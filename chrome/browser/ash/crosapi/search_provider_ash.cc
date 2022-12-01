@@ -43,17 +43,23 @@ void SearchProviderAsh::RegisterSearchController(
 void SearchProviderAsh::OnSearchResultsReceived(
     mojom::SearchStatus status,
     absl::optional<std::vector<mojom::SearchResultPtr>> results) {
-  const bool result_expected = status == mojom::SearchStatus::kInProgress ||
-                               status == mojom::SearchStatus::kDone;
-  const auto& callback = publisher_receivers_.current_context();
-  if (result_expected && results.has_value() && !callback.is_null()) {
-    callback.Run(std::move(results.value()));
-    return;
-  }
-
-  if (status == mojom::SearchStatus::kError) {
-    LOG(ERROR) << "Search failed.";
-    publisher_receivers_.Remove(publisher_receivers_.current_receiver());
+  switch (status) {
+    case mojom::SearchStatus::kError: {
+      LOG(ERROR) << "Search failed.";
+      publisher_receivers_.Remove(publisher_receivers_.current_receiver());
+      return;
+    }
+    case mojom::SearchStatus::kDone: {
+      const auto& callback = publisher_receivers_.current_context();
+      if (results.has_value() && !callback.is_null())
+        callback.Run(std::move(results.value()));
+      return;
+    }
+    case mojom::SearchStatus::kInProgress:
+    case mojom::SearchStatus::kCancelled:
+    case mojom::SearchStatus::kBackendUnavailable: {
+      return;
+    }
   }
 }
 
