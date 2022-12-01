@@ -89,7 +89,7 @@ void CrowdDenyPreloadData::LoadFromDisk(const base::FilePath& proto_path,
       FROM_HERE,
       base::BindOnce(&LoadAndParseAndIndexPreloadDataFromDisk, proto_path),
       base::BindOnce(&CrowdDenyPreloadData::SetSiteReputations,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 const CrowdDenyPreloadData::SiteReputation*

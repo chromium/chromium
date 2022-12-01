@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_service_impl.h"
 #include "content/browser/permissions/permission_util.h"
@@ -74,10 +75,16 @@ class PermissionServiceContext::PermissionSubscription {
 
   void set_id(PermissionController::SubscriptionId id) { id_ = id; }
 
+  base::WeakPtr<PermissionSubscription> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   const raw_ptr<PermissionServiceContext> context_;
   mojo::Remote<blink::mojom::PermissionObserver> observer_;
   PermissionController::SubscriptionId id_;
+
+  base::WeakPtrFactory<PermissionSubscription> weak_ptr_factory_{this};
 };
 
 // static
@@ -146,7 +153,7 @@ void PermissionServiceContext::CreateSubscription(
               requesting_origin,
               base::BindRepeating(
                   &PermissionSubscription::OnPermissionStatusChanged,
-                  base::Unretained(subscription.get())));
+                  subscription->GetWeakPtr()));
   subscription->set_id(subscription_id);
   subscriptions_[subscription_id] = std::move(subscription);
 }

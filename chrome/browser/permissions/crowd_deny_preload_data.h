@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/version.h"
 #include "chrome/browser/permissions/crowd_deny.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -106,6 +107,8 @@ class CrowdDenyPreloadData {
   scoped_refptr<base::SequencedTaskRunner> loading_task_runner_;
   absl::optional<base::Version> version_on_disk_;
   std::queue<PendingOrigin> origins_pending_verification_;
+
+  base::WeakPtrFactory<CrowdDenyPreloadData> weak_factory_{this};
 };
 
 namespace testing {

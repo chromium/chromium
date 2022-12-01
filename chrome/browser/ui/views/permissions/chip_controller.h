@@ -120,7 +120,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   views::View* get_prompt_bubble_view_for_testing() {
     CHECK_IS_TEST();
-    return bubble_tracker.view();
+    return bubble_tracker_.view();
   }
 
   absl::optional<permissions::PermissionRequestManager*>
@@ -212,7 +212,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   absl::optional<permissions::PermissionRequestManager*>
       active_chip_permission_request_manager_;
 
-  views::ViewTracker bubble_tracker;
+  views::ViewTracker bubble_tracker_;
 
   base::WeakPtrFactory<ChipController> weak_factory_{this};
 };
