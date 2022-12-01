@@ -1224,23 +1224,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Gpu.Rasterization.Raster.NumPaintOps" units="count"
-    expires_after="2023-03-26">
-  <owner>penghuang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>Number of paint ops in a raster task.</summary>
-</histogram>
-
-<histogram name="Gpu.Rasterization.Raster.NumSlowPathsUpToMinForMSAA"
-    units="count" expires_after="2022-11-20">
-  <owner>penghuang@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Number of slow paths in a raster task. (Only counts up to the minimum
-    required for MSAA)
-  </summary>
-</histogram>
-
 <histogram name="GPU.ReportOnlyModeStatusAtHang" enum="BooleanEnabled"
     expires_after="2023-04-23">
   <owner>spvw@chromium.org</owner>
