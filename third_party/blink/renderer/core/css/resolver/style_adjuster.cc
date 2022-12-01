@@ -900,9 +900,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   }
 
   if (style.Display() != EDisplay::kContents) {
-    style.ApplyTextDecorations(
-        parent_style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
-        OverridesTextDecorationColors(element));
+    style.ApplyTextDecorations(parent_style.VisitedDependentColorFast(
+                                   GetCSSPropertyTextDecorationColor()),
+                               OverridesTextDecorationColors(element));
   }
 
   // Cull out any useless layers and also repeat patterns into additional

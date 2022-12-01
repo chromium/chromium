@@ -2820,8 +2820,8 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
     }
 
     bool background_color_changed =
-        ResolveColor(GetCSSPropertyBackgroundColor()) !=
-        ResolveColor(new_style, GetCSSPropertyBackgroundColor());
+        ResolveColorFast(GetCSSPropertyBackgroundColor()) !=
+        ResolveColorFast(new_style, GetCSSPropertyBackgroundColor());
 
     if (diff.TextDecorationOrColorChanged() || background_color_changed ||
         style_->GetFontDescription() != new_style.GetFontDescription() ||

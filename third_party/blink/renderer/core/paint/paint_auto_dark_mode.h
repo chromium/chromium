@@ -18,7 +18,7 @@ inline AutoDarkMode PaintAutoDarkMode(const ComputedStyle& style,
                                       DarkModeFilter::ElementRole role) {
   return AutoDarkMode(
       role, style.ForceDark(),
-      style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb());
+      style.VisitedDependentColorFast(GetCSSPropertyBackgroundColor()).Rgb());
 }
 
 inline AutoDarkMode PaintAutoDarkMode(DarkModeFilter::ElementRole role,

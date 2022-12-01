@@ -148,13 +148,13 @@ TextPaintStyle TextPainterBase::TextPaintingStyle(const Document& document,
     text_style.shadow = nullptr;
   } else {
     text_style.current_color =
-        style.VisitedDependentColor(GetCSSPropertyColor());
+        style.VisitedDependentColorFast(GetCSSPropertyColor());
     text_style.fill_color =
-        style.VisitedDependentColor(GetCSSPropertyWebkitTextFillColor());
+        style.VisitedDependentColorFast(GetCSSPropertyWebkitTextFillColor());
     text_style.stroke_color =
-        style.VisitedDependentColor(GetCSSPropertyWebkitTextStrokeColor());
+        style.VisitedDependentColorFast(GetCSSPropertyWebkitTextStrokeColor());
     text_style.emphasis_mark_color =
-        style.VisitedDependentColor(GetCSSPropertyTextEmphasisColor());
+        style.VisitedDependentColorFast(GetCSSPropertyTextEmphasisColor());
     text_style.shadow = style.TextShadow();
 
     // Adjust text color when printing with a white background.

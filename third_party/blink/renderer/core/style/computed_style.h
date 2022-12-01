@@ -2225,6 +2225,27 @@ class ComputedStyle : public ComputedStyleBase,
       const Longhand& color_property,
       bool* is_current_color = nullptr) const;
 
+  // A faster version of VisitedDependentColor() that specializes on the
+  // concrete property class; for the common case of not being inside a link,
+  // can inline the question in function directly. However, it uses more code
+  // space, so only use it on code paths that are actually hot.
+  template <class Property>
+  blink::Color VisitedDependentColorFast(
+      const Property& color_property,
+      bool* is_current_color = nullptr) const {
+    DCHECK(!Property().IsVisited());
+
+    if (InsideLink() != EInsideLink::kInsideVisitedLink) {
+      blink::Color color =
+          color_property.ColorIncludingFallback(false, *this,
+                                                /*is_current_color=*/nullptr);
+      DCHECK(color == VisitedDependentColor(color_property, is_current_color));
+      return color;
+    } else {
+      return VisitedDependentColor(color_property, is_current_color);
+    }
+  }
+
   // -webkit-appearance utility functions.
   static bool HasEffectiveAppearance(ControlPart effective_appearance) {
     return effective_appearance != kNoControlPart;
