@@ -183,9 +183,14 @@ public class WebFeedMainMenuItem extends FrameLayout {
             mItemText.setOnClickListener((view) -> {
                 try {
                     mItemTextClicked = true;
+                    String creatorUrl =
+                            UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                                    mUrl);
                     // Launch a new activity for the creator page.
                     Intent intent = new Intent(mContext, mCreatorActivityClass);
                     intent.putExtra("CREATOR_WEB_FEED_ID", webFeedMetadata.id);
+                    intent.putExtra("CREATOR_TITLE", mTitle);
+                    intent.putExtra("CREATOR_URL", creatorUrl);
                     mContext.startActivity(intent);
                 } catch (Exception e) {
                     Log.d(TAG, "Failed to launch CreatorActivity " + e);

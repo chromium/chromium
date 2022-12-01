@@ -50,6 +50,8 @@ public class CreatorMediatorTest {
     private SnackbarManager mSnackbarManager;
     @Mock
     private Profile mProfile;
+    private final String mTitle = "Example";
+    private final String mUrl = "example.com";
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -75,7 +77,7 @@ public class CreatorMediatorTest {
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mCreatorCoordinator = new CreatorCoordinator(
-                mActivity, sWebFeedId, mSnackbarManager, mWindowAndroid, mProfile);
+                mActivity, sWebFeedId, mSnackbarManager, mWindowAndroid, mProfile, mTitle, mUrl);
         mCreatorProfileModel = mCreatorCoordinator.getCreatorProfileModel();
 
         mCreatorMediator = new CreatorMediator(mActivity, mCreatorProfileModel);

@@ -66,8 +66,7 @@ public class CreatorMediator {
     }
 
     private void onGetCreator(Creator creator) {
+        // TODO(crbug/1374058): Get Title and Url from CreatorAPI
         mCreator = creator;
-        mCreatorProfileModel.set(CreatorProfileProperties.TITLE_KEY, mCreator.title);
-        mCreatorProfileModel.set(CreatorProfileProperties.URL_KEY, mCreator.url);
     }
 }

@@ -69,14 +69,18 @@ public class CreatorCoordinator
     private ViewGroup mBottomSheetContainer;
     private Profile mProfile;
     private Stream mStream;
+    private String mTitle;
+    private String mUrl;
 
     public CreatorCoordinator(Activity activity, byte[] webFeedId, SnackbarManager snackbarManager,
-            WindowAndroid windowAndroid, Profile profile) {
+            WindowAndroid windowAndroid, Profile profile, String title, String url) {
         mActivity = activity;
         mWebFeedId = webFeedId;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
         mWindowAndroid = windowAndroid;
+        mTitle = title;
+        mUrl = url;
         mRecyclerView = setUpView();
 
         // Inflate the XML
@@ -90,8 +94,7 @@ public class CreatorCoordinator
         initBottomSheet();
 
         // Generate CreatorProfileModel
-        mCreatorProfileModel =
-                generateCreatorProfileModel(mWebFeedId, /* title */ "", /* url */ "", mIsFollowed);
+        mCreatorProfileModel = generateCreatorProfileModel(mWebFeedId, mTitle, mUrl, mIsFollowed);
         mCreatorProfileModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mCreatorProfileModel,
                         (CreatorProfileView) mProfileView, CreatorProfileViewBinder::bind);

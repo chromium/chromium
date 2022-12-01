@@ -23,16 +23,22 @@ import org.chromium.ui.base.WindowAndroid;
 public class CreatorActivity extends SnackbarActivity {
     // CREATOR_WEB_FEED_ID is the Intent key under which the Web Feed ID is stored.
     public static final String CREATOR_WEB_FEED_ID = "CREATOR_WEB_FEED_ID";
+    public static final String CREATOR_TITLE = "CREATOR_TITLE";
+    public static final String CREATOR_URL = "CREATOR_URL";
     private WindowAndroid mWindowAndroid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         byte[] mWebFeedId = getIntent().getByteArrayExtra(CREATOR_WEB_FEED_ID);
+        String mTitle = getIntent().getStringExtra(CREATOR_TITLE);
+        String mUrl = getIntent().getStringExtra(CREATOR_URL);
+
         super.onCreate(savedInstanceState);
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid = new ActivityWindowAndroid(this, false, intentRequestTracker);
-        CreatorCoordinator coordinator = new CreatorCoordinator(this, mWebFeedId,
-                getSnackbarManager(), mWindowAndroid, Profile.getLastUsedRegularProfile());
+        CreatorCoordinator coordinator =
+                new CreatorCoordinator(this, mWebFeedId, getSnackbarManager(), mWindowAndroid,
+                        Profile.getLastUsedRegularProfile(), mTitle, mUrl);
         setContentView(coordinator.getView());
 
         Toolbar actionBar = findViewById(R.id.action_bar);
