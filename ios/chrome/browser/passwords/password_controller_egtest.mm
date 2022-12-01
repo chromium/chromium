@@ -181,13 +181,7 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests password generation flow.
-// TODO(crbug.com/1221635) This fails on iPhone 14.5+
-- (void)DISABLED_testPasswordGeneration {
-#if TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (test is flaky)");
-  }
-#endif
+- (void)testPasswordGeneration {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
