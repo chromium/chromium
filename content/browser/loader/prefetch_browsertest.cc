@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "content/browser/loader/prefetch_browsertest_base.h"
 #include "content/browser/web_package/mock_signed_exchange_handler.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -114,7 +115,15 @@ class PrefetchBrowserTestPrivacyChanges
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(PrefetchBrowserTestPrivacyChanges, RedirectNotFollowed) {
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
+// Test flakes on Fuchsia & Windows.
+// TODO(crbug.com/1395163): Resolve flake and reenable.
+#define MAYBE_RedirectNotFollowed DISABLED_RedirectNotFollowed
+#else
+#define MAYBE_RedirectNotFollowed RedirectNotFollowed
+#endif
+IN_PROC_BROWSER_TEST_P(PrefetchBrowserTestPrivacyChanges,
+                       MAYBE_RedirectNotFollowed) {
   const char* prefetch_path = "/prefetch.html";
   const char* redirect_path = "/redirect.html";
   const char* destination_path = "/destination.html";
