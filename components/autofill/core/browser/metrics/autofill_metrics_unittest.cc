@@ -7442,9 +7442,7 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_EmptyForm) {
 
 // Verify that we correctly log user happiness metrics dealing with form
 // interaction.
-// TODO(crbug.com/1394998): Re-enable this test
-TEST_F(AutofillMetricsTest,
-       DISABLED_UserHappinessFormInteraction_CreditCardForm) {
+TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/false,
                       /*include_full_server_credit_card=*/false,
@@ -10340,9 +10338,8 @@ TEST_F(AutofillMetricsSeamlessnessTest,
 }
 
 // Tests that Autofill.CreditCard.SeamlessFills.* are emitted.
-// TODO(crbug.com/1394998): Re-enable this test
 TEST_F(AutofillMetricsSeamlessnessTest,
-       DISABLED_LogCreditCardSeamlessFillsMetricIfAutofilledWithoutCvc) {
+       LogCreditCardSeamlessFillsMetricIfAutofilledWithoutCvc) {
   using Metric = AutofillMetrics::CreditCardSeamlessness::Metric;
   using UkmBuilder = ukm::builders::Autofill_CreditCardFill;
 
