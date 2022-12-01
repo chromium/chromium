@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/property_tree_manager.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/overscroll_behavior.h"
@@ -1235,7 +1236,9 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
     const cc::LayerList& layers) {
   // This vector is indexed by effect node id. The value is the number of
   // layers and sub-render-surfaces controlled by this effect.
-  Vector<int> effect_layer_counts(static_cast<wtf_size_t>(effect_tree_.size()));
+  wtf_size_t tree_size = base::checked_cast<wtf_size_t>(effect_tree_.size());
+  Vector<int> effect_layer_counts(tree_size);
+  Vector<bool> has_child_surface(tree_size);
   // Initialize the vector to count directly controlled layers.
   for (const auto& layer : layers) {
     if (layer->draws_content())
@@ -1245,11 +1248,15 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
   // In the effect tree, parent always has lower id than children, so the
   // following loop will check descendants before parents and accumulate
   // effect_layer_counts.
-  for (int id = static_cast<int>(effect_tree_.size() - 1);
-       id > cc::kSecondaryRootPropertyNodeId; id--) {
+  for (int id = tree_size - 1; id > cc::kSecondaryRootPropertyNodeId; id--) {
     auto* effect = effect_tree_.Node(id);
     if (effect_layer_counts[id] < 2 &&
-        IsConditionalRenderSurfaceReason(effect->render_surface_reason)) {
+        IsConditionalRenderSurfaceReason(effect->render_surface_reason) &&
+        // kBlendModeDstIn should create a render surface if the mask itself
+        // has any child render surface.
+        !(effect->render_surface_reason ==
+              cc::RenderSurfaceReason::kBlendModeDstIn &&
+          has_child_surface[id])) {
       // The conditional render surface can be omitted because it controls less
       // than two layers or render surfaces.
       effect->render_surface_reason = cc::RenderSurfaceReason::kNone;
@@ -1260,9 +1267,11 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
     if (effect->HasRenderSurface()) {
       // A sub-render-surface counts as one controlled layer of the parent.
       effect_layer_counts[effect->parent_id]++;
+      has_child_surface[effect->parent_id] = true;
     } else {
       // Otherwise all layers count as controlled layers of the parent.
       effect_layer_counts[effect->parent_id] += effect_layer_counts[id];
+      has_child_surface[effect->parent_id] |= has_child_surface[id];
     }
 
 #if DCHECK_IS_ON()
