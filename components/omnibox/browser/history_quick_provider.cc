@@ -350,15 +350,16 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     match.from_keyword = true;
   }
 
-  // Propagate scoring signals to AC Match for ML Model training data.
-  // `allowed_to_be_default_match` is set in this function, after the ACMatch is
-  // constructed, rather than in ScoredHistoryMatch. We have to propagate that
-  // signal to `scoring_signals` in addition to all signals calculated in the
-  // ScoredHistoryMatch.
-  match.scoring_signals = history_match.scoring_signals;
-  match.scoring_signals.set_allowed_to_be_default_match(
-      match.allowed_to_be_default_match);
-
+  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
+    // Propagate scoring signals to AC Match for ML Model training data.
+    // `allowed_to_be_default_match` is set in this function, after the ACMatch
+    // is constructed, rather than in ScoredHistoryMatch. We have to propagate
+    // that signal to `scoring_signals` in addition to all signals calculated in
+    // the ScoredHistoryMatch.
+    match.scoring_signals = history_match.scoring_signals;
+    match.scoring_signals.set_allowed_to_be_default_match(
+        match.allowed_to_be_default_match);
+  }
   match.RecordAdditionalInfo("typed count", info.typed_count());
   match.RecordAdditionalInfo("visit count", info.visit_count());
   match.RecordAdditionalInfo("last visit", info.last_visit());
