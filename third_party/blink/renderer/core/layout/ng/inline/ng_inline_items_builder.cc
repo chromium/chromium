@@ -239,7 +239,7 @@ NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
     LayoutText* layout_object) {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendTextItem %d %u %u",
-                       layout_object->RecordReplayId(),
+                       layout_object ? layout_object->RecordReplayId() : 0,
                        text_.length(), string.length());
 
   DCHECK(layout_object);
@@ -263,7 +263,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendEmptyTextItem(
     LayoutText* layout_object) {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendEmptyTextItem %d %u",
-                       layout_object->RecordReplayId(),
+                       layout_object ? layout_object->RecordReplayId() : 0,
                        text_.length());
 
   DCHECK(layout_object);
@@ -409,7 +409,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
 
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendTextReusing #5 %d %u %u %u",
-                         item.GetLayoutObject()->RecordReplayId(),
+                         item.GetLayoutObject() ? item.GetLayoutObject()->RecordReplayId() : 0,
                          text_.length(), item.StartOffset(), item.Length());
 
     unsigned start = text_.length();
@@ -470,7 +470,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     const NGInlineNodeData* previous_data) {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendText #1 Start %d %u",
-                       layout_text->RecordReplayId(),
+                       layout_text ? layout_text->RecordReplayId() : 0,
                        layout_text->GetText().length());
 
   // If the LayoutText element hasn't changed, reuse the existing items.
@@ -499,7 +499,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendText #2 Start %d %u",
-                       layout_object->RecordReplayId(),
+                       layout_object ? layout_object->RecordReplayId() : 0,
                        string.length());
 
   if (string.IsEmpty()) {
@@ -547,7 +547,7 @@ void NGInlineItemsBuilderTemplate<
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendCollapseWhitespace Start %d %u",
-                       layout_object->RecordReplayId(),
+                       layout_object ? layout_object->RecordReplayId() : 0,
                        string.length());
   for (unsigned i = 0; i < string.length(); i++) {
     recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendCollapseWhitespace #1 %d %u",
@@ -948,7 +948,7 @@ NGInlineItem& NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::Append(
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::Append %d %u %u",
-                       layout_object->RecordReplayId(),
+                       layout_object ? layout_object->RecordReplayId() : 0,
                        text_.length(), character);
 
   text_.Append(character);
@@ -1004,7 +1004,7 @@ NGInlineItem& NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
     LayoutObject* layout_object) {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendOpaque #1 %d %u %u",
-                       layout_object->RecordReplayId(),
+                       layout_object ? layout_object->RecordReplayId() : 0,
                        text_.length(), character);
 
   text_.Append(character);
@@ -1024,7 +1024,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
     LayoutObject* layout_object) {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendOpaque #2 %d %u",
-                       layout_object->RecordReplayId(),
+                       layout_object ? layout_object->RecordReplayId() : 0,
                        text_.length());
 
   unsigned end_offset = text_.length();
@@ -1061,7 +1061,7 @@ void NGInlineItemsBuilderTemplate<
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::RemoveTrailingCollapsibleSpace #1 %d %u %u",
-                       item->GetLayoutObject()->RecordReplayId(),
+                       item->GetLayoutObject() ? item->GetLayoutObject()->RecordReplayId() : 0,
                        item->StartOffset(), item->EndOffset());
 
   DCHECK_GT(item->EndOffset(), item->StartOffset());
@@ -1107,14 +1107,14 @@ void NGInlineItemsBuilderTemplate<
   if (text_.length() == item->EndOffset()) {
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("NGInlineItemsBuilderTemplate::RestoreTrailingCollapsibleSpace #1 %d %u",
-                         item->GetLayoutObject()->RecordReplayId(),
+                         item->GetLayoutObject() ? item->GetLayoutObject()->RecordReplayId() : 0,
                          text_.length());
 
     text_.Append(' ');
   } else {
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("NGInlineItemsBuilderTemplate::RestoreTrailingCollapsibleSpace #2 %d %u %u",
-                         item->GetLayoutObject()->RecordReplayId(),
+                         item->GetLayoutObject() ? item->GetLayoutObject()->RecordReplayId() : 0,
                          text_.length(), item->EndOffset());
 
     String current = text_.ToString();
