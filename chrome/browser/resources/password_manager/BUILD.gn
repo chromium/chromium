@@ -21,10 +21,11 @@ build_webui("build") {
   ]
   web_component_files = [
     "checkup_section.ts",
-    "password_manager_app.ts",
-    "password_list_item.ts",
-    "passwords_section.ts",
+    "password_details_card.ts",
     "password_details_section.ts",
+    "password_list_item.ts",
+    "password_manager_app.ts",
+    "passwords_section.ts",
     "prefs/pref_toggle_button.ts",
     "settings_section.ts",
     "side_bar.ts",
@@ -32,17 +33,17 @@ build_webui("build") {
     "toolbar.ts",
   ]
   non_web_component_files = [
-    "password_manager_proxy.ts",
     "password_manager.ts",
-    "router.ts",
-    "prefs/prefs_browser_proxy.ts",
+    "password_manager_proxy.ts",
     "prefs/pref_mixin.ts",
+    "prefs/prefs_browser_proxy.ts",
+    "router.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
-    "shared_style.css",
     "shared_vars.css",
+    "shared_style.css",
   ]
 
   icons_html_files = [ "icons.html" ]
@@ -51,10 +52,10 @@ build_webui("build") {
 
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/passwords_private.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
-    "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
   ]

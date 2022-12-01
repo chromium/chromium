@@ -4,6 +4,7 @@
 
 import './password_manager_app.js';
 
+export {PasswordDetailsCardElement} from './password_details_card.js';
 export {PasswordDetailsSectionElement} from './password_details_section.js';
 export {PasswordListItemElement} from './password_list_item.js';
 export {PasswordManagerAppElement} from './password_manager_app.js';

@@ -24,6 +24,7 @@ export function makePasswordCheckStatus(params: PasswordCheckParams):
 export interface PasswordEntryParams {
   url?: string;
   username?: string;
+  password?: string;
   federationText?: string;
   id?: number;
   inAccountStore?: boolean;
@@ -61,9 +62,9 @@ export function createPasswordEntry(params?: PasswordEntryParams):
 
   return {
     urls: {
-      signonRealm: 'http://' + url + '/login',
+      signonRealm: 'https://' + url + '/login',
       shown: url,
-      link: 'http://' + url + '/login',
+      link: 'https://' + url + '/login',
     },
     username: username,
     federationText: params.federationText,
@@ -71,7 +72,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     storedIn: storeType,
     isAndroidCredential: params.isAndroidCredential || false,
     note: note,
-    password: '',
+    password: params.password || '',
   };
 }
 

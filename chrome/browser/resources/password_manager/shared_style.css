@@ -30,3 +30,20 @@
   align-items: center;
   display: flex;
 }
+
+.elide-left {
+  /* The following non-flex directives allow eliding long originUrls from
+  * the left. Forcing rtl should not cause an issue for right-to-left
+  * languages in this case, since valid URL characters are restricted to
+  * ASCII.
+  */
+  direction: rtl;
+}
+
+.elide-left > span {
+  direction: ltr;
+  /* This styling is necessary to fix the display of domains starting with
+   * numbers.
+   */
+  unicode-bidi: bidi-override;
+}

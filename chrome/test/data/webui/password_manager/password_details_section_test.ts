@@ -4,8 +4,8 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordDetailsSectionElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
-import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {Page, PasswordDetailsCardElement, PasswordDetailsSectionElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {assertArrayEquals, assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -123,5 +123,29 @@ suite('PasswordDetailsSectionTest', function() {
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     backButton.click();
     assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
+  });
+
+  test('All password entries are displayed', async function() {
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1'}),
+        createPasswordEntry({id: 1, username: 'test2'}),
+      ],
+    });
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    const section = document.createElement('password-details-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    const entries =
+        section.shadowRoot!.querySelectorAll<PasswordDetailsCardElement>(
+            'password-details-card');
+    assertTrue(!!entries.length);
+    assertEquals(entries.length, group.entries.length);
+    for (let index = 0; index < entries.length; ++index) {
+      assertDeepEquals(entries[index]!.password, group.entries[index]);
+    }
   });
 });
