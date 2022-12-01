@@ -146,26 +146,31 @@ HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
 
 }  // namespace
 
-WinKeyRotationCommand::WinKeyRotationCommand() = default;
+WinKeyRotationCommand::WinKeyRotationCommand()
+    : WinKeyRotationCommand(
+          base::BindRepeating(&RunGoogleUpdateElevatedCommand)) {}
 
 WinKeyRotationCommand::WinKeyRotationCommand(
     RunGoogleUpdateElevatedCommandFn run_elevated_command)
-    : run_elevated_command_(run_elevated_command) {}
+    : WinKeyRotationCommand(
+          run_elevated_command,
+          base::ThreadPool::CreateCOMSTATaskRunner(
+              {base::TaskPriority::USER_BLOCKING, base::MayBlock()})) {}
+
+WinKeyRotationCommand::WinKeyRotationCommand(
+    RunGoogleUpdateElevatedCommandFn run_elevated_command,
+    scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner)
+    : com_thread_runner_(com_thread_runner),
+      run_elevated_command_(run_elevated_command) {
+  DCHECK(run_elevated_command_);
+  DCHECK(com_thread_runner_);
+}
 
 WinKeyRotationCommand::~WinKeyRotationCommand() = default;
 
 void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
                                     Callback callback) {
   DCHECK(!callback.is_null());
-
-  if (!com_thread_runner_) {
-    com_thread_runner_ = base::ThreadPool::CreateCOMSTATaskRunner(
-        {base::TaskPriority::USER_BLOCKING, base::MayBlock()});
-  }
-
-  RunGoogleUpdateElevatedCommandFn run_elevated_command =
-      run_elevated_command_ ? run_elevated_command_
-                            : &RunGoogleUpdateElevatedCommand;
 
   com_thread_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -185,7 +190,7 @@ void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
             // and sleep time are pretty arbitrary choices.
             HRESULT hr = S_OK;
             for (int i = 0; i < 10; ++i) {
-              hr = run_elevated_command(
+              hr = run_elevated_command.Run(
                   installer::kCmdRotateDeviceTrustKey,
                   {token_base64, params.dm_server_url, nonce_base64},
                   &return_code);
@@ -213,7 +218,7 @@ void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
             }
             return status;
           },
-          params, run_elevated_command, waiting_enabled_),
+          params, run_elevated_command_, waiting_enabled_),
       std::move(callback));
 }
 

@@ -3207,6 +3207,7 @@ if (!is_android) {
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
           "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+          "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
           "//chrome/browser/ui/webui/app_home:mojo_bindings",
         ]
       }
