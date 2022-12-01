@@ -953,6 +953,47 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    public void testBackPressAfterSwitchIncognitoMode() {
+        initAndAssertAllProperties();
+        Assert.assertFalse(mMediator.shouldInterceptBackPress());
+
+        doReturn(false).when(mTabGridDialogController).isVisible();
+        mMediator.showTabSwitcherView(false);
+        doReturn(null).when(mTabModelSelector).getCurrentTab();
+        mMediator.showTabSwitcherView(true);
+        Assert.assertFalse(mMediator.shouldInterceptBackPress());
+        Assert.assertEquals(Boolean.FALSE, mMediator.getHandleBackPressChangedSupplier().get());
+
+        // Switch to incognito mode.
+        mModel.set(TabListContainerProperties.IS_VISIBLE, true);
+        doReturn(true).when(mTabModelFilter).isIncognito();
+        doReturn(true).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(false).when(mIncognitoReauthController).isIncognitoReauthPending();
+        doReturn(true).when(mTabModel).isIncognito();
+        doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
+
+        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
+        mMediator.showTabSwitcherView(true);
+        Assert.assertTrue(mMediator.shouldInterceptBackPress());
+        Assert.assertEquals(Boolean.TRUE, mMediator.getHandleBackPressChangedSupplier().get());
+
+        // Switch to normal mode.
+        mModel.set(TabListContainerProperties.IS_VISIBLE, true);
+        doReturn(false).when(mTabModelFilter).isIncognito();
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(false).when(mIncognitoReauthController).isIncognitoReauthPending();
+        doReturn(false).when(mTabModel).isIncognito();
+        doReturn(null).when(mTabModelSelector).getCurrentTab();
+
+        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
+        Assert.assertFalse(mMediator.shouldInterceptBackPress());
+        Assert.assertEquals(Boolean.FALSE, mMediator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
     public void testOnTabModelSelected_NewModelIncognito_ReauthPending_ClearsTabList() {
         initAndAssertAllProperties();
         mModel.set(TabListContainerProperties.IS_VISIBLE, true);
