@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
+
 #include <utility>
+
 #include "base/no_destructor.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-test-utils.h"
@@ -39,6 +41,10 @@ void BindToRecoveryFactorEditor(
 
 mojom::RecoveryFactorEditorAsyncWaiter GetRecoveryFactorEditorForTesting() {
   return mojom::RecoveryFactorEditorAsyncWaiter(recovery_factor_editor.get());
+}
+
+mojom::RecoveryFactorEditor& GetRecoveryFactorEditor() {
+  return *recovery_factor_editor.get();
 }
 
 }  // namespace ash::auth

@@ -38,6 +38,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Auto-enrollment-check"/>
   <variant name="Autolaunch"/>
   <variant name="Consolidated-consent"/>
+  <variant name="Cryptohome-recovery-setup"/>
   <variant name="Debugging"/>
   <variant name="Demo-preferences"/>
   <variant name="Demo-setup"/>
@@ -119,6 +120,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Consolidated-consent.AcceptedDemo"/>
   <variant name="Consolidated-consent.AcceptedRegular"/>
   <variant name="Consolidated-consent.BackDemo"/>
+  <variant name="Cryptohome-recovery-setup.Done"/>
   <variant name="Debugging.Next"/>
   <variant name="Demo-preferences.Canceled"/>
   <variant name="Demo-preferences.Completed"/>
