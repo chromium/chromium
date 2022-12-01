@@ -425,6 +425,12 @@ static constexpr const char* const kChromeUrls[] = {
     // Note: Disabled because a DCHECK fires when directly visiting the URL.
     // "chrome://signin-reauth",
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    "chrome://chrome-signin",
+#endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_ASH)
+    "chrome://chrome-signin/?reason=5",
+#endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     "chrome://webuijserror",
 #endif

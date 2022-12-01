@@ -34,7 +34,7 @@ suite(arc_account_picker_test.suiteName, () => {
    * @param {!Array<Account>} accountsNotAvailableInArc
    */
   function testSetup(accountsNotAvailableInArc) {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     testBrowserProxy = new TestArcAccountPickerBrowserProxy();
     if (accountsNotAvailableInArc) {
       testBrowserProxy.setAccountsNotAvailableInArc(accountsNotAvailableInArc);

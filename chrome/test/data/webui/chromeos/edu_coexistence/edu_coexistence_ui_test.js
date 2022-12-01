@@ -42,7 +42,7 @@ suite(edu_coexistence_ui_tests.suiteName, function() {
     });
 
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     appComponent = document.createElement('edu-coexistence-ui');
     document.body.appendChild(appComponent);
     // The webview needs to be set explicitly in for the test because

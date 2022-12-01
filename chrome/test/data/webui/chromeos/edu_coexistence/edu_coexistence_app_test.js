@@ -66,7 +66,7 @@ suite(edu_coexistence_app_tests.suiteName, function() {
       setTestArcAccountPickerBrowserProxy(testArcBrowserProxy);
     }
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     appComponent = document.createElement('edu-coexistence-app');
     document.body.appendChild(appComponent);
     flush();

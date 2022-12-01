@@ -43,7 +43,7 @@ suite(edu_coexistence_controller_tests.suiteName, function() {
       };
     });
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     // The controller wants an edu-coexistence-ui Polymer component
     // as a parameter.
     appComponent = document.createElement('edu-coexistence-ui');

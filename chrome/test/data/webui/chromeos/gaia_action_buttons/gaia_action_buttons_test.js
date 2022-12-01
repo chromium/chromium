@@ -56,7 +56,7 @@ suite(gaia_action_buttons_test.suiteName, () => {
   let secondaryButton;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     actionButtonsComponent = /** @type {!GaiaActionButtonsElement} */ (
         document.createElement('gaia-action-buttons'));
     document.body.appendChild(actionButtonsComponent);

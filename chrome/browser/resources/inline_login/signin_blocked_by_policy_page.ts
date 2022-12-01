@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './account_manager_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './signin_blocked_by_policy_page.html.js';
@@ -34,10 +35,10 @@ export class SigninBlockedByPolicyPageElement extends PolymerElement {
    *     Chromebox).
    */
   private getBodyText_(email: string, hostedDomain: string, deviceType: string):
-      string {
-    return loadTimeData.getStringF(
+      TrustedHTML {
+    return sanitizeInnerHtml(loadTimeData.getStringF(
         'accountManagerDialogSigninBlockedByPolicyBody', email, hostedDomain,
-        deviceType);
+        deviceType));
   }
 }
 
