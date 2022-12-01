@@ -6,7 +6,7 @@
 
         const observer = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
-            if (entry.name === 'keydown') {
+            if (entry.name === 'keydown' || entry.name === 'keyup') {
               interactionCallback();
             }
           }

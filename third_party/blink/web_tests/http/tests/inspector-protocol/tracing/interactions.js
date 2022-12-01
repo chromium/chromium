@@ -6,14 +6,15 @@
       await testRunner.loadScript('../resources/tracing-test.js');
   const tracingHelper = new TracingHelper(testRunner, session);
 
+  await dp.Page.enable();
   await tracingHelper.startTracing('devtools.timeline');
 
-  await dp.Page.navigate({
+  dp.Page.navigate({
     url: 'http://127.0.0.1:8000/inspector-protocol/resources/interactions.html'
   });
 
   // Wait for the DOM to be interactive.
-  await session.evaluateAsync(`new Promise((resolve) => onload = resolve)`);
+  await dp.Page.onceLoadEventFired();
 
   // Dispatch a keyboard interaction.
   await dp.Input.dispatchKeyEvent({type: 'keyDown', key: 'A'});
@@ -25,15 +26,16 @@
 
   const eventTimingTraces =
       devtoolsEvents.filter(event => event.name === 'EventTiming');
-  const keyUpBeginEvent =
-      eventTimingTraces.find(event => event.args?.data?.type === 'keydown');
-  const keyUpEndEvent = eventTimingTraces.find(
-      event => event.id === keyUpBeginEvent.id && !event.args.data);
+  const keyBeginEvent = eventTimingTraces.find(
+      event => event.args?.data?.type === 'keydown' ||
+          event.args?.data?.type === 'keyup');
+  const keyEndEvent = eventTimingTraces.find(
+      event => event.id === keyBeginEvent.id && !event.args.data);
   testRunner.log(`Got EventTiming begin event for keydown event with phase ${
-      keyUpBeginEvent.ph}:`);
-  tracingHelper.logEventShape(keyUpBeginEvent);
+      keyBeginEvent.ph}:`);
+  tracingHelper.logEventShape(keyBeginEvent);
   testRunner.log(`Got EventTiming end event for keydown event with phase ${
-      keyUpEndEvent.ph}:`);
-  tracingHelper.logEventShape(keyUpEndEvent);
+      keyEndEvent.ph}:`);
+  tracingHelper.logEventShape(keyEndEvent);
   testRunner.completeTest();
 })

@@ -1,0 +1,114 @@
+Tests the data of Network request lifecycle trace events
+Recording started
+Tracing complete
+Got ResourceWillSendRequest event:
+Object: {
+	args: {
+		data: {
+			requestId: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got ResourceSendRequest event:
+Object: {
+	args: {
+		data: {
+			frame: string
+			priority: string
+			requestId: string
+			requestMethod: string
+			url: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got ResourceReceiveResponse event:
+Object: {
+	args: {
+		data: {
+			encodedDataLength: number
+			frame: string
+			fromCache: boolean
+			fromServiceWorker: boolean
+			mimeType: string
+			requestId: string
+			responseTime: number
+			statusCode: number
+			timing: {
+				connectEnd: number
+				connectStart: number
+				dnsEnd: number
+				dnsStart: number
+				proxyEnd: number
+				proxyStart: number
+				pushEnd: number
+				pushStart: number
+				receiveHeadersEnd: number
+				requestTime: number
+				sendEnd: number
+				sendStart: number
+				sslEnd: number
+				sslStart: number
+				workerReady: number
+				workerStart: number
+			}
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got ResourceReceivedData event:
+Object: {
+	args: {
+		data: {
+			encodedDataLength: number
+			frame: string
+			requestId: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got ResourceFinish event:
+Object: {
+	args: {
+		data: {
+			decodedBodyLength: number
+			didFail: boolean
+			encodedDataLength: number
+			finishTime: number
+			requestId: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+
