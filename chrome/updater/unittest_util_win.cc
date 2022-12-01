@@ -83,7 +83,7 @@ void SetupCmdExe(UpdaterScope scope,
   ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));
 
   const base::FilePath cmd_exe_system_path = system_path.Append(kCmdExe);
-  if (scope == UpdaterScope::kUser) {
+  if (!IsSystemInstall(scope)) {
     cmd_exe_command_line = base::CommandLine(cmd_exe_system_path);
     return;
   }

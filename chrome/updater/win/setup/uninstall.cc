@@ -102,7 +102,7 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
     return kErrorNoVersionedDirectory;
   }
   const absl::optional<base::FilePath> base_dir = GetBaseDataDirectory(scope);
-  if (scope == UpdaterScope::kSystem && !base_dir) {
+  if (IsSystemInstall(scope) && !base_dir) {
     LOG(ERROR) << "GetBaseDataDirectory failed.";
     return kErrorNoBaseDirectory;
   }
@@ -143,7 +143,7 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
 // the function uninstalls only the internal updater.
 int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   VLOG(1) << __func__ << ", scope: " << scope;
-  DCHECK(scope == UpdaterScope::kUser || ::IsUserAnAdmin());
+  DCHECK(!IsSystemInstall(scope) || ::IsUserAnAdmin());
 
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
@@ -155,11 +155,11 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
     DeleteGoogleUpdateFilesAndKeys(scope);
 
   DeleteComInterfaces(scope, uninstall_all);
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     DeleteComService(uninstall_all);
   DeleteComServer(scope, uninstall_all);
 
-  if (scope == UpdaterScope::kUser)
+  if (!IsSystemInstall(scope))
     UnregisterUserRunAtStartup(GetTaskNamePrefix(scope));
 
   return RunUninstallScript(scope, uninstall_all);

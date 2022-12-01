@@ -40,7 +40,7 @@ int Setup(UpdaterScope scope) {
 
   // rwx------ for user installs, rwxr-xr-x for system installs.
   int permissions_mask = base::FILE_PERMISSION_USER_MASK;
-  if (scope == UpdaterScope::kSystem) {
+  if (IsSystemInstall(scope)) {
     permissions_mask |= base::FILE_PERMISSION_READ_BY_GROUP |
                         base::FILE_PERMISSION_EXECUTE_BY_GROUP |
                         base::FILE_PERMISSION_READ_BY_OTHERS |

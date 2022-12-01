@@ -192,7 +192,7 @@ void MaybeInstallUpdater(UpdaterScope scope) {
     return;
   }
 
-  if (scope == UpdaterScope::kSystem && geteuid() != 0) {
+  if (IsSystemInstall(scope) && geteuid() != 0) {
     VLOG(0) << "Cannot install system updater without root privilege.";
     return;
   }
@@ -275,8 +275,7 @@ KSTicket* KSAdminApp::TicketFromAppState(
 
 scoped_refptr<UpdateService> KSAdminApp::ServiceProxy(
     UpdaterScope scope) const {
-  return scope == UpdaterScope::kSystem ? system_service_proxy_
-                                        : user_service_proxy_;
+  return IsSystemInstall(scope) ? system_service_proxy_ : user_service_proxy_;
 }
 
 void KSAdminApp::ChooseService(

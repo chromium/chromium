@@ -72,8 +72,8 @@ class ProxyImplBase {
     }
 
     Microsoft::WRL::ComPtr<Interface> server_interface;
-    REFIID iid = scope_ == UpdaterScope::kSystem ? __uuidof(InterfaceSystem)
-                                                 : __uuidof(InterfaceUser);
+    REFIID iid = IsSystemInstall(scope_) ? __uuidof(InterfaceSystem)
+                                         : __uuidof(InterfaceUser);
     hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
 
     if (FAILED(hr)) {

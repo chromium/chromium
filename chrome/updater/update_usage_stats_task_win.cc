@@ -25,14 +25,13 @@ bool UpdateUsageStatsTask::UsageStatsAllowed(
     }
     std::wstring app_id_u16;
     DWORD usagestats = 0;
-    if (base::win::RegKey(scope_ == UpdaterScope::kUser ? HKEY_CURRENT_USER
-                                                        : HKEY_LOCAL_MACHINE,
-                          base::StrCat({scope_ == UpdaterScope::kUser
-                                            ? CLIENT_STATE_KEY
-                                            : CLIENT_STATE_MEDIUM_KEY,
-                                        base::SysUTF8ToWide(app_id)})
-                              .c_str(),
-                          Wow6432(KEY_READ))
+    if (base::win::RegKey(
+            UpdaterScopeToHKeyRoot(scope_),
+            base::StrCat({IsSystemInstall(scope_) ? CLIENT_STATE_MEDIUM_KEY
+                                                  : CLIENT_STATE_KEY,
+                          base::SysUTF8ToWide(app_id)})
+                .c_str(),
+            Wow6432(KEY_READ))
                 .ReadValueDW(L"usagestats", &usagestats) == ERROR_SUCCESS &&
         usagestats == 1) {
       return true;

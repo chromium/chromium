@@ -309,9 +309,9 @@ void SetUsageStats(UpdaterScope scope,
                    bool usage_stats_enabled) {
   const LONG result =
       base::win::RegKey(
-          scope == UpdaterScope::kUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE,
-          base::StrCat({scope == UpdaterScope::kUser ? CLIENT_STATE_KEY
-                                                     : CLIENT_STATE_MEDIUM_KEY,
+          UpdaterScopeToHKeyRoot(scope),
+          base::StrCat({IsSystemInstall(scope) ? CLIENT_STATE_MEDIUM_KEY
+                                               : CLIENT_STATE_KEY,
                         base::SysUTF8ToWide(app_id)})
               .c_str(),
           Wow6432(KEY_WRITE))

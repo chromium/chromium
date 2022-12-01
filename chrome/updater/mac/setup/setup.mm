@@ -93,7 +93,7 @@ bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
   }
 
   // For system installs, set file permissions to be drwxr-xr-x
-  if (scope == UpdaterScope::kSystem) {
+  if (IsSystemInstall(scope)) {
     constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
                                      base::FILE_PERMISSION_READ_BY_GROUP |
                                      base::FILE_PERMISSION_EXECUTE_BY_GROUP |
@@ -144,7 +144,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
                                  kLoggingModuleSwitchValue)
 
   ]];
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
 
   NSDictionary<NSString*, id>* launchd_plist = @{
@@ -174,7 +174,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
     MakeProgramArgumentWithValue(kLoggingModuleSwitch,
                                  kLoggingModuleSwitchValue)
   ]];
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
 
   NSDictionary<NSString*, id>* launchd_plist = @{
@@ -206,7 +206,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateUpdateServiceInternalLaunchdPlist(
     MakeProgramArgumentWithValue(kLoggingModuleSwitch,
                                  kLoggingModuleSwitchValue)
   ]];
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
 
   NSDictionary<NSString*, id>* launchd_plist = @{

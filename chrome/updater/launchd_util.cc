@@ -36,7 +36,7 @@ void PollLaunchctlListImpl(UpdaterScope scope,
   base::CommandLine command_line(base::FilePath("/bin/launchctl"));
   command_line.AppendArg("list");
   command_line.AppendArg(service);
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     command_line = MakeElevated(command_line);
 
   base::Process process = base::LaunchProcess(command_line, {});

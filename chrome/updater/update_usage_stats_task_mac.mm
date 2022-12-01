@@ -54,7 +54,7 @@ bool UsageStatsAllowedInDir(const base::FilePath& base_dir) {
 // Chrome channels all follow this pattern.
 bool UpdateUsageStatsTask::UsageStatsAllowed(
     const std::vector<std::string>& app_ids) const {
-  if (scope_ == UpdaterScope::kUser) {
+  if (!IsSystemInstall(scope_)) {
     absl::optional<base::FilePath> application_support_dir =
         GetApplicationSupportDirectory(UpdaterScope::kUser);
     return application_support_dir &&

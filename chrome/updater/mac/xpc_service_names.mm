@@ -25,9 +25,8 @@ const char kUpdateServiceLaunchdName[] = MAC_BUNDLE_IDENTIFIER_STRING ".update";
 const char kSystemLevelKeyword[] = ".system";
 
 std::string GetNameWithScope(const std::string& name, UpdaterScope scope) {
-  return scope == UpdaterScope::kSystem
-             ? base::StrCat({name, kSystemLevelKeyword})
-             : name;
+  return IsSystemInstall(scope) ? base::StrCat({name, kSystemLevelKeyword})
+                                : name;
 }
 
 }  // namespace
@@ -49,7 +48,7 @@ base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceLaunchdName(
 
 base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName(UpdaterScope scope) {
   return base::SysUTF8ToCFStringRef(
-      scope == UpdaterScope::kSystem
+      IsSystemInstall(scope)
           ? base::StrCat(
                 {MAC_BUNDLE_IDENTIFIER_STRING ".wake.", kSystemLevelKeyword})
           : base::StrCat({MAC_BUNDLE_IDENTIFIER_STRING ".wake"}));

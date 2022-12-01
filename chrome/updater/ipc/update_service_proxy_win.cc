@@ -267,8 +267,8 @@ class UpdateServiceProxyImpl
   explicit UpdateServiceProxyImpl(UpdaterScope scope) : ProxyImplBase(scope) {}
 
   static auto GetClassGuid(UpdaterScope scope) {
-    return scope == UpdaterScope::kSystem ? __uuidof(UpdaterSystemClass)
-                                          : __uuidof(UpdaterUserClass);
+    return IsSystemInstall(scope) ? __uuidof(UpdaterSystemClass)
+                                  : __uuidof(UpdaterUserClass);
   }
 
   void GetVersion(base::OnceCallback<void(const base::Version&)> callback) {

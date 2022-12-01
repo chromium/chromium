@@ -72,7 +72,7 @@ std::vector<base::FilePath> GetSetupFiles(const base::FilePath& source_dir) {
 // TODO(crbug.com/1069976): use specific return values for different code paths.
 int Setup(UpdaterScope scope) {
   VLOG(1) << __func__ << ", scope: " << scope;
-  DCHECK(scope == UpdaterScope::kUser || ::IsUserAnAdmin());
+  DCHECK(!IsSystemInstall(scope) || ::IsUserAnAdmin());
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
@@ -145,13 +145,13 @@ int Setup(UpdaterScope scope) {
   base::CommandLine run_updater_wake_command(
       versioned_dir->Append(updater_exe));
   run_updater_wake_command.AppendSwitch(kWakeSwitch);
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     run_updater_wake_command.AppendSwitch(kSystemSwitch);
   run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
   run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                              kLoggingModuleSwitchValue);
 
-  if (scope == UpdaterScope::kUser) {
+  if (!IsSystemInstall(scope)) {
     RegisterUserRunAtStartup(GetTaskNamePrefix(scope), run_updater_wake_command,
                              install_list.get());
   }

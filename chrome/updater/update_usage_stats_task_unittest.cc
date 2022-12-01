@@ -60,9 +60,8 @@ void ClearAppUsageStats(const std::string& app_id, UpdaterScope scope) {
 #elif BUILDFLAG(IS_WIN)
   LONG outcome =
       base::win::RegKey(
-          scope == UpdaterScope::kUser ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE,
-          scope == UpdaterScope::kUser ? CLIENT_STATE_KEY
-                                       : CLIENT_STATE_MEDIUM_KEY,
+          UpdaterScopeToHKeyRoot(scope),
+          IsSystemInstall(scope) ? CLIENT_STATE_MEDIUM_KEY : CLIENT_STATE_KEY,
           Wow6432(KEY_WRITE))
           .DeleteKey(base::SysUTF8ToWide(app_id).c_str());
   ASSERT_TRUE(outcome == ERROR_SUCCESS || outcome == ERROR_FILE_NOT_FOUND);
@@ -91,10 +90,9 @@ class UpdateUsageStatsTaskTest : public testing::Test {
     database->GetSettings()->SetUploadsEnabled(enabled);
 #elif BUILDFLAG(IS_WIN)
     base::win::RegKey key = base::win::RegKey(
-        GetTestScope() == UpdaterScope::kUser ? HKEY_CURRENT_USER
-                                              : HKEY_LOCAL_MACHINE,
-        GetTestScope() == UpdaterScope::kUser ? CLIENT_STATE_KEY
-                                              : CLIENT_STATE_MEDIUM_KEY,
+        UpdaterScopeToHKeyRoot(GetTestScope()),
+        IsSystemInstall(GetTestScope()) ? CLIENT_STATE_MEDIUM_KEY
+                                        : CLIENT_STATE_KEY,
         Wow6432(KEY_WRITE));
     ASSERT_EQ(
         key.CreateKey(base::SysUTF8ToWide(app_id).c_str(), Wow6432(KEY_WRITE)),

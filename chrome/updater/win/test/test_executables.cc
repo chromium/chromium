@@ -69,7 +69,7 @@ base::CommandLine GetTestProcessCommandLine(UpdaterScope scope) {
 
   base::CommandLine command_line(
       executable_path.Append(kTestProcessExecutableName));
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     command_line.AppendSwitch(kSystemSwitch);
 
   command_line.AppendSwitch(kEnableLoggingSwitch);

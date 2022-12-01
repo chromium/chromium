@@ -68,7 +68,7 @@ PolicyManager::PolicyManager(base::Value::Dict policies)
       return;
     }
 
-    if (policy.second.GetInt() != (GetUpdaterScope() == UpdaterScope::kSystem
+    if (policy.second.GetInt() != (IsSystemInstall()
                                        ? kPolicyForceInstallMachine
                                        : kPolicyForceInstallUser)) {
       return;

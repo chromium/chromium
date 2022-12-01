@@ -340,9 +340,8 @@ AppInstallerResult RunApplicationInstaller(
 
   base::LaunchOptions options;
   options.start_hidden = true;
-  options.environment = {
-      {ENV_GOOGLE_UPDATE_IS_MACHINE,
-       app_info.scope == UpdaterScope::kSystem ? L"1" : L"0"}};
+  options.environment = {{ENV_GOOGLE_UPDATE_IS_MACHINE,
+                          IsSystemInstall(app_info.scope) ? L"1" : L"0"}};
 
   auto process = base::LaunchProcess(cmdline, options);
   if (!process.IsValid()) {

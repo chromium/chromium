@@ -62,7 +62,7 @@ void KSInstallApp::Uninstall(base::OnceCallback<void(int)> callback) {
           PLOG(ERROR) << "Couldn't find/delete Keystone path.";
           return false;
         }
-        if (scope == UpdaterScope::kSystem) {
+        if (IsSystemInstall(scope)) {
           return base::DeleteFile(
               GetLibraryFolderPath(scope)
                   ->Append("LaunchDaemons")

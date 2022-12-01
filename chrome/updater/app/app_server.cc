@@ -132,7 +132,7 @@ void AppServer::MaybeUninstall() {
     base::CommandLine command_line(
         base::CommandLine::ForCurrentProcess()->GetProgram());
     command_line.AppendSwitch(kUninstallIfUnusedSwitch);
-    if (updater_scope() == UpdaterScope::kSystem)
+    if (IsSystemInstall(updater_scope()))
       command_line.AppendSwitch(kSystemSwitch);
     command_line.AppendSwitch(kEnableLoggingSwitch);
     command_line.AppendSwitchASCII(kLoggingModuleSwitch,

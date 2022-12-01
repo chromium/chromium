@@ -352,10 +352,10 @@ TEST_F(TaskSchedulerTests, GetTaskInfoNameAndDescription) {
   EXPECT_EQ(kTaskDescription1, info.description);
   EXPECT_EQ(kTaskName1, info.name);
 
-  const std::wstring expected_task_folder = base::StrCat(
-      {L"\\" COMPANY_SHORTNAME_STRING,
-       GetTestScope() == UpdaterScope::kSystem ? L"System" : L"User",
-       L"\\" PRODUCT_FULLNAME_STRING});
+  const std::wstring expected_task_folder =
+      base::StrCat({L"\\" COMPANY_SHORTNAME_STRING,
+                    IsSystemInstall(GetTestScope()) ? L"System" : L"User",
+                    L"\\" PRODUCT_FULLNAME_STRING});
   EXPECT_EQ(task_scheduler_->GetTaskSubfolderName(GetTestScope()),
             expected_task_folder);
   EXPECT_TRUE(task_scheduler_->HasTaskFolder(expected_task_folder.c_str()));
@@ -364,7 +364,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoNameAndDescription) {
 }
 
 TEST_F(TaskSchedulerTests, GetTaskInfoLogonType) {
-  const bool is_system = GetTestScope() == UpdaterScope::kSystem;
+  const bool is_system = IsSystemInstall(GetTestScope());
 
   base::CommandLine command_line1 = GetTestProcessCommandLine(GetTestScope());
 
@@ -385,7 +385,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoLogonType) {
 }
 
 TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
-  const bool is_system = GetTestScope() == UpdaterScope::kSystem;
+  const bool is_system = IsSystemInstall(GetTestScope());
 
   base::CommandLine command_line1 = GetTestProcessCommandLine(GetTestScope());
 

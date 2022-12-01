@@ -338,7 +338,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
 
   const UpdaterScope scope = GetUpdaterScopeForCommandLine(command_line);
 
-  if (!::IsUserAnAdmin() && scope == UpdaterScope::kSystem) {
+  if (!::IsUserAnAdmin() && IsSystemInstall(scope)) {
     ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
     if (run_elevated_result.exit_code !=
             RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS ||
@@ -353,7 +353,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
             base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
-  } else if (::IsUserAnAdmin() && scope == UpdaterScope::kUser && IsUACOn()) {
+  } else if (::IsUserAnAdmin() && !IsSystemInstall(scope) && IsUACOn()) {
     return HandleRunDeElevated(command_line);
   }
 

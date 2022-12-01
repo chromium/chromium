@@ -654,7 +654,7 @@ HRESULT RunDeElevated(const std::wstring& path,
 
 absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
   base::FilePath goopdate_base_dir;
-  if (!base::PathService::Get(scope == UpdaterScope::kSystem
+  if (!base::PathService::Get(IsSystemInstall(scope)
                                   ? base::DIR_PROGRAM_FILESX86
                                   : base::DIR_LOCAL_APP_DATA,
                               &goopdate_base_dir)) {
@@ -754,8 +754,7 @@ bool IsServiceRunning(const std::wstring& service_name) {
 }
 
 HKEY UpdaterScopeToHKeyRoot(UpdaterScope scope) {
-  return scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE
-                                        : HKEY_CURRENT_USER;
+  return IsSystemInstall(scope) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
 }
 
 absl::optional<OSVERSIONINFOEX> GetOSVersion() {
@@ -952,9 +951,8 @@ absl::optional<base::CommandLine> CommandLineForLegacyFormat(
 
 absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope) {
   base::FilePath app_data_dir;
-  if (!base::PathService::Get(scope == UpdaterScope::kSystem
-                                  ? base::DIR_PROGRAM_FILES
-                                  : base::DIR_LOCAL_APP_DATA,
+  if (!base::PathService::Get(IsSystemInstall(scope) ? base::DIR_PROGRAM_FILES
+                                                     : base::DIR_LOCAL_APP_DATA,
                               &app_data_dir)) {
     LOG(ERROR) << "Can't retrieve app data directory.";
     return absl::nullopt;

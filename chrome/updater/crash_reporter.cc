@@ -43,7 +43,7 @@ std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
   command_line.AppendSwitch(kEnableLoggingSwitch);
   command_line.AppendSwitchASCII(kLoggingModuleSwitch,
                                  kLoggingModuleSwitchValue);
-  if (updater_scope == UpdaterScope::kSystem) {
+  if (IsSystemInstall(updater_scope)) {
     command_line.AppendSwitch(kSystemSwitch);
   }
 

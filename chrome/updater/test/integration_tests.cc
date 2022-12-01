@@ -565,7 +565,7 @@ TEST_F(IntegrationTest, ForceInstallApp) {
   Install();
 
   base::Value::Dict group_policies;
-  group_policies.Set("Installtest1", GetTestScope() == UpdaterScope::kSystem
+  group_policies.Set("Installtest1", IsSystemInstall(GetTestScope())
                                          ? kPolicyForceInstallMachine
                                          : kPolicyForceInstallUser);
   SetGroupPolicies(group_policies);

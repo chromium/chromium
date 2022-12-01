@@ -37,7 +37,7 @@ namespace {
 constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
 
 HRESULT IsCOMCallerAllowed() {
-  if (GetUpdaterScope() == UpdaterScope::kUser)
+  if (!IsSystemInstall())
     return S_OK;
 
   HResultOr<bool> result = IsCOMCallerAdmin();

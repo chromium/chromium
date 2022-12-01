@@ -183,7 +183,7 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
 }
 
 TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
-  if (GetTestScope() == UpdaterScope::kSystem)
+  if (IsSystemInstall(GetTestScope()))
     return;
 
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;

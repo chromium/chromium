@@ -145,7 +145,7 @@ bool IsParentOf(int key, const base::FilePath& child) {
 bool IsSecureAppCommandExePath(UpdaterScope scope,
                                const base::FilePath& exe_path) {
   return exe_path.IsAbsolute() &&
-         (scope == UpdaterScope::kUser ||
+         (!IsSystemInstall(scope) ||
           IsParentOf(base::DIR_PROGRAM_FILESX86, exe_path) ||
           IsParentOf(base::DIR_PROGRAM_FILES6432, exe_path));
 }

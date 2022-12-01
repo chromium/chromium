@@ -58,7 +58,7 @@ void AppWakeAll::FirstTaskRun() {
               }
               base::CommandLine command(executable);
               command.AppendSwitch(kWakeSwitch);
-              if (scope == UpdaterScope::kSystem) {
+              if (IsSystemInstall(scope)) {
                 command.AppendSwitch(kSystemSwitch);
               }
               command.AppendSwitch(kEnableLoggingSwitch);

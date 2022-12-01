@@ -77,7 +77,11 @@ UpdaterScope GetUpdaterScope() {
 }
 
 bool IsSystemInstall() {
-  return GetUpdaterScope() == UpdaterScope::kSystem;
+  return IsSystemInstall(GetUpdaterScope());
+}
+
+bool IsSystemInstall(UpdaterScope scope) {
+  return scope == UpdaterScope::kSystem;
 }
 
 }  // namespace updater

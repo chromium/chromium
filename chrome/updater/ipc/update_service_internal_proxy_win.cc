@@ -91,8 +91,8 @@ class UpdateServiceInternalProxyImpl
       : ProxyImplBase(scope) {}
 
   static auto GetClassGuid(UpdaterScope scope) {
-    return scope == UpdaterScope::kSystem ? __uuidof(UpdaterInternalSystemClass)
-                                          : __uuidof(UpdaterInternalUserClass);
+    return IsSystemInstall(scope) ? __uuidof(UpdaterInternalSystemClass)
+                                  : __uuidof(UpdaterInternalUserClass);
   }
 
   void Run(base::OnceClosure callback) {

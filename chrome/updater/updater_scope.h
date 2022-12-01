@@ -49,6 +49,7 @@ UpdaterScope GetUpdaterScopeForCommandLine(
 UpdaterScope GetUpdaterScope();
 
 bool IsSystemInstall();
+bool IsSystemInstall(UpdaterScope scope);
 
 }  // namespace updater
 

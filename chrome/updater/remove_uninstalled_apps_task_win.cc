@@ -24,8 +24,7 @@ absl::optional<int> RemoveUninstalledAppsTask::GetUnregisterReason(
     const std::string& app_id,
     const base::FilePath& /*ecp*/) const {
   base::win::RegKey key;
-  if (key.Open(scope_ == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE
-                                               : HKEY_CURRENT_USER,
+  if (key.Open(IsSystemInstall(scope_) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER,
                GetAppClientsKey(app_id).c_str(),
                Wow6432(KEY_READ)) == ERROR_FILE_NOT_FOUND) {
     return absl::make_optional(kUninstallPingReasonUninstalled);

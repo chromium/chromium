@@ -58,7 +58,7 @@ void UninstallOtherVersions(UpdaterScope scope) {
     if (base::PathExists(version_executable_path)) {
       base::CommandLine command_line(version_executable_path);
       command_line.AppendSwitch(kUninstallSelfSwitch);
-      if (scope == UpdaterScope::kSystem)
+      if (IsSystemInstall(scope))
         command_line.AppendSwitch(kSystemSwitch);
       command_line.AppendSwitch(kEnableLoggingSwitch);
       command_line.AppendSwitchASCII(kLoggingModuleSwitch,

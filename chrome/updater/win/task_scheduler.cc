@@ -144,7 +144,7 @@ Microsoft::WRL::ComPtr<ITaskService> GetTaskService() {
 // folders have a "System" suffix, and User task folders have a "User" suffix.
 std::wstring GetTaskCompanyFolder(UpdaterScope scope) {
   return base::StrCat({L"\\" COMPANY_SHORTNAME_STRING,
-                       scope == UpdaterScope::kSystem ? L"System" : L"User"});
+                       IsSystemInstall(scope) ? L"System" : L"User"});
 }
 
 // A task scheduler class uses the V2 API of the task scheduler.
@@ -404,7 +404,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    bool is_system = scope == UpdaterScope::kSystem;
+    bool is_system = IsSystemInstall(scope);
     base::win::ScopedBstr user_name(L"NT AUTHORITY\\SYSTEM");
     if (!is_system && !GetCurrentUser(&user_name))
       return false;
@@ -656,8 +656,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
         TASK_CREATE_OR_UPDATE,
         *user.AsInput(),  // Not really input, but API expect non-const.
         base::win::ScopedVariant::kEmptyVariant,
-        scope == UpdaterScope::kSystem ? TASK_LOGON_SERVICE_ACCOUNT
-                                       : TASK_LOGON_INTERACTIVE_TOKEN,
+        IsSystemInstall(scope) ? TASK_LOGON_SERVICE_ACCOUNT
+                               : TASK_LOGON_INTERACTIVE_TOKEN,
         base::win::ScopedVariant::kEmptyVariant, &registered_task);
     if (FAILED(hr)) {
       LOG(ERROR) << "RegisterTaskDefinition failed. " << std::hex << hr << ": "

@@ -108,7 +108,7 @@ bool RemoveJobFromLaunchd(UpdaterScope scope,
   base::CommandLine command_line(base::FilePath("/bin/launchctl"));
   command_line.AppendArg("remove");
   command_line.AppendArg(base::SysCFStringRefToUTF8(name));
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     command_line = MakeElevated(command_line);
 
   int exit_code = -1;

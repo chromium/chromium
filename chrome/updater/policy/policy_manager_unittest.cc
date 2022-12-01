@@ -187,8 +187,8 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   std::vector<std::string> force_install_apps;
 
   EXPECT_EQ(policy_manager->GetForceInstallApps(&force_install_apps),
-            GetUpdaterScope() == UpdaterScope::kUser);
-  if (GetUpdaterScope() == UpdaterScope::kUser) {
+            !IsSystemInstall());
+  if (!IsSystemInstall()) {
     ASSERT_EQ(force_install_apps.size(), 1U);
     EXPECT_EQ(force_install_apps[0], kTestAppIDForceInstall);
   }

@@ -70,7 +70,7 @@ bool SwapUninstallCmdLine(UpdaterScope scope,
   // TODO(crbug.com/1270520) - use a switch that can uninstall immediately if
   // unused, instead of requiring server starts.
   uninstall_if_unused_command.AppendSwitch(kUninstallIfUnusedSwitch);
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     uninstall_if_unused_command.AppendSwitch(kSystemSwitch);
   uninstall_if_unused_command.AppendSwitch(kEnableLoggingSwitch);
   uninstall_if_unused_command.AppendSwitchASCII(kLoggingModuleSwitch,
@@ -255,7 +255,7 @@ bool ComServerApp::SwapInNewVersion() {
   const base::FilePath updater_path =
       versioned_directory->Append(GetExecutableRelativePath());
 
-  if (updater_scope() == UpdaterScope::kSystem && !CreateClientStateMedium()) {
+  if (IsSystemInstall(updater_scope()) && !CreateClientStateMedium()) {
     return false;
   }
 
@@ -268,7 +268,7 @@ bool ComServerApp::SwapInNewVersion() {
     return false;
   }
 
-  if (updater_scope() == UpdaterScope::kSystem) {
+  if (IsSystemInstall(updater_scope())) {
     AddComServiceWorkItems(updater_path, false, list.get());
   } else {
     AddComServerWorkItems(updater_path, false, list.get());

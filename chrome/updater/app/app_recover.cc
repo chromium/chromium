@@ -125,7 +125,7 @@ int AppRecover::ReinstallUpdater() const {
   uninstall_command.AppendSwitch(kEnableLoggingSwitch);
   uninstall_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                       kLoggingModuleSwitchValue);
-  if (updater_scope() == UpdaterScope::kSystem) {
+  if (IsSystemInstall(updater_scope())) {
     uninstall_command.AppendSwitch(kSystemSwitch);
   }
   if (!base::LaunchProcess(uninstall_command, {}).WaitForExit(&exit_code)) {
@@ -141,7 +141,7 @@ int AppRecover::ReinstallUpdater() const {
   install_command.AppendSwitch(kEnableLoggingSwitch);
   install_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                     kLoggingModuleSwitchValue);
-  if (updater_scope() == UpdaterScope::kSystem) {
+  if (IsSystemInstall(updater_scope())) {
     install_command.AppendSwitch(kSystemSwitch);
   }
   // TODO(crbug.com/1281971): suppress the installer's UI.

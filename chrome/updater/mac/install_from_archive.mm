@@ -173,7 +173,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
         {"PATH", env_path},
         {"PREVIOUS_VERSION", pv.GetString()},
         {"SERVER_ARGS", arguments},
-        {"UPDATE_IS_MACHINE", scope == UpdaterScope::kSystem ? "1" : "0"},
+        {"UPDATE_IS_MACHINE", IsSystemInstall(scope) ? "1" : "0"},
         {"UNPACK_DIR", unpacked_path.value()},
     };
     if (installer_data_file) {

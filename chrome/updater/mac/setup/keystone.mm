@@ -77,7 +77,7 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
   }
 
   // For system installs, set file permissions to be drwxr-xr-x.
-  if (scope == UpdaterScope::kSystem) {
+  if (IsSystemInstall(scope)) {
     constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
                                      base::FILE_PERMISSION_READ_BY_GROUP |
                                      base::FILE_PERMISSION_EXECUTE_BY_GROUP |
@@ -146,7 +146,7 @@ bool CreateKeystoneLaunchCtlPlistFiles(UpdaterScope scope) {
   // will proceed regardless of the bundle state. The empty launchctl files
   // created here are used to make legacy Keystone installer believe that a
   // healthy newer version updater already exists and thus won't over-install.
-  if (scope == UpdaterScope::kSystem &&
+  if (IsSystemInstall(scope) &&
       !CreateEmptyFileInDirectory(
           GetLibraryFolderPath(scope)->Append("LaunchDaemons"),
           "com.google.keystone.daemon.plist")) {
@@ -187,7 +187,7 @@ void UninstallKeystone(UpdaterScope scope) {
           .Append(FILE_PATH_LITERAL("ksinstall"));
   base::CommandLine command_line(ksinstall_path);
   command_line.AppendSwitch("uninstall");
-  if (scope == UpdaterScope::kSystem)
+  if (IsSystemInstall(scope))
     command_line = MakeElevated(command_line);
   base::Process process = base::LaunchProcess(command_line, {});
   if (!process.IsValid()) {
