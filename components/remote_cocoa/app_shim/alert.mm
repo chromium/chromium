@@ -248,7 +248,7 @@ const int kMessageTextMaxSlots = 2000;
 
 - (bool)shouldSuppress {
   if ([[self alert] showsSuppressionButton])
-    return [[[self alert] suppressionButton] state] == NSOnState;
+    return [[[self alert] suppressionButton] state] == NSControlStateValueOn;
   return false;
 }
 

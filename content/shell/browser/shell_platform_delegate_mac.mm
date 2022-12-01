@@ -113,7 +113,7 @@ void MakeShellButton(NSRect* rect,
   base::scoped_nsobject<NSButton> button(
       [[NSButton alloc] initWithFrame:*rect]);
   [button setTitle:title];
-  [button setBezelStyle:NSSmallSquareBezelStyle];
+  [button setBezelStyle:NSBezelStyleSmallSquare];
   [button setAutoresizingMask:(NSViewMaxXMargin | NSViewMinYMargin)];
   [button setTarget:target];
   [button setAction:@selector(performAction:)];

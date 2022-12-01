@@ -148,7 +148,8 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
       gfx::Image itemIcon =
           profiles::GetAvatarIconForNSMenu(itemData.profile_path);
       [item setImage:itemIcon.ToNSImage()];
-      [item setState:itemData.active ? NSOnState : NSOffState];
+      [item setState:itemData.active ? NSControlStateValueOn
+                                     : NSControlStateValueOff];
     }
     [menu insertItem:item atIndex:i + offset];
   }
@@ -229,7 +230,8 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
   for (size_t i = 0; i < _avatarMenu->GetNumberOfItems(); ++i) {
     const AvatarMenu::Item& itemData = _avatarMenu->GetItemAt(i);
     [[[self menu] itemWithTag:itemData.menu_index]
-        setState:itemData.active ? NSOnState : NSOffState];
+        setState:itemData.active ? NSControlStateValueOn
+                                 : NSControlStateValueOff];
   }
 }
 

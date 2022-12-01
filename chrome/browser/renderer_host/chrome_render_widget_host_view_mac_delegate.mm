@@ -161,9 +161,10 @@ using content::RenderViewHost;
   // is still necessary.
   if (action == @selector(toggleContinuousSpellChecking:)) {
     if ([(id)item respondsToSelector:@selector(setState:)]) {
-      NSCellStateValue checkedState =
-          pref->GetBoolean(spellcheck::prefs::kSpellCheckEnable) ? NSOnState
-                                                                 : NSOffState;
+      NSControlStateValue checkedState =
+          pref->GetBoolean(spellcheck::prefs::kSpellCheckEnable)
+              ? NSControlStateValueOn
+              : NSControlStateValueOff;
       [(id)item setState:checkedState];
     }
     *valid = spellCheckUserModifiable;

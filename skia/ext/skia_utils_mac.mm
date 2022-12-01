@@ -56,7 +56,7 @@ SkBitmap NSImageOrNSImageRepToSkBitmapWithColorSpace(
   [NSGraphicsContext saveGraphicsState];
 
   NSGraphicsContext* context_cocoa =
-      [NSGraphicsContext graphicsContextWithGraphicsPort:context flipped:NO];
+      [NSGraphicsContext graphicsContextWithCGContext:context flipped:NO];
   [NSGraphicsContext setCurrentContext:context_cocoa];
 
   NSRect drawRect = NSMakeRect(0, 0, size.width, size.height);

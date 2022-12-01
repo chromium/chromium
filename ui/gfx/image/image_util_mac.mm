@@ -26,8 +26,8 @@ bool JPEG1xEncodedDataFromImage(const Image& image,
 
   float compressionFactor = quality / 100.0;
   NSDictionary* options = @{ NSImageCompressionFactor : @(compressionFactor)};
-  NSData* data =
-      [rep representationUsingType:NSJPEGFileType properties:options];
+  NSData* data = [rep representationUsingType:NSBitmapImageFileTypeJPEG
+                                   properties:options];
 
   if ([data length] == 0)
     return false;

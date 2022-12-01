@@ -550,7 +550,8 @@ void AppShimController::UpdateProfileMenu(
                                     action:@selector(profileMenuItemSelected:)
                              keyEquivalent:@""] autorelease];
     [item setTag:mojo_item->menu_index];
-    [item setState:mojo_item->active ? NSOnState : NSOffState];
+    [item setState:mojo_item->active ? NSControlStateValueOn
+                                     : NSControlStateValueOff];
     [item setTarget:profile_menu_target_.get()];
     gfx::Image icon(mojo_item->icon);
     [item setImage:icon.AsNSImage()];

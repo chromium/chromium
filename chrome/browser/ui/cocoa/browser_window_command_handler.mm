@@ -25,13 +25,15 @@ void SetToggleState(bool toggled, id item) {
   NSMenuItem* menuItem = base::mac::ObjCCast<NSMenuItem>(item);
   NSButton* buttonItem = base::mac::ObjCCast<NSButton>(item);
   if (menuItem) {
-    NSInteger old_state = [menuItem state];
-    NSInteger new_state = toggled ? NSOnState : NSOffState;
+    NSControlStateValue old_state = [menuItem state];
+    NSControlStateValue new_state =
+        toggled ? NSControlStateValueOn : NSControlStateValueOff;
     if (old_state != new_state)
       [menuItem setState:new_state];
   } else if (buttonItem) {
-    NSInteger old_state = [buttonItem state];
-    NSInteger new_state = toggled ? NSOnState : NSOffState;
+    NSControlStateValue old_state = [buttonItem state];
+    NSControlStateValue new_state =
+        toggled ? NSControlStateValueOn : NSControlStateValueOff;
     if (old_state != new_state)
       [buttonItem setState:new_state];
   }

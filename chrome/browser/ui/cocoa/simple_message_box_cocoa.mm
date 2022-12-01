@@ -41,7 +41,7 @@ MessageBoxResult ShowMessageBoxCocoa(const std::u16string& message,
   base::scoped_nsobject<NSButton> checkbox;
   if (!checkbox_text.empty()) {
     checkbox.reset([[NSButton alloc] initWithFrame:NSZeroRect]);
-    [checkbox setButtonType:NSSwitchButton];
+    [checkbox setButtonType:NSButtonTypeSwitch];
     [checkbox setTitle:base::SysUTF16ToNSString(checkbox_text)];
     [checkbox sizeToFit];
     [alert setAccessoryView:checkbox];
@@ -51,7 +51,7 @@ MessageBoxResult ShowMessageBoxCocoa(const std::u16string& message,
   if (result == NSAlertSecondButtonReturn)
     return MESSAGE_BOX_RESULT_NO;
 
-  if (!checkbox || ([checkbox state] == NSOnState))
+  if (!checkbox || ([checkbox state] == NSControlStateValueOn))
     return MESSAGE_BOX_RESULT_YES;
 
   return MESSAGE_BOX_RESULT_NO;

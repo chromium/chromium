@@ -1494,7 +1494,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   const PrefService* prefService = g_browser_process->local_state();
   bool enabled = prefService->GetBoolean(prefs::kConfirmToQuitEnabled);
-  [item setState:enabled ? NSOnState : NSOffState];
+  [item setState:enabled ? NSControlStateValueOn : NSControlStateValueOff];
 }
 
 - (BOOL)shouldEnableConfirmToQuitPrefMenuItem {

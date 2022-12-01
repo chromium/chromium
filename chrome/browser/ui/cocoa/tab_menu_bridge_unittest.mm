@@ -149,7 +149,7 @@ class TabMenuBridgeTest : public ::testing::Test {
     // Check the static items too, to make sure none of them are checked.
     for (int i = 0; i < menu().numberOfItems; ++i) {
       NSMenuItem* item = [menu() itemAtIndex:i];
-      if (item.state == NSOnState)
+      if (item.state == NSControlStateValueOn)
         active_items.push_back(base::SysNSStringToUTF8(item.title));
     }
 

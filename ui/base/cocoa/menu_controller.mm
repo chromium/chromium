@@ -292,7 +292,8 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   const size_t modelIndex = base::checked_cast<size_t>([item tag]);
   BOOL checked = model->IsItemCheckedAt(modelIndex);
   DCHECK([(id)item isKindOfClass:[NSMenuItem class]]);
-  [(id)item setState:(checked ? NSOnState : NSOffState)];
+  [(id)item
+      setState:(checked ? NSControlStateValueOn : NSControlStateValueOff)];
   [(id)item setHidden:(!model->IsVisibleAt(modelIndex))];
   if (model->IsItemDynamicAt(modelIndex)) {
     // Update the label and the icon.

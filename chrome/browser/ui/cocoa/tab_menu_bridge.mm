@@ -127,7 +127,7 @@ void TabMenuBridge::AddDynamicItemsFromModel() {
     if (recyclable_items.count) {
       item.reset([[recyclable_items firstObject] retain]);
       [recyclable_items removeObjectAtIndex:0];
-      [item setState:NSOffState];
+      [item setState:NSControlStateValueOff];
     } else {
       item.reset([[NSMenuItem alloc] initWithTitle:@""
                                             action:@selector(activateTab:)
@@ -136,7 +136,7 @@ void TabMenuBridge::AddDynamicItemsFromModel() {
     }
 
     if (model_->active_index() == i) {
-      [item setState:NSOnState];
+      [item setState:NSControlStateValueOn];
     }
     UpdateItemForWebContents(item, model_->GetWebContentsAt(i));
 

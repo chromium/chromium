@@ -65,11 +65,13 @@ class ProfileMenuControllerTest : public BrowserWithTestWindowTest {
   void VerifyProfileNamedIsActive(NSString* title, int line) {
     for (NSMenuItem* item in [[controller() menu] itemArray]) {
       if ([[item title] isEqualToString:title]) {
-        EXPECT_EQ(NSOnState, [item state]) << [[item title] UTF8String]
-          << " (from line " << line << ")";
+        EXPECT_EQ(NSControlStateValueOn, [item state])
+            << base::SysNSStringToUTF8(item.title) << " (from line " << line
+            << ")";
       } else {
-        EXPECT_EQ(NSOffState, [item state]) << [[item title] UTF8String]
-          << " (from line " << line << ")";
+        EXPECT_EQ(NSControlStateValueOff, [item state])
+            << base::SysNSStringToUTF8(item.title) << " (from line " << line
+            << ")";
       }
     }
   }
