@@ -215,14 +215,14 @@ const kBrPortuguese = [
    */
   ...kQwertyLetters,
   [41, {bottomLeft: '\'', topLeft: '"'}],
-  [ 2, {bottomLeft: '1', topLeft: '!', bottomRight: '¹'}],
-  [ 3, {bottomLeft: '2', topLeft: '@', bottomRight: '²'}],
-  [ 4, {bottomLeft: '3', topLeft: '#', bottomRight: '³'}],
-  [ 5, {bottomLeft: '4', topLeft: '$', bottomRight: '£'}],
-  [ 6, {bottomLeft: '5', topLeft: '%', bottomRight: '¢'}],
-  [ 7, {bottomLeft: '6', topLeft: '◌̈', bottomRight: '¬'}],
-  [ 8, {bottomLeft: '7', topLeft: '&'}],
-  [ 9, {bottomLeft: '8', topLeft: '*'}],
+  [2, {bottomLeft: '1', topLeft: '!', bottomRight: '¹'}],
+  [3, {bottomLeft: '2', topLeft: '@', bottomRight: '²'}],
+  [4, {bottomLeft: '3', topLeft: '#', bottomRight: '³'}],
+  [5, {bottomLeft: '4', topLeft: '$', bottomRight: '£'}],
+  [6, {bottomLeft: '5', topLeft: '%', bottomRight: '¢'}],
+  [7, {bottomLeft: '6', topLeft: '◌̈', bottomRight: '¬'}],
+  [8, {bottomLeft: '7', topLeft: '&'}],
+  [9, {bottomLeft: '8', topLeft: '*'}],
   [10, {bottomLeft: '9', topLeft: '('}],
   [11, {bottomLeft: '0', topLeft: ')'}],
   [12, {bottomLeft: '-', topLeft: '_'}],
@@ -239,6 +239,8 @@ const kBrPortuguese = [
   [43, {bottomLeft: ']', topLeft: '}', bottomRight: 'º'}],
 
   [86, {bottomLeft: '\\', topLeft: '|'}],
+  [51, {bottomLeft: ',', topLeft: '<'}],
+  [52, {bottomLeft: '.', topLeft: '>'}],
   [53, {bottomLeft: ';', topLeft: ':'}],
 
   [100, 'alt gr'],
@@ -475,6 +477,41 @@ const kTraditionalChinese = [
   [54, 'shift'],
 ];
 
+const kSpainSpanish = [
+  ...kQwertyLetters,
+  [41, {bottomLeft: 'º', topLeft: 'ª', bottomRight: '\\'}],
+  [2, {bottomLeft: '1', topLeft: '!', bottomRight: '|'}],
+  [3, {bottomLeft: '2', topLeft: '"', bottomRight: '@'}],
+  [4, {bottomLeft: '3', topLeft: '·', bottomRight: '#'}],
+  [5, {bottomLeft: '4', topLeft: '$', bottomRight: '~'}],
+  [6, {bottomLeft: '5', topLeft: '%'}],
+  [7, {bottomLeft: '6', topLeft: '&', bottomRight: '¬'}],
+  [8, {bottomLeft: '7', topLeft: '/'}],
+  [9, {bottomLeft: '8', topLeft: '('}],
+  [10, {bottomLeft: '9', topLeft: ')'}],
+  [11, {bottomLeft: '0', topLeft: '='}],
+  [12, {bottomLeft: '\'', topLeft: '?'}],
+  [13, {bottomLeft: '¡', topLeft: '¿'}],
+
+  [18, {main: 'e', bottomRight: '€'}],
+  [26, {bottomLeft: '◌̀', topLeft: '◌̂'}],
+  [27, {bottomLeft: '+', topLeft: '*', bottomRight: '~'}],
+  [28, 'intro'],
+
+  [39, 'ñ'],
+  [40, {bottomLeft: '◌́', topLeft: '◌̈', bottomRight: '{'}],
+  [43, {main: 'ç', bottomRight: '◌̂'}],
+
+  [42, 'mayús'],
+  [86, {bottomLeft: '<', topLeft: '>'}],
+  [51, {bottomLeft: ',', topLeft: ';'}],
+  [52, {bottomLeft: '.', topLeft: ':'}],
+  [53, {bottomLeft: '-', topLeft: '_'}],
+  [54, 'mayús'],
+
+  [100, 'alt gr'],
+];
+
 /**
  * A hard-coded collection of glyphs to be shown on keys for a given region
  * code. Region codes are taken from a table in the factory docs [0]. For each
@@ -501,7 +538,7 @@ const kTraditionalChinese = [
  */
 const kLayouts = {
   /* United Arab Emirates */
-  'ae': kArabic,
+  'ae': kUsEnglish,
   /* Argentina */
   'ar': kLatamSpanish,
   /* Austria */
@@ -726,40 +763,7 @@ const kLayouts = {
     [100, 'alt gr'],
   ],
   /* Spain */
-  'es': [
-    ...kQwertyLetters,
-    [41, {bottomLeft: 'º', topLeft: 'ª', bottomRight: '\\'}],
-    [2, {bottomLeft: '1', topLeft: '!', bottomRight: '|'}],
-    [3, {bottomLeft: '2', topLeft: '"', bottomRight: '@'}],
-    [4, {bottomLeft: '3', topLeft: '·', bottomRight: '#'}],
-    [5, {bottomLeft: '4', topLeft: '$', bottomRight: '~'}],
-    [6, {bottomLeft: '5', topLeft: '%'}],
-    [7, {bottomLeft: '6', topLeft: '&', bottomRight: '¬'}],
-    [8, {bottomLeft: '7', topLeft: '/'}],
-    [9, {bottomLeft: '8', topLeft: '('}],
-    [10, {bottomLeft: '9', topLeft: ')'}],
-    [11, {bottomLeft: '0', topLeft: '='}],
-    [12, {bottomLeft: '\'', topLeft: '?'}],
-    [13, {bottomLeft: '¡', topLeft: '¿'}],
-
-    [18, {main: 'e', bottomRight: '€'}],
-    [26, {bottomLeft: '◌̀', topLeft: '◌̂'}],
-    [27, {bottomLeft: '+', topLeft: '*', bottomRight: '~'}],
-    [28, 'intro'],
-
-    [39, 'ñ'],
-    [40, {bottomLeft: '◌́', topLeft: '◌̈', bottomRight: '{'}],
-    [43, {main: 'ç', bottomRight: '◌̂'}],
-
-    [42, 'mayús'],
-    [86, {bottomLeft: '<', topLeft: '>'}],
-    [51, {bottomLeft: ',', topLeft: ';'}],
-    [52, {bottomLeft: '.', topLeft: ':'}],
-    [53, {bottomLeft: '-', topLeft: '_'}],
-    [54, 'mayús'],
-
-    [100, 'alt gr'],
-  ],
+  'es': kSpainSpanish,
   /* Finland */
   'fi': kNordic,
   /* France */
@@ -1158,6 +1162,10 @@ const kLayouts = {
   ],
   /* Kuwait */
   'kw': kArabic,
+  /* Kazakhstan */
+  'kz': kUsEnglish,
+  /* Hispanophone Latin America */
+  'latam-es-419': kSpainSpanish,
   /* Mexico */
   'mx': kLatamSpanish,
   /* Malaysia */
@@ -1224,7 +1232,7 @@ const kLayouts = {
   /* Romania */
   'ro': kRoRomanian,
   /* Romania with US keyboard */
-  'ro.us': kRoRomanian,
+  'ro.us': kUsEnglish,
   /* Russia */
   'ru': [
     [41, {bottomLeft: '`', topLeft: '~', bottomRight: 'ë'}],
@@ -1279,7 +1287,7 @@ const kLayouts = {
     [53, {bottomLeft: '/', topLeft: '?', bottomRight: '.', topRight: ','}],
   ],
   /* Saudi Arabia */
-  'sa': kArabic,
+  'sa': kUsEnglish,
   /* Sweden */
   'se': kNordic,
   /* Singapore */
@@ -1399,6 +1407,8 @@ const kLayouts = {
   'us.intl': kUsEnglishInternational,
   /* Uruguay */
   'uy': kLatamSpanish,
+  /* Vietnam */
+  'vn': kUsEnglish,
   /* South Africa */
   'za': kGbEnglish,
   /* South Africa */
