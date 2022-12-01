@@ -43,9 +43,6 @@ suite('onboardingWaitForManualWpDisablePageTest', function() {
    * @return {!Promise}
    */
   function initializeWaitForManualWpDisablePage() {
-    service.setGetWriteProtectManuallyDisabledInstructionsResult(
-        'g.co/help', fakeRsuChallengeQrCode);
-
     assertFalse(!!component);
 
     component = /** @type {!OnboardingWaitForManualWpDisablePage} */ (

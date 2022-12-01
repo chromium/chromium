@@ -65,9 +65,6 @@ function setupFakeShimlessRmaService_() {
   service.setGetWriteProtectDisableCompleteAction(
       WriteProtectDisableCompleteAction.kCompleteAssembleDevice);
 
-  service.setGetWriteProtectManuallyDisabledInstructionsResult(
-      'g.co/help', fakeRsuChallengeQrCode);
-
   service.setGetOriginalSerialNumberResult('serial# 0001');
   service.setGetRegionListResult(fakeDeviceRegions);
   service.setGetOriginalRegionResult(1);

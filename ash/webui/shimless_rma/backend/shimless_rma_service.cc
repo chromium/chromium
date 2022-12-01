@@ -554,14 +554,6 @@ void ShimlessRmaService::WriteProtectManuallyDisabled(
   TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::GetWriteProtectManuallyDisabledInstructions(
-    GetWriteProtectManuallyDisabledInstructionsCallback callback) {
-  // TODO (crbug/1268612): Replace with manufacturer specific help site.
-  const std::string url = "g.co/chromebook/";
-  mojom::QrCodePtr qr_code = GenerateQRCode(url);
-  std::move(callback).Run(url, std::move(qr_code));
-}
-
 void ShimlessRmaService::GetWriteProtectDisableCompleteAction(
     GetWriteProtectDisableCompleteActionCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWpDisableComplete) {
