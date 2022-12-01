@@ -10,7 +10,7 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Resign test runner"
-               scriptText = "unset -v XCODE_DEVELOPER_DIR_PATH&#10;&#10;BUILDDIR=&quot;${PROJECT_DIR}/../${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}&quot;&#10;&#10;export PATH=&quot;@{PATH}&quot;&#10;&#10;rm -rf &quot;${BUILDDIR}/@{BLUEPRINT_NAME}-Runner.app&quot;&#10;autoninja -C &quot;${BUILDDIR}&quot; &quot;@{BLUEPRINT_NAME}&quot;&#10;"
+               scriptText = "unset -v XCODE_DEVELOPER_DIR_PATH&#10;&#10;BUILDDIR=&quot;${PROJECT_DIR}/../${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}&quot;&#10;&#10;export PATH=&quot;@{PATH}&quot;&#10;&#10;rm -rf &quot;${BUILDDIR}/@{BLUEPRINT_NAME}-Runner.app&quot;&#10;cd &quot;${BUILDDIR}&quot; &amp;&amp; autoninja -C . &quot;@{BLUEPRINT_NAME}&quot;&#10;"
                shellToInvoke = "/bin/sh">
                <EnvironmentBuildable>
                   <BuildableReference
