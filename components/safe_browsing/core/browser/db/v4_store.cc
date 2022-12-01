@@ -793,10 +793,13 @@ StoreReadResult V4Store::ReadFromDisk() {
     return HASH_PREFIX_MAP_GENERATION_FAILURE;
   }
 
-  // Update |file_size_| now because we parsed the file correctly.
-  file_size_ = file_size;
-  for (const auto& hash_file : file_format.hash_files())
-    file_size_ += hash_file.file_size();
+  // If a migration happened, we already updated file size.
+  if (migrate_result != HashPrefixMap::MigrateResult::kSuccess) {
+    // Update |file_size_| now because we parsed the file correctly.
+    file_size_ = file_size;
+    for (const auto& hash_file : file_format.hash_files())
+      file_size_ += hash_file.file_size();
+  }
 
   return READ_SUCCESS;
 }

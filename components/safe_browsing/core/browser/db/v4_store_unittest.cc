@@ -1007,6 +1007,8 @@ TEST_F(V4StoreTest, MigrateToMmap) {
                                  file_format.hash_files(0).extension()),
       &contents));
   EXPECT_EQ(contents, kHash);
+  EXPECT_EQ(mmap_store.file_size(),
+            static_cast<int64_t>(proto_contents.size() + kHash.size()));
 
   // Reading again should not migrate.
   base::Time last_modified = GetLastModifiedTime(store_path_);
@@ -1050,6 +1052,10 @@ TEST_F(V4StoreTest, MigrateToInMemory) {
   EXPECT_EQ(in_memory_store.GetMatchingHashPrefix(kFullHash), kHash);
 
   EXPECT_FALSE(base::PathExists(hashes_path));
+
+  int64_t file_size;
+  EXPECT_TRUE(base::GetFileSize(store_path_, &file_size));
+  EXPECT_EQ(in_memory_store.file_size(), file_size);
 
   // Reading again should not migrate.
   base::Time last_modified = GetLastModifiedTime(store_path_);
