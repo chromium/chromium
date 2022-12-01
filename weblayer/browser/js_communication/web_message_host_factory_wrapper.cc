@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "absl/types/variant.h"
 #include "base/memory/raw_ptr.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
@@ -14,6 +13,7 @@
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "weblayer/browser/page_impl.h"
 #include "weblayer/public/js_communication/web_message.h"
 #include "weblayer/public/js_communication/web_message_host.h"

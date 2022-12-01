@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "absl/types/variant.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -17,6 +16,7 @@
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"

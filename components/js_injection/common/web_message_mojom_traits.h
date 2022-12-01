@@ -6,6 +6,7 @@
 #define COMPONENTS_JS_INJECTION_COMMON_WEB_MESSAGE_MOJOM_TRAITS_H_
 
 #include <string>
+
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/test/scoped_path_override.h"
