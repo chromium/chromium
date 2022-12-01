@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+
+attribution_reporting_promise_test(async t => {
+  const host = `https://{{host}}`;
+
+  await registerAttributionSrc(t, {
+    source: {
+      destination: host,
+      source_event_id: '123',
+    },
+    method: 'open',
+  });
+
+  await registerAttributionSrc(t, {
+    trigger: {
+      event_trigger_data: [{
+        deduplication_key: '666',
+        trigger_data: '5',
+      }],
+    },
+  });
+
+  const payload = await pollEventLevelReports();
+  assert_equals(payload.reports.length, 1);
+
+  const report = JSON.parse(payload.reports[0].body);
+  assert_equals(report.trigger_data, '5');
+  assert_equals(report.attribution_destination, host);
+
+  const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
+  await registerAttributionSrc(t, {
+    trigger: {
+      event_trigger_data: [{
+        deduplication_key: '666',
+      }],
+      debug_key: '789',
+      debug_reporting: true,
+    },
+    cookie,
+  });
+
+  const debugPayload = await pollVerboseDebugReports();
+  assert_equals(debugPayload.reports.length, 1);
+  const debugReport = JSON.parse(debugPayload.reports[0].body);
+  assert_equals(debugReport.length, 1);
+  assert_equals(debugReport[0].type, 'trigger-event-deduplicated');
+  assert_own_property(debugReport[0], 'body');
+  const debugReportBody = debugReport[0].body;
+  assert_equals(debugReportBody.attribution_destination, host);
+  assert_equals(debugReportBody.source_event_id, '123');
+  assert_equals(debugReportBody.source_site, host);
+  assert_equals(debugReportBody.trigger_debug_key, '789');
+  assert_not_own_property(debugReportBody, 'source_debug_key');
+}, 'Event-level report is deduplicated.');
+</script>
