@@ -1117,6 +1117,9 @@ const char kLoginScreenWebUILazyLoading[] =
 // Boolean value for the FloatingWorkspaceEnabled policy
 const char kFloatingWorkspaceEnabled[] = "ash.floating_workspace_enabled";
 
+// Boolean value for the FloatingWorkspaceV2Enabled policy
+const char kFloatingWorkspaceV2Enabled[] = "ash.floating_workspace_v2_enabled";
+
 // Boolean value indicating that post reboot notification should be shown to the
 // user.
 const char kShowPostRebootNotification[] = "ash.show_post_reboot_notification";

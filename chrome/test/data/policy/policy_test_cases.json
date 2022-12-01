@@ -19870,6 +19870,41 @@
       }
     ]
   },
+  "FloatingWorkspaceV2Enabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "FloatingWorkspaceV2Enabled": true
+        },
+        "prefs": {
+          "ash.floating_workspace_v2_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "FloatingWorkspaceV2Enabled": false
+        },
+        "prefs": {
+          "ash.floating_workspace_v2_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "ash.floating_workspace_v2_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  },
   "DefaultWindowPlacementSetting": {
     "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",

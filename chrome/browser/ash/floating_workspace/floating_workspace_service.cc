@@ -47,6 +47,8 @@ FloatingWorkspaceService::FloatingWorkspaceService(Profile* profile)
     : profile_(profile), initialization_timestamp_(base::TimeTicks::Now()) {}
 
 FloatingWorkspaceService::~FloatingWorkspaceService() {
+  if (is_testing_)
+    return;
   if (floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
     StopCaptureAndUploadActiveDesk();
     OnDeskModelDestroying();
@@ -54,6 +56,7 @@ FloatingWorkspaceService::~FloatingWorkspaceService() {
 }
 
 void FloatingWorkspaceService::Init() {
+  is_testing_ = false;
   if (floating_workspace_util::IsFloatingWorkspaceV1Enabled()) {
     InitForV1();
     return;
@@ -69,6 +72,7 @@ void FloatingWorkspaceService::Init() {
 void FloatingWorkspaceService::InitForTest(
     TestFloatingWorkspaceVersion version) {
   CHECK_IS_TEST();
+  is_testing_ = true;
   switch (version) {
     case TestFloatingWorkspaceVersion::kNoVersionEnabled:
       break;

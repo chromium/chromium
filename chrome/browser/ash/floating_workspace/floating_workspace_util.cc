@@ -29,6 +29,7 @@ namespace floating_workspace_util {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFloatingWorkspaceEnabled, false);
+  registry->RegisterBooleanPref(prefs::kFloatingWorkspaceV2Enabled, false);
 }
 
 bool IsFloatingWorkspaceV1Enabled() {
@@ -49,6 +50,18 @@ bool IsFloatingWorkspaceV1Enabled() {
 }
 
 bool IsFloatingWorkspaceV2Enabled() {
+  PrefService* pref_service = GetPrimaryUserPrefService();
+  DCHECK(pref_service);
+
+  const PrefService::Preference* floating_workspace_v2_pref =
+      pref_service->FindPreference(ash::prefs::kFloatingWorkspaceV2Enabled);
+
+  DCHECK(floating_workspace_v2_pref);
+
+  if (floating_workspace_v2_pref->IsManaged()) {
+    // If there is a policy managing the pref, return what is set by policy.
+    return pref_service->GetBoolean(ash::prefs::kFloatingWorkspaceV2Enabled);
+  }
   return features::IsFloatingWorkspaceV2Enabled();
 }
 

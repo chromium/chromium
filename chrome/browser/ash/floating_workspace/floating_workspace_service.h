@@ -137,6 +137,9 @@ class FloatingWorkspaceService : public KeyedService,
   // null for the duration of `this`.
   raw_ptr<desks_storage::DeskSyncService> desk_sync_service_ = nullptr;
 
+  // Indicate if it is a testing class.
+  bool is_testing_ = false;
+
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};
 };

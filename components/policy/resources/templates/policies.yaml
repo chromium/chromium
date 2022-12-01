@@ -1037,6 +1037,7 @@ policies:
   1036: IdleTimeoutActions
   1037: ThrottleNonVisibleCrossOriginIframesAllowed
   1038: PdfLocalFileAccessAllowedForDomains
+  1039: FloatingWorkspaceV2Enabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
