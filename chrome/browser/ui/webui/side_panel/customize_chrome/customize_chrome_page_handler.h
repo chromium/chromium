@@ -29,6 +29,7 @@ class CustomizeChromePageHandler
   // side_panel::mojom::CustomizeChromePageHandler:
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
   void GetMostVisitedSettings(GetMostVisitedSettingsCallback callback) override;
+  void GetChromeColors(GetChromeColorsCallback callback) override;
 
  private:
   bool IsCustomLinksEnabled() const;
