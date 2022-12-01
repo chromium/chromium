@@ -105,6 +105,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   TableViewDetailIconItem* _handoffDetailItem;
   // Safe Browsing item.
   TableViewDetailIconItem* _safeBrowsingDetailItem;
+
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 // Accessor for the incognito reauth pref.
@@ -197,6 +200,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 - (void)loadModel {
   [super loadModel];
+  if (_settingsAreDismissed)
+    return;
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierPrivacyContent];
@@ -412,6 +417,32 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   base::RecordAction(base::UserMetricsAction("MobilePrivacySettingsBack"));
 }
 
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  // Stop observable prefs.
+  [_incognitoReauthPref stop];
+  _incognitoReauthPref.observer = nil;
+  _incognitoReauthPref = nil;
+  [_HTTPSOnlyModePref stop];
+  _HTTPSOnlyModePref.observer = nil;
+  _HTTPSOnlyModePref = nil;
+  [_incognitoInterstitialPref stop];
+  _incognitoInterstitialPref.observer = nil;
+  _incognitoInterstitialPref = nil;
+
+  // Remove pref changes registrations.
+  _prefChangeRegistrar.RemoveAll();
+
+  // Remove observer bridges.
+  _prefObserverBridge.reset();
+
+  // Clear C++ ivars.
+  _browserState = nullptr;
+
+  _settingsAreDismissed = YES;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (UIView*)tableView:(UITableView*)tableView
@@ -499,6 +530,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (_settingsAreDismissed)
+    return;
+
   if (preferenceName == prefs::kIosHandoffToOtherDevices) {
     NSString* detailText = _browserState->GetPrefs()->GetBoolean(preferenceName)
                                ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
