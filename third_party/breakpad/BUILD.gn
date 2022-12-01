@@ -732,7 +732,7 @@ if (is_linux || is_chromeos || is_android) {
       "breakpad/src/common/tests/file_utils.h",
       "breakpad/src/tools/linux/md2core/minidump_memory_range.h",
       "breakpad/src/tools/linux/md2core/minidump_memory_range_unittest.cc",
-      "linux/breakpad_googletest_includes.h",
+      "chromium/breakpad_googletest_includes.h",
     ]
 
     deps = [
@@ -746,7 +746,7 @@ if (is_linux || is_chromeos || is_android) {
     data_deps = [ ":linux_dumper_unittest_helper" ]
 
     include_dirs = [
-      "linux",  # Use our copy of breakpad_googletest_includes.h
+      "chromium",  # Use our copy of breakpad_googletest_includes.h
       ".",
     ]
 
