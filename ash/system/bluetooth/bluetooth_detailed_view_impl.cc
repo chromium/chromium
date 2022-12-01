@@ -211,7 +211,7 @@ void BluetoothDetailedViewImpl::CreateMainContainer() {
 
   // Create the "+" icon.
   auto icon = std::make_unique<views::ImageView>();
-  icon->SetImage(ui::ImageModel::FromVectorIcon(kSystemMenuBluetoothPlusIcon,
+  icon->SetImage(ui::ImageModel::FromVectorIcon(kSystemMenuPlusIcon,
                                                 cros_tokens::kCrosSysPrimary));
   icon->SetProperty(views::kMarginsKey, kPairNewDeviceIconMargins);
   pair_new_device_icon_ = icon.get();
