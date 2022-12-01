@@ -18,7 +18,6 @@
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/openscreen_message_port.h"
 #include "components/mirroring/service/openscreen_rpc_dispatcher.h"
-#include "components/mirroring/service/receiver_setup_querier.h"
 #include "components/mirroring/service/rtp_stream.h"
 #include "components/openscreen_platform/task_runner.h"
 #include "gpu/config/gpu_info.h"
@@ -46,7 +45,6 @@ class Gpu;
 namespace mirroring {
 
 class VideoCaptureClient;
-class ReceiverSetupQuerier;
 
 // Minimum required bitrate used for calculating bandwidth.
 constexpr int kMinRequiredBitrate = 384 << 10;  // 384 kbps
@@ -254,9 +252,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Used to provide access to UDP sockets and URL loading.
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   bool set_network_context_proxy_ = false;
-
-  // Used to get build and name information from the receiver.
-  std::unique_ptr<ReceiverSetupQuerier> setup_querier_;
 
   // Stored as part of generating an OFFER.
   // NOTE: currently we only support Opus audio, but may provide a variety of

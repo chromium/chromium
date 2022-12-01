@@ -273,17 +273,6 @@ OpenscreenSessionHost::OpenscreenSessionHost(
     gpu_ = viz::Gpu::Create(std::move(remote_gpu), io_task_runner);
   }
 
-  network::mojom::URLLoaderFactoryParamsPtr params =
-      network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-  network_context_->CreateURLLoaderFactory(
-      url_loader_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
-
-  setup_querier_ = std::make_unique<ReceiverSetupQuerier>(
-      session_params_.receiver_address, std::move(url_loader_factory));
-
   session_ = std::make_unique<openscreen::cast::SenderSession>(
       openscreen::cast::SenderSession::Configuration{
           .remote_address = media::cast::ToOpenscreenIPAddress(
@@ -704,7 +693,6 @@ void OpenscreenSessionHost::StopSession() {
   // provider.
   media_remoter_.reset();
   rpc_dispatcher_.reset();
-  setup_querier_.reset();
   audio_encode_thread_.reset();
   video_encode_thread_.reset();
   video_capture_client_.reset();

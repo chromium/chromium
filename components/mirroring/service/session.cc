@@ -365,17 +365,6 @@ Session::Session(
     resource_provider_->BindGpu(remote_gpu.InitWithNewPipeAndPassReceiver());
     gpu_ = viz::Gpu::Create(std::move(remote_gpu), io_task_runner);
   }
-
-  network::mojom::URLLoaderFactoryParamsPtr params =
-      network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-  network_context_->CreateURLLoaderFactory(
-      url_loader_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
-
-  setup_querier_ = std::make_unique<ReceiverSetupQuerier>(
-      session_params_.receiver_address, std::move(url_loader_factory));
 }
 
 void Session::AsyncInitialize(AsyncInitializeDoneCB done_cb) {
@@ -471,7 +460,6 @@ void Session::StopSession() {
   media_remoter_.reset();
   message_dispatcher_.reset();
   rpc_dispatcher_.reset();
-  setup_querier_.reset();
   weak_factory_.InvalidateWeakPtrs();
   audio_encode_thread_ = nullptr;
   video_encode_thread_ = nullptr;

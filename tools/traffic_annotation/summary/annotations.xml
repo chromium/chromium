@@ -132,7 +132,6 @@ Refer to README.md for content description and update process.
  <item id="media_router_global_media_controls_image" added_in_milestone="81" content_hash_code="02e96911" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/global_media_controls/cast_media_notification_item.cc" />
  <item id="metrics_report_ukm" added_in_milestone="62" content_hash_code="008577eb" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="metrics_report_uma" added_in_milestone="62" content_hash_code="009b46c5" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
- <item id="mirroring_get_setup_info" added_in_milestone="68" content_hash_code="03dd5ef2" os_list="windows,linux,chromeos,android" file_path="components/mirroring/service/receiver_setup_querier.cc" />
  <item id="missing" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="navigation_predictor_srp_prefetch" added_in_milestone="81" content_hash_code="025036ba" os_list="windows,chromeos,android,linux" file_path="chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.cc" />
  <item id="navigation_url_loader" added_in_milestone="62" content_hash_code="060edd12" os_list="linux,windows,chromeos,android" file_path="content/browser/loader/navigation_url_loader_impl.cc" />
