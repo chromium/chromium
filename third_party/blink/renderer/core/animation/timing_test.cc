@@ -19,8 +19,9 @@ class AnimationTimingTest : public testing::Test {
                           : Timing::AnimationDirection::kForwards;
     return timing_.CalculateTimings(local_time,
                                     /* at_progress_timeline_boundary */ false,
-                                    normalized_timing_, animation_direction,
-                                    is_keyframe_effect, playback_rate);
+                                    /* is_idle */ false, normalized_timing_,
+                                    animation_direction, is_keyframe_effect,
+                                    playback_rate);
   }
   bool IsCurrent(absl::optional<double> local_time, double playback_rate) {
     absl::optional<AnimationTimeDelta> local_time_delta;

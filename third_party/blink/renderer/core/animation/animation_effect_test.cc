@@ -128,6 +128,7 @@ class TestAnimationEffect : public AnimationEffect {
     AnimationEffect::UpdateInheritedTime(
         ANIMATION_TIME_DELTA_FROM_SECONDS(time),
         /* at_progress_timeline_boundary */ false,
+        /* is_idle */ false,
         /* inherited_playback_rate */ 1.0, reason);
   }
 

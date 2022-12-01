@@ -2305,7 +2305,7 @@ bool Animation::Update(TimingUpdateReason reason) {
     }
 
     content_->UpdateInheritedTime(inherited_time, AtScrollTimelineBoundary(),
-                                  playback_rate_, reason);
+                                  idle, playback_rate_, reason);
 
     // After updating the animation time if the animation is no longer current
     // blink will no longer composite the element (see

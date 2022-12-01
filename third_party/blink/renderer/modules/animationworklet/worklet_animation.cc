@@ -418,7 +418,8 @@ void WorkletAnimation::cancel() {
     for (auto& effect : effects_) {
       effect->UpdateInheritedTime(absl::nullopt,
                                   /* at_scroll_timeline_boundary */ false,
-                                  playback_rate_, kTimingUpdateOnDemand);
+                                  /* is_idle */ false, playback_rate_,
+                                  kTimingUpdateOnDemand);
     }
   }
   SetPlayState(Animation::kIdle);
@@ -504,7 +505,8 @@ void WorkletAnimation::Update(TimingUpdateReason reason) {
         local_times_[i]
             ? absl::make_optional(AnimationTimeDelta(local_times_[i].value()))
             : absl::nullopt,
-        /* at_scroll_timeline_boundary */ false, playback_rate_, reason);
+        /* at_scroll_timeline_boundary */ false,
+        /* is_idle */ false, playback_rate_, reason);
   }
 }
 

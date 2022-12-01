@@ -216,6 +216,7 @@ ComputedEffectTiming* Timing::getComputedTiming(
 Timing::CalculatedTiming Timing::CalculateTimings(
     absl::optional<AnimationTimeDelta> local_time,
     bool at_progress_timeline_boundary,
+    bool is_idle,
     const NormalizedTiming& normalized_timing,
     AnimationDirection animation_direction,
     bool is_keyframe_effect,
@@ -282,12 +283,15 @@ Timing::CalculatedTiming Timing::CalculateTimings(
   DCHECK(!calculated.is_in_effect ||
          (current_iteration.has_value() && progress.has_value()));
   calculated.is_in_play = calculated.phase == Timing::kPhaseActive;
+
   // https://w3.org/TR/web-animations-1/#current
   calculated.is_current = calculated.is_in_play ||
                           (playback_rate.has_value() && playback_rate > 0 &&
                            calculated.phase == Timing::kPhaseBefore) ||
                           (playback_rate.has_value() && playback_rate < 0 &&
-                           calculated.phase == Timing::kPhaseAfter);
+                           calculated.phase == Timing::kPhaseAfter) ||
+                          (!is_idle && normalized_timing.timeline_duration);
+
   calculated.local_time = local_time;
   calculated.time_to_next_iteration = time_to_next_iteration;
 

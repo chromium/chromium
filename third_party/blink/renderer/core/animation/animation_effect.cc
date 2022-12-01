@@ -260,6 +260,7 @@ void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
 void AnimationEffect::UpdateInheritedTime(
     absl::optional<AnimationTimeDelta> inherited_time,
     bool at_progress_timeline_boundary,
+    bool is_idle,
     double inherited_playback_rate,
     TimingUpdateReason reason) const {
   const Timing::AnimationDirection direction =
@@ -269,9 +270,10 @@ void AnimationEffect::UpdateInheritedTime(
   bool needs_update =
       needs_update_ || last_update_time_ != inherited_time ||
       last_at_progress_timeline_boundary_ != at_progress_timeline_boundary ||
-      (owner_ && owner_->EffectSuppressed());
+      last_is_idle_ != is_idle || (owner_ && owner_->EffectSuppressed());
   needs_update_ = false;
   last_update_time_ = inherited_time;
+  last_is_idle_ = is_idle;
   // A finished animation saturates inherited time at 0 or effect end.
   // If we hit a progress timeline boundary and then enter the after phase
   // timeline time doesn't change. Thus, we need to track boundary transitions
@@ -280,8 +282,9 @@ void AnimationEffect::UpdateInheritedTime(
 
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
-        inherited_time, at_progress_timeline_boundary, NormalizedTiming(),
-        direction, IsA<KeyframeEffect>(this), inherited_playback_rate);
+        inherited_time, at_progress_timeline_boundary, is_idle,
+        NormalizedTiming(), direction, IsA<KeyframeEffect>(this),
+        inherited_playback_rate);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
                               calculated.phase == Timing::kPhaseNone;
