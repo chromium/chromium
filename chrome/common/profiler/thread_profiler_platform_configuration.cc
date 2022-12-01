@@ -180,6 +180,14 @@ ThreadProfilerPlatformConfiguration::Create(bool browser_test_mode_enabled) {
 
 bool ThreadProfilerPlatformConfiguration::IsSupported(
     absl::optional<version_info::Channel> release_channel) const {
+// `ThreadProfiler` is currently not supported on ARM64, even if
+// `base::StackSamplingProfiler` may support it.
+//
+// TODO(crbug.com/1392158): Remove this conditional.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
+  return false;
+#else
   return base::StackSamplingProfiler::IsSupportedForCurrentPlatform() &&
          IsSupportedForChannel(release_channel);
+#endif
 }
