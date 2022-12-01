@@ -22,15 +22,6 @@ BlinkStorageKey::BlinkStorageKey()
 BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin)
     : BlinkStorageKey(std::move(origin), nullptr) {}
 
-// TODO(https://crbug.com/1287130): Correctly infer the actual ancestor chain
-// bit value, add a parameter, or use this only in testing environments.
-BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
-                                 const BlinkSchemefulSite& top_level_site)
-    : BlinkStorageKey(std::move(origin),
-                      top_level_site,
-                      nullptr,
-                      mojom::blink::AncestorChainBit::kSameSite) {}
-
 // The AncestorChainBit is not applicable to StorageKeys with a non-empty
 // nonce, so they are initialized to be kSameSite.
 BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
@@ -72,6 +63,16 @@ BlinkStorageKey BlinkStorageKey::CreateWithNonce(
 BlinkStorageKey BlinkStorageKey::CreateFromStringForTesting(
     const WTF::String& origin) {
   return BlinkStorageKey(SecurityOrigin::CreateFromString(origin));
+}
+
+// static
+BlinkStorageKey BlinkStorageKey::CreateForTesting(
+    scoped_refptr<const SecurityOrigin> origin,
+    const BlinkSchemefulSite& top_level_site) {
+  return BlinkStorageKey(origin, top_level_site, nullptr,
+                         BlinkSchemefulSite(origin) == top_level_site
+                             ? mojom::blink::AncestorChainBit::kSameSite
+                             : mojom::blink::AncestorChainBit::kCrossSite);
 }
 
 BlinkStorageKey::BlinkStorageKey(const StorageKey& storage_key)

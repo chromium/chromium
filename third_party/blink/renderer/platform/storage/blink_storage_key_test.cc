@@ -200,9 +200,9 @@ TEST(BlinkStorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
 
   BlinkStorageKey key_origin1 = BlinkStorageKey(origin1);
   BlinkStorageKey key_origin1_site1 =
-      BlinkStorageKey(origin1, BlinkSchemefulSite(origin1));
+      BlinkStorageKey::CreateForTesting(origin1, BlinkSchemefulSite(origin1));
   BlinkStorageKey key_origin1_site2 =
-      BlinkStorageKey(origin1, BlinkSchemefulSite(origin2));
+      BlinkStorageKey::CreateForTesting(origin1, BlinkSchemefulSite(origin2));
 
   EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1.GetTopLevelSite());
   EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1_site1.GetTopLevelSite());

@@ -93,14 +93,22 @@ class BLINK_COMMON_EXPORT StorageKey {
   static StorageKey CreateFromStringForTesting(const std::string& origin);
 
   // Takes in two url::Origin types representing origin and top-level site and
-  // returns a StorageKey with a nullptr nonce and a kSameSite AncestorChainBit.
-  // NOTE: For use in tests only.
+  // returns a StorageKey with a nullptr nonce and an AncestorChainBit set based
+  // on whether `origin` and `top_level_site` are schemeful-same-site. NOTE: The
+  // approach used by this method for calculating the AncestorChainBit is
+  // different than what's done in production code, where the whole frame tree
+  // is used. In other words, this method cannot be used to create a StorageKey
+  // corresponding to a first-party iframe with a cross-site ancestor (e.g.,
+  // "a.com" -> "b.com" -> "a.com"). To create a StorageKey for that scenario,
+  // use the StorageKey constructor that has an AncestorChainBit parameter.
   static StorageKey CreateForTesting(const url::Origin& origin,
                                      const url::Origin& top_level_site);
 
-  // Takes in a url::Origin type and a net::SchemefulSite type and returns a
-  // StorageKey with a nullptr nonce and a kSameSite AncestorChainBit. NOTE: For
-  // use in tests only.
+  // Takes in a url::Origin `origin` and a net::SchemefulSite `top_level_site`
+  // and returns a StorageKey with a nullptr nonce and an AncestorChainBit set
+  // based on whether `origin` and `top_level_site` are schemeful-same-site. See
+  // the note in `CreateForTesting()` above regarding how the AncestorChainBit
+  // is calculated by this method.
   static StorageKey CreateForTesting(const url::Origin& origin,
                                      const net::SchemefulSite& top_level_site);
 

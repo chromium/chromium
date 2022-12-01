@@ -209,9 +209,12 @@ StorageKey StorageKey::CreateFromStringForTesting(const std::string& origin) {
 
 // static
 StorageKey StorageKey::CreateForTesting(const url::Origin& origin,
-                                        const url::Origin& top_level_site) {
-  return StorageKey(origin, net::SchemefulSite(top_level_site), nullptr,
-                    blink::mojom::AncestorChainBit::kSameSite);
+                                        const url::Origin& top_level_origin) {
+  auto top_level_site = net::SchemefulSite(top_level_origin);
+  return StorageKey(origin, std::move(top_level_site), nullptr,
+                    top_level_site == net::SchemefulSite(origin)
+                        ? blink::mojom::AncestorChainBit::kSameSite
+                        : blink::mojom::AncestorChainBit::kCrossSite);
 }
 
 // static
@@ -219,7 +222,9 @@ StorageKey StorageKey::CreateForTesting(
     const url::Origin& origin,
     const net::SchemefulSite& top_level_site) {
   return StorageKey(origin, top_level_site, nullptr,
-                    blink::mojom::AncestorChainBit::kSameSite);
+                    top_level_site == net::SchemefulSite(origin)
+                        ? blink::mojom::AncestorChainBit::kSameSite
+                        : blink::mojom::AncestorChainBit::kCrossSite);
 }
 
 // static

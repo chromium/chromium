@@ -37,11 +37,6 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // constructors and factory methods.
   explicit BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin);
 
-  // Creates a BlinkStorageKey with the given origin and top-level site.
-  // `origin` must not be null. `origin` can be opaque.
-  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
-                  const BlinkSchemefulSite& top_level_site);
-
   // Creates a BlinkStorageKey with the given origin, top-level site and nonce.
   // `origin` must not be null. `origin` can be opaque.
   // `nonce` can be null to create a key without a nonce.
@@ -72,6 +67,20 @@ class PLATFORM_EXPORT BlinkStorageKey {
       const base::UnguessableToken& nonce);
 
   static BlinkStorageKey CreateFromStringForTesting(const WTF::String& origin);
+
+  // Takes in a SecurityOrigin `origin` and a BlinkSchemefulSite
+  // `top_level_site` and returns a BlinkStorageKey with a nullptr nonce and an
+  // AncestorChainBit set based on whether `origin` and `top_level_site` are
+  // schemeful-same-site. NOTE: The approach used by this method for calculating
+  // the AncestorChainBit is different than what's done in production code,
+  // where the whole frame tree is used. In other words, this method cannot be
+  // used to create a StorageKey corresponding to a first-party iframe with a
+  // cross-site ancestor (e.g., "a.com" -> "b.com" -> "a.com"). To create a
+  // BlinkStorageKey for that scenario, use the BlinkStorageKey constructor that
+  // has an AncestorChainBit parameter.
+  static BlinkStorageKey CreateForTesting(
+      scoped_refptr<const SecurityOrigin> origin,
+      const BlinkSchemefulSite& top_level_site);
 
   const scoped_refptr<const SecurityOrigin>& GetSecurityOrigin() const {
     return origin_;
