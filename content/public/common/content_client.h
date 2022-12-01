@@ -218,7 +218,7 @@ class CONTENT_EXPORT ContentClient {
   friend class InternalTestInitializer;
 
   // The embedder API for participating in browser logic.
-  raw_ptr<ContentBrowserClient> browser_;
+  raw_ptr<ContentBrowserClient, DanglingUntriaged> browser_;
   // The embedder API for participating in gpu logic.
   raw_ptr<ContentGpuClient> gpu_;
   // The embedder API for participating in renderer logic.

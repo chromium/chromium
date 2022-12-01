@@ -122,7 +122,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
 // This is the data sent out as the details with BACKGROUND_CONTENTS_OPENED.
 struct BackgroundContentsOpenedDetails {
   // The BackgroundContents object that has just been opened.
-  raw_ptr<BackgroundContents> contents;
+  raw_ptr<BackgroundContents, DanglingUntriaged> contents;
 
   // The name of the parent frame for these contents.
   const raw_ref<const std::string> frame_name;

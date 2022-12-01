@@ -1666,7 +1666,7 @@ class DnsTransactionImpl : public DnsTransaction,
   scoped_refptr<DnsSession> session_;
   std::string hostname_;
   uint16_t qtype_;
-  raw_ptr<const OptRecordRdata> opt_rdata_;
+  raw_ptr<const OptRecordRdata, DanglingUntriaged> opt_rdata_;
   const bool secure_;
   const SecureDnsMode secure_dns_mode_;
   // Cleared in DoCallback.

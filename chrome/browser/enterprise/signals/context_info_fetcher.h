@@ -104,7 +104,8 @@ class ContextInfoFetcher {
   raw_ptr<content::BrowserContext> browser_context_;
 
   // |connectors_service| is used to obtain the value of each Connector policy.
-  raw_ptr<enterprise_connectors::ConnectorsService> connectors_service_;
+  raw_ptr<enterprise_connectors::ConnectorsService, DanglingUntriaged>
+      connectors_service_;
 };
 
 #if BUILDFLAG(IS_LINUX)

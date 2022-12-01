@@ -51,9 +51,10 @@ class MetricEventObserverManager {
 
   const std::unique_ptr<MetricEventObserver> event_observer_;
 
-  const raw_ptr<MetricReportQueue> metric_report_queue_;
+  const raw_ptr<MetricReportQueue, DanglingUntriaged> metric_report_queue_;
 
-  const raw_ptr<EventDrivenTelemetryCollectorPool> collector_pool_;
+  const raw_ptr<EventDrivenTelemetryCollectorPool, DanglingUntriaged>
+      collector_pool_;
 
   std::unique_ptr<MetricReportingController> reporting_controller_;
 

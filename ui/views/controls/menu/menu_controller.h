@@ -357,14 +357,14 @@ class VIEWS_EXPORT MenuController
     //       but is over a menu (for example, the mouse is over a separator or
     //       empty menu), this is null and parent is the menu the mouse was
     //       clicked on.
-    raw_ptr<MenuItemView> menu = nullptr;
+    raw_ptr<MenuItemView, DanglingUntriaged> menu = nullptr;
 
     // If type is kMenuItem but the mouse is not over a menu item this is the
     // parent of the menu item the user clicked on. Otherwise this is null.
-    raw_ptr<MenuItemView> parent = nullptr;
+    raw_ptr<MenuItemView, DanglingUntriaged> parent = nullptr;
 
     // This is the submenu the mouse is over.
-    raw_ptr<SubmenuView> submenu = nullptr;
+    raw_ptr<SubmenuView, DanglingUntriaged> submenu = nullptr;
 
     // Whether the controller should apply SELECTION_OPEN_SUBMENU to this item.
     bool should_submenu_show = false;

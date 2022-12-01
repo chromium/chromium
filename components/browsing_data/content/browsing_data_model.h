@@ -79,13 +79,13 @@ class BrowsingDataModel {
 
     // The primary host for this browsing data. This is the host which this
     // information will be most strongly associated with in UX surfaces.
-    const raw_ref<const std::string> primary_host;
+    const raw_ref<const std::string, DanglingUntriaged> primary_host;
 
     // The unique identifier for the data represented by this entry.
-    const raw_ref<const DataKey> data_key;
+    const raw_ref<const DataKey, DanglingUntriaged> data_key;
 
     // Information about the data represented by this entry.
-    const raw_ref<const DataDetails> data_details;
+    const raw_ref<const DataDetails, DanglingUntriaged> data_details;
 
    private:
     friend class BrowsingDataModel;

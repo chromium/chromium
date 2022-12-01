@@ -385,7 +385,7 @@ struct DNRHeaderAction {
 
   // Non-owning pointers to HeaderInfo and ExtensionId.
   raw_ptr<const DNRRequestAction::HeaderInfo> header_info;
-  raw_ptr<const extensions::ExtensionId> extension_id;
+  raw_ptr<const extensions::ExtensionId, DanglingUntriaged> extension_id;
 };
 
 // Helper to modify request headers from

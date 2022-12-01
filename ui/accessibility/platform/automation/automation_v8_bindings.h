@@ -244,7 +244,7 @@ class AX_EXPORT AutomationV8Bindings {
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
   raw_ptr<AutomationTreeManagerOwner> automation_tree_manager_owner_;
-  raw_ptr<AutomationV8Router> automation_v8_router_;
+  raw_ptr<AutomationV8Router, DanglingUntriaged> automation_v8_router_;
 };
 }  // namespace ui
 

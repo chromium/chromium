@@ -87,7 +87,7 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
       ~TaskMetadata();
 
       base::TimeTicks execution_start_time;
-      raw_ptr<const void> identifier;
+      raw_ptr<const void, DanglingUntriaged> identifier;
     };
     std::vector<TaskMetadata> task_execution_metadata_;
 

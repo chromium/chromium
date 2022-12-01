@@ -22,7 +22,7 @@ struct RegexRuleInfo {
   RegexRuleInfo(const RegexRuleInfo& info);
   RegexRuleInfo& operator=(const RegexRuleInfo& info);
   raw_ptr<const flat::RegexRule> regex_rule;
-  raw_ptr<const re2::RE2> regex;
+  raw_ptr<const re2::RE2, DanglingUntriaged> regex;
 };
 
 // RegexRulesMatcher deals with matching of regular expression rules. It is an

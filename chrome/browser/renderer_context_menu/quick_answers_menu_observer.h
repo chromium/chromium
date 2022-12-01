@@ -41,7 +41,7 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
       uint32_t end_offset);
 
   // The interface to add a context-menu item and update it.
-  raw_ptr<RenderViewContextMenuProxy> proxy_;
+  raw_ptr<RenderViewContextMenuProxy, DanglingUntriaged> proxy_;
 
   gfx::Rect bounds_in_screen_;
 

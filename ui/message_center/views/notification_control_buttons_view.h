@@ -76,8 +76,8 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   std::unique_ptr<NotificationControlButtonFactory>
       notification_control_button_factory_;
 
-  raw_ptr<views::ImageButton> close_button_ = nullptr;
-  raw_ptr<views::ImageButton> settings_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> close_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> settings_button_ = nullptr;
   raw_ptr<views::ImageButton> snooze_button_ = nullptr;
 
   // The color used for the close, settings, and snooze icons.

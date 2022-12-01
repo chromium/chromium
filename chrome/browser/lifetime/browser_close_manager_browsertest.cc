@@ -153,7 +153,7 @@ class TabRestoreServiceChangesObserver
     service_ = nullptr;
   }
 
-  raw_ptr<sessions::TabRestoreService> service_ = nullptr;
+  raw_ptr<sessions::TabRestoreService, DanglingUntriaged> service_ = nullptr;
   size_t changes_count_ = 0;
 };
 

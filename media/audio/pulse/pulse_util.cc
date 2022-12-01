@@ -181,7 +181,7 @@ void GetDefaultDeviceIdCallback(pa_context* c,
 
 struct ContextStartupData {
   raw_ptr<base::WaitableEvent> context_wait;
-  raw_ptr<pa_threaded_mainloop> pa_mainloop;
+  raw_ptr<pa_threaded_mainloop, DanglingUntriaged> pa_mainloop;
 };
 
 void SignalReadyOrErrorStateCallback(pa_context* context, void* context_data) {

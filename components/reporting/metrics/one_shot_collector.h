@@ -65,7 +65,7 @@ class OneShotCollector : public CollectorBase {
  private:
   void SetReportingControllerCb();
 
-  const raw_ptr<MetricReportQueue> metric_report_queue_;
+  const raw_ptr<MetricReportQueue, DanglingUntriaged> metric_report_queue_;
 
   std::unique_ptr<MetricReportingController> reporting_controller_;
 

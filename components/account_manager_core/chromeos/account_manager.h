@@ -347,7 +347,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   DelayNetworkCallRunner delay_network_call_runner_;
 
   // Non-owning pointer.
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
 
   // A task runner for disk I/O.
   // Will be |nullptr| if |AccountManager| is operating in ephemeral mode.

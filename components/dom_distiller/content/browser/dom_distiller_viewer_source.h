@@ -51,7 +51,8 @@ class DomDistillerViewerSource : public content::URLDataSource {
 
   // The service which contains all the functionality needed to interact with
   // the list of articles.
-  raw_ptr<DomDistillerServiceInterface> dom_distiller_service_;
+  raw_ptr<DomDistillerServiceInterface, DanglingUntriaged>
+      dom_distiller_service_;
 };
 
 }  // namespace dom_distiller

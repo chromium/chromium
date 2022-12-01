@@ -170,8 +170,8 @@ class WebAppPolicyManager {
       nullptr;
   raw_ptr<WebAppRegistrar> app_registrar_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
-  raw_ptr<const ash::SystemWebAppDelegateMap> system_web_apps_delegate_map_ =
-      nullptr;
+  raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
+      system_web_apps_delegate_map_ = nullptr;
   raw_ptr<OsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
       nullptr;
 

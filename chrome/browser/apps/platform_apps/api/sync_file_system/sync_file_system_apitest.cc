@@ -111,7 +111,7 @@ struct ReturnWithFakeFileAddedStatusFunctor {
 
  private:
   raw_ptr<GURL> origin_;
-  raw_ptr<MockRemoteFileSyncService> mock_remote_service_;
+  raw_ptr<MockRemoteFileSyncService, DanglingUntriaged> mock_remote_service_;
   sync_file_system::SyncFileType file_type_;
   sync_file_system::SyncFileStatus sync_file_status_;
   sync_file_system::SyncAction sync_action_taken_;

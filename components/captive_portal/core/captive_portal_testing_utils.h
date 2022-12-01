@@ -49,7 +49,7 @@ class CaptivePortalDetectorTestBase {
   const GURL& get_probe_url() { return detector_->probe_url_; }
 
  protected:
-  raw_ptr<CaptivePortalDetector> detector_;
+  raw_ptr<CaptivePortalDetector, DanglingUntriaged> detector_;
   network::TestURLLoaderFactory test_loader_factory_;
 };
 

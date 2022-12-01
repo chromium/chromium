@@ -57,7 +57,7 @@ class ChromeOmniboxEditController : public OmniboxEditController {
  private:
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
-  const raw_ptr<CommandUpdater> command_updater_;
+  const raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_

@@ -200,7 +200,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   scoped_refptr<Authenticator> authenticator_;
 
   // Used for metric reporting.
-  const raw_ptr<MetricsRecorder> metrics_recorder_;
+  const raw_ptr<MetricsRecorder, DanglingUntriaged> metrics_recorder_;
 
   // Represents last login failure that was encountered when communicating to
   // sign-in server. AuthFailure.LoginFailureNone() by default.

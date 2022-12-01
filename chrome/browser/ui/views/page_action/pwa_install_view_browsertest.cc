@@ -200,7 +200,8 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
   struct OpenTabResult {
     raw_ptr<content::WebContents> web_contents;
-    raw_ptr<webapps::TestAppBannerManagerDesktop> app_banner_manager;
+    raw_ptr<webapps::TestAppBannerManagerDesktop, DanglingUntriaged>
+        app_banner_manager;
     bool installable;
   };
 

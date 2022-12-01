@@ -51,7 +51,7 @@ class ScopedWidget {
   views::Widget* get() const { return widget_; }
 
  private:
-  raw_ptr<views::Widget> widget_;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_;
 };
 
 void SetURLAndDragImage(const GURL& url,

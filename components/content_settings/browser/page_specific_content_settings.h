@@ -180,7 +180,7 @@ class PageSpecificContentSettings
     void WebContentsDestroyed();
 
    private:
-    raw_ptr<content::WebContents> web_contents_;
+    raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   };
 
   PageSpecificContentSettings(const PageSpecificContentSettings&) = delete;

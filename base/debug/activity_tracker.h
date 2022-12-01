@@ -774,7 +774,8 @@ class BASE_EXPORT ThreadActivityTracker {
       ActivityTrackerMemoryAllocator* allocator);
 
   const raw_ptr<Header> header_;   // Pointer to the Header structure.
-  const raw_ptr<Activity> stack_;  // The stack of activities.
+  const raw_ptr<Activity, DanglingUntriaged>
+      stack_;  // The stack of activities.
 
 #if DCHECK_IS_ON()
   // The ActivityTracker is thread bound, and will be invoked across all the

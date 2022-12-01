@@ -266,7 +266,8 @@ class BrowserNonClientFrameViewChromeOS
   TabIconView* window_icon_ = nullptr;
 
   // This is used for teleported windows (in multi-profile mode).
-  raw_ptr<ProfileIndicatorIcon> profile_indicator_icon_ = nullptr;
+  raw_ptr<ProfileIndicatorIcon, DanglingUntriaged> profile_indicator_icon_ =
+      nullptr;
 
   // Helper class for painting the header.
   std::unique_ptr<chromeos::FrameHeader> frame_header_;

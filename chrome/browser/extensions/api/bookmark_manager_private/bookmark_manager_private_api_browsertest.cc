@@ -39,7 +39,7 @@ class BookmarkManagerPrivateApiBrowsertest : public InProcessBrowserTest {
     return model;
   }
 
-  raw_ptr<BookmarkModel> model_;
+  raw_ptr<BookmarkModel, DanglingUntriaged> model_;
 };
 
 IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,

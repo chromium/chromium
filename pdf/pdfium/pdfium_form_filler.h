@@ -226,7 +226,7 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
     // because indirect callers of `PDFiumFormFiller` might not be embedding V8
     // separately. This can happen in utility processes (through callers of
     // //pdf/pdf.h) and in Pepper plugin processes.
-    const raw_ptr<v8::Isolate> callback_isolate_;
+    const raw_ptr<v8::Isolate, DanglingUntriaged> callback_isolate_;
   };
 
   // Gets an `EngineInIsolateScope` using `engine_in_isolate_scope_factory_`.

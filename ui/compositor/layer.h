@@ -769,7 +769,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   std::string name_;
 
-  raw_ptr<LayerDelegate> delegate_;
+  raw_ptr<LayerDelegate, DanglingUntriaged> delegate_;
 
   base::ObserverList<LayerObserver>::Unchecked observer_list_;
 

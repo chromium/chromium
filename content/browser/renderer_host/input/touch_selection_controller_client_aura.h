@@ -124,7 +124,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
     void DidScroll() override;
 
    private:
-    raw_ptr<RenderWidgetHostViewAura> rwhva_;
+    raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> rwhva_;
   } internal_client_;
 
   // Keep track of which client interface to use.

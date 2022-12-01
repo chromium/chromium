@@ -62,10 +62,10 @@ class GFX_EXPORT StringSlicer {
 
  private:
   // The text to be sliced.
-  const raw_ref<const std::u16string> text_;
+  const raw_ref<const std::u16string, DanglingUntriaged> text_;
 
   // Ellipsis string to use.
-  const raw_ref<const std::u16string> ellipsis_;
+  const raw_ref<const std::u16string, DanglingUntriaged> ellipsis_;
 
   // If true, the middle of the string will be elided.
   const bool elide_in_middle_;

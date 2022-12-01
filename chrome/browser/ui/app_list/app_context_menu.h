@@ -70,7 +70,7 @@ class AppContextMenu : public ui::SimpleMenuModel::Delegate {
   raw_ptr<AppContextMenuDelegate> delegate_;
   raw_ptr<Profile> profile_;
   const std::string app_id_;
-  raw_ptr<AppListControllerDelegate> controller_;
+  raw_ptr<AppListControllerDelegate, DanglingUntriaged> controller_;
 };
 
 }  // namespace app_list

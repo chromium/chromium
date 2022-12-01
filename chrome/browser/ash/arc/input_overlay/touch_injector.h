@@ -259,7 +259,7 @@ class TouchInjector : public ui::EventRewriter {
   // TouchInjector is created when targeted |window_| is created and is
   // registered only when |window_| is focused. And TouchInjector doesn't own
   // |window_| and it is destroyed when |window_| is destroyed.
-  raw_ptr<aura::Window> window_;
+  raw_ptr<aura::Window, DanglingUntriaged> window_;
   std::string package_name_;
   gfx::RectF content_bounds_;
   base::WeakPtr<ui::EventRewriterContinuation> continuation_;

@@ -90,7 +90,7 @@ class FetchDiscountWorker {
   // active carts, updating given cart discount, etc.
   std::unique_ptr<CartServiceDelegate> cart_service_delegate_;
   // This is used to identify whether user is a sync user.
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   // This is used to fetch the oauth token.
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;

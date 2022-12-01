@@ -42,8 +42,8 @@ class BASE_EXPORT CategoryRegistry {
     TraceCategory* end() const { return end_; }
 
    private:
-    const raw_ptr<TraceCategory> begin_;
-    const raw_ptr<TraceCategory> end_;
+    const raw_ptr<TraceCategory, DanglingUntriaged> begin_;
+    const raw_ptr<TraceCategory, DanglingUntriaged> end_;
   };
 
   // Known categories.

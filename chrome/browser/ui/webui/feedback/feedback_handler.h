@@ -29,7 +29,7 @@ class FeedbackHandler : public content::WebUIMessageHandler {
   void HandleShowMetrics(const base::Value::List& args);
   void HandleShowSystemInfo(const base::Value::List& args);
 
-  raw_ptr<const FeedbackDialog> dialog_;
+  raw_ptr<const FeedbackDialog, DanglingUntriaged> dialog_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_HANDLER_H_

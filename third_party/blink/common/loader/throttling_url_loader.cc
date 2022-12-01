@@ -265,7 +265,7 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
     const raw_ptr<ForwardingThrottleDelegate> owner_;
   };
 
-  raw_ptr<ThrottlingURLLoader> loader_;
+  raw_ptr<ThrottlingURLLoader, DanglingUntriaged> loader_;
   const raw_ptr<URLLoaderThrottle> throttle_;
 };
 

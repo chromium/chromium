@@ -68,7 +68,7 @@ class UninstallDialog {
     UninstallDialog* uninstall_dialog() const { return uninstall_dialog_; }
 
    private:
-    raw_ptr<UninstallDialog> uninstall_dialog_;
+    raw_ptr<UninstallDialog, DanglingUntriaged> uninstall_dialog_;
   };
 
   // Called when the dialog closes after the user has made a decision about
@@ -120,7 +120,7 @@ class UninstallDialog {
 
   OnUninstallForTestingCallback uninstall_dialog_created_callback_;
 
-  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
 
   // Tracks whether |parent_window_| got destroyed.
   std::unique_ptr<NativeWindowTracker> parent_window_tracker_;

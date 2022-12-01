@@ -79,7 +79,7 @@ class EventSource::EventRewriterContinuationImpl
 
  private:
   const raw_ptr<EventSource> source_;
-  raw_ptr<EventRewriter> rewriter_;
+  raw_ptr<EventRewriter, DanglingUntriaged> rewriter_;
   EventRewriterList::iterator self_;
 
   base::WeakPtrFactory<EventRewriterContinuationImpl> weak_ptr_factory_{this};

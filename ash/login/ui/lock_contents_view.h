@@ -513,7 +513,8 @@ class ASH_EXPORT LockContentsView
 
   // If the kiosk app button is not visible, the kiosk app default message would
   // be shown.
-  raw_ptr<KioskAppDefaultMessage> kiosk_default_message_ = nullptr;
+  raw_ptr<KioskAppDefaultMessage, DanglingUntriaged> kiosk_default_message_ =
+      nullptr;
 
   // Actions that should be executed before a new layout happens caused by a
   // display change (eg. screen rotation). A full layout pass is performed after
@@ -542,7 +543,8 @@ class ASH_EXPORT LockContentsView
   LoginErrorBubble* warning_banner_bubble_;
 
   // View that is shown on login timeout with camera usage.
-  base::raw_ptr<LoginCameraTimeoutView> login_camera_timeout_view_ = nullptr;
+  base::raw_ptr<LoginCameraTimeoutView, DanglingUntriaged>
+      login_camera_timeout_view_ = nullptr;
 
   // Bottom status indicator displaying entreprise domain or ADB enabled alert
   BottomStatusIndicator* bottom_status_indicator_;

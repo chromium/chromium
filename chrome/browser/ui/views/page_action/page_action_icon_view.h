@@ -212,7 +212,7 @@ class PageActionIconView : public IconLabelBubbleView {
   SkColor icon_color_ = gfx::kPlaceholderColor;
 
   // The CommandUpdater for the Browser object that owns the location bar.
-  const raw_ptr<CommandUpdater> command_updater_;
+  const raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;
 
   // Delegate for access to associated state.
   const raw_ptr<Delegate> delegate_;

@@ -24,7 +24,7 @@ class StreamSurfaceSet {
   // Entry in the surface set. Holds the surface and information about it.
   struct Entry {
     // The surface.
-    raw_ptr<FeedStreamSurface> surface;
+    raw_ptr<FeedStreamSurface, DanglingUntriaged> surface;
     // Whether or not the feed content was ever reported as viewed.
     bool feed_viewed = false;
   };

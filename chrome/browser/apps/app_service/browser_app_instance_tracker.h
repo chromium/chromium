@@ -182,7 +182,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   bool IsBrowserTracked(Browser* browser) const;
   bool IsActivationClientTracked(wm::ActivationClient* client) const;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   std::map<content::WebContents*, std::unique_ptr<WebContentsObserver>>
       webcontents_to_observer_map_;

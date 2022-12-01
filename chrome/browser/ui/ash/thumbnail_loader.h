@@ -85,7 +85,7 @@ class ThumbnailLoader {
                         const SkBitmap* bitmap,
                         base::File::Error error);
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Maps pending thumbnail requests to their registered callbacks.
   std::map<base::UnguessableToken, ImageCallback> requests_;

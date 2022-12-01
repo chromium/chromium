@@ -73,7 +73,7 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
 
   // Actually scrolls |tab_strip_|.
   raw_ptr<views::ScrollView> scroll_view_;
-  raw_ptr<TabStrip> tab_strip_;
+  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;
 
   // The buttons that allow users to manually scroll |tab_strip_|.
   raw_ptr<views::ImageButton> leading_scroll_button_;

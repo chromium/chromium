@@ -206,7 +206,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
     bool is_animating = false;
 
     // Unowned.
-    raw_ptr<MessagePopupView> popup = nullptr;
+    raw_ptr<MessagePopupView, DanglingUntriaged> popup = nullptr;
   };
 
   // Transition from animation state (FADE_IN, FADE_OUT, and MOVE_DOWN) to

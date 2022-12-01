@@ -82,7 +82,7 @@ class ReloadButton : public ToolbarButton,
   base::OneShotTimer mode_switch_timer_;
 
   // This may be NULL when testing.
-  raw_ptr<CommandUpdater> command_updater_;
+  raw_ptr<CommandUpdater, DanglingUntriaged> command_updater_;
 
   // The mode we should be in assuming no timers are running.
   Mode intended_mode_ = Mode::kReload;

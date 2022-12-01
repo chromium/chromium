@@ -86,8 +86,8 @@ struct PendingSyncMsg {
       : id(id), deserializer(d), done_event(e), send_result(false) {}
 
   int id;
-  raw_ptr<MessageReplyDeserializer> deserializer;
-  raw_ptr<base::WaitableEvent> done_event;
+  raw_ptr<MessageReplyDeserializer, DanglingUntriaged> deserializer;
+  raw_ptr<base::WaitableEvent, DanglingUntriaged> done_event;
   bool send_result;
 };
 

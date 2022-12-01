@@ -45,7 +45,7 @@ class TabStripScrollingOverflowIndicatorStrategy {
   raw_ptr<views::ScrollView> scroll_view_;
 
   // The tabstrip which owns the scroll view.
-  raw_ptr<TabStrip> tab_strip_;
+  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;
 
   // The callback used to update the inidicators from the scrollview.
   base::CallbackListSubscription on_contents_scrolled_subscription_;

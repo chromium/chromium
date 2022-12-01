@@ -149,17 +149,24 @@ class LockScreenReauthDialogTestHelper {
   void WaitForNetworkDialogToLoad();
 
   // Main Dialog
-  base::raw_ptr<LockScreenStartReauthDialog> reauth_dialog_ = nullptr;
-  base::raw_ptr<LockScreenStartReauthUI> reauth_webui_controller_ = nullptr;
-  base::raw_ptr<LockScreenReauthHandler> main_handler_ = nullptr;
+  base::raw_ptr<LockScreenStartReauthDialog, DanglingUntriaged> reauth_dialog_ =
+      nullptr;
+  base::raw_ptr<LockScreenStartReauthUI, DanglingUntriaged>
+      reauth_webui_controller_ = nullptr;
+  base::raw_ptr<LockScreenReauthHandler, DanglingUntriaged> main_handler_ =
+      nullptr;
 
   // Network dialog which is owned by the main dialog.
-  base::raw_ptr<LockScreenNetworkDialog> network_dialog_ = nullptr;
-  base::raw_ptr<LockScreenNetworkUI> network_webui_controller_ = nullptr;
-  base::raw_ptr<NetworkConfigMessageHandler> network_handler_ = nullptr;
+  base::raw_ptr<LockScreenNetworkDialog, DanglingUntriaged> network_dialog_ =
+      nullptr;
+  base::raw_ptr<LockScreenNetworkUI, DanglingUntriaged>
+      network_webui_controller_ = nullptr;
+  base::raw_ptr<NetworkConfigMessageHandler, DanglingUntriaged>
+      network_handler_ = nullptr;
 
   // Captive portal dialog which is owned by the main dialog.
-  base::raw_ptr<LockScreenCaptivePortalDialog> captive_portal_dialog_ = nullptr;
+  base::raw_ptr<LockScreenCaptivePortalDialog, DanglingUntriaged>
+      captive_portal_dialog_ = nullptr;
 };
 
 }  // namespace ash

@@ -54,7 +54,7 @@ class HeadersToString final : public blink::WebHTTPHeaderVisitor {
 
  private:
   // Reference allows writing directly into `UrlResponse::headers`.
-  const raw_ref<std::string> buffer_ref_;
+  const raw_ref<std::string, DanglingUntriaged> buffer_ref_;
 };
 
 }  // namespace

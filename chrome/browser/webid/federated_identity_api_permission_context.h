@@ -48,7 +48,7 @@ class FederatedIdentityApiPermissionContext
  private:
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  const raw_ptr<permissions::PermissionDecisionAutoBlocker>
+  const raw_ptr<permissions::PermissionDecisionAutoBlocker, DanglingUntriaged>
       permission_autoblocker_;
 };
 

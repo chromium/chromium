@@ -187,7 +187,7 @@ class ExtensionMessagePort : public MessagePort {
   bool asynchronous_reply_pending_ = false;
 
   // Used in IncrementLazyKeepaliveCount
-  raw_ptr<ExtensionHost> background_host_ptr_ = nullptr;
+  raw_ptr<ExtensionHost, DanglingUntriaged> background_host_ptr_ = nullptr;
   std::unique_ptr<FrameTracker> frame_tracker_;
 };
 

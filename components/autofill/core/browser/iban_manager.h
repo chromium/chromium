@@ -71,7 +71,8 @@ class IBANManager : public SingleFieldFormFiller,
   void SendIBANSuggestions(const std::vector<IBAN*>& ibans,
                            const QueryHandler& query_handler);
 
-  raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;
+  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_ =
+      nullptr;
 
   bool is_off_the_record_ = false;
 

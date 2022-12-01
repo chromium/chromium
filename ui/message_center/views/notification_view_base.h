@@ -375,13 +375,13 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::View* right_content_ = nullptr;
 
   // Views which are dynamically created inside view hierarchy.
-  raw_ptr<views::Label> message_label_ = nullptr;
-  raw_ptr<views::Label> status_view_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> message_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> status_view_ = nullptr;
   raw_ptr<ProportionalImageView> icon_view_ = nullptr;
   views::View* image_container_view_ = nullptr;
   std::vector<views::LabelButton*> action_buttons_;
   std::vector<views::View*> item_views_;
-  raw_ptr<views::ProgressBar> progress_bar_view_ = nullptr;
+  raw_ptr<views::ProgressBar, DanglingUntriaged> progress_bar_view_ = nullptr;
   raw_ptr<CompactTitleMessageView> compact_title_message_view_ = nullptr;
   raw_ptr<views::View> action_buttons_row_ = nullptr;
   raw_ptr<NotificationInputContainer> inline_reply_ = nullptr;
