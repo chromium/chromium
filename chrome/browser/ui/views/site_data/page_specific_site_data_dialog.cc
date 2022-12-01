@@ -189,6 +189,12 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         PageSpecificSiteDataDialogController::UserDataKey());
   }
 
+  void SetBrowsingDataModelsForTesting(BrowsingDataModel* allowed,  // IN-TEST
+                                       BrowsingDataModel* blocked) {
+    allowed_browsing_data_model_ = allowed;
+    blocked_browsing_data_model_ = blocked;
+  }
+
   std::vector<PageSpecificSiteDataDialogSite> GetAllSites() {
     std::map<std::string, PageSpecificSiteDataDialogSite> sites_map;
     for (const std::unique_ptr<CookieTreeNode>& node :
@@ -281,15 +287,18 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // The both models have to checked, as the site might be in the blocked
     // model, then be allowed and deleted. Without reloading the page the site
     // will remain in the blocked model.
-    bool deleted_from_allowed = DeleteMatchingHostNodeFromModel(
-        allowed_cookies_tree_model_.get(), origin);
-    bool deleted_from_blocked = DeleteMatchingHostNodeFromModel(
-        blocked_cookies_tree_model_.get(), origin);
-    // The node could be present in both models, for example if there is a mix
-    // of regular and partitioned cookies.
-    DCHECK(deleted_from_allowed || deleted_from_blocked)
-        << "The node with a matching origin should be found and deleted in one "
-           "of the models";
+    DeleteMatchingHostNodeFromModel(allowed_cookies_tree_model_.get(), origin);
+    DeleteMatchingHostNodeFromModel(blocked_cookies_tree_model_.get(), origin);
+
+    // Removing origin from Browsing Data Model to support new storage types.
+    // The UI assumes deletion completed successfully, so we're passing
+    // `base::DoNothing` callback.
+    // TODO(crbug.com/1394352): Future tests will need to know when the deletion
+    // is completed, this will require a callback to be passed here.
+    allowed_browsing_data_model_->RemoveBrowsingData(origin.host(),
+                                                     base::DoNothing());
+    blocked_browsing_data_model_->RemoveBrowsingData(origin.host(),
+                                                     base::DoNothing());
 
     RecordPageSpecificSiteDataDialogAction(
         PageSpecificSiteDataDialogAction::kSiteDeleted);
@@ -311,7 +320,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
  private:
   // Deletes the host node matching |origin| and all stored objects for it.
-  bool DeleteMatchingHostNodeFromModel(CookiesTreeModel* model,
+  void DeleteMatchingHostNodeFromModel(CookiesTreeModel* model,
                                        const url::Origin& origin) {
     CookieTreeNode* node_to_delete = nullptr;
     for (const auto& node : model->GetRoot()->children()) {
@@ -326,8 +335,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
                 CookieTreeNode::DetailedInfo::TYPE_HOST);
       model->DeleteCookieNode(node_to_delete);
     }
-
-    return node_to_delete != nullptr;
   }
 
   bool CanCreateContentException(GURL url) const { return !url.SchemeIsFile(); }
@@ -544,9 +551,20 @@ PageSpecificSiteDataDialogTestApi::PageSpecificSiteDataDialogTestApi(
 PageSpecificSiteDataDialogTestApi::~PageSpecificSiteDataDialogTestApi() =
     default;
 
+void PageSpecificSiteDataDialogTestApi::SetBrowsingDataModels(
+    BrowsingDataModel* allowed,
+    BrowsingDataModel* blocked) {
+  delegate_->SetBrowsingDataModelsForTesting(allowed, blocked);  // IN-TEST
+}
+
 std::vector<PageSpecificSiteDataDialogSite>
 PageSpecificSiteDataDialogTestApi::GetAllSites() {
   return delegate_->GetAllSites();
+}
+
+void PageSpecificSiteDataDialogTestApi::DeleteStoredObjects(
+    const url::Origin& origin) {
+  delegate_->DeleteStoredObjects(origin);
 }
 
 }  // namespace test

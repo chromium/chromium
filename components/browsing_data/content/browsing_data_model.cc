@@ -130,8 +130,14 @@ void StorageRemoverHelper::RemoveByPrimaryHost(
 
   completed_ = std::move(completed);
 
+  // Creating a synchronous callback to hold off running `completed_` callback
+  // until the loop has completed visiting all its entries whether deletion is
+  // synchronous or asynchronous.
+  auto sync_completion = GetCompleteCallback();
   for (const auto& [key, details] : data_key_entries)
     absl::visit(Visitor{this, details.storage_types}, key);
+
+  std::move(sync_completion).Run();
 }
 
 template <>
