@@ -3481,6 +3481,7 @@ test("ash_pixeltests") {
     "//chromeos/dbus/power:power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/viz/test:test_support",
+    "//google_apis/calendar:test_support",
     "//mojo/core/embedder:embedder",
     "//ui/views:test_support",
   ]
