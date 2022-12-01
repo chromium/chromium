@@ -9,16 +9,15 @@
   await tracingHelper.startTracing(
       '__metadata,loading,blink.user_timing,disabled-by-default-devtools.timeline,devtools.timeline');
 
-  await dp.Page.navigate({
+  await dp.Page.enable();
+
+  dp.Page.navigate({
     url:
         'http://127.0.0.1:8000/inspector-protocol/resources/iframe-navigation.html'
   });
 
   // Wait for trace events.
-  await session.evaluateAsync(`
-    new Promise((res) => {
-      (new PerformanceObserver(res)).observe({entryTypes: ['largest-contentful-paint']});
-    })`);
+  await dp.Page.onceLoadEventFired();
 
   await tracingHelper.stopTracing(
       /__metadata|loading|blink.user_timing|(disabled-by-default-)?devtools.timeline/);
