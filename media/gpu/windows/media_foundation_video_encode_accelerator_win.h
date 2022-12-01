@@ -33,6 +33,8 @@
 
 namespace media {
 
+class VideoRateControlWrapper;
+
 // Media Foundation implementation of the VideoEncodeAccelerator interface for
 // Windows.
 // This class saves the task runner on which it is constructed and runs client
@@ -62,6 +64,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const VideoBitrateAllocation& bitrate_allocation,
+      uint32_t framerate) override;
   void Destroy() override;
   bool IsGpuFrameResizeSupported() override;
 
@@ -139,8 +144,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
       std::unique_ptr<BitstreamBufferRef> buffer_ref);
 
   // Changes encode parameters on |encoder_thread_task_runner_|.
-  void RequestEncodingParametersChangeTask(const Bitrate& bitrate,
-                                           uint32_t framerate);
+  void RequestEncodingParametersChangeTask(
+      const VideoBitrateAllocation& bitrate_allocation,
+      uint32_t framerate);
 
   // Destroys encode session on |encoder_thread_task_runner_|.
   void DestroyTask();
@@ -183,7 +189,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // For recording configured frame rate as we don't dynamically change it.
   // The default value here will be overridden during initialization.
   uint32_t configured_frame_rate_ = 30;
-  Bitrate bitrate_;
+  // Bitrate allocation in bps.
+  VideoBitrateAllocation bitrate_allocation_;
   bool low_latency_mode_;
   int num_temporal_layers_ = 1;
 
@@ -250,6 +257,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // A buffer used as a scratch space for I420 to NV12 conversion
   std::vector<uint8_t> resize_buffer_;
+
+  // Bitrate controller for CBR encoding.
+  std::unique_ptr<VideoRateControlWrapper> rate_ctrl_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

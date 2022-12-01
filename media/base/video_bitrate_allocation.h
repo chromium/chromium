@@ -60,6 +60,8 @@ class MEDIA_EXPORT VideoBitrateAllocation {
   // Sum of all bitrates.
   uint32_t GetSumBps() const;
 
+  // Returns peak bitrate.
+  uint32_t GetPeakBps() const;
   // Non-layered bitrate allocation. If there are layers, this bitrate's target
   // bps equals the sum of the layers' bitrates.
   const Bitrate GetSumBitrate() const;

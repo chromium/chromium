@@ -39,9 +39,11 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
+#include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "vp9_video_rate_control_wrapper.h"
 
 #define NOTIFY_RETURN_ON_FAILURE(cond, log, ret) \
   do {                                           \
@@ -75,6 +77,13 @@ const size_t kNumInputBuffers = 3;
 const size_t kOneMicrosecondInMFSampleTimeUnits = 10;
 const size_t kPrefixNALLocatedBytePos = 3;
 constexpr uint64_t kH264MaxQp = 51;
+constexpr uint64_t kVP9MaxQp = 63;
+
+// Quantizer parameter used in libvpx vp9 rate control, whose range is 0-63.
+// These are based on WebRTC's defaults, cite from
+// third_party/webrtc/media/engine/webrtc_video_engine.h.
+constexpr uint8_t kVP9MinQuantizer = 2;
+constexpr uint8_t kVP9MaxQuantizer = 56;
 
 constexpr const wchar_t* const kMediaFoundationVideoEncoderDLLs[] = {
     L"mf.dll",
@@ -107,6 +116,35 @@ eAVEncH264VProfile GetH264VProfile(VideoCodecProfile profile,
   }
 }
 
+// Convert VP9 qindex (0-255) to the quantizer parameter input in MF
+// AVEncVideoEncodeQP. AVEncVideoEncodeQP maps it to libvpx qp tuning parameter
+// and thus the range is 0-63.
+uint8_t Vp9QPtoAVEncQP(uint8_t q_index) {
+  // The following computation is based on the table in
+  // //third_party/libvpx/source/libvpx/vp9/encoder/vp9_quantize.c.
+  // {
+  //   0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,
+  //   52,  56,  60,  64,  68,  72,  76,  80,  84,  88,  92,  96,  100,
+  //   104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152,
+  //   156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204,
+  //   208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 249, 255,
+  // };
+  if (q_index <= 244)
+    return (q_index + 3) / 4;
+  if (q_index <= 249)
+    return 62;
+  return 63;
+}
+
+bool IsValidQp(VideoCodec codec, uint64_t qp) {
+  if (codec == VideoCodec::kH264) {
+    return qp <= kH264MaxQp;
+  }
+  if (codec == VideoCodec::kVP9) {
+    return qp <= kVP9MaxQp;
+  }
+  return false;
+}
 // Only eAVEncVP9VProfile_420_8 is supported on Intel graphics.
 eAVEncVP9VProfile GetVP9VProfile(VideoCodecProfile profile) {
   switch (profile) {
@@ -280,6 +318,35 @@ uint32_t AdjustBitrateToFrameRate(uint32_t bitrate,
   return bitrate * configured_framerate / requested_framerate;
 }
 
+VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
+    const VideoBitrateAllocation& bitrate_allocation,
+    gfx::Size size,
+    uint32_t frame_rate,
+    int num_temporal_layers,
+    VideoCodec codec) {
+  // Fill rate control config variables.
+  VideoRateControlWrapper::RateControlConfig config;
+  config.width = size.width();
+  config.height = size.height();
+  config.target_bandwidth = bitrate_allocation.GetSumBps() / 1000;
+  config.framerate = frame_rate;
+  config.ss_number_layers = 1;
+  config.ts_number_layers = num_temporal_layers;
+  if (codec == VideoCodec::kVP9) {
+    config.max_quantizer = kVP9MaxQuantizer;
+    config.min_quantizer = kVP9MinQuantizer;
+  }
+  int bitrate_sum = 0;
+  for (int tid = 0; tid < num_temporal_layers; ++tid) {
+    bitrate_sum += bitrate_allocation.GetBitrateBps(0, tid);
+    config.layer_target_bitrate[tid] = bitrate_sum / 1000;
+    config.ts_rate_decimator[tid] = 1u << (num_temporal_layers - tid - 1);
+    config.min_quantizers[tid] = config.min_quantizer;
+    config.max_quantizers[tid] = config.max_quantizer;
+  }
+  return config;
+}
+
 }  // namespace
 
 class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
@@ -299,10 +366,12 @@ class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
   uint8_t* memory() { return data_.data(); }
 
   int size() const { return static_cast<int>(data_.size()); }
+  void SetQp(int32_t qp_val) { frame_qp.emplace(qp_val); }
 
   const bool keyframe;
   const base::TimeDelta capture_timestamp;
   const int temporal_layer_id;
+  absl::optional<int32_t> frame_qp;
 
  private:
   std::vector<uint8_t> data_;
@@ -334,7 +403,7 @@ MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
     : compatible_with_win7_(
           gpu_preferences.enable_media_foundation_vea_on_windows7),
       frame_rate_(kMaxFrameRateNumerator / kMaxFrameRateDenominator),
-      bitrate_(Bitrate::ConstantBitrate(kDefaultTargetBitrate)),
+      bitrate_allocation_(Bitrate::Mode::kConstant),
       input_required_(false),
       main_client_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       encoder_thread_task_runner_(base::ThreadPool::CreateCOMSTATaskRunner(
@@ -343,6 +412,7 @@ MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
       luid_(luid) {
   DETACH_FROM_SEQUENCE(encode_sequence_checker_);
   encoder_weak_ptr_ = encoder_task_weak_factory_.GetWeakPtr();
+  bitrate_allocation_.SetBitrate(0, 0, kDefaultTargetBitrate);
 }
 
 MediaFoundationVideoEncodeAccelerator::
@@ -501,6 +571,11 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     return false;
   }
 
+  if (config.HasSpatialLayer()) {
+    MEDIA_LOG(ERROR, media_log.get()) << "MediaFoundation does not support "
+                                         "spatial layer encoding.";
+    return false;
+  }
   main_client_weak_factory_ =
       std::make_unique<base::WeakPtrFactory<Client>>(client);
   main_client_ = main_client_weak_factory_->GetWeakPtr();
@@ -509,13 +584,28 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     frame_rate_ = config.initial_framerate.value();
   else
     frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
-  bitrate_ = config.bitrate;
+  bitrate_allocation_ = AllocateBitrateForDefaultEncoding(config);
+
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   gop_length_ = config.gop_length.value_or(kDefaultGOPLength);
   low_latency_mode_ = config.require_low_delay;
 
   if (config.HasTemporalLayer())
     num_temporal_layers_ = config.spatial_layers.front().num_of_temporal_layers;
+
+  // Use SW BRC only in the case CBR and non layer encoding.
+  const bool use_sw_brc =
+      bitrate_allocation_.GetMode() == Bitrate::Mode::kConstant &&
+      base::FeatureList::IsEnabled(kMediaFoundationUseSoftwareRateCtrl) &&
+      !config.HasTemporalLayer();
+
+  if (use_sw_brc && codec_ == VideoCodec::kVP9) {
+    VideoRateControlWrapper::RateControlConfig rate_config =
+        CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
+                                   frame_rate_, /*num_temporal_layers=*/1,
+                                   codec_);
+    rate_ctrl_ = VP9RateControl::Create(rate_config);
+  }
 
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
@@ -673,10 +763,29 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
            << ": framerate=" << framerate;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  VideoBitrateAllocation allocation(bitrate.mode());
+  allocation.SetBitrate(0, 0, bitrate.target_bps());
+  if (bitrate.mode() == Bitrate::Mode::kVariable)
+    allocation.SetPeakBps(bitrate.peak_bps());
+
   encoder_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MediaFoundationVideoEncodeAccelerator::
                                     RequestEncodingParametersChangeTask,
-                                encoder_weak_ptr_, bitrate, framerate));
+                                encoder_weak_ptr_, allocation, framerate));
+}
+
+void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
+    const VideoBitrateAllocation& bitrate_allocation,
+    uint32_t framerate) {
+  DVLOG(3) << __func__ << ": bitrate=" << bitrate_allocation.GetSumBps()
+           << ": framerate=" << framerate;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  encoder_thread_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MediaFoundationVideoEncodeAccelerator::
+                         RequestEncodingParametersChangeTask,
+                     encoder_weak_ptr_, bitrate_allocation, framerate));
 }
 
 void MediaFoundationVideoEncodeAccelerator::Destroy() {
@@ -846,10 +955,13 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
                                        VideoCodecToMFSubtype(codec_));
   RETURN_ON_HR_FAILURE(hr, "Couldn't set video format", false);
 
-  hr = imf_output_media_type_->SetUINT32(
-      MF_MT_AVG_BITRATE, AdjustBitrateToFrameRate(bitrate_.target_bps(),
-                                                  frame_rate_, frame_rate_));
-  RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
+  if (!rate_ctrl_) {
+    hr = imf_output_media_type_->SetUINT32(
+        MF_MT_AVG_BITRATE,
+        AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(), frame_rate_,
+                                 frame_rate_));
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
+  }
   configured_frame_rate_ = frame_rate_;
 
   hr = MFSetAttributeRatio(imf_output_media_type_.Get(), MF_MT_FRAME_RATE,
@@ -910,13 +1022,18 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
 
   VARIANT var;
   var.vt = VT_UI4;
-  switch (bitrate_.mode()) {
+  switch (bitrate_allocation_.GetMode()) {
     case Bitrate::Mode::kConstant:
-      var.ulVal = eAVEncCommonRateControlMode_CBR;
+      if (rate_ctrl_)
+        var.ulVal = eAVEncCommonRateControlMode_Quality;
+      else
+        var.ulVal = eAVEncCommonRateControlMode_CBR;
       break;
-    case Bitrate::Mode::kVariable:
+    case Bitrate::Mode::kVariable: {
+      DCHECK(!rate_ctrl_);
       var.ulVal = eAVEncCommonRateControlMode_PeakConstrainedVBR;
       break;
+    }
   }
   hr = codec_api_->SetValue(&CODECAPI_AVEncCommonRateControlMode, &var);
   if (!compatible_with_win7_) {
@@ -941,15 +1058,17 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     }
   }
 
-  var.ulVal = AdjustBitrateToFrameRate(bitrate_.target_bps(),
-                                       configured_frame_rate_, frame_rate_);
-  hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
-  if (!compatible_with_win7_) {
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
+  if (!rate_ctrl_) {
+    var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
+                                         configured_frame_rate_, frame_rate_);
+    hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
+    if (!compatible_with_win7_) {
+      RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
+    }
   }
 
-  if (bitrate_.mode() == Bitrate::Mode::kVariable) {
-    var.ulVal = AdjustBitrateToFrameRate(bitrate_.peak_bps(),
+  if (bitrate_allocation_.GetMode() == Bitrate::Mode::kVariable) {
+    var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
                                          configured_frame_rate_, frame_rate_);
     hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
     if (!compatible_with_win7_) {
@@ -1072,6 +1191,21 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
                       "HRESULT: 0x"
                    << std::hex << hr;
     }
+  }
+  if (rate_ctrl_) {
+    VideoRateControlWrapper::FrameParams frame_params{};
+    frame_params.frame_type =
+        force_keyframe
+            ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
+            : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
+    int qp = rate_ctrl_->ComputeQP(frame_params);
+    VARIANT var;
+    var.vt = VT_UI8;
+    var.ulVal = Vp9QPtoAVEncQP(static_cast<uint8_t>(qp));
+    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set current layer QP", hr);
+    hr = input_sample_->SetUINT64(MFSampleExtension_VideoEncodeQP, var.ulVal);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
   }
 
   return encoder_->ProcessInput(input_stream_id_, input_sample_.Get(), 0);
@@ -1446,6 +1580,11 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   DWORD size = 0;
   hr = output_buffer->GetCurrentLength(&size);
   RETURN_ON_HR_FAILURE(hr, "Couldn't get buffer length", );
+  DCHECK_NE(size, 0u);
+  if (rate_ctrl_) {
+    // Notify SW BRC about recent encoded frame size.
+    rate_ctrl_->PostEncodeUpdate(size);
+  }
 
   base::TimeDelta timestamp;
   LONGLONG sample_time;
@@ -1459,12 +1598,16 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   // WebRTC will not use bandwidth quality scaler for resolution adaptation.
   uint64_t frame_qp = 0xfffful;
   bool should_notify_encoder_info_change = false;
-  if (vendor_ == DriverVendor::kIntel && codec_ == VideoCodec::kH264) {
-    hr = output_data_buffer.pSample->GetUINT64(MFSampleExtension_VideoEncodeQP,
-                                               &frame_qp);
-    if ((FAILED(hr) || frame_qp > kH264MaxQp) &&
-        encoder_info_.reports_average_qp) {
-      should_notify_encoder_info_change = true;
+  hr = output_data_buffer.pSample->GetUINT64(MFSampleExtension_VideoEncodeQP,
+                                             &frame_qp);
+  if (vendor_ == DriverVendor::kIntel) {
+    if (codec_ == VideoCodec::kH264) {
+      if ((FAILED(hr) || !IsValidQp(codec_, frame_qp)) &&
+          encoder_info_.reports_average_qp) {
+        should_notify_encoder_info_change = true;
+        encoder_info_.reports_average_qp = false;
+      }
+    } else if (codec_ == VideoCodec::kVP9 && !rate_ctrl_) {
       encoder_info_.reports_average_qp = false;
     }
   }
@@ -1473,6 +1616,10 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
         FROM_HERE, base::BindOnce(&Client::NotifyEncoderInfoChange,
                                   main_client_, encoder_info_));
     encoder_info_sent_ = true;
+  }
+  // Bits 0-15: Default QP.
+  if (SUCCEEDED(hr)) {
+    frame_qp = frame_qp & 0xfffful;
   }
 
   const bool keyframe = MFGetAttributeUINT32(
@@ -1495,6 +1642,9 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     {
       MediaBufferScopedPointer scoped_buffer(output_buffer.Get());
       memcpy(encode_output->memory(), scoped_buffer.get(), size);
+      if (IsValidQp(codec_, frame_qp)) {
+        encode_output->SetQp(frame_qp);
+      }
     }
     encoder_output_queue_.push_back(std::move(encode_output));
     output_data_buffer.pSample->Release();
@@ -1521,7 +1671,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   output_data_buffer.pSample = nullptr;
 
   BitstreamBufferMetadata md(size, keyframe, timestamp);
-  if (frame_qp <= kH264MaxQp) {
+  if (IsValidQp(codec_, frame_qp)) {
     md.qp = static_cast<int32_t>(frame_qp);
   }
 
@@ -1632,6 +1782,9 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 
     BitstreamBufferMetadata md(encode_output->size(), encode_output->keyframe,
                                encode_output->capture_timestamp);
+    if (encode_output->frame_qp) {
+      md.qp = *encode_output->frame_qp;
+    }
     if (temporalScalableCoding())
       md.h264.emplace().temporal_idx = encode_output->temporal_layer_id;
     main_client_task_runner_->PostTask(
@@ -1644,37 +1797,47 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 }
 
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
-    const Bitrate& bitrate,
+    const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encode_sequence_checker_);
   DCHECK(imf_output_media_type_);
   DCHECK(imf_input_media_type_);
   DCHECK(encoder_);
-  RETURN_ON_FAILURE(bitrate.mode() == bitrate_.mode(),
-                    "Invalid bitrate mode", );
+  RETURN_ON_FAILURE(
+      bitrate_allocation.GetMode() == bitrate_allocation_.GetMode(),
+      "Invalid bitrate mode", );
+  framerate =
+      base::clamp(framerate, 1u, static_cast<uint32_t>(kMaxFrameRateNumerator));
 
-  framerate = base::clamp(framerate, 1u, uint32_t{kMaxFrameRateNumerator});
+  if (framerate == frame_rate_ && bitrate_allocation == bitrate_allocation_)
+    return;
 
-  if (bitrate_ != bitrate || frame_rate_ != framerate) {
-    bitrate_ = bitrate;
-    frame_rate_ = framerate;
-    VARIANT var;
-    var.vt = VT_UI4;
-    var.ulVal = AdjustBitrateToFrameRate(bitrate.target_bps(),
+  bitrate_allocation_ = bitrate_allocation;
+  frame_rate_ = framerate;
+  // For SW BRC we don't reconfigure the encoder.
+  if (rate_ctrl_) {
+    rate_ctrl_->UpdateRateControl(CreateRateControllerConfig(
+        bitrate_allocation_, input_visible_size_, frame_rate_,
+        /*num_temporal_layers=*/1, codec_));
+    return;
+  }
+
+  VARIANT var;
+  var.vt = VT_UI4;
+  var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
+                                       configured_frame_rate_, framerate);
+  HRESULT hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
+  if (!compatible_with_win7_) {
+    RETURN_ON_HR_FAILURE(hr, "Couldn't update mean bitrate", );
+  }
+
+  if (bitrate_allocation_.GetMode() == Bitrate::Mode::kVariable) {
+    var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
                                          configured_frame_rate_, framerate);
-    HRESULT hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
+    hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
     if (!compatible_with_win7_) {
-      RETURN_ON_HR_FAILURE(hr, "Couldn't update mean bitrate", );
-    }
-
-    if (bitrate.mode() == Bitrate::Mode::kVariable) {
-      var.ulVal = AdjustBitrateToFrameRate(bitrate.peak_bps(),
-                                           configured_frame_rate_, framerate);
-      hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
-      if (!compatible_with_win7_) {
-        RETURN_ON_HR_FAILURE(hr, "Couldn't set max bitrate", );
-      }
+      RETURN_ON_HR_FAILURE(hr, "Couldn't set max bitrate", );
     }
   }
 }

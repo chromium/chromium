@@ -244,6 +244,8 @@ component("gpu") {
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
       "windows/video_rate_control_wrapper.h",
+      "windows/vp9_video_rate_control_wrapper.cc",
+      "windows/vp9_video_rate_control_wrapper.h",
     ]
     if (enable_hevc_parser_and_hw_decoder) {
       sources += [
@@ -251,12 +253,16 @@ component("gpu") {
         "windows/d3d11_h265_accelerator.h",
       ]
     }
-    configs += [ "//third_party/khronos:khronos_headers" ]
+    configs += [
+      "//third_party/khronos:khronos_headers",
+      "//third_party/libvpx:libvpx_config",
+    ]
     public_deps += [ "//media/base/win:media_foundation_util" ]
     deps += [
       "//gpu/ipc/common:common",
       "//media/parsers",
       "//third_party/angle:includes",
+      "//third_party/libvpx:libvpxrc",
       "//ui/display",
     ]
     libs += [

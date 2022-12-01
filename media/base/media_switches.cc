@@ -983,6 +983,10 @@ BASE_FEATURE(kIncludeIRCamerasInDeviceEnumeration,
              "IncludeIRCamerasInDeviceEnumeration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables software rate controller encoding acceleration for Windows.
+const base::Feature MEDIA_EXPORT kMediaFoundationUseSoftwareRateCtrl{
+    "MediaFoundationUseSoftwareRateCtrl", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables MediaFoundation based video capture
 BASE_FEATURE(kMediaFoundationVideoCapture,
              "MediaFoundationVideoCapture",
