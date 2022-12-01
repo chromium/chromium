@@ -85,6 +85,9 @@ enum Destination {
   // |CROS_SECURITY_PROCESS| is for events that exec or terminate process.
   CROS_SECURITY_PROCESS = 23;
 
+  // |OS_EVENTS| is for events regarding updates, rollbacks or powerwashes.
+  OS_EVENTS = 24;
+
   reserved 8;
 }
 
