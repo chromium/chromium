@@ -18,6 +18,7 @@ BASE_DECLARE_FEATURE(kBootCompletedBroadcastFeature);
 BASE_DECLARE_FEATURE(kCustomTabsExperimentFeature);
 BASE_DECLARE_FEATURE(kDocumentsProviderUnknownSizeFeature);
 BASE_DECLARE_FEATURE(kEnableArcHostVpn);
+BASE_DECLARE_FEATURE(kEnableArcIdleManager);
 BASE_DECLARE_FEATURE(kEnableArcNearbyShareFuseBox);
 BASE_DECLARE_FEATURE(kEnableArcVmDataMigration);
 BASE_DECLARE_FEATURE(kEnableLazyWebViewInit);

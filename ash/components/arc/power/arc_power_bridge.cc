@@ -10,7 +10,6 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/location.h"
@@ -141,6 +140,10 @@ ArcPowerBridge::~ArcPowerBridge() {
   arc_bridge_service_->power()->SetHost(nullptr);
 }
 
+void ArcPowerBridge::DisableAndroidIdleControl() {
+  android_idle_control_disabled_ = true;
+}
+
 void ArcPowerBridge::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -255,6 +258,9 @@ void ArcPowerBridge::OnConciergeResumeVmResponse(
 }
 
 void ArcPowerBridge::DispatchAndroidResume() {
+  if (android_idle_control_disabled_)
+    return;
+
   mojom::PowerInstance* power_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->power(), Resume);
   if (!power_instance)
@@ -290,6 +296,9 @@ void ArcPowerBridge::PowerChanged(
 
 void ArcPowerBridge::OnPowerStateChanged(
     chromeos::DisplayPowerState power_state) {
+  if (android_idle_control_disabled_)
+    return;
+
   mojom::PowerInstance* power_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->power(), SetInteractive);
   if (!power_instance)

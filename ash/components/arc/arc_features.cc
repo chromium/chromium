@@ -34,6 +34,12 @@ BASE_FEATURE(kEnableArcHostVpn,
              "ArcHostVpn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether we automatically send ARCVM into Doze mode
+// when it is mostly idle - even if Chrome is still active.
+BASE_FEATURE(kEnableArcIdleManager,
+             "ArcIdleManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether files shared to ARC Nearby Share are shared through the
 // FuseBox filesystem, instead of the default method (through a temporary path
 // managed by file manager).

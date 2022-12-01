@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/mojom/anr.mojom.h"
 #include "ash/components/arc/mojom/power.mojom.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -60,6 +61,12 @@ class ArcPowerBridge : public KeyedService,
   ArcPowerBridge& operator=(const ArcPowerBridge&) = delete;
 
   ~ArcPowerBridge() override;
+
+  // Disables Android Idle Control logic locally.
+  // This is necessary because we are in the process of moving this control
+  // to a different class, and need to accommodate both cases.
+  // TODO(b/259622742): remove this once the new control is default.
+  void DisableAndroidIdleControl();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -155,6 +162,9 @@ class ArcPowerBridge : public KeyedService,
   // SuspendImminent event has been observed, but a SuspendDone event has not
   // yet been observed.
   bool is_suspending_ = false;
+
+  // Controls whether or not we switch Android's idle state upon events.
+  bool android_idle_control_disabled_ = false;
 
   base::WeakPtrFactory<ArcPowerBridge> weak_ptr_factory_{this};
 };

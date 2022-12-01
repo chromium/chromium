@@ -917,6 +917,10 @@ void DisplayConfigurator::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool DisplayConfigurator::HasObserverForTesting(Observer* observer) const {
+  return observers_.HasObserver(observer);
+}
+
 void DisplayConfigurator::MaybeSetRefreshRateThrottleState(
     int64_t display_id,
     RefreshRateThrottleState state) {

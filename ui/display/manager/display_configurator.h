@@ -250,6 +250,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+  bool HasObserverForTesting(Observer* observer) const;
 
   // Sets all the displays into pre-suspend mode; usually this means
   // configure them for their resume state. This allows faster resume on

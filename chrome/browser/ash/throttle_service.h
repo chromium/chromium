@@ -53,6 +53,7 @@ class ThrottleService {
   void NotifyObserverStateChangedForTesting();
   void SetObserversForTesting(
       std::vector<std::unique_ptr<ThrottleObserver>> observers);
+  bool HasServiceObserverForTesting(ServiceObserver* candidate);
 
   bool should_throttle() const {
     // When `should_throttle_` hasn't been initialized, return true to throttle

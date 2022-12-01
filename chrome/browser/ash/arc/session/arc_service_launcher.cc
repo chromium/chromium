@@ -59,6 +59,7 @@
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_service.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_mounter.h"
+#include "chrome/browser/ash/arc/idle_manager/arc_idle_manager.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_instance_throttle.h"
@@ -318,6 +319,8 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
       arc_vm_data_migration_notifier_ =
           std::make_unique<ArcVmDataMigrationNotifier>(profile);
     }
+    if (base::FeatureList::IsEnabled(kEnableArcIdleManager))
+      ArcIdleManager::GetForBrowserContext(profile);
   } else {
     // ARC Container-only services.
     ArcAppfuseBridge::GetForBrowserContext(profile);

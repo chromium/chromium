@@ -43,6 +43,10 @@ void ThrottleService::SetObserversForTesting(
   StartObservers();
 }
 
+bool ThrottleService::HasServiceObserverForTesting(ServiceObserver* candidate) {
+  return service_observers_.HasObserver(candidate);
+}
+
 void ThrottleService::AddObserver(std::unique_ptr<ThrottleObserver> observer) {
   observers_.push_back(std::move(observer));
 }
