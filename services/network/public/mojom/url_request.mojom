@@ -55,6 +55,21 @@ struct TrustedUrlRequestParams {
   // without user gesture. Used to determine the `Sec-Fetch-User` header.
   bool has_user_activation;
 
+  // Requests received from the trusted URLLoaderFactory may contain cookies
+  // which are overridden in the network stack.
+  //
+  // If this is set to true, the Cookie headers in ResourceRequest::headers and
+  // ResourceRequest::cors_exempt_headers, if present, are added to the request
+  // after the network stack has set its cookies, which prevents them from being
+  // overridden. Such a cookie will not be added if the request already contains
+  // a cookie with an identical name.
+  //
+  // Cookies added through this method are removed on redirects (including same-
+  // origin redirects) to ensure sensitive data is only sent to appropriate
+  // sites. If needed, the caller can add the cookies back in the call to
+  // FollowRedirect().
+  bool allow_cookies_from_browser;
+
   // Observer which should be notified when this URLRequest reads or writes
   // a cookie. If this is set to non-null, the observer passed to
   // URLLoaderFactory will be ignored.

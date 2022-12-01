@@ -112,6 +112,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       url::Origin::Create(original.url), url::Origin::Create(original.url),
       original.site_for_cookies);
   original.trusted_params->disable_secure_dns = true;
+  original.trusted_params->allow_cookies_from_browser = true;
 
   original.trust_token_params = network::mojom::TrustTokenParams();
   original.trust_token_params->issuers.push_back(

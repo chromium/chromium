@@ -47,6 +47,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_store.h"
+#include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -390,6 +391,56 @@ bool HasHeadersIncompatibleWithSingleKeyedCache(
   return false;
 }
 
+// Retrieves the Cookie header from either `cors_exempt_headers` or `headers`.
+std::string GetCookiesFromHeaders(
+    const net::HttpRequestHeaders& headers,
+    const net::HttpRequestHeaders& cors_exempt_headers) {
+  std::string cookies;
+  if (!cors_exempt_headers.GetHeader(net::HttpRequestHeaders::kCookie,
+                                     &cookies)) {
+    headers.GetHeader(net::HttpRequestHeaders::kCookie, &cookies);
+  }
+  return cookies;
+}
+
+net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
+                                      const std::string& cookies_from_browser) {
+  DCHECK(!cookies_from_browser.empty());
+
+  // Parse the existing cookie line.
+  std::string old_cookies;
+  headers.GetHeader(net::HttpRequestHeaders::kCookie, &old_cookies);
+  net::cookie_util::ParsedRequestCookies parsed_cookies;
+
+  net::cookie_util::ParseRequestCookieLine(old_cookies, &parsed_cookies);
+  net::cookie_util::ParsedRequestCookies parsed_cookies_from_browser;
+  net::cookie_util::ParseRequestCookieLine(cookies_from_browser,
+                                           &parsed_cookies_from_browser);
+
+  // Add the browser cookies to the request.
+  for (auto cookie : parsed_cookies_from_browser) {
+    DCHECK(!cookie.first.empty());
+
+    // Ensure we're not adding duplicate cookies.
+    auto it = std::find_if(
+        parsed_cookies.begin(), parsed_cookies.end(),
+        [&cookie](const net::cookie_util::ParsedRequestCookie& old_cookie) {
+          return old_cookie.first == cookie.first;
+        });
+    if (it != parsed_cookies.end())
+      continue;
+
+    parsed_cookies.emplace_back(cookie.first, cookie.second);
+  }
+
+  net::HttpRequestHeaders updated_headers = headers;
+  std::string updated_cookies =
+      net::cookie_util::SerializeRequestCookieLine(parsed_cookies);
+  updated_headers.SetHeader(net::HttpRequestHeaders::kCookie, updated_cookies);
+
+  return updated_headers;
+}
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -582,6 +633,8 @@ URLLoader::URLLoader(
 
   if (request.trusted_params) {
     has_user_activation_ = request.trusted_params->has_user_activation;
+    allow_cookies_from_browser_ =
+        request.trusted_params->allow_cookies_from_browser;
   }
 
   throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
@@ -675,6 +728,13 @@ URLLoader::URLLoader(
   if (request.request_body.get()) {
     OpenFilesForUpload(request);
     return;
+  }
+
+  // Store any cookies passed from the browser process to later attach them to
+  // the request.
+  if (allow_cookies_from_browser_) {
+    cookies_from_browser_ =
+        GetCookiesFromHeaders(request.headers, request.cors_exempt_headers);
   }
 
   BeginTrustTokenOperationIfNecessaryAndThenScheduleStart(request);
@@ -1002,6 +1062,13 @@ void URLLoader::FollowRedirect(
     return;
   }
 
+  // Store any cookies passed from the browser process to later attach them to
+  // the request.
+  if (allow_cookies_from_browser_) {
+    cookies_from_browser_ =
+        GetCookiesFromHeaders(modified_headers, modified_cors_exempt_headers);
+  }
+
   deferred_redirect_url_.reset();
   new_redirect_url_ = new_url;
 
@@ -1289,6 +1356,12 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   }
 
   SetRequestCredentials(redirect_info.new_url);
+
+  // Clear the Cookie header to ensure that cookies passed in through the
+  // `ResourceRequest` do not persist across redirects.
+  url_request_.get()->RemoveRequestHeaderByName(
+      net::HttpRequestHeaders::kCookie);
+  cookies_from_browser_.clear();
 
   // We may need to clear out old Sec- prefixed request headers. We'll attempt
   // to do this before we re-add any.
@@ -1754,11 +1827,24 @@ int URLLoader::OnBeforeStartTransaction(
     net::NetworkDelegate::OnBeforeStartTransactionCallback callback) {
   if (header_client_) {
     header_client_->OnBeforeSendHeaders(
-        headers,
+        cookies_from_browser_.empty()
+            ? headers
+            : AttachCookies(headers, cookies_from_browser_),
         base::BindOnce(&URLLoader::OnBeforeSendHeadersComplete,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return net::ERR_IO_PENDING;
   }
+
+  // Additional cookies were added to the existing headers, so `callback` must
+  // be invoked to ensure that the cookies are included in the request.
+  if (!cookies_from_browser_.empty()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), net::OK,
+                       AttachCookies(headers, cookies_from_browser_)));
+    return net::ERR_IO_PENDING;
+  }
+
   return net::OK;
 }
 

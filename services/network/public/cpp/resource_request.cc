@@ -119,6 +119,7 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   isolation_info = other.isolation_info;
   disable_secure_dns = other.disable_secure_dns;
   has_user_activation = other.has_user_activation;
+  allow_cookies_from_browser = other.allow_cookies_from_browser;
   cookie_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
           other.cookie_observer));
@@ -140,6 +141,7 @@ bool ResourceRequest::TrustedParams::EqualsForTesting(
   return isolation_info.IsEqualForTesting(other.isolation_info) &&
          disable_secure_dns == other.disable_secure_dns &&
          has_user_activation == other.has_user_activation &&
+         allow_cookies_from_browser == other.allow_cookies_from_browser &&
          client_security_state == other.client_security_state;
 }
 

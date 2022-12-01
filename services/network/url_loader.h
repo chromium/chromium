@@ -621,6 +621,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 
+  // Stores cookies passed from the browser process to later add them to the
+  // request. This prevents the network stack from overriding them.
+  bool allow_cookies_from_browser_ = false;
+  std::string cookies_from_browser_;
+
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };
 

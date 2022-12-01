@@ -88,6 +88,7 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
   }
   out->disable_secure_dns = data.disable_secure_dns();
   out->has_user_activation = data.has_user_activation();
+  out->allow_cookies_from_browser = data.allow_cookies_from_browser();
   out->cookie_observer = data.TakeCookieObserver<
       mojo::PendingRemote<network::mojom::CookieAccessObserver>>();
   out->url_loader_network_observer = data.TakeUrlLoaderNetworkObserver<

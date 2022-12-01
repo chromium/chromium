@@ -31,6 +31,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -74,6 +75,7 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_store.h"
+#include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_util.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache.h"
@@ -90,6 +92,7 @@
 #include "net/http/http_auth.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_server_properties_manager.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_transaction_test_util.h"
@@ -7657,6 +7660,403 @@ TEST_F(NetworkContextExpectBadMessageTest, DataUrl) {
 
   AssertBadMessage();
 }
+
+class NetworkContextBrowserCookieTest
+    : public NetworkContextTest,
+      public testing::WithParamInterface</*should_add_browser_cookies=*/bool> {
+ public:
+  NetworkContextBrowserCookieTest() = default;
+  ~NetworkContextBrowserCookieTest() override = default;
+
+  bool AllowCookiesFromBrowser() const { return GetParam(); }
+
+  void StartLoadingURL(
+      const GURL& url,
+      net::HttpRequestHeaders headers,
+      int options = mojom::kURLLoadOptionNone,
+      mojom::RequestMode mode = mojom::RequestMode::kNoCors,
+      net::HttpRequestHeaders cors_exempt_headers = net::HttpRequestHeaders()) {
+    CreateLoaderAndStart(InitializeURLLoaderFactory(options),
+                         BuildResourceRequest(url, std::move(headers), mode,
+                                              std::move(cors_exempt_headers)),
+                         options);
+  }
+
+  ResourceRequest BuildResourceRequest(
+      const GURL& url,
+      net::HttpRequestHeaders headers,
+      mojom::RequestMode mode,
+      net::HttpRequestHeaders cors_exempt_headers) {
+    ResourceRequest request;
+    request.url = url;
+    request.method = "GET";
+    request.request_initiator = url::Origin::Create(test_server()->base_url());
+    request.mode = mode;
+    request.headers = std::move(headers);
+    request.cors_exempt_headers = std::move(cors_exempt_headers);
+    request.trusted_params = ResourceRequest::TrustedParams();
+    request.trusted_params->allow_cookies_from_browser =
+        AllowCookiesFromBrowser();
+    return request;
+  }
+
+  mojo::Remote<mojom::URLLoaderFactory> InitializeURLLoaderFactory(
+      int options) {
+    mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+    mojom::URLLoaderFactoryParamsPtr params =
+        mojom::URLLoaderFactoryParams::New();
+    params->process_id = mojom::kBrowserProcessId;
+    params->is_trusted = true;
+    if (options & mojom::kURLLoadOptionUseHeaderClient) {
+      header_client_receiver_ =
+          params->header_client.InitWithNewPipeAndPassReceiver();
+    }
+    network_context_->CreateURLLoaderFactory(
+        loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+    return loader_factory;
+  }
+
+  void CreateLoaderAndStart(
+      mojo::Remote<mojom::URLLoaderFactory> loader_factory,
+      ResourceRequest request,
+      int options) {
+    url_loader_client_ = std::make_unique<TestURLLoaderClient>();
+    loader_.reset();
+    loader_factory->CreateLoaderAndStart(
+        loader_.BindNewPipeAndPassReceiver(), 1, options, request,
+        url_loader_client_->CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  }
+
+  net::HttpRequestHeaders GenerateTestRequestHeaders() {
+    net::HttpRequestHeaders headers;
+    headers.SetHeader(net::HttpRequestHeaders::kCookie,
+                      base::JoinString({kCookie2Updated, kCookie3}, "; "));
+    headers.SetHeader(kHeader1Name, kHeader1Value);
+    headers.SetHeader(kHeader2Name, kHeader2Value);
+    return headers;
+  }
+
+  net::HttpRequestHeaders GenerateTestCorsExemptRequestHeaders() {
+    net::HttpRequestHeaders headers;
+    headers.SetHeader(kCorsHeaderName, kCorsHeaderValue);
+    headers.SetHeader(net::HttpRequestHeaders::kCookie, kCorsCookie);
+    return headers;
+  }
+
+  void ValidateRequestHeaderValue(const std::string& name,
+                                  const std::string& expected_value) {
+    SCOPED_TRACE(name);
+    // EmbeddedTestServer callbacks run on another thread, so protect this with
+    // a lock.
+    base::AutoLock lock(server_headers_lock_);
+    ASSERT_NE(recently_observed_headers_.end(),
+              recently_observed_headers_.find(name));
+    EXPECT_EQ(expected_value, recently_observed_headers_.find(name)->second);
+  }
+
+  void ValidateRequestHeaderIsUnset(const std::string& name) {
+    SCOPED_TRACE(name);
+    // EmbeddedTestServer callbacks run on another thread, so protect this with
+    // a lock.
+    base::AutoLock lock(server_headers_lock_);
+    ASSERT_EQ(recently_observed_headers_.end(),
+              recently_observed_headers_.find(name));
+  }
+
+  net::EmbeddedTestServer* test_server() { return test_server_.get(); }
+  TestURLLoaderClient* url_loader_client() { return url_loader_client_.get(); }
+
+ protected:
+  void SetUp() override {
+    // Set up HTTPS server.
+    test_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+    test_server_->RegisterRequestMonitor(base::BindRepeating(
+        &NetworkContextBrowserCookieTest::SaveRequestHeaders,
+        base::Unretained(this)));
+    test_server_->AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+    ASSERT_TRUE(test_server_->Start());
+
+    // Initialize `NetworkContext` and bind the cookie manager.
+    auto context_params = CreateNetworkContextParamsForTesting();
+    context_params->cors_exempt_header_list.push_back(
+        net::HttpRequestHeaders::kCookie);
+    context_params->cors_exempt_header_list.push_back(kCorsHeaderName);
+    network_context_ = CreateContextWithParams(std::move(context_params));
+    network_context_->GetCookieManager(
+        cookie_manager_.BindNewPipeAndPassReceiver());
+
+    // Add cookies to the cookie store.
+    EXPECT_TRUE(SetCookieHelper(network_context_.get(),
+                                test_server()->GetURL("/echo"), kCookie1Name,
+                                kCookie1Value));
+    EXPECT_TRUE(SetCookieHelper(network_context_.get(),
+                                test_server()->GetURL("/echo"), kCookie2Name,
+                                kCookie2Value));
+  }
+
+  void SaveRequestHeaders(const net::test_server::HttpRequest& request) {
+    // EmbeddedTestServer callbacks run on another thread, so protect this with
+    // a lock.
+    base::AutoLock lock(server_headers_lock_);
+    recently_observed_headers_ = request.headers;
+  }
+
+  // Header constants.
+  static constexpr char kCookie1Name[] = "A";
+  static constexpr char kCookie1Value[] = "value-1";
+  const std::string kCookie1 =
+      base::JoinString({kCookie1Name, kCookie1Value}, "=");
+
+  static constexpr char kCookie2Name[] = "B";
+  static constexpr char kCookie2Value[] = "value-2";
+  const std::string kCookie2 =
+      base::JoinString({kCookie2Name, kCookie2Value}, "=");
+
+  // Used to test whether the value of an existing cookie (`kCookie2Name`) is
+  // overridden by this updated value when set via `ResourceRequest::headers`.
+  static constexpr char kCookie2ValueUpdated[] = "new-value-2";
+  const std::string kCookie2Updated =
+      base::JoinString({kCookie2Name, kCookie2ValueUpdated}, "=");
+
+  static constexpr char kCookie3Name[] = "C";
+  static constexpr char kCookie3Value[] = "value-3";
+  const std::string kCookie3 =
+      base::JoinString({kCookie3Name, kCookie3Value}, "=");
+
+  static constexpr char kCorsCookieName[] = "X-A";
+  static constexpr char kCorsCookieValue[] = "cors-value";
+  const std::string kCorsCookie =
+      base::JoinString({kCorsCookieName, kCorsCookieValue}, "=");
+
+  static constexpr char kHeader1Name[] = "header-1";
+  static constexpr char kHeader1Value[] = "header-value-1";
+
+  static constexpr char kHeader2Name[] = "header-2";
+  static constexpr char kHeader2Value[] = "header-value-2";
+
+  static constexpr char kCorsHeaderName[] = "cors-header";
+  static constexpr char kCorsHeaderValue[] = "cors-header-value";
+
+  std::unique_ptr<net::EmbeddedTestServer> test_server_;
+  std::unique_ptr<TestURLLoaderClient> url_loader_client_;
+  std::unique_ptr<NetworkContext> network_context_;
+  mojo::Remote<mojom::URLLoader> loader_;
+  mojo::Remote<mojom::CookieManager> cookie_manager_;
+  mojo::PendingReceiver<mojom::TrustedURLLoaderHeaderClient>
+      header_client_receiver_;
+  base::Lock server_headers_lock_;
+  net::test_server::HttpRequest::HeaderMap recently_observed_headers_
+      GUARDED_BY(server_headers_lock_);
+};
+
+TEST_P(NetworkContextBrowserCookieTest, Request) {
+  StartLoadingURL(test_server()->GetURL("/echo"), GenerateTestRequestHeaders());
+  url_loader_client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // Confirm that the processed request contains the expected headers.
+  if (AllowCookiesFromBrowser()) {
+    // Only the non-existing new cookie is added.
+    ValidateRequestHeaderValue(
+        net::HttpRequestHeaders::kCookie,
+        base::JoinString({kCookie1, kCookie2, kCookie3}, "; "));
+  } else {
+    ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                               base::JoinString({kCookie1, kCookie2}, "; "));
+  }
+  ValidateRequestHeaderValue(kHeader1Name, kHeader1Value);
+  ValidateRequestHeaderValue(kHeader2Name, kHeader2Value);
+}
+
+// Request cookies should still be stored even when a header client is present.
+TEST_P(NetworkContextBrowserCookieTest, HeaderClient) {
+  ResourceRequest request = BuildResourceRequest(
+      test_server()->GetURL("/echo"), GenerateTestRequestHeaders(),
+      mojom::RequestMode::kNoCors, net::HttpRequestHeaders());
+  int options = mojom::kURLLoadOptionUseHeaderClient;
+  mojo::Remote<mojom::URLLoaderFactory> factory =
+      InitializeURLLoaderFactory(options);
+  // Initialize the test header client before starting the request to prevent a
+  // race condition.
+  TestURLLoaderHeaderClient header_client(std::move(header_client_receiver_));
+  CreateLoaderAndStart(std::move(factory), std::move(request), options);
+
+  url_loader_client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  if (AllowCookiesFromBrowser()) {
+    // Only the non-existing new cookie is added.
+    ValidateRequestHeaderValue(
+        net::HttpRequestHeaders::kCookie,
+        base::JoinString({kCookie1, kCookie2, kCookie3}, "; "));
+  } else {
+    ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                               base::JoinString({kCookie1, kCookie2}, "; "));
+  }
+  ValidateRequestHeaderValue(kHeader1Name, kHeader1Value);
+  ValidateRequestHeaderValue(kHeader2Name, kHeader2Value);
+}
+
+// Test that browser cookies are added to the request after a redirect.
+TEST_P(NetworkContextBrowserCookieTest, Redirect) {
+  // Don't set any headers initially.
+  StartLoadingURL(test_server()->GetURL("/redirect307-to-echo"),
+                  net::HttpRequestHeaders());
+  url_loader_client()->RunUntilRedirectReceived();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // The cookie store cookies should be set.
+  ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                             base::JoinString({kCookie1, kCookie2}, "; "));
+  ValidateRequestHeaderIsUnset(kHeader1Name);
+  ValidateRequestHeaderIsUnset(kHeader2Name);
+
+  // Redirect with cookies added to the modified headers.
+  loader_->FollowRedirect({}, {GenerateTestRequestHeaders()}, {},
+                          absl::nullopt);
+  url_loader_client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // Confirm that the redirected request contains the expected headers.
+  if (AllowCookiesFromBrowser()) {
+    // Only the non-existing new cookie is added.
+    ValidateRequestHeaderValue(
+        net::HttpRequestHeaders::kCookie,
+        base::JoinString({kCookie1, kCookie2, kCookie3}, "; "));
+  } else {
+    ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                               base::JoinString({kCookie1, kCookie2}, "; "));
+  }
+  ValidateRequestHeaderValue(kHeader1Name, kHeader1Value);
+  ValidateRequestHeaderValue(kHeader2Name, kHeader2Value);
+}
+
+// Test that browser cookies are cleared after a redirect.
+TEST_P(NetworkContextBrowserCookieTest, RedirectClear) {
+  StartLoadingURL(test_server()->GetURL("/redirect307-to-echo"),
+                  GenerateTestRequestHeaders());
+  url_loader_client()->RunUntilRedirectReceived();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // Confirm that the processed request contains the expected headers.
+  if (AllowCookiesFromBrowser()) {
+    // Only the non-existing new cookie is added.
+    ValidateRequestHeaderValue(
+        net::HttpRequestHeaders::kCookie,
+        base::JoinString({kCookie1, kCookie2, kCookie3}, "; "));
+  } else {
+    ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                               base::JoinString({kCookie1, kCookie2}, "; "));
+  }
+  ValidateRequestHeaderValue(kHeader1Name, kHeader1Value);
+  ValidateRequestHeaderValue(kHeader2Name, kHeader2Value);
+
+  // Redirect with some header changes.
+  net::HttpRequestHeaders modified_headers;
+  const char kHeader1ValueUpdated[] = "new-header-value-1";
+  modified_headers.SetHeader(kHeader1Name, kHeader1ValueUpdated);
+  loader_->FollowRedirect({kHeader2Name}, {modified_headers}, {},
+                          absl::nullopt);
+  url_loader_client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // Because the browser cookies are cleared on redirect, only the cookie store
+  // cookies should be set regardless of whether the feature is enabled.
+  ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                             base::JoinString({kCookie1, kCookie2}, "; "));
+  ValidateRequestHeaderValue(kHeader1Name, kHeader1ValueUpdated);
+  ValidateRequestHeaderIsUnset(kHeader2Name);
+}
+
+// Test that browser cookies are added to the request after a CORS redirect.
+TEST_P(NetworkContextBrowserCookieTest, CorsRedirect) {
+  // Don't set any headers initially.
+  StartLoadingURL(test_server()->GetURL("/redirect307-to-echo"),
+                  net::HttpRequestHeaders(), mojom::kURLLoadOptionNone,
+                  mojom::RequestMode::kCors);
+  url_loader_client()->RunUntilRedirectReceived();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // The cookie store cookies should be set.
+  ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                             base::JoinString({kCookie1, kCookie2}, "; "));
+  ValidateRequestHeaderIsUnset(kHeader1Name);
+  ValidateRequestHeaderIsUnset(kHeader2Name);
+  ValidateRequestHeaderIsUnset(kCorsHeaderName);
+
+  // Redirect with cookies added to the modified headers.
+  loader_->FollowRedirect({kHeader1Name}, {GenerateTestRequestHeaders()},
+                          {GenerateTestCorsExemptRequestHeaders()},
+                          absl::nullopt);
+  url_loader_client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // Confirm that the processed request contains the expected headers.
+  if (AllowCookiesFromBrowser()) {
+    // Only the non-existing new CORS cookie is added.
+    ValidateRequestHeaderValue(
+        net::HttpRequestHeaders::kCookie,
+        base::JoinString({kCookie1, kCookie2, kCorsCookie}, "; "));
+  } else {
+    ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                               base::JoinString({kCookie1, kCookie2}, "; "));
+  }
+  ValidateRequestHeaderValue(kHeader1Name, kHeader1Value);
+  ValidateRequestHeaderValue(kHeader2Name, kHeader2Value);
+  ValidateRequestHeaderValue(kCorsHeaderName, kCorsHeaderValue);
+}
+
+// Test that browser cookies are cleared after a CORS redirect.
+TEST_P(NetworkContextBrowserCookieTest, CorsRedirectClear) {
+  StartLoadingURL(test_server()->GetURL("/redirect307-to-echo"),
+                  GenerateTestRequestHeaders(), mojom::kURLLoadOptionNone,
+                  mojom::RequestMode::kCors,
+                  GenerateTestCorsExemptRequestHeaders());
+  url_loader_client()->RunUntilRedirectReceived();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // Confirm that the processed request contains the expected headers.
+  if (AllowCookiesFromBrowser()) {
+    // Only the non-existing new CORS cookie is added.
+    ValidateRequestHeaderValue(
+        net::HttpRequestHeaders::kCookie,
+        base::JoinString({kCookie1, kCookie2, kCorsCookie}, "; "));
+  } else {
+    ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                               base::JoinString({kCookie1, kCookie2}, "; "));
+  }
+  ValidateRequestHeaderValue(kHeader1Name, kHeader1Value);
+  ValidateRequestHeaderValue(kHeader2Name, kHeader2Value);
+  ValidateRequestHeaderValue(kCorsHeaderName, kCorsHeaderValue);
+
+  // Redirect with some header changes.
+  net::HttpRequestHeaders modified_headers;
+  const char kHeader2ValueUpdated[] = "new-header-value-2";
+  modified_headers.SetHeader(kHeader2Name, kHeader2ValueUpdated);
+  net::HttpRequestHeaders modified_cors_exempt_headers;
+  const char kCorsHeaderValueUpdated[] = "new-cors-header-value";
+  modified_cors_exempt_headers.SetHeader(kCorsHeaderName,
+                                         kCorsHeaderValueUpdated);
+  loader_->FollowRedirect({kHeader1Name}, {modified_headers},
+                          {modified_cors_exempt_headers}, absl::nullopt);
+  url_loader_client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, url_loader_client()->completion_status().error_code);
+
+  // Because the browser cookies are cleared on redirect, only the cookie store
+  // cookies should be set regardless of whether the feature is enabled.
+  ValidateRequestHeaderValue(net::HttpRequestHeaders::kCookie,
+                             base::JoinString({kCookie1, kCookie2}, "; "));
+  ValidateRequestHeaderIsUnset(kHeader1Name);
+  ValidateRequestHeaderValue(kHeader2Name, kHeader2ValueUpdated);
+  ValidateRequestHeaderValue(kCorsHeaderName, kCorsHeaderValueUpdated);
+}
+
+INSTANTIATE_TEST_SUITE_P(NetworkContextBrowserCookieTestInstance,
+                         NetworkContextBrowserCookieTest,
+                         testing::Bool());
 
 }  // namespace
 
