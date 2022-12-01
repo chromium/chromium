@@ -2358,6 +2358,36 @@ public class SiteSettingsTest {
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, "site_settings_protected_media_page");
     }
 
+    /** Test case for checking that settings with binary toggles are disabled by policy.*/
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({
+        @Policies.Item(key = "DefaultJavaScriptSetting", string = "2")
+        , @Policies.Item(key = "DefaultPopupsSetting", string = "2"),
+                @Policies.Item(key = "DefaultGeolocationSetting", string = "2")
+    })
+    public void
+    testAllTwoStateToggleDisabledByPolicy() {
+        testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT);
+        testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.POPUPS);
+        testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.DEVICE_LOCATION);
+        // TODO(crbug/1385889): add a test for sensors once crash in the sensors settings page is
+        // resolved.
+    }
+
+    public void testTwoStateToggleDisabledByPolicy(@SiteSettingsCategory.Type int type) {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(type);
+        SingleCategorySettings singleCategorySettings =
+                (SingleCategorySettings) settingsActivity.getMainFragment();
+        ChromeSwitchPreference binaryToggle =
+                (ChromeSwitchPreference) singleCategorySettings.findPreference(
+                        SingleCategorySettings.BINARY_TOGGLE_KEY);
+
+        Assert.assertFalse(binaryToggle.isEnabled());
+    }
+
     /**
      * Allows third party cookies for a website, and tests that the UI shows a managed preference
      * in the allowed group. Checks that it shows the toast when the preference is clicked.

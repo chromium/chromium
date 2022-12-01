@@ -38,8 +38,7 @@ public class ForwardingManagedPreferenceDelegate implements ManagedPreferenceDel
         return mBase.doesProfileHaveMultipleCustodians();
     }
 
-    @Override
-    public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
-        return mBase.isPreferenceClickDisabledByPolicy(preference);
-    }
+    /* Do not override the 'isPreferenceClickDisabledByPolicy' method in this class as this causes
+     * the wrong version to be called for instances of `SingleCategoryManagedPreferenceDelegate`.
+     * Refer to crbug/1380613 for more details. */
 }
