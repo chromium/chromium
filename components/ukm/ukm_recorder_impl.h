@@ -44,11 +44,6 @@ class UkmUtilsForTest;
 
 COMPONENT_EXPORT(UKM_RECORDER) BASE_DECLARE_FEATURE(kUkmSamplingRateFeature);
 
-// Determines if non-allowlisted sources with a URL that matches that of
-// an allowlisted source should be kept after entries are logged.
-COMPONENT_EXPORT(UKM_RECORDER)
-BASE_DECLARE_FEATURE(kKeepNonAllowlistedSourcesThatMatch);
-
 namespace debug {
 class UkmDebugDataExtractor;
 }

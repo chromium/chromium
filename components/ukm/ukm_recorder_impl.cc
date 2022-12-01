@@ -40,9 +40,6 @@ namespace ukm {
 BASE_FEATURE(kUkmSamplingRateFeature,
              "UkmSamplingRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kKeepNonAllowlistedSourcesThatMatch,
-             "KeepNonAllowlistedSourcesThatMatch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -407,7 +404,8 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
         continue;
       }
 
-      if (!base::FeatureList::IsEnabled(kKeepNonAllowlistedSourcesThatMatch)) {
+      if (!base::GetFieldTrialParamByFeatureAsBool(
+              kUkmFeature, "KeepNonAllowlistedSourcesThatMatch", false)) {
         // Non-allowlisted Source types will not be kept after entries are
         // logged.
         MarkSourceForDeletion(kv.first);
