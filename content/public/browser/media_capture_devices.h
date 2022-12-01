@@ -15,7 +15,7 @@ namespace content {
 // called in UI thread.
 class CONTENT_EXPORT  MediaCaptureDevices {
  public:
-  // Get signleton instance of MediaCaptureDevices.
+  // Get singleton instance of MediaCaptureDevices.
   static MediaCaptureDevices* GetInstance();
 
   // Return all Audio/Video devices.
