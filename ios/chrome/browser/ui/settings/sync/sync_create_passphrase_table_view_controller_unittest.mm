@@ -197,11 +197,9 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestOnStateChanged) {
       }));
 }
 
-// TODO(crbug.com/658269): Re-enable test once it's been deflaked.
 // Verifies that sync errors don't make the navigation item disappear.
 // Regression test for http://crbug.com/501784.
-TEST_F(SyncCreatePassphraseTableViewControllerTest,
-       DISABLED_TestOnStateChangedError) {
+TEST_F(SyncCreatePassphraseTableViewControllerTest, TestOnStateChangedError) {
   SyncCreatePassphraseTableViewController* sync_controller = SyncController();
   SetUpNavigationController(sync_controller);
   EXPECT_EQ([nav_controller_ topViewController], sync_controller);
