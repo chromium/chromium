@@ -9,20 +9,20 @@
 <script>
 async_test((t) => {
     startTime = new Date();
-    gotLayoutCompleteBeforeOneSecond = false;
+    gotMarkDirtyBeforeOneSecond = false;
 
     accessibilityController.addNotificationListener(
         t.step_func((target, notification) => {
             elapsedTime = new Date() - startTime;
-            if (notification == "LayoutComplete" && elapsedTime < 500) {
+            if (notification == "MarkDirty" && elapsedTime < 500) {
                 // See comment below if you're confused by this
-                gotLayoutCompleteBeforeOneSecond = true;
+                gotMarkDirtyBeforeOneSecond = true;
             }
 
             if (notification == "LoadComplete") {
                 accessibilityController.removeNotificationListener();
                 assert_greater_than_equal(elapsedTime, 500);
-                assert_true(gotLayoutCompleteBeforeOneSecond);
+                assert_true(gotMarkDirtyBeforeOneSecond);
                 t.done();
             }
         }));

@@ -20,7 +20,7 @@ description("Scrollable area removed on scroll");
 window.jsTestIsAsync = true;
 
 accessibilityController.addNotificationListener(function (evt, type) {
-  if (!window.container || type != "LayoutComplete")
+  if (!window.container || type != "MarkDirty")
     return;
   container.parentNode.removeChild(container);
   setTimeout(function(){

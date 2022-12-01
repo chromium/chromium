@@ -18,12 +18,8 @@ async_test((t) => {
     listener.queueExpectedNotification("Focus", "Hours", "12", "2");
     listener.queueExpectedNotification("Focus", "Minutes", "34", "ArrowDown");
     listener.queueExpectedNotification("ValueChanged", "Day", "04");
-    listener.queueExpectedNotification("ValueChanged", "Day", "04");
-    listener.queueExpectedNotification("ValueChanged", "Year", "2013");
     listener.queueExpectedNotification("ValueChanged", "Year", "2013", "\t");
     listener.queueExpectedNotification("ValueChanged", "Hours", "02");
-    listener.queueExpectedNotification("ValueChanged", "Hours", "02");
-    listener.queueExpectedNotification("ValueChanged", "Minutes", "33");
     listener.queueExpectedNotification("ValueChanged", "Minutes", "33");
 
     testInput.focus();

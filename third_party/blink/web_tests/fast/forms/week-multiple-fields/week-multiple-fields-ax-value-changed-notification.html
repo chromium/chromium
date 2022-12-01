@@ -14,9 +14,7 @@ async_test((t) => {
     var listener = new TestAccessibilityControllerNotificationListener(t);
     listener.queueExpectedNotification("Focus", "Week", "10", "\t");
     listener.queueExpectedNotification("Focus", "Year", "2012", "4");
-    listener.queueExpectedNotification("ValueChanged", "Year", "0004");
     listener.queueExpectedNotification("ValueChanged", "Year", "0004", "ArrowUp");
-    listener.queueExpectedNotification("ValueChanged", "Year", "0005");
     listener.queueExpectedNotification("ValueChanged", "Year", "0005");
 
     testInput.focus();

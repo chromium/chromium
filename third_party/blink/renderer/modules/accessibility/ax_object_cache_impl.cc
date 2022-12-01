@@ -2786,6 +2786,8 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
   TreeUpdateCallbackQueue old_tree_update_callback_queue;
   GetTreeUpdateCallbackQueue(document).swap(old_tree_update_callback_queue);
   nodes_with_pending_children_changed_.clear();
+  nodes_with_pending_location_changed_.clear();
+  last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 
   for (auto& tree_update : old_tree_update_callback_queue) {
     const Node* node = tree_update->node;
@@ -3019,6 +3021,9 @@ void AXObjectCacheImpl::ListboxActiveIndexChanged(HTMLSelectElement* select) {
   ax_object->ActiveIndexChanged();
 }
 
+// This is called when the actual style of an object changed, which can occur in
+// script-based animations as opposed to more automated animations, e.g. via CSS
+// or SVG animation.
 void AXObjectCacheImpl::LocationChanged(const LayoutObject* layout_object) {
   // No need to send this notification if the object is aria-hidden.
   // Note that if the node is ignored for other reasons, it still might
@@ -3029,8 +3034,14 @@ void AXObjectCacheImpl::LocationChanged(const LayoutObject* layout_object) {
   // because if the cached aria-hidden becomes stale, then the entire subtree
   // will be invalidated anyway.
   AXObject* obj = Get(layout_object);
-  if (obj && obj->CachedIsAriaHidden())
-    return;
+  if (obj) {
+    if (obj->CachedIsAriaHidden())
+      return;
+    if (!nodes_with_pending_location_changed_.insert(obj->AXObjectID())
+             .is_new_entry) {
+      return;
+    }
+  }
 
   PostNotification(layout_object, ax::mojom::Event::kLocationChanged);
 }
@@ -3696,6 +3707,10 @@ void AXObjectCacheImpl::PostPlatformNotification(
   }
 }
 
+void AXObjectCacheImpl::EnsureMarkDirtyWithCleanLayout(Node* node) {
+  MarkAXObjectDirty(GetOrCreate(node));
+}
+
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
     AXObject* obj,
     bool subtree,
@@ -4101,6 +4116,17 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     updates.push_back(update);
   }
 
+  // Add kLayoutComplete if layout has changed.
+  if (need_to_send_location_changes_) {
+    need_to_send_location_changes_ = false;  // Class member is now clear.
+    need_to_send_location_changes = true;    // Reference parameter.
+    // TODO(accessibility) Remove the layout complete event, which is only
+    // used by tests and as a signal to serialize location data.
+    ui::AXEvent layout_complete_event(Root()->AXObjectID(),
+                                      ax::mojom::blink::Event::kLayoutComplete);
+    src_events.push_back(layout_complete_event);
+  }
+
   // Loop over each event and generate an updated event message.
   for (ui::AXEvent& event : src_events) {
     if (event.event_type == ax::mojom::blink::Event::kEndOfTest) {
@@ -4122,11 +4148,11 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
         << event.id;
 #endif
 
-    if (event.event_type == ax::mojom::blink::Event::kLayoutComplete)
-      need_to_send_location_changes = true;
-
-    if (event.event_type == ax::mojom::blink::Event::kLoadComplete)
+    if (event.event_type == ax::mojom::blink::Event::kLoadComplete) {
+      if (had_load_complete_messages)
+        continue;  // De-dupe.
       had_load_complete_messages = true;
+    }
 
     events.push_back(event);
 
@@ -4137,14 +4163,6 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
 
 bool AXObjectCacheImpl::AddPendingEvent(const ui::AXEvent& event,
                                         bool insert_at_beginning) {
-  // Discard duplicate accessibility events.
-  for (const ui::AXEvent& pending_event : pending_events_) {
-    if (pending_event.id == event.id &&
-        pending_event.event_type == event.event_type) {
-      return false;
-    }
-  }
-
   if (insert_at_beginning)
     pending_events_.push_front(event);
   else
@@ -4189,12 +4207,6 @@ void AXObjectCacheImpl::HandleEditableTextContentChangedWithCleanLayout(
     obj = obj->ParentObject();
 
   PostNotification(obj, ax::mojom::Event::kValueChanged);
-}
-
-void AXObjectCacheImpl::HandleScaleAndLocationChanged(Document* document) {
-  if (!document)
-    return;
-  PostNotification(document, ax::mojom::Event::kLocationChanged);
 }
 
 void AXObjectCacheImpl::HandleTextFormControlChanged(Node* node) {
@@ -4255,10 +4267,18 @@ void AXObjectCacheImpl::HandleTextMarkerDataAddedWithCleanLayout(Node* node) {
 }
 
 void AXObjectCacheImpl::HandleValueChanged(Node* node) {
+  // Avoid duplicate processing of rapid value changes, e.g. on a slider being
+  // dragged, or a progress meter.
+  AXObject* ax_object = Get(node);
+  if (ax_object) {
+    if (last_value_change_node_ == ax_object->AXObjectID())
+      return;
+    last_value_change_node_ = ax_object->AXObjectID();
+  }
+
   PostNotification(node, ax::mojom::Event::kValueChanged);
 
   // If it's a slider, invalidate the thumb's bounding box.
-  AXObject* ax_object = Get(node);
   if (ax_object && ax_object->RoleValue() == ax::mojom::blink::Role::kSlider &&
       !ax_object->NeedsToUpdateChildren() &&
       ax_object->ChildCountIncludingIgnored() == 1) {
@@ -4360,10 +4380,9 @@ void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
   if (IsPopup(*document))
     return;
 
-  // TODO(accessibility) Investigate removal of the layout complete event, which
-  // seems to only be used as a signal to serialize location data.
-  DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
-                  ax::mojom::blink::Event::kLayoutComplete);
+  need_to_send_location_changes_ = true;
+  MarkElementDirty(document);
+  DeferTreeUpdate(&AXObjectCacheImpl::EnsureMarkDirtyWithCleanLayout, document);
 }
 
 void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {
@@ -4402,9 +4421,8 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
   InvalidateBoundingBoxForFixedOrStickyPosition();
+  need_to_send_location_changes_ = true;
   MarkElementDirty(document_);
-  DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document_,
-                  ax::mojom::blink::Event::kLayoutComplete);
 }
 
 void AXObjectCacheImpl::HandleScrollPositionChanged(
@@ -4413,9 +4431,8 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   InvalidateBoundingBoxForFixedOrStickyPosition();
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
-    MarkElementDirty(node);
-    DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, node,
-                    ax::mojom::blink::Event::kLayoutComplete);
+    need_to_send_location_changes_ = true;
+    DeferTreeUpdate(&AXObjectCacheImpl::EnsureMarkDirtyWithCleanLayout, node);
   }
 }
 

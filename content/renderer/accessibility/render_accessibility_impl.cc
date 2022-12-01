@@ -500,11 +500,13 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
 void RenderAccessibilityImpl::NotifyWebAXObjectMarkedDirty(
   const blink::WebAXObject& obj,
   ax::mojom::Event event_type) {
+  if (event_schedule_mode_ == EventScheduleMode::kProcessEventsImmediately)
+    return;
 
   // If the event occurred on the focused object, process immediately.
   // kLayoutComplete is an exception because it always fires on the root
   // object but it doesn't imply immediate processing is needed.
-  if (obj.IsFocused() && event_type != ax::mojom::Event::kLayoutComplete)
+  if (obj != ComputeRoot() && obj.IsFocused())
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
 
   ScheduleSendPendingAccessibilityEvents();

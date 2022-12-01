@@ -519,7 +519,7 @@ void VisualViewport::SetScaleAndLocation(float scale,
     NotifyRootFrameViewport();
     Document* document = LocalMainFrame().GetDocument();
     if (AXObjectCache* cache = document->ExistingAXObjectCache()) {
-      cache->HandleScaleAndLocationChanged(document);
+      cache->LocationChanged(document->GetLayoutView());
     }
   }
 }
