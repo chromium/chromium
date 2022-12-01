@@ -25,4 +25,8 @@
     desc="Text displayed in the bubble to tell users that they need to go to normal mode to see Downloads, when an existing bubble text is overwritten. Please surround the name of the key (e.g. 'Esc') in pipe characters so it can be rendered as a key.">
     Press |<ph name="ACCELERATOR">$1<ex>Esc</ex></ph>| to exit full screen and see download.
   </message>
+  <message name="IDS_FULLSCREEN_HOLD_TO_SEE_DOWNLOADS_AND_EXIT"
+    desc="Text displayed in the bubble to tell users that they need to go to normal mode to see Downloads, when an existing bubble text is overwritten. Please surround the name of the key (e.g. 'Esc') in pipe characters so it can be rendered as a key.">
+    Press and hold |<ph name="ACCELERATOR">$1<ex>Esc</ex></ph>| to exit full screen and see download.
+  </message>
 </grit-part>
