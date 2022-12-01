@@ -7762,7 +7762,6 @@ void RenderFrameHostImpl::ReceivedDelegatedCapability(
   }
 }
 
-// TODO(ahemery): Move checks to mojo bad message reporting.
 void RenderFrameHostImpl::BeginNavigation(
     blink::mojom::CommonNavigationParamsPtr common_params,
     blink::mojom::BeginNavigationParamsPtr begin_params,
