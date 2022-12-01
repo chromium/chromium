@@ -8,6 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 // A class which controls keyboard brightness when Alt+F6, Alt+F7 or a
@@ -16,6 +18,9 @@ class ASH_EXPORT KeyboardBrightnessController
     : public KeyboardBrightnessControlDelegate {
  public:
   KeyboardBrightnessController() = default;
+
+  // Register the pref to store keyboard brightness in the given registry.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Disallow copy and move.
   KeyboardBrightnessController(const KeyboardBrightnessController&) = delete;
