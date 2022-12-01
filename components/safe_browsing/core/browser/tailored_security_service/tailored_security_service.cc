@@ -324,9 +324,10 @@ void TailoredSecurityService::StartRequest(
   DCHECK(!is_shut_down_);
 
   // Wrap the original callback into a generic completion callback.
-  CompletionCallback completion_callback = base::BindOnce(
-      &TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  CompletionCallback completion_callback =
+      base::BindOnce(&TailoredSecurityService::
+                         ExtractTailoredSecurityBitFromResponseAndRunCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   GURL url(kQueryTailoredSecurityServiceUrl);
 
   static constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -426,10 +427,11 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
   }
 }
 
-void TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback(
-    QueryTailoredSecurityBitCallback callback,
-    Request* request,
-    bool success) {
+void TailoredSecurityService::
+    ExtractTailoredSecurityBitFromResponseAndRunCallback(
+        QueryTailoredSecurityBitCallback callback,
+        Request* request,
+        bool success) {
   DCHECK(!is_shut_down_);
 
   std::unique_ptr<Request> request_ptr =
@@ -454,9 +456,10 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
     QueryTailoredSecurityBitCallback callback,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   // Wrap the original callback into a generic completion callback.
-  CompletionCallback completion_callback = base::BindOnce(
-      &TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  CompletionCallback completion_callback =
+      base::BindOnce(&TailoredSecurityService::
+                         ExtractTailoredSecurityBitFromResponseAndRunCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   GURL url(kQueryTailoredSecurityServiceUrl);
   std::unique_ptr<Request> request =

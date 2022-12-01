@@ -124,10 +124,12 @@ class TailoredSecurityService : public KeyedService {
   // Extracts a JSON-encoded HTTP response into a dictionary.
   static base::Value ReadResponse(Request* request);
 
-  // Called by `request` when a tailored security service query has completed.
-  // Unpacks the response and calls `callback`, which is the original callback
-  // that was passed to QueryTailoredSecurityBit().
-  void QueryTailoredSecurityBitCompletionCallback(
+  // Unpacks the response and calls `callback`. Called by a `Request` when a
+  // tailored security service query sequence has completed. When `success` is
+  // `true`, the method will try to extract the Tailored Security bit value
+  // from the request and run `callback`; when `false` the method performs error
+  // handling.
+  void ExtractTailoredSecurityBitFromResponseAndRunCallback(
       QueryTailoredSecurityBitCallback callback,
       Request* request,
       bool success);
