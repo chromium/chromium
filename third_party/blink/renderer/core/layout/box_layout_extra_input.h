@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_LAYOUT_EXTRA_INPUT_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -54,6 +55,9 @@ struct BoxLayoutExtraInput {
   // resolution size.
   LayoutUnit containing_block_content_inline_size;
   LayoutUnit containing_block_content_block_size;
+
+  // Border and padding values. This field is set only for LayoutReplaced.
+  NGPhysicalBoxStrut border_padding_for_replaced;
 };
 
 }  // namespace blink

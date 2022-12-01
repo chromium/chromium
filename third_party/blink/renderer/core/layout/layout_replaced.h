@@ -127,6 +127,14 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // content box.
   bool ClipsToContentBox() const;
 
+  // This returns a local rectangle excluding borders and padding from
+  // FrameRect().
+  //
+  // This is a variant of LayoutBox::PhysicalContentBoxRect().
+  // - Supports BoxLayoutExtraInput
+  // - Doesn't support scrollbars
+  PhysicalRect PhysicalContentBoxRectFromNG() const;
+
  protected:
   virtual bool CanApplyObjectViewBox() const {
     NOT_DESTROYED();
@@ -194,6 +202,14 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // content's natural size. For example, if contain-intrinsic-size is
   // specified. Returns null for these cases.
   absl::optional<gfx::SizeF> ComputeObjectViewBoxSizeForIntrinsicSizing() const;
+
+  // This returns border-box size computed in NG if a
+  // BoxLayoutExtraInput is associated to this box.
+  LayoutSize SizeFromNG() const;
+
+  // This returns border and padding values computed in NG if a
+  // BoxLayoutExtraInput is associated to this box.
+  NGPhysicalBoxStrut BorderPaddingFromNG() const;
 
  private:
   // Computes a rect, relative to the element's content's natural size, that

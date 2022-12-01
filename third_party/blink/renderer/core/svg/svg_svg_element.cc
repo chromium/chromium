@@ -634,10 +634,11 @@ gfx::SizeF SVGSVGElement::CurrentViewportSize() const {
     return gfx::SizeF();
 
   if (layout_object->IsSVGRoot()) {
-    LayoutSize content_size = To<LayoutSVGRoot>(layout_object)->ContentSize();
+    PhysicalRect content_rect =
+        To<LayoutSVGRoot>(layout_object)->PhysicalContentBoxRectFromNG();
     float zoom = layout_object->StyleRef().EffectiveZoom();
-    return gfx::SizeF(content_size.Width() / zoom,
-                      content_size.Height() / zoom);
+    return gfx::SizeF(content_rect.size.width / zoom,
+                      content_rect.size.height / zoom);
   }
 
   gfx::RectF viewport_rect =

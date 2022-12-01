@@ -1607,6 +1607,15 @@
       base_feature: "LayoutNGPrinting",
     },
     {
+      // Avoid UpdateLogicalWidth() and UpdateLogicalHeight() in LayoutReplaced
+      // subclasses.
+      // It's a part of "stop-copying-back" project. crbug.com/1353190
+      name: "LayoutNGReplacedNoBoxSetters",
+      depends_on: ["LayoutNGPrinting"],
+      status: "stable",
+      base_feature: "LayoutNGReplacedNoBoxSetters",
+    },
+    {
       name: "LayoutNGSubgrid",
       depends_on: ["LayoutNG"],
       status: "test"

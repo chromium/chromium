@@ -207,8 +207,10 @@ void LayoutSVGRoot::UpdateLayout() {
   DeferredShapingDisallowScope disallow_deferred(*View());
 
   LayoutSize old_size = Size();
-  UpdateLogicalWidth();
-  UpdateLogicalHeight();
+  if (!RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled()) {
+    UpdateLogicalWidth();
+    UpdateLogicalHeight();
+  }
 
   // Whether we have a self-painting layer depends on whether there are
   // compositing descendants (see: |HasCompositingDescendants()| which is called
@@ -241,7 +243,7 @@ void LayoutSVGRoot::UpdateLayout() {
   // selfNeedsLayout() will cover changes to one (or more) of viewBox,
   // current{Scale,Translate}, decorations and 'overflow'.
   const bool viewport_may_have_changed =
-      SelfNeedsLayout() || old_size != Size();
+      SelfNeedsLayout() || old_size != SizeFromNG();
 
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
@@ -491,15 +493,15 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform() {
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
   float scale = StyleRef().EffectiveZoom();
-  gfx::SizeF content_size(ContentWidth() / scale, ContentHeight() / scale);
+  PhysicalRect content_rect = PhysicalContentBoxRectFromNG();
+  gfx::SizeF content_size(content_rect.size.width / scale,
+                          content_rect.size.height / scale);
   local_to_border_box_transform_ = svg->ViewBoxToViewTransform(content_size);
 
   gfx::Vector2dF translate = svg->CurrentTranslate();
-  LayoutSize border_and_padding(BorderLeft() + PaddingLeft(),
-                                BorderTop() + PaddingTop());
   AffineTransform view_to_border_box_transform(
-      scale, 0, 0, scale, border_and_padding.Width() + translate.x(),
-      border_and_padding.Height() + translate.y());
+      scale, 0, 0, scale, content_rect.offset.left + translate.x(),
+      content_rect.offset.top + translate.y());
   view_to_border_box_transform.Scale(svg->currentScale());
   local_to_border_box_transform_.PostConcat(view_to_border_box_transform);
   return change_detector.ComputeChange(local_to_border_box_transform_);

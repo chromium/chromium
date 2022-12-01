@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
@@ -844,6 +845,37 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
 PhysicalRect LayoutReplaced::ReplacedContentRect() const {
   NOT_DESTROYED();
   return ComputeReplacedContentRect();
+}
+
+LayoutSize LayoutReplaced::SizeFromNG() const {
+  if (!RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled() ||
+      !GetBoxLayoutExtraInput()) {
+    return Size();
+  }
+  LayoutSize new_size(OverrideLogicalWidth(), OverrideLogicalHeight());
+  if (!StyleRef().IsHorizontalWritingMode())
+    new_size = new_size.TransposedSize();
+  return new_size;
+}
+
+NGPhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {
+  if (RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled() &&
+      GetBoxLayoutExtraInput()) {
+    return GetBoxLayoutExtraInput()->border_padding_for_replaced;
+  }
+  return NGPhysicalBoxStrut(
+      BorderTop() + PaddingTop(), BorderRight() + PaddingRight(),
+      BorderBottom() + PaddingBottom(), BorderLeft() + PaddingLeft());
+}
+
+PhysicalRect LayoutReplaced::PhysicalContentBoxRectFromNG() const {
+  NOT_DESTROYED();
+  LayoutSize size = SizeFromNG();
+  NGPhysicalBoxStrut border_padding = BorderPaddingFromNG();
+  return PhysicalRect(
+      border_padding.left, border_padding.top,
+      (size.Width() - border_padding.HorizontalSum()).ClampNegativeToZero(),
+      (size.Height() - border_padding.VerticalSum()).ClampNegativeToZero());
 }
 
 PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(

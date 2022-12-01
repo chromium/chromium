@@ -888,6 +888,10 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
         << "Forced block size wasn't the fragment's block size?";
     input.override_inline_size = fragment.InlineSize();
     input.override_block_size = fragment.BlockSize();
+    if (RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled()) {
+      input.border_padding_for_replaced =
+          physical_fragment.Borders() + physical_fragment.Padding();
+    }
     box_->ComputeAndSetBlockDirectionMargins(box_->ContainingBlock());
     if (box_->NeedsLayout())
       box_->LayoutIfNeeded();
@@ -895,15 +899,18 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
       box_->ForceLayout();
 
 #if DCHECK_IS_ON()
-    // Assert that legacy uses the size NG forces above. But legacy sends
-    // LayoutUnit to float and back, which can slightly change the result. So
-    // give a 1px cushion.
-    PhysicalSize difference =
-        PhysicalSize(box_->Size()) - physical_fragment.Size();
-    DCHECK_LE(difference.width.Abs(), LayoutUnit(1))
-        << box_->Size() << " " << physical_fragment.Size();
-    DCHECK_LE(difference.height.Abs(), LayoutUnit(1))
-        << box_->Size() << " " << physical_fragment.Size();
+    if (!RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled() ||
+        !box_->IsSVGRoot()) {
+      // Assert that legacy uses the size NG forces above. But legacy sends
+      // LayoutUnit to float and back, which can slightly change the result. So
+      // give a 1px cushion.
+      PhysicalSize difference =
+          PhysicalSize(box_->Size()) - physical_fragment.Size();
+      DCHECK_LE(difference.width.Abs(), LayoutUnit(1))
+          << box_->Size() << " " << physical_fragment.Size();
+      DCHECK_LE(difference.height.Abs(), LayoutUnit(1))
+          << box_->Size() << " " << physical_fragment.Size();
+    }
 #endif
   }
 
