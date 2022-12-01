@@ -10,6 +10,8 @@ static_library("region_search") {
     "../metrics/lens_metrics.h",
     "lens_region_search_controller.cc",
     "lens_region_search_controller.h",
+    "lens_region_search_helper.cc",
+    "lens_region_search_helper.h",
   ]
 
   # TODO(crbug/1383280): Remove allow_circular_includes_from when dependencies for controller are fixed.
@@ -17,9 +19,13 @@ static_library("region_search") {
   deps = [
     "//base",
     "//chrome/browser/image_editor",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/common:constants",
     "//components/lens",
     "//components/lens:lens_mojo",
+    "//components/prefs",
+    "//components/search_engines:search_engines",
     "//content/public/browser",
   ]
 }

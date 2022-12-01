@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/lens/lens_features.h"
 #include "components/renderer_context_menu/views/toolkit_delegate_views.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -208,6 +210,20 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
     case IDC_SAVE_PAGE:
       *accel = ui::Accelerator(ui::VKEY_S, ui::EF_CONTROL_DOWN);
       return true;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
+    case IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH:
+      if (base::FeatureList::IsEnabled(
+              lens::features::kEnableRegionSearchKeyboardShortcut)) {
+        // TODO(nguyenbryan): This is a temporary hotkey; update when finalized.
+        *accel = ui::Accelerator(ui::VKEY_E,
+                                 ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+        return true;
+      } else {
+        return false;
+      }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
     case IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN: {
       // Esc only works in HTML5 (site-triggered) fullscreen.

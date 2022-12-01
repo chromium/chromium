@@ -26,6 +26,9 @@
 
 namespace lens {
 
+LensRegionSearchControllerData::LensRegionSearchControllerData() = default;
+LensRegionSearchControllerData::~LensRegionSearchControllerData() = default;
+
 RegionSearchCapturedData::RegionSearchCapturedData() = default;
 RegionSearchCapturedData::~RegionSearchCapturedData() = default;
 

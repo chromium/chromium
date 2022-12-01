@@ -36,6 +36,8 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -180,6 +182,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
+#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#include "chrome/browser/lens/region_search/lens_region_search_helper.h"
+#include "components/lens/lens_features.h"
 #endif
 
 namespace {
@@ -1851,5 +1859,27 @@ void RunScreenAIVisualAnnotation(Browser* browser) {
   browser->RunScreenAIAnnotator();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+void ExecLensRegionSearch(Browser* browser) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  Profile* profile = browser->profile();
+  TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  WebContents* contents = browser->tab_strip_model()->GetActiveWebContents();
+  GURL url = contents->GetController().GetLastCommittedEntry()->GetURL();
+
+  if (lens::IsRegionSearchEnabled(browser, profile, service, url)) {
+    auto lens_region_search_controller_data =
+        std::make_unique<lens::LensRegionSearchControllerData>();
+    lens_region_search_controller_data->lens_region_search_controller =
+        std::make_unique<lens::LensRegionSearchController>(browser);
+    lens_region_search_controller_data->lens_region_search_controller->Start(
+        contents, lens::features::IsLensFullscreenSearchEnabled(),
+        search::DefaultSearchProviderIsGoogle(profile));
+    browser->SetUserData(lens::LensRegionSearchControllerData::kDataKey,
+                         std::move(lens_region_search_controller_data));
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
 
 }  // namespace chrome

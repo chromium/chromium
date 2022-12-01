@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "components/lens/lens_features.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -262,6 +263,16 @@ const AcceleratorMapping kEnableWithNewMappingAcceleratorMap[] = {
 };
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Accelerators to enable if lens::features::kEnableRegionSearchKeyboardShortcut
+// is true.
+constexpr AcceleratorMapping kRegionSearchAcceleratorMap[] = {
+    // TODO(nguyenbryan): This is a temporary hotkey; update when finalized.
+    {ui::VKEY_E, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
+     IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH},
+};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 constexpr int kDebugModifier =
     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
 
@@ -306,6 +317,15 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
                            std::end(kDisableWithNewMappingAcceleratorMap));
     }
 #endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (base::FeatureList::IsEnabled(
+            lens::features::kEnableRegionSearchKeyboardShortcut)) {
+      accelerators->insert(accelerators->begin(),
+                           std::begin(kRegionSearchAcceleratorMap),
+                           std::end(kRegionSearchAcceleratorMap));
+    }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
     if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
       accelerators->insert(accelerators->begin(),
