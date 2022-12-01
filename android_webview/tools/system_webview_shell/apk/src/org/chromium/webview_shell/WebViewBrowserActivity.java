@@ -320,6 +320,9 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else if (manufacturer.equals("oppo")) {
             // https://crbug.com/1177779
             threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+        } else if (manufacturer.equals("nokia")) {
+            // https://crbug.com/1385924
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
         }
         StrictMode.setThreadPolicy(threadPolicyBuilder.build());
 
