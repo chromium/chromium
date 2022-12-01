@@ -33,6 +33,7 @@ struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
                   kStringValue;
             },
             [](const std::unique_ptr<blink::WebMessageArrayBufferPayload>&) {
+              // TODO(crrev.com/1374142): Add support for ArrayBuffer.
               NOTREACHED() << "ArrayBufferPayload is not supported";
               return js_injection::mojom::JsWebMessageDataView::Tag::
                   kStringValue;
