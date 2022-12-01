@@ -6,16 +6,20 @@ package org.chromium.chrome.browser.privacy_sandbox.v4;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogLaunchContext;
 import org.chromium.chrome.browser.privacy_sandbox.PromptAction;
 import org.chromium.chrome.browser.privacy_sandbox.R;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 
@@ -24,6 +28,7 @@ import org.chromium.ui.widget.CheckableImageView;
  */
 public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnClickListener {
     private static final int SPINNER_DURATION_MS = 1500;
+    private static final int BACKGROUND_TRANSITION_DURATION_MS = 300;
 
     private View mContentView;
 
@@ -33,9 +38,12 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
     private LinearLayout mProgressBarContainer;
     private LinearLayout mConsentViewContainer;
     private boolean mAreAnimationsDisabled;
+    private SettingsLauncher mSettingsLauncher;
 
-    public PrivacySandboxDialogConsentEEAV4(Context context, boolean disableAnimations) {
+    public PrivacySandboxDialogConsentEEAV4(Context context,
+            @NonNull SettingsLauncher settingsLauncher, boolean disableAnimations) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        mSettingsLauncher = settingsLauncher;
         mAreAnimationsDisabled = disableAnimations;
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea_v4, null);
@@ -70,10 +78,10 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
         int id = view.getId();
         if (id == R.id.ack_button) {
             PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED);
-            showSavingConfirmationAndDismiss();
+            dismissAndMaybeShowNotice();
         } else if (id == R.id.no_button) {
             PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED);
-            showSavingConfirmationAndDismiss();
+            dismissAndMaybeShowNotice();
         } else if (id == R.id.dropdown_element) {
             ScrollView scrollView =
                     mContentView.findViewById(R.id.privacy_sandbox_consent_eea_scroll_view);
@@ -113,17 +121,30 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
         }
     }
 
-    private void showSavingConfirmationAndDismiss() {
+    private void dismissAndMaybeShowNotice() {
         mProgressBarContainer.setVisibility(View.VISIBLE);
         mConsentViewContainer.setVisibility(View.GONE);
-        PostTask.postDelayedTask(TaskTraits.USER_BLOCKING, this::dismiss, getSpinnerDuration());
+        var consentHandler = new Handler();
+        // Dismiss has a bigger timeout than spinner in order to guarantee a graceful transition
+        // between the spinner view and the notice one.
+        consentHandler.postDelayed(this::dismiss, getDismissTimeout());
+        consentHandler.postDelayed(this::maybeShowNotice, getSpinnerTimeout());
+    }
+
+    private void maybeShowNotice() {
+        PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                PrivacySandboxDialogLaunchContext.BROWSER_START, getContext(), mSettingsLauncher,
+                /*isIncognito = */ false, /*bottomSheetController = */ null);
     }
 
     private boolean isDropdownExpanded() {
         return mDropdownContainer != null && mDropdownContainer.getVisibility() == View.VISIBLE;
     }
 
-    private long getSpinnerDuration() {
+    private long getDismissTimeout() {
+        return mAreAnimationsDisabled ? 0 : SPINNER_DURATION_MS + BACKGROUND_TRANSITION_DURATION_MS;
+    }
+    private long getSpinnerTimeout() {
         return mAreAnimationsDisabled ? 0 : SPINNER_DURATION_MS;
     }
 }

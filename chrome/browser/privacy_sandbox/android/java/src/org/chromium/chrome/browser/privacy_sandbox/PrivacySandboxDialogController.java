@@ -48,7 +48,7 @@ public class PrivacySandboxDialogController {
                 return false;
             case PromptType.M1_CONSENT:
                 dialog = new PrivacySandboxDialogConsentEEAV4(
-                        context, /*disableAnimations=*/sDisableAnimations);
+                        context, settingsLauncher, sDisableAnimations);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
@@ -124,7 +124,7 @@ public class PrivacySandboxDialogController {
     }
 
     @VisibleForTesting
-    static void disableAnimationsForTesting() {
-        sDisableAnimations = true;
+    static void disableAnimationsForTesting(boolean disable) {
+        sDisableAnimations = disable;
     }
 }
