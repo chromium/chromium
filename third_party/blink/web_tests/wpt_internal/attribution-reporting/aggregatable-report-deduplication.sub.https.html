@@ -1,0 +1,72 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+
+attribution_reporting_promise_test(async t => {
+  const host = `https://{{host}}`;
+  const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
+
+  await registerAttributionSrc(t, {
+    source: {
+      destination: host,
+      source_event_id: '123',
+      aggregation_keys: {
+        campaignCounts: '0x159',
+      },
+      debug_key: '456',
+    },
+    method: 'open',
+    cookie,
+  });
+
+  const trigger = {
+    // Create event-level report to avoid verbose debug report created for
+    // event-level attribution.
+    event_trigger_data: [{}],
+    aggregatable_trigger_data: [{
+      key_piece: '0x400',
+      source_keys: ['campaignCounts'],
+    }],
+    aggregatable_values: {
+      campaignCounts: 32768,
+    },
+    aggregatable_deduplication_key: '666',
+    debug_reporting: true,
+  };
+
+  await registerAttributionSrc(t, {
+    trigger,
+  });
+
+  const payload = await pollAggregatableReports();
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
+  assert_own_property(report, 'shared_info');
+  const shared_info = JSON.parse(report.shared_info);
+  assert_equals(shared_info.attribution_destination, host);
+
+  await registerAttributionSrc(t, {
+    trigger,
+    cookie,
+  });
+
+  const debugPayload = await pollVerboseDebugReports();
+  assert_equals(debugPayload.reports.length, 1);
+  const debugReport = JSON.parse(debugPayload.reports[0].body);
+  assert_equals(debugReport.length, 1);
+  assert_equals(debugReport[0].type, 'trigger-aggregate-deduplicated');
+  assert_own_property(debugReport[0], 'body');
+  const debugReportBody = debugReport[0].body;
+  assert_equals(debugReportBody.attribution_destination, host);
+  assert_equals(debugReportBody.source_event_id, '123');
+  assert_equals(debugReportBody.source_site, host);
+  assert_equals(debugReportBody.source_debug_key, '456');
+  assert_not_own_property(debugReportBody, 'trigger_debug_key');
+}, 'Aggregatable report is deduplicated.');
+</script>
