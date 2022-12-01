@@ -254,6 +254,16 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
 }
 
 void ServiceWorkerUpdatedScriptLoader::OnClientWritable(MojoResult) {
+  if (pending_network_buffer_) {
+    DCHECK_GT(pending_network_bytes_available_, 0u);
+    scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer =
+        std::move(pending_network_buffer_);
+    uint32_t bytes_available = pending_network_bytes_available_;
+    pending_network_bytes_available_ = 0;
+    WriteData(std::move(pending_buffer), bytes_available);
+    return;
+  }
+
   DCHECK(data_to_send_);
   DCHECK_GE(data_length_, bytes_sent_to_client_);
   DCHECK(client_producer_);
@@ -391,11 +401,14 @@ void ServiceWorkerUpdatedScriptLoader::WriteData(
                       ServiceWorkerConsts::kServiceWorkerFetchScriptError);
       return;
     case MOJO_RESULT_SHOULD_WAIT:
-      // No data was written to |client_producer_| because the pipe was full.
+      DCHECK(pending_buffer);
+      DCHECK(!pending_network_buffer_);
+      DCHECK_EQ(pending_network_bytes_available_, 0u);
+      // No data was written to `client_producer_` because the pipe was full.
       // Retry when the pipe becomes ready again.
-      pending_buffer->CompleteRead(0);
-      network_consumer_ = pending_buffer->ReleaseHandle();
-      network_watcher_.ArmOrNotify();
+      pending_network_buffer_ = std::move(pending_buffer);
+      pending_network_bytes_available_ = bytes_available;
+      client_producer_watcher_.ArmOrNotify();
       return;
     default:
       NOTREACHED() << static_cast<int>(result);

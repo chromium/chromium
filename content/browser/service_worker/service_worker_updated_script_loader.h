@@ -189,6 +189,12 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   URLLoaderClientCheckedRemote client_;
   mojo::ScopedDataPipeProducerHandle client_producer_;
 
+  // Holds a part of body data from network that wasn't able to write to
+  // `client_producer_` since the data pipe was full. Only available when
+  // `client_producer_` gets blocked.
+  scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer_;
+  uint32_t pending_network_bytes_available_ = 0;
+
   // Represents the state of |network_loader_|.
   // Corresponds to the steps of calls as a URLLoaderClient.
   //

@@ -93,6 +93,9 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
                        base::SequencedTaskRunnerHandle::Get()),
       loader_factory_(std::move(loader_factory)),
       client_(std::move(client)),
+      client_producer_watcher_(FROM_HERE,
+                               mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+                               base::SequencedTaskRunner::GetCurrentDefault()),
       requesting_frame_id_(requesting_frame_id) {
   DCHECK_NE(cache_resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
 
@@ -314,6 +317,11 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
                              std::move(client_consumer),
                              std::move(cached_metadata));
 
+  client_producer_watcher_.Watch(
+      client_producer_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+      base::BindRepeating(&ServiceWorkerNewScriptLoader::OnClientWritable,
+                          weak_factory_.GetWeakPtr()));
+
   network_consumer_ = std::move(body);
   network_loader_state_ = LoaderState::kLoadingBody;
   MaybeStartNetworkConsumerHandleWatcher();
@@ -492,11 +500,14 @@ void ServiceWorkerNewScriptLoader::WriteData(
                       nullptr);
       return;
     case MOJO_RESULT_SHOULD_WAIT:
-      // No data was written to |client_producer_| because the pipe was full.
+      DCHECK(pending_buffer);
+      DCHECK(!pending_network_buffer_);
+      DCHECK_EQ(pending_network_bytes_available_, 0u);
+      // No data was written to `client_producer_` because the pipe was full.
       // Retry when the pipe becomes ready again.
-      pending_buffer->CompleteRead(0);
-      network_consumer_ = pending_buffer->ReleaseHandle();
-      network_watcher_.ArmOrNotify();
+      pending_network_buffer_ = std::move(pending_buffer);
+      pending_network_bytes_available_ = bytes_available;
+      client_producer_watcher_.ArmOrNotify();
       return;
     default:
       NOTREACHED() << static_cast<int>(result);
@@ -591,6 +602,7 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
 
   client_->OnComplete(status);
   client_producer_.reset();
+  client_producer_watcher_.Cancel();
 
   network_loader_.reset();
   network_consumer_.reset();
@@ -599,6 +611,17 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
   network_loader_state_ = LoaderState::kCompleted;
   header_writer_state_ = WriterState::kCompleted;
   body_writer_state_ = WriterState::kCompleted;
+}
+
+void ServiceWorkerNewScriptLoader::OnClientWritable(MojoResult) {
+  DCHECK(pending_network_buffer_);
+  DCHECK_GT(pending_network_bytes_available_, 0u);
+
+  scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer =
+      std::move(pending_network_buffer_);
+  uint32_t bytes_available = pending_network_bytes_available_;
+  pending_network_bytes_available_ = 0;
+  WriteData(std::move(pending_buffer), bytes_available);
 }
 
 }  // namespace content
