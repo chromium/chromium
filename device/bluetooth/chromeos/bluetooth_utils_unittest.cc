@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -174,21 +173,8 @@ TEST_F(BluetoothUtilsTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(BluetoothUtilsTest, ShowPolyDevice_PolyFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ash::features::kAllowPolyDevicePairing);
-
-  AddMockPolyDeviceToAdapter();
-  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
-                                  0u /* num_expected_remaining_devices */);
-}
-
 // Regression test for b/228118615.
 TEST_F(BluetoothUtilsTest, ShowPolyDevice_PolyFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      ash::features::kAllowPolyDevicePairing};
-
   // Poly devices should not be filtered out, regardless of device type.
   AddMockPolyDeviceToAdapter();
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,

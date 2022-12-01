@@ -4625,11 +4625,6 @@ const char kAllowDisableTouchpadHapticFeedbackName[] =
 const char kAllowDisableTouchpadHapticFeedbackDescription[] =
     "Shows settings to adjust and disable touchpad haptic feedback.";
 
-const char kAllowPolyDevicePairingName[] =
-    "Allow pairing of Bluetooth devices by Poly";
-const char kAllowPolyDevicePairingDescription[] =
-    "Shows Poly devices in the Bluetooth pairing UI.";
-
 const char kAllowRepeatedUpdatesName[] =
     "Continue checking for updates before reboot and after initial update.";
 const char kAllowRepeatedUpdatesDescription[] =

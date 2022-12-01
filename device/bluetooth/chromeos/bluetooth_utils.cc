@@ -149,14 +149,7 @@ std::string GetTransportName(BluetoothTransport transport) {
   }
 }
 
-bool IsPolyDevicePairingAllowed() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::features::IsPolyDevicePairingAllowed();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 bool IsPolyDevice(const device::BluetoothDevice* device) {
   // OUI portions of Bluetooth addresses for devices manufactured by Poly. See
   // https://standards-oui.ieee.org/.
@@ -165,6 +158,7 @@ bool IsPolyDevice(const device::BluetoothDevice* device) {
 
   return base::Contains(kPolyOuis, device->GetOuiPortionOfBluetoothAddress());
 }
+#endif
 
 }  // namespace
 
@@ -191,11 +185,13 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Never filter out Poly devices; this requires a special case since these
   // devices often identify themselves as phones, which are disallowed below.
   // See b/228118615.
-  if (IsPolyDevicePairingAllowed() && IsPolyDevice(device))
+  if (IsPolyDevice(device))
     return false;
+#endif
 
   // Always filter out laptops, etc. There is no intended use case or
   // Bluetooth profile in this context.
