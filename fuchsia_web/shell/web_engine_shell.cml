@@ -71,4 +71,7 @@
       availability: "optional",
     },
   ],
+  facets: {
+    "fuchsia.test.deprecated-allowed-packages": [ "web_engine_with_webui" ]
+  },
 }
