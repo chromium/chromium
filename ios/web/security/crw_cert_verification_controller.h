@@ -60,9 +60,6 @@ typedef void (^StatusQueryHandler)(web::SecurityStyle, net::CertStatus);
 // compatible form (e.g. for "http://名がドメイン.com", it should be
 // "xn--v8jxj3d1dzdz08w.com"). `completionHandler` cannot be null and will be
 // called asynchronously on the UI thread.
-// Note: Certificate errors may be bypassed by calling
-// `allowCert:forHost:status:` with the host, certificate, and certificate
-// error to ignore.
 - (void)decideLoadPolicyForTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
                             host:(NSString*)host
                completionHandler:(web::PolicyDecisionHandler)completionHandler;
@@ -78,17 +75,6 @@ typedef void (^StatusQueryHandler)(web::SecurityStyle, net::CertStatus);
 - (void)querySSLStatusForTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
                           host:(NSString*)host
              completionHandler:(web::StatusQueryHandler)completionHandler;
-
-// Records that `cert` is permitted to be used for `host` in future calls to
-// `decideLoadPolicyForTrust:host:completionHandler:`. `host` should be in an
-// ASCII-compatible form. Subsequent calls to
-// `decideLoadPolicyForTrust:host:completionHandler:` for the same
-// `cert|/|host` tuple and same `status` (or a subset of the given `status`)
-// will return CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_ACCEPTED_BY_USER.
-- (void)allowCert:(scoped_refptr<net::X509Certificate>)cert
-          forHost:(NSString*)host
-           status:(net::CertStatus)status;
-
 @end
 
 #endif  // IOS_WEB_SECURITY_CRW_CERT_VERIFICATION_CONTROLLER_H_

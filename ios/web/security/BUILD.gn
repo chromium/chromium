@@ -51,6 +51,7 @@ source_set("unittests") {
     "//ios/web/navigation:core",
     "//ios/web/public",
     "//ios/web/public/security",
+    "//ios/web/public/session",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",

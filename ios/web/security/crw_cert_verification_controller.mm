@@ -125,28 +125,6 @@ using web::WebThread;
       }];
 }
 
-- (void)allowCert:(scoped_refptr<net::X509Certificate>)cert
-          forHost:(NSString*)host
-           status:(net::CertStatus)status {
-  DCHECK_CURRENTLY_ON(WebThread::UI);
-  // Store user decisions with the leaf cert, ignoring any intermediates.
-  // This is because WKWebView returns the verified certificate chain in
-  // `webView:didReceiveAuthenticationChallenge:completionHandler:`,
-  // but the server-supplied chain in
-  // `webView:didFailProvisionalNavigation:withError:`.
-  if (!cert->intermediate_buffers().empty()) {
-    cert = net::X509Certificate::CreateFromBuffer(
-        bssl::UpRef(cert->cert_buffer()), {});
-    DCHECK(cert);
-  }
-  DCHECK(cert->intermediate_buffers().empty());
-  web::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        self->_certPolicyCache->AllowCertForHost(
-            cert.get(), base::SysNSStringToUTF8(host), status);
-      }));
-}
-
 #pragma mark - Private
 
 - (net::CertStatus)certStatusFromTrustResult:(SecTrustResultType)trustResult
