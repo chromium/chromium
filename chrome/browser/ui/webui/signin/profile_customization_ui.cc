@@ -55,6 +55,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kResources),
       IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   // Localized strings.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
