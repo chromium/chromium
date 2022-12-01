@@ -1199,21 +1199,17 @@ Try tapping the mic to ask me anything.
       <message name="IDS_INPUT_DIAGNOSTICS_UNTESTABLE_NOTE" translateable="false" desc="Text explaining why the input device is untestable and the test button is grey out.">
         Can't access this routine. Check that it's properly connected and try again.
       </message>
-      <!-- TODO(dpad): Finalize string and localization -->
-      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_UNTESTABLE_LID_CLOSED_NOTE" translateable="false" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the lid of the device being closed.">
-        Can't access this routine as the built-in keyboard is inaccessible as the lid is closed.
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_UNTESTABLE_LID_CLOSED_NOTE" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the lid of the device being closed. This is shown as the text on a tooltip.">
+        Reopen the lid to test
       </message>
-      <!-- TODO(dpad): Finalize string and localization -->
-      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_UNTESTABLE_TABLET_MODE_NOTE" translateable="false" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the lid of the device being closed.">
-        Can't access this routine as the built-in keyboard is inaccessible due to being in tablet mode.
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_UNTESTABLE_TABLET_MODE_NOTE" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the device being folded over into tablet mode. This is shown as the text on a tooltip.">
+        Switch to laptop mode to test
       </message>
-      <!-- TODO(dpad): Finalize string and localization -->
-      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_CLOSED_LID_CLOSED_NOTE" translateable="false" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the lid of the device being closed.">
-        Device is no longer accessible as the lid is closed. Try opening the lid to test
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_CLOSED_LID_CLOSED_NOTE" desc="Text that shows when the keyboard tester window closes due to a situation when causes the internal keyboard to become unusuable. In this case, it is due to the user closing the lid of their device. This is shown in a toast at the bottom of the user's screen.">
+        Can’t test device. Reopen the lid to test.
       </message>
-      <!-- TODO(dpad): Finalize string and localization -->
-      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_CLOSED_TABLET_MODE_NOTE" translateable="false" desc="Text explaining why the keyboard is untestable and the test button is grey out. In this case, it is due to the lid of the device being closed.">
-        Device is no longer accessible as it is in tablet mode. Try disabling tablet mode to test
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_CLOSED_TABLET_MODE_NOTE" desc="Text that shows when the keyboard tester window closes due to a situation when causes the internal keyboard to become unusuable. In this case, it is due to a user folding their convertible device over into tablet mode. This is shown in a toast at the bottom of the user's screen.">
+        Can’t test device. Switch to laptop mode to test.
       </message>
 
       <!-- Input diagnostics: keyboard tester -->

@@ -155,7 +155,8 @@ export class InputCardElement extends InputCardElementBase {
       return loadTimeData.getString('inputKeyboardUntestableLidClosedNote');
     }
 
-    return loadTimeData.getString('inputDeviceUntestableNote');
+    // Otherwise, there is no error.
+    return '';
   }
 
   private handleTestButtonClick_(e: PointerEvent): void {
