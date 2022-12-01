@@ -31,10 +31,13 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -45,7 +48,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {SessionRestoreMessageControllerUnitTest.ShadowMessageDispatcherProvider.class})
+        shadows = {SessionRestoreMessageControllerUnitTest.ShadowMessageDispatcherProvider.class,
+                SessionRestoreMessageControllerUnitTest.ShadowSessionRestoreUtils.class})
 public class SessionRestoreMessageControllerUnitTest {
     private static class FakeMessageDispatcher implements MessageDispatcher {
         private static PropertyModel sMessageModel;
@@ -90,13 +94,42 @@ public class SessionRestoreMessageControllerUnitTest {
         }
     }
 
+    @Implements(SessionRestoreUtils.class)
+    static class ShadowSessionRestoreUtils {
+        private static boolean sRestorable;
+
+        @Implementation
+        protected static boolean canRestoreSession(int taskId, String url,
+                SharedPreferencesManager preferences, @Nullable String clientPackage,
+                @Nullable String referrer) {
+            sRestorable = true;
+            return true;
+        }
+
+        static boolean restorable() {
+            return sRestorable;
+        }
+
+        static void reset() {
+            sRestorable = false;
+        }
+    }
+
     @Rule
     public TestRule mFeatureProcessor = new Features.JUnitProcessor();
+
+    @Rule
+    public CustomTabActivityContentTestEnvironment env =
+            new CustomTabActivityContentTestEnvironment();
 
     @Mock
     ActivityWindowAndroid mMockWindowAndroid;
     @Mock
     ActivityLifecycleDispatcher mMockLifecycleDispatcher;
+    @Mock
+    BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock
+    SessionRestoreManager mMockManager;
 
     @Captor
     private ArgumentCaptor<LifecycleObserver> mLifecycleObserverArgumentCaptor;
@@ -113,6 +146,8 @@ public class SessionRestoreMessageControllerUnitTest {
         ChromeFeatureList.sCctRetainableStateInMemory.setForTesting(true);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         doReturn(true).when(mMockLifecycleDispatcher).isNativeInitializationFinished();
+        doReturn(mMockManager).when(env.connection).getSessionRestoreManager();
+        doReturn(true).when(mMockManager).canRestoreTab();
     }
 
     @After
@@ -120,13 +155,15 @@ public class SessionRestoreMessageControllerUnitTest {
         CachedFeatureFlags.resetFlagsForTesting();
         ShadowMessageDispatcherProvider.sMessageDispatcher.reset();
         ShadowMessageDispatcherProvider.sMessageDispatcher = null;
+        ShadowSessionRestoreUtils.reset();
     }
 
     @Test
     public void testShowMessageIfNativeLoaded() {
-        mController = new SessionRestoreMessageController(
-                mActivity, mMockWindowAndroid, mMockLifecycleDispatcher);
+        mController = createSessionRestoreMessageController();
         verify(mMockLifecycleDispatcher, times(1)).isNativeInitializationFinished();
+        verify(mMockManager, times(1)).canRestoreTab();
+        Assert.assertTrue("Session not restorable", ShadowSessionRestoreUtils.restorable());
         Assert.assertTrue("Message not shown: MessageDispatcher never calls enqueue",
                 ShadowMessageDispatcherProvider.sMessageDispatcher.called());
     }
@@ -134,22 +171,22 @@ public class SessionRestoreMessageControllerUnitTest {
     @Test
     public void testWaitsForNativeIfNotLoaded() {
         doReturn(false).when(mMockLifecycleDispatcher).isNativeInitializationFinished();
-        mController = new SessionRestoreMessageController(
-                mActivity, mMockWindowAndroid, mMockLifecycleDispatcher);
+        mController = createSessionRestoreMessageController();
         verify(mMockLifecycleDispatcher, times(1)).isNativeInitializationFinished();
         verify(mMockLifecycleDispatcher, times(1))
                 .register(mLifecycleObserverArgumentCaptor.capture());
+        verify(mMockManager, times(1)).canRestoreTab();
         Assert.assertFalse("Message shown when it should not be: Native not yet initialized",
                 ShadowMessageDispatcherProvider.sMessageDispatcher.called());
         mController.onFinishNativeInitialization();
         Assert.assertTrue("Message not shown: MessageDispatcher never calls enqueue",
                 ShadowMessageDispatcherProvider.sMessageDispatcher.called());
+        Assert.assertTrue("Session not restorable", ShadowSessionRestoreUtils.restorable());
     }
 
     @Test
     public void testValidPropertyModel() {
-        mController = new SessionRestoreMessageController(
-                mActivity, mMockWindowAndroid, mMockLifecycleDispatcher);
+        mController = createSessionRestoreMessageController();
 
         Assert.assertNotNull("PropertyModel is null", FakeMessageDispatcher.sMessageModel);
         Assert.assertNotNull(FakeMessageDispatcher.sMessageModel.get(
@@ -166,15 +203,33 @@ public class SessionRestoreMessageControllerUnitTest {
                         MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         Assert.assertNotNull(
                 FakeMessageDispatcher.sMessageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION));
+        Assert.assertTrue("Session not restorable", ShadowSessionRestoreUtils.restorable());
     }
 
     @Test
     public void testFlagDisabledDoNothing() {
         ChromeFeatureList.sCctRetainableStateInMemory.setForTesting(false);
-        mController = new SessionRestoreMessageController(
-                mActivity, mMockWindowAndroid, mMockLifecycleDispatcher);
+        mController = createSessionRestoreMessageController();
         verifyNoMoreInteractions(mMockLifecycleDispatcher);
+        verifyNoMoreInteractions(mMockManager);
+        Assert.assertFalse("Session is restorable even though flag is disabled",
+                ShadowSessionRestoreUtils.restorable());
         Assert.assertFalse("Message shown when it should not be",
                 ShadowMessageDispatcherProvider.sMessageDispatcher.called());
+    }
+
+    @Test
+    public void testCannotRestoreDoNothing() {
+        doReturn(false).when(mMockManager).canRestoreTab();
+        mController = createSessionRestoreMessageController();
+        verifyNoMoreInteractions(mMockLifecycleDispatcher);
+        Assert.assertFalse("Session restorable", ShadowSessionRestoreUtils.restorable());
+        Assert.assertFalse("Message shown when it should not be",
+                ShadowMessageDispatcherProvider.sMessageDispatcher.called());
+    }
+
+    private SessionRestoreMessageController createSessionRestoreMessageController() {
+        return new SessionRestoreMessageController(mActivity, mMockWindowAndroid,
+                mMockLifecycleDispatcher, mIntentDataProvider, env.connection);
     }
 }

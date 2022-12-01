@@ -221,7 +221,7 @@ public class CustomTabActivityLifecycleUmaTracker
      * {@link IntentHandler#getReferrerUrlIncludingExtraHeaders(Intent)}.
      * TODO(https://crbug.com/1350252): Move this to IntentHandler.
      */
-    static String getReferrerUriString(Activity activity) {
+    public static String getReferrerUriString(Activity activity) {
         if (activity == null || activity.getIntent() == null) {
             return "";
         }

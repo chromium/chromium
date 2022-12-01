@@ -8,10 +8,14 @@ import android.app.Activity;
 import android.content.res.Resources;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTracker;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -29,14 +33,19 @@ import javax.inject.Inject;
 public class SessionRestoreMessageController implements NativeInitObserver {
     private final Activity mActivity;
     private final ActivityWindowAndroid mWindowAndroid;
+    private final BrowserServicesIntentDataProvider mIntentDataProvider;
+    private final CustomTabsConnection mConnection;
     private MessageDispatcher mMessageDispatcher;
 
     @Inject
     public SessionRestoreMessageController(Activity activity, ActivityWindowAndroid windowAndroid,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            BrowserServicesIntentDataProvider intentDataProvider, CustomTabsConnection connection) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
-        if (ChromeFeatureList.sCctRetainableStateInMemory.isEnabled()) {
+        mIntentDataProvider = intentDataProvider;
+        mConnection = connection;
+        if (ChromeFeatureList.sCctRetainableStateInMemory.isEnabled() && isRestorable()) {
             if (lifecycleDispatcher.isNativeInitializationFinished()) {
                 showMessage();
             } else {
@@ -71,5 +80,19 @@ public class SessionRestoreMessageController implements NativeInitObserver {
                         .build();
 
         mMessageDispatcher.enqueueWindowScopedMessage(message, false);
+    }
+
+    boolean isRestorable() {
+        SessionRestoreManager sessionRestoreManager = mConnection.getSessionRestoreManager();
+        assert sessionRestoreManager != null;
+
+        int taskId = mActivity.getTaskId();
+        String clientPackage = mIntentDataProvider.getClientPackageName();
+        SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
+        String urlToLoad = mIntentDataProvider.getUrlToLoad();
+        String referrer = CustomTabActivityLifecycleUmaTracker.getReferrerUriString(mActivity);
+        return sessionRestoreManager.canRestoreTab()
+                && SessionRestoreUtils.canRestoreSession(
+                        taskId, urlToLoad, preferences, clientPackage, referrer);
     }
 }
