@@ -7442,15 +7442,9 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_EmptyForm) {
 
 // Verify that we correctly log user happiness metrics dealing with form
 // interaction.
-#if BUILDFLAG(IS_FUCHSIA)
-// https://crbug.com/1394958
-#define MAYBE_UserHappinessFormInteraction_CreditCardForm \
-  DISABLED_UserHappinessFormInteraction_CreditCardForm
-#else
-#define MAYBE_UserHappinessFormInteraction_CreditCardForm \
-  UserHappinessFormInteraction_CreditCardForm
-#endif
-TEST_F(AutofillMetricsTest, MAYBE_UserHappinessFormInteraction_CreditCardForm) {
+// TODO(crbug.com/1394998): Re-enable this test
+TEST_F(AutofillMetricsTest,
+       DISABLED_UserHappinessFormInteraction_CreditCardForm) {
   RecreateCreditCards(/*include_local_credit_card=*/true,
                       /*include_masked_server_credit_card=*/false,
                       /*include_full_server_credit_card=*/false,
@@ -10346,16 +10340,9 @@ TEST_F(AutofillMetricsSeamlessnessTest,
 }
 
 // Tests that Autofill.CreditCard.SeamlessFills.* are emitted.
-#if BUILDFLAG(IS_FUCHSIA)
-// https://crbug.com/1394958
-#define MAYBE_LogCreditCardSeamlessFillsMetricIfAutofilledWithoutCvc \
-  DISABLED_LogCreditCardSeamlessFillsMetricIfAutofilledWithoutCvc
-#else
-#define MAYBE_LogCreditCardSeamlessFillsMetricIfAutofilledWithoutCvc \
-  LogCreditCardSeamlessFillsMetricIfAutofilledWithoutCvc
-#endif
+// TODO(crbug.com/1394998): Re-enable this test
 TEST_F(AutofillMetricsSeamlessnessTest,
-       MAYBE_LogCreditCardSeamlessFillsMetricIfAutofilledWithoutCvc) {
+       DISABLED_LogCreditCardSeamlessFillsMetricIfAutofilledWithoutCvc) {
   using Metric = AutofillMetrics::CreditCardSeamlessness::Metric;
   using UkmBuilder = ukm::builders::Autofill_CreditCardFill;
 
