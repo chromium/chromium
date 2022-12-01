@@ -886,8 +886,6 @@ TEST_F(UDPSocketTest, ConnectUsingNetworkAsync) {
     }
     EXPECT_NE(ERR_NOT_IMPLEMENTED, rv);
     EXPECT_NE(OK, rv);
-    EXPECT_NE(NetworkChangeNotifier::GetDefaultNetwork(),
-              socket.GetBoundNetwork());
   }
 
   {
