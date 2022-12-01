@@ -421,30 +421,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ContentVerification.VerifiedContentsInitResult"
-    enum="BooleanSuccess" expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Whether or not initializing verified_contents.json succeeded. Recorded
-    during an extension load completion or during an on demand content
-    verification that was triggered by ContentVerifyJob.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ContentVerification.VerifiedContentsInitTime"
-    units="ms" expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    How long a successful initialization of verified_contents.json file takes.
-    Recorded if Extensions.ContentVerification.VerifiedContentsInitResult = true
-    was recorded.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ContextMenuAction"
     enum="ExtensionContextMenuAction" expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->

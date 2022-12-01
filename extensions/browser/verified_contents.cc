@@ -20,7 +20,6 @@
 #include "components/crx_file/id_util.h"
 #include "crypto/signature_verifier.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
-#include "extensions/browser/content_verifier/scoped_uma_recorder.h"
 #include "extensions/common/extension.h"
 
 namespace {
@@ -61,11 +60,6 @@ const base::Value* FindDictionaryWithValue(const base::Value& list,
   }
   return nullptr;
 }
-
-const char kUMAVerifiedContentsInitResult[] =
-    "Extensions.ContentVerification.VerifiedContentsInitResult";
-const char kUMAVerifiedContentsInitTime[] =
-    "Extensions.ContentVerification.VerifiedContentsInitTime";
 
 }  // namespace
 
@@ -111,9 +105,6 @@ std::unique_ptr<VerifiedContents> VerifiedContents::CreateFromFile(
 std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     base::span<const uint8_t> public_key,
     base::StringPiece contents) {
-  ScopedUMARecorder<kUMAVerifiedContentsInitTime,
-                    kUMAVerifiedContentsInitResult>
-      uma_recorder;
   // Note: VerifiedContents constructor is private.
   auto verified_contents = base::WrapUnique(new VerifiedContents(public_key));
   std::string payload;
@@ -192,7 +183,6 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
 
     break;
   }
-  uma_recorder.RecordSuccess();
   return verified_contents;
 }
 
