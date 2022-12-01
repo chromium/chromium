@@ -110,9 +110,8 @@ import("//build/rust/rust_target.gni")
 #     '--cfg feature=XXX'
 #
 #   cxx_bindings (optional)
-#     A list of Rust files which contain #[cxx::bridge] mods or
-#     autocxx::include_cpp! macros and should therefore have C++ bindings
-#     generated. See https://cxx.rs or https://google.github.io/autocxx/.
+#     A list of Rust files which contain #[cxx::bridge] mods and should
+#     therefore have C++ bindings generated. See https://cxx.rs.
 #     This will automatically add appropriate dependencies: there's no
 #     need to depend on the cxx crate or any generated bindings.
 #

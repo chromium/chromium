@@ -5392,7 +5392,6 @@
         'additional_compile_targets': [
           'mojo_rust',
           'rust_build_tests',
-          'rust_autocxx_tests',
         ],
         'mixins': [ 'pie_fleet' ],
         'test_suites': {
@@ -5406,7 +5405,6 @@
         'additional_compile_targets': [
           'mojo_rust',
           'rust_build_tests',
-          'rust_autocxx_tests',
         ],
         'mixins': [ 'pie_fleet' ],
         'test_suites': {
@@ -5422,7 +5420,6 @@
           'mojo_rust',
           'mojo_rust_tests',
           'rust_build_tests',
-          'rust_autocxx_tests',
         ],
         'mixins': [
           'linux-bionic'
@@ -5438,7 +5435,6 @@
           'mojo_rust',
           'mojo_rust_tests',
           'rust_build_tests',
-          'rust_autocxx_tests',
         ],
         'mixins': [
           'linux-bionic'
@@ -5454,7 +5450,6 @@
           'mojo_rust',
           'mojo_rust_tests',
           'rust_build_tests',
-          'rust_autocxx_tests',
         ],
         'mixins': [
           'linux-bionic'

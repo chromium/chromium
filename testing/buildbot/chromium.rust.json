@@ -4,8 +4,7 @@
   "android-rust-arm-dbg": {
     "additional_compile_targets": [
       "mojo_rust",
-      "rust_build_tests",
-      "rust_autocxx_tests"
+      "rust_build_tests"
     ],
     "gtest_tests": [
       {
@@ -105,8 +104,7 @@
   "android-rust-arm-rel": {
     "additional_compile_targets": [
       "mojo_rust",
-      "rust_build_tests",
-      "rust_autocxx_tests"
+      "rust_build_tests"
     ],
     "gtest_tests": [
       {
@@ -208,8 +206,7 @@
       "gnrt_unittests",
       "mojo_rust",
       "mojo_rust_tests",
-      "rust_build_tests",
-      "rust_autocxx_tests"
+      "rust_build_tests"
     ],
     "gtest_tests": [
       {
@@ -301,25 +298,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "isolate_name": "autocxx_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "autocxx_tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "autocxx_tests",
-        "test_id_prefix": "ninja://third_party/rust/autocxx/chromium_integration/tests:autocxx_tests/"
-      },
       {
         "isolate_name": "build_rust_tests",
         "merge": {
@@ -365,8 +343,7 @@
       "gnrt_unittests",
       "mojo_rust",
       "mojo_rust_tests",
-      "rust_build_tests",
-      "rust_autocxx_tests"
+      "rust_build_tests"
     ],
     "gtest_tests": [
       {
@@ -458,25 +435,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "isolate_name": "autocxx_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "autocxx_tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "autocxx_tests",
-        "test_id_prefix": "ninja://third_party/rust/autocxx/chromium_integration/tests:autocxx_tests/"
-      },
       {
         "isolate_name": "build_rust_tests",
         "merge": {
@@ -522,8 +480,7 @@
       "gnrt_unittests",
       "mojo_rust",
       "mojo_rust_tests",
-      "rust_build_tests",
-      "rust_autocxx_tests"
+      "rust_build_tests"
     ],
     "gtest_tests": [
       {
@@ -615,25 +572,6 @@
       }
     ],
     "isolated_scripts": [
-      {
-        "isolate_name": "autocxx_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "autocxx_tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "autocxx_tests",
-        "test_id_prefix": "ninja://third_party/rust/autocxx/chromium_integration/tests:autocxx_tests/"
-      },
       {
         "isolate_name": "build_rust_tests",
         "merge": {
