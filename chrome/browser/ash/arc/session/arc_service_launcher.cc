@@ -71,6 +71,7 @@
 #include "chrome/browser/ash/arc/net/cert_manager_impl.h"
 #include "chrome/browser/ash/arc/notification/arc_boot_error_notification.h"
 #include "chrome/browser/ash/arc/notification/arc_provision_notification_service.h"
+#include "chrome/browser/ash/arc/notification/arc_vm_data_migration_notifier.h"
 #include "chrome/browser/ash/arc/oemcrypto/arc_oemcrypto_bridge.h"
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
@@ -312,6 +313,11 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   if (arc::IsArcVmEnabled()) {
     // ARCVM-only services.
     ArcMemoryPressureBridge::GetForBrowserContext(profile);
+
+    if (base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
+      arc_vm_data_migration_notifier_ =
+          std::make_unique<ArcVmDataMigrationNotifier>(profile);
+    }
   } else {
     // ARC Container-only services.
     ArcAppfuseBridge::GetForBrowserContext(profile);
