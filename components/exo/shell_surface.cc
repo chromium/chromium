@@ -746,26 +746,18 @@ void ShellSurface::AttemptToStartDrag(int component) {
       target->Contains(mouse_pressed_handler)) {
     return;
   }
-  auto end_drag = [](ShellSurface* shell_surface,
-                     ash::ToplevelWindowEventHandler::DragResult result) {
-    if (result != ash::ToplevelWindowEventHandler::DragResult::WINDOW_DESTROYED)
-      shell_surface->EndDrag();
-  };
 
   if (gesture_target) {
     gfx::PointF location = toplevel_handler->event_location_in_gesture_target();
     aura::Window::ConvertPointToTarget(
         gesture_target, widget_->GetNativeWindow()->GetRootWindow(), &location);
-    toplevel_handler->AttemptToStartDrag(
-        target, location, component,
-        base::BindOnce(end_drag, base::Unretained(this)));
+    toplevel_handler->AttemptToStartDrag(target, location, component, {});
   } else {
     gfx::Point location = aura::Env::GetInstance()->last_mouse_location();
     ::wm::ConvertPointFromScreen(widget_->GetNativeWindow()->GetRootWindow(),
                                  &location);
-    toplevel_handler->AttemptToStartDrag(
-        target, gfx::PointF(location), component,
-        base::BindOnce(end_drag, base::Unretained(this)));
+    toplevel_handler->AttemptToStartDrag(target, gfx::PointF(location),
+                                         component, {});
   }
   // Notify client that resizing state has changed.
   if (IsResizing())
