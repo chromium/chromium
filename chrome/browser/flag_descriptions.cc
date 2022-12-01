@@ -5566,6 +5566,11 @@ const char kImeSystemEmojiPickerExtensionDescription[] =
     "Emoji picker extension allows users to select emoticons and symbols to "
     "input.";
 
+const char kImeSystemEmojiPickerGIFSupportName[] =
+    "System emoji picker gif support";
+const char kImeSystemEmojiPickerGIFSupportDescription[] =
+    "Emoji picker gif support allows users to select gifs to input.";
+
 const char kImeSystemEmojiPickerSearchExtensionName[] =
     "System emoji picker search extension";
 const char kImeSystemEmojiPickerSearchExtensionDescription[] =

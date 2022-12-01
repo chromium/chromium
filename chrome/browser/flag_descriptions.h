@@ -3211,6 +3211,9 @@ extern const char kHindiInscriptLayoutDescription[];
 extern const char kImeSystemEmojiPickerExtensionName[];
 extern const char kImeSystemEmojiPickerExtensionDescription[];
 
+extern const char kImeSystemEmojiPickerGIFSupportName[];
+extern const char kImeSystemEmojiPickerGIFSupportDescription[];
+
 extern const char kImeSystemEmojiPickerClipboardName[];
 extern const char kImeSystemEmojiPickerClipboardDescription[];
 

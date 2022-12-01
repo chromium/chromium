@@ -60121,6 +60121,7 @@ from previous Chrome versions.
   <int value="-366949535" label="KeyboardShortcutViewerApp:enabled"/>
   <int value="-365920680" label="ImageCaptureAPI:disabled"/>
   <int value="-365806433" label="BuiltInModuleAll:disabled"/>
+  <int value="-365082768" label="SystemEmojiPickerGIFSupport:enabled"/>
   <int value="-365039598" label="WebBluetooth:disabled"/>
   <int value="-364604989"
       label="LinkManagedNoticeToChromeUIManagementURL:disabled"/>
@@ -62526,6 +62527,7 @@ from previous Chrome versions.
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
   <int value="1065451331" label="NtpRealboxPedals:disabled"/>
+  <int value="1065481614" label="SystemEmojiPickerGIFSupport:disabled"/>
   <int value="1065547630" label="EnableInputNoiseCancellationUi:disabled"/>
   <int value="1065553214" label="ClosedTabCache:enabled"/>
   <int value="1067618884" label="enable-experimental-input-view-features"/>

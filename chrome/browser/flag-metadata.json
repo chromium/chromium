@@ -1931,6 +1931,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-cros-ime-system-emoji-picker-gif-support",
+    "owners": [ "kaiqiliang", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-cros-ime-system-emoji-picker-search-extension",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 110
