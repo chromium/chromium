@@ -554,6 +554,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // will be ignored (they won't reset the timeout) and will return `false`.
   virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
 
+  // Configures whether a Cookie header added to this request should not be
+  // overwritten by the network service.
+  virtual void SetAllowCookiesFromBrowser(bool allow_cookies_from_browser) = 0;
+
   // Prerender2:
   // Used for metrics.
   virtual PrerenderTriggerType GetPrerenderTriggerType() = 0;

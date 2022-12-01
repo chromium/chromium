@@ -30,7 +30,8 @@ NavigationRequestInfo::NavigationRequestInfo(
     const absl::optional<std::vector<net::SourceStream::SourceType>>&
         devtools_accepted_stream_types,
     bool is_pdf,
-    WeakDocumentPtr initiator_document)
+    WeakDocumentPtr initiator_document,
+    bool allow_cookies_from_browser)
     : common_params(std::move(common_params)),
       begin_params(std::move(begin_params)),
       sandbox_flags(sandbox_flags),
@@ -49,7 +50,8 @@ NavigationRequestInfo::NavigationRequestInfo(
       client_security_state(std::move(client_security_state)),
       devtools_accepted_stream_types(devtools_accepted_stream_types),
       is_pdf(is_pdf),
-      initiator_document(std::move(initiator_document)) {}
+      initiator_document(std::move(initiator_document)),
+      allow_cookies_from_browser(allow_cookies_from_browser) {}
 
 NavigationRequestInfo::~NavigationRequestInfo() {}
 

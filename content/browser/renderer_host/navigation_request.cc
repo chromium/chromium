@@ -4508,7 +4508,8 @@ void NavigationRequest::OnStartChecksComplete(
           devtools_navigation_token(),
           frame_tree_node_->current_frame_host()->devtools_frame_token(),
           std::move(cors_exempt_headers), std::move(client_security_state),
-          devtools_accepted_stream_types, is_pdf_, initiator_document_),
+          devtools_accepted_stream_types, is_pdf_, initiator_document_,
+          allow_cookies_from_browser_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(),
@@ -6781,6 +6782,11 @@ bool NavigationRequest::SetNavigationTimeout(base::TimeDelta timeout) {
   if (loader_)
     return loader_->SetNavigationTimeout(timeout);
   return false;
+}
+
+void NavigationRequest::SetAllowCookiesFromBrowser(
+    bool allow_cookies_from_browser) {
+  allow_cookies_from_browser_ = allow_cookies_from_browser;
 }
 
 void NavigationRequest::RenderProcessBlockedStateChanged(bool blocked) {

@@ -231,6 +231,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       request_info.client_security_state.Clone();
   new_request->trusted_params->accept_ch_frame_observer =
       std::move(accept_ch_frame_observer);
+  new_request->trusted_params->allow_cookies_from_browser =
+      request_info.allow_cookies_from_browser;
   new_request->is_outermost_main_frame = request_info.is_outermost_main_frame;
   new_request->priority = net::HIGHEST;
   new_request->request_initiator = request_info.common_params->initiator_origin;

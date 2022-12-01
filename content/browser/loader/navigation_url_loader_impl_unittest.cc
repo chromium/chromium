@@ -262,7 +262,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             nullptr /* client_security_state */,
             absl::nullopt /* devtools_accepted_stream_types */,
             false /* is_pdf */,
-            content::WeakDocumentPtr() /* initiator_document */));
+            content::WeakDocumentPtr() /* initiator_document */,
+            false /* allow_cookies_from_browser */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
     most_recent_resource_request_ = absl::nullopt;
     interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>(

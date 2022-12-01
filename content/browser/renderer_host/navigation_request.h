@@ -390,6 +390,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsPdf() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const override;
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
+  void SetAllowCookiesFromBrowser(bool allow_cookies_from_browser) override;
   PrerenderTriggerType GetPrerenderTriggerType() override;
   std::string GetPrerenderEmbedderHistogramSuffix() override;
 #if BUILDFLAG(IS_ANDROID)
@@ -2222,6 +2223,10 @@ class CONTENT_EXPORT NavigationRequest
       renderer_cancellation_listener_{this};
   bool renderer_cancellation_window_ended_ = false;
   base::OnceClosure renderer_cancellation_window_ended_callback_;
+
+  // Whether a Cookie header added to this request should not be overwritten by
+  // the network service.
+  bool allow_cookies_from_browser_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

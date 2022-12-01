@@ -46,7 +46,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       const absl::optional<std::vector<net::SourceStream::SourceType>>&
           devtools_accepted_stream_types,
       bool is_pdf,
-      WeakDocumentPtr initiator_document);
+      WeakDocumentPtr initiator_document,
+      bool allow_cookies_from_browser);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
@@ -129,6 +130,10 @@ struct CONTENT_EXPORT NavigationRequestInfo {
 
   // The initiator document, if still available.
   const WeakDocumentPtr initiator_document;
+
+  // Whether a Cookie header added to this request should not be overwritten by
+  // the network service.
+  const bool allow_cookies_from_browser;
 };
 
 }  // namespace content
