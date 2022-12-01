@@ -24,6 +24,7 @@ ts_library("build_ts") {
     "ambient_subpage_element_test.ts",
     "avatar_camera_element_test.ts",
     "avatar_list_element_test.ts",
+    "dynamic_color_element_test.ts",
     "google_photos_albums_element_test.ts",
     "google_photos_collection_element_test.ts",
     "google_photos_photos_by_album_id_element_test.ts",

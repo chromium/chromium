@@ -29,7 +29,8 @@ export interface DynamicColorScheme {
 
 export interface DynamicColorElement {
   $: {
-    keys: IronA11yKeysElement,
+    staticColorKeys: IronA11yKeysElement,
+    colorSchemeKeys: IronA11yKeysElement,
     colorSchemeSelector: IronSelectorElement,
     staticColorSelector: IronSelectorElement,
   };
@@ -119,20 +120,26 @@ export class DynamicColorElement extends WithPersonalizationStore {
 
   override ready() {
     super.ready();
-    this.$.keys.target = this.automaticSeedColorEnabled ?
-        this.$.colorSchemeSelector :
-        this.$.staticColorSelector;
+    this.$.staticColorKeys.target = this.$.staticColorSelector;
+    this.$.colorSchemeKeys.target = this.$.colorSchemeSelector;
+  }
+
+  private onStaticColorKeysPress_(
+      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
+    this.onKeysPress_(
+        e, this.$.staticColorSelector, this.staticColorSelectedButton_);
+  }
+
+  private onColorSchemeKeysPress_(
+      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
+    this.onKeysPress_(
+        e, this.$.colorSchemeSelector, this.colorSchemeSelectedButton_);
   }
 
   /** Handle keyboard navigation. */
   private onKeysPress_(
-      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
-    const selector = this.automaticSeedColorEnabled ?
-        this.$.colorSchemeSelector :
-        this.$.staticColorSelector;
-    const prevButton = this.automaticSeedColorEnabled ?
-        this.colorSchemeSelectedButton_ :
-        this.staticColorSelectedButton_;
+      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>,
+      selector: IronSelectorElement, prevButton: CrButtonElement) {
     switch (e.detail.key) {
       case 'left':
         selector.selectPrevious();
@@ -147,15 +154,14 @@ export class DynamicColorElement extends WithPersonalizationStore {
     if (prevButton) {
       prevButton.removeAttribute('tabindex');
     }
+
     // Add focus state for new button.
-    if (this.automaticSeedColorEnabled && this.colorSchemeSelectedButton_) {
-      this.colorSchemeSelectedButton_.setAttribute('tabindex', '0');
-      this.colorSchemeSelectedButton_.focus();
-    }
-    if (!this.automaticSeedColorEnabled && this.staticColorSelectedButton_) {
-      this.staticColorSelectedButton_.setAttribute('tabindex', '0');
-      this.staticColorSelectedButton_.focus();
-    }
+    const selectedButton = this.automaticSeedColorEnabled ?
+        this.colorSchemeSelectedButton_ :
+        this.staticColorSelectedButton_;
+    selectedButton.setAttribute('tabindex', '0');
+    selectedButton.focus();
+
     e.detail.keyboardEvent.preventDefault();
   }
 

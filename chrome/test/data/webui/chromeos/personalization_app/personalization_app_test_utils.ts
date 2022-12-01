@@ -10,7 +10,7 @@
 import {emptyState, PersonalizationState, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestAmbientProvider} from './test_ambient_interface_provider.js';
 import {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';
@@ -92,4 +92,40 @@ export function createSvgDataUrl(id: string): string {
       `height="100px" width="100px" id="${id}">` +
       '<rect fill="red" height="100px" width="100px"></rect>' +
       '</svg>';
+}
+
+/**
+ * Waits for the specified |element| to be the active element in
+ * the containing element's shadow DOM.
+ */
+export async function waitForActiveElement(
+    targetElement: Element, elementContainer: HTMLElement) {
+  while (elementContainer.shadowRoot!.activeElement !== targetElement) {
+    await waitAfterNextRender(elementContainer!);
+  }
+}
+
+/** Dispatches a keydown event to |element| for the specified |key|. */
+export function dispatchKeydown(element: HTMLElement, key: string) {
+  const init: KeyboardEventInit = {bubbles: true, key};
+  switch (key) {
+    case 'ArrowDown':
+      init.keyCode = 40;
+      break;
+    case 'ArrowRight':
+      init.keyCode = 39;
+      break;
+    case 'ArrowLeft':
+      init.keyCode = 37;
+      break;
+    case 'ArrowUp':
+      init.keyCode = 38;
+      break;
+  }
+  element.dispatchEvent(new KeyboardEvent('keydown', init));
+}
+
+/** Returns the active element in the given element's shadow DOM. */
+export function getActiveElement(element: Element): HTMLElement {
+  return (element.shadowRoot!.activeElement as HTMLElement);
 }

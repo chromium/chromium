@@ -53,19 +53,18 @@
     <cr-toggle checked="{{automaticSeedColorEnabled}}">
     </cr-toggle>
   </div>
-  <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
+  <iron-a11y-keys id="colorSchemeKeys" keys="left right" on-keys-pressed="onColorSchemeKeysPress_">
   </iron-a11y-keys>
-  <iron-selector 
+  <iron-a11y-keys id="staticColorKeys" keys="left right" on-keys-pressed="onStaticColorKeysPress_">
+  </iron-a11y-keys>
+  <iron-selector
       id="colorSchemeSelector"
       selected="0"
       selected-item="{{colorSchemeSelectedButton_}}"
       hidden="[[!automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[schemes_]]" as="scheme">
       <cr-button tabindex$="[[getTabIndex_(scheme.id)]]">
-        <!-- TODO(b/254481177): Replace with the real SVG. -->
-        <svg>
-          <circle style$="fill: [[scheme.primaryColor]]" cx="24" cy="24" r="24"></circle>
-        </svg>
+        <color-scheme-icon-svg scheme="[[scheme]]"></color-scheme-icon-svg>
       </cr-button>
     </template>
   </iron-selector>
