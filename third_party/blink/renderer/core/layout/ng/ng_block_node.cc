@@ -436,6 +436,33 @@ const NGLayoutResult* NGBlockNode::Layout(
   const NGLayoutResult* layout_result = box_->CachedLayoutResult(
       constraint_space, break_token, early_break, column_spanner_path,
       &fragment_geometry, &cache_status);
+
+  if ((cache_status == NGLayoutCacheStatus::kHit ||
+       cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout) &&
+      needed_layout && constraint_space.CacheSlot() == NGCacheSlot::kLayout &&
+      !ChildLayoutBlockedByDisplayLock()) {
+    // If we're not guaranteed to discard the old fragment (which we're only
+    // guaranteed to do if we have decided to perform full layout), we need to
+    // clone the result to pick the most recent fragments from the LayoutBox
+    // children, because there may be relayout boundary children which just got
+    // laid out by the subtree layout machinery, but didn't rebuild the fragment
+    // tree spine, because its containing block (this node) was already marked
+    // for layout, and thus assuming that the containing block would eventually
+    // update its children (and the remaining part of the ancestry) anyway. So,
+    // here we are, fulfilling our part of the deal.
+    layout_result =
+        NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
+    const auto& new_fragment =
+        To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+    // If we have fragment items, and we're not done (more fragments to follow),
+    // be sure to miss the cache for any subsequent fragments, lest finalization
+    // be missed (which could cause trouble for NGInlineCursor when walking the
+    // items).
+    bool clear_trailing_results =
+        new_fragment.BreakToken() && new_fragment.HasItems();
+    StoreResultInLayoutBox(layout_result, break_token, clear_trailing_results);
+  }
+
   if (cache_status == NGLayoutCacheStatus::kHit) {
     DCHECK(layout_result);
 
@@ -450,32 +477,8 @@ const NGLayoutResult* NGBlockNode::Layout(
     // added or removed scrollbars during overflow recalculation, which may have
     // marked us for layout. In that case the cached result is unusable, and we
     // need to re-lay out now.
-    if (!box_->NeedsLayout()) {
-      if (needed_layout &&
-          constraint_space.CacheSlot() == NGCacheSlot::kLayout) {
-        // We need to clone the result to pick the most recent fragments from
-        // the LayoutBox children, because there may be relayout boundary
-        // children which just got laid out by the subtree layout machinery, but
-        // didn't rebuild the fragment tree spine, because its containing block
-        // (this node) was already marked for layout, and thus assuming that the
-        // containing block would eventually update its children (and remaining
-        // part of the ancestry) anyway. So, here we are, fulfilling our part of
-        // the deal.
-        layout_result =
-            NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
-        const auto& new_fragment =
-            To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
-        // If we have fragment items, and we're not done (more fragments to
-        // follow), be sure to miss the cache for any subsequent fragments, lest
-        // finalization be missed (which could cause trouble for NGInlineCursor
-        // when walking the items).
-        bool clear_trailing_results =
-            new_fragment.BreakToken() && new_fragment.HasItems();
-        StoreResultInLayoutBox(layout_result, break_token,
-                               clear_trailing_results);
-      }
+    if (!box_->NeedsLayout())
       return layout_result;
-    }
   }
 
   if (!fragment_geometry) {

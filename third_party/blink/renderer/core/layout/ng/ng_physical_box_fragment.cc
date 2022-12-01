@@ -695,8 +695,11 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
 
   const auto* layout_object = GetSelfOrContainerLayoutObject();
   if (UNLIKELY(!layout_object)) {
-    NOTREACHED();
-    return nullptr;
+    // In some cases the layout object may have been removed. This can of course
+    // not happen if we have actually performed layout, but we may in some cases
+    // clone a fragment *before* layout, to ensure that the fragment tree spine
+    // is correctly rebuilt after a subtree layout.
+    return this;
   }
   const auto* box = DynamicTo<LayoutBox>(layout_object);
   if (UNLIKELY(!box)) {
