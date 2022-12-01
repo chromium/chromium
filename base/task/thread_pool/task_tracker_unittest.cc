@@ -122,7 +122,11 @@ class ThreadPostingAndRunningTask : public SimpleThread {
 
       post_and_queue_succeeded =
           tracker_->WillPostTask(&task_, sequence_->shutdown_behavior());
-      sequence_->BeginTransaction().PushImmediateTask(std::move(task_));
+      {
+        auto transaction = sequence_->BeginTransaction();
+        transaction.WillPushImmediateTask();
+        transaction.PushImmediateTask(std::move(task_));
+      }
       task_source_ = tracker_->RegisterTaskSource(std::move(sequence_));
 
       post_and_queue_succeeded &= !!task_source_;
@@ -958,6 +962,7 @@ TEST_F(ThreadPoolTaskTrackerTest, CurrentSequenceToken) {
 
   {
     Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
+    sequence_transaction.WillPushImmediateTask();
     sequence_transaction.PushImmediateTask(std::move(task));
 
     EXPECT_FALSE(SequenceToken::GetForCurrentThread().IsValid());
@@ -1158,7 +1163,11 @@ TEST_F(ThreadPoolTaskTrackerTest,
 
   scoped_refptr<Sequence> sequence =
       test::CreateSequenceWithTask(std::move(task_1), default_traits);
-  sequence->BeginTransaction().PushImmediateTask(std::move(task_2));
+  {
+    auto transaction = sequence->BeginTransaction();
+    transaction.WillPushImmediateTask();
+    transaction.PushImmediateTask(std::move(task_2));
+  }
   EXPECT_EQ(sequence,
             test::QueueAndRunTaskSource(&tracker_, sequence).Unregister());
 }

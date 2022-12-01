@@ -100,7 +100,8 @@ class BASE_EXPORT TaskTracker {
   // Informs this TaskTracker that |task| that is about to be pushed to a task
   // source with |priority|. Returns true if this operation is allowed (the
   // operation should be performed if-and-only-if it is).
-  [[nodiscard]] bool WillPostTaskNow(const Task& task, TaskPriority priority);
+  [[nodiscard]] bool WillPostTaskNow(const Task& task,
+                                     TaskPriority priority) const;
 
   // Informs this TaskTracker that |task_source| is about to be queued. Returns
   // a RegisteredTaskSource that should be queued if-and-only-if it evaluates to

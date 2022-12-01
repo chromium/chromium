@@ -123,13 +123,6 @@ RegisteredTaskSource& RegisteredTaskSource::operator=(
   return *this;
 }
 
-void RegisteredTaskSource::OnBecomeReady() {
-#if DCHECK_IS_ON()
-  DCHECK_EQ(run_step_, State::kInitial);
-#endif  // DCHECK_IS_ON()
-  task_source_->OnBecomeReady();
-}
-
 TaskSource::RunStatus RegisteredTaskSource::WillRunTask() {
   TaskSource::RunStatus run_status = task_source_->WillRunTask();
 #if DCHECK_IS_ON()

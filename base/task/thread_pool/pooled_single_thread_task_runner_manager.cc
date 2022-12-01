@@ -148,7 +148,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
 
     // |task| will be pushed to |sequence|, and |sequence| will be queued
     // to |priority_queue_| iff |sequence_should_be_queued| is true.
-    const bool sequence_should_be_queued = transaction.ShouldBeQueued();
+    const bool sequence_should_be_queued = transaction.WillPushImmediateTask();
     RegisteredTaskSource task_source;
     if (sequence_should_be_queued) {
       task_source = task_tracker_->RegisterTaskSource(sequence);
@@ -359,7 +359,8 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
       if (task_tracker()->WillPostTask(
               &pump_message_task, TaskShutdownBehavior::SKIP_ON_SHUTDOWN)) {
         auto transaction = message_pump_sequence_->BeginTransaction();
-        const bool sequence_should_be_queued = transaction.ShouldBeQueued();
+        const bool sequence_should_be_queued =
+            transaction.WillPushImmediateTask();
         DCHECK(sequence_should_be_queued)
             << "GetWorkFromWindowsMessageQueue() does not expect "
                "queueing of pump tasks.";

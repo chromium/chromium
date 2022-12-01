@@ -348,7 +348,7 @@ void ThreadPoolImpl::EndBestEffortFence() {
 bool ThreadPoolImpl::PostTaskWithSequenceNow(Task task,
                                              scoped_refptr<Sequence> sequence) {
   auto transaction = sequence->BeginTransaction();
-  const bool sequence_should_be_queued = transaction.ShouldBeQueued();
+  const bool sequence_should_be_queued = transaction.WillPushImmediateTask();
   RegisteredTaskSource task_source;
   if (sequence_should_be_queued) {
     task_source = task_tracker_->RegisterTaskSource(sequence);

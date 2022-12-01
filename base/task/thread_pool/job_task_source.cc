@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
@@ -365,7 +366,9 @@ bool JobTaskSource::WillReEnqueue(TimeTicks now,
 }
 
 // This is a no-op.
-void JobTaskSource::OnBecomeReady() {}
+bool JobTaskSource::OnBecomeReady() {
+  return false;
+}
 
 TaskSourceSortKey JobTaskSource::GetSortKey() const {
   return TaskSourceSortKey(priority_racy(), ready_time_,
@@ -376,6 +379,13 @@ TaskSourceSortKey JobTaskSource::GetSortKey() const {
 // However, the class still needs to provide an override.
 TimeTicks JobTaskSource::GetDelayedSortKey() const {
   return TimeTicks();
+}
+
+// This function isn't expected to be called since a job is never delayed.
+// However, the class still needs to provide an override.
+bool JobTaskSource::HasReadyTasks(TimeTicks now) const {
+  NOTREACHED();
+  return true;
 }
 
 Task JobTaskSource::Clear(TaskSource::Transaction* transaction) {

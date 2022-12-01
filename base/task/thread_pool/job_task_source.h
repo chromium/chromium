@@ -73,6 +73,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   size_t GetRemainingConcurrency() const override;
   TaskSourceSortKey GetSortKey() const override;
   TimeTicks GetDelayedSortKey() const override;
+  bool HasReadyTasks(TimeTicks now) const override;
 
   bool IsActive() const;
   size_t GetWorkerCount() const;
@@ -195,7 +196,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   bool DidProcessTask(TaskSource::Transaction* transaction) override;
   bool WillReEnqueue(TimeTicks now,
                      TaskSource::Transaction* transaction) override;
-  void OnBecomeReady() override;
+  bool OnBecomeReady() override;
 
   // Synchronizes access to workers state.
   mutable CheckedLock worker_lock_{UniversalSuccessor()};

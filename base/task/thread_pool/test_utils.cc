@@ -107,7 +107,9 @@ scoped_refptr<Sequence> CreateSequenceWithTask(
     TaskSourceExecutionMode execution_mode) {
   scoped_refptr<Sequence> sequence =
       MakeRefCounted<Sequence>(traits, task_runner.get(), execution_mode);
-  sequence->BeginTransaction().PushImmediateTask(std::move(task));
+  auto transaction = sequence->BeginTransaction();
+  transaction.WillPushImmediateTask();
+  transaction.PushImmediateTask(std::move(task));
   return sequence;
 }
 
@@ -190,7 +192,7 @@ void MockPooledTaskRunnerDelegate::PostTaskWithSequenceNow(
     Task task,
     scoped_refptr<Sequence> sequence) {
   auto transaction = sequence->BeginTransaction();
-  const bool sequence_should_be_queued = transaction.ShouldBeQueued();
+  const bool sequence_should_be_queued = transaction.WillPushImmediateTask();
   RegisteredTaskSource task_source;
   if (sequence_should_be_queued) {
     task_source = task_tracker_->RegisterTaskSource(std::move(sequence));

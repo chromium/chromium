@@ -58,17 +58,17 @@ TEST(ThreadPoolSequenceTest, PushTakeRemove) {
   Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
 
   // Push task A in the sequence. PushImmediateTask() should return true since
-  // it's the first task->
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
+  // it's the first task.
+  EXPECT_TRUE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(CreateTask(&mock_task_a));
 
   // Push task B, C and D in the sequence. PushImmediateTask() should return
   // false since there is already a task in a sequence.
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
+  EXPECT_FALSE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(CreateTask(&mock_task_b));
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
+  EXPECT_FALSE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(CreateTask(&mock_task_c));
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
+  EXPECT_FALSE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(CreateTask(&mock_task_d));
 
   // Take the task in front of the sequence. It should be task A.
@@ -85,8 +85,8 @@ TEST(ThreadPoolSequenceTest, PushTakeRemove) {
   EXPECT_TRUE(registered_task_source.WillReEnqueue(TimeTicks::Now(),
                                                    &sequence_transaction));
 
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
   registered_task_source.WillRunTask();
+  EXPECT_TRUE(sequence->has_worker_for_testing());
   task = registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_b, &task.value());
   EXPECT_FALSE(task->queue_time.is_null());
@@ -96,8 +96,8 @@ TEST(ThreadPoolSequenceTest, PushTakeRemove) {
   EXPECT_TRUE(registered_task_source.WillReEnqueue(TimeTicks::Now(),
                                                    &sequence_transaction));
 
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
   registered_task_source.WillRunTask();
+  EXPECT_TRUE(sequence->has_worker_for_testing());
   task = registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_c, &task.value());
   EXPECT_FALSE(task->queue_time.is_null());
@@ -106,13 +106,15 @@ TEST(ThreadPoolSequenceTest, PushTakeRemove) {
   EXPECT_TRUE(registered_task_source.DidProcessTask(&sequence_transaction));
   EXPECT_TRUE(registered_task_source.WillReEnqueue(TimeTicks::Now(),
                                                    &sequence_transaction));
+  EXPECT_FALSE(sequence->has_worker_for_testing());
 
   // Push task E in the sequence.
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
+  EXPECT_FALSE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(CreateTask(&mock_task_e));
 
   // Task D should be in front.
   registered_task_source.WillRunTask();
+  EXPECT_TRUE(sequence->has_worker_for_testing());
   task = registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_d, &task.value());
   EXPECT_FALSE(task->queue_time.is_null());
@@ -121,7 +123,6 @@ TEST(ThreadPoolSequenceTest, PushTakeRemove) {
   EXPECT_TRUE(registered_task_source.DidProcessTask(&sequence_transaction));
   EXPECT_TRUE(registered_task_source.WillReEnqueue(TimeTicks::Now(),
                                                    &sequence_transaction));
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
   registered_task_source.WillRunTask();
   task = registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_e, &task.value());
@@ -129,7 +130,11 @@ TEST(ThreadPoolSequenceTest, PushTakeRemove) {
 
   // Remove the empty slot. The sequence should now be empty.
   EXPECT_FALSE(registered_task_source.DidProcessTask(&sequence_transaction));
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
+
+  // Sequence is empty and it won't be returned to the priority queue.
+  EXPECT_FALSE(sequence->has_worker_for_testing());
+  EXPECT_FALSE(sequence->is_immediate_for_testing());
+  EXPECT_TRUE(sequence->IsEmptyForTesting());
 }
 
 // Verifies the sort key of a BEST_EFFORT sequence that contains one task.
@@ -141,6 +146,7 @@ TEST(ThreadPoolSequenceTest, GetSortKeyBestEffort) {
                                TaskSourceExecutionMode::kParallel);
   Sequence::Transaction best_effort_sequence_transaction(
       best_effort_sequence->BeginTransaction());
+  best_effort_sequence_transaction.WillPushImmediateTask();
   best_effort_sequence_transaction.PushImmediateTask(
       std::move(best_effort_task));
 
@@ -176,6 +182,7 @@ TEST(ThreadPoolSequenceTest, GetSortKeyForeground) {
                                TaskSourceExecutionMode::kParallel);
   Sequence::Transaction foreground_sequence_transaction(
       foreground_sequence->BeginTransaction());
+  foreground_sequence_transaction.WillPushImmediateTask();
   foreground_sequence_transaction.PushImmediateTask(std::move(foreground_task));
 
   // Get the sort key.
@@ -205,6 +212,7 @@ TEST(ThreadPoolSequenceTest, DidProcessTaskWithoutWillRunTask) {
   scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
       TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel);
   Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
+  EXPECT_TRUE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(
       Task(FROM_HERE, DoNothing(), TimeTicks::Now(), TimeDelta()));
 
@@ -221,6 +229,7 @@ TEST(ThreadPoolSequenceTest, TakeEmptyFrontSlot) {
   scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
       TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel);
   Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
+  sequence_transaction.WillPushImmediateTask();
   sequence_transaction.PushImmediateTask(
       Task(FROM_HERE, DoNothing(), TimeTicks::Now(), TimeDelta()));
 
@@ -249,91 +258,9 @@ TEST(ThreadPoolSequenceTest, TakeEmptySequence) {
   });
 }
 
-// Verify that the sequence sets its current location correctly depending on how
-// it's interacted with.
-TEST(ThreadPoolSequenceTest, PushTakeRemoveTasksWithLocationSetting) {
-  testing::StrictMock<MockTask> mock_task_a;
-  testing::StrictMock<MockTask> mock_task_b;
-
-  scoped_refptr<Sequence> sequence =
-      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::BEST_EFFORT), nullptr,
-                               TaskSourceExecutionMode::kParallel);
-
-  // sequence location is kNone at creation.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kNone);
-
-  Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
-
-  // Push task A in the sequence. ShouldBeQueued() should return
-  // true since sequence is empty.
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
-  sequence_transaction.PushImmediateTask(CreateTask(&mock_task_a));
-
-  // ShouldBeQueued()is called when a new task is about to be
-  // pushed and sequence will be put in the priority queue or is already in it.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
-
-  // Push task B into the sequence. ShouldBeQueued() should
-  // return false.
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
-  sequence_transaction.PushImmediateTask(CreateTask(&mock_task_b));
-
-  // ShouldBeQueued()is called when a new task is about to be
-  // pushed and sequence will be put in the priority queue or is already in it.
-  // Sequence location should be kImmediateQueue.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
-
-  auto registered_task_source =
-      RegisteredTaskSource::CreateForTesting(sequence);
-
-  registered_task_source.WillRunTask();
-
-  // WillRunTask typically indicate that a worker has called GetWork() and
-  // is ready to run a task so sequence location should have been changed
-  // to kInWorker.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kInWorker);
-
-  // The next task we get when we call Sequence::TakeTask should be Task A.
-  absl::optional<Task> task =
-      registered_task_source.TakeTask(&sequence_transaction);
-
-  // Remove the empty slot. Sequence still has task B. This should return true.
-  EXPECT_TRUE(registered_task_source.DidProcessTask(&sequence_transaction));
-  // Sequence can run immediately.
-  EXPECT_TRUE(registered_task_source.WillReEnqueue(TimeTicks::Now(),
-                                                   &sequence_transaction));
-
-  // Sequence is not empty so it will be returned to the priority queue and its
-  // location should be updated to kImmediateQueue.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
-
-  registered_task_source.WillRunTask();
-
-  // WillRunTask typically indicate that a worker has called GetWork() and
-  // is ready to run a task so sequence location should have been changed
-  // to kInWorker.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kInWorker);
-
-  task = registered_task_source.TakeTask(&sequence_transaction);
-
-  // Remove the empty slot. Sequence is be empty. This should return false.
-  EXPECT_FALSE(registered_task_source.DidProcessTask(&sequence_transaction));
-
-  // Sequence is empty so it won't be returned to the priority queue and its
-  // location should be updated to kNone.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kNone);
-}
-
-// Verify that the sequence location stays kInWorker when new tasks are being
-// pushed while it's being processed.
-TEST(ThreadPoolSequenceTest, CheckSequenceLocationInWorker) {
+// Verify that the sequence stays in worker when new tasks are being pushed
+// while it's being processed.
+TEST(ThreadPoolSequenceTest, SequenceHasWorker) {
   testing::StrictMock<MockTask> mock_task_a;
   testing::StrictMock<MockTask> mock_task_b;
 
@@ -343,35 +270,31 @@ TEST(ThreadPoolSequenceTest, CheckSequenceLocationInWorker) {
 
   Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
 
-  // Push task A in the sequence. ShouldBeQueued() should return
+  // Push task A in the sequence. WillPushImmediateTask() should return
   // true since sequence is empty.
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
+  EXPECT_TRUE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(CreateTask(&mock_task_a));
 
   auto registered_task_source =
       RegisteredTaskSource::CreateForTesting(sequence);
 
   registered_task_source.WillRunTask();
+
+  // WillRunTask indicates that a worker has called GetWork() and is ready to
+  // run a task.
+  EXPECT_TRUE(sequence->has_worker_for_testing());
 
   // The next task we get when we call Sequence::TakeTask should be Task A.
   absl::optional<Task> task_a =
       registered_task_source.TakeTask(&sequence_transaction);
 
-  // WillRunTask typically indicate that a worker has called GetWork() and
-  // is ready to run a task so sequence location should have been changed
-  // to kInWorker.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kInWorker);
-
-  // Push task B into the sequence. ShouldBeQueued() should
-  // return false.
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
+  // Push task B into the sequence. WillPushImmediateTask() should return false.
+  EXPECT_FALSE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(CreateTask(&mock_task_b));
 
   // Sequence is still being processed by a worker so pushing a new task
   // shouldn't change its location. We should expect it to still be in worker.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kInWorker);
+  EXPECT_TRUE(sequence->has_worker_for_testing());
 
   // Remove the empty slot. Sequence still has task B. This should return true.
   EXPECT_TRUE(registered_task_source.DidProcessTask(&sequence_transaction));
@@ -379,10 +302,8 @@ TEST(ThreadPoolSequenceTest, CheckSequenceLocationInWorker) {
   EXPECT_TRUE(registered_task_source.WillReEnqueue(TimeTicks::Now(),
                                                    &sequence_transaction));
 
-  // Sequence is not empty so it will be returned to the priority queue and its
-  // location should be updated to kImmediateQueue.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
+  // Sequence is not empty so it will be returned to the priority queue.
+  EXPECT_FALSE(sequence->has_worker_for_testing());
 
   registered_task_source.WillRunTask();
 
@@ -393,14 +314,13 @@ TEST(ThreadPoolSequenceTest, CheckSequenceLocationInWorker) {
   // Remove the empty slot. Sequence is be empty. This should return false.
   EXPECT_FALSE(registered_task_source.DidProcessTask(&sequence_transaction));
 
-  // Sequence is empty so it won't be returned to the priority queue and its
-  // location should be updated to kNone.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kNone);
+  // Sequence is empty and it won't be returned to the priority queue.
+  EXPECT_FALSE(sequence->has_worker_for_testing());
+  EXPECT_FALSE(sequence->is_immediate_for_testing());
+  EXPECT_TRUE(sequence->IsEmptyForTesting());
 }
 
-// Verify that the sequence handle delayed tasks and sets locations
-// appropriately
+// Verify that the sequence handle delayed tasks.
 TEST(ThreadPoolSequenceTest, PushTakeRemoveDelayedTasks) {
   TimeTicks now = TimeTicks::Now();
 
@@ -417,55 +337,31 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveDelayedTasks) {
 
   // Push task A in the sequence.
   auto delayed_task_a = CreateDelayedTask(&mock_task_a, Milliseconds(20), now);
-  // TopDelayedTaskWillChange(delayed_task_a) should return
-  // true since sequence is empty.
-  EXPECT_TRUE(sequence_transaction.TopDelayedTaskWillChange(delayed_task_a));
-  // ShouldBeQueued() should return true since sequence is empty.
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
-  // PushImmediateTask(...) should be used for immediate tasks only
-  // EXPECT_DCHECK_DEATH({
-  //   sequence_transaction.PushImmediateTask(delayed_task_a);
-  // });
-  sequence_transaction.PushDelayedTask(std::move(delayed_task_a));
-
-  // Sequence doesn't have immediate tasks so its location should be the delayed
-  // queue.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kDelayedQueue);
+  // PushDelayedTask(delayed_task_a, now) should return true since sequence is
+  // empty.
+  EXPECT_TRUE(sequence_transaction.PushDelayedTask(std::move(delayed_task_a)));
 
   // Push task B into the sequence.
   auto delayed_task_b = CreateDelayedTask(&mock_task_b, Milliseconds(10), now);
-  // TopDelayedTaskWillChange(...) should return true since task b runtime is
-  // earlier than task a's.
-  EXPECT_TRUE(sequence_transaction.TopDelayedTaskWillChange(delayed_task_b));
-  // ShouldBeQueued() should return true since task B is earlier
-  // than task A.
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
-  sequence_transaction.PushDelayedTask(std::move(delayed_task_b));
+  // PushDelayedTask(...) should return true since task b runtime is earlier
+  // than task a's.
+  EXPECT_TRUE(sequence_transaction.PushDelayedTask(std::move(delayed_task_b)));
 
-  // Sequence doesn't have immediate tasks so its location should be the delayed
-  // queue.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kDelayedQueue);
+  // Sequence doesn't have immediate tasks.
+  EXPECT_FALSE(sequence->is_immediate_for_testing());
 
   // Time advances by 15s.
   now += Milliseconds(15);
 
   // Set sequence to ready
-  sequence->OnBecomeReady();
+  EXPECT_TRUE(sequence->OnBecomeReady());
 
-  // Sequence is about to be run so its location should change to immediate
-  // queue.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
+  // Sequence is about to be run.
+  EXPECT_TRUE(sequence->is_immediate_for_testing());
 
   auto registered_task_source =
       RegisteredTaskSource::CreateForTesting(sequence);
   registered_task_source.WillRunTask();
-
-  // WillRunTask() has been called so sequence location should be kInWorker.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kInWorker);
 
   // Take the task in front of the sequence. It should be task B.
   absl::optional<Task> task =
@@ -477,34 +373,27 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveDelayedTasks) {
   // so this should return true.
   EXPECT_TRUE(registered_task_source.DidProcessTask(&sequence_transaction));
 
-  // Task A is still not ready so this should return false and location
-  // should be set to delayed queue
+  // Task A is still not ready so this should return false.
   EXPECT_FALSE(
       registered_task_source.WillReEnqueue(now, &sequence_transaction));
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kDelayedQueue);
+  EXPECT_FALSE(sequence->is_immediate_for_testing());
 
   // Push task C into the sequence.
   auto delayed_task_c = CreateDelayedTask(&mock_task_c, Milliseconds(1), now);
-  // TopDelayedTaskWillChange(...) should return true since task c runtime is
+  // PushDelayedTask(...) should return true since task c runtime is
   // earlier than task a's.
-  EXPECT_TRUE(sequence_transaction.TopDelayedTaskWillChange(delayed_task_c));
-  // ShouldBeQueued() should return true since task C is earlier
-  // than task A.
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
-  sequence_transaction.PushDelayedTask(std::move(delayed_task_c));
+  EXPECT_TRUE(sequence_transaction.PushDelayedTask(std::move(delayed_task_c)));
 
   // Push task D into the sequence.
   auto delayed_task_d = CreateDelayedTask(&mock_task_d, Milliseconds(1), now);
-  // TopDelayedTaskWillChange(...) should return false since task d queue time
+  // PushDelayedTask(...) should return false since task d queue time
   // is later than task c's.
-  EXPECT_FALSE(sequence_transaction.TopDelayedTaskWillChange(delayed_task_d));
-  sequence_transaction.PushDelayedTask(std::move(delayed_task_d));
+  EXPECT_FALSE(sequence_transaction.PushDelayedTask(std::move(delayed_task_d)));
 
   // Time advances by 2ms.
   now += Milliseconds(2);
   // Set sequence to ready
-  registered_task_source.OnBecomeReady();
+  EXPECT_TRUE(registered_task_source->OnBecomeReady());
 
   registered_task_source.WillRunTask();
 
@@ -516,11 +405,9 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveDelayedTasks) {
   // Remove the empty slot. Task D should now be in front.
   EXPECT_TRUE(registered_task_source.DidProcessTask(&sequence_transaction));
 
-  // Task D is ready so this should return true and location
-  // should be set to immediate queue
+  // Task D is ready so this should return true.
   EXPECT_TRUE(registered_task_source.WillReEnqueue(now, &sequence_transaction));
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
+  EXPECT_TRUE(sequence->is_immediate_for_testing());
 
   registered_task_source.WillRunTask();
 
@@ -535,11 +422,9 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveDelayedTasks) {
   // Time advances by 10ms.
   now += Milliseconds(10);
 
-  // Task A is ready so this should return true and location
-  // should be set to immediate queue
+  // Task A is ready so this should return true.
   EXPECT_TRUE(registered_task_source.WillReEnqueue(now, &sequence_transaction));
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
+  EXPECT_TRUE(sequence->is_immediate_for_testing());
 
   registered_task_source.WillRunTask();
 
@@ -550,16 +435,14 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveDelayedTasks) {
 
   // Remove the empty slot. Sequence should be empty now.
   EXPECT_FALSE(registered_task_source.DidProcessTask(&sequence_transaction));
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kNone);
 
-  // Sequence is empty so there should be no task to execute.
-  // This should return true
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
+  // Sequence is empty and it won't be returned to the priority queue.
+  EXPECT_FALSE(sequence->has_worker_for_testing());
+  EXPECT_FALSE(sequence->is_immediate_for_testing());
+  EXPECT_TRUE(sequence->IsEmptyForTesting());
 }
 
-// Verify that the sequence handle delayed and immediate tasks and sets
-// locations appropriately
+// Verify that the sequence handle delayed and immediate tasks.
 TEST(ThreadPoolSequenceTest, PushTakeRemoveMixedTasks) {
   TimeTicks now = TimeTicks::Now();
 
@@ -577,39 +460,29 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveMixedTasks) {
   // Starting with a delayed task
   // Push task A in the sequence.
   auto delayed_task_a = CreateDelayedTask(&mock_task_a, Milliseconds(20), now);
-  // TopDelayedTaskWillChange(delayed_task_a) should return
+  // PushDelayedTask(delayed_task_a) should return
   // true since sequence is empty.
-  EXPECT_TRUE(sequence_transaction.TopDelayedTaskWillChange(delayed_task_a));
-  // ShouldBeQueued() should return true since sequence is empty.
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
-  sequence_transaction.PushDelayedTask(std::move(delayed_task_a));
-
-  // Sequence doesn't have immediate tasks so its location should be the delayed
-  // queue.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kDelayedQueue);
+  EXPECT_TRUE(sequence_transaction.PushDelayedTask(std::move(delayed_task_a)));
+  // Sequence doesn't have immediate tasks.
+  EXPECT_FALSE(sequence->is_immediate_for_testing());
 
   // Push an immediate task while a delayed task is already sitting in the
   // delayed queue. This should prompt a move to the immediate queue.
   // Push task B in the sequence.
   auto task_b = CreateTask(&mock_task_b, now);
-  // ShouldBeQueued() should return true since sequence is in delayed queue.
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
+  // WillPushImmediateTask() should return true since sequence is in delayed
+  // queue.
+  EXPECT_TRUE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(std::move(task_b));
-  // Sequence doesn't have immediate tasks so its location should will change
-  // to immediate queue.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
+  // Sequence now has an immediate tasks.
+  EXPECT_TRUE(sequence->is_immediate_for_testing());
 
   auto registered_task_source =
       RegisteredTaskSource::CreateForTesting(sequence);
 
   // Prepare to run a task.
   registered_task_source.WillRunTask();
-
-  // WillRunTask() has been called so sequence location should be kInWorker.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kInWorker);
+  EXPECT_TRUE(sequence->has_worker_for_testing());
 
   // Take the task in front of the sequence. It should be task B.
   absl::optional<Task> task =
@@ -624,31 +497,21 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveMixedTasks) {
   // Time advances by 21ms.
   now += Milliseconds(21);
 
-  // Task A is ready so this should return true and location
-  // should be set to immediate queue.
+  // Task A is ready so this should return true.
   EXPECT_TRUE(registered_task_source.WillReEnqueue(now, &sequence_transaction));
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
+  EXPECT_TRUE(sequence->is_immediate_for_testing());
 
   registered_task_source.WillRunTask();
+  EXPECT_TRUE(sequence->has_worker_for_testing());
 
-  // WillRunTask() has been called so sequence location should be kInWorker.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kInWorker);
-
-  // Push a delayed task while sequence is being run by a worker.
-  // Push task C in the sequence.
+  // Push a delayed task while sequence is being run by a worker. Push task C in
+  // the sequence.
   auto delayed_task_c = CreateDelayedTask(&mock_task_c, Milliseconds(5), now);
-  // TopDelayedTaskWillChange(delayed_task_c) should return
-  // false since task A is ripe and earlier than task C.
-  EXPECT_FALSE(sequence_transaction.TopDelayedTaskWillChange(delayed_task_c));
-  // ShouldBeQueued() should return false since sequence is in worker.
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
-  sequence_transaction.PushDelayedTask(std::move(delayed_task_c));
-
-  // Sequence is in worker.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kInWorker);
+  // PushDelayedTask(delayed_task_c) should return false since sequence is in
+  // worker.
+  EXPECT_FALSE(sequence_transaction.PushDelayedTask(std::move(delayed_task_c)));
+  // Sequence is still in worker.
+  EXPECT_TRUE(sequence->has_worker_for_testing());
 
   // This should return task A
   task = registered_task_source.TakeTask(&sequence_transaction);
@@ -661,37 +524,28 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveMixedTasks) {
   // Time advances by 2ms.
   now += Milliseconds(2);
 
-  // Task C is not ready so this should return false and location should be set
-  // to delayed queue.
+  // Task C is not ready so this should return false.
   EXPECT_FALSE(
       registered_task_source.WillReEnqueue(now, &sequence_transaction));
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kDelayedQueue);
+  EXPECT_FALSE(sequence->is_immediate_for_testing());
 
   // Time advances by 4ms. Task C becomes ready.
   now += Milliseconds(4);
 
   // Set sequence to ready
-  registered_task_source.OnBecomeReady();
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
+  EXPECT_TRUE(registered_task_source->OnBecomeReady());
+  EXPECT_TRUE(sequence->is_immediate_for_testing());
 
   // Push task D in the sequence while sequence is ready.
   auto task_d = CreateTask(&mock_task_d, now);
-  // ShouldBeQueued() should return false since sequence is already in immediate
-  // queue.
-  EXPECT_FALSE(sequence_transaction.ShouldBeQueued());
+  // WillPushImmediateTask() should return false since sequence is already in
+  // immediate queue.
+  EXPECT_FALSE(sequence_transaction.WillPushImmediateTask());
   sequence_transaction.PushImmediateTask(std::move(task_d));
-
-  // Sequence should be in immediate queue.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
+  EXPECT_TRUE(sequence->is_immediate_for_testing());
 
   registered_task_source.WillRunTask();
-
-  // WillRunTask() has been called so sequence location should be kInWorker.
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kInWorker);
+  EXPECT_TRUE(sequence->has_worker_for_testing());
 
   // This should return task C since was ready before Task D was posted.
   task = registered_task_source.TakeTask(&sequence_transaction);
@@ -701,11 +555,9 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveMixedTasks) {
   // Remove the empty slot. Task D should now be in front.
   EXPECT_TRUE(registered_task_source.DidProcessTask(&sequence_transaction));
 
-  // Task D should be run so this should return true and location should be set
-  // to immediate queue.
+  // Task D should be run so this should return true.
   EXPECT_TRUE(registered_task_source.WillReEnqueue(now, &sequence_transaction));
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kImmediateQueue);
+  EXPECT_TRUE(sequence->is_immediate_for_testing());
 
   registered_task_source.WillRunTask();
 
@@ -716,8 +568,8 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveMixedTasks) {
 
   // Remove the empty slot. Sequence should be empty.
   EXPECT_FALSE(registered_task_source.DidProcessTask(&sequence_transaction));
-  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
-            Sequence::SequenceLocation::kNone);
+  EXPECT_FALSE(sequence->has_worker_for_testing());
+  EXPECT_FALSE(sequence->is_immediate_for_testing());
 }
 
 // Test that PushDelayedTask method is used only for delayed tasks
@@ -732,9 +584,6 @@ TEST(ThreadPoolSequenceTest, TestPushDelayedTaskMethodUsage) {
 
   // Push task B in the sequence.
   auto task_a = CreateTask(&mock_task_a);
-  // ShouldBeQueued() should return true since sequence is empty.
-  EXPECT_TRUE(sequence_transaction.ShouldBeQueued());
-  // PushDelayedTask(...) should be used for delayed tasks only.
   EXPECT_DCHECK_DEATH(
       { sequence_transaction.PushDelayedTask(std::move(task_a)); });
 }
@@ -753,8 +602,8 @@ TEST(ThreadPoolSequenceTest, GetDelayedSortKeyMixedtasks) {
   Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
 
   // Create a first delayed task.
-  sequence_transaction.PushDelayedTask(
-      CreateDelayedTask(&mock_task_a, Milliseconds(10), now));
+  EXPECT_TRUE(sequence_transaction.PushDelayedTask(
+      CreateDelayedTask(&mock_task_a, Milliseconds(10), now)));
 
   // Get the delayed sort key (first time).
   const TimeTicks sort_key_1 = sequence->GetDelayedSortKey();
@@ -764,6 +613,7 @@ TEST(ThreadPoolSequenceTest, GetDelayedSortKeyMixedtasks) {
 
   // Push an immediate task that should run after the delayed task.
   auto immediate_task = CreateTask(&mock_task_b, now);
+  sequence_transaction.WillPushImmediateTask();
   sequence_transaction.PushImmediateTask(std::move(immediate_task));
 
   // Get the delayed sort key (second time).
@@ -836,9 +686,9 @@ TEST(ThreadPoolSequenceTest, GetDelayedSortKeyDelayedtasks) {
   // Time advances by 11ms
   now += Milliseconds(11);
 
+  sequence->OnBecomeReady();
   auto registered_task_source =
       RegisteredTaskSource::CreateForTesting(sequence);
-  registered_task_source.OnBecomeReady();
   registered_task_source.WillRunTask();
   absl::optional<Task> task =
       registered_task_source.TakeTask(&sequence_transaction);
