@@ -38,12 +38,13 @@ void TabSearchButton::FrameColorsChanged() {
   // Icon color needs to be updated here as this is called when the hosting
   // window switches between active and inactive states. In each state the
   // foreground color of the tab controls is expected to change.
-  SetImage(Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(
-               base::FeatureList::IsEnabled(features::kTabSearchChevronIcon)
-                   ? vector_icons::kCaretDownIcon
-                   : kTabSearchIcon,
-               GetForegroundColor()));
+  SetImageModel(
+      Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          base::FeatureList::IsEnabled(features::kTabSearchChevronIcon)
+              ? vector_icons::kCaretDownIcon
+              : kTabSearchIcon,
+          GetForegroundColor()));
 }
 
 void TabSearchButton::PaintIcon(gfx::Canvas* canvas) {
