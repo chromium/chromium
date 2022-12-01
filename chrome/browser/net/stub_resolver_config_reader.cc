@@ -42,6 +42,11 @@
 #include "chrome/browser/enterprise/util/android_enterprise_info.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #include "base/win/win_util.h"
@@ -173,6 +178,11 @@ StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
   pref_change_registrar_.Add(prefs::kDnsOverHttpsTemplates, pref_callback);
   pref_change_registrar_.Add(prefs::kAdditionalDnsQueryTypesEnabled,
                              pref_callback);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  pref_change_registrar_.Add(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                             pref_callback);
+  pref_change_registrar_.Add(prefs::kDnsOverHttpsSalt, pref_callback);
+#endif
 
   parental_controls_delay_timer_.Start(
       FROM_HERE, kParentalControlsCheckDelay,
@@ -378,8 +388,15 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
 
   net::DnsOverHttpsConfig doh_config;
   if (secure_dns_mode != net::SecureDnsMode::kOff) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ash::dns_over_https::TemplatesUriResolverImpl doh_template_uri_resolver;
+    doh_template_uri_resolver.UpdateFromPrefs(local_state_);
+    doh_config = net::DnsOverHttpsConfig::FromStringLax(
+        doh_template_uri_resolver.GetEffectiveTemplates());
+#else
     doh_config = net::DnsOverHttpsConfig::FromStringLax(
         local_state_->GetString(prefs::kDnsOverHttpsTemplates));
+#endif
   }
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
@@ -400,5 +417,18 @@ void StubResolverConfigReader::OnAndroidOwnedStateCheckComplete(
   // update the network service if the actual result is "true" to save time.
   if (android_has_owner_.value())
     UpdateNetworkService(false /* record_metrics */);
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+absl::optional<std::string>
+StubResolverConfigReader::GetDohWithIdentifiersDisplayServers() {
+  ash::dns_over_https::TemplatesUriResolverImpl doh_template_uri_resolver;
+  doh_template_uri_resolver.UpdateFromPrefs(local_state_);
+
+  if (doh_template_uri_resolver.GetDohWithIdentifiersActive())
+    return doh_template_uri_resolver.GetDisplayTemplates();
+
+  return absl::nullopt;
 }
 #endif

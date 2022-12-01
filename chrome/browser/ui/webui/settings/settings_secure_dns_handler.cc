@@ -48,6 +48,15 @@ base::Value::Dict CreateSecureDnsSettingDict() {
   base::Value::Dict dict;
   dict.Set("mode", SecureDnsConfig::ModeToString(config.mode()));
   dict.Set("config", config.doh_servers().ToString());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::optional<std::string> doh_with_identifiers_servers_for_display =
+      SystemNetworkContextManager::GetStubResolverConfigReader()
+          ->GetDohWithIdentifiersDisplayServers();
+  dict.Set("dohWithIdentifiersActive",
+           doh_with_identifiers_servers_for_display.has_value());
+  dict.Set("configForDisplay",
+           doh_with_identifiers_servers_for_display.value_or(std::string()));
+#endif
   dict.Set("managementMode", static_cast<int>(config.management_mode()));
   return dict;
 }
@@ -99,6 +108,18 @@ void SecureDnsHandler::OnJavascriptAllowed() {
       base::BindRepeating(
           &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
           base::Unretained(this)));
+#if BUILDFLAG(IS_CHROMEOS)
+  pref_registrar_.Add(
+      prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+      base::BindRepeating(
+          &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
+          base::Unretained(this)));
+  pref_registrar_.Add(
+      prefs::kDnsOverHttpsSalt,
+      base::BindRepeating(
+          &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
+          base::Unretained(this)));
+#endif
 }
 
 void SecureDnsHandler::OnJavascriptDisallowed() {

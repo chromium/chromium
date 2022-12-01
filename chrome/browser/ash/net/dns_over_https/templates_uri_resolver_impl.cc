@@ -181,7 +181,7 @@ void TemplatesUriResolverImpl::UpdateFromPrefs(PrefService* pref_service) {
   doh_with_identifiers_active_ = true;
 }
 
-bool TemplatesUriResolverImpl::GetDoHWithIdentifiersActive() {
+bool TemplatesUriResolverImpl::GetDohWithIdentifiersActive() {
   return doh_with_identifiers_active_;
 }
 

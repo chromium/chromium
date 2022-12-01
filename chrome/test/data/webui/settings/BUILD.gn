@@ -25,6 +25,7 @@ preprocessed_files = [
   "personalization_options_test.ts",
   "privacy_page_test.ts",
   "route_tests.ts",
+  "secure_dns_test.ts",
   "security_page_test.ts",
   "settings_menu_test.ts",
   "settings_toggle_button_tests.ts",
@@ -32,6 +33,7 @@ preprocessed_files = [
   "sync_account_control_test.ts",
   "test_about_page_browser_proxy.ts",
   "test_lifetime_browser_proxy.ts",
+  "test_privacy_page_browser_proxy.ts",
   "test_sync_browser_proxy.ts",
 ]
 
@@ -108,7 +110,6 @@ non_preprocessed_files = [
   "search_page_test.ts",
   "search_settings_test.ts",
   "secure_dns_interactive_test.ts",
-  "secure_dns_test.ts",
   "security_keys_subpage_test.ts",
   "security_keys_phones_subpage_test.ts",
   "settings_animated_pages_test.ts",
@@ -138,7 +139,6 @@ non_preprocessed_files = [
   "test_password_manager_proxy.ts",
   "test_performance_browser_proxy.ts",
   "test_performance_metrics_proxy.ts",
-  "test_privacy_page_browser_proxy.ts",
   "test_profile_info_browser_proxy.ts",
   "test_reset_browser_proxy.ts",
   "test_search_engines_browser_proxy.ts",

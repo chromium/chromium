@@ -27,7 +27,7 @@ class TemplatesUriResolver {
 
   // Checks whether the DoH system is configured to provide DoH identifiers in
   // the DNS URL.
-  virtual bool GetDoHWithIdentifiersActive() = 0;
+  virtual bool GetDohWithIdentifiersActive() = 0;
 
   // Returns the templates with identifiers to be used for actual DNS lookups.
   // The identifiers are hashed using a salt value.

@@ -29,6 +29,13 @@
 #include "base/win/win_util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_type.h"
+#endif
+
 using testing::_;
 using testing::IsEmpty;
 using testing::Return;
@@ -191,6 +198,41 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
     }
     return false;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Similar to `GetLastSettingsChangedMessage`, but only reads data related to
+  // template URIs with identifiers.  Returns false if the message was invalid
+  // or not found; in this case the out params may be not set.
+  bool GetIdentifierConfigsFromLastSettingsChangedMessage(
+      bool* out_doh_with_identifiers_active,
+      std::string* out_doh_config_for_display) {
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_.call_data())) {
+      if (data->function_name() != "cr.webUIListenerCallback" ||
+          !data->arg1()->is_string() ||
+          data->arg1()->GetString() != "secure-dns-setting-changed") {
+        continue;
+      }
+      const base::Value::Dict* dict = data->arg2()->GetIfDict();
+      if (!dict)
+        return false;
+      absl::optional<bool> doh_with_identifiers_active =
+          dict->FindBool("dohWithIdentifiersActive");
+      if (!doh_with_identifiers_active)
+        return false;
+      *out_doh_with_identifiers_active = *doh_with_identifiers_active;
+
+      const std::string* doh_config_for_display =
+          dict->FindString("configForDisplay");
+      if (!doh_config_for_display)
+        return false;
+      *out_doh_config_for_display = *doh_config_for_display;
+
+      return true;
+    }
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Sets a policy update which will cause power pref managed change.
   void SetPolicyForPolicyKey(policy::PolicyMap* policy_map,
@@ -386,6 +428,59 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
                                             &management_mode));
   EXPECT_EQ(good_post_template, doh_config);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest,
+                       SecureDnsTemplatesWithIdentifiers) {
+  std::string templatesWithIdentifier =
+      "https://foo.test-${USER_EMAIL}/dns-query{?dns}";
+  std::string templatesWithIdentifierDisplay =
+      "https://foo.test-${testuser@managed.com}/dns-query{?dns}";
+  std::string templatesWithIdentifierEffective =
+      "https://"
+      "foo.test-"
+      "FD5DFBED0D7B875A6416AFC61A37DBB63B6BA05B627AE9F5BE463A1F858F2D4E/"
+      "dns-query{?dns}";
+  std::string templates = "https://bar.test/dns-query{?dns}";
+
+  // Create an affiliated user.
+  std::unique_ptr<ash::MockUserManager> user_manager =
+      std::make_unique<ash::MockUserManager>();
+  const AccountId account_id0(AccountId::FromUserEmail("testuser@managed.com"));
+  user_manager->AddUserWithAffiliationAndType(
+      account_id0, /* is_affiliated=*/true, user_manager::USER_TYPE_REGULAR);
+  user_manager::ScopedUserManager user_manager_enabler(std::move(user_manager));
+
+  std::string secure_dns_mode;
+  std::string doh_config, doh_config_for_display;
+  bool doh_with_identifiers_active;
+  int management_mode;
+  PrefService* local_state = g_browser_process->local_state();
+
+  local_state->SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeSecure);
+  local_state->SetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                         templatesWithIdentifier);
+  local_state->SetString(prefs::kDnsOverHttpsSalt, "salt-for-test");
+  local_state->SetString(prefs::kDnsOverHttpsTemplates, templates);
+
+  EXPECT_TRUE(GetLastSettingsChangedMessage(&secure_dns_mode, &doh_config,
+                                            &management_mode));
+  EXPECT_TRUE(GetIdentifierConfigsFromLastSettingsChangedMessage(
+      &doh_with_identifiers_active, &doh_config_for_display));
+  EXPECT_EQ(templatesWithIdentifierEffective, doh_config);
+  EXPECT_EQ(templatesWithIdentifierDisplay, doh_config_for_display);
+  EXPECT_TRUE(doh_with_identifiers_active);
+
+  local_state->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  EXPECT_TRUE(GetLastSettingsChangedMessage(&secure_dns_mode, &doh_config,
+                                            &management_mode));
+  EXPECT_TRUE(GetIdentifierConfigsFromLastSettingsChangedMessage(
+      &doh_with_identifiers_active, &doh_config_for_display));
+  EXPECT_EQ(templates, doh_config);
+  EXPECT_FALSE(doh_with_identifiers_active);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, TemplateValid) {
   base::Value::List args;

@@ -43,6 +43,14 @@ export interface SecureDnsSetting {
   mode: SecureDnsMode;
   config: string;
   managementMode: SecureDnsUiManagementMode;
+  // <if expr="chromeos_ash">
+  // Indicates if the templates URI contain user identifiers configured via
+  // policy.
+  dohWithIdentifiersActive: boolean;
+  // The template URI with plain text identifiers. In the effective template
+  // URI `config` the identifiers are hashed and hex encoded.
+  configForDisplay: string;
+  // </if>
 }
 
 export interface PrivacyPageBrowserProxy {

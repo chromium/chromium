@@ -39,7 +39,7 @@ class MockDoHTemplatesUriResolver
  public:
   MockDoHTemplatesUriResolver() = default;
   MOCK_METHOD1(UpdateFromPrefs, void(PrefService*));
-  MOCK_METHOD0(GetDoHWithIdentifiersActive, bool());
+  MOCK_METHOD0(GetDohWithIdentifiersActive, bool());
   MOCK_METHOD0(GetEffectiveTemplates, std::string());
   MOCK_METHOD0(GetDisplayTemplates, std::string());
 };

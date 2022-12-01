@@ -163,14 +163,14 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiers) {
             kDisplayTemplateIdentifiers);
   EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(),
             kEffectiveTemplateIdentifiers);
-  EXPECT_TRUE(doh_template_uri_resolver_->GetDoHWithIdentifiersActive());
+  EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
   // `prefs::kDnsOverHttpsTemplates` should apply when
   // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
   pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   doh_template_uri_resolver_->UpdateFromPrefs(pref_service());
   EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(), kGoogleDns);
-  EXPECT_FALSE(doh_template_uri_resolver_->GetDoHWithIdentifiersActive());
+  EXPECT_FALSE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 }
 
 // Tests that only user indentifiers are replaced in
@@ -187,7 +187,7 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersUnaffiliated) {
 
   EXPECT_EQ(doh_template_uri_resolver_->GetDisplayTemplates(),
             kDisplayTemplateIdentifiersUnaffiliated);
-  EXPECT_TRUE(doh_template_uri_resolver_->GetDoHWithIdentifiersActive());
+  EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 }
 
 // Verifies that, when the pref sets a list of template URI separated by space,
@@ -209,7 +209,7 @@ TEST_F(TemplatesUriResolverImplTest, MultipleTemplatesWithIdentifiers) {
                          kEffectiveTemplateIdentifiers);
   EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(),
             expected_multiple_templates);
-  EXPECT_TRUE(doh_template_uri_resolver_->GetDoHWithIdentifiersActive());
+  EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 }
 
 // Tests that reusing the existing policy DnsOverHttpsTemplates for testing
@@ -234,7 +234,7 @@ TEST_F(TemplatesUriResolverImplTest, ReuseOldPolicyFeature) {
   EXPECT_EQ(doh_template_uri_resolver_->GetDisplayTemplates(), "");
   EXPECT_EQ(doh_template_uri_resolver_->GetEffectiveTemplates(),
             kTemplateIdentifiers);
-  EXPECT_FALSE(doh_template_uri_resolver_->GetDoHWithIdentifiersActive());
+  EXPECT_FALSE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
   features.Reset();
   features.InitAndEnableFeature(
@@ -249,7 +249,7 @@ TEST_F(TemplatesUriResolverImplTest, ReuseOldPolicyFeature) {
             kEffectiveTemplateIdentifiersWithTestSalt);
   EXPECT_NE(kEffectiveTemplateIdentifiersWithTestSalt,
             kEffectiveTemplateIdentifiers);
-  EXPECT_TRUE(doh_template_uri_resolver_->GetDoHWithIdentifiersActive());
+  EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 }
 
 }  // namespace ash::dns_over_https

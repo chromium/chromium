@@ -292,6 +292,10 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kSecure);
   EXPECT_EQ(*net::DnsOverHttpsConfig::FromString("https://doh.test/"),
             secure_dns_config.doh_servers());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_FALSE(
+      config_reader_->GetDohWithIdentifiersDisplayServers().has_value());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
@@ -362,6 +366,36 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kAutomatic);
   EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kTemplateIdentifiers[] =
+    "https://dns.google.alternativeuri/"
+    "${USER_EMAIL}";
+constexpr char kEffectiveTemplateIdentifiers[] =
+    "https://dns.google.alternativeuri/"
+    "8E71AF9783B71B6996DAE103B28BC55882BD5CB93B29260D000D8121D9D10977";
+constexpr char kDisplayTemplateIdentifiers[] =
+    "https://dns.google.alternativeuri/"
+    "${stub-user@example.com}";
+IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
+                       DohWithIdentifiers) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeSecure);
+  local_state->SetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                         kTemplateIdentifiers);
+  local_state->SetString(prefs::kDnsOverHttpsSalt, "test-salt");
+
+  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      false /* force_check_parental_controls_for_automatic_mode */);
+
+  EXPECT_EQ(secure_dns_config.doh_servers().ToString(),
+            kEffectiveTemplateIdentifiers);
+
+  EXPECT_THAT(config_reader_->GetDohWithIdentifiersDisplayServers(),
+              testing::Optional(std::string(kDisplayTemplateIdentifiers)));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          StubResolverConfigReaderBrowsertest,

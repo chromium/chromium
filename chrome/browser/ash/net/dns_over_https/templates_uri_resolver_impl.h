@@ -48,7 +48,7 @@ class TemplatesUriResolverImpl : public TemplatesUriResolver {
 
   // This function checks whether the DoH system is configured to provide
   // DoH identifiers in the DNS URL
-  bool GetDoHWithIdentifiersActive() override;
+  bool GetDohWithIdentifiersActive() override;
 
   // This function returns the templates to be used for actual DNS lookups
   std::string GetEffectiveTemplates() override;

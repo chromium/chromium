@@ -193,7 +193,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         assertNotReached('Received unknown secure DNS mode');
     }
 
-    this.updateManagementView_(setting.managementMode);
+    this.updateManagementView_(setting);
   }
 
   /**
@@ -296,7 +296,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * Updates the setting to communicate the type of management, if any. The
    * setting is always collapsed if there is any management.
    */
-  private updateManagementView_(managementMode: SecureDnsUiManagementMode) {
+  private updateManagementView_(setting: SecureDnsSetting) {
     if (this.prefs === undefined) {
       return;
     }
@@ -307,19 +307,32 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: this.secureDnsToggle_.value,
     };
+
+    // The message to be displayed when the device is managed. On Chrome OS, if
+    // the effective template URI contains identifiers (which are
+    // hashed with a salt and hex encoded), then the message will contain the
+    // template URI for display in which the identifiers are shown in plain
+    // text.
+    let secureDescription = loadTimeData.getString('secureDnsDescription');
+    // <if expr="chromeos_ash">
+    if (setting.dohWithIdentifiersActive) {
+      secureDescription = loadTimeData.substituteString(
+          loadTimeData.getString('secureDnsWithIdentifiersDescription'),
+          setting.configForDisplay);
+    }
+    // </if>
+
     if (this.getPref('dns_over_https.mode').enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED) {
       pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
       pref.controlledBy = this.getPref('dns_over_https.mode').controlledBy;
-      this.secureDnsDescription_ =
-          loadTimeData.getString('secureDnsDescription');
+      this.secureDnsDescription_ = secureDescription;
     } else {
       // If the secure DNS mode was forcefully overridden by Chrome, provide an
       // explanation in the setting subtitle.
-      switch (managementMode) {
+      switch (setting.managementMode) {
         case SecureDnsUiManagementMode.NO_OVERRIDE:
-          this.secureDnsDescription_ =
-              loadTimeData.getString('secureDnsDescription');
+          this.secureDnsDescription_ = secureDescription;
           break;
         case SecureDnsUiManagementMode.DISABLED_MANAGED:
           pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
@@ -333,7 +346,8 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
           break;
         default:
           assertNotReached(
-              'Received unknown secure DNS management mode ' + managementMode);
+              'Received unknown secure DNS management mode ' +
+              setting.managementMode);
       }
     }
     this.secureDnsToggle_ = pref;
