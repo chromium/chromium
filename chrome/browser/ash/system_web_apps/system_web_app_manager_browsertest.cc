@@ -82,6 +82,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/common/constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
@@ -1799,22 +1800,38 @@ class SystemWebAppAccessibilityTest : public SystemWebAppManagerBrowserTest {
   ~SystemWebAppAccessibilityTest() override = default;
 
  protected:
+  void EnableChromeVox();
   test::SpeechMonitor speech_monitor_;
 };
 
+void SystemWebAppAccessibilityTest::EnableChromeVox() {
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  speech_monitor_.ExpectSpeechPattern("*");
+  speech_monitor_.Call([this]() {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+        browser()->profile(), extension_misc::kChromeVoxExtensionId, R"JS(
+        import('/chromevox/background/chromevox_state.js').then(
+            module => module.ChromeVoxState.ready().then(() =>
+                window.domAutomationController.send('done')));
+        )JS");
+  });
+}
+
 IN_PROC_BROWSER_TEST_P(SystemWebAppAccessibilityTest,
                        CanCycleToWindowControlButtons) {
-  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  EnableChromeVox();
   WaitForTestSystemAppInstall();
 
   // Launch the app so it shows up in shelf.
   Browser* app_browser;
-  LaunchApp(maybe_installation_->GetType(), &app_browser);
+  gfx::NativeWindow app_window;
 
-  auto* app_window = app_browser->window()->GetNativeWindow();
-
-  // F6 to switch pane.
   speech_monitor_.Call([&]() {
+    LaunchApp(maybe_installation_->GetType(), &app_browser);
+
+    app_window = app_browser->window()->GetNativeWindow();
+
+    // F6 to switch pane.
     ui_controls::SendKeyPress(app_window, ui::VKEY_F6, /*Ctrl*/ false,
                               /*Shift*/ false, /*Alt*/ false,
                               /*Launcher*/ false);

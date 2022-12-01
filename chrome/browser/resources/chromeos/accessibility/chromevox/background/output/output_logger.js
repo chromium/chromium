@@ -5,6 +5,7 @@
 /**
  * @fileoverview Provides output logger.
  */
+import {LocalStorage} from '../../../common/local_storage.js';
 import {LogType} from '../../common/log_types.js';
 import {LogStore} from '../logging/log_store.js';
 
@@ -12,28 +13,27 @@ import {OutputRuleSpecifier} from './output_rules.js';
 
 export class OutputFormatLogger {
   /**
-   * @param {string} enableKey The key to enable logging in localStorage
+   * @param {string} enableKey The key to enable logging in LocalStorage
    * @param {!LogType} type
    */
   constructor(enableKey, type) {
     /** @private {string} */
     this.str_ = '';
-
     /** @private {string} */
-    this.localStorageEnabledKey_ = enableKey;
+    this.storageEnabledKey_ = enableKey;
     /** @private {!LogType} */
     this.logType_ = type;
   }
 
   /** @return {boolean} */
   get loggingDisabled() {
-    return localStorage[this.localStorageEnabledKey_] !== 'true';
+    return !LocalStorage.get(this.storageEnabledKey_);
   }
 
   /** Sends the queued logs to the LogStore. */
   commitLogs() {
     if (this.str_) {
-      LogStore.getInstance().writeTextLog(this.str_, this.logType_);
+      LogStore.instance.writeTextLog(this.str_, this.logType_);
     }
   }
 

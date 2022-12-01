@@ -2800,16 +2800,33 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
   speech_monitor.Call([this]() {
     // Disable earcons (https://crbug.com/396507).
     const std::string script(R"JS(
-        const module = await import('/chromevox/background/chromevox.js');
+        let module = await import('/chromevox/background/chromevox.js');
         module.ChromeVox.earcons.playEarcon = function() {};
+        module = await import('/chromevox/background/chromevox_state.js');
+        await module.ChromeVoxState.ready();
+
+        // Wait for ChromeVox to have a current range before the test starts
+        // traversal through shelf to ensure that the browser does not show
+        // mid shelf traversal, and causes the a11y focus to unexpectedly
+        // switch to the omnibox mid test.
+        if (!module.ChromeVoxState.instance.currentRange) {
+          await new Promise(resolve => {
+              new (class {
+                  constructor() {
+                    module.ChromeVoxState.addObserver(this);
+                  }
+                  onCurrentRangeChanged(newRange) {
+                    if (newRange) {
+                        module.ChromeVoxState.removeObserver(this);
+                        resolve();
+                    }
+                  }
+              })();
+          });
+        }
     )JS");
     ExecuteScriptInChromeVox(browser(), script);
   });
-
-  // Wait for an utterance from the browser before the test starts traversal
-  // through shelf to ensure that the browser does not show mid shelf traversal,
-  // and causes the a11y focus to unexpectedly switch to the omnibox mid test.
-  speech_monitor.ExpectSpeech("about:blank");
 
   ash::RootWindowController* controller =
       ash::Shell::GetRootWindowControllerWithDisplayId(

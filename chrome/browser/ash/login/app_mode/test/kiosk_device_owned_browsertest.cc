@@ -703,16 +703,6 @@ IN_PROC_BROWSER_TEST_F(
                 app_profile, extension_misc::kChromeVoxExtensionId,
                 kGetFromStorageAPI));
 
-  // Store data in localStorage and verify that it is saved.
-  constexpr char kSetAndReadFromLocalStorage[] = R"(
-      localStorage.setItem('test2', 'testValue2');
-      domAutomationController.send(localStorage.getItem('test2'));
-    )";
-  EXPECT_EQ("testValue2",
-            extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-                app_profile, extension_misc::kChromeVoxExtensionId,
-                kSetAndReadFromLocalStorage));
-
   // The data should persist when extension is restarted.
   AccessibilityManager::Get()->EnableSpokenFeedback(false);
   test::SpeechMonitor speech_monitor2;
@@ -725,13 +715,6 @@ IN_PROC_BROWSER_TEST_F(
             extensions::browsertest_util::ExecuteScriptInBackgroundPage(
                 app_profile, extension_misc::kChromeVoxExtensionId,
                 kGetFromStorageAPI));
-
-  constexpr char kGetFromLocalStorage[] =
-      R"( domAutomationController.send(localStorage.getItem('test2'));)";
-  EXPECT_EQ("testValue2",
-            extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-                app_profile, extension_misc::kChromeVoxExtensionId,
-                kGetFromLocalStorage));
 }
 
 IN_PROC_BROWSER_TEST_F(

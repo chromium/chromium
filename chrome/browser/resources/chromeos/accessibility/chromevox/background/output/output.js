@@ -10,6 +10,7 @@ import {AutomationUtil} from '../../../common/automation_util.js';
 import {constants} from '../../../common/constants.js';
 import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
+import {LocalStorage} from '../../../common/local_storage.js';
 import {AutomationTreeWalker} from '../../../common/tree_walker.js';
 import {Earcon} from '../../common/abstract_earcons.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
@@ -1220,7 +1221,7 @@ export class Output {
    * @private
    */
   ancestry_(node, prevNode, type, buff, formatLog, optionalArgs = {}) {
-    if (localStorage['useVerboseMode'] === 'false') {
+    if (LocalStorage.get('useVerboseMode') === false) {
       return;
     }
 
@@ -1506,7 +1507,7 @@ export class Output {
       text = range.start.getText().substring(rangeStart, rangeEnd);
     }
 
-    if (localStorage['languageSwitching'] === 'true') {
+    if (LocalStorage.get('languageSwitching')) {
       this.assignLocaleAndAppend_(text, node, buff, options);
     } else {
       this.append_(buff, text, options);
@@ -1542,7 +1543,7 @@ export class Output {
    * @private
    */
   hint_(range, uniqueAncestors, type, buff, formatLog) {
-    if (!this.enableHints_ || localStorage['useVerboseMode'] !== 'true') {
+    if (!this.enableHints_ || LocalStorage.get('useVerboseMode') !== true) {
       return;
     }
 

@@ -38,6 +38,7 @@ ChromeVoxBluetoothBrailleDisplayManagerWebUITest =
     await importModule(
         'BluetoothBrailleDisplayManager',
         '/chromevox/options/bluetooth_braille_display_manager.js');
+    await importModule('LocalStorage', '/common/local_storage.js');
   }
 };
 
@@ -87,7 +88,7 @@ TEST_F(
             assertEquals('1234', address);
             callback();
           });
-      localStorage['preferredBrailleDisplayAddress'] = '1234';
+      LocalStorage.set('preferredBrailleDisplayAddress', '1234');
       const manager = new BluetoothBrailleDisplayManager();
       manager.connect({address: 'abcd', connected: false, paired: false});
     });
@@ -97,7 +98,7 @@ TEST_F(
     function() {
       chrome.bluetoothPrivate.connect = this.newCallback();
       chrome.bluetoothPrivate.disconnectAll = assertNotReached;
-      localStorage['preferredBrailleDisplayAddress'] = 'abcd';
+      LocalStorage.set('preferredBrailleDisplayAddress', 'abcd');
       const manager = new BluetoothBrailleDisplayManager();
       manager.connect({address: 'abcd', connected: false, paired: false});
     });
@@ -148,7 +149,7 @@ TEST_F(
             assertEquals('abcd', address);
           });
 
-      localStorage['preferredBrailleDisplayAddress'] = 'abcd';
+      LocalStorage.set('preferredBrailleDisplayAddress', 'abcd');
       const manager = new BluetoothBrailleDisplayManager();
       let devices = [];
       chrome.bluetooth.getDevices = callback => callback(devices);

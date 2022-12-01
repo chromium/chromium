@@ -155,4 +155,4 @@ export class GestureCommandHandler {
 /** @private {GestureCommandHandler} */
 GestureCommandHandler.instance_;
 
-GestureCommandHandler.init();
+ChromeVoxState.ready().then(() => GestureCommandHandler.init());

@@ -12,6 +12,7 @@ import {Cursor, CursorUnit} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
+import {LocalStorage} from '../../common/local_storage.js';
 import {RectUtil} from '../../common/rect_util.js';
 import {Earcon} from '../common/abstract_earcons.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
@@ -1753,7 +1754,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
   /** @private */
   toggleBrailleTable_() {
-    let brailleTableType = localStorage['brailleTableType'];
+    let brailleTableType = LocalStorage.get('brailleTableType');
     let output = '';
     if (brailleTableType === 'brailleTable6') {
       brailleTableType = 'brailleTable8';
@@ -1767,10 +1768,10 @@ export class CommandHandler extends CommandHandlerInterface {
       output = '@OPTIONS_BRAILLE_TABLE_TYPE_8';
     }
 
-    localStorage['brailleTable'] = localStorage[brailleTableType];
-    localStorage['brailleTableType'] = brailleTableType;
+    LocalStorage.set('brailleTable', LocalStorage.get(brailleTableType));
+    LocalStorage.set('brailleTableType', brailleTableType);
     BrailleBackground.instance.getTranslatorManager().refresh(
-        localStorage[brailleTableType]);
+        LocalStorage.get(brailleTableType));
     new Output().format(output).go();
   }
 
@@ -1786,14 +1787,14 @@ export class CommandHandler extends CommandHandlerInterface {
   toggleScreen_() {
     const oldState = sessionStorage.getItem('darkScreen');
     const newState = (oldState === 'true') ? false : true;
-    if (newState && localStorage['acceptToggleScreen'] !== 'true') {
+    if (newState && !LocalStorage.get('acceptToggleScreen')) {
       // If this is the first time, show a confirmation dialog.
       chrome.accessibilityPrivate.showConfirmationDialog(
           Msgs.getMsg('toggle_screen_title'),
           Msgs.getMsg('toggle_screen_description'), confirmed => {
             if (confirmed) {
               sessionStorage.setItem('darkScreen', 'true');
-              localStorage['acceptToggleScreen'] = true;
+              LocalStorage.set('acceptToggleScreen', true);
               chrome.accessibilityPrivate.darkenScreen(true);
               new Output().format('@toggle_screen_off').go();
             }

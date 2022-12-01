@@ -29,6 +29,7 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'ExpandingBrailleTranslator',
         '/chromevox/background/braille/expanding_braille_translator.js');
+    await importModule('LocalStorage', '/common/local_storage.js');
 
     /** @const */
     this.NAV_BRAILLE = new NavBraille({text: 'Hello, world!'});
@@ -383,9 +384,9 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'RandB_Random', function() {
 AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'UpdatePrefs', function() {
   this.displayState = {available: false};
   const manager = new BrailleDisplayManager(this.translatorManager);
-  assertEquals('false', localStorage['menuBrailleCommands']);
+  assertEquals(false, LocalStorage.get('menuBrailleCommands'));
   this.simulateOnDisplayStateChanged({available: true});
-  assertEquals('true', localStorage['menuBrailleCommands']);
+  assertEquals(true, LocalStorage.get('menuBrailleCommands'));
   this.simulateOnDisplayStateChanged({available: false});
-  assertEquals('false', localStorage['menuBrailleCommands']);
+  assertEquals(false, LocalStorage.get('menuBrailleCommands'));
 });

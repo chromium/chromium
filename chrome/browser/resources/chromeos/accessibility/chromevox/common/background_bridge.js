@@ -58,7 +58,7 @@ BackgroundBridge.ChromeVoxPrefs = {
   /**
    * Get the prefs (not including keys).
    * @return {!Promise<Object<string, string>>} A map of all prefs except the
-   *     key map from localStorage.
+   *     key map from LocalStorage.
    */
   async getPrefs() {
     return BridgeHelper.sendMessage(

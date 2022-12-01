@@ -27,6 +27,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
     await importModule('TtsSettings', '/chromevox/common/tts_types.js');
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
+    await importModule('LocalStorage', '/common/local_storage.js');
   }
 
   async loadOptionsPage() {
@@ -72,7 +73,7 @@ AX_TEST_F(
 
           // Before selecting the menu option.
           .call(() => {
-            assertEquals('asWords', localStorage['numberReadingStyle']);
+            assertEquals('asWords', LocalStorage.get('numberReadingStyle'));
           })
 
           .call(press(KeyCode.DOWN))
@@ -80,7 +81,7 @@ AX_TEST_F(
           .call(press(KeyCode.RETURN))
           .expectSpeech('Digits', 'Collapsed')
           .call(() => {
-            assertEquals('asDigits', localStorage['numberReadingStyle']);
+            assertEquals('asDigits', LocalStorage.get('numberReadingStyle'));
           });
 
       await mockFeedback.replay();
@@ -108,7 +109,7 @@ AX_TEST_F(
           .call(() => {
             assertEquals(
                 PUNCTUATION_ECHO_NONE,
-                localStorage[TtsSettings.PUNCTUATION_ECHO]);
+                LocalStorage.get(TtsSettings.PUNCTUATION_ECHO));
           })
 
           .call(press(KeyCode.DOWN))
@@ -118,7 +119,7 @@ AX_TEST_F(
           .call(() => {
             assertEquals(
                 PUNCTUATION_ECHO_SOME,
-                localStorage[TtsSettings.PUNCTUATION_ECHO]);
+                LocalStorage.get(TtsSettings.PUNCTUATION_ECHO));
           })
 
           .call(press(KeyCode.DOWN))
@@ -126,7 +127,7 @@ AX_TEST_F(
           .call(() => {
             assertEquals(
                 PUNCTUATION_ECHO_ALL,
-                localStorage[TtsSettings.PUNCTUATION_ECHO]);
+                LocalStorage.get(TtsSettings.PUNCTUATION_ECHO));
           });
 
       await mockFeedback.replay();
@@ -147,14 +148,14 @@ AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_SmartStickyMode', async function() {
           'Turn off sticky mode when editing text (Smart Sticky Mode)',
           'Check box', 'Checked')
       .call(() => {
-        assertEquals('true', localStorage['smartStickyMode']);
+        assertEquals('true', LocalStorage.get('smartStickyMode'));
       })
       .call(smartStickyModeCheckbox.doDefault.bind(smartStickyModeCheckbox))
       .expectSpeech(
           'Turn off sticky mode when editing text (Smart Sticky Mode)',
           'Check box', 'Not checked')
       .call(() => {
-        assertEquals('false', localStorage['smartStickyMode']);
+        assertEquals('false', LocalStorage.get('smartStickyMode'));
       });
 
   await mockFeedback.replay();
@@ -179,8 +180,8 @@ AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', async function() {
   assertNotNullNorUndefined(capitalStrategySelect);
 
   // Assert initial pref values.
-  assertEquals('true', localStorage['usePitchChanges']);
-  assertEquals('increasePitch', localStorage['capitalStrategy']);
+  assertEquals('true', LocalStorage.get('usePitchChanges'));
+  assertEquals('increasePitch', LocalStorage.get('capitalStrategy'));
 
   mockFeedback.call(pitchChangesCheckbox.focus.bind(pitchChangesCheckbox))
       .expectSpeech(
@@ -193,11 +194,11 @@ AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', async function() {
               'deleted, bolded, parenthesized, or capitalized text.',
           'Check box', 'Not checked')
       .call(() => {
-        assertEquals('false', localStorage['usePitchChanges']);
+        assertEquals('false', LocalStorage.get('usePitchChanges'));
         // Toggling usePitchChanges affects capitalStrategy. Ensure that
         // the preference has been changed and that the 'Increase pitch'
         // option is hidden.
-        assertEquals('announceCapitals', localStorage['capitalStrategy']);
+        assertEquals('announceCapitals', LocalStorage.get('capitalStrategy'));
 
         // Open the menu first in order to assert this.
         // const increasePitchOption = evt.target.find({
@@ -216,11 +217,11 @@ AX_TEST_F('ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', async function() {
               'deleted, bolded, parenthesized, or capitalized text.',
           'Check box', 'Checked')
       .call(() => {
-        assertEquals('true', localStorage['usePitchChanges']);
+        assertEquals('true', LocalStorage.get('usePitchChanges'));
         // Ensure that the capitalStrategy preference is restored to its
         // initial setting and that the 'Increase pitch' option is visible
         // again.
-        assertEquals('increasePitch', localStorage['capitalStrategy']);
+        assertEquals('increasePitch', LocalStorage.get('capitalStrategy'));
 
         // Open the menu first in order to assert this.
         // const increasePitchOption = evt.target.find({

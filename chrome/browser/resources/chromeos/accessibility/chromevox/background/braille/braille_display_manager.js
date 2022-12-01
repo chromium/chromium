@@ -5,6 +5,7 @@
 /**
  * @fileoverview Puts text on a braille display.
  */
+import {LocalStorage} from '../../../common/local_storage.js';
 import {BrailleDisplayState, BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 
@@ -241,11 +242,11 @@ export class BrailleDisplayManager {
       // Update the dimensions of the virtual braille captions display to those
       // of a real physical display when one is plugged in.
       processDisplayState(newState);
-      localStorage['menuBrailleCommands'] = true;
+      LocalStorage.set('menuBrailleCommands', true);
     } else {
       BrailleCaptionsBackground.getVirtualDisplayState().then(
           processDisplayState);
-      localStorage['menuBrailleCommands'] = false;
+      LocalStorage.set('menuBrailleCommands', false);
     }
   }
 

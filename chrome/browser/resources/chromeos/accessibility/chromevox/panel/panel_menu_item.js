@@ -5,6 +5,7 @@
 /**
  * @fileoverview An item in a drop-down menu in the ChromeVox panel.
  */
+import {LocalStorage} from '../../common/local_storage.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {EventSourceType} from '../common/event_source_type.js';
 
@@ -78,8 +79,8 @@ export class PanelMenuItem {
     shortcut.textContent = this.menuItemShortcut;
     this.element.appendChild(shortcut);
 
-    if (localStorage['brailleCaptions'] === String(true) ||
-        localStorage['menuBrailleCommands'] === String(true)) {
+    if (LocalStorage.get('brailleCaptions') ||
+        LocalStorage.get('menuBrailleCommands')) {
       const braille = document.createElement('td');
       braille.className = 'menu-item-shortcut';
       braille.textContent = this.menuItemBraille;

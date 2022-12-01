@@ -34,6 +34,7 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
         '/chromevox/common/braille/braille_key_types.js');
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
+    await importModule('LocalStorage', '/common/local_storage.js');
   }
 
   press(keyCode, modifiers) {
@@ -151,7 +152,7 @@ AX_TEST_F('ChromeVoxEditingTest', 'TextButNoSelectionChange', async function() {
 
 AX_TEST_F('ChromeVoxEditingTest', 'RichTextMoveByLine', async function() {
   // Turn on rich text output settings.
-  localStorage['announceRichTextAttributes'] = 'true';
+  LocalStorage.set('announceRichTextAttributes', true);
 
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(`
@@ -203,7 +204,7 @@ AX_TEST_F('ChromeVoxEditingTest', 'RichTextMoveByLine', async function() {
 
 AX_TEST_F('ChromeVoxEditingTest', 'RichTextMoveByCharacter', async function() {
   // Turn on rich text output settings.
-  localStorage['announceRichTextAttributes'] = 'true';
+  LocalStorage.set('announceRichTextAttributes', true);
 
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(`
@@ -279,7 +280,7 @@ AX_TEST_F(
     'ChromeVoxEditingTest', 'RichTextMoveByCharacterAllAttributes',
     async function() {
       // Turn on rich text output settings.
-      localStorage['announceRichTextAttributes'] = 'true';
+      LocalStorage.set('announceRichTextAttributes', true);
 
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(`
@@ -523,7 +524,7 @@ AX_TEST_F(
 
 AX_TEST_F('ChromeVoxEditingTest', 'RichTextLinkOutput', async function() {
   // Turn on rich text output settings.
-  localStorage['announceRichTextAttributes'] = 'true';
+  LocalStorage.set('announceRichTextAttributes', true);
 
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(`
@@ -2056,7 +2057,7 @@ AX_TEST_F(
 
       // Set braille to use 6-dot braille (which is defaulted to UEB grade 2
       // contracted braille).
-      localStorage['brailleTable'] = 'en-ueb-g2';
+      LocalStorage.set('brailleTable', 'en-ueb-g2');
 
       // Wait for it to be fully refreshed (liblouis loads the new tables, our
       // translators are re-created).
@@ -2069,10 +2070,10 @@ AX_TEST_F(
 
       // Set braille to use 6-dot braille (which is defaulted to UEB grade 2
       // contracted braille).
-      localStorage['brailleTable'] = 'en-ueb-g2';
+      LocalStorage.set('brailleTable', 'en-ueb-g2');
       await new Promise(
           r => BrailleBackground.instance.getTranslatorManager().refresh(
-              localStorage['brailleTable'], undefined, r));
+              LocalStorage.get('brailleTable'), undefined, r));
 
       async function waitForBrailleDots(expectedDots) {
         return new Promise(r => {

@@ -39,6 +39,7 @@ chromevox_es6_modules = [
   "../common/event_generator.js",
   "../common/instance_checker.js",
   "../common/key_code.js",
+  "../common/local_storage.js",
   "../common/rect_util.js",
   "../common/string_util.js",
   "../common/tree_walker.js",

@@ -1530,7 +1530,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, KeyboardShortcutViewer) {
   EnableChromeVox();
-  SendKeyPressWithControlAndAlt(ui::VKEY_OEM_2 /* forward slash */);
+  sm_.Call([this]() {
+    SendKeyPressWithControlAndAlt(ui::VKEY_OEM_2 /* forward slash */);
+  });
   sm_.ExpectSpeech("Shortcuts, window");
 
   // Move through all tabs; make a few expectations along the way.

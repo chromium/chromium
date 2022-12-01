@@ -6,6 +6,7 @@
  * @fileoverview Common page for reading and writing preferences from
  * the background context (background page or options page).
  */
+import {LocalStorage} from '../../common/local_storage.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Msgs} from '../common/msgs.js';
@@ -25,27 +26,29 @@ import {TtsBackground} from './tts_background.js';
  */
 export class ChromeVoxPrefs {
   constructor() {
-    localStorage['lastRunVersion'] = chrome.runtime.getManifest().version;
+    LocalStorage.set('lastRunVersion', chrome.runtime.getManifest().version);
 
     // Clear per session preferences.
     // This is to keep the position dictionary from growing excessively large.
-    localStorage['position'] = '{}';
+    LocalStorage.set('position', {});
 
     // Default per session sticky to off.
-    localStorage['sticky'] = false;
+    LocalStorage.set('sticky', false);
   }
 
   /**
    * Merge the default values of all known prefs with what's found in
-   * localStorage.
+   * LocalStorage.
    */
   static init() {
     ChromeVoxPrefs.instance = new ChromeVoxPrefs();
 
-    // Set the default value of any pref that isn't already in localStorage.
+    ChromeVoxPrefs.isStickyPrefOn = LocalStorage.get('sticky');
+
+    // Set the default value of any pref that isn't already in LocalStorage.
     for (const pref in ChromeVoxPrefs.DEFAULT_PREFS) {
-      if (localStorage[pref] === undefined) {
-        localStorage[pref] = ChromeVoxPrefs.DEFAULT_PREFS[pref];
+      if (LocalStorage.get(pref) === undefined) {
+        LocalStorage.set(pref, ChromeVoxPrefs.DEFAULT_PREFS[pref]);
       }
     }
     ChromeVoxPrefs.instance.enableOrDisableLogUrlWatcher_();
@@ -71,12 +74,12 @@ export class ChromeVoxPrefs {
   /**
    * Get the prefs (not including keys).
    * @return {Object<string, string>} A map of all prefs except the key map from
-   *     localStorage.
+   *     LocalStorage.
    */
   getPrefs() {
     const prefs = {};
     for (const pref in ChromeVoxPrefs.DEFAULT_PREFS) {
-      prefs[pref] = localStorage[pref];
+      prefs[pref] = LocalStorage.get(pref);
     }
     prefs['version'] = chrome.runtime.getManifest().version;
     return prefs;
@@ -88,8 +91,8 @@ export class ChromeVoxPrefs {
    * @param {Object|string|number|boolean} value The new value of the pref.
    */
   setPref(key, value) {
-    if (localStorage[key] !== value) {
-      localStorage[key] = value;
+    if (LocalStorage.get(key) !== value) {
+      LocalStorage.set(key, value);
     }
   }
 
@@ -99,7 +102,7 @@ export class ChromeVoxPrefs {
    * @param {boolean} value The new value of the pref.
    */
   setLoggingPrefs(key, value) {
-    localStorage[key] = value;
+    LocalStorage.set(key, value);
     if (key === 'enableSpeechLogging') {
       TtsBackground.console.setEnabled(value);
     } else if (key === 'enableEventStreamLogging') {
@@ -140,7 +143,7 @@ export class ChromeVoxPrefs {
 
   enableOrDisableLogUrlWatcher_() {
     for (const pref of Object.values(ChromeVoxPrefs.loggingPrefs)) {
-      if (localStorage[pref]) {
+      if (LocalStorage.get(pref)) {
         LogUrlWatcher.create();
         return;
       }
@@ -177,7 +180,7 @@ ChromeVoxPrefs.DEFAULT_PREFS = {
   'languageSwitching': false,
   'menuBrailleCommands': false,
   'numberReadingStyle': 'asWords',
-  'position': '{}',
+  'position': {},
   'smartStickyMode': true,
   'speakTextUnderMouse': false,
   'sticky': false,
@@ -258,7 +261,7 @@ ChromeVoxPrefs.instance;
  * either through the pref or due to being temporarily toggled on.
  * @type {boolean}
  */
-ChromeVoxPrefs.isStickyPrefOn = localStorage['sticky'] === String(true);
+ChromeVoxPrefs.isStickyPrefOn = false;
 
 /**
  * If set to true or false, this value overrides ChromeVoxPrefs.isStickyPrefOn

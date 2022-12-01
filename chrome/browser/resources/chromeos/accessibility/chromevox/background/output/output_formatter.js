@@ -10,6 +10,7 @@ import {AutomationUtil} from '../../../common/automation_util.js';
 import {constants} from '../../../common/constants.js';
 import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
+import {LocalStorage} from '../../../common/local_storage.js';
 import {Msgs} from '../../common/msgs.js';
 
 import {OutputFormatParserObserver} from './output_format_parser.js';
@@ -81,7 +82,7 @@ export class OutputFormatter {
     } else if (token === 'joinedDescendants') {
       this.formatJoinedDescendants_(this.params_, token, options);
     } else if (token === 'role') {
-      if (localStorage['useVerboseMode'] === String(false)) {
+      if (LocalStorage.get('useVerboseMode') === false) {
         return true;
       }
       if (this.output_.useAuralStyle) {
@@ -385,7 +386,7 @@ export class OutputFormatter {
       options.annotation.push(new outputTypes.OutputSelectionSpan(0, 0));
     }
 
-    if (localStorage['languageSwitching'] === 'true') {
+    if (LocalStorage.get('languageSwitching')) {
       this.output_.assignLocaleAndAppend_(node.name || '', node, buff, options);
     } else {
       this.output_.append_(buff, node.name || '', options);

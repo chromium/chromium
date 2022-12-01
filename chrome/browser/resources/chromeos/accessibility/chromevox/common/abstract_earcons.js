@@ -8,6 +8,7 @@
  * When adding earcons, please add them to getEarconName and getEarconId.
  *
  */
+import {LocalStorage} from '../../common/local_storage.js';
 
 /**
  * Earcon names.
@@ -99,7 +100,7 @@ export class AbstractEarcons {
    * @return {boolean} True if earcons are enabled.
    */
   get enabled() {
-    return localStorage['earcons'] === 'true';
+    return LocalStorage.get('earcons');
   }
 
   /**
@@ -107,6 +108,6 @@ export class AbstractEarcons {
    * @param {boolean} value True turns on earcons, false turns off earcons.
    */
   set enabled(value) {
-    localStorage['earcons'] = value;
+    LocalStorage.set('earcons', value);
   }
 }

@@ -6,6 +6,7 @@
  * @fileoverview Creates event stream logger.
  */
 
+import {LocalStorage} from '../../../common/local_storage.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
 import {EventLog} from '../../common/log_types.js';
@@ -68,7 +69,7 @@ export class EventStreamLogger {
   /** @param {boolean} checked */
   notifyEventStreamFilterChangedAll(checked) {
     for (const type in EventType) {
-      if (localStorage[EventType[type]] === 'true') {
+      if (LocalStorage.get(EventType[type])) {
         this.notifyEventStreamFilterChanged(EventType[type], checked);
       }
     }
@@ -79,7 +80,7 @@ export class EventStreamLogger {
     chrome.automation.getDesktop(function(desktop) {
       EventStreamLogger.instance = new EventStreamLogger(desktop);
       EventStreamLogger.instance.notifyEventStreamFilterChangedAll(
-          localStorage['enableEventStreamLogging'] === 'true');
+          LocalStorage.get('enableEventStreamLogging'));
 
       BridgeHelper.registerHandler(
           Constants.TARGET, Constants.Action.NOTIFY_EVENT_STREAM_FILTER_CHANGED,

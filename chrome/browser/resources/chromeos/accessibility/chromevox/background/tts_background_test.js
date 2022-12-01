@@ -20,6 +20,7 @@ ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
     await importModule('PrimaryTts', '/chromevox/background/tts_background.js');
     await importModule(
         ['QueueMode', 'TtsSpeechProperties'], '/chromevox/common/tts_types.js');
+    await importModule('LocalStorage', '/common/local_storage.js');
 
     window.tts = new PrimaryTts();
   }
@@ -201,7 +202,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'AnnounceCapitalLetters', function() {
   assertEquals('A', preprocess('A'));
 
   // Only announce capital for solo capital letters.
-  localStorage['capitalStrategy'] = 'announceCapitals';
+  LocalStorage.set('capitalStrategy', 'announceCapitals');
   assertEquals('Cap A', preprocess('A'));
   assertEquals('Cap Z', preprocess('Z'));
   assertEquals('Cap Ａ', preprocess('Ａ'));
@@ -269,7 +270,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'NumberReadingStyle', function() {
   };
 
   // Check the default preference.
-  assertEquals('asWords', localStorage['numberReadingStyle']);
+  assertEquals('asWords', LocalStorage.get('numberReadingStyle'));
 
   tts.speak('100');
   assertEquals('100', lastSpokenTextString);
@@ -285,7 +286,7 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'NumberReadingStyle', function() {
   assertEquals(
       'An unanswered call lasts for ３０ seconds.', lastSpokenTextString);
 
-  localStorage['numberReadingStyle'] = 'asDigits';
+  LocalStorage.set('numberReadingStyle', 'asDigits');
   tts.speak('100');
   assertEquals('1 0 0', lastSpokenTextString);
 
@@ -429,10 +430,10 @@ AX_TEST_F('ChromeVoxBackgroundTtsTest', 'Phonetics', function() {
 AX_TEST_F('ChromeVoxBackgroundTtsTest', 'PitchChanges', function() {
   const preprocess = tts.preprocess.bind(tts);
   const props = {relativePitch: -0.3};
-  localStorage['usePitchChanges'] = 'true';
+  LocalStorage.set('usePitchChanges', 'true');
   preprocess('Hello world', props);
   assertTrue(props.hasOwnProperty('relativePitch'));
-  localStorage['usePitchChanges'] = 'false';
+  LocalStorage.set('usePitchChanges', 'false');
   preprocess('Hello world', props);
   assertFalse(props.hasOwnProperty('relativePitch'));
 });

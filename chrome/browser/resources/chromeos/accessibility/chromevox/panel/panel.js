@@ -8,6 +8,7 @@
 import {constants} from '../../common/constants.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
+import {LocalStorage} from '../../common/local_storage.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
@@ -41,9 +42,11 @@ export class Panel extends PanelInterface {
   /**
    * Initialize the panel.
    */
-  static init() {
+  static async init() {
     /** @type {string} */
     Panel.sessionState = '';
+
+    await LocalStorage.init();
 
     const updateSessionState = sessionState => {
       Panel.sessionState = sessionState;
@@ -174,7 +177,7 @@ export class Panel extends PanelInterface {
     Panel.brailleContainer_.hidden = false;
     Panel.searchContainer_.hidden = true;
 
-    if (localStorage['brailleCaptions'] === String(true)) {
+    if (LocalStorage.get('brailleCaptions')) {
       Panel.speechContainer_.style.visibility = 'hidden';
       Panel.brailleContainer_.style.visibility = 'visible';
     } else {
@@ -606,7 +609,7 @@ export class Panel extends PanelInterface {
     const groups = data.groups;
     const cols = data.cols;
     const rows = data.rows;
-    const sideBySide = localStorage['brailleSideBySide'] === 'true';
+    const sideBySide = LocalStorage.get('brailleSideBySide');
 
     const addBorders = function(event) {
       const cell = event.target;
@@ -1269,8 +1272,8 @@ Panel.nodeMenuDictionary_ = {};
 /** @public {boolean} */
 Panel.disableRestartTutorialNudgesForTesting = false;
 
-window.addEventListener('load', function() {
-  Panel.init();
+window.addEventListener('load', async function() {
+  await Panel.init();
 
   switch (location.search.slice(1)) {
     case 'tutorial':

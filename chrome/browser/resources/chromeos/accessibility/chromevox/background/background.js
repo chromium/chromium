@@ -7,6 +7,7 @@ import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {InstanceChecker} from '../../common/instance_checker.js';
+import {LocalStorage} from '../../common/local_storage.js';
 import {AbstractEarcons} from '../common/abstract_earcons.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {ContentScriptBridge} from '../common/content_script_bridge.js';
@@ -111,11 +112,12 @@ export class Background extends ChromeVoxState {
     });
   }
 
-  static init() {
-    ChromeVoxState.instance = new Background();
-
-    // Initialize legacy background page first.
+  static async init() {
+    // Initialize storage and legacy background first.
+    await LocalStorage.init();
     ChromeVoxBackground.init();
+
+    ChromeVoxState.instance = new Background();
 
     AutoScrollHandler.init();
     BackgroundKeyboardHandler.init();
@@ -191,8 +193,8 @@ export class Background extends ChromeVoxState {
     this.previousRange_ = this.currentRange_;
     this.currentRange_ = newRange;
 
-    ChromeVoxState.observers.forEach(
-        observer => observer.onCurrentRangeChanged(newRange, opt_fromEditing));
+    ChromeVoxState.ready().then(ChromeVoxState.observers.forEach(
+        observer => observer.onCurrentRangeChanged(newRange, opt_fromEditing)));
 
     if (!this.currentRange_) {
       FocusBounds.set([]);
@@ -229,12 +231,12 @@ export class Background extends ChromeVoxState {
 
   /** @override */
   get typingEcho() {
-    return parseInt(localStorage['typingEcho'], 10) || 0;
+    return LocalStorage.get('typingEcho');
   }
 
   /** @override */
   set typingEcho(newTypingEcho) {
-    localStorage['typingEcho'] = newTypingEcho;
+    LocalStorage.set('typingEcho', newTypingEcho);
   }
 
   /**

@@ -13,6 +13,7 @@
  * extended to override methods that extract lines for multiline fields
  * or to provide other customizations.
  */
+import {LocalStorage} from '../../../common/local_storage.js';
 import {Msgs} from '../../common/msgs.js';
 import {TtsInterface} from '../../common/tts_interface.js';
 import {Personality, QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';

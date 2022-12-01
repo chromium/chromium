@@ -8,6 +8,7 @@
  */
 
 import {constants} from '../../common/constants.js';
+import {LocalStorage} from '../../common/local_storage.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Msgs} from '../common/msgs.js';
@@ -116,7 +117,7 @@ export class PrimaryTts extends AbstractTts {
 
     /** @private {number} */
     this.currentPunctuationEcho_ =
-        parseInt(localStorage[ttsTypes.TtsSettings.PUNCTUATION_ECHO] || 1, 10);
+        LocalStorage.get(ttsTypes.TtsSettings.PUNCTUATION_ECHO) || 1;
 
     /**
      * A list of punctuation characters that should always be spliced into
@@ -165,12 +166,6 @@ export class PrimaryTts extends AbstractTts {
      */
     this.currentVoice;
 
-    // TODO(dtseng): Done while migrating away from using localStorage.
-    if (localStorage['voiceName']) {
-      chrome.storage.local.set({voiceName: localStorage['voiceName']});
-      delete localStorage['voiceName'];
-    }
-
     if (window.speechSynthesis) {
       window.speechSynthesis.onvoiceschanged = function() {
         chrome.storage.local.get({voiceName: ''}, function(items) {
@@ -190,21 +185,21 @@ export class PrimaryTts extends AbstractTts {
       }
     }.bind(this));
 
-    // Migration: localStorage tts properties -> Chrome pref settings.
-    if (localStorage['rate']) {
+    // Migration: local LocalStorage tts properties -> Chrome pref settings.
+    if (LocalStorage.get('rate')) {
       chrome.settingsPrivate.setPref(
-          'settings.tts.speech_rate', parseFloat(localStorage['rate']));
-      delete localStorage['rate'];
+          'settings.tts.speech_rate', LocalStorage.get('rate'));
+      LocalStorage.remove('rate');
     }
-    if (localStorage['pitch']) {
+    if (LocalStorage.get('pitch')) {
       chrome.settingsPrivate.setPref(
-          'settings.tts.speech_pitch', parseFloat(localStorage['pitch']));
-      delete localStorage['pitch'];
+          'settings.tts.speech_pitch', LocalStorage.get('pitch'));
+      LocalStorage.remove('pitch');
     }
-    if (localStorage['volume']) {
+    if (LocalStorage.get('volume')) {
       chrome.settingsPrivate.setPref(
-          'settings.tts.speech_volume', parseFloat(localStorage['volume']));
-      delete localStorage['volume'];
+          'settings.tts.speech_volume', LocalStorage.get('volume'));
+      LocalStorage.remove('volume');
     }
 
     // At startup.
@@ -247,8 +242,8 @@ export class PrimaryTts extends AbstractTts {
 
     textString = this.preprocess(textString, properties);
 
-    // This pref on localStorage gets set by the options page.
-    if (localStorage['numberReadingStyle'] === 'asDigits') {
+    // This pref on LocalStorage gets set by the options page.
+    if (LocalStorage.get('numberReadingStyle') === 'asDigits') {
       textString = this.getNumberAsDigits_(textString);
     }
 
@@ -747,7 +742,7 @@ export class PrimaryTts extends AbstractTts {
    */
   updatePunctuationEcho(punctuationEcho) {
     this.currentPunctuationEcho_ = punctuationEcho;
-    localStorage[ttsTypes.TtsSettings.PUNCTUATION_ECHO] = punctuationEcho;
+    LocalStorage.set(ttsTypes.TtsSettings.PUNCTUATION_ECHO, punctuationEcho);
   }
 
   /**

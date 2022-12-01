@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles media automation events.
  */
+import {LocalStorage} from '../../common/local_storage.js';
 import {TtsCapturingEventListener} from '../common/tts_interface.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
@@ -74,7 +75,7 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
    */
   onMediaStartedPlaying(evt) {
     this.mediaRoots_.add(evt.target);
-    const audioStrategy = localStorage['audioStrategy'];
+    const audioStrategy = LocalStorage.get('audioStrategy');
     if (ChromeVox.tts.isSpeaking() && audioStrategy === 'audioDuck') {
       this.update_({start: true});
     }
@@ -96,7 +97,7 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
   update_(options) {
     const it = this.mediaRoots_.values();
     let item = it.next();
-    const audioStrategy = localStorage['audioStrategy'];
+    const audioStrategy = LocalStorage.get('audioStrategy');
     while (!item.done) {
       const root = item.value;
       if (options.start) {

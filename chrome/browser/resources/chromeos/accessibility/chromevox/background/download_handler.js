@@ -6,6 +6,7 @@
  * @fileoverview Listens for download events and provides corresponding
  * notifications in ChromeVox.
  */
+import {LocalStorage} from '../../common/local_storage.js';
 import {Msgs} from '../common/msgs.js';
 import {QueueMode} from '../common/tts_types.js';
 
@@ -259,7 +260,7 @@ export class DownloadHandler {
    * @private
    */
   speechAndBrailleOutput_(msgId, queueMode, optSubs) {
-    if (localStorage['announceDownloadNotifications'] === 'true') {
+    if (LocalStorage.get('announceDownloadNotifications')) {
       const msg = Msgs.getMsg(msgId, optSubs);
       new Output().withString(msg).withQueueMode(queueMode).go();
     }

@@ -42,6 +42,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "gdocs_script.js",
     "instance_checker.js",
     "key_code.js",
+    "local_storage.js",
     "node_navigation_utils.js",
     "node_utils.js",
     "paragraph_utils.js",
@@ -201,6 +202,7 @@ js2gtest("accessibility_tests") {
     "cursors/cursors_test.js",
     "cursors/recovery_strategy_test.js",
     "event_generator_test.js",
+    "local_storage_test.js",
     "paragraph_utils_overflow_test.js",
     "rect_util_test.js",
     "repeated_event_handler_test.js",
@@ -225,6 +227,7 @@ js2gtest("accessibility_tests") {
     "testing/common_e2e_test_base.js",
     "testing/doc_utils.js",
     "testing/e2e_test_base.js",
+    "testing/mock_storage.js",
   ]
 
   if (is_chromeos_ash) {

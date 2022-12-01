@@ -7,6 +7,7 @@
  * chrome.bluetoothPrivate, and chrome.brailleDisplayPrivate for a UI component
  * to interact with a bluetooth braille display.
  */
+import {LocalStorage} from '../../common/local_storage.js';
 
 /** @interface */
 export class BluetoothBrailleDisplayListener {
@@ -101,7 +102,7 @@ export class BluetoothBrailleDisplayManager {
      * @private {string?}
      */
     this.preferredDisplayAddress_ =
-        localStorage['preferredBrailleDisplayAddress'];
+        LocalStorage.get('preferredBrailleDisplayAddress');
 
     /**
      * Tracks whether the preferred display is connected.
@@ -167,7 +168,7 @@ export class BluetoothBrailleDisplayManager {
    */
   connectInternal(display) {
     this.preferredDisplayAddress_ = display.address;
-    localStorage['preferredBrailleDisplayAddress'] = display.address;
+    LocalStorage.set('preferredBrailleDisplayAddress', display.address);
     if (!display.connected) {
       chrome.bluetoothPrivate.connect(display.address, result => {
         if (!display.paired) {

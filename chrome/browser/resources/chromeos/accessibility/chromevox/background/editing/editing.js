@@ -11,6 +11,7 @@ import {AutomationUtil} from '../../../common/automation_util.js';
 import {constants} from '../../../common/constants.js';
 import {Cursor, CursorMovement, CursorUnit} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
+import {LocalStorage} from '../../../common/local_storage.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
@@ -988,7 +989,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
 
     this.speakTextMarker_(container, cur.localStartOffset, cur.localEndOffset);
 
-    if (localStorage['announceRichTextAttributes'] === 'true') {
+    if (LocalStorage.get('announceRichTextAttributes')) {
       this.speakTextStyle_(container);
     }
   }
@@ -1014,11 +1015,11 @@ class EditingChromeVoxStateObserver {
     const inputType = range && range.start.node.inputType;
     if (inputType === 'email' || inputType === 'url') {
       BrailleBackground.instance.getTranslatorManager().refresh(
-          localStorage['brailleTable8']);
+          LocalStorage.get('brailleTable8'));
       return;
     }
     BrailleBackground.instance.getTranslatorManager().refresh(
-        localStorage['brailleTable']);
+        LocalStorage.get('brailleTable'));
   }
 }
 

@@ -25,6 +25,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
         ['PanelCommand', 'PanelCommandType'],
         '/chromevox/common/panel_command.js');
     await importModule('CursorRange', '/common/cursors/range.js');
+    await importModule('LocalStorage', '/common/local_storage.js');
   }
 
   fireMockEvent(key) {
@@ -207,7 +208,7 @@ AX_TEST_F(
     'ChromeVoxPanelTest', 'InternationalFormControlsMenu', async function() {
       await this.runWithLoadedTree(this.internationalButtonDoc);
       // Turn on language switching and set available voice list.
-      localStorage['languageSwitching'] = 'true';
+      LocalStorage.set('languageSwitching', true);
       LocaleOutputHelper.instance.availableVoices_ =
           [{'lang': 'en-US'}, {'lang': 'es-ES'}];
       CommandHandlerInterface.instance.onCommand('showFormsList');

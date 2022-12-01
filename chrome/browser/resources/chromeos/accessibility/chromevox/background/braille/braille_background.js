@@ -5,6 +5,7 @@
 /**
  * @fileoverview Sends Braille commands to the Braille API.
  */
+import {LocalStorage} from '../../../common/local_storage.js';
 import {BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
@@ -82,7 +83,7 @@ export class BrailleBackground {
       return;
     }
 
-    if (localStorage['enableBrailleLogging'] === 'true') {
+    if (LocalStorage.get('enableBrailleLogging')) {
       const logStr = 'Braille "' + params.text.toString() + '"';
       LogStore.instance.writeTextLog(logStr, LogType.BRAILLE);
       console.log(logStr);

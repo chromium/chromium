@@ -10,6 +10,7 @@ import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
 import {WrappingCursor} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
+import {LocalStorage} from '../../common/local_storage.js';
 import {Command} from '../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
 import {EventSourceType} from '../common/event_source_type.js';
@@ -429,7 +430,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
       // If auto read is set, skip focus recovery and start reading from the
       // top.
-      if (localStorage['autoRead'] === 'true' &&
+      if (LocalStorage.get('autoRead') &&
           AutomationUtil.getTopLevelRoot(evt.target) === evt.target) {
         ChromeVoxState.instance.setCurrentRange(
             CursorRange.fromNode(evt.target));

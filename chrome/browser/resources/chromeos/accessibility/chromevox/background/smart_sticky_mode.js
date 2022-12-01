@@ -9,6 +9,7 @@
  */
 import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
+import {LocalStorage} from '../../common/local_storage.js';
 import {Earcon} from '../common/abstract_earcons.js';
 
 import {ChromeVox} from './chromevox.js';
@@ -46,7 +47,7 @@ export class SmartStickyMode {
   onCurrentRangeChanged(newRange, opt_fromEditing) {
     if (!newRange || this.ignoreRangeChanges_ ||
         ChromeVoxState.instance.isReadingContinuously || opt_fromEditing ||
-        localStorage['smartStickyMode'] !== 'true') {
+        !LocalStorage.get('smartStickyMode')) {
       return;
     }
 
