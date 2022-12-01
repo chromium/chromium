@@ -118,6 +118,12 @@ std::unique_ptr<SequenceManager> CreateUnboundSequenceManager(
 
 namespace internal {
 
+std::unique_ptr<SequenceManagerImpl> CreateUnboundSequenceManagerImpl(
+    PassKey<base::internal::SequenceManagerThreadDelegate>,
+    SequenceManager::Settings settings) {
+  return SequenceManagerImpl::CreateUnbound(std::move(settings));
+}
+
 using TimeRecordingPolicy =
     base::sequence_manager::TaskQueue::TaskTiming::TimeRecordingPolicy;
 
