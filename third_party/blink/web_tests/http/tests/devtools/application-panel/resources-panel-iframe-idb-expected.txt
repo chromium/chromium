@@ -27,6 +27,7 @@ Storage
   http://devtools.oopif.test:8000
  Trust Tokens
  Interest Groups
+ Shared Storage
 Cache
  Cache Storage
  Back/forward cache
@@ -67,6 +68,7 @@ Storage
   http://devtools.oopif.test:8000
  Trust Tokens
  Interest Groups
+ Shared Storage
 Cache
  Cache Storage
  Back/forward cache
@@ -109,6 +111,7 @@ Storage
   http://devtools.oopif.test:8000
  Trust Tokens
  Interest Groups
+ Shared Storage
 Cache
  Cache Storage
  Back/forward cache
