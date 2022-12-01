@@ -204,6 +204,53 @@ TEST_P(HistogramTest, DeltaTest) {
   EXPECT_EQ(0, samples->TotalCount());
 }
 
+// Check that delta calculations work correctly with SnapshotUnloggedSamples()
+// and MarkSamplesAsLogged().
+TEST_P(HistogramTest, UnloggedSamplesTest) {
+  HistogramBase* histogram = Histogram::FactoryGet("DeltaHistogram", 1, 64, 8,
+                                                   HistogramBase::kNoFlags);
+  histogram->Add(1);
+  histogram->Add(10);
+  histogram->Add(50);
+
+  std::unique_ptr<HistogramSamples> samples =
+      histogram->SnapshotUnloggedSamples();
+  EXPECT_EQ(3, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(1));
+  EXPECT_EQ(1, samples->GetCount(10));
+  EXPECT_EQ(1, samples->GetCount(50));
+  EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+
+  // Snapshot unlogged samples again, which would be the same as above.
+  samples = histogram->SnapshotUnloggedSamples();
+  EXPECT_EQ(3, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(1));
+  EXPECT_EQ(1, samples->GetCount(10));
+  EXPECT_EQ(1, samples->GetCount(50));
+  EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+
+  // Verify that marking the samples as logged works correctly, and that
+  // SnapshotDelta() will not pick up the samples.
+  histogram->MarkSamplesAsLogged(*samples);
+  samples = histogram->SnapshotUnloggedSamples();
+  EXPECT_EQ(0, samples->TotalCount());
+  samples = histogram->SnapshotDelta();
+  EXPECT_EQ(0, samples->TotalCount());
+
+  // Similarly, verify that SnapshotDelta() marks the samples as logged.
+  histogram->Add(1);
+  histogram->Add(10);
+  histogram->Add(50);
+  samples = histogram->SnapshotDelta();
+  EXPECT_EQ(3, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(1));
+  EXPECT_EQ(1, samples->GetCount(10));
+  EXPECT_EQ(1, samples->GetCount(50));
+  EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+  samples = histogram->SnapshotUnloggedSamples();
+  EXPECT_EQ(0, samples->TotalCount());
+}
+
 // Check that final-delta calculations work correctly.
 TEST_P(HistogramTest, FinalDeltaTest) {
   HistogramBase* histogram = Histogram::FactoryGet("FinalDeltaHistogram", 1, 64,

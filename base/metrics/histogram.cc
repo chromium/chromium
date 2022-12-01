@@ -529,7 +529,22 @@ std::unique_ptr<HistogramSamples> Histogram::SnapshotSamples() const {
   return SnapshotAllSamples();
 }
 
+std::unique_ptr<HistogramSamples> Histogram::SnapshotUnloggedSamples() const {
+  return SnapshotUnloggedSamplesImpl();
+}
+
+void Histogram::MarkSamplesAsLogged(const HistogramSamples& samples) {
+  // |final_delta_created_| only exists when DCHECK is on.
+#if DCHECK_IS_ON()
+  DCHECK(!final_delta_created_);
+#endif
+
+  unlogged_samples_->Subtract(samples);
+  logged_samples_->Add(samples);
+}
+
 std::unique_ptr<HistogramSamples> Histogram::SnapshotDelta() {
+  // |final_delta_created_| only exists when DCHECK is on.
 #if DCHECK_IS_ON()
   DCHECK(!final_delta_created_);
 #endif
@@ -546,14 +561,16 @@ std::unique_ptr<HistogramSamples> Histogram::SnapshotDelta() {
   // vector: this way, the next snapshot will include any concurrent updates
   // missed by the current snapshot.
 
-  std::unique_ptr<HistogramSamples> snapshot = SnapshotUnloggedSamples();
-  unlogged_samples_->Subtract(*snapshot);
-  logged_samples_->Add(*snapshot);
+  // MarkSamplesAsLogged() is final in order to a prevent vtable lookup here,
+  // since SnapshotDelta() might be called often.
+  std::unique_ptr<HistogramSamples> snapshot = SnapshotUnloggedSamplesImpl();
+  MarkSamplesAsLogged(*snapshot);
 
   return snapshot;
 }
 
 std::unique_ptr<HistogramSamples> Histogram::SnapshotFinalDelta() const {
+  // |final_delta_created_| only exists when DCHECK is on.
 #if DCHECK_IS_ON()
   DCHECK(!final_delta_created_);
   final_delta_created_ = true;
@@ -646,12 +663,12 @@ HistogramBase* Histogram::DeserializeInfoImpl(PickleIterator* iter) {
 }
 
 std::unique_ptr<SampleVector> Histogram::SnapshotAllSamples() const {
-  std::unique_ptr<SampleVector> samples = SnapshotUnloggedSamples();
+  std::unique_ptr<SampleVector> samples = SnapshotUnloggedSamplesImpl();
   samples->Add(*logged_samples_);
   return samples;
 }
 
-std::unique_ptr<SampleVector> Histogram::SnapshotUnloggedSamples() const {
+std::unique_ptr<SampleVector> Histogram::SnapshotUnloggedSamplesImpl() const {
   std::unique_ptr<SampleVector> samples(
       new SampleVector(unlogged_samples_->id(), bucket_ranges()));
   samples->Add(*unlogged_samples_);

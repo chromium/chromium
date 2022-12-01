@@ -216,6 +216,8 @@ class BASE_EXPORT Histogram : public HistogramBase {
   void Add(Sample value) override;
   void AddCount(Sample value, int count) override;
   std::unique_ptr<HistogramSamples> SnapshotSamples() const override;
+  std::unique_ptr<HistogramSamples> SnapshotUnloggedSamples() const override;
+  void MarkSamplesAsLogged(const HistogramSamples& samples) final;
   std::unique_ptr<HistogramSamples> SnapshotDelta() override;
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
   void AddSamples(const HistogramSamples& samples) override;
@@ -274,8 +276,10 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // internal use.
   std::unique_ptr<SampleVector> SnapshotAllSamples() const;
 
-  // Create a copy of unlogged samples.
-  std::unique_ptr<SampleVector> SnapshotUnloggedSamples() const;
+  // Returns a copy of unlogged samples as the underlying SampleVector class,
+  // instead of the HistogramSamples base class. Used for tests and to avoid
+  // virtual dispatch from some callsites.
+  std::unique_ptr<SampleVector> SnapshotUnloggedSamplesImpl() const;
 
   // Writes the type, min, max, and bucket count information of the histogram in
   // |params|.

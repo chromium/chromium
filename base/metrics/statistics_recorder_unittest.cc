@@ -391,7 +391,7 @@ TEST_P(StatisticsRecorderTest, IterationTest) {
 
   auto histograms = StatisticsRecorder::GetHistograms();
   EXPECT_THAT(histograms, SizeIs(2));
-  histograms = StatisticsRecorder::NonPersistent(std::move(histograms));
+  histograms = StatisticsRecorder::GetHistograms(/*include_persistent=*/false);
   EXPECT_THAT(histograms, SizeIs(use_persistent_histogram_allocator_ ? 0 : 2));
 
   // Create a new global allocator using the same memory as the old one. Any
@@ -410,7 +410,7 @@ TEST_P(StatisticsRecorderTest, IterationTest) {
 
   histograms = StatisticsRecorder::GetHistograms();
   EXPECT_THAT(histograms, SizeIs(use_persistent_histogram_allocator_ ? 2 : 0));
-  histograms = StatisticsRecorder::NonPersistent(std::move(histograms));
+  histograms = StatisticsRecorder::GetHistograms(/*include_persistent=*/false);
   EXPECT_THAT(histograms, IsEmpty());
 }
 

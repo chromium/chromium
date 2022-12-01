@@ -132,9 +132,34 @@ std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotSamples() const {
   return std::move(snapshot);
 }
 
+std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotUnloggedSamples()
+    const {
+  std::unique_ptr<SampleMap> snapshot(new SampleMap(name_hash()));
+
+  base::AutoLock auto_lock(lock_);
+  snapshot->Add(*unlogged_samples_);
+
+  return std::move(snapshot);
+}
+
+void SparseHistogram::MarkSamplesAsLogged(const HistogramSamples& samples) {
+  DCHECK(!final_delta_created_);
+
+  base::AutoLock auto_lock(lock_);
+  unlogged_samples_->Subtract(samples);
+  logged_samples_->Add(samples);
+}
+
 std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotDelta() {
   DCHECK(!final_delta_created_);
 
+  // We can't re-use SnapshotUnloggedSamples() or MarkSamplesAsLogged() here
+  // since |lock_| is not re-entrant.
+  // TODO(crbug/1052796): Consider removing the lock in this function, and
+  // just directly calling SnapshotUnloggedSamples() and MarkSamplesAsLogged(),
+  // since the lock may not be needed in between (similarly to
+  // Histogram::SnapshotDelta()). This would still ensure eventual consistency.
+  // Also make those functions final in order to avoid vtable lookups.
   std::unique_ptr<SampleMap> snapshot(new SampleMap(name_hash()));
   base::AutoLock auto_lock(lock_);
   snapshot->Add(*unlogged_samples_);

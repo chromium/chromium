@@ -89,6 +89,11 @@ std::unique_ptr<HistogramSamples> DummyHistogram::SnapshotSamples() const {
   return std::make_unique<DummyHistogramSamples>();
 }
 
+std::unique_ptr<HistogramSamples> DummyHistogram::SnapshotUnloggedSamples()
+    const {
+  return std::make_unique<DummyHistogramSamples>();
+}
+
 std::unique_ptr<HistogramSamples> DummyHistogram::SnapshotDelta() {
   return std::make_unique<DummyHistogramSamples>();
 }

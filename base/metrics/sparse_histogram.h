@@ -55,6 +55,8 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
   void AddSamples(const HistogramSamples& samples) override;
   bool AddSamplesFromPickle(base::PickleIterator* iter) override;
   std::unique_ptr<HistogramSamples> SnapshotSamples() const override;
+  std::unique_ptr<HistogramSamples> SnapshotUnloggedSamples() const override;
+  void MarkSamplesAsLogged(const HistogramSamples& samples) override;
   std::unique_ptr<HistogramSamples> SnapshotDelta() override;
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
   base::Value::Dict ToGraphDict() const override;

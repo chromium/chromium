@@ -229,13 +229,20 @@ void StatisticsRecorder::PrepareDeltas(
     HistogramBase::Flags flags_to_set,
     HistogramBase::Flags required_flags,
     HistogramSnapshotManager* snapshot_manager) {
-  Histograms histograms = GetHistograms();
-  if (!include_persistent)
-    histograms = NonPersistent(std::move(histograms));
-
+  Histograms histograms = Sort(GetHistograms(include_persistent));
   base::AutoLock lock(snapshot_lock_.Get());
-  snapshot_manager->PrepareDeltas(Sort(std::move(histograms)), flags_to_set,
+  snapshot_manager->PrepareDeltas(std::move(histograms), flags_to_set,
                                   required_flags);
+}
+
+// static
+void StatisticsRecorder::SnapshotUnloggedSamples(
+    HistogramBase::Flags required_flags,
+    HistogramSnapshotManager* snapshot_manager) {
+  Histograms histograms = Sort(GetHistograms());
+  base::AutoLock lock(snapshot_lock_.Get());
+  snapshot_manager->SnapshotUnloggedSamples(std::move(histograms),
+                                            required_flags);
 }
 
 // static
@@ -384,7 +391,8 @@ bool StatisticsRecorder::ShouldRecordHistogram(uint32_t histogram_hash) {
 }
 
 // static
-StatisticsRecorder::Histograms StatisticsRecorder::GetHistograms() {
+StatisticsRecorder::Histograms StatisticsRecorder::GetHistograms(
+    bool include_persistent) {
   // This must be called *before* the lock is acquired below because it will
   // call back into this object to register histograms. Those called methods
   // will acquire the lock at that time.
@@ -396,8 +404,13 @@ StatisticsRecorder::Histograms StatisticsRecorder::GetHistograms() {
   EnsureGlobalRecorderWhileLocked();
 
   out.reserve(top_->histograms_.size());
-  for (const auto& entry : top_->histograms_)
+  for (const auto& entry : top_->histograms_) {
+    bool is_persistent =
+        (entry.second->flags() & HistogramBase::kIsPersistent) != 0;
+    if (!include_persistent && is_persistent)
+      continue;
     out.push_back(entry.second);
+  }
 
   return out;
 }
@@ -418,19 +431,6 @@ StatisticsRecorder::Histograms StatisticsRecorder::WithName(
       ranges::remove_if(histograms,
                         [query_string](const HistogramBase* const h) {
                           return !strstr(h->histogram_name(), query_string);
-                        }),
-      histograms.end());
-  return histograms;
-}
-
-// static
-StatisticsRecorder::Histograms StatisticsRecorder::NonPersistent(
-    Histograms histograms) {
-  histograms.erase(
-      ranges::remove_if(histograms,
-                        [](const HistogramBase* const h) {
-                          return (h->flags() & HistogramBase::kIsPersistent) !=
-                                 0;
                         }),
       histograms.end());
   return histograms;
