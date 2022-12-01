@@ -19,8 +19,10 @@
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/fakes/fake_pass_kit_tab_helper_delegate.h"
+#import "ios/chrome/test/fakes/fake_web_content_handler.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -46,20 +48,24 @@ class PassKitCoordinatorTest : public PlatformTest {
     coordinator_ = [[PassKitCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
-    web_state_ = std::make_unique<web::FakeWebState>();
-    delegate_ = [[FakePassKitTabHelperDelegate alloc]
-        initWithWebState:web_state_.get()];
+    auto web_state = std::make_unique<web::FakeWebState>();
     test_navigation_manager_ = std::make_unique<web::FakeNavigationManager>();
+    web_state->SetNavigationManager(std::move(test_navigation_manager_));
+    browser_->GetWebStateList()->InsertWebState(
+        /*index=*/0, std::move(web_state),
+        WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
+    web_state_ = browser_->GetWebStateList()->GetActiveWebState();
+    handler_ = [[FakeWebContentHandler alloc] init];
 
-    PassKitTabHelper::CreateForWebState(web_state_.get());
-    PassKitTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
-    InfoBarManagerImpl::CreateForWebState(web_state_.get());
-    web_state_->SetNavigationManager(std::move(test_navigation_manager_));
+    PassKitTabHelper::CreateForWebState(web_state_);
+    PassKitTabHelper::FromWebState(web_state_)->SetWebContentsHandler(handler_);
+    InfoBarManagerImpl::CreateForWebState(web_state_);
+
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
   }
 
   PassKitTabHelper* tab_helper() {
-    return PassKitTabHelper::FromWebState(web_state_.get());
+    return PassKitTabHelper::FromWebState(web_state_);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -67,8 +73,9 @@ class PassKitCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   PassKitCoordinator* coordinator_;
-  std::unique_ptr<web::FakeWebState> web_state_;
-  FakePassKitTabHelperDelegate* delegate_;
+  // Weak pointer to the test web state; browser_'s web state list owns it.
+  web::WebState* web_state_;
+  FakeWebContentHandler* handler_;
   ScopedKeyWindow scoped_key_window_;
   std::unique_ptr<web::NavigationManager> test_navigation_manager_;
   base::HistogramTester histogram_tester_;
@@ -76,16 +83,14 @@ class PassKitCoordinatorTest : public PlatformTest {
 
 // Tests that PassKitCoordinator presents PKAddPassesViewController for the
 // valid PKPass object.
-// TODO(crbug.com/804250): this test is flaky.
 TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
   std::string data = testing::GetTestFileContents(testing::kPkPassFilePath);
   NSData* nsdata = [NSData dataWithBytes:data.c_str() length:data.size()];
   PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
   ASSERT_TRUE(pass);
 
-  [coordinator_ passKitTabHelper:tab_helper()
-            presentDialogForPass:pass
-                        webState:web_state_.get()];
+  coordinator_.pass = pass;
+  [coordinator_ start];
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Wallet app is not supported on iPads.
@@ -108,12 +113,10 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
         1);
   }
 
-  EXPECT_FALSE(coordinator_.webState);
   EXPECT_FALSE(coordinator_.pass);
 }
 
 // Tests presenting multiple valid PKPass objects.
-// TODO(crbug.com/804250): this test is flaky.
 TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Wallet app is not supported on iPads.
@@ -125,9 +128,8 @@ TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
   PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
   ASSERT_TRUE(pass);
 
-  [coordinator_ passKitTabHelper:tab_helper()
-            presentDialogForPass:pass
-                        webState:web_state_.get()];
+  coordinator_.pass = pass;
+  [coordinator_ start];
 
   EXPECT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForUIElementTimeout, ^{
@@ -144,9 +146,8 @@ TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
   UIViewController* presented_controller =
       base_view_controller_.presentedViewController;
 
-  [coordinator_ passKitTabHelper:tab_helper()
-            presentDialogForPass:pass
-                        webState:web_state_.get()];
+  coordinator_.pass = pass;
+  [coordinator_ start];
 
   // New UI presentation is ignored.
   EXPECT_EQ(presented_controller,
@@ -191,9 +192,8 @@ TEST_F(PassKitCoordinatorTest, AnotherViewControllerIsPresented) {
   PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
   ASSERT_TRUE(pass);
 
-  [coordinator_ passKitTabHelper:tab_helper()
-            presentDialogForPass:pass
-                        webState:web_state_.get()];
+  coordinator_.pass = pass;
+  [coordinator_ start];
 
   // New UI presentation is ignored.
   EXPECT_EQ(presented_controller,
@@ -209,12 +209,11 @@ TEST_F(PassKitCoordinatorTest, AnotherViewControllerIsPresented) {
 // Tests that PassKitCoordinator presents error infobar for invalid PKPass
 // object.
 TEST_F(PassKitCoordinatorTest, InvalidPassKitObject) {
-  [coordinator_ passKitTabHelper:tab_helper()
-            presentDialogForPass:nil
-                        webState:web_state_.get()];
+  coordinator_.pass = nil;
+  [coordinator_ start];
 
   infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(web_state_.get());
+      InfoBarManagerImpl::FromWebState(web_state_);
   ASSERT_EQ(1U, infobar_manager->infobar_count());
   infobars::InfoBar* infobar = infobar_manager->infobar_at(0);
   ASSERT_TRUE(infobar->delegate());
@@ -222,16 +221,7 @@ TEST_F(PassKitCoordinatorTest, InvalidPassKitObject) {
   ASSERT_TRUE(delegate);
   DCHECK_EQ(l10n_util::GetStringUTF16(IDS_IOS_GENERIC_PASSKIT_ERROR),
             delegate->GetMessageText());
-  EXPECT_FALSE(coordinator_.webState);
   EXPECT_FALSE(coordinator_.pass);
 
   histogram_tester_.ExpectTotalCount(kUmaPresentAddPassesDialogResult, 0);
-}
-
-// Tests that destroying web state nulls out webState property.
-TEST_F(PassKitCoordinatorTest, DestroyWebState) {
-  coordinator_.webState = web_state_.get();
-  ASSERT_TRUE(coordinator_.webState);
-  web_state_.reset();
-  EXPECT_FALSE(coordinator_.webState);
 }

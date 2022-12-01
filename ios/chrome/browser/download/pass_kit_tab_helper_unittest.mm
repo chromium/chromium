@@ -13,7 +13,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/download_test_util.h"
 #import "ios/chrome/browser/download/mime_type_util.h"
-#import "ios/chrome/test/fakes/fake_pass_kit_tab_helper_delegate.h"
+#import "ios/chrome/test/fakes/fake_web_content_handler.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/io_buffer.h"
@@ -35,11 +35,10 @@ char kUrl[] = "https://test.test/";
 // Test fixture for testing PassKitTabHelper class.
 class PassKitTabHelperTest : public PlatformTest {
  protected:
-  PassKitTabHelperTest()
-      : delegate_([[FakePassKitTabHelperDelegate alloc]
-            initWithWebState:&web_state_]) {
+  PassKitTabHelperTest() : handler_([[FakeWebContentHandler alloc] init]) {
     PassKitTabHelper::CreateForWebState(&web_state_);
-    PassKitTabHelper::FromWebState(&web_state_)->SetDelegate(delegate_);
+    PassKitTabHelper::FromWebState(&web_state_)
+        ->SetWebContentsHandler(handler_);
   }
 
   PassKitTabHelper* tab_helper() {
@@ -48,7 +47,7 @@ class PassKitTabHelperTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   web::FakeWebState web_state_;
-  FakePassKitTabHelperDelegate* delegate_;
+  FakeWebContentHandler* handler_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -59,8 +58,8 @@ TEST_F(PassKitTabHelperTest, EmptyFile) {
   web::FakeDownloadTask* task_ptr = task.get();
   tab_helper()->Download(std::move(task));
   task_ptr->SetDone(true);
-  EXPECT_EQ(1U, delegate_.passes.count);
-  EXPECT_TRUE([delegate_.passes.firstObject isKindOfClass:[NSNull class]]);
+  EXPECT_EQ(1U, handler_.passes.count);
+  EXPECT_TRUE([handler_.passes.firstObject isKindOfClass:[NSNull class]]);
 
   histogram_tester_.ExpectUniqueSample(kUmaDownloadPassKitResult,
                                        static_cast<base::HistogramBase::Sample>(
@@ -81,12 +80,12 @@ TEST_F(PassKitTabHelperTest, MultipleEmptyFiles) {
   tab_helper()->Download(std::move(task2));
 
   task_ptr->SetDone(true);
-  EXPECT_EQ(1U, delegate_.passes.count);
-  EXPECT_TRUE([delegate_.passes.firstObject isKindOfClass:[NSNull class]]);
+  EXPECT_EQ(1U, handler_.passes.count);
+  EXPECT_TRUE([handler_.passes.firstObject isKindOfClass:[NSNull class]]);
 
   task_ptr2->SetDone(true);
-  EXPECT_EQ(2U, delegate_.passes.count);
-  EXPECT_TRUE([delegate_.passes.lastObject isKindOfClass:[NSNull class]]);
+  EXPECT_EQ(2U, handler_.passes.count);
+  EXPECT_TRUE([handler_.passes.lastObject isKindOfClass:[NSNull class]]);
 
   histogram_tester_.ExpectUniqueSample(kUmaDownloadPassKitResult,
                                        static_cast<base::HistogramBase::Sample>(
@@ -108,8 +107,8 @@ TEST_F(PassKitTabHelperTest, ValidPassKitFile) {
   task_ptr->SetResponseData(data);
   task_ptr->SetDone(true);
 
-  EXPECT_EQ(1U, delegate_.passes.count);
-  PKPass* pass = delegate_.passes.firstObject;
+  EXPECT_EQ(1U, handler_.passes.count);
+  PKPass* pass = handler_.passes.firstObject;
   EXPECT_TRUE([pass isKindOfClass:[PKPass class]]);
   EXPECT_EQ(PKPassTypeBarcode, pass.passType);
   EXPECT_NSEQ(@"pass.com.apple.devpubs.example", pass.passTypeIdentifier);

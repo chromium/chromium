@@ -14,6 +14,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper_delegate.h"
+#import "ios/chrome/browser/ui/commands/web_content_commands.h"
 #import "ios/web/public/download/download_task.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -61,8 +62,8 @@ void PassKitTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
   task_ptr->Start(base::FilePath());
 }
 
-void PassKitTabHelper::SetDelegate(id<PassKitTabHelperDelegate> delegate) {
-  delegate_ = delegate;
+void PassKitTabHelper::SetWebContentsHandler(id<WebContentCommands> handler) {
+  handler_ = handler;
 }
 
 void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
@@ -89,9 +90,7 @@ void PassKitTabHelper::OnDownloadDataRead(
     NSData* data) {
   DCHECK(task);
   PKPass* pass = [[PKPass alloc] initWithData:data error:nil];
-  [delegate_ passKitTabHelper:this
-         presentDialogForPass:pass
-                     webState:web_state_];
+  [handler_ showDialogForPassKitPass:pass];
 
   UMA_HISTOGRAM_ENUMERATION(kUmaDownloadPassKitResult, GetUmaResult(task.get()),
                             DownloadPassKitResult::Count);

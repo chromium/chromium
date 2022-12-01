@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_COMMANDS_WEB_CONTENT_COMMANDS_H_
 #define IOS_CHROME_BROWSER_UI_COMMANDS_WEB_CONTENT_COMMANDS_H_
 
+@class PKPass;
+
 // Commands for starting UI in response to certain types of content loading.
 @protocol WebContentCommands
 
@@ -12,6 +14,9 @@
 // SKStoreProductParameterITunesItemIdentifier key must be set in
 // `productParameters`.
 - (void)showAppStoreWithParameters:(NSDictionary*)productParameters;
+
+// Opens the system PassKit dialog to add `pass`.
+- (void)showDialogForPassKitPass:(PKPass*)pass;
 
 @end
 
