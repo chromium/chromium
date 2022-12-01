@@ -114,6 +114,12 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
     return explicit_sites_filter_error_page_;
   }
 
+  // Override |blink_prefs| with settings defined in |content_settings_|.
+  //
+  // This method is called when WebPreferences is first created and when it is
+  // recomputed.
+  void OverrideWebPreferences(blink::web_pref::WebPreferences* web_prefs);
+
   // Accessors required by tests.
   zx::unowned_channel GetBindingChannelForTest() const;
   content::WebContents* web_contents_for_test() const {
@@ -123,12 +129,6 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   FrameWindowTreeHost* window_tree_host_for_test() {
     return window_tree_host_.get();
   }
-
-  // Override |blink_prefs| with settings defined in |content_settings_|.
-  //
-  // This method is called when WebPreferences is first created and when it is
-  // recomputed.
-  void OverrideWebPreferences(blink::web_pref::WebPreferences* web_prefs);
 
   void set_window_size_for_test(gfx::Size size) {
     window_size_for_test_ = size;
@@ -273,12 +273,6 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
                           std::string web_origin,
                           fuchsia::web::PermissionState state) override;
   void SetBlockMediaLoading(bool blocked) override;
-  void MediaStartedPlaying(const MediaPlayerInfo& video_type,
-                           const content::MediaPlayerId& id) override;
-  void MediaStoppedPlaying(
-      const MediaPlayerInfo& video_type,
-      const content::MediaPlayerId& id,
-      WebContentsObserver::MediaStoppedReason reason) override;
   void GetPrivateMemorySize(GetPrivateMemorySizeCallback callback) override;
   void SetNavigationPolicyProvider(
       fuchsia::web::NavigationPolicyProviderParams params,
@@ -289,7 +283,6 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   void SetContentAreaSettings(
       fuchsia::web::ContentAreaSettings settings) override;
   void ResetContentAreaSettings() override;
-  void OnThemeManagerError();
 
   // content::WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) override;
@@ -341,9 +334,22 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
       content::RenderFrameHost* render_frame_host,
       const content::GlobalRequestID& request_id,
       const blink::mojom::ResourceLoadInfo& resource_load_info) override;
+  void MediaStartedPlaying(const MediaPlayerInfo& video_type,
+                           const content::MediaPlayerId& id) override;
+  void MediaStoppedPlaying(
+      const MediaPlayerInfo& video_type,
+      const content::MediaPlayerId& id,
+      WebContentsObserver::MediaStoppedReason reason) override;
 
+  // Notified whenever the pixel scale of the `Frame`'s `View` changes.
   void OnPixelScaleUpdate(float pixel_scale);
+
+  // Called by the `accessibility_bridge_` in response to changes in the
+  // system's "semantics mode" setting.
   void SetAccessibilityEnabled(bool enabled);
+
+  // Called by `theme_manager_` if it is unable to determine the system theme.
+  void OnThemeManagerError();
 
   const std::unique_ptr<content::WebContents> web_contents_;
   ContextImpl* const context_;
