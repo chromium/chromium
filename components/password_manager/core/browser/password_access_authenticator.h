@@ -32,6 +32,8 @@ class PasswordAccessAuthenticator {
   // authenticated without repeating the challenge.
   constexpr static base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 
+  PasswordAccessAuthenticator();
+
   // |os_reauth_call| is passed to |os_reauth_call_|, see the latter for
   // explanation. |timeout_call| is passed to |timeout_call_| and will be called
   // when |auth_timer_| runs out.
@@ -43,6 +45,9 @@ class PasswordAccessAuthenticator {
       delete;
 
   ~PasswordAccessAuthenticator();
+
+  // Initializes the authenticator with |os_reauth_call_| and |timeout_call_|.
+  void Init(ReauthCallback os_reauth_call, TimeoutCallback timeout_call);
 
   // Determines whether the user is able to pass the authentication challenge,
   // which is represented by |os_reauth_call_| returning true. A successful
