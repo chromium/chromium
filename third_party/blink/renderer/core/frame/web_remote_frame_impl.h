@@ -33,6 +33,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
   static WebRemoteFrameImpl* CreateMainFrame(
       WebView*,
       const RemoteFrameToken& frame_token,
+      bool is_loading,
       const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener,
       mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
@@ -97,6 +98,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
   WebRemoteFrameImpl* CreateRemoteChild(
       mojom::blink::TreeScopeType,
       const RemoteFrameToken& frame_token,
+      bool is_loading,
       const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener,
       mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>

@@ -396,6 +396,7 @@ interface RemoteFrame {
   //     exists, or absl::nullopt otherwise.
   // `tree_scope_type`: Whether the owner element (e.g. <iframe>, <object>, et
   //     cetera) for this frame is in the document tree or the shadow tree.
+  // `is_loading`: Whether to call DidStartLoading() on the new child frame.
   // `devtools_frame_token`: Used for devtools instrumentation and
   //    trace-ability. The token is shared across all frames (local or remotes)
   //    representing the same logical frame tree node, and is used by Blink and
@@ -409,6 +410,7 @@ interface RemoteFrame {
                    blink.mojom.FrameToken? opener_frame_token,
                    blink.mojom.TreeScopeType tree_scope_type,
                    blink.mojom.FrameReplicationState replication_state,
+                   bool is_loading,
                    mojo_base.mojom.UnguessableToken devtools_frame_token,
                    RemoteFrameInterfacesFromBrowser remote_frame_interfaces);
 };

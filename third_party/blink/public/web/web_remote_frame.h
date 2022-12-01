@@ -39,6 +39,7 @@ class BLINK_EXPORT WebRemoteFrame : public WebFrame {
   static WebRemoteFrame* CreateMainFrame(
       WebView*,
       const RemoteFrameToken& frame_token,
+      bool is_loading,
       const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener,
       CrossVariantMojoAssociatedRemote<mojom::RemoteFrameHostInterfaceBase>

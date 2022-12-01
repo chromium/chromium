@@ -137,6 +137,7 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
       (const blink::RemoteFrameToken& token,
        const absl::optional<blink::FrameToken>& opener_frame_token,
        blink::mojom::FrameReplicationStatePtr replication_state,
+       bool is_loading,
        const base::UnguessableToken& devtools_frame_token,
        blink::mojom::RemoteFrameInterfacesFromBrowserPtr
            remote_frame_interfaces,

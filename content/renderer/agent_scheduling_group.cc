@@ -76,9 +76,9 @@ void CreateRemoteMainFrame(
     blink::WebFrame* opener_frame,
     blink::WebView* web_view) {
   blink::WebRemoteFrame::CreateMainFrame(
-      web_view, frame_token, devtools_main_frame_token, opener_frame,
-      std::move(remote_frame_host), std::move(remote_frame_receiver),
-      std::move(replication_state));
+      web_view, frame_token, /*is_loading=*/false, devtools_main_frame_token,
+      opener_frame, std::move(remote_frame_host),
+      std::move(remote_frame_receiver), std::move(replication_state));
   // Root frame proxy has no ancestors to point to their RenderWidget.
 
   // The WebRemoteFrame created here was already attached to the Page as its

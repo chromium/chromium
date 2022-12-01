@@ -271,6 +271,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     parent_proxy->GetAssociatedRemoteFrame()->CreateRemoteChild(
         frame_token_, opener_frame_token, frame_tree_node_->tree_scope_type(),
         frame_tree_node_->current_replication_state().Clone(),
+        frame_tree_node_->IsLoading(),
         frame_tree_node_->current_frame_host()->devtools_frame_token(),
         CreateAndBindRemoteFrameInterfaces());
 
@@ -278,18 +279,13 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     GetRenderViewHost()->GetAssociatedPageBroadcast()->CreateRemoteMainFrame(
         frame_token_, opener_frame_token,
         frame_tree_node_->current_replication_state().Clone(),
+        frame_tree_node_->IsLoading(),
         frame_tree_node_->current_frame_host()->devtools_frame_token(),
         CreateAndBindRemoteFrameInterfaces(),
         CreateAndBindRemoteMainFrameInterfaces());
   }
 
   SetRenderFrameProxyCreated(true);
-
-  // If this proxy was created for a frame that hasn't yet finished loading,
-  // let the renderer know so it can also mark the proxy as loading. See
-  // https://crbug.com/916137.
-  if (frame_tree_node_->IsLoading())
-    GetAssociatedRemoteFrame()->DidStartLoading();
 
   // For subframes, initialize the proxy's FrameOwnerProperties only if they
   // differ from default values.

@@ -310,6 +310,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const RemoteFrameToken& frame_token,
       const absl::optional<FrameToken>& opener_frame_token,
       mojom::blink::FrameReplicationStatePtr replicated_state,
+      bool is_loading,
       const base::UnguessableToken& devtools_frame_token,
       mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       mojom::blink::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)

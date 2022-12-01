@@ -3912,6 +3912,7 @@ void WebViewImpl::CreateRemoteMainFrame(
     const RemoteFrameToken& frame_token,
     const absl::optional<FrameToken>& opener_frame_token,
     mojom::blink::FrameReplicationStatePtr replicated_state,
+    bool is_loading,
     const base::UnguessableToken& devtools_frame_token,
     mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
     mojom::blink::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
@@ -3920,7 +3921,7 @@ void WebViewImpl::CreateRemoteMainFrame(
     opener = WebFrame::FromFrameToken(*opener_frame_token);
   // Create a top level WebRemoteFrame.
   WebRemoteFrameImpl::CreateMainFrame(
-      this, frame_token, devtools_frame_token, opener,
+      this, frame_token, is_loading, devtools_frame_token, opener,
       std::move(remote_frame_interfaces->frame_host),
       std::move(remote_frame_interfaces->frame_receiver),
       std::move(replicated_state));
