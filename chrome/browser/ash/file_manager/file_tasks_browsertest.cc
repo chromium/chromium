@@ -556,6 +556,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, IsExtensionInstalled) {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// This test only runs with the is_chrome_branded GN flag set because otherwise
+// QuickOffice is not installed.
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, IsExtensionInstalledQuickOffice) {
   Profile* const profile = browser()->profile();
   ASSERT_TRUE(IsExtensionInstalled(
@@ -579,6 +581,33 @@ const TaskDescriptor CreateOpenInOfficeTask() {
   return TaskDescriptor(kFileManagerSwaAppId, TASK_TYPE_WEB_APP,
                         full_action_id);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// This test only runs with the is_chrome_branded GN flag set because otherwise
+// QuickOffice is not installed.
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
+  storage::FileSystemURL test_url;
+  Profile* const profile = browser()->profile();
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  const extensions::Extension* quick_office = registry->GetInstalledExtension(
+      extension_misc::kQuickOfficeComponentExtensionId);
+
+  // Uninstall QuickOffice.
+  registry->RemoveEnabled(extension_misc::kQuickOfficeComponentExtensionId);
+  // GetUserFallbackChoice() returns `False` because QuickOffice is not
+  // installed.
+  ASSERT_FALSE(
+      GetUserFallbackChoice(profile, CreateWebDriveOfficeTask(), {test_url},
+                            ash::office_fallback::FallbackReason::kOffline));
+  // Install QuickOffice.
+  registry->AddEnabled(quick_office);
+  // GetUserFallbackChoice() returns `True` because QuickOffice is installed.
+  ASSERT_TRUE(
+      GetUserFallbackChoice(profile, CreateWebDriveOfficeTask(), {test_url},
+                            ash::office_fallback::FallbackReason::kOffline));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // TODO(cassycc): move this class to a more appropriate spot.
 // Fake DriveFs specific to the `OfficeFallbackDriveTest`. Allows a test file to
@@ -642,6 +671,9 @@ class FakeSimpleDriveFsHelper : public drive::FakeDriveFsHelper {
   const base::FilePath mount_path_;
   FakeSimpleDriveFs fake_drivefs_;
 };
+
+
+
 
 // Tests the office fallback flow that occurs when a user fails to open an
 // office file from Drive.
