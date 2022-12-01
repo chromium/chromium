@@ -673,6 +673,8 @@ public abstract class CronetEngine {
      * different events occurring.
      * @param executor the {@link Executor} on which {@code callback} methods will be invoked.
      * @return the created builder.
+     *
+     * {@hide}
      */
     public abstract BidirectionalStream.Builder newBidirectionalStreamBuilder(
             String url, BidirectionalStream.Callback callback, Executor executor);

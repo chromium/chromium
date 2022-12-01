@@ -15,6 +15,8 @@ import java.util.concurrent.Executor;
  *
  * <p>Note: There are ordering restrictions on methods of {@link BidirectionalStream}; please see
  * individual methods for description of restrictions.
+ *
+ * {@hide crbug/1394772: needs review before we expose to aosp}
  */
 public abstract class BidirectionalStream {
     /**
