@@ -7549,7 +7549,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPermissionQuietChipDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionQuietChip)},
     {"fail-fast-quiet-chip", flag_descriptions::kFailFastQuietChipName,
-     flag_descriptions::kFailFastQuietChipDescription, kOsDesktop,
+     flag_descriptions::kFailFastQuietChipDescription, kOsAll,
      FEATURE_VALUE_TYPE(permissions::features::kFailFastQuietChip)},
 
     {"canvas-2d-layers", flag_descriptions::kCanvas2DLayersName,
