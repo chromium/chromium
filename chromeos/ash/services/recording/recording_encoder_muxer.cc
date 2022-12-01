@@ -17,6 +17,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/muxers/file_webm_muxer_delegate.h"
+#include "media/muxers/muxer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace recording {
@@ -399,9 +400,9 @@ void RecordingEncoderMuxer::OnVideoEncoderOutput(
     absl::optional<media::VideoEncoder::CodecDescription> codec_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  media::WebmMuxer::VideoParameters params(
-      video_visible_rect_sizes_.front(), kMaxFrameRate, media::VideoCodec::kVP8,
-      kColorSpace);
+  media::Muxer::VideoParameters params(video_visible_rect_sizes_.front(),
+                                       kMaxFrameRate, media::VideoCodec::kVP8,
+                                       kColorSpace);
   video_visible_rect_sizes_.pop();
 
   // TODO(crbug.com/1143798): Explore changing the WebmMuxer so it doesn't work

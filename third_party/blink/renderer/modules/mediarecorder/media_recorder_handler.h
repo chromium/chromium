@@ -25,7 +25,7 @@ namespace media {
 class AudioBus;
 class AudioParameters;
 class VideoFrame;
-class WebmMuxer;
+class Muxer;
 }  // namespace media
 
 namespace blink {
@@ -95,17 +95,17 @@ class MODULES_EXPORT MediaRecorderHandler final
   // Called to indicate there is encoded video data available. |encoded_alpha|
   // represents the encode output of alpha channel when available, can be
   // nullptr otherwise.
-  void OnEncodedVideo(const media::WebmMuxer::VideoParameters& params,
+  void OnEncodedVideo(const media::Muxer::VideoParameters& params,
                       std::string encoded_data,
                       std::string encoded_alpha,
                       base::TimeTicks timestamp,
                       bool is_key_frame);
-  void OnPassthroughVideo(const media::WebmMuxer::VideoParameters& params,
+  void OnPassthroughVideo(const media::Muxer::VideoParameters& params,
                           std::string encoded_data,
                           std::string encoded_alpha,
                           base::TimeTicks timestamp,
                           bool is_key_frame);
-  void HandleEncodedVideo(const media::WebmMuxer::VideoParameters& params,
+  void HandleEncodedVideo(const media::Muxer::VideoParameters& params,
                           std::string encoded_data,
                           std::string encoded_alpha,
                           base::TimeTicks timestamp,
@@ -170,8 +170,8 @@ class MODULES_EXPORT MediaRecorderHandler final
   Vector<std::unique_ptr<VideoTrackRecorder>> video_recorders_;
   Vector<std::unique_ptr<AudioTrackRecorder>> audio_recorders_;
 
-  // Worker class doing the actual Webm Muxing work.
-  std::unique_ptr<media::WebmMuxer> webm_muxer_;
+  // Worker class doing the actual muxing work.
+  std::unique_ptr<media::Muxer> muxer_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

@@ -57,7 +57,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
   using VideoFrameAndTimestamp =
       std::pair<scoped_refptr<media::VideoFrame>, base::TimeTicks>;
   using VideoParamsAndTimestamp =
-      std::pair<media::WebmMuxer::VideoParameters, base::TimeTicks>;
+      std::pair<media::Muxer::VideoParameters, base::TimeTicks>;
 
   struct OutputBuffer {
     base::UnsafeSharedMemoryRegion region;

@@ -18,6 +18,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/muxers/live_webm_muxer_delegate.h"
+#include "media/muxers/muxer.h"
 #include "media/muxers/webm_muxer.h"
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
@@ -259,7 +260,7 @@ bool MediaRecorderHandler::Start(int timeslice) {
   DCHECK(!recording_);
   DCHECK(media_stream_);
   DCHECK(timeslice_.is_zero());
-  DCHECK(!webm_muxer_);
+  DCHECK(!muxer_);
 
   invalidated_ = false;
 
@@ -286,14 +287,13 @@ bool MediaRecorderHandler::Start(int timeslice) {
     return false;
   }
 
-  webm_muxer_ = std::make_unique<media::WebmMuxer>(
+  muxer_ = std::make_unique<media::WebmMuxer>(
       CodecIdToMediaAudioCodec(audio_codec_id_), use_video_tracks,
       use_audio_tracks,
       std::make_unique<media::LiveWebmMuxerDelegate>(WTF::BindRepeating(
           &MediaRecorderHandler::WriteData, WrapWeakPersistent(this))));
-  if (timeslice > 0) {
-    webm_muxer_->SetMaximumDurationToForceDataOutput(timeslice_);
-  }
+  if (timeslice > 0)
+    muxer_->SetMaximumDurationToForceDataOutput(timeslice_);
   if (use_video_tracks) {
     // TODO(mcasas): The muxer API supports only one video track. Extend it to
     // several video tracks, see http://crbug.com/528523.
@@ -369,7 +369,7 @@ void MediaRecorderHandler::Stop() {
   timeslice_ = base::Milliseconds(0);
   video_recorders_.clear();
   audio_recorders_.clear();
-  webm_muxer_.reset();
+  muxer_.reset();
 }
 
 void MediaRecorderHandler::Pause() {
@@ -380,8 +380,8 @@ void MediaRecorderHandler::Pause() {
     video_recorder->Pause();
   for (const auto& audio_recorder : audio_recorders_)
     audio_recorder->Pause();
-  if (webm_muxer_)
-    webm_muxer_->Pause();
+  if (muxer_)
+    muxer_->Pause();
 }
 
 void MediaRecorderHandler::Resume() {
@@ -392,8 +392,8 @@ void MediaRecorderHandler::Resume() {
     video_recorder->Resume();
   for (const auto& audio_recorder : audio_recorders_)
     audio_recorder->Resume();
-  if (webm_muxer_)
-    webm_muxer_->Resume();
+  if (muxer_)
+    muxer_->Resume();
 }
 
 void MediaRecorderHandler::EncodingInfo(
@@ -527,7 +527,7 @@ String MediaRecorderHandler::ActualMimeType() {
 }
 
 void MediaRecorderHandler::OnEncodedVideo(
-    const media::WebmMuxer::VideoParameters& params,
+    const media::Muxer::VideoParameters& params,
     std::string encoded_data,
     std::string encoded_alpha,
     base::TimeTicks timestamp,
@@ -545,7 +545,7 @@ void MediaRecorderHandler::OnEncodedVideo(
 }
 
 void MediaRecorderHandler::OnPassthroughVideo(
-    const media::WebmMuxer::VideoParameters& params,
+    const media::Muxer::VideoParameters& params,
     std::string encoded_data,
     std::string encoded_alpha,
     base::TimeTicks timestamp,
@@ -559,7 +559,7 @@ void MediaRecorderHandler::OnPassthroughVideo(
 }
 
 void MediaRecorderHandler::HandleEncodedVideo(
-    const media::WebmMuxer::VideoParameters& params,
+    const media::Muxer::VideoParameters& params,
     std::string encoded_data,
     std::string encoded_alpha,
     base::TimeTicks timestamp,
@@ -581,11 +581,11 @@ void MediaRecorderHandler::HandleEncodedVideo(
     return;
   }
 
-  if (!webm_muxer_)
+  if (!muxer_)
     return;
-  if (!webm_muxer_->OnEncodedVideo(params, std::move(encoded_data),
-                                   std::move(encoded_alpha), timestamp,
-                                   is_key_frame)) {
+  if (!muxer_->OnEncodedVideo(params, std::move(encoded_data),
+                              std::move(encoded_alpha), timestamp,
+                              is_key_frame)) {
     DLOG(ERROR) << "Error muxing video data";
     recorder_->OnError("Error muxing video data");
   }
@@ -603,10 +603,9 @@ void MediaRecorderHandler::OnEncodedAudio(const media::AudioParameters& params,
     recorder_->OnError("Amount of tracks in MediaStream has changed.");
     return;
   }
-  if (!webm_muxer_)
+  if (!muxer_)
     return;
-  if (!webm_muxer_->OnEncodedAudio(params, std::move(encoded_data),
-                                   timestamp)) {
+  if (!muxer_->OnEncodedAudio(params, std::move(encoded_data), timestamp)) {
     DLOG(ERROR) << "Error muxing audio data";
     recorder_->OnError("Error muxing audio data");
   }
@@ -680,8 +679,8 @@ void MediaRecorderHandler::UpdateTrackLiveAndEnabled(
   const bool track_live_and_enabled =
       track.GetReadyState() == MediaStreamSource::kReadyStateLive &&
       track.Enabled();
-  if (webm_muxer_)
-    webm_muxer_->SetLiveAndEnabled(track_live_and_enabled, is_video);
+  if (muxer_)
+    muxer_->SetLiveAndEnabled(track_live_and_enabled, is_video);
 }
 
 void MediaRecorderHandler::OnSourceReadyStateChanged() {

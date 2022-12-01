@@ -97,9 +97,8 @@ class WebmMuxerTest : public TestWithParam<TestParams> {
     return webm_muxer_->delegate_->Write(buf, len);
   }
 
-  WebmMuxer::VideoParameters GetVideoParameters(
-      scoped_refptr<VideoFrame> frame) {
-    WebmMuxer::VideoParameters parameters(frame);
+  Muxer::VideoParameters GetVideoParameters(scoped_refptr<VideoFrame> frame) {
+    Muxer::VideoParameters parameters(*frame);
     parameters.codec = GetParam().video_codec;
     return parameters;
   }
@@ -313,8 +312,8 @@ TEST_P(WebmMuxerTest, OnEncodedAudioTwoFrames) {
 }
 
 TEST_P(WebmMuxerTest, ColorSpaceREC709IsPropagatedToTrack) {
-  WebmMuxer::VideoParameters params(gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
-                                    gfx::ColorSpace::CreateREC709());
+  Muxer::VideoParameters params(gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
+                                gfx::ColorSpace::CreateREC709());
   webm_muxer_->OnEncodedVideo(params, "abab", {}, base::TimeTicks::Now(),
                               true /* keyframe */);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
@@ -325,7 +324,7 @@ TEST_P(WebmMuxerTest, ColorSpaceREC709IsPropagatedToTrack) {
 }
 
 TEST_P(WebmMuxerTest, ColorSpaceExtendedSRGBIsPropagatedToTrack) {
-  WebmMuxer::VideoParameters params(
+  Muxer::VideoParameters params(
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
       gfx::ColorSpace(
           gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
@@ -340,7 +339,7 @@ TEST_P(WebmMuxerTest, ColorSpaceExtendedSRGBIsPropagatedToTrack) {
 }
 
 TEST_P(WebmMuxerTest, ColorSpaceHDR10IsPropagatedToTrack) {
-  WebmMuxer::VideoParameters params(
+  Muxer::VideoParameters params(
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::PQ,
@@ -357,7 +356,7 @@ TEST_P(WebmMuxerTest, ColorSpaceHDR10IsPropagatedToTrack) {
 }
 
 TEST_P(WebmMuxerTest, ColorSpaceFullRangeHDR10IsPropagatedToTrack) {
-  WebmMuxer::VideoParameters params(
+  Muxer::VideoParameters params(
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::PQ,
@@ -493,8 +492,8 @@ class WebmMuxerTestUnparametrized : public testing::Test {
   }
 
   void AddVideoAtOffset(int system_timestamp_offset_ms, bool is_key_frame) {
-    WebmMuxer::VideoParameters params(
-        gfx::Size(1, 1), 0, media::VideoCodec::kVP8, gfx::ColorSpace());
+    Muxer::VideoParameters params(gfx::Size(1, 1), 0, media::VideoCodec::kVP8,
+                                  gfx::ColorSpace());
     webm_muxer_->OnEncodedVideo(
         params, "video_at_offset", "",
         base::TimeTicks() + base::Milliseconds(system_timestamp_offset_ms),

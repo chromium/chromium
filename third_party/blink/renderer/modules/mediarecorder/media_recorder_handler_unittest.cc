@@ -151,7 +151,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
                                                     base::TimeTicks::Now());
   }
 
-  void OnEncodedVideoForTesting(const media::WebmMuxer::VideoParameters& params,
+  void OnEncodedVideoForTesting(const media::Muxer::VideoParameters& params,
                                 std::string encoded_data,
                                 std::string encoded_alpha,
                                 base::TimeTicks timestamp,
@@ -181,7 +181,8 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   }
 
   void ForceOneErrorInWebmMuxer() {
-    media_recorder_handler_->webm_muxer_->ForceOneLibWebmErrorForTesting();
+    static_cast<media::WebmMuxer*>(media_recorder_handler_->muxer_.get())
+        ->ForceOneLibWebmErrorForTesting();
   }
 
   std::unique_ptr<media::AudioBus> NextAudioBus() {
@@ -574,8 +575,8 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
   media_recorder_handler_->Pause();
 
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
-  media::WebmMuxer::VideoParameters params(
-      gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
+  media::Muxer::VideoParameters params(gfx::Size(), 1, media::VideoCodec::kVP9,
+                                       gfx::ColorSpace());
   OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
                            true);
 
@@ -608,8 +609,8 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
   EXPECT_TRUE(media_recorder_handler_->Start(0));
 
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
-  media::WebmMuxer::VideoParameters params(
-      gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
+  media::Muxer::VideoParameters params(gfx::Size(), 1, media::VideoCodec::kVP9,
+                                       gfx::ColorSpace());
   OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
                            true);
 

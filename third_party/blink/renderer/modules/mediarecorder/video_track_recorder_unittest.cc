@@ -167,7 +167,7 @@ class VideoTrackRecorderTest
   MOCK_METHOD0(OnSourceReadyStateEnded, void());
 
   MOCK_METHOD5(OnEncodedVideo,
-               void(const media::WebmMuxer::VideoParameters& params,
+               void(const media::Muxer::VideoParameters& params,
                     std::string encoded_data,
                     std::string encoded_alpha,
                     base::TimeTicks timestamp,
@@ -578,7 +578,7 @@ class VideoTrackRecorderPassthroughTest
   }
 
   MOCK_METHOD5(OnEncodedVideo,
-               void(const media::WebmMuxer::VideoParameters& params,
+               void(const media::Muxer::VideoParameters& params,
                     std::string encoded_data,
                     std::string encoded_alpha,
                     base::TimeTicks timestamp,

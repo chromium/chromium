@@ -92,7 +92,7 @@ void VpxEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
 
   const gfx::Size frame_size = frame->visible_rect().size();
   base::TimeDelta duration = EstimateFrameDuration(*frame);
-  const media::WebmMuxer::VideoParameters video_params(frame);
+  const media::Muxer::VideoParameters video_params(*frame);
 
   if (!IsInitialized(codec_config_) ||
       gfx::Size(codec_config_.g_w, codec_config_.g_h) != frame_size) {

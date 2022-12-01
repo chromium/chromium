@@ -52,9 +52,9 @@ const int kVEAEncoderMinResolutionHeight = 480;
 namespace WTF {
 
 template <>
-struct CrossThreadCopier<media::WebmMuxer::VideoParameters> {
+struct CrossThreadCopier<media::Muxer::VideoParameters> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = media::WebmMuxer::VideoParameters;
+  using Type = media::Muxer::VideoParameters;
   static Type Copy(Type pointer) { return pointer; }
 };
 
@@ -95,12 +95,12 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
                  uint8_t level);
   };
 
-  using OnEncodedVideoCB = base::RepeatingCallback<void(
-      const media::WebmMuxer::VideoParameters& params,
-      std::string encoded_data,
-      std::string encoded_alpha,
-      base::TimeTicks capture_timestamp,
-      bool is_key_frame)>;
+  using OnEncodedVideoCB =
+      base::RepeatingCallback<void(const media::Muxer::VideoParameters& params,
+                                   std::string encoded_data,
+                                   std::string encoded_alpha,
+                                   base::TimeTicks capture_timestamp,
+                                   bool is_key_frame)>;
   using OnErrorCB = base::RepeatingClosure;
 
   // MediaStreamVideoSink implementation
@@ -162,7 +162,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
         base::TimeTicks capture_timestamp);
 
     using OnEncodedVideoInternalCB = WTF::CrossThreadFunction<void(
-        const media::WebmMuxer::VideoParameters& params,
+        const media::Muxer::VideoParameters& params,
         std::string encoded_data,
         std::string encoded_alpha,
         base::TimeTicks capture_timestamp,

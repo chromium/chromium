@@ -162,7 +162,7 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
     NOTREACHED() << "OpenH264 encoding failed";
     return;
   }
-  const media::WebmMuxer::VideoParameters video_params(frame);
+  const media::Muxer::VideoParameters video_params(*frame);
   frame = nullptr;
 
   std::string data;

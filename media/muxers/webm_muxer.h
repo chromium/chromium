@@ -8,29 +8,27 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
-#include "media/base/video_color_space.h"
+#include "media/muxers/muxer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libwebm/source/mkvmuxer.hpp"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace gfx {
-class Size;
-}  // namespace gfx
+namespace base {
+class ElapsedTimer;
+}  // namespace base
 
 namespace media {
 
-class VideoFrame;
 class AudioParameters;
 
 // Adapter class to manage a WebM container [1], a simplified version of a
@@ -44,7 +42,7 @@ class AudioParameters;
 // WebmMuxer is designed for use on a single thread.
 // [1] http://www.webmproject.org/docs/container/
 // [2] http://www.matroska.org/technical/specs/index.html
-class MEDIA_EXPORT WebmMuxer {
+class MEDIA_EXPORT WebmMuxer : public Muxer {
  public:
   // Defines an interface for delegates of WebmMuxer which should define how to
   // implement the |mkvmuxer::IMkvWriter| APIs (e.g. whether to support
@@ -83,22 +81,6 @@ class MEDIA_EXPORT WebmMuxer {
         GUARDED_BY_CONTEXT(sequence_checker_);
   };
 
-  // Container for the parameters that muxer uses that is extracted from
-  // media::VideoFrame.
-  struct MEDIA_EXPORT VideoParameters {
-    explicit VideoParameters(scoped_refptr<media::VideoFrame> frame);
-    VideoParameters(gfx::Size visible_rect_size,
-                    double frame_rate,
-                    VideoCodec codec,
-                    absl::optional<gfx::ColorSpace> color_space);
-    VideoParameters(const VideoParameters&);
-    ~VideoParameters();
-    gfx::Size visible_rect_size;
-    double frame_rate;
-    VideoCodec codec;
-    absl::optional<gfx::ColorSpace> color_space;
-  };
-
   // |audio_codec| should coincide with whatever is sent in OnEncodedAudio(),
   WebmMuxer(AudioCodec audio_codec,
             bool has_video_,
@@ -108,7 +90,7 @@ class MEDIA_EXPORT WebmMuxer {
   WebmMuxer(const WebmMuxer&) = delete;
   WebmMuxer& operator=(const WebmMuxer&) = delete;
 
-  ~WebmMuxer();
+  ~WebmMuxer() override;
 
   // Sets the maximum duration interval to cause data output on
   // |write_data_callback|, provided frames are delivered. The WebM muxer can
@@ -118,7 +100,7 @@ class MEDIA_EXPORT WebmMuxer {
   // last write.
   // The maximum duration between forced clusters is internally limited to not
   // go below 100 ms.
-  void SetMaximumDurationToForceDataOutput(base::TimeDelta interval);
+  void SetMaximumDurationToForceDataOutput(base::TimeDelta interval) override;
 
   // Functions to add video and audio frames with |encoded_data.data()|
   // to WebM Segment. Either one returns true on success.
@@ -128,23 +110,20 @@ class MEDIA_EXPORT WebmMuxer {
                       std::string encoded_data,
                       std::string encoded_alpha,
                       base::TimeTicks timestamp,
-                      bool is_key_frame);
-  bool OnEncodedAudio(const media::AudioParameters& params,
+                      bool is_key_frame) override;
+  bool OnEncodedAudio(const AudioParameters& params,
                       std::string encoded_data,
-                      base::TimeTicks timestamp);
-
-  // WebmMuxer may hold on to data. Make sure it gets out on the next frame.
-  void ForceDataOutputOnNextFrame();
+                      base::TimeTicks timestamp) override;
 
   // Call to handle mute and tracks getting disabled.
-  void SetLiveAndEnabled(bool track_live_and_enabled, bool is_video);
+  void SetLiveAndEnabled(bool track_live_and_enabled, bool is_video) override;
 
-  void Pause();
-  void Resume();
+  void Pause() override;
+  void Resume() override;
 
   // Drains and writes out all buffered frames and finalizes the segment.
   // Returns true on success, false otherwise.
-  bool Flush();
+  bool Flush() override;
 
   void ForceOneLibWebmErrorForTesting() { force_one_libwebm_error_ = true; }
 
@@ -159,7 +138,7 @@ class MEDIA_EXPORT WebmMuxer {
   void AddVideoTrack(const gfx::Size& frame_size,
                      double frame_rate,
                      const absl::optional<gfx::ColorSpace>& color_space);
-  void AddAudioTrack(const media::AudioParameters& params);
+  void AddAudioTrack(const AudioParameters& params);
 
   // Adds all currently buffered frames to the mkvmuxer in timestamp order,
   // until the queues are depleted.

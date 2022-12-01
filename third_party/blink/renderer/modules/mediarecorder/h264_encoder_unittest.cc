@@ -127,7 +127,7 @@ class H264EncoderFixture : public ::testing::Test {
             kELevelIdcToLevel.find(eLevelIdc)->value};
   }
 
-  void OnEncodedVideo(const media::WebmMuxer::VideoParameters& params,
+  void OnEncodedVideo(const media::Muxer::VideoParameters& params,
                       std::string encoded_data,
                       std::string encoded_alpha,
                       base::TimeTicks capture_timestamp,

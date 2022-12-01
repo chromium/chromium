@@ -5,18 +5,30 @@
 #include "media/muxers/webm_muxer.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <cstring>
 #include <memory>
+#include <string>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/circular_deque.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/time/time_override.h"
+#include "base/timer/elapsed_timer.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/formats/common/opus_constants.h"
+#include "media/muxers/muxer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/libwebm/source/mkvmuxer.hpp"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 
@@ -56,7 +68,7 @@ constexpr uint8_t codec_private[4] = {
 constexpr base::TimeDelta kMinimumForcedClusterDuration =
     base::Milliseconds(100);
 
-void WriteOpusHeader(const media::AudioParameters& params, uint8_t* header) {
+void WriteOpusHeader(const AudioParameters& params, uint8_t* header) {
   // See https://wiki.xiph.org/OggOpus#ID_Header.
   // Set magic signature.
   std::string label = "OpusHead";
@@ -80,13 +92,13 @@ void WriteOpusHeader(const media::AudioParameters& params, uint8_t* header) {
   header[OPUS_EXTRADATA_CHANNEL_MAPPING_OFFSET] = 0;
 }
 
-static double GetFrameRate(const WebmMuxer::VideoParameters& params) {
+static double GetFrameRate(const Muxer::VideoParameters& params) {
   const double kZeroFrameRate = 0.0;
   const double kDefaultFrameRate = 30.0;
 
   double frame_rate = params.frame_rate;
   if (frame_rate <= kZeroFrameRate ||
-      frame_rate > media::limits::kMaxFramesPerSecond) {
+      frame_rate > limits::kMaxFramesPerSecond) {
     frame_rate = kDefaultFrameRate;
   }
   return frame_rate;
@@ -198,30 +210,6 @@ mkvmuxer::int32 WebmMuxer::Delegate::Write(const void* buf,
 }
 
 // -----------------------------------------------------------------------------
-// WebmMuxer::VideoParameters:
-
-WebmMuxer::VideoParameters::VideoParameters(
-    scoped_refptr<media::VideoFrame> frame)
-    : visible_rect_size(frame->visible_rect().size()),
-      frame_rate(frame->metadata().frame_rate.value_or(0.0)),
-      codec(VideoCodec::kUnknown),
-      color_space(frame->ColorSpace()) {}
-
-WebmMuxer::VideoParameters::VideoParameters(
-    gfx::Size visible_rect_size,
-    double frame_rate,
-    VideoCodec codec,
-    absl::optional<gfx::ColorSpace> color_space)
-    : visible_rect_size(visible_rect_size),
-      frame_rate(frame_rate),
-      codec(codec),
-      color_space(color_space) {}
-
-WebmMuxer::VideoParameters::VideoParameters(const VideoParameters&) = default;
-
-WebmMuxer::VideoParameters::~VideoParameters() = default;
-
-// -----------------------------------------------------------------------------
 // WebmMuxer:
 
 WebmMuxer::WebmMuxer(AudioCodec audio_codec,
@@ -312,7 +300,7 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
   return PartiallyFlushQueues();
 }
 
-bool WebmMuxer::OnEncodedAudio(const media::AudioParameters& params,
+bool WebmMuxer::OnEncodedAudio(const AudioParameters& params,
                                std::string encoded_data,
                                base::TimeTicks timestamp) {
   DVLOG(2) << __func__ << " - " << encoded_data.size() << "B";
@@ -420,7 +408,7 @@ void WebmMuxer::AddVideoTrack(
   video_track->set_max_block_additional_id(1);
 }
 
-void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
+void WebmMuxer::AddAudioTrack(const AudioParameters& params) {
   DVLOG(1) << __func__ << " " << params.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, audio_track_index_)
@@ -569,6 +557,8 @@ void WebmMuxer::MaybeForceNewCluster() {
     return;
   }
 
+  // TODO(crbug.com/1381323): consider if cluster output should be based on
+  // media timestamps
   if (base::TimeTicks::Now() - delegate_->last_data_output_timestamp() >=
       max_data_output_interval_) {
     segment_.ForceNewClusterOnNextFrame();

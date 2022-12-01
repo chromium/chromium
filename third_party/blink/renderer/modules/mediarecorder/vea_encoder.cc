@@ -299,8 +299,8 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
         WTF::BindOnce(&VEAEncoder::FrameFinished, WrapRefCounted(this),
                       std::move(input_buffer))));
   }
-  frames_in_encode_.push(std::make_pair(
-      media::WebmMuxer::VideoParameters(frame), capture_timestamp));
+  frames_in_encode_.emplace(media::Muxer::VideoParameters(*frame),
+                            capture_timestamp);
 
   video_encoder_->Encode(video_frame, force_next_frame_to_be_keyframe_);
   force_next_frame_to_be_keyframe_ = false;

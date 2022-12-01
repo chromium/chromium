@@ -73,7 +73,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
             media::VideoFrame::CreateBlackFrame(visible_rect);
         const auto is_key_frame = rng() % 2;
         const auto has_alpha_frame = rng() % 4;
-        auto parameters = media::WebmMuxer::VideoParameters(video_frame);
+        auto parameters = media::Muxer::VideoParameters(*video_frame);
         parameters.codec = video_codec;
         muxer.OnEncodedVideo(parameters, str,
                              has_alpha_frame ? str : std::string(),
