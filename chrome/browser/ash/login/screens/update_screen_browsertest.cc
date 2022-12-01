@@ -678,7 +678,8 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestVoidNetwork) {
   histogram_tester_.ExpectTotalCount(kTimeFinalize, 0);
 }
 
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestAPReselection) {
+// TODO(b/260997063): Re-enable this test
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_TestAPReselection) {
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
 
