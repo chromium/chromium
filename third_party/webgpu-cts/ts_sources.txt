@@ -181,6 +181,7 @@ src/webgpu/api/operation/rendering/depth_clip_clamp.spec.ts
 src/webgpu/api/operation/rendering/draw.spec.ts
 src/webgpu/api/operation/rendering/indirect_draw.spec.ts
 src/webgpu/api/operation/rendering/robust_access_index.spec.ts
+src/webgpu/api/operation/rendering/stencil.spec.ts
 src/webgpu/api/operation/resource_init/buffer.spec.ts
 src/webgpu/util/texture/subresource.ts
 src/webgpu/api/operation/resource_init/check_texture/by_copy.ts
