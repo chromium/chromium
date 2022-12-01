@@ -383,16 +383,10 @@ GetCurrentThreadPriorityForPlatformForTest() {
 void PlatformThread::SetName(const std::string& name) {
   ThreadIdNameManager::GetInstance()->SetName(name);
 
-<<<<<<< HEAD
   if (recordreplay::AreEventsDisallowed())
     return;
 
-#if !defined(OS_NACL) && !defined(OS_AIX)
-||||||| 80c960997e61f
-#if !defined(OS_NACL) && !defined(OS_AIX)
-=======
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // On linux we can get the thread names to show up in the debugger by setting
   // the process name for the LWP.  We don't want to do this for the main
   // thread because that would rename the process, causing tools like killall

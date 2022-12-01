@@ -15,14 +15,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-||||||| 80c960997e61f
-#include "base/single_thread_task_runner.h"
-=======
 #include "base/task/single_thread_task_runner.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_factory.h"
@@ -32,6 +25,8 @@
 #include "ipc/message_filter.h"
 #include "ipc/message_filter_router.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+
+#include "base/record_replay.h"
 
 namespace IPC {
 

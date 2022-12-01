@@ -285,15 +285,8 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   ScrollOffset previous_offset = GetScrollOffset();
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
-<<<<<<< HEAD
-
-  if (clamped_offset == GetScrollOffset()) {
-||||||| 80c960997e61f
-  if (clamped_offset == GetScrollOffset()) {
-=======
   if (clamped_offset == previous_offset &&
       scroll_type != mojom::blink::ScrollType::kProgrammatic) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return;
   }
 

@@ -52,32 +52,18 @@ bool SVGDocumentExtensions::ServiceSmilOnAnimationFrame(Document& document) {
   return document.AccessSVGExtensions().ServiceSmilAnimations();
 }
 
-<<<<<<< HEAD
-void SVGDocumentExtensions::ServiceAnimations() {
-  HeapVector<Member<SVGSVGElement>> time_containers;
-  CopyToVector(time_containers_, time_containers);
-  std::sort(time_containers.begin(), time_containers.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
-  for (const auto& container : time_containers)
-    container->TimeContainer()->ServiceAnimations();
-||||||| 80c960997e61f
-void SVGDocumentExtensions::ServiceAnimations() {
-  HeapVector<Member<SVGSVGElement>> time_containers;
-  CopyToVector(time_containers_, time_containers);
-  for (const auto& container : time_containers)
-    container->TimeContainer()->ServiceAnimations();
-=======
 void SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(
     Document& document) {
   if (!document.SvgExtensions())
     return;
   document.AccessSVGExtensions().ServiceWebAnimations();
 }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 bool SVGDocumentExtensions::ServiceSmilAnimations() {
   bool did_schedule_animation_frame = false;
   HeapVector<Member<SVGSVGElement>> time_containers(time_containers_);
+  std::sort(time_containers.begin(), time_containers.end(),
+            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
   for (const auto& container : time_containers) {
     did_schedule_animation_frame |=
         container->TimeContainer()->ServiceAnimations();
@@ -106,17 +92,9 @@ void SVGDocumentExtensions::StartAnimations() {
   // FIXME: We hold a ref pointers to prevent a shadow tree from getting removed
   // out from underneath us.  In the future we should refactor the use-element
   // to avoid this. See https://webkit.org/b/53704
-<<<<<<< HEAD
-  HeapVector<Member<SVGSVGElement>> time_containers;
-  CopyToVector(time_containers_, time_containers);
+  HeapVector<Member<SVGSVGElement>> time_containers(time_containers_);
   std::sort(time_containers.begin(), time_containers.end(),
             recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
-||||||| 80c960997e61f
-  HeapVector<Member<SVGSVGElement>> time_containers;
-  CopyToVector(time_containers_, time_containers);
-=======
-  HeapVector<Member<SVGSVGElement>> time_containers(time_containers_);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   for (const auto& container : time_containers) {
     SMILTimeContainer* time_container = container->TimeContainer();
     if (!time_container->IsStarted())
@@ -138,17 +116,9 @@ bool SVGDocumentExtensions::HasSmilAnimations() const {
 }
 
 void SVGDocumentExtensions::DispatchSVGLoadEventToOutermostSVGElements() {
-<<<<<<< HEAD
-  HeapVector<Member<SVGSVGElement>> time_containers;
-  CopyToVector(time_containers_, time_containers);
+  HeapVector<Member<SVGSVGElement>> time_containers(time_containers_);
   std::sort(time_containers.begin(), time_containers.end(),
             recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
-||||||| 80c960997e61f
-  HeapVector<Member<SVGSVGElement>> time_containers;
-  CopyToVector(time_containers_, time_containers);
-=======
-  HeapVector<Member<SVGSVGElement>> time_containers(time_containers_);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   for (const auto& container : time_containers) {
     SVGSVGElement* outer_svg = container.Get();
     if (!outer_svg->IsOutermostSVGSVGElement())

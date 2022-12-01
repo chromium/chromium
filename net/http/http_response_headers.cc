@@ -19,15 +19,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/stl_util.h"
-=======
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -43,6 +36,8 @@
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
+
+#include "base/record_replay.h"
 
 using base::Time;
 

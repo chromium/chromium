@@ -7,12 +7,7 @@
 #include <memory>
 #include <numeric>
 
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/ranges/algorithm.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -56,6 +51,8 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -1275,18 +1272,12 @@ void NGInlineNode::SegmentBidiRuns(NGInlineNodeData* data) const {
 
 void NGInlineNode::ShapeText(NGInlineItemsData* data,
                              const String* previous_text,
-<<<<<<< HEAD
-                             const Vector<NGInlineItem>* previous_items) const {
+                             const HeapVector<NGInlineItem>* previous_items,
+                             const Font* override_font) const {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineNode::ShapeText %d",
                        GetLayoutBox()->RecordReplayId());
 
-||||||| 80c960997e61f
-                             const Vector<NGInlineItem>* previous_items) const {
-=======
-                             const HeapVector<NGInlineItem>* previous_items,
-                             const Font* override_font) const {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   TRACE_EVENT0("fonts", "NGInlineNode::ShapeText");
   const String& text_content = data->text_content;
   HeapVector<NGInlineItem>* items = &data->items;

@@ -40,14 +40,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-<<<<<<< HEAD
-#include "net/base/net_errors.h"
-#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
-||||||| 80c960997e61f
-#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
-=======
 #include "services/metrics/public/cpp/metrics_utils.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
@@ -102,6 +95,8 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "url/url_constants.h"
+
+#include "net/base/net_errors.h"
 
 namespace blink {
 
@@ -1166,7 +1161,6 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   resource_->ResponseReceived(response);
 
-<<<<<<< HEAD
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
     dict.SetDouble("identifier",
@@ -1187,8 +1181,6 @@ void ResourceLoader::DidReceiveResponseInternal(
     recordreplay::BrowserEvent("Network.DidReceiveResponse", dict);
   }
 
-||||||| 80c960997e61f
-=======
   if (resource_->Loader() && fetcher_->GetProperties().IsDetached()) {
     // If the fetch context is already detached, we don't need further signals,
     // so let's cancel the request.
@@ -1196,7 +1188,6 @@ void ResourceLoader::DidReceiveResponseInternal(
     return;
   }
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // Send the cached code after we notify that the response is received.
   // Resource expects that we receive the response first before the
   // corresponding cached code.
@@ -1314,7 +1305,6 @@ void ResourceLoader::DidFinishLoading(
   resource_->SetEncodedBodyLength(encoded_body_length);
   resource_->SetDecodedBodyLength(decoded_body_length);
 
-<<<<<<< HEAD
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
     dict.SetDouble("identifier",
@@ -1324,8 +1314,6 @@ void ResourceLoader::DidFinishLoading(
     recordreplay::BrowserEvent("Network.DidFinishLoading", dict);
   }
 
-||||||| 80c960997e61f
-=======
   if (pervasive_payload_requested.has_value()) {
     ukm::SourceId ukm_source_id =
         resource_->GetResourceRequest().GetUkmSourceId();
@@ -1336,7 +1324,6 @@ void ResourceLoader::DidFinishLoading(
     builder.Record(fetcher_->UkmRecorder());
   }
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   response_end_time_for_error_cases_ = response_end_time;
 
   if ((response_body_loader_ && !has_seen_end_of_body_ &&

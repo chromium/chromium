@@ -18,13 +18,7 @@
 #include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
 #include "base/numerics/safe_math.h"
-<<<<<<< HEAD
-#include "base/process/process_metrics.h"
 #include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/process/process_metrics.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 

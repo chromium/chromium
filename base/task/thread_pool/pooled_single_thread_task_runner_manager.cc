@@ -13,15 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
@@ -43,6 +34,8 @@
 
 #include "base/win/scoped_com_initializer.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#include "base/record_replay.h"
 
 namespace base {
 namespace internal {
@@ -442,37 +435,9 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
     if (!g_manager_is_alive)
       return false;
 
-<<<<<<< HEAD
-    if (task.delayed_run_time.is_null()) {
-      return GetDelegate()->PostTaskNow(sequence_, std::move(task));
-    }
-
-    // Unretained(GetDelegate()) is safe because this TaskRunner and its
-    // worker are kept alive as long as there are pending Tasks.
-    outer_->delayed_task_manager_->AddDelayedTask(
-        std::move(task),
-        BindOnce(IgnoreResult(&WorkerThreadDelegate::PostTaskNow),
-                 Unretained(GetDelegate()), sequence_),
-        this);
-
-    return true;
-||||||| 80c960997e61f
-    if (task.delayed_run_time.is_null())
-      return GetDelegate()->PostTaskNow(sequence_, std::move(task));
-
-    // Unretained(GetDelegate()) is safe because this TaskRunner and its
-    // worker are kept alive as long as there are pending Tasks.
-    outer_->delayed_task_manager_->AddDelayedTask(
-        std::move(task),
-        BindOnce(IgnoreResult(&WorkerThreadDelegate::PostTaskNow),
-                 Unretained(GetDelegate()), sequence_),
-        this);
-    return true;
-=======
     Task task(from_here, std::move(closure), TimeTicks::Now(),
               delayed_run_time);
     return PostTask(std::move(task));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   bool PostNonNestableDelayedTask(const Location& from_here,

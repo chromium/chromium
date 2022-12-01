@@ -161,61 +161,8 @@ class PLATFORM_EXPORT DisplayItem {
     kTypeLast = kScrollbarVertical,
   };
 
-<<<<<<< HEAD
-  // Some fields are copied from |client|, because we need to access them in
-  // later paint cycles when |client| may have been destroyed.
-  DisplayItem(const DisplayItemClient& client,
-              Type type,
-              wtf_size_t derived_size,
-              const IntRect& visual_rect,
-              bool draws_content = false)
-      : client_(&client),
-        key_(client.GetKey()),
-        visual_rect_(visual_rect),
-        fragment_(0),
-        type_(type),
-        derived_size_(derived_size),
-        raster_effect_outset_(
-            static_cast<unsigned>(client.VisualRectOutsetForRasterEffects())),
-        draws_content_(draws_content),
-        is_cacheable_(client.IsCacheable()),
-        is_tombstone_(false) {
-    // |derived_size| must fit in |derived_size_|.
-    // If it doesn't, enlarge |derived_size_| and fix this assert.
-    SECURITY_DCHECK(derived_size == derived_size_);
-    SECURITY_DCHECK(derived_size >= sizeof(*this));
-    DCHECK_EQ(client.VisualRectOutsetForRasterEffects(),
-              GetRasterEffectOutset());
-  }
-||||||| 80c960997e61f
-  // Some fields are copied from |client|, because we need to access them in
-  // later paint cycles when |client| may have been destroyed.
-  DisplayItem(const DisplayItemClient& client,
-              Type type,
-              wtf_size_t derived_size,
-              const IntRect& visual_rect,
-              bool draws_content = false)
-      : client_(&client),
-        visual_rect_(visual_rect),
-        fragment_(0),
-        type_(type),
-        derived_size_(derived_size),
-        raster_effect_outset_(
-            static_cast<unsigned>(client.VisualRectOutsetForRasterEffects())),
-        draws_content_(draws_content),
-        is_cacheable_(client.IsCacheable()),
-        is_tombstone_(false) {
-    // |derived_size| must fit in |derived_size_|.
-    // If it doesn't, enlarge |derived_size_| and fix this assert.
-    SECURITY_DCHECK(derived_size == derived_size_);
-    SECURITY_DCHECK(derived_size >= sizeof(*this));
-    DCHECK_EQ(client.VisualRectOutsetForRasterEffects(),
-              GetRasterEffectOutset());
-  }
-=======
   static_assert(kTypeLast < (1 << 8),
                 "DisplayItem::Type should fit in uint8_t");
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   DisplayItem(const DisplayItem&) = delete;
   DisplayItem(DisplayItem&&) = delete;
@@ -314,27 +261,6 @@ class PLATFORM_EXPORT DisplayItem {
     return type_ == kScrollbarHorizontal || type_ == kScrollbarVertical;
   }
 
-<<<<<<< HEAD
-  uintptr_t GetKey() const { return key_; }
-
-  bool IsCacheable() const { return is_cacheable_; }
-  void SetUncacheable() { is_cacheable_ = false; }
-
-  virtual bool Equals(const DisplayItem& other) const {
-    // Failure of this DCHECK would cause bad casts in subclasses.
-    SECURITY_CHECK(!is_tombstone_);
-    return client_ == other.client_ && type_ == other.type_ &&
-           fragment_ == other.fragment_ && derived_size_ == other.derived_size_;
-||||||| 80c960997e61f
-  bool IsCacheable() const { return is_cacheable_; }
-  void SetUncacheable() { is_cacheable_ = false; }
-
-  virtual bool Equals(const DisplayItem& other) const {
-    // Failure of this DCHECK would cause bad casts in subclasses.
-    SECURITY_CHECK(!is_tombstone_);
-    return client_ == other.client_ && type_ == other.type_ &&
-           fragment_ == other.fragment_ && derived_size_ == other.derived_size_;
-=======
   PaintInvalidationReason GetPaintInvalidationReason() const {
     return static_cast<PaintInvalidationReason>(paint_invalidation_reason_);
   }
@@ -344,7 +270,6 @@ class PLATFORM_EXPORT DisplayItem {
   bool IsCacheable() const {
     return static_cast<PaintInvalidationReason>(paint_invalidation_reason_) !=
            PaintInvalidationReason::kUncacheable;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   bool EqualsForUnderInvalidation(const DisplayItem& other) const;
@@ -397,14 +322,6 @@ class PLATFORM_EXPORT DisplayItem {
   // It knows how to destruct subclasses.
   void Destruct();
 
-<<<<<<< HEAD
-  const DisplayItemClient* client_;
-  uintptr_t key_;
-  IntRect visual_rect_;
-||||||| 80c960997e61f
-  const DisplayItemClient* client_;
-  IntRect visual_rect_;
-=======
   // Used by DisplayItemList::AppendByMoving() and ReplaceLastByMoving() where
   // a tombstone DisplayItem is constructed at the source location. Only set
   // draws_content_ and is_not_tombstone_ to false, leaving other fields as-is
@@ -417,7 +334,6 @@ class PLATFORM_EXPORT DisplayItem {
 
   DisplayItemClientId client_id_;
   gfx::Rect visual_rect_;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   wtf_size_t fragment_;
   // paint_invalidation_reason_ is set during construction (or, in the case of a
   // DisplayItem copied from the cache, shortly thereafter). Once set, it is

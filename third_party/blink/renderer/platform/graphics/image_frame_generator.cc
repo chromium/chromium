@@ -28,20 +28,15 @@
 #include <memory>
 #include <utility>
 
-<<<<<<< HEAD
-#include "base/macros.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/macros.h"
-=======
 #include "base/synchronization/lock.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/core/SkData.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -118,23 +113,10 @@ bool ImageFrameGenerator::DecodeAndScale(
     ImageDecoder::AlphaOption alpha_option,
     cc::PaintImage::GeneratorClientId client_id) {
   {
-<<<<<<< HEAD
-    MutexLocker lock(generator_mutex_);
-    if (decode_failed_) {
-||||||| 80c960997e61f
-    MutexLocker lock(generator_mutex_);
-    if (decode_failed_)
-=======
     base::AutoLock lock(generator_lock_);
     if (decode_failed_)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       return false;
-<<<<<<< HEAD
-    }
-||||||| 80c960997e61f
-=======
     RecordWhetherMultiDecoded(client_id);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   TRACE_EVENT1("blink", "ImageFrameGenerator::decodeAndScale", "generator",

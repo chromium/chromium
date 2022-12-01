@@ -442,12 +442,8 @@ class CONTENT_EXPORT RenderThreadImpl
       WriteClangProfilingProfileCallback callback) override;
 #endif
   void SetIsCrossOriginIsolated(bool value) override;
-<<<<<<< HEAD
   void RecordReplayBrowserEvent(const std::string& name, base::Value value) override;
-||||||| 80c960997e61f
-=======
   void SetIsIsolatedApplication(bool value) override;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 

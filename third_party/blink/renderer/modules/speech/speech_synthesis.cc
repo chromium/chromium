@@ -251,15 +251,7 @@ void SpeechSynthesis::SentenceBoundaryEventOccurred(
 }
 
 void SpeechSynthesis::VoicesDidChange() {
-<<<<<<< HEAD
-  if (GetSupplementable()->GetFrame())
-    DispatchEvent(*Event::Create(event_type_names::kVoiceschanged), "SpeechSynthesis::VoicesDidChange");
-||||||| 80c960997e61f
-  if (GetSupplementable()->GetFrame())
-    DispatchEvent(*Event::Create(event_type_names::kVoiceschanged));
-=======
-  DispatchEvent(*Event::Create(event_type_names::kVoiceschanged));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  DispatchEvent(*Event::Create(event_type_names::kVoiceschanged), "SpeechSynthesis::VoicesDidChange");
 }
 
 void SpeechSynthesis::StartSpeakingImmediately() {

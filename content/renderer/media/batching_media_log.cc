@@ -52,13 +52,7 @@ BatchingMediaLog::BatchingMediaLog(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     std::vector<std::unique_ptr<EventHandler>> event_handlers)
     : task_runner_(std::move(task_runner)),
-<<<<<<< HEAD
-      event_handlers_(std::move(event_handlers)),
       lock_("BatchingMediaLog.lock_"),
-||||||| 80c960997e61f
-      event_handlers_(std::move(event_handlers)),
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       tick_clock_(base::DefaultTickClock::GetInstance()),
       last_ipc_send_time_(tick_clock_->NowTicks()),
       event_handlers_(std::move(event_handlers)),

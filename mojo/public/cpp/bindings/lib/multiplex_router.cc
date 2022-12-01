@@ -13,17 +13,8 @@
 #include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
-=======
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -33,6 +24,8 @@
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace internal {
@@ -392,22 +385,10 @@ MultiplexRouter::MultiplexRouter(
                  primary_interface_name),
       control_message_handler_(this),
       control_message_proxy_(&connector_) {
-<<<<<<< HEAD
   recordreplay::RegisterPointer("MultiplexRouter", this);
 
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-  if (config == MULTI_INTERFACE)
-    lock_.emplace("MultiplexRouter.lock_");
-||||||| 80c960997e61f
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-  if (config == MULTI_INTERFACE)
-    lock_.emplace();
-=======
   if (config_ == MULTI_INTERFACE)
-    lock_.emplace();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+    lock_.emplace("MultiplexRouter.lock_");
 
   connector_.set_incoming_receiver(&dispatcher_);
 

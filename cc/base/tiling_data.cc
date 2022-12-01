@@ -9,16 +9,11 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
-<<<<<<< HEAD
-#include "base/numerics/ranges.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/numerics/ranges.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 

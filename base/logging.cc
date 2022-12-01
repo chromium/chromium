@@ -25,13 +25,8 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
-<<<<<<< HEAD
 #include <dlfcn.h>
 
-#if defined(OS_WIN)
-||||||| 80c960997e61f
-#if defined(OS_WIN)
-=======
 #if !BUILDFLAG(IS_NACL)
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
@@ -42,7 +37,6 @@
 #endif  // defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_WIN)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include <io.h>
 #include <windows.h>
 typedef HANDLE FileHandle;
@@ -989,7 +983,6 @@ LogMessage::~LogMessage() {
   }
 }
 
-<<<<<<< HEAD
 #ifdef OS_MAC
 static void (*gRecordReplayPrintFn)(const char*, va_list);
 #endif
@@ -1011,14 +1004,11 @@ static void RecordReplayPrint(const char* aFormat, ...) {
 #endif
 }
 
-||||||| 80c960997e61f
-=======
 std::string LogMessage::BuildCrashString() const {
   return logging::BuildCrashString(file(), line(),
                                    str().c_str() + message_start_);
 }
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 // writes the common header info to the stream
 void LogMessage::Init(const char* file, int line) {
   RecordReplayPrint("LogMessage::Init %s:%d", file, line);

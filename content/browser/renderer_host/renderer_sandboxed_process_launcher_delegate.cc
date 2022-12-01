@@ -29,6 +29,10 @@
 
 namespace content {
 
+static inline bool MaybeRecordingOrReplaying() {
+  return true;
+}
+
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 ZygoteHandle RendererSandboxedProcessLauncherDelegate::GetZygote() {
   const base::CommandLine& browser_command_line =
@@ -36,6 +40,9 @@ ZygoteHandle RendererSandboxedProcessLauncherDelegate::GetZygote() {
   base::CommandLine::StringType renderer_prefix =
       browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
   if (!renderer_prefix.empty())
+    return nullptr;
+  // Zygotes are not used to spawn recording processes.
+  if (MaybeRecordingOrReplaying())
     return nullptr;
   return GetGenericZygote();
 }

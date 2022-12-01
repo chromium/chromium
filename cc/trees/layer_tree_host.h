@@ -650,23 +650,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // These are internal methods, called from the Layer itself when changing a
   // property or completing a PushPropertiesTo.
   void AddLayerShouldPushProperties(Layer* layer);
-<<<<<<< HEAD
-  void ClearLayersThatShouldPushProperties();
-  // The current set of all Layers attached to the LayerTreeHost's tree that
-  // have been marked as needing PushPropertiesTo in the next commit.
-  typedef base::flat_set<Layer*, CompareLayersById> LayerSet;
-  const LayerSet& LayersThatShouldPushProperties() {
-    return layers_that_should_push_properties_;
-  }
-||||||| 80c960997e61f
-  void ClearLayersThatShouldPushProperties();
-  // The current set of all Layers attached to the LayerTreeHost's tree that
-  // have been marked as needing PushPropertiesTo in the next commit.
-  const base::flat_set<Layer*>& LayersThatShouldPushProperties() {
-    return layers_that_should_push_properties_;
-  }
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   void SetPageScaleFromImplSide(float page_scale);
   void SetElasticOverscrollFromImplSide(gfx::Vector2dF elastic_overscroll);
@@ -1041,24 +1024,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   scoped_refptr<HeadsUpDisplayLayer> hud_layer_;
 
-<<<<<<< HEAD
-  // The number of SurfaceLayers that have (fallback,primary) set to
-  // viz::SurfaceRange.
-  base::flat_map<viz::SurfaceRange, int> surface_ranges_;
-
-  // Set of layers that need to push properties.
-  LayerSet layers_that_should_push_properties_;
-
-||||||| 80c960997e61f
-  // The number of SurfaceLayers that have (fallback,primary) set to
-  // viz::SurfaceRange.
-  base::flat_map<viz::SurfaceRange, int> surface_ranges_;
-
-  // Set of layers that need to push properties.
-  base::flat_set<Layer*> layers_that_should_push_properties_;
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // Layer id to Layer map.
   std::unordered_map<int, Layer*> layer_id_map_;
 

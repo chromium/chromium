@@ -667,42 +667,6 @@ void PresentationConnection::DidFailLoadingBlob(FileErrorCode error_code) {
   HandleMessageQueue();
 }
 
-<<<<<<< HEAD
-void PresentationConnection::DispatchStateChangeEvent(Event* event) {
-  GetExecutionContext()
-      ->GetTaskRunner(TaskType::kPresentation)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&PresentationConnection::DispatchEventAsync,
-                           WrapPersistent(this), WrapPersistent(event)));
-}
-
-// static
-void PresentationConnection::DispatchEventAsync(EventTarget* target,
-                                                Event* event) {
-  DCHECK(target);
-  DCHECK(event);
-  target->DispatchEvent(*event, "PresentationConnection::DispatchEventAsync");
-}
-
-||||||| 80c960997e61f
-void PresentationConnection::DispatchStateChangeEvent(Event* event) {
-  GetExecutionContext()
-      ->GetTaskRunner(TaskType::kPresentation)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&PresentationConnection::DispatchEventAsync,
-                           WrapPersistent(this), WrapPersistent(event)));
-}
-
-// static
-void PresentationConnection::DispatchEventAsync(EventTarget* target,
-                                                Event* event) {
-  DCHECK(target);
-  DCHECK(event);
-  target->DispatchEvent(*event);
-}
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 void PresentationConnection::TearDown() {
   // Cancel current Blob loading if any.
   if (blob_loader_) {

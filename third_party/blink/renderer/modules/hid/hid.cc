@@ -354,64 +354,8 @@ String HID::CheckDeviceFilterValidity(const HIDDeviceFilter& filter) {
     return "A filter containing a productId must also contain a vendorId.";
   }
 
-<<<<<<< HEAD
-  EnsureServiceConnection();
-  if (!receiver_.is_bound())
-    service_->RegisterClient(receiver_.BindNewEndpointAndPassRemote());
-}
-
-void HID::DeviceAdded(device::mojom::blink::HidDeviceInfoPtr device_info) {
-  auto* device = GetOrCreateDevice(std::move(device_info));
-
-  DispatchEvent(*MakeGarbageCollected<HIDConnectionEvent>(
-      event_type_names::kConnect, device), "HID::DeviceAdded");
-}
-
-void HID::DeviceRemoved(device::mojom::blink::HidDeviceInfoPtr device_info) {
-  auto* device = GetOrCreateDevice(std::move(device_info));
-
-  DispatchEvent(*MakeGarbageCollected<HIDConnectionEvent>(
-      event_type_names::kDisconnect, device), "HID::DeviceRemoved");
-}
-
-ScriptPromise HID::getDevices(ScriptState* script_state,
-                              ExceptionState& exception_state) {
-  auto* context = GetExecutionContext();
-  if (!context) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kContextGone);
-    return ScriptPromise();
-||||||| 80c960997e61f
-  EnsureServiceConnection();
-  if (!receiver_.is_bound())
-    service_->RegisterClient(receiver_.BindNewEndpointAndPassRemote());
-}
-
-void HID::DeviceAdded(device::mojom::blink::HidDeviceInfoPtr device_info) {
-  auto* device = GetOrCreateDevice(std::move(device_info));
-
-  DispatchEvent(*MakeGarbageCollected<HIDConnectionEvent>(
-      event_type_names::kConnect, device));
-}
-
-void HID::DeviceRemoved(device::mojom::blink::HidDeviceInfoPtr device_info) {
-  auto* device = GetOrCreateDevice(std::move(device_info));
-
-  DispatchEvent(*MakeGarbageCollected<HIDConnectionEvent>(
-      event_type_names::kDisconnect, device));
-}
-
-ScriptPromise HID::getDevices(ScriptState* script_state,
-                              ExceptionState& exception_state) {
-  auto* context = GetExecutionContext();
-  if (!context) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kContextGone);
-    return ScriptPromise();
-=======
   if (filter.hasUsage() && !filter.hasUsagePage()) {
     return "A filter containing a usage must also contain a usagePage.";
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   return String();

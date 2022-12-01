@@ -249,16 +249,8 @@ void NavigatorManagedData::OnAttributeReceived(
   }
 }
 
-<<<<<<< HEAD:third_party/blink/renderer/modules/managed_device/device_service.cc
-void DeviceService::OnConfigurationChanged() {
-  DispatchEvent(*Event::Create(event_type_names::kManagedconfigurationchange), "DeviceService::OnConfigurationChanged");
-||||||| 80c960997e61f:third_party/blink/renderer/modules/managed_device/device_service.cc
-void DeviceService::OnConfigurationChanged() {
-  DispatchEvent(*Event::Create(event_type_names::kManagedconfigurationchange));
-=======
 void NavigatorManagedData::OnConfigurationChanged() {
-  DispatchEvent(*Event::Create(event_type_names::kManagedconfigurationchange));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:third_party/blink/renderer/modules/managed_device/navigator_managed_data.cc
+  DispatchEvent(*Event::Create(event_type_names::kManagedconfigurationchange), "NavigatorManagedData::OnConfigurationChanged");
 }
 
 void NavigatorManagedData::AddedEventListener(

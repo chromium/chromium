@@ -24,17 +24,11 @@ class LOCKABLE BASE_EXPORT Lock {
  public:
 #if !DCHECK_IS_ON()
   // Optimized wrapper implementation
-<<<<<<< HEAD
   Lock(const char* ordered_name = nullptr) : lock_(ordered_name) {}
-||||||| 80c960997e61f
-  Lock() : lock_() {}
-=======
-  Lock() : lock_() {}
 
   Lock(const Lock&) = delete;
   Lock& operator=(const Lock&) = delete;
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   ~Lock() {}
 
   void Acquire() EXCLUSIVE_LOCK_FUNCTION() { lock_.Lock(); }

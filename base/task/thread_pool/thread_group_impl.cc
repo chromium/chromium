@@ -564,20 +564,6 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
 
   DCHECK(ContainsWorker(outer_->workers_, worker));
 
-<<<<<<< HEAD
-  if (!CanGetWorkLockRequired(&executor, worker)) {
-    // https://linear.app/replay/issue/RUN-753
-    if (!recordreplay::AreEventsDisallowed())
-      recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1");
-    return nullptr;
-  }
-
-||||||| 80c960997e61f
-  if (!CanGetWorkLockRequired(&executor, worker))
-    return nullptr;
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // Use this opportunity, before assigning work to this worker, to create/wake
   // additional workers if needed (doing this here allows us to reduce
   // potentially expensive create/wake directly on PostTask()).
@@ -588,8 +574,12 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   outer_->EnsureEnoughWorkersLockRequired(&executor);
   executor.FlushWorkerCreation(&outer_->lock_);
 
-  if (!CanGetWorkLockRequired(&executor, worker))
+  if (!CanGetWorkLockRequired(&executor, worker)) {
+    // https://linear.app/replay/issue/RUN-753
+    if (!recordreplay::AreEventsDisallowed())
+      recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1");
     return nullptr;
+  }
 
   RegisteredTaskSource task_source;
   TaskPriority priority;
@@ -607,16 +597,10 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
     task_source = outer_->TakeRegisteredTaskSource(&executor);
   }
   if (!task_source) {
-<<<<<<< HEAD
     // https://linear.app/replay/issue/RUN-753
     if (!recordreplay::AreEventsDisallowed())
       recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #2");
-    OnWorkerBecomesIdleLockRequired(worker);
-||||||| 80c960997e61f
-    OnWorkerBecomesIdleLockRequired(worker);
-=======
     OnWorkerBecomesIdleLockRequired(&executor, worker);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return nullptr;
   }
 

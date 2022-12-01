@@ -154,15 +154,12 @@ interface Renderer {
   // agents, not both.
   // This is called at most once, prior to committing a navigation.
   SetIsCrossOriginIsolated(bool value);
-<<<<<<< HEAD
 
   // A single API call to convey record/replay events
   // from the browser to the renderer.
   RecordReplayBrowserEvent(
       string name,
       mojo_base.mojom.DictionaryValue params);
-||||||| 80c960997e61f
-=======
 
   // Set whether this renderer process has the "isolated application" isolation
   // level. Similarly to the `SetIsCrossOriginIsolated()` method above, this
@@ -195,5 +192,4 @@ interface Renderer {
                      string reduced_user_agent,
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 };

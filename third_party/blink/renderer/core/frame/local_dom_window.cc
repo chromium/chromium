@@ -889,18 +889,8 @@ void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
 
 void LocalDOMWindow::DispatchPopstateEvent(
     scoped_refptr<SerializedScriptValue> state_object) {
-<<<<<<< HEAD
-  // FIXME: https://bugs.webkit.org/show_bug.cgi?id=36202 Popstate event needs
-  // to fire asynchronously
-  DispatchEvent(*PopStateEvent::Create(std::move(state_object), history()), "LocalDOMWindow::EnqueuePopstateEvent");
-||||||| 80c960997e61f
-  // FIXME: https://bugs.webkit.org/show_bug.cgi?id=36202 Popstate event needs
-  // to fire asynchronously
-  DispatchEvent(*PopStateEvent::Create(std::move(state_object), history()));
-=======
   DCHECK(GetFrame());
-  DispatchEvent(*PopStateEvent::Create(std::move(state_object), history()));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  DispatchEvent(*PopStateEvent::Create(std::move(state_object), history()), "LocalDOMWindow::DispatchPopstateEvent");
 }
 
 LocalDOMWindow::~LocalDOMWindow() = default;
@@ -1229,11 +1219,6 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     UMA_HISTOGRAM_ENUMERATION("BackForwardCache.SameSite.ActionAfterPagehide2",
                               ActionAfterPagehide::kReceivedPostMessage);
   }
-<<<<<<< HEAD
-  DispatchEvent(*event, "LocalDOMWindow::DispatchMessageEventWithOriginCheck");
-||||||| 80c960997e61f
-  DispatchEvent(*event);
-=======
 
   if (event->delegatedCapability() ==
       mojom::blink::DelegatedCapability::kPaymentRequest) {
@@ -1250,8 +1235,7 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     fullscreen_request_token_.Activate();
   }
 
-  DispatchEvent(*event);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  DispatchEvent(*event, "LocalDOMWindow::DispatchMessageEventWithOriginCheck");
 }
 
 DOMSelection* LocalDOMWindow::getSelection() {

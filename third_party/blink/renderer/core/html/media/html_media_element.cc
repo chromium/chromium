@@ -4738,21 +4738,13 @@ void HTMLMediaElement::DidMediaMetadataChange(
 void HTMLMediaElement::DidPlayerMediaPositionStateChange(
     double playback_rate,
     base::TimeDelta duration,
-<<<<<<< HEAD
-    base::TimeDelta position) {
-  // https://linear.app/replay/issue/RUN-616
-  recordreplay::Assert("HTMLMediaElement::DidPlayerMediaPositionStateChange");
-  for (auto& observer : media_player_observer_remote_set_) {
-    // https://linear.app/replay/issue/RUN-616
-    recordreplay::Assert("HTMLMediaElement::DidPlayerMediaPositionStateChange #1");
-||||||| 80c960997e61f
-    base::TimeDelta position) {
-  for (auto& observer : media_player_observer_remote_set_) {
-=======
     base::TimeDelta position,
     bool end_of_media) {
+  // https://linear.app/replay/issue/RUN-616
+  recordreplay::Assert("HTMLMediaElement::DidPlayerMediaPositionStateChange");
   for (auto& observer : media_player_observer_remote_set_->Value()) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+    // https://linear.app/replay/issue/RUN-616
+    recordreplay::Assert("HTMLMediaElement::DidPlayerMediaPositionStateChange #1");
     observer->OnMediaPositionStateChanged(
         media_session::mojom::blink::MediaPosition::New(
             playback_rate, duration, position, base::TimeTicks::Now(),

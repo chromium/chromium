@@ -1822,19 +1822,13 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
     const LayoutUnit block_offset,
     const NGBlockBreakToken* break_token,
     const NGConstraintSpace* fragmentainer_constraint_space,
-<<<<<<< HEAD
-    bool should_use_fixed_block_size) {
+    bool should_use_fixed_block_size,
+    bool requires_content_before_breaking,
+    RepeatMode repeat_mode) {
   // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("NGOutOfFlowLayoutPart::GenerateFragment Start %d",
                        node.GetLayoutBox()->RecordReplayId());
 
-||||||| 80c960997e61f
-    bool should_use_fixed_block_size) {
-=======
-    bool should_use_fixed_block_size,
-    bool requires_content_before_breaking,
-    RepeatMode repeat_mode) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   const auto& style = node.Style();
 
   LayoutUnit inline_size = node_dimensions.size.inline_size;

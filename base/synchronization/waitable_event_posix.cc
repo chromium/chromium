@@ -227,27 +227,14 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   const TimeTicks end_time =
       wait_delta.is_max() ? TimeTicks::Max()
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
-<<<<<<< HEAD
-
-  for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();) {
-||||||| 80c960997e61f
-  for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();
-       remaining = end_time.is_max()
-                       ? TimeDelta::Max()
-                       : end_time - subtle::TimeTicksNowIgnoringOverride()) {
-=======
   for (TimeDelta remaining = wait_delta; remaining.is_positive() && !sw.fired();
        remaining = end_time.is_max()
                        ? TimeDelta::Max()
                        : end_time - subtle::TimeTicksNowIgnoringOverride()) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     if (end_time.is_max())
       sw.cv()->Wait();
     else
       sw.cv()->TimedWait(remaining);
-    remaining = end_time.is_max()
-                    ? TimeDelta::Max()
-                    : end_time - subtle::TimeTicksNowIgnoringOverride();
   }
 
   // Get the SyncWaiter signaled state before releasing the lock.

@@ -11,13 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/stl_util.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,6 +19,8 @@
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/language_detection/chinese_script_classifier.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
+
+#include "base/record_replay.h"
 
 namespace {
 

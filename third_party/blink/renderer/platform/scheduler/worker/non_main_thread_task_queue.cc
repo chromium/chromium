@@ -20,13 +20,9 @@ NonMainThreadTaskQueue::NonMainThreadTaskQueue(
     bool can_be_throttled)
     : task_queue_(base::MakeRefCounted<TaskQueue>(std::move(impl), spec)),
       non_main_thread_scheduler_(non_main_thread_scheduler) {
-<<<<<<< HEAD
   // Pointer registration is needed for sorting in TaskQueueVoterMap.
   recordreplay::RegisterPointer("NonMainThreadTaskQueue", this);
-  if (GetTaskQueueImpl() && spec.should_notify_observers) {
-||||||| 80c960997e61f
-  if (GetTaskQueueImpl() && spec.should_notify_observers) {
-=======
+
   // Throttling needs |should_notify_observers| to get task timing.
   DCHECK(!can_be_throttled || spec.should_notify_observers)
       << "Throttled queue is not supported with |!should_notify_observers|";
@@ -35,7 +31,6 @@ NonMainThreadTaskQueue::NonMainThreadTaskQueue(
       throttler_.emplace(task_queue_.get(),
                          non_main_thread_scheduler->GetTickClock());
     }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     // TaskQueueImpl may be null for tests.
     task_queue_->SetOnTaskCompletedHandler(base::BindRepeating(
         &NonMainThreadTaskQueue::OnTaskCompleted, base::Unretained(this)));

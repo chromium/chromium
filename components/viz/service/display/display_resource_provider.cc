@@ -10,13 +10,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/stl_util.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -27,6 +20,8 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/trace_util.h"
+
+#include "base/record_replay.h"
 
 namespace viz {
 

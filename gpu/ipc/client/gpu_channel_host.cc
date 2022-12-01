@@ -10,18 +10,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-<<<<<<< HEAD
-#include "base/metrics/histogram_macros.h"
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_restrictions.h"
-||||||| 80c960997e61f
-#include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_restrictions.h"
-=======
 #include "base/task/single_thread_task_runner.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -32,6 +21,8 @@
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "url/gurl.h"
+
+#include "base/record_replay.h"
 
 using base::AutoLock;
 
@@ -57,13 +48,8 @@ GpuChannelHost::GpuChannelHost(
       image_decode_accelerator_proxy_(
           this,
           static_cast<int32_t>(
-<<<<<<< HEAD
               GpuChannelReservedRoutes::kImageDecodeAccelerator)),
       context_lock_("GpuChannelHost.context_lock_") {
-||||||| 80c960997e61f
-              GpuChannelReservedRoutes::kImageDecodeAccelerator)) {
-=======
-              GpuChannelReservedRoutes::kImageDecodeAccelerator)) {
   mojo::PendingAssociatedRemote<mojom::GpuChannel> channel;
   listener_->Initialize(std::move(handle),
                         channel.InitWithNewEndpointAndPassReceiver(),
@@ -75,7 +61,6 @@ GpuChannelHost::GpuChannelHost(
                      connection_tracker_),
       io_thread_);
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   next_image_id_.GetNext();
   for (int32_t i = 0;
        i <= static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue); ++i)
@@ -86,112 +71,8 @@ GpuChannelHost::GpuChannelHost(
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-<<<<<<< HEAD
-bool GpuChannelHost::Send(IPC::Message* msg) {
-  // The sync wait below currently can prevent recordings from being finished
-  // on the main thread.
-  if (recordreplay::IsRecordingOrReplaying()) {
-    fprintf(stderr, "Warning: Sending GPU message while recording.\n");
-  }
-
-  TRACE_IPC_MESSAGE_SEND("ipc", "GpuChannelHost::Send", msg);
-
-  auto message = base::WrapUnique(msg);
-
-  DCHECK(!io_thread_->BelongsToCurrentThread());
-
-  // The GPU process never sends synchronous IPCs so clear the unblock flag to
-  // preserve order.
-  message->set_unblock(false);
-
-  if (!message->is_sync()) {
-    io_thread_->PostTask(FROM_HERE,
-                         base::BindOnce(&Listener::SendMessage,
-                                        base::Unretained(listener_.get()),
-                                        std::move(message), nullptr));
-    return true;
-  }
-
-  base::WaitableEvent done_event(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  auto deserializer = base::WrapUnique(
-      static_cast<IPC::SyncMessage*>(message.get())->GetReplyDeserializer());
-
-  IPC::PendingSyncMsg pending_sync(IPC::SyncMessage::GetMessageId(*message),
-                                   deserializer.get(), &done_event);
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Listener::SendMessage, base::Unretained(listener_.get()),
-                     std::move(message), &pending_sync));
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
-  // http://crbug.com/125264
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-
-  pending_sync.done_event->Wait();
-
-  // Histogram to measure how long the browser UI thread spends blocked.
-  // Recorded only for users with high-resolution clocks.
-  base::TimeDelta wait_duration = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("GPU.GPUChannelHostWaitTime3",
-                                          wait_duration,
-                                          base::TimeDelta::FromMicroseconds(5),
-                                          base::TimeDelta::FromSeconds(1), 50);
-
-  return pending_sync.send_result;
-||||||| 80c960997e61f
-bool GpuChannelHost::Send(IPC::Message* msg) {
-  TRACE_IPC_MESSAGE_SEND("ipc", "GpuChannelHost::Send", msg);
-
-  auto message = base::WrapUnique(msg);
-
-  DCHECK(!io_thread_->BelongsToCurrentThread());
-
-  // The GPU process never sends synchronous IPCs so clear the unblock flag to
-  // preserve order.
-  message->set_unblock(false);
-
-  if (!message->is_sync()) {
-    io_thread_->PostTask(FROM_HERE,
-                         base::BindOnce(&Listener::SendMessage,
-                                        base::Unretained(listener_.get()),
-                                        std::move(message), nullptr));
-    return true;
-  }
-
-  base::WaitableEvent done_event(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  auto deserializer = base::WrapUnique(
-      static_cast<IPC::SyncMessage*>(message.get())->GetReplyDeserializer());
-
-  IPC::PendingSyncMsg pending_sync(IPC::SyncMessage::GetMessageId(*message),
-                                   deserializer.get(), &done_event);
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Listener::SendMessage, base::Unretained(listener_.get()),
-                     std::move(message), &pending_sync));
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
-  // http://crbug.com/125264
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-
-  pending_sync.done_event->Wait();
-
-  // Histogram to measure how long the browser UI thread spends blocked.
-  // Recorded only for users with high-resolution clocks.
-  base::TimeDelta wait_duration = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("GPU.GPUChannelHostWaitTime3",
-                                          wait_duration,
-                                          base::TimeDelta::FromMicroseconds(5),
-                                          base::TimeDelta::FromSeconds(1), 50);
-
-  return pending_sync.send_result;
-=======
 mojom::GpuChannel& GpuChannelHost::GetGpuChannel() {
   return *gpu_channel_.get();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 uint32_t GpuChannelHost::OrderingBarrier(

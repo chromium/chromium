@@ -217,22 +217,11 @@ PlatformThreadId PlatformThread::CurrentId() {
   // into the kernel.
 #if BUILDFLAG(IS_APPLE)
   return pthread_mach_thread_np(pthread_self());
-<<<<<<< HEAD
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-  static NoDestructor<InitAtFork> init_at_fork;
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Always use gettid() here to workaround bug where g_thread_id doesn't work
   // properly when replaying.
   return syscall(__NR_gettid);
   /*
-  if (g_thread_id == -1) {
-    g_thread_id = syscall(__NR_gettid);
-||||||| 80c960997e61f
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-  static NoDestructor<InitAtFork> init_at_fork;
-  if (g_thread_id == -1) {
-    g_thread_id = syscall(__NR_gettid);
-=======
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Workaround false-positive MSAN use-of-uninitialized-value on
   // thread_local storage for loaded libraries:
   // https://github.com/google/sanitizers/issues/1265
@@ -251,7 +240,6 @@ PlatformThreadId PlatformThread::CurrentId() {
     } else {
       g_is_main_thread = false;
     }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   } else {
 #if DCHECK_IS_ON()
     if (g_thread_id != syscall(__NR_gettid)) {
@@ -264,19 +252,13 @@ PlatformThreadId PlatformThread::CurrentId() {
 #endif
   }
   return g_thread_id;
-<<<<<<< HEAD
   */
-#elif defined(OS_ANDROID)
-||||||| 80c960997e61f
-#elif defined(OS_ANDROID)
-=======
 #elif BUILDFLAG(IS_ANDROID)
   // Note: do not cache the return value inside a thread_local variable on
   // Android (as above). The reasons are:
   // - thread_local is slow on Android (goes through emutls)
   // - gettid() is fast, since its return value is cached in pthread (in the
   //   thread control block of pthread). See gettid.c in bionic.
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   return gettid();
 #elif BUILDFLAG(IS_FUCHSIA)
   return zx_thread_self();

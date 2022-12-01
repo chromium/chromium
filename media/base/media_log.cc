@@ -108,15 +108,8 @@ void MediaLog::InvalidateLog() {
   // Keep |parent_log_record_| around, since the lock must keep working.
 }
 
-<<<<<<< HEAD
 MediaLog::ParentLogRecord::ParentLogRecord(MediaLog* log)
-    : id(g_media_log_count.GetNext()), lock("ParentLogRecord.lock"), media_log(log) {}
-||||||| 80c960997e61f
-MediaLog::ParentLogRecord::ParentLogRecord(MediaLog* log)
-    : id(g_media_log_count.GetNext()), media_log(log) {}
-=======
-MediaLog::ParentLogRecord::ParentLogRecord(MediaLog* log) : media_log(log) {}
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  : lock("ParentLogRecord.lock"), media_log(log) {}
 MediaLog::ParentLogRecord::~ParentLogRecord() = default;
 
 LogHelper::LogHelper(MediaLogMessageLevel level, MediaLog* media_log)

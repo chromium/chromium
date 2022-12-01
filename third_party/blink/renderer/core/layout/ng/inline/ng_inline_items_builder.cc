@@ -420,14 +420,11 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     if (!text_.length() && !item.Length() && collapse_spaces)
       continue;
 
-<<<<<<< HEAD
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendTextReusing #5 %d %u %u %u",
                          item.GetLayoutObject()->RecordReplayId(),
                          text_.length(), item.StartOffset(), item.Length());
 
-||||||| 80c960997e61f
-=======
     // We are reusing items that included 'generated line breaks', inserted to
     // deal with leading preserved space sequences. If we are performing a
     // relayout after removing a <br> (eg. <div>abc<br><span> dfg</span></div>)
@@ -446,7 +443,6 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
         continue;
     }
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     unsigned start = text_.length();
     text_.Append(original_string, item.StartOffset(), item.Length());
 
@@ -537,18 +533,12 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     LayoutText* layout_object) {
   DCHECK(layout_object);
 
-<<<<<<< HEAD
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendText #2 Start %d %u",
                        layout_object->RecordReplayId(),
                        string.length());
 
-  if (string.IsEmpty()) {
-||||||| 80c960997e61f
-  if (string.IsEmpty()) {
-=======
   if (string.empty()) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     AppendEmptyTextItem(layout_object);
     return;
   }

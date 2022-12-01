@@ -4,17 +4,6 @@
 
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.h"
 
-<<<<<<< HEAD
-#import <AppKit/AppKit.h>
-
-#include "base/mac/scoped_nsobject.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#import <AppKit/AppKit.h>
-
-#include "base/mac/scoped_nsobject.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_mac.h"
@@ -23,6 +12,8 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mac/block_exceptions.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace {
@@ -131,31 +122,10 @@ int MacScrollbarImplV2::GetTrackBoxWidth() {
   }
 }
 
-<<<<<<< HEAD
-- (void)invalidate {
-  recordreplay::AutoPassThroughEvents pt;
-  _scrollbar = 0;
-  BEGIN_BLOCK_OBJC_EXCEPTIONS;
-  [_knobAlphaAnimation invalidate];
-  [_trackAlphaAnimation invalidate];
-  [_uiStateTransitionAnimation invalidate];
-  [_expansionTransitionAnimation invalidate];
-  END_BLOCK_OBJC_EXCEPTIONS;
-||||||| 80c960997e61f
-- (void)invalidate {
-  _scrollbar = 0;
-  BEGIN_BLOCK_OBJC_EXCEPTIONS;
-  [_knobAlphaAnimation invalidate];
-  [_trackAlphaAnimation invalidate];
-  [_uiStateTransitionAnimation invalidate];
-  [_expansionTransitionAnimation invalidate];
-  END_BLOCK_OBJC_EXCEPTIONS;
-=======
 bool MacScrollbarImplV2::IsMouseInScrollbarFrameRect() const {
   if (auto* area = scrollbar_->GetScrollableArea())
     return scrollbar_->FrameRect().Contains(area->LastKnownMousePosition());
   return false;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 void MacScrollbarImplV2::SetHidden(bool hidden) {
   scrollbar_->SetScrollbarsHiddenFromExternalAnimator(hidden);
@@ -208,103 +178,17 @@ void MacScrollbarAnimatorV2::DidAddHorizontalScrollbar(Scrollbar& scrollbar) {
       std::make_unique<MacScrollbarImplV2>(scrollbar, task_runner_);
 }
 
-<<<<<<< HEAD
-void MacScrollbarAnimatorImpl::ContentsResized() const {
-  if (!scrollable_area_->ScrollbarsCanBeActive())
-    return;
-  [scrollbar_painter_controller_ contentAreaDidResize];
-}
-
-void MacScrollbarAnimatorImpl::DidAddVerticalScrollbar(Scrollbar& scrollbar) {
-  ScrollbarPainter painter = ScrollbarPainterForScrollbar(scrollbar);
-  if (!painter)
-    return;
-
-  // For now we avoid creating BlinkScrollbarPainterDelegate when
-  // recording/replaying. We don't currently replay custom messages,
-  // and scrollbar related state will go out of sync as a result.
-  if (recordreplay::IsRecordingOrReplaying()) {
-    return;
-  }
-
-  DCHECK(!vertical_scrollbar_painter_delegate_);
-  vertical_scrollbar_painter_delegate_.reset(
-      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar
-                                                    taskRunner:task_runner_]);
-
-  [painter setDelegate:vertical_scrollbar_painter_delegate_];
-  [scrollbar_painter_controller_ setVerticalScrollerImp:painter];
-}
-
-void MacScrollbarAnimatorImpl::WillRemoveVerticalScrollbar(
-||||||| 80c960997e61f
-void MacScrollbarAnimatorImpl::ContentsResized() const {
-  if (!scrollable_area_->ScrollbarsCanBeActive())
-    return;
-  [scrollbar_painter_controller_ contentAreaDidResize];
-}
-
-void MacScrollbarAnimatorImpl::DidAddVerticalScrollbar(Scrollbar& scrollbar) {
-  ScrollbarPainter painter = ScrollbarPainterForScrollbar(scrollbar);
-  if (!painter)
-    return;
-
-  DCHECK(!vertical_scrollbar_painter_delegate_);
-  vertical_scrollbar_painter_delegate_.reset(
-      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar
-                                                    taskRunner:task_runner_]);
-
-  [painter setDelegate:vertical_scrollbar_painter_delegate_];
-  [scrollbar_painter_controller_ setVerticalScrollerImp:painter];
-}
-
-void MacScrollbarAnimatorImpl::WillRemoveVerticalScrollbar(
-=======
 void MacScrollbarAnimatorV2::WillRemoveHorizontalScrollbar(
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     Scrollbar& scrollbar) {
   horizontal_scrollbar_.reset();
 }
 
-<<<<<<< HEAD
-void MacScrollbarAnimatorImpl::DidAddHorizontalScrollbar(Scrollbar& scrollbar) {
-  ScrollbarPainter painter = ScrollbarPainterForScrollbar(scrollbar);
-  if (!painter)
-    return;
-
-  // See DidAddVerticalScrollbar.
-  if (recordreplay::IsRecordingOrReplaying()) {
-    return;
-  }
-
-  DCHECK(!horizontal_scrollbar_painter_delegate_);
-  horizontal_scrollbar_painter_delegate_.reset(
-      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar
-                                                    taskRunner:task_runner_]);
-
-  [painter setDelegate:horizontal_scrollbar_painter_delegate_];
-  [scrollbar_painter_controller_ setHorizontalScrollerImp:painter];
-||||||| 80c960997e61f
-void MacScrollbarAnimatorImpl::DidAddHorizontalScrollbar(Scrollbar& scrollbar) {
-  ScrollbarPainter painter = ScrollbarPainterForScrollbar(scrollbar);
-  if (!painter)
-    return;
-
-  DCHECK(!horizontal_scrollbar_painter_delegate_);
-  horizontal_scrollbar_painter_delegate_.reset(
-      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar
-                                                    taskRunner:task_runner_]);
-
-  [painter setDelegate:horizontal_scrollbar_painter_delegate_];
-  [scrollbar_painter_controller_ setHorizontalScrollerImp:painter];
-=======
 void MacScrollbarAnimatorV2::DidChangeUserVisibleScrollOffset(
     const ScrollOffset& new_offset) {
   if (horizontal_scrollbar_ && new_offset.x() != 0)
     horizontal_scrollbar_->DidScroll();
   if (vertical_scrollbar_ && new_offset.y() != 0)
     vertical_scrollbar_->DidScroll();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void MacScrollbarAnimatorV2::Dispose() {

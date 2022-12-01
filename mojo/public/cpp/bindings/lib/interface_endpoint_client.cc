@@ -15,14 +15,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
-=======
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -31,7 +23,6 @@
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
@@ -42,6 +33,8 @@
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 
@@ -461,16 +454,11 @@ InterfaceEndpointClient::InterfaceEndpointClient(
       dispatcher_(&thunk_),
       task_runner_(std::move(task_runner)),
       control_message_handler_(this, interface_version),
-<<<<<<< HEAD
-      interface_name_(interface_name) {
-  recordreplay::RegisterPointer("InterfaceEndpointClient", this);
-||||||| 80c960997e61f
-      interface_name_(interface_name) {
-=======
       interface_name_(interface_name),
       method_info_callback_(method_info_callback),
       method_name_callback_(method_name_callback) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  recordreplay::RegisterPointer("InterfaceEndpointClient", this);
+
   DCHECK(handle_.is_valid());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -989,18 +977,8 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
 
     if (message->has_flag(Message::kFlagIsSync)) {
       auto it = sync_responses_.find(request_id);
-      if (it == sync_responses_.end()) {
+      if (it == sync_responses_.end())
         return false;
-<<<<<<< HEAD
-      }
-      it->second->response = std::move(*message);
-      *it->second->response_received = true;
-      return true;
-||||||| 80c960997e61f
-      it->second->response = std::move(*message);
-      *it->second->response_received = true;
-      return true;
-=======
 
       if (it->second) {
         if (message->name() != it->second->request_message_name) {
@@ -1015,16 +993,8 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
       // This was a sync message sent forcibly as async. Clean up and proceed as
       // if the message were any other async message.
       sync_responses_.erase(it);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     }
 
-<<<<<<< HEAD
-    auto it = async_responders_.find(request_id);
-    if (it == async_responders_.end()) {
-||||||| 80c960997e61f
-    auto it = async_responders_.find(request_id);
-    if (it == async_responders_.end())
-=======
     absl::optional<PendingAsyncResponse> pending_response;
     {
       base::AutoLock lock(async_responders_lock_);
@@ -1036,18 +1006,8 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
     }
 
     if (message->name() != pending_response->request_message_name) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       return false;
-<<<<<<< HEAD
     }
-    std::unique_ptr<MessageReceiver> responder = std::move(it->second);
-    async_responders_.erase(it);
-||||||| 80c960997e61f
-    std::unique_ptr<MessageReceiver> responder = std::move(it->second);
-    async_responders_.erase(it);
-=======
-    }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
     internal::MessageDispatchContext dispatch_context(message);
     return pending_response->responder->Accept(message);

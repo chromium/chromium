@@ -4,11 +4,6 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 
-<<<<<<< HEAD
-#include "base/record_replay.h"
-
-||||||| 80c960997e61f
-=======
 #include <memory>
 #include <utility>
 
@@ -17,22 +12,10 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "v8/include/v8-isolate.h"
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+#include "base/record_replay.h"
+
 namespace blink {
 
-<<<<<<< HEAD
-FrameOrWorkerScheduler::Observer::Observer() {
-  // Pointer registration is needed for sorting in
-  // FrameOrWorkerScheduler::NotifyLifecycleObservers.
-  recordreplay::RegisterPointer("FrameOrWorkerScheduler::Observer", this);
-}
-
-FrameOrWorkerScheduler::Observer::~Observer() {
-  recordreplay::UnregisterPointer(this);
-}
-
-||||||| 80c960997e61f
-=======
 namespace {
 
 // When enabled, Source Location blocking BFCache is captured
@@ -49,7 +32,6 @@ bool IsRegisterJSSourceLocationBlockingBFCache() {
 
 }  // namespace
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 FrameOrWorkerScheduler::LifecycleObserverHandle::LifecycleObserverHandle(
     FrameOrWorkerScheduler* scheduler)
     : scheduler_(scheduler->GetWeakPtr()) {}
@@ -146,41 +128,16 @@ void FrameOrWorkerScheduler::RemoveLifecycleObserver(
   lifecycle_observers_.erase(found);
 }
 
-struct CompareObserverByPointerId {
-  bool operator()(const std::pair<FrameOrWorkerScheduler::Observer*,
-                                  FrameOrWorkerScheduler::ObserverType>& a,
-                  const std::pair<FrameOrWorkerScheduler::Observer*,
-                                  FrameOrWorkerScheduler::ObserverType>& b) const {
-    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
-      int ida = recordreplay::PointerId(a.first);
-      int idb = recordreplay::PointerId(b.first);
-      CHECK(ida && idb);
-      return ida < idb;
-    }
-    return (uintptr_t)a.first < (uintptr_t)b.first;
-  }
-};
-
 void FrameOrWorkerScheduler::NotifyLifecycleObservers() {
-<<<<<<< HEAD
-  std::vector<std::pair<Observer*, ObserverType>> observers;
+  std::vector<ObserverState*> observers;
   for (const auto& observer : lifecycle_observers_)
-    observers.emplace_back(observer.key, observer.value);
+    observers.push_back(observer.value.get());
   std::sort(observers.begin(), observers.end(),
-            CompareObserverByPointerId());
+            recordreplay::CompareByPointerId());
 
   for (const auto& observer : observers) {
-    observer.first->OnLifecycleStateChanged(
-        CalculateLifecycleState(observer.second));
-||||||| 80c960997e61f
-  for (const auto& observer : lifecycle_observers_) {
-    observer.key->OnLifecycleStateChanged(
-        CalculateLifecycleState(observer.value));
-=======
-  for (const auto& observer : lifecycle_observers_) {
-    observer.value->GetCallback().Run(
-        CalculateLifecycleState(observer.value->GetObserverType()));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+    observer->GetCallback().Run(
+        CalculateLifecycleState(observer->GetObserverType()));
   }
 }
 
@@ -191,8 +148,14 @@ base::WeakPtr<FrameOrWorkerScheduler> FrameOrWorkerScheduler::GetWeakPtr() {
 FrameOrWorkerScheduler::ObserverState::ObserverState(
     FrameOrWorkerScheduler::ObserverType observer_type,
     FrameOrWorkerScheduler::OnLifecycleStateChangedCallback callback)
-    : observer_type_(observer_type), callback_(callback) {}
+    : observer_type_(observer_type), callback_(callback) {
+  // Pointer registration is needed for sorting in
+  // FrameOrWorkerScheduler::NotifyLifecycleObservers.
+  recordreplay::RegisterPointer("FrameOrWorkerScheduler::ObserverState", this);
+}
 
-FrameOrWorkerScheduler::ObserverState::~ObserverState() = default;
+FrameOrWorkerScheduler::ObserverState::~ObserverState() {
+  recordreplay::UnregisterPointer(this);
+}
 
 }  // namespace blink

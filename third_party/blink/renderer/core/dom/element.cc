@@ -3574,16 +3574,12 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 void Element::AttachLayoutTree(AttachContext& context) {
   DCHECK(GetDocument().InStyleRecalc());
 
-<<<<<<< HEAD
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("Element::AttachLayoutTree %d",
                        RecordReplayId());
 
-||||||| 80c960997e61f
-=======
   StyleEngine& style_engine = GetDocument().GetStyleEngine();
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   const ComputedStyle* style = GetComputedStyle();
   bool being_rendered =
       context.parent && style && !style->IsEnsuredInDisplayNone();
@@ -6238,19 +6234,10 @@ Element* Element::AdjustedFocusedElementInTreeScope() const {
 void Element::DispatchFocusEvent(Element* old_focused_element,
                                  mojom::blink::FocusType type,
                                  InputDeviceCapabilities* source_capabilities) {
-<<<<<<< HEAD
-  DispatchEvent(*FocusEvent::Create(
-      event_type_names::kFocus, Event::Bubbles::kNo, GetDocument().domWindow(),
-      0, old_focused_element, source_capabilities), "Element::DispatchFocusEvent");
-||||||| 80c960997e61f
-  DispatchEvent(*FocusEvent::Create(
-      event_type_names::kFocus, Event::Bubbles::kNo, GetDocument().domWindow(),
-      0, old_focused_element, source_capabilities));
-=======
   Document& document = GetDocument();
   if (DispatchEvent(*FocusEvent::Create(
           event_type_names::kFocus, Event::Bubbles::kNo, document.domWindow(),
-          0, old_focused_element, source_capabilities)) !=
+          0, old_focused_element, source_capabilities), "Element::DispatchFocusEvent") !=
       DispatchEventResult::kNotCanceled) {
     return;
   }
@@ -6265,7 +6252,6 @@ void Element::DispatchFocusEvent(Element* old_focused_element,
         HidePopupForcingLevel::kHideAfterAnimations,
         HidePopupIndependence::kHideUnrelated);
   }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void Element::DispatchBlurEvent(Element* new_focused_element,

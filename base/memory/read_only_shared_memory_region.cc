@@ -85,20 +85,12 @@ ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
   if (!result.has_value())
     return {};
 
-<<<<<<< HEAD
 #ifdef OS_MAC
   recordreplay::RecordReplayBytes("ReadOnlySharedMemoryRegion::MapAt", memory, size);
 #endif
 
-  return ReadOnlySharedMemoryMapping(memory, size, mapped_size,
-                                     handle_.GetGUID());
-||||||| 80c960997e61f
-  return ReadOnlySharedMemoryMapping(memory, size, mapped_size,
-                                     handle_.GetGUID());
-=======
   return ReadOnlySharedMemoryMapping(result.value(), size, handle_.GetGUID(),
                                      mapper);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 bool ReadOnlySharedMemoryRegion::IsValid() const {

@@ -5,13 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERFORMANCE_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERFORMANCE_MONITOR_H_
 
-<<<<<<< HEAD
-#include "base/macros.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/macros.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -23,6 +16,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "v8/include/v8.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 

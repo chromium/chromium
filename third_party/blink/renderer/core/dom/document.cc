@@ -609,21 +609,6 @@ void IntrinsicSizeResizeObserverDelegate::OnResize(
   }
 }
 
-<<<<<<< HEAD
-  void OnLineStateChange(bool on_line) override {
-    AtomicString event_name =
-        on_line ? event_type_names::kOnline : event_type_names::kOffline;
-    auto* window = To<LocalDOMWindow>(GetExecutionContext());
-    window->DispatchEvent(*Event::Create(event_name), "Document::NetworkStateObserver::OnLineStateChange");
-    probe::NetworkStateChanged(window->GetFrame(), on_line);
-||||||| 80c960997e61f
-  void OnLineStateChange(bool on_line) override {
-    AtomicString event_name =
-        on_line ? event_type_names::kOnline : event_type_names::kOffline;
-    auto* window = To<LocalDOMWindow>(GetExecutionContext());
-    window->DispatchEvent(*Event::Create(event_name));
-    probe::NetworkStateChanged(window->GetFrame(), on_line);
-=======
 void Document::UnassociatedListedElementsList::MarkDirty() {
   dirty_ = true;
   list_.clear();
@@ -647,7 +632,6 @@ const ListedElement::List& Document::UnassociatedListedElementsList::Get(
       }
     }
     dirty_ = false;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
   return list_;
 }
@@ -1956,69 +1940,11 @@ Document::CalculateStyleAndLayoutTreeUpdateForThisDocument() const {
   return StyleAndLayoutTreeUpdate::kNone;
 }
 
-<<<<<<< HEAD
-bool Document::NeedsFullLayoutTreeUpdate() const {
-  // This method returns true if we cannot decide which specific elements need
-  // to have its style or layout tree updated on the next lifecycle update. If
-  // this method returns false, we typically use that to walk up the ancestor
-  // chain to decide if we can let getComputedStyle() use the current
-  // ComputedStyle without doing the lifecycle update (implemented in
-  // Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked()).
-
-  // https://linear.app/replay/issue/RUN-594
-  recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate Start");
-
-  if (!IsActive() || !View()) {
-    return false;
-  }
-  if (style_engine_->NeedsFullStyleUpdate()) {
-    return true;
-  }
-  if (!use_elements_needing_update_.IsEmpty()) {
-    return true;
-  }
-  // We have scheduled an invalidation set on the document node which means any
-  // element may need a style recalc.
-  if (NeedsStyleInvalidation()) {
-    return true;
-  }
-  if (IsSlotAssignmentOrLegacyDistributionDirty()) {
-    return true;
-  }
-  if (document_animations_->NeedsAnimationTimingUpdate()) {
-    return true;
-  }
-  return false;
-||||||| 80c960997e61f
-bool Document::NeedsFullLayoutTreeUpdate() const {
-  // This method returns true if we cannot decide which specific elements need
-  // to have its style or layout tree updated on the next lifecycle update. If
-  // this method returns false, we typically use that to walk up the ancestor
-  // chain to decide if we can let getComputedStyle() use the current
-  // ComputedStyle without doing the lifecycle update (implemented in
-  // Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked()).
-  if (!IsActive() || !View())
-    return false;
-  if (style_engine_->NeedsFullStyleUpdate())
-    return true;
-  if (!use_elements_needing_update_.IsEmpty())
-    return true;
-  // We have scheduled an invalidation set on the document node which means any
-  // element may need a style recalc.
-  if (NeedsStyleInvalidation())
-    return true;
-  if (IsSlotAssignmentOrLegacyDistributionDirty())
-    return true;
-  if (document_animations_->NeedsAnimationTimingUpdate())
-    return true;
-  return false;
-=======
 Document::StyleAndLayoutTreeUpdate
 Document::CalculateStyleAndLayoutTreeUpdateForParentFrame() const {
   if (HTMLFrameOwnerElement* owner = LocalOwner())
     return owner->GetDocument().CalculateStyleAndLayoutTreeUpdate();
   return StyleAndLayoutTreeUpdate::kNone;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 bool Document::ShouldScheduleLayoutTreeUpdate() const {
@@ -2370,97 +2296,14 @@ bool Document::NeedsLayoutTreeUpdateForNode(const Node& node) const {
 }
 
 bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
-<<<<<<< HEAD
-    const Node& node,
-    bool ignore_adjacent_style) const {
-  if (node.IsShadowRoot()) {
-    return false;
-  }
-  if (GetDisplayLockDocumentState().LockedDisplayLockCount() == 0 &&
-      !NeedsLayoutTreeUpdate()) {
-    return false;
-  }
-  if (!node.isConnected()) {
-||||||| 80c960997e61f
-    const Node& node,
-    bool ignore_adjacent_style) const {
-  if (node.IsShadowRoot())
-    return false;
-  if (GetDisplayLockDocumentState().LockedDisplayLockCount() == 0 &&
-      !NeedsLayoutTreeUpdate())
-    return false;
-  if (!node.isConnected())
-=======
     const Node& node) const {
   if (!node.isConnected())
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return false;
-<<<<<<< HEAD
-  }
-
-  if (NeedsFullLayoutTreeUpdate() || node.NeedsStyleRecalc() ||
-      node.NeedsStyleInvalidation()) {
-||||||| 80c960997e61f
-
-  if (NeedsFullLayoutTreeUpdate() || node.NeedsStyleRecalc() ||
-      node.NeedsStyleInvalidation())
-=======
   if (node.IsShadowRoot())
     return false;
   const StyleAndLayoutTreeUpdate update = CalculateStyleAndLayoutTreeUpdate();
   if (update == StyleAndLayoutTreeUpdate::kFull)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return true;
-<<<<<<< HEAD
-  }
-  for (const ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node);
-       ancestor; ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
-    if (ShadowRoot* root = ancestor->GetShadowRoot()) {
-      if (root->NeedsStyleRecalc() || root->NeedsStyleInvalidation() ||
-          root->NeedsAdjacentStyleRecalc()) {
-        return true;
-      }
-    }
-    if (ancestor->NeedsStyleRecalc() || ancestor->NeedsStyleInvalidation() ||
-        (ancestor->NeedsAdjacentStyleRecalc() && !ignore_adjacent_style)) {
-      return true;
-    }
-    auto* element = DynamicTo<Element>(ancestor);
-    if (!element)
-      continue;
-    if (auto* context = element->GetDisplayLockContext()) {
-      // Even if the ancestor is style-clean, we might've previously
-      // blocked a style traversal going to the ancestor or its descendants.
-      if (context->StyleTraversalWasBlocked()) {
-        DCHECK(context->IsLocked());
-        return true;
-      }
-    }
-||||||| 80c960997e61f
-  for (const ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node);
-       ancestor; ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
-    if (ShadowRoot* root = ancestor->GetShadowRoot()) {
-      if (root->NeedsStyleRecalc() || root->NeedsStyleInvalidation() ||
-          root->NeedsAdjacentStyleRecalc()) {
-        return true;
-      }
-    }
-    if (ancestor->NeedsStyleRecalc() || ancestor->NeedsStyleInvalidation() ||
-        (ancestor->NeedsAdjacentStyleRecalc() && !ignore_adjacent_style)) {
-      return true;
-    }
-    auto* element = DynamicTo<Element>(ancestor);
-    if (!element)
-      continue;
-    if (auto* context = element->GetDisplayLockContext()) {
-      // Even if the ancestor is style-clean, we might've previously
-      // blocked a style traversal going to the ancestor or its descendants.
-      if (context->StyleTraversalWasBlocked()) {
-        DCHECK(context->IsLocked());
-        return true;
-      }
-    }
-=======
   bool analyze = update == StyleAndLayoutTreeUpdate::kAnalyzed;
 
   // If DisplayLockUtilities::IsUnlockedQuickCheck returns 'false', then
@@ -2492,7 +2335,6 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
       return needs_update_inside_interleaving_root;
     case StyleEngine::AncestorAnalysis::kStyleRoot:
       return true;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 }
 
@@ -3016,14 +2858,6 @@ void Document::Shutdown() {
   if (num_canvases_ > 0)
     UMA_HISTOGRAM_COUNTS_100("Blink.Canvas.NumCanvasesPerPage", num_canvases_);
 
-<<<<<<< HEAD
-  // Font metrics are not published at non-deterministic points, and we also don't
-  // want to get the metrics themselves as that can interact with the recording.
-  if (!recordreplay::AreEventsDisallowed())
-    GetFontMatchingMetrics()->PublishAllMetrics();
-||||||| 80c960997e61f
-  GetFontMatchingMetrics()->PublishAllMetrics();
-=======
   if (!data_->already_sent_automatic_lazy_load_frame_ukm_) {
     data_->already_sent_automatic_lazy_load_frame_ukm_ = true;
     if (data_->lazy_ads_frame_count_ > 0 ||
@@ -3037,8 +2871,10 @@ void Document::Shutdown() {
     }
   }
 
-  GetFontMatchingMetrics()->PublishAllMetrics();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  // Font metrics are not published at non-deterministic points, and we also don't
+  // want to get the metrics themselves as that can interact with the recording.
+  if (!recordreplay::AreEventsDisallowed())
+    GetFontMatchingMetrics()->PublishAllMetrics();
 
   GetViewportData().Shutdown();
 
@@ -7294,14 +7130,8 @@ void Document::FinishedParsing() {
   // dispatched in a queued task, see https://crbug.com/961428
   if (document_timing_.DomContentLoadedEventStart().is_null())
     document_timing_.MarkDomContentLoadedEventStart();
-<<<<<<< HEAD
-  DispatchEvent(*Event::CreateBubble(event_type_names::kDOMContentLoaded), "Document::FinishedParsing");
-||||||| 80c960997e61f
-  DispatchEvent(*Event::CreateBubble(event_type_names::kDOMContentLoaded));
-=======
   if (!ScriptForbiddenScope::IsScriptForbidden())
-    DispatchEvent(*Event::CreateBubble(event_type_names::kDOMContentLoaded));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+    DispatchEvent(*Event::CreateBubble(event_type_names::kDOMContentLoaded), "Document::FinishedParsing");
   if (document_timing_.DomContentLoadedEventEnd().is_null())
     document_timing_.MarkDomContentLoadedEventEnd();
   SetParsingState(kFinishedParsing);
@@ -8127,18 +7957,9 @@ bool Document::HaveRenderBlockingResourcesLoaded() const {
 
 Locale& Document::GetCachedLocale(const AtomicString& locale) {
   AtomicString locale_key = locale;
-<<<<<<< HEAD
-  if (locale.IsEmpty() ||
-      !RuntimeEnabledFeatures::LangAttributeAwareFormControlUIEnabled()) {
-||||||| 80c960997e61f
-  if (locale.IsEmpty() ||
-      !RuntimeEnabledFeatures::LangAttributeAwareFormControlUIEnabled())
-=======
   if (locale.empty() ||
       !RuntimeEnabledFeatures::LangAttributeAwareFormControlUIEnabled())
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return Locale::DefaultLocale();
-  }
   LocaleIdentifierToLocaleMap::AddResult result =
       locale_cache_.insert(locale_key, nullptr);
   if (result.is_new_entry)
@@ -8901,23 +8722,17 @@ void Document::ActivateForPrerendering(
     loader->NotifyPrerenderingDocumentActivated(params);
   }
 
-<<<<<<< HEAD
-  DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange), "Document::ActivateForPrerendering");
-||||||| 80c960997e61f
-  DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
-=======
   Vector<base::OnceClosure> callbacks;
   callbacks.swap(will_dispatch_prerenderingchange_callbacks_);
   for (auto& callback : callbacks) {
     std::move(callback).Run();
   }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   // https://wicg.github.io/nav-speculation/prerendering.html#prerendering-browsing-context-activate
   // Step 8.3.4 "Fire an event named prerenderingchange at doc."
   if (RuntimeEnabledFeatures::Prerender2RelatedFeaturesEnabled(
           GetExecutionContext())) {
-    DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
+    DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange), "Document::ActivateForPrerendering");
   } else {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kJavaScript,

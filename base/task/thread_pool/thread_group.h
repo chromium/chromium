@@ -9,14 +9,7 @@
 #include <vector>
 
 #include "base/base_export.h"
-<<<<<<< HEAD
-#include "base/memory/ref_counted.h"
-#include "base/record_replay_ordered_atomic.h"
-||||||| 80c960997e61f
-#include "base/memory/ref_counted.h"
-=======
 #include "base/memory/raw_ptr.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/priority_queue.h"
 #include "base/task/thread_pool/task.h"
@@ -28,6 +21,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_windows_thread_environment.h"
 #endif
+
+#include "base/record_replay_ordered_atomic.h"
 
 namespace base {
 namespace internal {
@@ -128,16 +123,12 @@ class BASE_EXPORT ThreadGroup {
   // called after an update to CanRunPolicy in TaskTracker.
   virtual void DidUpdateCanRunPolicy() = 0;
 
-<<<<<<< HEAD
+  virtual void OnShutdownStarted() = 0;
+
   bool RecordReplayUnordered() const {
     return record_replay_unordered_;
   }
 
-||||||| 80c960997e61f
-=======
-  virtual void OnShutdownStarted() = 0;
-
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
  protected:
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been
@@ -275,16 +266,10 @@ class BASE_EXPORT ThreadGroup {
   // If |replacement_thread_group_| is non-null, this ThreadGroup is invalid and
   // all task sources should be scheduled on |replacement_thread_group_|. Used
   // to support the UseNativeThreadPool experiment.
-<<<<<<< HEAD
-  ThreadGroup* replacement_thread_group_ = nullptr;
+  raw_ptr<ThreadGroup> replacement_thread_group_ = nullptr;
 
   // Whether operations on this thread group may be unordered when recording/replaying.
   bool record_replay_unordered_ = false;
-||||||| 80c960997e61f
-  ThreadGroup* replacement_thread_group_ = nullptr;
-=======
-  raw_ptr<ThreadGroup> replacement_thread_group_ = nullptr;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 };
 
 }  // namespace internal

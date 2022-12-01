@@ -2405,28 +2405,8 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
         continue;
       if (!VTIsHardwareDecodeSupported(kCMVideoCodecType_VP9))
         continue;
-<<<<<<< HEAD
-      if (__builtin_available(macOS 10.13, *)) {
-        // FIXME disabled due to build break.
-        continue;
-        /*
-        if ((supported_profile == VP9PROFILE_PROFILE0 ||
-             supported_profile == VP9PROFILE_PROFILE2) &&
-            !VTIsHardwareDecodeSupported(kCMVideoCodecType_VP9)) {
-          continue;
-        }
-        */
-||||||| 80c960997e61f
-      if (__builtin_available(macOS 10.13, *)) {
-        if ((supported_profile == VP9PROFILE_PROFILE0 ||
-             supported_profile == VP9PROFILE_PROFILE2) &&
-            !VTIsHardwareDecodeSupported(kCMVideoCodecType_VP9)) {
-          continue;
-        }
-=======
       // Success! We have VP9 hardware decoding support.
     }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
     if (supported_profile == HEVCPROFILE_MAIN ||
         supported_profile == HEVCPROFILE_MAIN10 ||

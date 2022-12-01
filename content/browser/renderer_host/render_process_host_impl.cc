@@ -62,13 +62,8 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
-<<<<<<< HEAD
-#include "base/values.h"
-||||||| 80c960997e61f
-=======
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
@@ -277,6 +272,8 @@
 #include "content/public/common/profiling_utils.h"
 #endif
 
+#include "base/values.h"
+
 // VLOG additional statements in Fuchsia release builds.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBEVLOG VLOG
@@ -404,272 +401,10 @@ SiteProcessMap* GetSiteProcessMapForBrowserContext(BrowserContext* context) {
   return new_map_ptr;
 }
 
-<<<<<<< HEAD
 static inline bool MaybeRecordingOrReplaying() {
   return true;
 }
 
-// NOTE: changes to this class need to be reviewed by the security team.
-class RendererSandboxedProcessLauncherDelegate
-    : public SandboxedProcessLauncherDelegate {
- public:
-  RendererSandboxedProcessLauncherDelegate() = default;
-
-  ~RendererSandboxedProcessLauncherDelegate() override = default;
-
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
-  ZygoteHandle GetZygote() override {
-    const base::CommandLine& browser_command_line =
-        *base::CommandLine::ForCurrentProcess();
-    base::CommandLine::StringType renderer_prefix =
-        browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
-    if (!renderer_prefix.empty())
-      return nullptr;
-    if (MaybeRecordingOrReplaying()) {
-      // Zygotes are not used to spawn recording processes.
-      return nullptr;
-    }
-    return GetGenericZygote();
-  }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
-
-#if defined(OS_MAC)
-  bool EnableCpuSecurityMitigations() override { return true; }
-#endif  // defined(OS_MAC)
-
-  sandbox::policy::SandboxType GetSandboxType() override {
-    return sandbox::policy::SandboxType::kRenderer;
-  }
-};
-
-#if defined(OS_WIN)
-// NOTE: changes to this class need to be reviewed by the security team.
-class RendererSandboxedProcessLauncherDelegateWin
-    : public RendererSandboxedProcessLauncherDelegate {
- public:
-  RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line)
-      : renderer_code_integrity_enabled_(
-            GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()) {
-    if (cmd_line->HasSwitch(switches::kJavaScriptFlags)) {
-      std::string js_flags =
-          cmd_line->GetSwitchValueASCII(switches::kJavaScriptFlags);
-      std::vector<base::StringPiece> js_flag_list = base::SplitStringPiece(
-          js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      for (const auto& js_flag : js_flag_list) {
-        if (js_flag.as_string() == "--jitless") {
-          // If v8 is running jitless then there is no need for the ability to
-          // mark writable pages as executable to be available to the process.
-          dynamic_code_can_be_disabled_ = true;
-          break;
-        }
-      }
-    }
-  }
-
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
-    sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);
-
-    const std::wstring& sid =
-        GetContentClient()->browser()->GetAppContainerSidForSandboxType(
-            GetSandboxType());
-    if (!sid.empty())
-      sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
-
-    ContentBrowserClient::ChildSpawnFlags flags(
-        ContentBrowserClient::ChildSpawnFlags::NONE);
-    if (renderer_code_integrity_enabled_) {
-      flags = ContentBrowserClient::ChildSpawnFlags::RENDERER_CODE_INTEGRITY;
-
-      // If the renderer process is protected by code integrity, more
-      // mitigations become available.
-      if (dynamic_code_can_be_disabled_) {
-        sandbox::MitigationFlags mitigation_flags =
-            policy->GetDelayedProcessMitigations();
-        mitigation_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-        if (sandbox::SBOX_ALL_OK !=
-            policy->SetDelayedProcessMitigations(mitigation_flags)) {
-          return false;
-        }
-      }
-    }
-
-    return GetContentClient()->browser()->PreSpawnChild(
-        policy, sandbox::policy::SandboxType::kRenderer, flags);
-  }
-
-  bool CetCompatible() override {
-    // Disable CET for renderer because v8 deoptimization swaps stacks in a
-    // non-compliant way.
-    return false;
-  }
-
- private:
-  const bool renderer_code_integrity_enabled_;
-  bool dynamic_code_can_be_disabled_ = false;
-};
-#endif  // defined(OS_WIN)
-
-const char kSessionStorageHolderKey[] = "kSessionStorageHolderKey";
-
-class SessionStorageHolder : public base::SupportsUserData::Data {
- public:
-  SessionStorageHolder()
-      : session_storage_namespaces_awaiting_close_(
-            new std::map<int, SessionStorageNamespaceMap>) {}
-
-  ~SessionStorageHolder() override {
-    // Its important to delete the map on the IO thread to avoid deleting
-    // the underlying namespaces prior to processing ipcs referring to them.
-    GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, session_storage_namespaces_awaiting_close_.release());
-  }
-
-  SessionStorageHolder(const SessionStorageHolder& other) = delete;
-  SessionStorageHolder& operator=(const SessionStorageHolder& other) = delete;
-
-  void Hold(const SessionStorageNamespaceMap& sessions, int widget_route_id) {
-    (*session_storage_namespaces_awaiting_close_)[widget_route_id] = sessions;
-  }
-
-  void Release(int old_route_id) {
-    session_storage_namespaces_awaiting_close_->erase(old_route_id);
-  }
-
- private:
-  std::unique_ptr<std::map<int, SessionStorageNamespaceMap>>
-      session_storage_namespaces_awaiting_close_;
-};
-
-||||||| 80c960997e61f
-// NOTE: changes to this class need to be reviewed by the security team.
-class RendererSandboxedProcessLauncherDelegate
-    : public SandboxedProcessLauncherDelegate {
- public:
-  RendererSandboxedProcessLauncherDelegate() = default;
-
-  ~RendererSandboxedProcessLauncherDelegate() override = default;
-
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
-  ZygoteHandle GetZygote() override {
-    const base::CommandLine& browser_command_line =
-        *base::CommandLine::ForCurrentProcess();
-    base::CommandLine::StringType renderer_prefix =
-        browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
-    if (!renderer_prefix.empty())
-      return nullptr;
-    return GetGenericZygote();
-  }
-#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
-
-#if defined(OS_MAC)
-  bool EnableCpuSecurityMitigations() override { return true; }
-#endif  // defined(OS_MAC)
-
-  sandbox::policy::SandboxType GetSandboxType() override {
-    return sandbox::policy::SandboxType::kRenderer;
-  }
-};
-
-#if defined(OS_WIN)
-// NOTE: changes to this class need to be reviewed by the security team.
-class RendererSandboxedProcessLauncherDelegateWin
-    : public RendererSandboxedProcessLauncherDelegate {
- public:
-  RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line)
-      : renderer_code_integrity_enabled_(
-            GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()) {
-    if (cmd_line->HasSwitch(switches::kJavaScriptFlags)) {
-      std::string js_flags =
-          cmd_line->GetSwitchValueASCII(switches::kJavaScriptFlags);
-      std::vector<base::StringPiece> js_flag_list = base::SplitStringPiece(
-          js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      for (const auto& js_flag : js_flag_list) {
-        if (js_flag.as_string() == "--jitless") {
-          // If v8 is running jitless then there is no need for the ability to
-          // mark writable pages as executable to be available to the process.
-          dynamic_code_can_be_disabled_ = true;
-          break;
-        }
-      }
-    }
-  }
-
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
-    sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);
-
-    const std::wstring& sid =
-        GetContentClient()->browser()->GetAppContainerSidForSandboxType(
-            GetSandboxType());
-    if (!sid.empty())
-      sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
-
-    ContentBrowserClient::ChildSpawnFlags flags(
-        ContentBrowserClient::ChildSpawnFlags::NONE);
-    if (renderer_code_integrity_enabled_) {
-      flags = ContentBrowserClient::ChildSpawnFlags::RENDERER_CODE_INTEGRITY;
-
-      // If the renderer process is protected by code integrity, more
-      // mitigations become available.
-      if (dynamic_code_can_be_disabled_) {
-        sandbox::MitigationFlags mitigation_flags =
-            policy->GetDelayedProcessMitigations();
-        mitigation_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-        if (sandbox::SBOX_ALL_OK !=
-            policy->SetDelayedProcessMitigations(mitigation_flags)) {
-          return false;
-        }
-      }
-    }
-
-    return GetContentClient()->browser()->PreSpawnChild(
-        policy, sandbox::policy::SandboxType::kRenderer, flags);
-  }
-
-  bool CetCompatible() override {
-    // Disable CET for renderer because v8 deoptimization swaps stacks in a
-    // non-compliant way.
-    return false;
-  }
-
- private:
-  const bool renderer_code_integrity_enabled_;
-  bool dynamic_code_can_be_disabled_ = false;
-};
-#endif  // defined(OS_WIN)
-
-const char kSessionStorageHolderKey[] = "kSessionStorageHolderKey";
-
-class SessionStorageHolder : public base::SupportsUserData::Data {
- public:
-  SessionStorageHolder()
-      : session_storage_namespaces_awaiting_close_(
-            new std::map<int, SessionStorageNamespaceMap>) {}
-
-  ~SessionStorageHolder() override {
-    // Its important to delete the map on the IO thread to avoid deleting
-    // the underlying namespaces prior to processing ipcs referring to them.
-    GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, session_storage_namespaces_awaiting_close_.release());
-  }
-
-  SessionStorageHolder(const SessionStorageHolder& other) = delete;
-  SessionStorageHolder& operator=(const SessionStorageHolder& other) = delete;
-
-  void Hold(const SessionStorageNamespaceMap& sessions, int widget_route_id) {
-    (*session_storage_namespaces_awaiting_close_)[widget_route_id] = sessions;
-  }
-
-  void Release(int old_route_id) {
-    session_storage_namespaces_awaiting_close_->erase(old_route_id);
-  }
-
- private:
-  std::unique_ptr<std::map<int, SessionStorageNamespaceMap>>
-      session_storage_namespaces_awaiting_close_;
-};
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 // This class manages spare RenderProcessHosts.
 //
 // There is a singleton instance of this class which manages a single spare
@@ -1912,23 +1647,11 @@ bool RenderProcessHostImpl::Init() {
   renderer_prefix =
       browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
 
-<<<<<<< HEAD
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   int flags = (renderer_prefix.empty() && !MaybeRecordingOrReplaying())
     ? ChildProcessHost::CHILD_ALLOW_SELF
     : ChildProcessHost::CHILD_NORMAL;
-#elif defined(OS_MAC)
-||||||| 80c960997e61f
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  int flags = renderer_prefix.empty() ? ChildProcessHost::CHILD_ALLOW_SELF
-                                      : ChildProcessHost::CHILD_NORMAL;
-#elif defined(OS_MAC)
-=======
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  int flags = renderer_prefix.empty() ? ChildProcessHost::CHILD_ALLOW_SELF
-                                      : ChildProcessHost::CHILD_NORMAL;
 #elif BUILDFLAG(IS_MAC)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   int flags = ChildProcessHost::CHILD_RENDERER;
 #else
   int flags = ChildProcessHost::CHILD_NORMAL;
@@ -2526,6 +2249,7 @@ void RenderProcessHostImpl::WriteIntoTrace(
   if (ChildProcessSecurityPolicyImpl::GetInstance())
     dict.Add("process_lock", GetProcessLock().ToString());
 }
+
 void RenderProcessHostImpl::SendRecordReplayBrowserEvent(
     const std::string& name,
     base::Value&& value) {

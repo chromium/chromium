@@ -288,21 +288,15 @@ Animation::Animation(ExecutionContext* execution_context,
       compositor_state_(nullptr),
       compositor_pending_(false),
       compositor_group_(0),
-<<<<<<< HEAD
-      effect_suppressed_(false) {
-  // Pointer registration is needed for sorting in Animation::HasLowerCompositeOrdering.
-  recordreplay::RegisterPointer("Animation", this);
-
-||||||| 80c960997e61f
-      effect_suppressed_(false) {
-=======
       effect_suppressed_(false),
       compositor_property_animations_have_no_effect_(false),
       animation_has_no_effect_(false) {
+  // Pointer registration is needed for sorting in Animation::HasLowerCompositeOrdering.
+  recordreplay::RegisterPointer("Animation", this);
+
   if (execution_context && !execution_context->IsContextDestroyed())
     SetExecutionContext(execution_context);
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   if (content_) {
     if (content_->GetAnimation()) {
       content_->GetAnimation()->cancel();

@@ -10,12 +10,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/threading/platform_thread.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/histograms.h"
@@ -28,6 +23,8 @@
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/display/record_replay_render.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 namespace mojo_embedder {
@@ -217,17 +214,13 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                          TRACE_EVENT_FLAG_FLOW_OUT, "step",
                          "SubmitHitTestData");
 
-<<<<<<< HEAD
   if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     recordreplay::SubmitCompositorFrame(local_surface_id_, frame);
   }
 
-||||||| 80c960997e61f
-=======
   power_mode_voter_.OnFrameProduced(frame.render_pass_list.back()->damage_rect,
                                     frame.device_scale_factor());
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
 }

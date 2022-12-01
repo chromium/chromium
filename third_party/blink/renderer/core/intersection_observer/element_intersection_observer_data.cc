@@ -62,31 +62,19 @@ void ElementIntersectionObserverData::StopTrackingWithController(
 bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
     unsigned flags) {
   bool needs_occlusion_tracking = false;
-<<<<<<< HEAD
+  absl::optional<base::TimeTicks> monotonic_time;
 
   // Intersections need to be computed in a consistent order.
   HeapVector<Member<IntersectionObservation>> observations_to_process;
-
-||||||| 80c960997e61f
-=======
-  absl::optional<base::TimeTicks> monotonic_time;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   for (auto& entry : observations_) {
     needs_occlusion_tracking |= entry.key->NeedsOcclusionTracking();
-<<<<<<< HEAD
     observations_to_process.push_back(entry.value);
   }
-
   std::sort(observations_to_process.begin(), observations_to_process.end(),
             recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
 
   for (auto& observation : observations_to_process) {
-    observation->ComputeIntersection(flags);
-||||||| 80c960997e61f
-    entry.value->ComputeIntersection(flags);
-=======
     entry.value->ComputeIntersection(flags, monotonic_time);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
   return needs_occlusion_tracking;
 }

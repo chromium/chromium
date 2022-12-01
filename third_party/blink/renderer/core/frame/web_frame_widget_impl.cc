@@ -4136,20 +4136,10 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
     View()->CancelPagePopup();
   }
 
-<<<<<<< HEAD
-  if (previous_original_screen_info != original_screen_info) {
-    local_root_->GetFrame()->DomWindow()->screen()->DispatchEvent(
-        *Event::Create(event_type_names::kChange), "WebFrameWidgetImpl::DidUpdateSurfaceAndScreen");
-||||||| 80c960997e61f
-  if (previous_original_screen_info != original_screen_info) {
-    local_root_->GetFrame()->DomWindow()->screen()->DispatchEvent(
-        *Event::Create(event_type_names::kChange));
-=======
   const bool window_screen_has_changed =
       !Screen::AreWebExposedScreenPropertiesEqual(
           previous_original_screen_infos.current(),
           original_screen_infos.current());
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   // Update Screens interface data before firing any events. The API is designed
   // to offer synchronous access to the most up-to-date cached screen
@@ -4166,7 +4156,7 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
             CoreInitializer::GetInstance().DidUpdateScreens(
                 *local_frame->GetFrame(), original_screen_infos);
             if (window_screen_has_changed)
-              screen->DispatchEvent(*Event::Create(event_type_names::kChange));
+              screen->DispatchEvent(*Event::Create(event_type_names::kChange), "WebFrameWidgetImpl::DidUpdateSurfaceAndScreen");
           },
           original_screen_infos, window_screen_has_changed));
 

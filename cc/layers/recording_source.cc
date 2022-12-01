@@ -9,17 +9,14 @@
 #include <algorithm>
 
 #include "base/numerics/safe_math.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/trace_event/trace_event.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "cc/base/region.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/solid_color_analyzer.h"
 #include "cc/raster/raster_source.h"
+
+#include "base/record_replay.h"
 
 namespace {
 

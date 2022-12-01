@@ -706,15 +706,9 @@ bool EventTarget::dispatchEventForBindings(Event* event,
          DispatchEventResult::kCanceledByEventHandler;
 }
 
-<<<<<<< HEAD
 DispatchEventResult EventTarget::DispatchEvent(Event& event, const char* why) {
-||||||| 80c960997e61f
-DispatchEventResult EventTarget::DispatchEvent(Event& event) {
-=======
-DispatchEventResult EventTarget::DispatchEvent(Event& event) {
   if (!GetExecutionContext())
     return DispatchEventResult::kCanceledBeforeDispatch;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   event.SetTrusted(true);
   return DispatchEventInternal(event);
 }
@@ -984,16 +978,8 @@ void EventTarget::DispatchEnqueuedEvent(Event* event,
     event->async_task_context()->Cancel();
     return;
   }
-<<<<<<< HEAD
-  probe::AsyncTask async_task(context, event->async_task_id());
-  DispatchEvent(*event, "EventTarget::DispatchEnqueuedEvent");
-||||||| 80c960997e61f
-  probe::AsyncTask async_task(context, event->async_task_id());
-  DispatchEvent(*event);
-=======
   probe::AsyncTask async_task(context, event->async_task_context());
-  DispatchEvent(*event);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  DispatchEvent(*event, "EventTarget::DispatchEnqueuedEvent");
 }
 
 void EventTargetWithInlineData::Trace(Visitor* visitor) const {

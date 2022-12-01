@@ -281,16 +281,8 @@ void HTMLTrackElement::DidCompleteLoad(LoadStatus status) {
   // must change the text track readiness state to failed to load and fire a
   // simple event named error at the track element.
   if (status == kFailure) {
-<<<<<<< HEAD
-    SetReadyState(kError);
-    DispatchEvent(*Event::Create(event_type_names::kError), "HTMLTrackElement::DidCompleteLoad ERROR");
-||||||| 80c960997e61f
-    SetReadyState(kError);
-    DispatchEvent(*Event::Create(event_type_names::kError));
-=======
     SetReadyState(ReadyState::kError);
-    DispatchEvent(*Event::Create(event_type_names::kError));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+    DispatchEvent(*Event::Create(event_type_names::kError), "HTMLTrackElement::DidCompleteLoad #1");
     return;
   }
 
@@ -299,16 +291,8 @@ void HTMLTrackElement::DidCompleteLoad(LoadStatus status) {
   // source, after it has finished parsing the data, must change the text track
   // readiness state to loaded, and fire a simple event named load at the track
   // element.
-<<<<<<< HEAD
-  SetReadyState(kLoaded);
-  DispatchEvent(*Event::Create(event_type_names::kLoad), "HTMLTrackElement::DidCompleteLoad");
-||||||| 80c960997e61f
-  SetReadyState(kLoaded);
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
-=======
   SetReadyState(ReadyState::kLoaded);
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  DispatchEvent(*Event::Create(event_type_names::kLoad), "HTMLTrackElement::DidCompleteLoad #2");
 }
 
 void HTMLTrackElement::NewCuesAvailable(TextTrackLoader* loader) {

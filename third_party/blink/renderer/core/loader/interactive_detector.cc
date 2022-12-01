@@ -411,18 +411,10 @@ void InteractiveDetector::OnLongTaskDetected(base::TimeTicks start_time,
 
 void InteractiveDetector::OnFirstContentfulPaint(
     base::TimeTicks first_contentful_paint) {
-<<<<<<< HEAD
   // https://linear.app/replay/issue/RUN-852
   recordreplay::Assert("InteractiveDetector::OnFirstContentfulPaint");
 
-  // Should not set FCP twice.
-  DCHECK(page_event_times_.first_contentful_paint.is_null());
-||||||| 80c960997e61f
-  // Should not set FCP twice.
-  DCHECK(page_event_times_.first_contentful_paint.is_null());
-=======
   // TODO(yoav): figure out what we should do when FCP is set multiple times!
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   page_event_times_.first_contentful_paint = first_contentful_paint;
   if (clock_->NowTicks() - first_contentful_paint >= kTimeToInteractiveWindow) {
     // We may have reached TTI already. Check right away.

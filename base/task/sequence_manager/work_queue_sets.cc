@@ -5,14 +5,10 @@
 #include "base/task/sequence_manager/work_queue_sets.h"
 
 #include "base/check_op.h"
-<<<<<<< HEAD
 #include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/work_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 namespace base {
 namespace sequence_manager {

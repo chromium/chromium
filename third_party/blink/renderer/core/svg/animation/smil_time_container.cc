@@ -119,14 +119,8 @@ class SMILTimeContainer::TimingUpdate {
 SMILTimeContainer::TimingUpdate::~TimingUpdate() {
   if (!ShouldDispatchEvents())
     return;
-<<<<<<< HEAD
-  DCHECK(IsSeek() || updated_elements_.IsEmpty());
-  HeapVector<Member<SVGSMILElement>> updated_elements_vector;
-||||||| 80c960997e61f
-  DCHECK(IsSeek() || updated_elements_.IsEmpty());
-=======
   DCHECK(IsSeek() || updated_elements_.empty());
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  HeapVector<Member<SVGSMILElement>> updated_elements_vector;
   for (const auto& entry : updated_elements_) {
     updated_elements_vector.push_back(entry.key);
   }

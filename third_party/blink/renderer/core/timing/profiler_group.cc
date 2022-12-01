@@ -135,19 +135,11 @@ void ProfilerGroup::OnProfilingContextAdded(ExecutionContext* context) {
 
 void ProfilerGroup::DispatchSampleBufferFullEvent(String profiler_id) {
   for (const auto& profiler : profilers_) {
-<<<<<<< HEAD
-    profiler->DispatchEvent(
-        *Event::Create(event_type_names::kSamplebufferfull), "ProfilerGroup::DispatchSampleBufferFullEvent");
-||||||| 80c960997e61f
-    profiler->DispatchEvent(
-        *Event::Create(event_type_names::kSamplebufferfull));
-=======
     if (profiler->ProfilerId() == profiler_id) {
       profiler->DispatchEvent(
-          *Event::Create(event_type_names::kSamplebufferfull));
+          *Event::Create(event_type_names::kSamplebufferfull), "ProfilerGroup::DispatchSampleBufferFullEvent");
       break;
     }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 }
 

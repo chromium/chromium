@@ -48,147 +48,10 @@ class DeferredTaskHandler;
 
 namespace WTF {
 
-<<<<<<< HEAD
-#if defined(OS_WIN)
-struct PlatformMutex {
-  CRITICAL_SECTION internal_mutex_;
-  size_t recursion_count_;
-};
-typedef CONDITION_VARIABLE PlatformCondition;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-struct PlatformMutex {
-  pthread_mutex_t internal_mutex_;
-#if DCHECK_IS_ON()
-  size_t recursion_count_;
-#endif
-};
-typedef pthread_cond_t PlatformCondition;
-#endif
-
-class WTF_EXPORT MutexBase {
-  USING_FAST_MALLOC(MutexBase);
-
- public:
-  ~MutexBase();
-
-  void lock();
-  void unlock();
-  void AssertAcquired() const {
-#if DCHECK_IS_ON()
-    DCHECK(mutex_.recursion_count_);
-#endif
-  }
-
- public:
-  PlatformMutex& Impl() { return mutex_; }
-
- protected:
-  MutexBase(const char* ordered_name, bool recursive);
-
-  PlatformMutex mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutexBase);
-};
-
-class LOCKABLE WTF_EXPORT Mutex : public MutexBase {
- public:
-  Mutex(const char* ordered_name = nullptr) : MutexBase(ordered_name, false) {}
-  bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true);
-
-  // Overridden solely for the purpose of annotating them.
-  // The compiler is expected to optimize the calls away.
-  void lock() EXCLUSIVE_LOCK_FUNCTION() { MutexBase::lock(); }
-  void unlock() UNLOCK_FUNCTION() { MutexBase::unlock(); }
-  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
-    MutexBase::AssertAcquired();
-  }
-};
-
-||||||| 80c960997e61f
-#if defined(OS_WIN)
-struct PlatformMutex {
-  CRITICAL_SECTION internal_mutex_;
-  size_t recursion_count_;
-};
-typedef CONDITION_VARIABLE PlatformCondition;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-struct PlatformMutex {
-  pthread_mutex_t internal_mutex_;
-#if DCHECK_IS_ON()
-  size_t recursion_count_;
-#endif
-};
-typedef pthread_cond_t PlatformCondition;
-#endif
-
-class WTF_EXPORT MutexBase {
-  USING_FAST_MALLOC(MutexBase);
-
- public:
-  ~MutexBase();
-
-  void lock();
-  void unlock();
-  void AssertAcquired() const {
-#if DCHECK_IS_ON()
-    DCHECK(mutex_.recursion_count_);
-#endif
-  }
-
- public:
-  PlatformMutex& Impl() { return mutex_; }
-
- protected:
-  MutexBase(bool recursive);
-
-  PlatformMutex mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutexBase);
-};
-
-class LOCKABLE WTF_EXPORT Mutex : public MutexBase {
- public:
-  Mutex() : MutexBase(false) {}
-  bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true);
-
-  // Overridden solely for the purpose of annotating them.
-  // The compiler is expected to optimize the calls away.
-  void lock() EXCLUSIVE_LOCK_FUNCTION() { MutexBase::lock(); }
-  void unlock() UNLOCK_FUNCTION() { MutexBase::unlock(); }
-  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
-    MutexBase::AssertAcquired();
-  }
-};
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 // RecursiveMutex is deprecated AND WILL BE REMOVED.
 // https://crbug.com/856641
 class LOCKABLE WTF_EXPORT RecursiveMutex {
  public:
-<<<<<<< HEAD
-  RecursiveMutex(const char* ordered_name = nullptr) : MutexBase(ordered_name, true) {}
-  bool TryLock();
-};
-
-class SCOPED_LOCKABLE MutexLocker final {
-  STACK_ALLOCATED();
-
- public:
-  MutexLocker(Mutex& mutex) EXCLUSIVE_LOCK_FUNCTION(mutex) : mutex_(mutex) {
-    mutex_.lock();
-||||||| 80c960997e61f
-  RecursiveMutex() : MutexBase(true) {}
-  bool TryLock();
-};
-
-class SCOPED_LOCKABLE MutexLocker final {
-  STACK_ALLOCATED();
-
- public:
-  MutexLocker(Mutex& mutex) EXCLUSIVE_LOCK_FUNCTION(mutex) : mutex_(mutex) {
-    mutex_.lock();
-=======
   // Overridden solely for the purpose of annotating them.
   // The compiler is expected to optimize the calls away.
   void lock() EXCLUSIVE_LOCK_FUNCTION();
@@ -197,7 +60,6 @@ class SCOPED_LOCKABLE MutexLocker final {
     // TS_UNCHECKED_READ: Either we are the owner and then the value can be
     // read, or we aren't, and we are guaranteed to not see our own thread ID.
     DCHECK_EQ(TS_UNCHECKED_READ(owner_), base::PlatformThread::CurrentId());
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
   bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true);
 

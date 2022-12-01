@@ -110,20 +110,8 @@ bool UncheckedMalloc(size_t size, void** result) {
   *result = allocator_shim::UncheckedAlloc(size);
 #elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
   *result = malloc(size);
-<<<<<<< HEAD
-#elif defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC)
-  *result = malloc(size);
-#elif BUILDFLAG(USE_TCMALLOC)
-  *result = tc_malloc_skip_new_handler(size);
-||||||| 80c960997e61f
-#elif defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC)
-  *result = __libc_malloc(size);
-#elif BUILDFLAG(USE_TCMALLOC)
-  *result = tc_malloc_skip_new_handler(size);
-=======
 #elif defined(LIBC_GLIBC)
   *result = __libc_malloc(size);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #endif
   return *result != nullptr;
 }

@@ -105,14 +105,8 @@ bool GetRandomSyscall(void* output, size_t output_length) {
   // We have to call `getrandom` via Linux Syscall Support, rather than through
   // the libc wrapper, because we might not have an up-to-date libc (e.g. on
   // some bots).
-<<<<<<< HEAD
-  const ssize_t r = HANDLE_EINTR(syscall(SYS_getrandom, output, output_length, 0));
-||||||| 80c960997e61f
-  const ssize_t r = HANDLE_EINTR(sys_getrandom(output, output_length, 0));
-=======
   const ssize_t r =
       HANDLE_EINTR(syscall(__NR_getrandom, output, output_length, 0));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   // Return success only on total success. In case errno == ENOSYS (or any other
   // error), we'll fall through to reading from urandom below.

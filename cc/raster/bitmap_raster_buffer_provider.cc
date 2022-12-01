@@ -12,13 +12,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/strings/stringprintf.h"
-||||||| 80c960997e61f
-#include "base/strings/stringprintf.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -27,6 +20,8 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/service/display/record_replay_render.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 namespace {

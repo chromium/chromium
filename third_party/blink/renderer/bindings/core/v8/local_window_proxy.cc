@@ -34,12 +34,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/metrics/single_sample_metrics.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
@@ -77,6 +72,8 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "v8/include/v8.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -167,20 +164,12 @@ static bool gRecordReplayStateInitialized;
 extern "C" void V8RecordReplaySetDefaultContext(v8::Isolate* isolate, v8::Local<v8::Context> cx);
 
 void LocalWindowProxy::Initialize() {
-<<<<<<< HEAD
   // https://linear.app/replay/issue/RUN-749
   recordreplay::Assert("LocalWindowProxy::Initialize Start");
 
-  TRACE_EVENT1("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
-               GetFrame()->IsMainFrame());
-||||||| 80c960997e61f
-  TRACE_EVENT1("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
-               GetFrame()->IsMainFrame());
-=======
   TRACE_EVENT2("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
                GetFrame()->IsMainFrame(), "IsOutermostMainFrame",
                GetFrame()->IsOutermostMainFrame());
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   CHECK(!GetFrame()->IsProvisional());
 
   ScriptForbiddenScope::AllowUserAgentScript allow_script;

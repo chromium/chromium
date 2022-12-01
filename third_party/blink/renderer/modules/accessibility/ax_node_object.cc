@@ -400,15 +400,6 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
   AccessibilityOrientation orientation = Orientation();
   ax::mojom::blink::WritingDirection text_direction = GetTextDirection();
 
-<<<<<<< HEAD
-  KeyboardEvent* keydown = CreateKeyboardEvent(
-      local_dom_window, WebInputEvent::Type::kRawKeyDown, action);
-  GetNode()->DispatchEvent(*keydown, "AXNodeObject::AlterSliderOrSpinButtonValue #1");
-||||||| 80c960997e61f
-  KeyboardEvent* keydown = CreateKeyboardEvent(
-      local_dom_window, WebInputEvent::Type::kRawKeyDown, action);
-  GetNode()->DispatchEvent(*keydown);
-=======
   // A kKeyDown event is kRawKeyDown + kChar events. We cannot synthesize it
   // because the KeyboardEvent constructor will prevent it, to force us to
   // decide if we must produce both events. In our case, we don't have to
@@ -417,8 +408,7 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
   KeyboardEvent* keydown =
       CreateKeyboardEvent(local_dom_window, WebInputEvent::Type::kRawKeyDown,
                           action, orientation, text_direction);
-  GetNode()->DispatchEvent(*keydown);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  GetNode()->DispatchEvent(*keydown, "AXNodeObject::AlterSliderOrSpinButtonValue #1");
 
   // TODO(crbug.com/1099069): add a brief pause between keydown and keyup?
 
@@ -426,20 +416,10 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
   if (!GetNode())
     return;
 
-<<<<<<< HEAD
-  KeyboardEvent* keyup = CreateKeyboardEvent(
-      local_dom_window, WebInputEvent::Type::kKeyUp, action);
-  GetNode()->DispatchEvent(*keyup, "AXNodeObject::AlterSliderOrSpinButtonValue #2");
-||||||| 80c960997e61f
-  KeyboardEvent* keyup = CreateKeyboardEvent(
-      local_dom_window, WebInputEvent::Type::kKeyUp, action);
-  GetNode()->DispatchEvent(*keyup);
-=======
   KeyboardEvent* keyup =
       CreateKeyboardEvent(local_dom_window, WebInputEvent::Type::kKeyUp, action,
                           orientation, text_direction);
-  GetNode()->DispatchEvent(*keyup);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  GetNode()->DispatchEvent(*keyup, "AXNodeObject::AlterSliderOrSpinButtonValue #2");
 }
 
 AXObject* AXNodeObject::ActiveDescendant() {

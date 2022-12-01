@@ -246,7 +246,6 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
     if (last_watch_to_block_arming_) {
       // Find the next watch to notify in simple round-robin order on the
       // |ready_watches_| map, wrapping around to the beginning if necessary.
-<<<<<<< HEAD
       if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
         // When recording/replaying the ready_watches_ set is sorted by pointer ID,
         // and since last_watch_to_block_arming_ may be an invalid pointer we can't
@@ -263,14 +262,9 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
           }
         }
       } else {
-        next_ready_iter = ready_watches_.find(last_watch_to_block_arming_);
+        next_ready_iter = ready_watches_.find(
+            reinterpret_cast<const Watch*>(last_watch_to_block_arming_));
       }
-||||||| 80c960997e61f
-      next_ready_iter = ready_watches_.find(last_watch_to_block_arming_);
-=======
-      next_ready_iter = ready_watches_.find(
-          reinterpret_cast<const Watch*>(last_watch_to_block_arming_));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       if (next_ready_iter != ready_watches_.end())
         ++next_ready_iter;
       if (next_ready_iter == ready_watches_.end())

@@ -16,16 +16,11 @@
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/stl_util.h"
-=======
 #include "base/ranges/algorithm.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
+
+#include "base/record_replay.h"
 
 namespace discardable_memory {
 

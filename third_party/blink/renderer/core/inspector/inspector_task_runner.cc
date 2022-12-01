@@ -4,17 +4,12 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
-||||||| 80c960997e61f
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
-=======
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 

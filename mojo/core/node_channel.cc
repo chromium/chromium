@@ -12,17 +12,14 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "build/build_config.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "mojo/core/broker_host.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"
 #include "mojo/core/request_context.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -547,17 +544,9 @@ NodeChannel::NodeChannel(
     const ProcessErrorCallback& process_error_callback)
     : base::RefCountedDeleteOnSequence<NodeChannel>(io_task_runner),
       delegate_(delegate),
-<<<<<<< HEAD
       process_error_callback_(process_error_callback),
       channel_lock_("NodeChannel.channel_lock_")
-#if !defined(OS_NACL_SFI)
-||||||| 80c960997e61f
-      process_error_callback_(process_error_callback)
-#if !defined(OS_NACL_SFI)
-=======
-      process_error_callback_(process_error_callback)
 #if !BUILDFLAG(IS_NACL)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       ,
       channel_(Channel::Create(this,
                                std::move(connection_params),

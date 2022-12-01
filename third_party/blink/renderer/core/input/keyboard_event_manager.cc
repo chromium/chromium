@@ -568,20 +568,12 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     page->GetSpatialNavigationController().HandleEscapeKeyboardEvent(event);
   }
 
-<<<<<<< HEAD
-  if (HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog())
-    dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel), "KeyboardEventManager::DefaultEscapeEventHandler");
-||||||| 80c960997e61f
-  if (HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog())
-    dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel));
-=======
   HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog();
   if (dialog && !RuntimeEnabledFeatures::CloseWatcherEnabled()) {
-    dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel));
+    dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel), "KeyboardEventManager::DefaultEscapeEventHandler");
   }
 
   frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void KeyboardEventManager::DefaultEnterEventHandler(KeyboardEvent* event) {

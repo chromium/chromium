@@ -298,19 +298,13 @@ void PictureInPictureControllerImpl::OnExitedPictureInPicture(
     element->OnExitedPictureInPicture();
     element->DispatchEvent(*PictureInPictureEvent::Create(
         event_type_names::kLeavepictureinpicture,
-<<<<<<< HEAD:third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_controller_impl.cc
         WrapPersistent(picture_in_picture_window_.Get())), "PictureInPictureControllerImpl::OnExitedPictureInPicture");
-||||||| 80c960997e61f:third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_controller_impl.cc
-        WrapPersistent(picture_in_picture_window_.Get())));
-=======
-        WrapPersistent(picture_in_picture_window_.Get())));
 
     // Register the video frame sink back to the element when the PiP window
     // is closed and if the video is not unset.
     if (element->GetWebMediaPlayer()) {
       element->GetWebMediaPlayer()->RegisterFrameSinkHierarchy();
     }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.cc
   }
 
   if (resolver)

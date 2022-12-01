@@ -295,18 +295,12 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-<<<<<<< HEAD
-      dispatch_result = target->DispatchEvent(*event, "MouseEventManager::DispatchMouseEvent #1");
-||||||| 80c960997e61f
-      dispatch_result = target->DispatchEvent(*event);
-=======
       if (frame_ && frame_->DomWindow())
         event_timing = EventTiming::Create(frame_->DomWindow(), *event);
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
-            target->DispatchEvent(*event));
+            target->DispatchEvent(*event, "MouseEventManager::DispatchMouseEvent #1"));
       }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     } else {
       MouseEventInit* initializer = MouseEventInit::Create();
       SetMouseEventAttributes(initializer, target_node, mouse_event_type,
@@ -317,20 +311,12 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-<<<<<<< HEAD
-
-      dispatch_result = target->DispatchEvent(*event, "MouseEventManager::DispatchMouseEvent #1");
-||||||| 80c960997e61f
-
-      dispatch_result = target->DispatchEvent(*event);
-=======
       if (frame_ && frame_->DomWindow())
         event_timing = EventTiming::Create(frame_->DomWindow(), *event);
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
-            target->DispatchEvent(*event));
+            target->DispatchEvent(*event, "MouseEventManager::DispatchMouseEvent #2"));
       }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     }
   }
 

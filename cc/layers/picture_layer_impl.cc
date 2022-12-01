@@ -18,13 +18,6 @@
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-<<<<<<< HEAD
-#include "base/numerics/ranges.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/numerics/ranges.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
@@ -51,6 +44,8 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 namespace {

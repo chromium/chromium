@@ -14,7 +14,6 @@
 namespace base {
 namespace internal {
 
-<<<<<<< HEAD
 static void (*gRecordReplayBeginPassThroughEventsFn)();
 
 static void RecordReplayBeginPassThroughEvents() {
@@ -43,12 +42,7 @@ static void RecordReplayEndPassThroughEvents() {
   gRecordReplayEndPassThroughEventsFn();
 }
 
-bool NeedsLazyInstance(subtle::AtomicWord* state) {
-||||||| 80c960997e61f
-bool NeedsLazyInstance(subtle::AtomicWord* state) {
-=======
 bool NeedsLazyInstance(std::atomic<uintptr_t>& state) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // Try to create the instance, if we're the first, will go from 0 to
   // kLazyInstanceStateCreating, otherwise we've already been beaten here.
   // The memory access has no memory ordering as state 0 and
@@ -67,17 +61,11 @@ bool NeedsLazyInstance(std::atomic<uintptr_t>& state) {
   // state_ == STATE_CREATED needs to acquire visibility over
   // the associated data (buf_). Pairing Release_Store is in
   // CompleteLazyInstance().
-<<<<<<< HEAD
-  if (subtle::Acquire_Load(state) == kLazyInstanceStateCreating) {
+  if (state.load(std::memory_order_acquire) == kLazyInstanceStateCreating) {
     // Don't interact with the recording while we get the current time or sleep
     // in non-deterministic ways.
     RecordReplayBeginPassThroughEvents();
 
-||||||| 80c960997e61f
-  if (subtle::Acquire_Load(state) == kLazyInstanceStateCreating) {
-=======
-  if (state.load(std::memory_order_acquire) == kLazyInstanceStateCreating) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     const base::TimeTicks start = base::TimeTicks::Now();
     do {
       const base::TimeDelta elapsed = base::TimeTicks::Now() - start;
@@ -88,19 +76,11 @@ bool NeedsLazyInstance(std::atomic<uintptr_t>& state) {
       if (elapsed < Milliseconds(1))
         PlatformThread::YieldCurrentThread();
       else
-<<<<<<< HEAD
-        PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
-    } while (subtle::Acquire_Load(state) == kLazyInstanceStateCreating);
-
-    RecordReplayEndPassThroughEvents();
-||||||| 80c960997e61f
-        PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
-    } while (subtle::Acquire_Load(state) == kLazyInstanceStateCreating);
-=======
         PlatformThread::Sleep(Milliseconds(1));
     } while (state.load(std::memory_order_acquire) ==
              kLazyInstanceStateCreating);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+
+    RecordReplayEndPassThroughEvents();
   }
   // Someone else created the instance.
   return false;

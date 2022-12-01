@@ -71,7 +71,6 @@ Only one build configuration is currently supported.
    node build
    ```
 
-<<<<<<< HEAD
 # Troubleshooting
 
 ## Python3 version
@@ -158,16 +157,3 @@ git push
 ```
 
 FIXME add instructions for other chromium repositories we've forked.
-||||||| 80c960997e61f
-For historical reasons, there are some small top level directories. Now the
-guidance is that new top level directories are for product (e.g. Chrome,
-Android WebView, Ash). Even if these products have multiple executables, the
-code should be in subdirectories of the product.
-=======
-For historical reasons, there are some small top level directories. Now the
-guidance is that new top level directories are for product (e.g. Chrome,
-Android WebView, Ash). Even if these products have multiple executables, the
-code should be in subdirectories of the product.
-
-If you found a bug, please file it at https://crbug.com/new.
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae

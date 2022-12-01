@@ -28,34 +28,9 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   // Observer type that regulates conditions to invoke callbacks.
   enum class ObserverType { kLoader, kWorkerScheduler };
 
-<<<<<<< HEAD
-  // Observer interface to receive scheduling policy change events.
-  class Observer {
-   public:
-    Observer();
-    virtual ~Observer();
-
-    // Notified when throttling state is changed. May be called consecutively
-    // with the same value.
-    virtual void OnLifecycleStateChanged(
-        scheduler::SchedulingLifecycleState) = 0;
-  };
-||||||| 80c960997e61f
-  // Observer interface to receive scheduling policy change events.
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-
-    // Notified when throttling state is changed. May be called consecutively
-    // with the same value.
-    virtual void OnLifecycleStateChanged(
-        scheduler::SchedulingLifecycleState) = 0;
-  };
-=======
   // Callback type for receiving scheduling policy change events.
   using OnLifecycleStateChangedCallback =
       base::RepeatingCallback<void(scheduler::SchedulingLifecycleState)>;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   class PLATFORM_EXPORT LifecycleObserverHandle {
     USING_FAST_MALLOC(LifecycleObserverHandle);

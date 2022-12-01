@@ -68,23 +68,6 @@ bool IntersectionObserverController::ComputeIntersections(
     LocalFrameUkmAggregator& ukm_aggregator,
     absl::optional<base::TimeTicks>& monotonic_time) {
   needs_occlusion_tracking_ = false;
-<<<<<<< HEAD
-  if (GetExecutionContext()) {
-    TRACE_EVENT0("blink",
-                 "IntersectionObserverController::"
-                 "computeIntersections");
-    HeapVector<Member<IntersectionObserver>> observers_to_process;
-    CopyToVector(tracked_explicit_root_observers_, observers_to_process);
-    std::sort(observers_to_process.begin(), observers_to_process.end(),
-              recordreplay::CompareMemberByPointerId<Member<IntersectionObserver>>());
-||||||| 80c960997e61f
-  if (GetExecutionContext()) {
-    TRACE_EVENT0("blink",
-                 "IntersectionObserverController::"
-                 "computeIntersections");
-    HeapVector<Member<IntersectionObserver>> observers_to_process;
-    CopyToVector(tracked_explicit_root_observers_, observers_to_process);
-=======
   if (!GetExecutionContext())
     return false;
   TRACE_EVENT0("blink,devtools.timeline",
@@ -92,13 +75,16 @@ bool IntersectionObserverController::ComputeIntersections(
                "computeIntersections");
   HeapVector<Member<IntersectionObserver>> observers_to_process(
       tracked_explicit_root_observers_);
+  std::sort(observers_to_process.begin(), observers_to_process.end(),
+            recordreplay::CompareMemberByPointerId<Member<IntersectionObserver>>());
   HeapVector<Member<IntersectionObservation>> observations_to_process(
       tracked_implicit_root_observations_);
+  std::sort(observations_to_process.begin(), observations_to_process.end(),
+            recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
   int64_t internal_observation_count = 0;
   int64_t javascript_observation_count = 0;
   {
     LocalFrameUkmAggregator::IterativeTimer ukm_timer(ukm_aggregator);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     for (auto& observer : observers_to_process) {
       if (observer->HasObservations()) {
         ukm_timer.StartInterval(observer->GetUkmMetricId());
@@ -112,16 +98,6 @@ bool IntersectionObserverController::ComputeIntersections(
         tracked_explicit_root_observers_.erase(observer);
       }
     }
-<<<<<<< HEAD
-    HeapVector<Member<IntersectionObservation>> observations_to_process;
-    CopyToVector(tracked_implicit_root_observations_, observations_to_process);
-    std::sort(observations_to_process.begin(), observations_to_process.end(),
-              recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
-||||||| 80c960997e61f
-    HeapVector<Member<IntersectionObservation>> observations_to_process;
-    CopyToVector(tracked_implicit_root_observations_, observations_to_process);
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     for (auto& observation : observations_to_process) {
       ukm_timer.StartInterval(observation->Observer()->GetUkmMetricId());
       int64_t count = observation->ComputeIntersection(flags, monotonic_time);

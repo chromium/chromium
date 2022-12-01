@@ -24,15 +24,10 @@
 #include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_mach_vm.h"
 #include "base/message_loop/message_pump_for_io.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/strings/stringprintf.h"
-||||||| 80c960997e61f
-#include "base/strings/stringprintf.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/task/current_thread.h"
 #include "base/trace_event/typed_macros.h"
+
+#include "base/record_replay.h"
 
 extern "C" {
 kern_return_t fileport_makeport(int fd, mach_port_t*);

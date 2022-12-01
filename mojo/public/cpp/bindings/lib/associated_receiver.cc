@@ -4,19 +4,14 @@
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/sequenced_task_runner.h"
-||||||| 80c960997e61f
-#include "base/sequenced_task_runner.h"
-=======
 #include <memory>
 
 #include "base/task/sequenced_task_runner.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 

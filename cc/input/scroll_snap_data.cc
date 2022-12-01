@@ -12,15 +12,10 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
-<<<<<<< HEAD
-#include "base/numerics/ranges.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/numerics/ranges.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "cc/input/snap_selection_strategy.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 namespace {

@@ -16,13 +16,6 @@
 #include "base/metrics/single_sample_metrics.h"
 #include "base/observer_list.h"
 #include "base/profiler/sample_metadata.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-||||||| 80c960997e61f
-#include "base/single_thread_task_runner.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/synchronization/lock.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/task_time_observer.h"
@@ -61,6 +54,8 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 class LazyNow;

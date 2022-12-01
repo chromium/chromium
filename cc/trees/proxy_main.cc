@@ -11,13 +11,8 @@
 #include <vector>
 
 #include "base/bind.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/completion_event.h"
@@ -37,6 +32,8 @@
 #include "cc/trees/swap_promise.h"
 #include "components/viz/service/display/record_replay_render.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 
@@ -443,20 +440,10 @@ void ProxyMain::BeginMainFrame(
     if (blocking)
       main_thread_blocked.emplace(task_runner_provider_);
 
-<<<<<<< HEAD
     if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
       recordreplay::OnCommitPaint();
     }
 
-    bool hold_commit_for_activation = commit_waits_for_activation_;
-    commit_waits_for_activation_ = false;
-    CompletionEvent completion;
-||||||| 80c960997e61f
-    bool hold_commit_for_activation = commit_waits_for_activation_;
-    commit_waits_for_activation_ = false;
-    CompletionEvent completion;
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(

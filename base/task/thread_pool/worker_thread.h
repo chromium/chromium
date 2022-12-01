@@ -251,16 +251,12 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Set once JoinForTesting() has been called.
   AtomicFlag join_called_for_testing_;
-<<<<<<< HEAD
 
   // Whether operations on this worker thread may be unordered when recording/replaying.
   bool record_replay_unordered_ = false;
-||||||| 80c960997e61f
-=======
 
   // Service thread task runner.
   scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 };
 
 }  // namespace internal

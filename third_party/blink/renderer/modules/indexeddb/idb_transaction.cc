@@ -466,15 +466,7 @@ void IDBTransaction::OnAbort(DOMException* error) {
 }
 
 void IDBTransaction::OnComplete() {
-<<<<<<< HEAD
-  recordreplay::Diagnostic("IDBTransaction::OnComplete %p", this);
-
-  IDB_TRACE1("IDBTransaction::onComplete", "txn.id", id_);
-||||||| 80c960997e61f
-  IDB_TRACE1("IDBTransaction::onComplete", "txn.id", id_);
-=======
   TRACE_EVENT1("IndexedDB", "IDBTransaction::onComplete", "txn.id", id_);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   if (!GetExecutionContext()) {
     Finished();
     return;

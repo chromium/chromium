@@ -15,14 +15,7 @@ namespace blink {
 
 struct SameSizeAsDisplayItem {
   void* pointer;
-<<<<<<< HEAD
-  uintptr_t key;
-  IntRect rect;
-||||||| 80c960997e61f
-  IntRect rect;
-=======
   gfx::Rect rect;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   uint32_t i1;
   uint32_t i2;
 };

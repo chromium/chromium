@@ -1151,9 +1151,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         // PaintLayer is created. If a node with transform-style: preserve-3d
         // does not exist in an existing rendering context, it establishes a
         // new one.
-<<<<<<< HEAD
-        state.rendering_context_id = context_.current.rendering_context_id;
-        if (style.Preserves3D() && !state.rendering_context_id) {
+        state.rendering_context_id = context_.rendering_context_id;
+        if (handling_transform_property && style.Preserves3D() &&
+            !state.rendering_context_id) {
           // When recording/replaying we need a consistent context ID, so use
           // the pointer ID of the object instead of its hash.
           if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
@@ -1162,18 +1162,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
             state.rendering_context_id =
                 PtrHash<const LayoutObject>::GetHash(&object_);
           }
-||||||| 80c960997e61f
-        state.rendering_context_id = context_.current.rendering_context_id;
-        if (style.Preserves3D() && !state.rendering_context_id) {
-          state.rendering_context_id =
-              PtrHash<const LayoutObject>::GetHash(&object_);
-=======
-        state.rendering_context_id = context_.rendering_context_id;
-        if (handling_transform_property && style.Preserves3D() &&
-            !state.rendering_context_id) {
-          state.rendering_context_id =
-              PtrHash<const LayoutObject>::GetHash(&object_);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
         }
 
         // TODO(crbug.com/1185254): Make this work correctly for block

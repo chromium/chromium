@@ -31,20 +31,10 @@ ImageController::ImageDecodeRequestId
 ImageController::ImageController(
     scoped_refptr<base::SequencedTaskRunner> origin_task_runner,
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner)
-<<<<<<< HEAD
     : worker_task_runner_(std::move(worker_task_runner)),
-      origin_task_runner_(origin_task_runner),
       lock_("ImageController.lock_") {
-  weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-||||||| 80c960997e61f
-    : worker_task_runner_(std::move(worker_task_runner)),
-      origin_task_runner_(origin_task_runner) {
-  weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-=======
-    : worker_task_runner_(std::move(worker_task_runner)) {
   worker_state_ = std::make_unique<WorkerState>(std::move(origin_task_runner),
                                                 weak_ptr_factory_.GetWeakPtr());
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 ImageController::~ImageController() {

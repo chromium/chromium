@@ -12,15 +12,8 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-||||||| 80c960997e61f
-#include "base/single_thread_task_runner.h"
-=======
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -31,6 +24,8 @@
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 

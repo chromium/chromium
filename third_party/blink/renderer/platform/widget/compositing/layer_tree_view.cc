@@ -14,16 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
-||||||| 80c960997e61f
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
-=======
 #include "base/task/single_thread_task_runner.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -57,6 +48,8 @@
 #include "third_party/blink/renderer/platform/graphics/raster_dark_mode_filter_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
 #include "ui/gfx/presentation_feedback.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 class Layer;
@@ -198,17 +191,7 @@ void LayerTreeView::DidUpdateLayers() {
 void LayerTreeView::BeginMainFrame(const viz::BeginFrameArgs& args) {
   if (!delegate_) {
     return;
-<<<<<<< HEAD
-  }
-  if (web_main_thread_scheduler_) {
-    web_main_thread_scheduler_->WillBeginFrame(args);
-  }
-||||||| 80c960997e61f
-  if (web_main_thread_scheduler_)
-    web_main_thread_scheduler_->WillBeginFrame(args);
-=======
   widget_scheduler_->WillBeginFrame(args);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   delegate_->BeginMainFrame(args.frame_time);
 }
 

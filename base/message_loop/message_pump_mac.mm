@@ -429,17 +429,11 @@ void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
   // The timer fired, assume we have work and let RunWork() figure out what to
   // do and what to schedule after.
-<<<<<<< HEAD
-
   // For now CallWithEHFrame is disabled in this file to avoid crashes when
   // replaying. These calls are only used to ensure the process terminates if
   // an exception is thrown, but it would be nice to figure out what's going on
   // sometime and restore these calls.
   //base::mac::CallWithEHFrame(^{
-||||||| 80c960997e61f
-  base::mac::CallWithEHFrame(^{
-=======
-  base::mac::CallWithEHFrame(^{
     // It would be incorrect to expect that `self->delayed_work_scheduled_at_`
     // is smaller than or equal to `TimeTicks::Now()` because the fire date of a
     // CFRunLoopTimer can be adjusted slightly.
@@ -447,7 +441,6 @@ void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
     DCHECK(!self->delayed_work_scheduled_at_.is_max());
 
     self->delayed_work_scheduled_at_ = base::TimeTicks::Max();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     self->RunWork();
   //});
 }
@@ -610,15 +603,10 @@ void MessagePumpCFRunLoopBase::PreWaitObserver(CFRunLoopObserverRef observer,
     // nesting-deferred work may have accumulated.  Schedule it for processing
     // if appropriate.
     self->MaybeScheduleNestingDeferredWork();
-<<<<<<< HEAD
-  //});
-||||||| 80c960997e61f
-  });
-=======
 
     // Notify the delegate that the loop is about to sleep.
     self->BeforeWait();
-  });
+  //});
 }
 
 // Called from the run loop.
@@ -627,13 +615,12 @@ void MessagePumpCFRunLoopBase::AfterWaitObserver(CFRunLoopObserverRef observer,
                                                  CFRunLoopActivity activity,
                                                  void* info) {
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
-  base::mac::CallWithEHFrame(^{
+  //base::mac::CallWithEHFrame(^{
     // Emerging from sleep, any work happening after this (outside of a
     // RunWork()) should be considered native work. Matching PopWorkItemScope()
     // is in BeforeWait().
     self->PushWorkItemScope();
-  });
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  //});
 }
 
 // Called from the run loop.
@@ -691,17 +678,11 @@ void MessagePumpCFRunLoopBase::EnterExitObserver(CFRunLoopObserverRef observer,
       // loop.
       //base::mac::CallWithEHFrame(^{
         self->MaybeScheduleNestingDeferredWork();
-<<<<<<< HEAD
       //});
-||||||| 80c960997e61f
-      });
-=======
-      });
 
       // Current work item tracking needs to go away since execution will stop.
       self->PopWorkItemScope();
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       --self->nesting_level_;
       break;
 

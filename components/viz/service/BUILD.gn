@@ -82,22 +82,10 @@ viz_component("service") {
     "display/overlay_processor_on_gpu.h",
     "display/overlay_processor_stub.cc",
     "display/overlay_processor_stub.h",
-<<<<<<< HEAD
-    "display/program_binding.cc",
-    "display/program_binding.h",
-    "display/record_replay_render.cc",
-    "display/record_replay_render.h",
-    "display/render_pass_id_remapper.cc",
-    "display/render_pass_id_remapper.h",
-||||||| 80c960997e61f
-    "display/program_binding.cc",
-    "display/program_binding.h",
-    "display/render_pass_id_remapper.cc",
-    "display/render_pass_id_remapper.h",
-=======
     "display/pending_swap_params.cc",
     "display/pending_swap_params.h",
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+    "display/record_replay_render.cc",
+    "display/record_replay_render.h",
     "display/renderer_utils.cc",
     "display/renderer_utils.h",
     "display/resolved_frame_data.cc",

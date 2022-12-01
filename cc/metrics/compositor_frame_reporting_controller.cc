@@ -182,38 +182,20 @@ void CompositorFrameReportingController::BeginMainFrameAborted(
 }
 
 void CompositorFrameReportingController::WillCommit() {
-<<<<<<< HEAD
   // The reporter can be missing while repainting when replaying.
-  if (!reporters_[PipelineStage::kBeginMainFrame])
+  if (!reporters_[PipelineStage::kReadyToCommit])
     return;
-  DCHECK(reporters_[PipelineStage::kBeginMainFrame]);
-  reporters_[PipelineStage::kBeginMainFrame]->StartStage(StageType::kCommit,
-                                                         Now());
-||||||| 80c960997e61f
-  DCHECK(reporters_[PipelineStage::kBeginMainFrame]);
-  reporters_[PipelineStage::kBeginMainFrame]->StartStage(StageType::kCommit,
-                                                         Now());
-=======
   DCHECK(reporters_[PipelineStage::kReadyToCommit]);
   reporters_[PipelineStage::kReadyToCommit]->StartStage(StageType::kCommit,
                                                         Now());
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void CompositorFrameReportingController::DidCommit() {
-<<<<<<< HEAD
   // The reporter can be missing while repainting when replaying.
-  if (!reporters_[PipelineStage::kBeginMainFrame])
+  if (!reporters_[PipelineStage::kReadyToCommit])
     return;
-  DCHECK(reporters_[PipelineStage::kBeginMainFrame]);
-  reporters_[PipelineStage::kBeginMainFrame]->StartStage(
-||||||| 80c960997e61f
-  DCHECK(reporters_[PipelineStage::kBeginMainFrame]);
-  reporters_[PipelineStage::kBeginMainFrame]->StartStage(
-=======
   DCHECK(reporters_[PipelineStage::kReadyToCommit]);
   reporters_[PipelineStage::kReadyToCommit]->StartStage(
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       StageType::kEndCommitToActivation, Now());
   AdvanceReporterStage(PipelineStage::kReadyToCommit, PipelineStage::kCommit);
 }
@@ -610,21 +592,11 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
   last_started_compositor_frame_ = {};
 }
 
-<<<<<<< HEAD
-void CompositorFrameReportingController::SetBlinkBreakdown(
-    std::unique_ptr<BeginMainFrameMetrics> details,
-    base::TimeTicks main_thread_start_time) {
+void CompositorFrameReportingController::NotifyReadyToCommit(
+    std::unique_ptr<BeginMainFrameMetrics> details) {
   // The reporter can be missing while repainting when replaying.
   if (!reporters_[PipelineStage::kBeginMainFrame])
     return;
-||||||| 80c960997e61f
-void CompositorFrameReportingController::SetBlinkBreakdown(
-    std::unique_ptr<BeginMainFrameMetrics> details,
-    base::TimeTicks main_thread_start_time) {
-=======
-void CompositorFrameReportingController::NotifyReadyToCommit(
-    std::unique_ptr<BeginMainFrameMetrics> details) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   DCHECK(reporters_[PipelineStage::kBeginMainFrame]);
   reporters_[PipelineStage::kBeginMainFrame]->SetBlinkBreakdown(
       std::move(details), begin_main_frame_start_time_);

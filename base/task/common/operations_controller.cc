@@ -4,14 +4,10 @@
 
 #include "base/task/common/operations_controller.h"
 #include "base/check_op.h"
-<<<<<<< HEAD
 #include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/synchronization/waitable_event.h"
 
 #include <ostream>
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 namespace base {
 namespace internal {

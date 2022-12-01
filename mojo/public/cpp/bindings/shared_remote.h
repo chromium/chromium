@@ -11,13 +11,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/stl_util.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -25,6 +18,8 @@
 #include "mojo/public/cpp/bindings/lib/thread_safe_forwarder_base.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 

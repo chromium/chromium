@@ -19,13 +19,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/sequenced_task_runner.h"
-||||||| 80c960997e61f
-#include "base/sequenced_task_runner.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
@@ -54,6 +47,8 @@
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/trace_event/address_space_dump_provider.h"
 #endif
+
+#include "base/record_replay.h"
 
 namespace base {
 namespace trace_event {

@@ -16,17 +16,12 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/stl_util.h"
-=======
 #include "base/ranges/algorithm.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/trace_event.h"
 #include "cc/raster/raster_source.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 

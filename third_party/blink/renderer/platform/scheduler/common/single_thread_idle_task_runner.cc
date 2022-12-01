@@ -5,17 +5,10 @@
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
 
 #include "base/location.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-#include "base/trace_event/blame_context.h"
-||||||| 80c960997e61f
-#include "base/single_thread_task_runner.h"
-#include "base/trace_event/blame_context.h"
-=======
 #include "base/task/single_thread_task_runner.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/trace_event.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace scheduler {
@@ -107,19 +100,9 @@ void SingleThreadIdleTaskRunner::RunTask(IdleTask idle_task) {
                "allotted_time_ms",
                (deadline - base::TimeTicks::Now()).InMillisecondsF());
   std::move(idle_task).Run(deadline);
-<<<<<<< HEAD
-  if (blame_context_)
-    blame_context_->Leave();
 
   if (!recordreplay::AreEventsDisallowed())
     delegate_->DidProcessIdleTask();
-||||||| 80c960997e61f
-  if (blame_context_)
-    blame_context_->Leave();
-  delegate_->DidProcessIdleTask();
-=======
-  delegate_->DidProcessIdleTask();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 }  // namespace scheduler

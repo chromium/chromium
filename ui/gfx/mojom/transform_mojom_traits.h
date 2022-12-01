@@ -13,47 +13,6 @@
 namespace mojo {
 
 template <>
-<<<<<<< HEAD
-struct ArrayTraits<SkMatrix44> {
-  using Element = float;
-
-  static bool IsNull(const SkMatrix44& input) {
-    // When recording/replaying, whether a matrix is an identity or not can
-    // vary between recording and replaying for unknown reasons. Checking
-    // isIdentity below can lead to messages having different lengths,
-    // so for now we workaround this by always serializing the matrix.
-    if (recordreplay::IsRecordingOrReplaying()) {
-      return false;
-    }
-    return input.isIdentity();
-  }
-
-  static size_t GetSize(const SkMatrix44& input) { return 16; }
-
-  static float GetAt(const SkMatrix44& input, size_t index) {
-    return input.getFloat(static_cast<int>(index % 4),
-                          static_cast<int>(index / 4));
-  }
-};
-
-template <>
-||||||| 80c960997e61f
-struct ArrayTraits<SkMatrix44> {
-  using Element = float;
-
-  static bool IsNull(const SkMatrix44& input) { return input.isIdentity(); }
-
-  static size_t GetSize(const SkMatrix44& input) { return 16; }
-
-  static float GetAt(const SkMatrix44& input, size_t index) {
-    return input.getFloat(static_cast<int>(index % 4),
-                          static_cast<int>(index / 4));
-  }
-};
-
-template <>
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
   static absl::optional<std::array<float, 16>> matrix(
       const gfx::Transform& transform) {

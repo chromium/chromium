@@ -210,7 +210,6 @@ void SnapCoordinator::SnapAreaDidChange(LayoutBox& snap_area,
 }
 
 void SnapCoordinator::ResnapAllContainersIfNeeded() {
-<<<<<<< HEAD
   std::vector<LayoutBox*> container_vector;
   for (LayoutBox* container : snap_containers_) {
     container_vector.push_back(container);
@@ -218,12 +217,7 @@ void SnapCoordinator::ResnapAllContainersIfNeeded() {
   std::sort(container_vector.begin(), container_vector.end(),
             recordreplay::CompareByRecordReplayId());
 
-  for (const auto* container : container_vector) {
-||||||| 80c960997e61f
-  for (const auto* container : snap_containers_) {
-=======
-  for (const auto& container : snap_containers_) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  for (const auto& container : container_vector) {
     if (!container->GetScrollableArea()->NeedsResnap())
       continue;
 
@@ -248,7 +242,6 @@ void SnapCoordinator::ResnapAllContainersIfNeeded() {
 }
 
 void SnapCoordinator::UpdateAllSnapContainerDataIfNeeded() {
-<<<<<<< HEAD
   std::vector<LayoutBox*> container_vector;
   for (LayoutBox* container : snap_containers_) {
     container_vector.push_back(container);
@@ -256,12 +249,7 @@ void SnapCoordinator::UpdateAllSnapContainerDataIfNeeded() {
   std::sort(container_vector.begin(), container_vector.end(),
             recordreplay::CompareByRecordReplayId());
 
-  for (auto* container : container_vector) {
-||||||| 80c960997e61f
-  for (auto* container : snap_containers_) {
-=======
-  for (const auto& container : snap_containers_) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  for (const auto& container : container_vector) {
     if (container->GetScrollableArea()->SnapContainerDataNeedsUpdate())
       UpdateSnapContainerData(*container);
   }

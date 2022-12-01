@@ -9,12 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-<<<<<<< HEAD:base/task_runner.cc
-#include "base/record_replay.h"
-||||||| 80c960997e61f:base/task_runner.cc
-=======
 #include "base/memory/raw_ptr.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:base/task/task_runner.cc
 #include "base/threading/post_task_and_reply_impl.h"
 #include "base/time/time.h"
 

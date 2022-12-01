@@ -358,39 +358,18 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
     return nullptr;
   }
 
-<<<<<<< HEAD
   // WebGL contexts are not currently supported when recording/replaying.
   if (recordreplay::IsRecordingOrReplaying("no-webgl")) {
-    switch (context_type) {
-      case CanvasRenderingContext::kContextExperimentalWebgl:
-      case CanvasRenderingContext::kContextWebgl:
-      case CanvasRenderingContext::kContextWebgl2:
-      case CanvasRenderingContext::kContextGPUPresent:
+    switch (rendering_api) {
+      case CanvasRenderingAPI::kWebgl:
+      case CanvasRenderingAPI::kWebgl2:
+      case CanvasRenderingAPI::kWebgpu:
         return nullptr;
       default:
         break;
     }
   }
 
-  // Log the aliased context type used.
-  if (!context_) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.ContextType", context_type);
-  }
-
-  context_type =
-      CanvasRenderingContext::ResolveContextTypeAliases(context_type);
-
-||||||| 80c960997e61f
-  // Log the aliased context type used.
-  if (!context_) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.ContextType", context_type);
-  }
-
-  context_type =
-      CanvasRenderingContext::ResolveContextTypeAliases(context_type);
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   CanvasRenderingContextFactory* factory =
       GetRenderingContextFactory(static_cast<int>(rendering_api));
   if (!factory)

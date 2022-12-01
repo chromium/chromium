@@ -22,14 +22,8 @@
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-<<<<<<< HEAD
 #include "base/record_replay.h"
-#include "base/task/sequence_manager/real_time_domain.h"
-||||||| 80c960997e61f
-#include "base/task/sequence_manager/real_time_domain.h"
-=======
 #include "base/task/sequence_manager/enqueue_order.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_impl.h"
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
@@ -236,17 +230,9 @@ SequenceManagerImpl::SequenceManagerImpl(
       add_queue_time_to_tasks_(settings_.add_queue_time_to_tasks),
 
       empty_queues_to_reload_(associated_thread_),
-<<<<<<< HEAD
-      memory_corruption_sentinel_(kMemoryCorruptionSentinelValue),
-      main_thread_only_(associated_thread_, settings_) {
-  recordreplay::RegisterPointer("SequenceManagerImpl", this);
-||||||| 80c960997e61f
-      memory_corruption_sentinel_(kMemoryCorruptionSentinelValue),
-      main_thread_only_(associated_thread_, settings_) {
-=======
       main_thread_only_(this, associated_thread_, settings_, settings_.clock),
       clock_(settings_.clock) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  recordreplay::RegisterPointer("SequenceManagerImpl", this);
   TRACE_EVENT_OBJECT_CREATED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("sequence_manager"), "SequenceManager", this);
   main_thread_only().selector.SetTaskQueueSelectorObserver(this);
@@ -666,13 +652,6 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
                "SequenceManagerImpl::SelectNextTask");
 
   ReloadEmptyWorkQueues();
-<<<<<<< HEAD
-
-  LazyNow lazy_now(controller_->GetClock());
-||||||| 80c960997e61f
-  LazyNow lazy_now(controller_->GetClock());
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   MoveReadyDelayedTasksToWorkQueues(&lazy_now);
 
   // If we sampled now, check if it's time to reclaim memory next time we go
@@ -692,17 +671,8 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
         AsValueWithSelectorResultForTracing(work_queue,
                                             /* force_verbose */ false));
 
-<<<<<<< HEAD
-    if (!work_queue) {
-      return nullptr;
-    }
-||||||| 80c960997e61f
-    if (!work_queue)
-      return nullptr;
-=======
     if (!work_queue)
       return absl::nullopt;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
     // If the head task was canceled, remove it and run the selector again.
     if (UNLIKELY(work_queue->RemoveAllCanceledTasksFromFront())) {
@@ -792,20 +762,9 @@ absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
     // If the selector has non-empty queues we trivially know there is immediate
     // work to be done. However we may want to yield to native work if it is
     // more important.
-<<<<<<< HEAD
-    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority))) {
-      return GetDelayTillNextDelayedTask(lazy_now, option);
-    }
-    return TimeDelta();
-||||||| 80c960997e61f
-    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
-      return GetDelayTillNextDelayedTask(lazy_now, option);
-    return TimeDelta();
-=======
     if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
       return AdjustWakeUp(GetNextDelayedWakeUpWithOption(option), lazy_now);
     return WakeUp{};
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   // There may be some incoming immediate work which we haven't accounted for.
@@ -815,20 +774,9 @@ absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
 
   if (auto priority =
           main_thread_only().selector.GetHighestPendingPriority(option)) {
-<<<<<<< HEAD
-    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority))) {
-      return GetDelayTillNextDelayedTask(lazy_now, option);
-    }
-    return TimeDelta();
-||||||| 80c960997e61f
-    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
-      return GetDelayTillNextDelayedTask(lazy_now, option);
-    return TimeDelta();
-=======
     if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
       return AdjustWakeUp(GetNextDelayedWakeUpWithOption(option), lazy_now);
     return WakeUp{};
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   // Otherwise we need to find the shortest delay, if any.  NB we don't need to

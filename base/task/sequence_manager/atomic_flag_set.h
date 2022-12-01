@@ -132,17 +132,11 @@ class BASE_EXPORT AtomicFlagSet {
 
   const scoped_refptr<const AssociatedThreadId> associated_thread_;
   std::unique_ptr<Group> alloc_list_head_;
-<<<<<<< HEAD
-  Group* partially_free_list_head_ = nullptr;
+  raw_ptr<Group> partially_free_list_head_ = nullptr;
 
   // When recording/replaying, orders all operations to ensure that flags are
   // set and callbacks are run at consistent points when recording vs replaying.
   int ordered_lock_id_ = 0;
-||||||| 80c960997e61f
-  Group* partially_free_list_head_ = nullptr;
-=======
-  raw_ptr<Group> partially_free_list_head_ = nullptr;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 };
 
 }  // namespace internal

@@ -307,16 +307,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
   void ForceCrash() override;
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
-<<<<<<< HEAD
-  void WriteIntoTracedValue(perfetto::TracedValue context) override;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
   void SendRecordReplayBrowserEvent(
       const std::string& name,
       base::Value&& value) override;
-||||||| 80c960997e61f
-  void WriteIntoTracedValue(perfetto::TracedValue context) override;
-=======
-  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void DumpProfilingData(base::OnceClosure callback) override;
 #endif

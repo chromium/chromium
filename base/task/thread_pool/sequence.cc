@@ -321,21 +321,8 @@ Task Sequence::Clear(TaskSource::Transaction* transaction) {
 }
 
 void Sequence::ReleaseTaskRunner() {
-  if (!task_runner()) {
+  if (!task_runner())
     return;
-<<<<<<< HEAD
-  }
-  if (execution_mode() == TaskSourceExecutionMode::kParallel) {
-    static_cast<PooledParallelTaskRunner*>(task_runner())
-        ->UnregisterSequence(this);
-  }
-||||||| 80c960997e61f
-  if (execution_mode() == TaskSourceExecutionMode::kParallel) {
-    static_cast<PooledParallelTaskRunner*>(task_runner())
-        ->UnregisterSequence(this);
-  }
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // No member access after this point, releasing |task_runner()| might delete
   // |this|.
   task_runner()->Release();

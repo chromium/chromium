@@ -148,16 +148,10 @@ MultiBufferDataSource::MultiBufferDataSource(
       base::BindOnce(&MultiBufferDataSource::OnRedirected, weak_ptr_));
 }
 
-<<<<<<< HEAD:media/blink/multibuffer_data_source.cc
-MultibufferDataSource::~MultibufferDataSource() {
+MultiBufferDataSource::~MultiBufferDataSource() {
   // https://linear.app/replay/issue/RUN-468
   recordreplay::UnregisterPointer(this);
 
-||||||| 80c960997e61f:media/blink/multibuffer_data_source.cc
-MultibufferDataSource::~MultibufferDataSource() {
-=======
-MultiBufferDataSource::~MultiBufferDataSource() {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:third_party/blink/renderer/platform/media/multi_buffer_data_source.cc
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 }
 

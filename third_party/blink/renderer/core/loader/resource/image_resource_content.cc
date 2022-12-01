@@ -259,15 +259,9 @@ void ImageResourceContent::NotifyObservers(
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-<<<<<<< HEAD
-      finished_observers_as_vector = finished_observers_.AsVector();
+      CopyToVector(finished_observers_, finished_observers_as_vector);
       std::sort(finished_observers_as_vector.begin(), finished_observers_as_vector.end(),
                 recordreplay::CompareByPointerId());
-||||||| 80c960997e61f
-      finished_observers_as_vector = finished_observers_.AsVector();
-=======
-      CopyToVector(finished_observers_, finished_observers_as_vector);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     }
 
     for (ImageResourceObserver* observer : finished_observers_as_vector) {
@@ -280,15 +274,9 @@ void ImageResourceContent::NotifyObservers(
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-<<<<<<< HEAD
-      observers_as_vector = observers_.AsVector();
+      CopyToVector(observers_, observers_as_vector);
       std::sort(observers_as_vector.begin(), observers_as_vector.end(),
                 recordreplay::CompareByPointerId());
-||||||| 80c960997e61f
-      observers_as_vector = observers_.AsVector();
-=======
-      CopyToVector(observers_, observers_as_vector);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     }
 
     for (ImageResourceObserver* observer : observers_as_vector) {

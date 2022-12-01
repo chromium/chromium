@@ -5706,8 +5706,7 @@ void RenderFrameImpl::BeginNavigationInternal(
       CloneBlobURLToken(info->blob_url_token));
 
   int load_flags = info->url_request.GetLoadFlagsForWebUrlRequest();
-<<<<<<< HEAD
-  std::unique_ptr<base::DictionaryValue> initiator;
+  absl::optional<base::Value::Dict> initiator;
 
   // Devtools behavior can vary when replaying, so record/replay the contents
   // of the initiator.
@@ -5717,21 +5716,10 @@ void RenderFrameImpl::BeginNavigationInternal(
   recordreplay::RecordReplayString("devtools_initiator_info", initiator_string);
 
   if (initiator_string.length()) {
-    initiator = base::DictionaryValue::From(
-        base::JSONReader::ReadDeprecated(initiator_string));
-||||||| 80c960997e61f
-  std::unique_ptr<base::DictionaryValue> initiator;
-  if (!info->devtools_initiator_info.IsNull()) {
-    initiator = base::DictionaryValue::From(
-        base::JSONReader::ReadDeprecated(info->devtools_initiator_info.Utf8()));
-=======
-  absl::optional<base::Value::Dict> initiator;
-  if (!info->devtools_initiator_info.IsNull()) {
     absl::optional<base::Value> initiator_value =
-        base::JSONReader::Read(info->devtools_initiator_info.Utf8());
+        base::JSONReader::Read(initiator_string);
     if (initiator_value && initiator_value->is_dict())
       initiator = std::move(*initiator_value).TakeDict();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   absl::optional<network::ResourceRequest::WebBundleTokenParams>
@@ -5779,16 +5767,12 @@ void RenderFrameImpl::BeginNavigationInternal(
       initiator_policy_container_keep_alive_handle =
           std::move(info->initiator_policy_container_keep_alive_handle);
 
-<<<<<<< HEAD
   // https://linear.app/replay/issue/RUN-771
   mojo::internal::RecordReplayAssertBufferAllocationsBegin();
 
-||||||| 80c960997e61f
-=======
   network::mojom::RequestDestination request_destination =
       blink::GetRequestDestinationForWebURLRequest(info->url_request);
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   GetFrameHost()->BeginNavigation(
       MakeCommonNavigationParams(frame_->GetSecurityOrigin(), std::move(info),
                                  load_flags, has_download_sandbox_flag, from_ad,
@@ -5796,17 +5780,11 @@ void RenderFrameImpl::BeginNavigationInternal(
                                  request_destination),
       std::move(begin_navigation_params), std::move(blob_url_token),
       std::move(navigation_client_remote),
-<<<<<<< HEAD
-      std::move(initiator_policy_container_keep_alive_handle));
+      std::move(initiator_policy_container_keep_alive_handle),
+      std::move(renderer_cancellation_listener_receiver));
 
   // https://linear.app/replay/issue/RUN-771
   mojo::internal::RecordReplayAssertBufferAllocationsEnd();
-||||||| 80c960997e61f
-      std::move(initiator_policy_container_keep_alive_handle));
-=======
-      std::move(initiator_policy_container_keep_alive_handle),
-      std::move(renderer_cancellation_listener_receiver));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void RenderFrameImpl::DecodeDataURL(

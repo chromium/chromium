@@ -13,17 +13,9 @@ namespace sequence_manager {
 namespace internal {
 
 WorkDeduplicator::WorkDeduplicator(
-<<<<<<< HEAD
-    scoped_refptr<AssociatedThreadId> associated_thread)
-    : state_ordered_lock_id_(recordreplay::CreateOrderedLock("WorkDeduplicator.state_"))
-    , associated_thread_(std::move(associated_thread)) {}
-||||||| 80c960997e61f
-    scoped_refptr<AssociatedThreadId> associated_thread)
-    : associated_thread_(std::move(associated_thread)) {}
-=======
     scoped_refptr<const AssociatedThreadId> associated_thread)
-    : associated_thread_(std::move(associated_thread)) {}
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+    : state_ordered_lock_id_(recordreplay::CreateOrderedLock("WorkDeduplicator.state_")),
+      associated_thread_(std::move(associated_thread)) {}
 
 WorkDeduplicator::~WorkDeduplicator() = default;
 

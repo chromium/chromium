@@ -7,14 +7,11 @@
 #include <algorithm>
 #include <utility>
 
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/memory/raw_ptr.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/task_tracker.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 namespace internal {

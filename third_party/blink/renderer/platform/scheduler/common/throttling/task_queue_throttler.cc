@@ -27,7 +27,10 @@ using base::sequence_manager::TaskQueue;
 TaskQueueThrottler::TaskQueueThrottler(
     base::sequence_manager::TaskQueue* task_queue,
     const base::TickClock* tick_clock)
-    : task_queue_(task_queue), tick_clock_(tick_clock) {}
+    : task_queue_(task_queue), tick_clock_(tick_clock) {
+  // Pointer registration is needed for sorting in BudgetPool::UpdateThrottlingStateForAllQueues
+  recordreplay::RegisterPointer("TaskQueueThrottler", this);
+}
 
 TaskQueueThrottler::~TaskQueueThrottler() {
   if (IsThrottled())
@@ -36,6 +39,8 @@ TaskQueueThrottler::~TaskQueueThrottler() {
   for (BudgetPool* budget_pool : budget_pools_) {
     budget_pool->UnregisterThrottler(this);
   }
+
+  recordreplay::UnregisterPointer(this);
 }
 
 void TaskQueueThrottler::IncreaseThrottleRefCount() {
@@ -111,69 +116,10 @@ void TaskQueueThrottler::OnHasImmediateTask() {
   TRACE_EVENT0("renderer.scheduler", "TaskQueueThrottler::OnHasImmediateTask");
 
   LazyNow lazy_now(tick_clock_);
-<<<<<<< HEAD
-
-  // Collect BudgetPools for which at least one queue has reached its next
-  // granted run time.
-  HashSet<BudgetPool*> budget_pools_at_next_granted_run_time;
-  for (const TaskQueueMap::value_type& map_entry : queue_details_) {
-    const base::TimeTicks next_granted_run_time =
-        map_entry.value->next_granted_run_time();
-    if (next_granted_run_time <= lazy_now.Now()) {
-      budget_pools_at_next_granted_run_time.ReserveCapacityForSize(
-          map_entry.value->budget_pools().size());
-      for (BudgetPool* budget_pool : map_entry.value->budget_pools())
-        budget_pools_at_next_granted_run_time.insert(budget_pool);
-    }
-  }
-
-  // Notify BudgetPools for which at least one queue has reached its next
-  // granted run time about the wake up.
-  for (BudgetPool* budget_pool : budget_pools_at_next_granted_run_time)
-    budget_pool->OnWakeUp(lazy_now.Now());
-
-  std::vector<TaskQueue*> queues;
-  for (const TaskQueueMap::value_type& map_entry : queue_details_)
-    queues.push_back(map_entry.key);
-  std::sort(queues.begin(), queues.end(),
-            recordreplay::CompareByPointerId());
-
-  // Update throttling state for all queues.
-  for (TaskQueue* task_queue : queues) {
-    UpdateQueueSchedulingLifecycleStateInternal(lazy_now.Now(), task_queue,
-                                                true);
-||||||| 80c960997e61f
-
-  // Collect BudgetPools for which at least one queue has reached its next
-  // granted run time.
-  HashSet<BudgetPool*> budget_pools_at_next_granted_run_time;
-  for (const TaskQueueMap::value_type& map_entry : queue_details_) {
-    const base::TimeTicks next_granted_run_time =
-        map_entry.value->next_granted_run_time();
-    if (next_granted_run_time <= lazy_now.Now()) {
-      budget_pools_at_next_granted_run_time.ReserveCapacityForSize(
-          map_entry.value->budget_pools().size());
-      for (BudgetPool* budget_pool : map_entry.value->budget_pools())
-        budget_pools_at_next_granted_run_time.insert(budget_pool);
-    }
-  }
-
-  // Notify BudgetPools for which at least one queue has reached its next
-  // granted run time about the wake up.
-  for (BudgetPool* budget_pool : budget_pools_at_next_granted_run_time)
-    budget_pool->OnWakeUp(lazy_now.Now());
-
-  // Update throttling state for all queues.
-  for (const TaskQueueMap::value_type& map_entry : queue_details_) {
-    TaskQueue* task_queue = map_entry.key;
-    UpdateQueueSchedulingLifecycleStateInternal(lazy_now.Now(), task_queue,
-                                                true);
-=======
   if (CanRunTasksAt(lazy_now.Now())) {
     UpdateFence(lazy_now.Now());
   } else {
     task_queue_->UpdateWakeUp(&lazy_now);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 }
 

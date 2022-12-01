@@ -135,16 +135,8 @@ static inline bool BlinkRuntimeCallStatsEnabled() {
   }
 
 #define RUNTIME_CALL_TIMER_SCOPE_WITH_RCS(runtime_call_stats, counterId)  \
-<<<<<<< HEAD
-  base::Optional<RuntimeCallTimerScope> rcs_scope;                        \
-  if (BlinkRuntimeCallStatsEnabled()) {                                   \
-||||||| 80c960997e61f
-  base::Optional<RuntimeCallTimerScope> rcs_scope;                        \
-  if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) { \
-=======
   absl::optional<RuntimeCallTimerScope> rcs_scope;                        \
   if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) { \
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     rcs_scope.emplace(runtime_call_stats, counterId);                     \
   }
 

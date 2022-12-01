@@ -86,20 +86,12 @@ PowerModeArbiter* PowerModeArbiter::GetInstance() {
 }
 
 PowerModeArbiter::PowerModeArbiter()
-<<<<<<< HEAD
-    : observers_(new base::ObserverListThreadSafe<Observer>()),
-      lock_("PowerModeArbiter.lock_"),
-      active_mode_("PowerModeArbiter", this) {
-||||||| 80c960997e61f
-    : observers_(new base::ObserverListThreadSafe<Observer>()),
-      active_mode_("PowerModeArbiter", this) {
-=======
     : trace_observer_(std::make_unique<TraceObserver>()),
       active_mode_("PowerModeArbiter", this),
       observers_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()),
+      lock_("PowerModeArbiter.lock_"),
       charging_voter_(std::make_unique<ChargingPowerModeVoter>(this)) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
   base::trace_event::TraceLog::GetInstance()->AddIncrementalStateObserver(this);
 }

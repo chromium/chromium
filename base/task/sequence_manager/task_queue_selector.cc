@@ -232,17 +232,8 @@ void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
 absl::optional<TaskQueue::QueuePriority>
 TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-<<<<<<< HEAD
-  if (!active_priority_tracker_.HasActivePriority()) {
-    return nullopt;
-  }
-||||||| 80c960997e61f
-  if (!active_priority_tracker_.HasActivePriority())
-    return nullopt;
-=======
   if (!active_priority_tracker_.HasActivePriority())
     return absl::nullopt;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   TaskQueue::QueuePriority highest_priority =
       active_priority_tracker_.HighestActivePriority();

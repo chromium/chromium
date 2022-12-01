@@ -74,30 +74,7 @@ const Node& OpaqueRootForGC(v8::Isolate*, const Node* node) {
   return *node;
 }
 
-<<<<<<< HEAD
-/*
-#if !BUILDFLAG(USE_V8_OILPAN)
-namespace {
-bool IsNestedInV8GC(ThreadState* thread_state, v8::GCType type) {
-  return thread_state && (type == v8::kGCTypeMarkSweepCompact ||
-                          type == v8::kGCTypeIncrementalMarking);
-}
-||||||| 80c960997e61f
-#if !BUILDFLAG(USE_V8_OILPAN)
-namespace {
-bool IsNestedInV8GC(ThreadState* thread_state, v8::GCType type) {
-  return thread_state && (type == v8::kGCTypeMarkSweepCompact ||
-                          type == v8::kGCTypeIncrementalMarking);
-}
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }  // namespace
-<<<<<<< HEAD
-#endif  // !USE_V8_OILPAN
-*/
-||||||| 80c960997e61f
-#endif  // !USE_V8_OILPAN
-=======
 
 // static
 v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
@@ -113,7 +90,6 @@ v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
     return v8::EmbedderGraph::Node::Detachedness::kAttached;
   return v8::EmbedderGraph::Node::Detachedness::kDetached;
 }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 void V8GCController::GcPrologue(v8::Isolate* isolate,
                                 v8::GCType type,
@@ -122,25 +98,6 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
   // FIXME update ThreadHeapStatsCollector instead.
   /*
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcPrologue);
-<<<<<<< HEAD
-#if !BUILDFLAG(USE_V8_OILPAN)
-  ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
-      IsNestedInV8GC(ThreadState::Current(), type)
-          ? ThreadState::Current()->Heap().stats_collector()
-          : nullptr);
-#endif  // !USE_V8_OILPAN
-  */
-
-||||||| 80c960997e61f
-#if !BUILDFLAG(USE_V8_OILPAN)
-  ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
-      IsNestedInV8GC(ThreadState::Current(), type)
-          ? ThreadState::Current()->Heap().stats_collector()
-          : nullptr);
-#endif  // !USE_V8_OILPAN
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   auto* per_isolate_data = V8PerIsolateData::From(isolate);
   per_isolate_data->EnterGC();
 
@@ -167,30 +124,16 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
     default:
       break;
   }
+  */
 }
 
 void V8GCController::GcEpilogue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
+  // Disable code to avoid getting the current time at non-deterministic points.
+  // FIXME update ThreadHeapStatsCollector instead.
   /*
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcEpilogue);
-<<<<<<< HEAD
-#if !BUILDFLAG(USE_V8_OILPAN)
-  ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
-      IsNestedInV8GC(ThreadState::Current(), type)
-          ? ThreadState::Current()->Heap().stats_collector()
-          : nullptr);
-#endif  // !USE_V8_OILPAN
-  */
-||||||| 80c960997e61f
-#if !BUILDFLAG(USE_V8_OILPAN)
-  ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
-      IsNestedInV8GC(ThreadState::Current(), type)
-          ? ThreadState::Current()->Heap().stats_collector()
-          : nullptr);
-#endif  // !USE_V8_OILPAN
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   V8PerIsolateData::From(isolate)->LeaveGC();
 
@@ -206,6 +149,7 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
       TRACE_EVENT_SCOPE_THREAD, "data", [&](perfetto::TracedValue context) {
         inspector_update_counters_event::Data(std::move(context));
       });
+  */
 }
 
 }  // namespace blink

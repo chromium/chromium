@@ -18,14 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-<<<<<<< HEAD
-#include "base/optional.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/optional.h"
-=======
 #include "base/observer_list.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/string_number_conversions.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
@@ -65,6 +58,8 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_renderer_scheduler_state.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 #include "v8/include/v8.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 class LazyNow;
@@ -272,29 +267,11 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
                               base::Unretained(this)),
           helper_.ControlMainThreadTaskQueue()->CreateTaskRunner(
               TaskType::kMainThreadTaskQueueControl)),
-<<<<<<< HEAD
-      main_thread_only_(this,
-                        helper_.GetClock(),
-                        helper_.NowTicks()),
-      any_thread_lock_("MainThreadSchedulerImpl.any_thread_lock_"),
-||||||| 80c960997e61f
-      main_thread_only_(this,
-                        helper_.GetClock(),
-                        helper_.NowTicks()),
-=======
       main_thread_only_(this, helper_.GetClock(), helper_.NowTicks()),
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+      any_thread_lock_("MainThreadSchedulerImpl.any_thread_lock_"),
       any_thread_(this),
-<<<<<<< HEAD
-      policy_may_need_update_(&any_thread_lock_, "MainThreadSchedulerImpl.policy_may_need_update_"),
-      notify_agent_strategy_task_posted_(&any_thread_lock_) {
+      policy_may_need_update_(&any_thread_lock_, "MainThreadSchedulerImpl.policy_may_need_update_") {
   recordreplay::RegisterPointer("MainThreadSchedulerImpl", this);
-||||||| 80c960997e61f
-      policy_may_need_update_(&any_thread_lock_),
-      notify_agent_strategy_task_posted_(&any_thread_lock_) {
-=======
-      policy_may_need_update_(&any_thread_lock_) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   helper_.AttachToCurrentThread();
 
   // Compositor task queue and default task queue should be managed by
@@ -1059,53 +1036,7 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   memory_purge_manager_.SetRendererBackgrounded(backgrounded);
 }
 
-<<<<<<< HEAD
-void MainThreadSchedulerImpl::SetSchedulerKeepActive(bool keep_active) {
-  main_thread_only().keep_active_fetch_or_worker = keep_active;
-
-  std::vector<PageSchedulerImpl*> page_schedulers;
-  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
-    page_schedulers.push_back(page_scheduler);
-  }
-  std::sort(page_schedulers.begin(), page_schedulers.end(),
-            recordreplay::CompareByPointerId());
-
-  for (PageSchedulerImpl* page_scheduler : page_schedulers) {
-    page_scheduler->SetKeepActive(keep_active);
-  }
-}
-
-void MainThreadSchedulerImpl::OnMainFrameRequestedForInput() {
-  SetPrioritizeCompositingAfterInput(
-      scheduling_settings().prioritize_compositing_after_input);
-}
-
-bool MainThreadSchedulerImpl::SchedulerKeepActive() {
-  return main_thread_only().keep_active_fetch_or_worker;
-}
-
-#if defined(OS_ANDROID)
-||||||| 80c960997e61f
-void MainThreadSchedulerImpl::SetSchedulerKeepActive(bool keep_active) {
-  main_thread_only().keep_active_fetch_or_worker = keep_active;
-  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
-    page_scheduler->SetKeepActive(keep_active);
-  }
-}
-
-void MainThreadSchedulerImpl::OnMainFrameRequestedForInput() {
-  SetPrioritizeCompositingAfterInput(
-      scheduling_settings().prioritize_compositing_after_input);
-}
-
-bool MainThreadSchedulerImpl::SchedulerKeepActive() {
-  return main_thread_only().keep_active_fetch_or_worker;
-}
-
-#if defined(OS_ANDROID)
-=======
 #if BUILDFLAG(IS_ANDROID)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 void MainThreadSchedulerImpl::PauseTimersForAndroidWebView() {
   main_thread_only().pause_timers_for_webview = true;
   UpdatePolicy();

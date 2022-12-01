@@ -9,20 +9,11 @@
 #include <vector>
 
 #include "base/bind.h"
-<<<<<<< HEAD:content/renderer/categorized_worker_pool.cc
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f:content/renderer/categorized_worker_pool.cc
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-=======
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:third_party/blink/renderer/platform/widget/compositing/categorized_worker_pool.cc
 #include "base/strings/stringprintf.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/single_thread_task_runner.h"
@@ -37,6 +28,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace {
@@ -199,19 +192,9 @@ class CategorizedWorkerPool::CategorizedWorkerPoolSequencedTaskRunner
   cc::Task::Vector completed_tasks_;
 };
 
-<<<<<<< HEAD:content/renderer/categorized_worker_pool.cc
-CategorizedWorkerPool::CategorizedWorkerPool()
-    : lock_("CategorizedWorkerPool.lock_"),
-      namespace_token_(GenerateNamespaceToken()),
-      has_task_for_normal_priority_thread_cv_(&lock_),
-||||||| 80c960997e61f:content/renderer/categorized_worker_pool.cc
-CategorizedWorkerPool::CategorizedWorkerPool()
-    : namespace_token_(GenerateNamespaceToken()),
-      has_task_for_normal_priority_thread_cv_(&lock_),
-=======
 CategorizedWorkerPoolImpl::CategorizedWorkerPoolImpl()
-    : has_task_for_normal_priority_thread_cv_(&lock_),
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:third_party/blink/renderer/platform/widget/compositing/categorized_worker_pool.cc
+    : lock_("CategorizedWorkerPool.lock_"),
+      has_task_for_normal_priority_thread_cv_(&lock_),
       has_task_for_background_priority_thread_cv_(&lock_),
       shutdown_(false) {
   // Declare the two ConditionVariables which are used by worker threads to
@@ -225,23 +208,15 @@ CategorizedWorkerPoolImpl::~CategorizedWorkerPoolImpl() = default;
 void CategorizedWorkerPoolImpl::Start(int max_concurrency_foreground) {
   DCHECK(threads_.empty());
 
-<<<<<<< HEAD:content/renderer/categorized_worker_pool.cc
   // Using multiple threads for raster tasks runs into ordering problems within
   // Skia when recording/replaying. For now we avoid this by only creating one thread.
   if (recordreplay::IsRecordingOrReplaying("no-render-workers")) {
-    num_normal_threads = 1;
+    max_concurrency_foreground = 1;
   }
 
-  // |num_normal_threads| normal threads and 1 background threads are created.
-  const size_t num_threads = num_normal_threads + 1;
-||||||| 80c960997e61f:content/renderer/categorized_worker_pool.cc
-  // |num_normal_threads| normal threads and 1 background threads are created.
-  const size_t num_threads = num_normal_threads + 1;
-=======
   // |max_concurrency_foreground| normal threads and 1 background threads are
   // created.
   const size_t num_threads = max_concurrency_foreground + 1;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:third_party/blink/renderer/platform/widget/compositing/categorized_worker_pool.cc
   threads_.reserve(num_threads);
 
   // Start |max_concurrency_foreground| normal priority threads, which run

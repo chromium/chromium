@@ -159,17 +159,12 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
       outgoing_serialization_mode_(g_default_outgoing_serialization_mode),
       incoming_serialization_mode_(g_default_incoming_serialization_mode),
       interface_name_(interface_name),
-<<<<<<< HEAD
-      nesting_observer_(RunLoopNestingObserver::GetForThread()) {
-  recordreplay::RegisterPointer("Connector", this);
-||||||| 80c960997e61f
-      nesting_observer_(RunLoopNestingObserver::GetForThread()) {
-=======
       header_validator_(
           base::JoinString({interface_name ? interface_name : "Generic",
                             "MessageHeaderValidator"},
                            "")) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  recordreplay::RegisterPointer("Connector", this);
+
   if (config == MULTI_THREADED_SEND)
     lock_.emplace("Connector.lock_");
 
@@ -201,17 +196,8 @@ Connector::~Connector() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CancelWait();
   }
-<<<<<<< HEAD
 
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CancelWait();
   recordreplay::UnregisterPointer(this);
-||||||| 80c960997e61f
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CancelWait();
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void Connector::SetOutgoingSerializationMode(OutgoingSerializationMode mode) {

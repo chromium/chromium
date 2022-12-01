@@ -37,13 +37,6 @@
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-<<<<<<< HEAD
-#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-||||||| 80c960997e61f
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
@@ -70,6 +63,8 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
+
 namespace blink {
 
 ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
@@ -85,10 +80,7 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
   DCHECK(agent_);
 }
 
-<<<<<<< HEAD
 ExecutionContext::~ExecutionContext() {
-  DCHECK(is_context_destroyed_);
-
   // Leak the policy container if we are being destroyed at a non-deterministic
   // point while recording/replaying, as this releases mojo resources which must
   // happen at specific points.
@@ -96,13 +88,6 @@ ExecutionContext::~ExecutionContext() {
     policy_container_.release();
   }
 }
-||||||| 80c960997e61f
-ExecutionContext::~ExecutionContext() {
-  DCHECK(is_context_destroyed_);
-}
-=======
-ExecutionContext::~ExecutionContext() = default;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 // static
 ExecutionContext* ExecutionContext::From(const ScriptState* script_state) {

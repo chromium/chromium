@@ -25,12 +25,8 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/observer_list.h"
 #include "base/pending_task.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/rand_util.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+#include "base/record_replay.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
@@ -300,19 +296,11 @@ class BASE_EXPORT SequenceManagerImpl
     internal::TaskQueueSelector selector;
     ObserverList<TaskObserver>::Unchecked task_observers;
     ObserverList<TaskTimeObserver>::Unchecked task_time_observers;
-<<<<<<< HEAD
-    std::set<TimeDomain*, recordreplay::CompareByPointerId> time_domains;
-    std::unique_ptr<internal::RealTimeDomain> real_time_domain;
-||||||| 80c960997e61f
-    std::set<TimeDomain*> time_domains;
-    std::unique_ptr<internal::RealTimeDomain> real_time_domain;
-=======
     const raw_ptr<const base::TickClock> default_clock;
     raw_ptr<TimeDomain> time_domain = nullptr;
 
     std::unique_ptr<WakeUpQueue> wake_up_queue;
     std::unique_ptr<WakeUpQueue> non_waking_wake_up_queue;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
     // If true MaybeReclaimMemory will attempt to reclaim memory.
     bool memory_reclaim_scheduled = false;

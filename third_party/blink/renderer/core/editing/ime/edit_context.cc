@@ -127,19 +127,9 @@ void EditContext::DispatchTextUpdateEvent(const String& text,
                                           uint32_t new_selection_start,
                                           uint32_t new_selection_end) {
   TextUpdateEvent* event = MakeGarbageCollected<TextUpdateEvent>(
-<<<<<<< HEAD
-      text, update_range_start, update_range_end, new_selection_start,
-      new_selection_end);
-  DispatchEvent(*event, "EditContext::DispatchTextUpdateEvent");
-||||||| 80c960997e61f
-      text, update_range_start, update_range_end, new_selection_start,
-      new_selection_end);
-  DispatchEvent(*event);
-=======
       event_type_names::kTextupdate, text, update_range_start, update_range_end,
       new_selection_start, new_selection_end);
-  DispatchEvent(*event);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  DispatchEvent(*event, "EditContext::DispatchTextUpdateEvent");
 }
 
 void EditContext::DispatchTextFormatEvent(
@@ -186,33 +176,6 @@ void EditContext::DispatchTextFormatEvent(
         underline_style = "Squiggle";
         break;
     }
-<<<<<<< HEAD
-    TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(
-        format_range_start, format_range_end,
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.underline_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.background_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.suggestion_highlight_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.text_color),
-        underline_thickness, underline_style);
-    DispatchEvent(*event, "EditContext::DispatchTextFormatEvent");
-||||||| 80c960997e61f
-    TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(
-        format_range_start, format_range_end,
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.underline_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.background_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.suggestion_highlight_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.text_color),
-        underline_thickness, underline_style);
-    DispatchEvent(*event);
-=======
 
     text_formats.push_back(TextFormat::Create(
         range_start, range_end,
@@ -223,12 +186,11 @@ void EditContext::DispatchTextFormatEvent(
         cssvalue::CSSColor::SerializeAsCSSComponentValue(
             Color::FromSkColor(ime_text_span.underline_color)),
         underline_style, underline_thickness));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(
       event_type_names::kTextformatupdate, text_formats);
-  DispatchEvent(*event);
+  DispatchEvent(*event, "EditContext::DispatchTextFormatEvent");
 }
 
 void EditContext::Focus() {

@@ -20,12 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/ranges/algorithm.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_runner.h"
@@ -43,6 +38,8 @@
 #endif
 
 #endif  // !BUILDFLAG(IS_NACL)
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -160,20 +157,9 @@ void ChannelPosix::ShutDownImpl() {
 }
 
 void ChannelPosix::Write(MessagePtr message) {
-<<<<<<< HEAD
   // https://linear.app/replay/issue/RUN-618
   recordreplay::Assert("ChannelPosix::Write Start");
 
-  UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",
-                              message->data_num_bytes());
-  UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
-                           message->NumHandlesForTransit());
-||||||| 80c960997e61f
-  UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",
-                              message->data_num_bytes());
-  UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
-                           message->NumHandlesForTransit());
-=======
   bool log_histograms = true;
 #if !defined(MOJO_CORE_SHARED_LIBRARY)
   log_histograms = base::ShouldLogHistogramForCpuReductionExperiment();
@@ -184,7 +170,6 @@ void ChannelPosix::Write(MessagePtr message) {
     UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
                              message->NumHandlesForTransit());
   }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   bool write_error = false;
   {

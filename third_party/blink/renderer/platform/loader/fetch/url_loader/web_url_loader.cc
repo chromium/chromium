@@ -19,13 +19,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-<<<<<<< HEAD
-#include "base/optional.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/optional.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -94,6 +87,8 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
+
+#include "base/record_replay.h"
 
 using base::Time;
 using base::TimeTicks;
@@ -530,19 +525,10 @@ bool WebURLLoader::Context::OnReceivedRedirect(
 }
 
 void WebURLLoader::Context::OnReceivedResponse(
-<<<<<<< HEAD
-    network::mojom::URLResponseHeadPtr head) {
-  if (!client_) {
-||||||| 80c960997e61f
-    network::mojom::URLResponseHeadPtr head) {
-  if (!client_)
-=======
     network::mojom::URLResponseHeadPtr head,
     base::TimeTicks response_arrival_at_renderer) {
   if (!client_)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return;
-  }
 
   TRACE_EVENT_WITH_FLOW0("loading", "WebURLLoader::Context::OnReceivedResponse",
                          this,

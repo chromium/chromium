@@ -306,43 +306,22 @@ void PerformanceMonitor::DidProcessTask(base::TimeTicks start_time,
   if (!thresholds_[kLongTask].is_zero()) {
     base::TimeDelta task_time = end_time - start_time;
     if (task_time > thresholds_[kLongTask]) {
-<<<<<<< HEAD
-      ClientThresholds* client_thresholds = subscriptions_.at(kLongTask);
-      HeapVector<Member<Client>> client_thresholds_vector;
-      for (const auto& it : *client_thresholds) {
-        if (it.value < task_time) {
-          client_thresholds_vector.push_back(it.key);
-||||||| 80c960997e61f
-      ClientThresholds* client_thresholds = subscriptions_.at(kLongTask);
-      for (const auto& it : *client_thresholds) {
-        if (it.value < task_time) {
-          it.key->ReportLongTask(
-              start_time, end_time,
-              task_has_multiple_contexts_ ? nullptr : task_execution_context_,
-              task_has_multiple_contexts_);
-=======
       auto subscriptions_it = subscriptions_.find(kLongTask);
       if (subscriptions_it != subscriptions_.end()) {
         ClientThresholds* client_thresholds = subscriptions_it->value;
-        DCHECK(client_thresholds);
-
+        HeapVector<Member<Client>> client_thresholds_vector;
         for (const auto& it : *client_thresholds) {
-          if (it.value < task_time) {
-            it.key->ReportLongTask(
-                start_time, end_time,
-                task_has_multiple_contexts_ ? nullptr : task_execution_context_,
-                task_has_multiple_contexts_);
-          }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+          if (it.value < task_time)
+            client_thresholds_vector.push_back(it.key);
         }
-      }
-      std::sort(client_thresholds_vector.begin(), client_thresholds_vector.end(),
-                recordreplay::CompareMemberByPointerId<Member<Client>>());
-      for (const auto& client : client_thresholds_vector) {
-        client->ReportLongTask(
-            start_time, end_time,
-            task_has_multiple_contexts_ ? nullptr : task_execution_context_,
-            task_has_multiple_contexts_);
+        std::sort(client_thresholds_vector.begin(), client_thresholds_vector.end(),
+                  recordreplay::CompareMemberByPointerId<Member<Client>>());
+        for (const auto& client : client_thresholds_vector) {
+          client->ReportLongTask(
+              start_time, end_time,
+              task_has_multiple_contexts_ ? nullptr : task_execution_context_,
+              task_has_multiple_contexts_);
+        }
       }
     }
   }

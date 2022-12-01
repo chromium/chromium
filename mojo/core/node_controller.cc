@@ -14,12 +14,7 @@
 #include "base/logging.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/strings/string_piece.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "mojo/core/broker.h"
@@ -39,6 +34,8 @@
 #if !BUILDFLAG(IS_NACL)
 #include "crypto/random.h"
 #endif
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {

@@ -371,19 +371,13 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     viz::FrameSinkId parent_frame_sink_id,
     const cc::LayerTreeSettings& settings,
     scoped_refptr<base::SingleThreadTaskRunner>
-<<<<<<< HEAD
-        main_thread_compositor_task_runner) {
+        main_thread_compositor_task_runner,
+    scoped_refptr<base::TaskRunner> compositor_worker_task_runner) {
   // Media playback is not supported when recording/replaying.
   if (recordreplay::IsRecordingOrReplaying("no-media")) {
     return nullptr;
   }
 
-||||||| 80c960997e61f
-        main_thread_compositor_task_runner) {
-=======
-        main_thread_compositor_task_runner,
-    scoped_refptr<base::TaskRunner> compositor_worker_task_runner) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
   auto* delegate = GetWebMediaPlayerDelegate();
 

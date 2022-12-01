@@ -65,63 +65,9 @@ void WaitableEvent::Reset() {
   PeekPort(receive_right_->Name(), true);
 }
 
-<<<<<<< HEAD
-// NO_THREAD_SAFETY_ANALYSIS: Runtime dependent locking.
-void WaitableEvent::Signal() NO_THREAD_SAFETY_ANALYSIS {
+void WaitableEvent::Signal() {
   RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
 
-  // If using the slow watch-list, copy the watchers to a local. After
-  // mach_msg(), the event object may be deleted by an awoken thread.
-  const bool use_slow_path = UseSlowWatchList(policy_);
-  ReceiveRight* receive_right = nullptr;  // Manually reference counted.
-  std::unique_ptr<std::list<OnceClosure>> watch_list;
-  if (use_slow_path) {
-    // To avoid a race condition of a WaitableEventWatcher getting added
-    // while another thread is in this method, hold the watch-list lock for
-    // the duration of mach_msg(). This requires ref-counting the
-    // |receive_right_| object that contains it, in case the event is deleted
-    // by a waiting thread after mach_msg().
-    receive_right = receive_right_.get();
-    receive_right->AddRef();
-
-    ReceiveRight::WatchList* slow_watch_list = receive_right->SlowWatchList();
-    slow_watch_list->lock.Acquire();
-
-    if (!slow_watch_list->list.empty()) {
-      watch_list.reset(new std::list<OnceClosure>());
-      std::swap(*watch_list, slow_watch_list->list);
-    }
-  }
-
-||||||| 80c960997e61f
-// NO_THREAD_SAFETY_ANALYSIS: Runtime dependent locking.
-void WaitableEvent::Signal() NO_THREAD_SAFETY_ANALYSIS {
-  // If using the slow watch-list, copy the watchers to a local. After
-  // mach_msg(), the event object may be deleted by an awoken thread.
-  const bool use_slow_path = UseSlowWatchList(policy_);
-  ReceiveRight* receive_right = nullptr;  // Manually reference counted.
-  std::unique_ptr<std::list<OnceClosure>> watch_list;
-  if (use_slow_path) {
-    // To avoid a race condition of a WaitableEventWatcher getting added
-    // while another thread is in this method, hold the watch-list lock for
-    // the duration of mach_msg(). This requires ref-counting the
-    // |receive_right_| object that contains it, in case the event is deleted
-    // by a waiting thread after mach_msg().
-    receive_right = receive_right_.get();
-    receive_right->AddRef();
-
-    ReceiveRight::WatchList* slow_watch_list = receive_right->SlowWatchList();
-    slow_watch_list->lock.Acquire();
-
-    if (!slow_watch_list->list.empty()) {
-      watch_list.reset(new std::list<OnceClosure>());
-      std::swap(*watch_list, slow_watch_list->list);
-    }
-  }
-
-=======
-void WaitableEvent::Signal() {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   mach_msg_empty_send_t msg{};
   msg.header.msgh_bits = MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_COPY_SEND);
   msg.header.msgh_size = sizeof(&msg);

@@ -18,15 +18,8 @@
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-<<<<<<< HEAD
-#include "base/optional.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/optional.h"
-=======
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -44,6 +37,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 namespace {
@@ -979,23 +974,12 @@ void TileManager::PartitionImagesForCheckering(
     if (image_to_frame_index)
       (*image_to_frame_index)[image.stable_id()] = frame_index;
 
-<<<<<<< HEAD
-    DrawImage draw_image(*original_draw_image, tile->raster_transform().scale(),
-                         frame_index, raster_color_space, sdr_white_level);
-    if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree)) {
-||||||| 80c960997e61f
-    DrawImage draw_image(*original_draw_image, tile->raster_transform().scale(),
-                         frame_index, raster_color_space, sdr_white_level);
-    if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree))
-=======
     DrawImage draw_image(*original_draw_image, tile->contents_scale_key(),
                          frame_index, target_color_params);
     if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree))
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       checkered_images->push_back(draw_image.paint_image());
-    } else {
+    else
       sync_decoded_images->push_back(std::move(draw_image));
-    }
   }
 }
 

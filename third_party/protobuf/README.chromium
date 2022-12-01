@@ -25,24 +25,10 @@ Steps used to create the current version:
    For future releases, it will be worth looking into which patches still need
    to be applied. In case of conflict, update those patches accordingly and save
    them back in place (i.e. in patches directory).
-<<<<<<< HEAD
-8. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
-   the same directory as this file.
-
-9. Add an __init__.py to protobuf/ that adds third_party/six/ to Python path.
-10. Update this file (README.chromium).
-||||||| 80c960997e61f
-8. Generate descriptor_pb2.py using the script "gen_extra_chromium_files" in
-the same directory as this file.
-
-9. Add an __init__.py to protobuf/ that adds third_party/six/ to Python path.
-10. Update this file (README.chromium).
-=======
 7. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
    the same directory as this file.
 8. Generate proto_sources.gni using the script "gen_chromium_file_lists.py".
 9. Update this file (README.chromium).
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 Note about libmirclient:
 

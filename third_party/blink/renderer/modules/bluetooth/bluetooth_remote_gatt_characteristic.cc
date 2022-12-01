@@ -52,13 +52,6 @@ void BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged(
     const Vector<uint8_t>& value) {
   if (!GetGatt()->connected())
     return;
-<<<<<<< HEAD
-  this->SetValue(BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value));
-  DispatchEvent(*Event::Create(event_type_names::kCharacteristicvaluechanged), "BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged");
-||||||| 80c960997e61f
-  this->SetValue(BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value));
-  DispatchEvent(*Event::Create(event_type_names::kCharacteristicvaluechanged));
-=======
   SetValue(BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value));
   if (notification_registration_in_progress()) {
     // Save event and value to be dispatched after notification is registered.
@@ -68,9 +61,8 @@ void BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged(
             value_, /*promise=*/nullptr));
   } else {
     DispatchEvent(
-        *Event::Create(event_type_names::kCharacteristicvaluechanged));
+        *Event::Create(event_type_names::kCharacteristicvaluechanged), "BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged");
   }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 const WTF::AtomicString& BluetoothRemoteGATTCharacteristic::InterfaceName()
@@ -117,15 +109,6 @@ void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
     DOMDataView* dom_data_view =
         BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value.value());
     SetValue(dom_data_view);
-<<<<<<< HEAD
-    DispatchEvent(
-        *Event::Create(event_type_names::kCharacteristicvaluechanged), "BluetoothRemoteGATTCharacteristic::ReadValueCallback");
-    resolver->Resolve(dom_data_view);
-||||||| 80c960997e61f
-    DispatchEvent(
-        *Event::Create(event_type_names::kCharacteristicvaluechanged));
-    resolver->Resolve(dom_data_view);
-=======
     if (notification_registration_in_progress()) {
       // Save event to be dispatched after notification is registered.
       deferred_value_change_data_.push_back(
@@ -134,10 +117,9 @@ void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
               dom_data_view, resolver));
     } else {
       DispatchEvent(
-          *Event::Create(event_type_names::kCharacteristicvaluechanged));
+          *Event::Create(event_type_names::kCharacteristicvaluechanged), "BluetoothRemoteGATTCharacteristic::ReadValueCallback");
       resolver->Resolve(dom_data_view);
     }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
   }

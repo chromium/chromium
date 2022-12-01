@@ -10,12 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/task/common/lazy_now.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
 #include "base/time/time.h"
@@ -40,6 +35,8 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -184,15 +181,10 @@ FrameSchedulerImpl::FrameSchedulerImpl(
       loading_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Loading")) {
-<<<<<<< HEAD
   // Pointer registration is needed for sorting in PageSchedulerImpl.
   recordreplay::RegisterPointer("FrameSchedulerImpl", this);
-  frame_task_queue_controller_.reset(
-||||||| 80c960997e61f
-  frame_task_queue_controller_.reset(
-=======
+
   frame_task_queue_controller_ = base::WrapUnique(
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
   back_forward_cache_disabling_feature_tracker_.SetDelegate(delegate_);
 }
@@ -648,90 +640,7 @@ void FrameSchedulerImpl::OnStoppedUsingFeature(
   if (policy.disable_aggressive_throttling)
     OnRemovedAggressiveThrottlingOptOut();
   if (policy.disable_back_forward_cache)
-<<<<<<< HEAD
-    OnRemovedBackForwardCacheOptOut(feature);
-
-  uint64_t new_mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
-
-  if (old_mask != new_mask) {
-    NotifyDelegateAboutFeaturesAfterCurrentTask();
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "renderer.scheduler", "ActiveSchedulerTrackedFeature",
-        TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
-                       static_cast<int>(feature)));
-  }
-}
-
-void FrameSchedulerImpl::NotifyDelegateAboutFeaturesAfterCurrentTask() {
-  // https://linear.app/replay/issue/RUN-825
-  recordreplay::Assert("FrameSchedulerImpl::NotifyDelegateAboutFeaturesAfterCurrentTask");
-
-  if (!delegate_)
-    return;
-  if (feature_report_scheduled_)
-    return;
-  feature_report_scheduled_ = true;
-
-  // https://linear.app/replay/issue/RUN-825
-  recordreplay::Assert("FrameSchedulerImpl::NotifyDelegateAboutFeaturesAfterCurrentTask #1");
-
-  main_thread_scheduler_->ExecuteAfterCurrentTask(
-      base::BindOnce(&FrameSchedulerImpl::ReportFeaturesToDelegate,
-                     document_bound_weak_factory_.GetWeakPtr()));
-}
-
-void FrameSchedulerImpl::ReportFeaturesToDelegate() {
-  // https://linear.app/replay/issue/RUN-825
-  recordreplay::Assert("FrameSchedulerImpl::ReportFeaturesToDelegate");
-
-  DCHECK(delegate_);
-  feature_report_scheduled_ = false;
-  uint64_t mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
-  if (mask == last_uploaded_active_features_)
-    return;
-  last_uploaded_active_features_ = mask;
-
-  // https://linear.app/replay/issue/RUN-825
-  recordreplay::Assert("FrameSchedulerImpl::ReportFeaturesToDelegate #1");
-
-  delegate_->UpdateActiveSchedulerTrackedFeatures(mask);
-||||||| 80c960997e61f
-    OnRemovedBackForwardCacheOptOut(feature);
-
-  uint64_t new_mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
-
-  if (old_mask != new_mask) {
-    NotifyDelegateAboutFeaturesAfterCurrentTask();
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "renderer.scheduler", "ActiveSchedulerTrackedFeature",
-        TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
-                       static_cast<int>(feature)));
-  }
-}
-
-void FrameSchedulerImpl::NotifyDelegateAboutFeaturesAfterCurrentTask() {
-  if (!delegate_)
-    return;
-  if (feature_report_scheduled_)
-    return;
-  feature_report_scheduled_ = true;
-
-  main_thread_scheduler_->ExecuteAfterCurrentTask(
-      base::BindOnce(&FrameSchedulerImpl::ReportFeaturesToDelegate,
-                     document_bound_weak_factory_.GetWeakPtr()));
-}
-
-void FrameSchedulerImpl::ReportFeaturesToDelegate() {
-  DCHECK(delegate_);
-  feature_report_scheduled_ = false;
-  uint64_t mask = GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
-  if (mask == last_uploaded_active_features_)
-    return;
-  last_uploaded_active_features_ = mask;
-  delegate_->UpdateActiveSchedulerTrackedFeatures(mask);
-=======
     back_forward_cache_disabling_feature_tracker_.Remove(feature);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 base::WeakPtr<FrameScheduler> FrameSchedulerImpl::GetWeakPtr() {
@@ -743,18 +652,10 @@ base::WeakPtr<const FrameSchedulerImpl> FrameSchedulerImpl::GetWeakPtr() const {
 }
 
 void FrameSchedulerImpl::ReportActiveSchedulerTrackedFeatures() {
-<<<<<<< HEAD
   // https://linear.app/replay/issue/RUN-825
   recordreplay::Assert("FrameSchedulerImpl::ReportActiveSchedulerTrackedFeatures");
 
-  if (delegate_)
-    ReportFeaturesToDelegate();
-||||||| 80c960997e61f
-  if (delegate_)
-    ReportFeaturesToDelegate();
-=======
   back_forward_cache_disabling_feature_tracker_.ReportFeaturesToDelegate();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 base::WeakPtr<FrameSchedulerImpl>

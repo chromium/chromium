@@ -644,13 +644,7 @@ void RTCDataChannel::OnStateChange(
                    << ", code: " << error.sctp_cause_code().value_or(-1);
         IncrementErrorCounter(error);
         DispatchEvent(*MakeGarbageCollected<RTCErrorEvent>(
-<<<<<<< HEAD
-            event_type_names::kError, channel()->error()), "RTCDataChannel::OnStateChange #3");
-||||||| 80c960997e61f
-            event_type_names::kError, channel()->error()));
-=======
-            event_type_names::kError, error));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+            event_type_names::kError, error), "RTCDataChannel::OnStateChange");
       }
       DispatchEvent(*Event::Create(event_type_names::kClose), "RTCDataChannel::OnStateChange #4");
       break;

@@ -8,13 +8,9 @@
 
 #include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/metrics/field_trial_params.h"
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/fence.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
@@ -101,20 +97,9 @@ bool WorkQueue::BlockedByFence() const {
   return tasks_.empty() || tasks_.front().task_order() >= fence_->task_order();
 }
 
-<<<<<<< HEAD
-bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
-  if (tasks_.empty() || BlockedByFence()) {
-    return false;
-  }
-||||||| 80c960997e61f
-bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
-  if (tasks_.empty() || BlockedByFence())
-    return false;
-=======
 absl::optional<TaskOrder> WorkQueue::GetFrontTaskOrder() const {
   if (tasks_.empty() || BlockedByFence())
     return absl::nullopt;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // Quick sanity check.
   DCHECK(tasks_.front().task_order() <= tasks_.back().task_order())
       << task_queue_->GetName() << " : " << work_queue_sets_->GetName() << " : "

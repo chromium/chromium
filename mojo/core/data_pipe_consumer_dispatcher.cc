@@ -14,13 +14,8 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "mojo/core/core.h"
 #include "mojo/core/data_pipe_control_message.h"
 #include "mojo/core/node_controller.h"
@@ -28,6 +23,8 @@
 #include "mojo/core/request_context.h"
 #include "mojo/core/user_message_impl.h"
 #include "mojo/public/c/system/data_pipe.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {

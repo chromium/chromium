@@ -247,44 +247,6 @@ void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
   SVGResourceClient::Trace(visitor);
 }
 
-<<<<<<< HEAD
-void CanvasRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
-  if (canvas() && RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
-    Event* event = Event::CreateCancelable(event_type_names::kContextlost);
-    canvas()->DispatchEvent(*event, "CanvasRenderingContext2D::DispatchContextLostEvent");
-    if (event->defaultPrevented()) {
-      context_restorable_ = false;
-    }
-  }
-
-  if (context_restorable_ && (context_lost_mode_ == kRealLostContext ||
-                              context_lost_mode_ == kSyntheticLostContext)) {
-    try_restore_context_attempt_count_ = 0;
-    try_restore_context_event_timer_.StartRepeating(kTryRestoreContextInterval,
-                                                    FROM_HERE);
-  }
-}
-
-||||||| 80c960997e61f
-void CanvasRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
-  if (canvas() && RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
-    Event* event = Event::CreateCancelable(event_type_names::kContextlost);
-    canvas()->DispatchEvent(*event);
-    if (event->defaultPrevented()) {
-      context_restorable_ = false;
-    }
-  }
-
-  if (context_restorable_ && (context_lost_mode_ == kRealLostContext ||
-                              context_lost_mode_ == kSyntheticLostContext)) {
-    try_restore_context_attempt_count_ = 0;
-    try_restore_context_event_timer_.StartRepeating(kTryRestoreContextInterval,
-                                                    FROM_HERE);
-  }
-}
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   if (context_lost_mode_ == kNotLostContext) {
     // Canvas was already restored (possibly thanks to a resize), so stop
@@ -324,32 +286,6 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   }
 }
 
-<<<<<<< HEAD
-void CanvasRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
-  if (context_lost_mode_ == kNotLostContext)
-    return;
-  Reset();
-  context_lost_mode_ = kNotLostContext;
-  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
-    Event* event(Event::Create(event_type_names::kContextrestored));
-    canvas()->DispatchEvent(*event, "CanvasRenderingContext2D::DispatchContextRestoredEvent");
-  }
-}
-
-||||||| 80c960997e61f
-void CanvasRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
-  if (context_lost_mode_ == kNotLostContext)
-    return;
-  Reset();
-  context_lost_mode_ = kNotLostContext;
-  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
-    Event* event(Event::Create(event_type_names::kContextrestored));
-    canvas()->DispatchEvent(*event);
-  }
-}
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source) const {
   canvas()->WillDrawImageTo2DContext(source);
 }

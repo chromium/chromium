@@ -13,15 +13,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/task/task_features.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 namespace internal {
@@ -220,59 +217,9 @@ TimeTicks DelayTimerBase::Now() const {
   return tick_clock_ ? tick_clock_->NowTicks() : TimeTicks::Now();
 }
 
-<<<<<<< HEAD
-void TimerBase::PostNewScheduledTask(TimeDelta delay) {
-  // TODO(gab): Enable this when it's no longer called racily from
-  // RunScheduledTask(): https://crbug.com/587199.
-  // DCHECK(origin_sequence_checker_.CalledOnValidSequence());
-  DCHECK(!scheduled_task_);
-  is_running_ = true;
-  scheduled_task_ = new BaseTimerTaskInternal(this);
-  if (delay > TimeDelta::FromMicroseconds(0)) {
-    // https://linear.app/replay/issue/RUN-571
-    recordreplay::Assert("TimerBase::PostNewScheduledTask #1");
-    // TODO(gab): Posting BaseTimerTaskInternal::Run to another sequence makes
-    // this code racy. https://crbug.com/587199
-    GetTaskRunner()->PostDelayedTask(
-        posted_from_,
-        BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)), delay);
-    scheduled_run_time_ = desired_run_time_ = Now() + delay;
-  } else {
-    // https://linear.app/replay/issue/RUN-571
-    recordreplay::Assert("TimerBase::PostNewScheduledTask #2");
-    GetTaskRunner()->PostTask(
-        posted_from_,
-        BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)));
-    scheduled_run_time_ = desired_run_time_ = TimeTicks();
-  }
-}
-||||||| 80c960997e61f
-void TimerBase::PostNewScheduledTask(TimeDelta delay) {
-  // TODO(gab): Enable this when it's no longer called racily from
-  // RunScheduledTask(): https://crbug.com/587199.
-  // DCHECK(origin_sequence_checker_.CalledOnValidSequence());
-  DCHECK(!scheduled_task_);
-  is_running_ = true;
-  scheduled_task_ = new BaseTimerTaskInternal(this);
-  if (delay > TimeDelta::FromMicroseconds(0)) {
-    // TODO(gab): Posting BaseTimerTaskInternal::Run to another sequence makes
-    // this code racy. https://crbug.com/587199
-    GetTaskRunner()->PostDelayedTask(
-        posted_from_,
-        BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)), delay);
-    scheduled_run_time_ = desired_run_time_ = Now() + delay;
-  } else {
-    GetTaskRunner()->PostTask(
-        posted_from_,
-        BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)));
-    scheduled_run_time_ = desired_run_time_ = TimeTicks();
-  }
-}
-=======
 void DelayTimerBase::OnScheduledTaskInvoked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!delayed_task_handle_.IsValid()) << posted_from_.ToString();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   // The timer may have been stopped.
   if (!is_running_)

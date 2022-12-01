@@ -310,14 +310,7 @@ RunContentProcess(ContentMainParams params,
 
     ui::RegisterPathProvider();
     tracker = base::debug::GlobalActivityTracker::Get();
-<<<<<<< HEAD
-
-    exit_code = content_main_runner->Initialize(content_main_params);
-||||||| 80c960997e61f
-    exit_code = content_main_runner->Initialize(content_main_params);
-=======
     exit_code = content_main_runner->Initialize(std::move(params));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
     if (exit_code >= 0) {
       if (tracker) {

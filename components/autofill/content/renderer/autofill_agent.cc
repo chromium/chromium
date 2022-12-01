@@ -1368,15 +1368,8 @@ mojom::AutofillDriver& AutofillAgent::GetAutofillDriver() {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
         &autofill_driver_);
   }
-<<<<<<< HEAD
-  return autofill_driver_;
-||||||| 80c960997e61f
-
-  return autofill_driver_;
-=======
 
   return *autofill_driver_;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 mojom::PasswordManagerDriver& AutofillAgent::GetPasswordManagerDriver() {

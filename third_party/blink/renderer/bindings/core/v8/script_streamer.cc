@@ -8,12 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/metrics/histogram_functions.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/system/wait.h"
@@ -43,6 +38,8 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
+
+#include "base/record_replay.h"
 
 namespace recordreplay {
 

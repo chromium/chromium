@@ -188,18 +188,8 @@ void EventSource::NetworkRequestEnded() {
 
 void EventSource::ScheduleReconnect() {
   state_ = kConnecting;
-<<<<<<< HEAD
-  connect_timer_.StartOneShot(
-      base::TimeDelta::FromMilliseconds(reconnect_delay_), FROM_HERE);
-  DispatchEvent(*Event::Create(event_type_names::kError), "EventSource::ScheduleReconnect");
-||||||| 80c960997e61f
-  connect_timer_.StartOneShot(
-      base::TimeDelta::FromMilliseconds(reconnect_delay_), FROM_HERE);
-  DispatchEvent(*Event::Create(event_type_names::kError));
-=======
   connect_timer_.StartOneShot(base::Milliseconds(reconnect_delay_), FROM_HERE);
-  DispatchEvent(*Event::Create(event_type_names::kError));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  DispatchEvent(*Event::Create(event_type_names::kError), "EventSource::ScheduleReconnect");
 }
 
 void EventSource::ConnectTimerFired(TimerBase*) {

@@ -13,15 +13,11 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/tasks.h"
 #include "base/task/task_features.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
@@ -89,21 +85,9 @@ void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     const SequenceManager::Settings& settings)
-<<<<<<< HEAD
-    : associated_thread_(AssociatedThreadId::CreateUnbound()),
-      task_runner_lock_("ThreadControllerWithMessagePumpImpl.task_runner_lock_"),
-      work_deduplicator_(associated_thread_),
-      time_source_(settings.clock) {
-}
-||||||| 80c960997e61f
-    : associated_thread_(AssociatedThreadId::CreateUnbound()),
-      work_deduplicator_(associated_thread_),
-      time_source_(settings.clock) {
-}
-=======
     : ThreadController(settings.clock),
+      task_runner_lock_("ThreadControllerWithMessagePumpImpl.task_runner_lock_"),
       work_deduplicator_(associated_thread_) {}
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     std::unique_ptr<MessagePump> message_pump,
@@ -373,19 +357,10 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
     main_thread_only().next_delayed_do_work =
         main_thread_only().quit_runloop_after;
     // If we've passed |quit_runloop_after| there's no more work to do.
-<<<<<<< HEAD
-    if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after) {
-      return {TimeTicks::Max()};
-    }
-||||||| 80c960997e61f
-    if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after)
-      return {TimeTicks::Max()};
-=======
     if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after) {
       next_work_info.delayed_run_time = TimeTicks::Max();
       return next_work_info;
     }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   next_work_info.delayed_run_time = CapAtOneDay(
@@ -403,21 +378,10 @@ WorkDetails ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // Broadcast in a trace event that application tasks were disallowed. This
     // helps spot nested loops that intentionally starve application tasks.
     TRACE_EVENT0("base", "ThreadController: application tasks disallowed");
-<<<<<<< HEAD
-    if (main_thread_only().quit_runloop_after == TimeTicks::Max()) {
-      return TimeDelta::Max();
-    }
-    return main_thread_only().quit_runloop_after - continuation_lazy_now->Now();
-||||||| 80c960997e61f
-    if (main_thread_only().quit_runloop_after == TimeTicks::Max())
-      return TimeDelta::Max();
-    return main_thread_only().quit_runloop_after - continuation_lazy_now->Now();
-=======
     if (main_thread_only().quit_runloop_after == TimeTicks::Max())
       return WorkDetails{absl::nullopt, Nanoseconds(0)};
     return WorkDetails{WakeUp{main_thread_only().quit_runloop_after},
                        Nanoseconds(0)};
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   DCHECK(main_thread_only().task_source);
@@ -463,77 +427,10 @@ WorkDetails ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     if (!selected_task) {
       OnEndWorkItemImpl(lazy_now_task_selected);
       break;
-<<<<<<< HEAD
+    }
 
     recordreplay::NewCheckpoint();
 
-    work_id_provider_->IncrementWorkId();
-
-    // [OnTaskStarted(), OnTaskEnded()] must outscope all other tracing calls
-    // so that the "ThreadController active" trace event lives on top of all
-    // "run task" events.
-    main_thread_only().run_level_tracker.OnTaskStarted();
-    {
-      // Execute the task and assume the worst: it is probably not reentrant.
-      AutoReset<bool> ban_nested_application_tasks(
-          &main_thread_only().task_execution_allowed, false);
-
-      // Trace-parsing tools (DevTools, Lighthouse, etc) consume this event
-      // to determine long tasks.
-      // See https://crbug.com/681863 and https://crbug.com/874982
-      TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "RunTask");
-
-      {
-        // Trace events should finish before we call DidRunTask to ensure that
-        // SequenceManager trace events do not interfere with them.
-        TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask", *task);
-        task_annotator_.RunTask("SequenceManager RunTask", task);
-      }
-
-      // This processes microtasks, hence all scoped operations above must end
-      // after it.
-      main_thread_only().task_source->DidRunTask();
-||||||| 80c960997e61f
-
-    work_id_provider_->IncrementWorkId();
-
-    // [OnTaskStarted(), OnTaskEnded()] must outscope all other tracing calls
-    // so that the "ThreadController active" trace event lives on top of all
-    // "run task" events.
-    main_thread_only().run_level_tracker.OnTaskStarted();
-    {
-      // Execute the task and assume the worst: it is probably not reentrant.
-      AutoReset<bool> ban_nested_application_tasks(
-          &main_thread_only().task_execution_allowed, false);
-
-      // Trace-parsing tools (DevTools, Lighthouse, etc) consume this event
-      // to determine long tasks.
-      // See https://crbug.com/681863 and https://crbug.com/874982
-      TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "RunTask");
-
-      {
-        // Trace events should finish before we call DidRunTask to ensure that
-        // SequenceManager trace events do not interfere with them.
-        TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask", *task);
-        task_annotator_.RunTask("SequenceManager RunTask", task);
-      }
-
-      // This processes microtasks, hence all scoped operations above must end
-      // after it.
-      main_thread_only().task_source->DidRunTask();
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
-    }
-
-<<<<<<< HEAD
-    // When Quit() is called we must stop running the batch because the caller
-    // expects per-task granularity.
-    if (main_thread_only().quit_pending) {
-||||||| 80c960997e61f
-    // When Quit() is called we must stop running the batch because the caller
-    // expects per-task granularity.
-    if (main_thread_only().quit_pending)
-=======
     // Execute the task and assume the worst: it is probably not reentrant.
     AutoReset<bool> ban_nested_application_tasks(
         &main_thread_only().task_execution_allowed, false);
@@ -575,22 +472,12 @@ WorkDetails ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // When Quit() is called we must stop running the batch because the
     // caller expects per-task granularity.
     if (main_thread_only().quit_pending)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       break;
     }
   }
 
-<<<<<<< HEAD
-  if (main_thread_only().quit_pending) {
-    return TimeDelta::Max();
-  }
-||||||| 80c960997e61f
-  if (main_thread_only().quit_pending)
-    return TimeDelta::Max();
-=======
   if (main_thread_only().quit_pending)
     return {absl::nullopt, Nanoseconds(0)};
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   work_deduplicator_.WillCheckForMoreWork();
 
@@ -600,25 +487,11 @@ WorkDetails ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       power_monitor_.IsProcessInPowerSuspendState()
           ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
           : SequencedTaskSource::SelectTaskOption::kDefault;
-<<<<<<< HEAD
-
-  TimeDelta do_work_delay = main_thread_only().task_source->DelayTillNextTask(
-      continuation_lazy_now, select_task_option);
-  DCHECK_GE(do_work_delay, TimeDelta());
-
-  return do_work_delay;
-||||||| 80c960997e61f
-  TimeDelta do_work_delay = main_thread_only().task_source->DelayTillNextTask(
-      continuation_lazy_now, select_task_option);
-  DCHECK_GE(do_work_delay, TimeDelta());
-  return do_work_delay;
-=======
   main_thread_only().task_source->RemoveAllCanceledDelayedTasksFromFront(
       continuation_lazy_now);
   return {main_thread_only().task_source->GetPendingWakeUp(
               continuation_lazy_now, select_task_option),
           work_executed};
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {

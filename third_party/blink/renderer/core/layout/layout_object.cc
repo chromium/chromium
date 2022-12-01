@@ -281,23 +281,9 @@ struct SameSizeAsLayoutObject : public GarbageCollected<SameSizeAsLayoutObject>,
   unsigned bitfields_;
   unsigned bitfields2_;
   unsigned bitfields3_;
-<<<<<<< HEAD
-  void* pointers[4];
-  Member<void*> members[1];
-  // The following fields are in FragmentData.
-  PhysicalOffset paint_offset_;
-  std::unique_ptr<int> rare_data_;
-  int record_replay_id_;
-||||||| 80c960997e61f
-  void* pointers[4];
-  Member<void*> members[1];
-  // The following fields are in FragmentData.
-  PhysicalOffset paint_offset_;
-  std::unique_ptr<int> rare_data_;
-=======
   void* pointers[1];
   Member<void*> members[5];
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  int record_replay_id_;
 #if DCHECK_IS_ON()
   bool is_destroyed_;
 #endif
@@ -416,15 +402,9 @@ LayoutObject::LayoutObject(Node* node)
       node_(node),
       parent_(nullptr),
       previous_(nullptr),
-<<<<<<< HEAD
-      next_(nullptr) {
-  record_replay_id_ = recordreplay::NewIdMainThread("LayoutObject");
-||||||| 80c960997e61f
-      next_(nullptr) {
-=======
       next_(nullptr),
       fragment_(MakeGarbageCollected<FragmentData>()) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  record_replay_id_ = recordreplay::NewIdMainThread("LayoutObject");
   InstanceCounters::IncrementCounter(InstanceCounters::kLayoutObjectCounter);
   if (node_)
     GetFrameView()->IncrementLayoutObjectCount();

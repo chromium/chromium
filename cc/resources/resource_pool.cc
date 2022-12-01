@@ -17,14 +17,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-||||||| 80c960997e61f
-#include "base/single_thread_task_runner.h"
-=======
 #include "base/ranges/algorithm.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -38,6 +31,8 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+
+#include "base/record_replay.h"
 
 using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpLevelOfDetail;
@@ -275,18 +270,12 @@ ResourcePool::TryAcquireResourceForPartialRaster(
     in_use_memory_usage_bytes_ += resource->memory_usage();
     *total_invalidated_rect = resource->invalidated_rect();
 
-<<<<<<< HEAD
     // https://linear.app/replay/issue/RUN-464
     recordreplay::Assert("ResourcePool::TryAcquireResourceForPartialRaster #5 %d %d %d %d",
                          total_invalidated_rect->x(), total_invalidated_rect->y(),
                          total_invalidated_rect->width(), total_invalidated_rect->height());
 
-    // Clear the invalidated rect and content ID on the resource being retunred.
-||||||| 80c960997e61f
-    // Clear the invalidated rect and content ID on the resource being retunred.
-=======
     // Clear the invalidated rect and content ID on the resource being returned.
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     // These will be updated when raster completes successfully.
     resource->set_invalidated_rect(gfx::Rect());
     resource->set_content_id(0);

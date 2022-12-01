@@ -194,20 +194,10 @@ BASE_FEATURE(kPath2DPaintCache,
              "Path2DPaintCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-<<<<<<< HEAD
-// Force synchronous HTML parsing for recording/replaying. It would be nice to
-// enable this only when recording/replaying...
-const base::Feature kForceSynchronousHTMLParsing{
-    "ForceSynchronousHTMLParsing", base::FEATURE_ENABLED_BY_DEFAULT};
-||||||| 80c960997e61f
-const base::Feature kForceSynchronousHTMLParsing{
-    "ForceSynchronousHTMLParsing", base::FEATURE_DISABLED_BY_DEFAULT};
-=======
 // Enable by default. This feature is for a kill switch.
 BASE_FEATURE(kLayoutNGBlockInInline,
              "LayoutNGBlockInInline",
              base::FEATURE_ENABLED_BY_DEFAULT);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 BASE_FEATURE(kPrivacySandboxAdsAPIs,
              "PrivacySandboxAdsAPIs",
@@ -632,31 +622,13 @@ BASE_FEATURE(kBlinkHeapCompaction,
              "BlinkHeapCompaction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables concurrently marking Blink's heap.
-<<<<<<< HEAD
-// Disabled as non-deterministic runnables can't be posted when recording/replaying.
-const base::Feature kBlinkHeapConcurrentMarking{
-    "BlinkHeapConcurrentMarking", base::FEATURE_DISABLED_BY_DEFAULT};
-||||||| 80c960997e61f
-const base::Feature kBlinkHeapConcurrentMarking{
-    "BlinkHeapConcurrentMarking", base::FEATURE_ENABLED_BY_DEFAULT};
-=======
 BASE_FEATURE(kBlinkHeapConcurrentMarking,
              "BlinkHeapConcurrentMarking",
              base::FEATURE_ENABLED_BY_DEFAULT);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 // Enables concurrently sweeping Blink's heap.
-<<<<<<< HEAD
-// Disabled as non-deterministic runnables can't be posted when recording/replaying.
-const base::Feature kBlinkHeapConcurrentSweeping{
-    "BlinkHeapConcurrentSweeping", base::FEATURE_DISABLED_BY_DEFAULT};
-||||||| 80c960997e61f
-const base::Feature kBlinkHeapConcurrentSweeping{
-    "BlinkHeapConcurrentSweeping", base::FEATURE_ENABLED_BY_DEFAULT};
-=======
 BASE_FEATURE(kBlinkHeapConcurrentSweeping,
              "BlinkHeapConcurrentSweeping",
              base::FEATURE_ENABLED_BY_DEFAULT);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 // Enables incrementally marking Blink's heap.
 BASE_FEATURE(kBlinkHeapIncrementalMarking,
              "BlinkHeapIncrementalMarking",

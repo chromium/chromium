@@ -23,15 +23,8 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-<<<<<<< HEAD
-#include "base/numerics/ranges.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/numerics/ranges.h"
-=======
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -67,6 +60,8 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 namespace {

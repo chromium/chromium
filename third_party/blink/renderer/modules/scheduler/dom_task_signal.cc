@@ -44,14 +44,6 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
   const AtomicString previous_priority = priority_;
   priority_ = priority;
   priority_change_status_ = PriorityChangeStatus::kPriorityHasChanged;
-<<<<<<< HEAD
-  DispatchEvent(*Event::Create(event_type_names::kPrioritychange), "DOMTaskSignal::SignalPriorityChange");
-}
-||||||| 80c960997e61f
-  DispatchEvent(*Event::Create(event_type_names::kPrioritychange));
-}
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   for (base::RepeatingClosure& closure : priority_change_algorithms_) {
     closure.Run();
@@ -60,7 +52,7 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
   auto* init = TaskPriorityChangeEventInit::Create();
   init->setPreviousPriority(previous_priority);
   DispatchEvent(*TaskPriorityChangeEvent::Create(
-      event_type_names::kPrioritychange, init));
+      event_type_names::kPrioritychange, init), "DOMTaskSignal::SignalPriorityChange");
   is_priority_changing_ = false;
 }
 

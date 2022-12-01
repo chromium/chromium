@@ -67,16 +67,10 @@ MessagePipeReader::MessagePipeReader(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     MessagePipeReader::Delegate* delegate)
     : delegate_(delegate),
-<<<<<<< HEAD
-      sender_(std::move(sender)),
-      receiver_(this, std::move(receiver)) {
-  recordreplay::RegisterPointer("MessagePipeReader", this);
-||||||| 80c960997e61f
-      sender_(std::move(sender)),
-      receiver_(this, std::move(receiver)) {
-=======
       sender_(std::move(sender), task_runner),
       receiver_(this, std::move(receiver), task_runner) {
+  recordreplay::RegisterPointer("MessagePipeReader", this);
+
   thread_safe_sender_ =
       std::make_unique<mojo::ThreadSafeForwarder<mojom::Channel>>(
           base::MakeRefCounted<ThreadSafeProxy>(
@@ -89,13 +83,14 @@ MessagePipeReader::MessagePipeReader(
 }
 
 MessagePipeReader::~MessagePipeReader() {
+  recordreplay::UnregisterPointer(this);
+
   DCHECK(thread_checker_.CalledOnValidThread());
   // The pipe should be closed before deletion.
 }
 
 void MessagePipeReader::FinishInitializationOnIOThread(
     base::ProcessId self_pid) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   sender_.set_disconnect_handler(
       base::BindOnce(&MessagePipeReader::OnPipeError, base::Unretained(this),
                      MOJO_RESULT_FAILED_PRECONDITION));
@@ -103,18 +98,7 @@ void MessagePipeReader::FinishInitializationOnIOThread(
       base::BindOnce(&MessagePipeReader::OnPipeError, base::Unretained(this),
                      MOJO_RESULT_FAILED_PRECONDITION));
 
-<<<<<<< HEAD
-MessagePipeReader::~MessagePipeReader() {
-  recordreplay::UnregisterPointer(this);
-  DCHECK(thread_checker_.CalledOnValidThread());
-  // The pipe should be closed before deletion.
-||||||| 80c960997e61f
-MessagePipeReader::~MessagePipeReader() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  // The pipe should be closed before deletion.
-=======
   sender_->SetPeerPid(self_pid);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void MessagePipeReader::Close() {

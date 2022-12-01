@@ -187,15 +187,7 @@ void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
     algorithm->Run();
   }
   abort_algorithms_.clear();
-<<<<<<< HEAD
-  dependent_signals_.clear();
   DispatchEvent(*Event::Create(event_type_names::kAbort), "AbortSignal::SignalAbort");
-||||||| 80c960997e61f
-  dependent_signals_.clear();
-  DispatchEvent(*Event::Create(event_type_names::kAbort));
-=======
-  DispatchEvent(*Event::Create(event_type_names::kAbort));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void AbortSignal::Follow(ScriptState* script_state, AbortSignal* parent) {

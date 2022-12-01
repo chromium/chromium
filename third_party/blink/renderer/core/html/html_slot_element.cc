@@ -231,67 +231,6 @@ void HTMLSlotElement::AppendAssignedNode(Node& host_child) {
   assigned_nodes_.push_back(&host_child);
 }
 
-<<<<<<< HEAD
-void HTMLSlotElement::UpdateManuallyAssignedNodesOrdering() {
-  if (assigned_nodes_.IsEmpty() || assigned_nodes_candidates_.IsEmpty()) {
-    return;
-  }
-
-  // TODO: (1067153) Add perf benchmark test for large assigned list.
-  HeapHashSet<Member<Node>> prev_nodes;
-  for (auto& node : assigned_nodes_) {
-    prev_nodes.insert(node);
-  }
-  assigned_nodes_.clear();
-  for (auto& node : assigned_nodes_candidates_) {
-    if (prev_nodes.Contains(node))
-      assigned_nodes_.push_back(node);
-  }
-}
-
-void HTMLSlotElement::RemoveAssignedNodeCandidate(Node& node) {
-  auto it = assigned_nodes_candidates_.find(&node);
-  if (it != assigned_nodes_candidates_.end()) {
-    assigned_nodes_candidates_.erase(it);
-    DidSlotChange(SlotChangeType::kSignalSlotChangeEvent);
-  }
-}
-
-void HTMLSlotElement::ClearAssignedNodesCandidates() {
-  assigned_nodes_candidates_.clear();
-}
-
-||||||| 80c960997e61f
-void HTMLSlotElement::UpdateManuallyAssignedNodesOrdering() {
-  if (assigned_nodes_.IsEmpty() || assigned_nodes_candidates_.IsEmpty())
-    return;
-
-  // TODO: (1067153) Add perf benchmark test for large assigned list.
-  HeapHashSet<Member<Node>> prev_nodes;
-  for (auto& node : assigned_nodes_) {
-    prev_nodes.insert(node);
-  }
-  assigned_nodes_.clear();
-  for (auto& node : assigned_nodes_candidates_) {
-    if (prev_nodes.Contains(node))
-      assigned_nodes_.push_back(node);
-  }
-}
-
-void HTMLSlotElement::RemoveAssignedNodeCandidate(Node& node) {
-  auto it = assigned_nodes_candidates_.find(&node);
-  if (it != assigned_nodes_candidates_.end()) {
-    assigned_nodes_candidates_.erase(it);
-    DidSlotChange(SlotChangeType::kSignalSlotChangeEvent);
-  }
-}
-
-void HTMLSlotElement::ClearAssignedNodesCandidates() {
-  assigned_nodes_candidates_.clear();
-}
-
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 void HTMLSlotElement::ClearAssignedNodes() {
   assigned_nodes_.clear();
 }

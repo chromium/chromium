@@ -314,17 +314,7 @@ mixed_component("base") {
     "debug/stack_trace.h",
     "debug/task_trace.cc",
     "debug/task_trace.h",
-<<<<<<< HEAD
-    "deferred_sequenced_task_runner.cc",
-    "deferred_sequenced_task_runner.h",
     "deterministic_containers.h",
-    "enterprise_util.h",
-||||||| 80c960997e61f
-    "deferred_sequenced_task_runner.cc",
-    "deferred_sequenced_task_runner.h",
-    "enterprise_util.h",
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     "environment.cc",
     "environment.h",
     "export_template.h",

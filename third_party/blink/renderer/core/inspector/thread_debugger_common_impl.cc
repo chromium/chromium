@@ -8,19 +8,8 @@
 
 #include "base/check.h"
 #include "base/rand_util.h"
-<<<<<<< HEAD:third_party/blink/renderer/core/inspector/thread_debugger.cc
-
-#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-||||||| 80c960997e61f:third_party/blink/renderer/core/inspector/thread_debugger.cc
-
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-=======
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:third_party/blink/renderer/core/inspector/thread_debugger_common_impl.cc
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -55,22 +44,14 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
+
 namespace blink {
 
-<<<<<<< HEAD:third_party/blink/renderer/core/inspector/thread_debugger.cc
-ThreadDebugger::ThreadDebugger(v8::Isolate* isolate)
-    : isolate_(isolate),
-      v8_inspector_(v8_inspector::V8Inspector::create(isolate, this)) {
+ThreadDebuggerCommonImpl::ThreadDebuggerCommonImpl(v8::Isolate* isolate)
+    : ThreadDebugger(isolate), isolate_(isolate) {
   RecordReplayRegisterV8Inspector(v8_inspector_.get());
 }
-||||||| 80c960997e61f:third_party/blink/renderer/core/inspector/thread_debugger.cc
-ThreadDebugger::ThreadDebugger(v8::Isolate* isolate)
-    : isolate_(isolate),
-      v8_inspector_(v8_inspector::V8Inspector::create(isolate, this)) {}
-=======
-ThreadDebuggerCommonImpl::ThreadDebuggerCommonImpl(v8::Isolate* isolate)
-    : ThreadDebugger(isolate), isolate_(isolate) {}
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:third_party/blink/renderer/core/inspector/thread_debugger_common_impl.cc
 
 ThreadDebuggerCommonImpl::~ThreadDebuggerCommonImpl() = default;
 

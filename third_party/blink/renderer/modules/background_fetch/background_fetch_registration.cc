@@ -74,23 +74,7 @@ void BackgroundFetchRegistration::OnProgress(
   result_ = result;
   failure_reason_ = failure_reason;
 
-<<<<<<< HEAD
-  ExecutionContext* context = GetExecutionContext();
-  if (!context || context->IsContextDestroyed())
-    return;
-
-  DCHECK(context->IsContextThread());
   DispatchEvent(*Event::Create(event_type_names::kProgress), "BackgroundFetchRegistration::OnProgress");
-||||||| 80c960997e61f
-  ExecutionContext* context = GetExecutionContext();
-  if (!context || context->IsContextDestroyed())
-    return;
-
-  DCHECK(context->IsContextThread());
-  DispatchEvent(*Event::Create(event_type_names::kProgress));
-=======
-  DispatchEvent(*Event::Create(event_type_names::kProgress));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void BackgroundFetchRegistration::OnRecordsUnavailable() {

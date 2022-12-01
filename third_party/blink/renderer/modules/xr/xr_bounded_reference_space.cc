@@ -89,17 +89,11 @@ void XRBoundedReferenceSpace::EnsureUpdated() const {
     offset_bounds_geometry_.clear();
   }
 
-<<<<<<< HEAD
-  DispatchEvent(*XRReferenceSpaceEvent::Create(event_type_names::kReset, this), "XRBoundedReferenceSpace::EnsureUpdated");
-||||||| 80c960997e61f
-  DispatchEvent(*XRReferenceSpaceEvent::Create(event_type_names::kReset, this));
-=======
   // DispatchEvent inherited from core/dom/events/event_target.h isn't const.
   XRBoundedReferenceSpace* mutable_this =
       const_cast<XRBoundedReferenceSpace*>(this);
   mutable_this->DispatchEvent(
-      *XRReferenceSpaceEvent::Create(event_type_names::kReset, mutable_this));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+      *XRReferenceSpaceEvent::Create(event_type_names::kReset, mutable_this), "XRBoundedReferenceSpace::EnsureUpdated");
 }
 
 absl::optional<TransformationMatrix> XRBoundedReferenceSpace::MojoFromNative()

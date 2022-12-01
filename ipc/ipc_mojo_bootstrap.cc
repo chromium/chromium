@@ -21,15 +21,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
-||||||| 80c960997e61f
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
@@ -57,6 +48,8 @@
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/tracing_helpers.h"
+
+#include "base/record_replay.h"
 
 namespace IPC {
 

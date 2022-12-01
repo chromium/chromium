@@ -17,14 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-<<<<<<< HEAD
-#include "base/optional.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/optional.h"
-=======
 #include "base/notreached.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/sequence_token.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/condition_variable.h"
@@ -40,6 +33,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 namespace internal {

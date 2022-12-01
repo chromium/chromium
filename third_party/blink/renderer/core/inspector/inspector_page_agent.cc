@@ -34,12 +34,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/numerics/safe_conversions.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -102,6 +97,8 @@
 #include "third_party/inspector_protocol/crdtp/protocol_core.h"
 #include "ui/display/screen_info.h"
 #include "v8/include/v8-inspector.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 

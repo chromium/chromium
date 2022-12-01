@@ -394,19 +394,13 @@ void InterceptAllocationsMac() {
 
   g_oom_killer_enabled = true;
 
-<<<<<<< HEAD:base/allocator/allocator_interception_mac.mm
   // Don't alter memory allocation behavior when recording/replaying.
   if (MaybeRecordingOrReplaying()) {
     g_replaced_default_zone = true;
     return;
   }
 
-// === C malloc/calloc/valloc/realloc/posix_memalign ===
-||||||| 80c960997e61f:base/allocator/allocator_interception_mac.mm
-// === C malloc/calloc/valloc/realloc/posix_memalign ===
-=======
   // === C malloc/calloc/valloc/realloc/posix_memalign ===
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:base/allocator/partition_allocator/shim/allocator_interception_mac.mm
 
   // This approach is not perfect, as requests for amounts of memory larger than
   // MALLOC_ABSOLUTE_MAX_SIZE (currently SIZE_T_MAX - (2 * PAGE_SIZE)) will

@@ -19,21 +19,9 @@ RasterQuery::RasterQuery() = default;
 RasterQuery::~RasterQuery() = default;
 
 RasterQueryQueue::RasterQueryQueue(
-<<<<<<< HEAD
-    viz::RasterContextProvider* const worker_context_provider,
-    bool oop_rasterization_enabled)
-    : worker_context_provider_(worker_context_provider),
-      oop_rasterization_enabled_(oop_rasterization_enabled),
-      pending_raster_queries_lock_("RasterQueryQueue.pending_raster_queries_lock_") {}
-||||||| 80c960997e61f
-    viz::RasterContextProvider* const worker_context_provider,
-    bool oop_rasterization_enabled)
-    : worker_context_provider_(worker_context_provider),
-      oop_rasterization_enabled_(oop_rasterization_enabled) {}
-=======
     viz::RasterContextProvider* const worker_context_provider)
-    : worker_context_provider_(worker_context_provider) {}
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+    : worker_context_provider_(worker_context_provider),
+      pending_raster_queries_lock_("RasterQueryQueue.pending_raster_queries_lock_") {}
 
 RasterQueryQueue::~RasterQueryQueue() = default;
 

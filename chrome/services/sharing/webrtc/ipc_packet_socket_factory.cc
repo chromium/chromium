@@ -13,12 +13,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/memory/weak_ptr.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
@@ -29,6 +24,8 @@
 #include "net/base/ip_address.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
+
+#include "base/record_replay.h"
 
 namespace sharing {
 

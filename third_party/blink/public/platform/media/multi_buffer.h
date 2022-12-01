@@ -90,18 +90,10 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
   // but we keep and compare pointers to Readers internally.
   class Reader {
    public:
-<<<<<<< HEAD:media/blink/multibuffer.h
     Reader();
-    virtual ~Reader();
-||||||| 80c960997e61f:media/blink/multibuffer.h
-    Reader() {}
-    virtual ~Reader() {}
-=======
-    Reader() = default;
     Reader(const Reader&) = delete;
     Reader& operator=(const Reader&) = delete;
-    virtual ~Reader() = default;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:third_party/blink/public/platform/media/multi_buffer.h
+    virtual ~Reader();
     // Notifies the reader that the range of available blocks has changed.
     // The reader must call MultiBuffer::Observe() to activate this callback.
     virtual void NotifyAvailableRange(

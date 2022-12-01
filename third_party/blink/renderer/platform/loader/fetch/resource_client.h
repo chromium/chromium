@@ -26,20 +26,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-||||||| 80c960997e61f
-#include "third_party/blink/renderer/platform/heap/handle.h"
-=======
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 class SingleThreadTaskRunner;

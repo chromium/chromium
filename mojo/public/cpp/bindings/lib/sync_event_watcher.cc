@@ -9,13 +9,8 @@
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 namespace mojo {
 

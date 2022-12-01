@@ -1727,18 +1727,10 @@ void PaymentRequest::DispatchPaymentRequestUpdateEvent(
   // within 60 seconds, abort payment.
   update_payment_details_timer_.StartOneShot(base::Seconds(60), FROM_HERE);
 
-<<<<<<< HEAD
   event_target->DispatchEvent(*event, "PaymentRequest::DispatchPaymentRequestUpdateEvent");
-  if (!event->is_waiting_for_update()) {
-||||||| 80c960997e61f
-  event_target->DispatchEvent(*event);
-  if (!event->is_waiting_for_update()) {
-=======
-  event_target->DispatchEvent(*event);
   // Check whether the execution context still exists, because DispatchEvent()
   // could have destroyed it.
   if (GetExecutionContext() && !event->is_waiting_for_update()) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     // DispatchEvent runs synchronously. The method is_waiting_for_update()
     // returns false if the merchant did not call event.updateWith() within
     // the event handler, which is optional, so the renderer sends a message

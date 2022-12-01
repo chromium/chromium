@@ -413,18 +413,12 @@ inline LayoutPoint ToLayoutPoint(
 const NGLayoutResult* NGBlockNode::Layout(
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
-<<<<<<< HEAD
-    const NGEarlyBreak* early_break) const {
+    const NGEarlyBreak* early_break,
+    const NGColumnSpannerPath* column_spanner_path) const {
   // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("NGBlockNode::Layout Start %d",
                        GetLayoutBox()->RecordReplayId());
 
-||||||| 80c960997e61f
-    const NGEarlyBreak* early_break) const {
-=======
-    const NGEarlyBreak* early_break,
-    const NGColumnSpannerPath* column_spanner_path) const {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // Use the old layout code and synthesize a fragment.
   if (!CanUseNewLayout())
     return RunLegacyLayout(constraint_space);
@@ -446,30 +440,6 @@ const NGLayoutResult* NGBlockNode::Layout(
   // (calculating that isn't necessarily very cheap). So, start off without it.
   absl::optional<NGFragmentGeometry> fragment_geometry;
 
-<<<<<<< HEAD
-  scoped_refptr<const NGLayoutResult> layout_result =
-      box_->CachedLayoutResult(constraint_space, break_token, early_break,
-                               &fragment_geometry, &cache_status);
-
-  // https://linear.app/replay/issue/RUN-546
-  recordreplay::Assert("NGBlockNode::Layout #2 %d %d",
-                       !!layout_result, (int)cache_status);
-
-  if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
-    DCHECK_EQ(cache_status, NGLayoutCacheStatus::kHit);
-    DCHECK(!box_->NeedsLayoutOverflowRecalc());
-    return layout_result;
-  }
-||||||| 80c960997e61f
-  scoped_refptr<const NGLayoutResult> layout_result =
-      box_->CachedLayoutResult(constraint_space, break_token, early_break,
-                               &fragment_geometry, &cache_status);
-  if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
-    DCHECK_EQ(cache_status, NGLayoutCacheStatus::kHit);
-    DCHECK(!box_->NeedsLayoutOverflowRecalc());
-    return layout_result;
-  }
-=======
   // CachedLayoutResult() might clear flags, so remember the need for layout
   // before attempting to hit the cache.
   bool needed_layout = box_->NeedsLayout();
@@ -477,7 +447,11 @@ const NGLayoutResult* NGBlockNode::Layout(
   const NGLayoutResult* layout_result = box_->CachedLayoutResult(
       constraint_space, break_token, early_break, column_spanner_path,
       &fragment_geometry, &cache_status);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+
+  // https://linear.app/replay/issue/RUN-546
+  recordreplay::Assert("NGBlockNode::Layout #2 %d %d",
+                       !!layout_result, (int)cache_status);
+
   if (cache_status == NGLayoutCacheStatus::kHit) {
     DCHECK(layout_result);
 
@@ -533,23 +507,13 @@ const NGLayoutResult* NGBlockNode::Layout(
       // Try the cache again. Container query matching may have affected
       // elements in the subtree, so that we need full layout instead of
       // simplified layout, for instance.
-<<<<<<< HEAD
-      layout_result =
-          box_->CachedLayoutResult(constraint_space, break_token, early_break,
-                                   &fragment_geometry, &cache_status);
+      layout_result = box_->CachedLayoutResult(
+          constraint_space, break_token, early_break, column_spanner_path,
+          &fragment_geometry, &cache_status);
 
       // https://linear.app/replay/issue/RUN-546
       recordreplay::Assert("NGBlockNode::Layout #8 %d %d",
                            !!layout_result, (int)cache_status);
-||||||| 80c960997e61f
-      layout_result =
-          box_->CachedLayoutResult(constraint_space, break_token, early_break,
-                                   &fragment_geometry, &cache_status);
-=======
-      layout_result = box_->CachedLayoutResult(
-          constraint_space, break_token, early_break, column_spanner_path,
-          &fragment_geometry, &cache_status);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     }
   }
 
@@ -681,25 +645,13 @@ const NGLayoutResult* NGBlockNode::Layout(
       box_->SetNeedsLayout(layout_invalidation_reason::kScrollbarChanged,
                            kMarkOnlyThis);
 
-<<<<<<< HEAD
-    // https://linear.app/replay/issue/RUN-546
-    recordreplay::Assert("NGBlockNode::Layout #20");
+      // https://linear.app/replay/issue/RUN-546
+      recordreplay::Assert("NGBlockNode::Layout #20");
 
-    fragment_geometry =
-        CalculateInitialFragmentGeometry(constraint_space, *this);
-    layout_result = LayoutWithAlgorithm(params);
-    FinishLayout(block_flow, constraint_space, break_token, layout_result);
-||||||| 80c960997e61f
-    fragment_geometry =
-        CalculateInitialFragmentGeometry(constraint_space, *this);
-    layout_result = LayoutWithAlgorithm(params);
-    FinishLayout(block_flow, constraint_space, break_token, layout_result);
-=======
       fragment_geometry = CalculateInitialFragmentGeometry(constraint_space,
                                                            *this, break_token);
       layout_result = LayoutWithAlgorithm(params);
       FinishLayout(block_flow, constraint_space, break_token, layout_result);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 #if DCHECK_IS_ON()
       scrollbar_changed->erase(box_);

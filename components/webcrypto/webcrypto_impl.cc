@@ -14,20 +14,9 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/location.h"
-<<<<<<< HEAD
-#include "base/macros.h"
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
-||||||| 80c960997e61f
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
-=======
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -36,6 +25,8 @@
 #include "components/webcrypto/status.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/blink/public/platform/web_string.h"
+
+#include "base/record_replay.h"
 
 namespace webcrypto {
 
@@ -423,10 +414,8 @@ void DoDecrypt(std::unique_ptr<DecryptState> passed_state) {
   DecryptState* state = passed_state.get();
   if (state->cancelled())
     return;
-<<<<<<< HEAD
-  state->status =
-      webcrypto::Decrypt(state->algorithm, state->key,
-                         webcrypto::CryptoData(state->data), &state->buffer);
+  state->status = webcrypto::Decrypt(state->algorithm, state->key, state->data,
+                                     &state->buffer);
 
   // Decryption might fail when replaying and not while recording.
   // As with other record/replay issues in this file, record/replay the
@@ -438,14 +427,6 @@ void DoDecrypt(std::unique_ptr<DecryptState> passed_state) {
     recordreplay::RecordReplayBytes("DoDecrypt buffer", &state->buffer[0], state->buffer.size());
   }
 
-||||||| 80c960997e61f
-  state->status =
-      webcrypto::Decrypt(state->algorithm, state->key,
-                         webcrypto::CryptoData(state->data), &state->buffer);
-=======
-  state->status = webcrypto::Decrypt(state->algorithm, state->key, state->data,
-                                     &state->buffer);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   state->origin_thread->PostTask(
       FROM_HERE, base::BindOnce(DoDecryptReply, std::move(passed_state)));
 }

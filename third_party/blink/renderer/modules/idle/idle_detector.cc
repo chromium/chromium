@@ -265,11 +265,6 @@ void IdleDetector::Update(mojom::blink::IdleStatePtr state,
     fire_event = true;
   }
 
-<<<<<<< HEAD
-  DispatchEvent(*Event::Create(event_type_names::kChange), "IdleDetector::Update");
-||||||| 80c960997e61f
-  DispatchEvent(*Event::Create(event_type_names::kChange));
-=======
   if (state->idle_time.has_value()) {
     DCHECK_GE(threshold_, kUserInputThreshold);
     if (!is_overridden_by_devtools &&
@@ -301,14 +296,13 @@ void IdleDetector::Update(mojom::blink::IdleStatePtr state,
   }
 
   if (fire_event) {
-    DispatchEvent(*Event::Create(event_type_names::kChange));
+    DispatchEvent(*Event::Create(event_type_names::kChange), "IdleDetector::Update");
   }
 }
 
 void IdleDetector::DispatchUserIdleEvent(TimerBase*) {
   user_idle_ = true;
-  DispatchEvent(*Event::Create(event_type_names::kChange));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  DispatchEvent(*Event::Create(event_type_names::kChange), "IdleDetector::DispatchUserIdleEvent");
 }
 
 void IdleDetector::Trace(Visitor* visitor) const {

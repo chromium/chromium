@@ -31,13 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 
-<<<<<<< HEAD
-#include "base/macros.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/macros.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -46,6 +39,8 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "v8/include/v8.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -61,11 +56,6 @@ class PLATFORM_EXPORT ScriptWrappable
     : public GarbageCollected<ScriptWrappable>,
       public NameClient {
  public:
-<<<<<<< HEAD
-  virtual ~ScriptWrappable() {}
-||||||| 80c960997e61f
-  virtual ~ScriptWrappable() = default;
-=======
   // This is a type dispatcher from ScriptWrappable* to a subtype, optimized for
   // use cases that perform downcasts multiple times. If you perform a downcast
   // only once, ScriptWrappable::DowncastTo or ScriptWrappable::ToMostDerived
@@ -115,7 +105,6 @@ class PLATFORM_EXPORT ScriptWrappable
   ScriptWrappable(const ScriptWrappable&) = delete;
   ScriptWrappable& operator=(const ScriptWrappable&) = delete;
   ~ScriptWrappable() override = default;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   // The following methods may override lifetime of ScriptWrappable objects when
   // needed. In particular if `HasPendingActivity()` returns true *and* the

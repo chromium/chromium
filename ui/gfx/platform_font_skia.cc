@@ -171,14 +171,6 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
   if (g_default_font.Get())
     return;
 
-<<<<<<< HEAD
-  FontDiagnostic("PlatformFontSkia::InitDefaultFont Start");
-
-  bool success = false;
-||||||| 80c960997e61f
-  bool success = false;
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   std::string family = kFallbackFontFamilyName;
   int size_pixels = PlatformFont::kDefaultBaseFontSize;
   int style = Font::NORMAL;
@@ -197,26 +189,6 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
   weight = system_font.GetWeight();
 #endif  // BUILDFLAG(IS_WIN)
 
-<<<<<<< HEAD
-  // On Linux, SkiaFontDelegate is used to query the native toolkit (e.g.
-  // GTK+) for the default UI font.
-  const SkiaFontDelegate* delegate = SkiaFontDelegate::instance();
-  FontDiagnostic("PlatformFontSkia::InitDefaultFont HasDelegate %p", delegate);
-  if (delegate) {
-    delegate->GetDefaultFontDescription(&family, &size_pixels, &style, &weight,
-                                        &params);
-  } else if (default_font_description_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-||||||| 80c960997e61f
-  // On Linux, SkiaFontDelegate is used to query the native toolkit (e.g.
-  // GTK+) for the default UI font.
-  const SkiaFontDelegate* delegate = SkiaFontDelegate::instance();
-  if (delegate) {
-    delegate->GetDefaultFontDescription(&family, &size_pixels, &style, &weight,
-                                        &params);
-  } else if (default_font_description_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-=======
 #if BUILDFLAG(IS_LINUX)
   // On Linux, LinuxUi is used to query the native toolkit (e.g.
   // GTK) for the default UI font.
@@ -229,7 +201,6 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
 #endif
       if (default_font_description_) {
 #if BUILDFLAG(IS_CHROMEOS)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     // On ChromeOS, a FontList font description string is stored as a
     // translatable resource and passed in via SetDefaultFontDescription().
     FontRenderParamsQuery query;
@@ -251,16 +222,6 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
   bool success = false;
   sk_sp<SkTypeface> typeface =
       CreateSkTypeface(style & Font::ITALIC, weight, &family, &success);
-<<<<<<< HEAD
-  if (!success) {
-    FontDiagnostic("PlatformFontSkia::InitDefaultFont CreateSkTypeface failed");
-    return false;
-  }
-  FontDiagnostic("PlatformFontSkia::InitDefaultFont CreateSkTypeface succeeded");
-||||||| 80c960997e61f
-  if (!success)
-    return false;
-=======
 
   // It's possible that the Skia interface is not longer able to proxy queries
   // to the browser process which make all requests to fail. Calling
@@ -275,7 +236,6 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
   // nothing we can do about it and Chrome won't be able to work.
   CHECK(typeface.get()) << "No typeface available";
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   g_default_font.Get() = new PlatformFontSkia(
       std::move(typeface), family, size_pixels, style, weight, params);
 }

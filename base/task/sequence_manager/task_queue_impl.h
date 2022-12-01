@@ -320,16 +320,12 @@ class BASE_EXPORT TaskQueueImpl {
 
     void ShutdownAndWaitForZeroOperations() {
       operations_controller_.ShutdownAndWaitForZeroOperations();
-<<<<<<< HEAD
       if (record_replay_unordered_operations_controller_.has_value())
         record_replay_unordered_operations_controller_.value().ShutdownAndWaitForZeroOperations();
-||||||| 80c960997e61f
-=======
       // `operations_controller_` won't let any more operations here, and
       // `outer_` might get destroyed before `this` does, so clearing `outer_`
       // avoids a potential dangling pointer.
       outer_ = nullptr;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     }
 
    private:

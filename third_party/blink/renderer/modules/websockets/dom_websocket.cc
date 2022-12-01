@@ -81,18 +81,8 @@ DOMWebSocket::EventQueue::~EventQueue() = default;
 void DOMWebSocket::EventQueue::Dispatch(Event* event) {
   switch (state_) {
     case kActive:
-<<<<<<< HEAD
-      DCHECK(events_.IsEmpty());
-      DCHECK(target_->GetExecutionContext());
-      target_->DispatchEvent(*event, "DOMWebSocket::EventQueue::Dispatch");
-||||||| 80c960997e61f
-      DCHECK(events_.IsEmpty());
-      DCHECK(target_->GetExecutionContext());
-      target_->DispatchEvent(*event);
-=======
       DCHECK(events_.empty());
-      target_->DispatchEvent(*event);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+      target_->DispatchEvent(*event, "DOMWebSocket::EventQueue::Dispatch");
       break;
     case kPaused:
     case kUnpausePosted:
@@ -149,15 +139,7 @@ void DOMWebSocket::EventQueue::DispatchQueuedEvents() {
     if (state_ == kStopped || state_ == kPaused || state_ == kUnpausePosted)
       break;
     DCHECK_EQ(state_, kActive);
-<<<<<<< HEAD
-    DCHECK(target_->GetExecutionContext());
     target_->DispatchEvent(*events.TakeFirst(), "DOMWebSocket::EventQueue::DispatchQueuedEvents");
-||||||| 80c960997e61f
-    DCHECK(target_->GetExecutionContext());
-    target_->DispatchEvent(*events.TakeFirst());
-=======
-    target_->DispatchEvent(*events.TakeFirst());
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     // |this| can be stopped here.
   }
   if (state_ == kPaused || state_ == kUnpausePosted) {

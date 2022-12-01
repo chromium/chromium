@@ -10,12 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/strings/stringprintf.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/layers/content_layer_client.h"
@@ -27,6 +22,8 @@
 #include "cc/trees/transform_node.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 

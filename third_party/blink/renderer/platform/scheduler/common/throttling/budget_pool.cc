@@ -6,17 +6,10 @@
 
 #include <cstdint>
 
-<<<<<<< HEAD
-#include "base/optional.h"
-#include "base/record_replay.h"
-#include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool_controller.h"
-||||||| 80c960997e61f
-#include "base/optional.h"
-#include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool_controller.h"
-=======
 #include "third_party/abseil-cpp/absl/types/optional.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace scheduler {
@@ -92,23 +85,13 @@ void BudgetPool::Close() {
   DCHECK_EQ(0u, associated_throttlers_.size());
 }
 
-<<<<<<< HEAD
-void BudgetPool::UpdateThrottlingStateForAllQueues(base::TimeTicks now) {
-  std::vector<TaskQueue*> queues;
-  for (TaskQueue* queue : associated_task_queues_)
-    queues.push_back(queue);
-  std::sort(queues.begin(), queues.end(), recordreplay::CompareByPointerId());
-  for (TaskQueue* queue : queues)
-    budget_pool_controller_->UpdateQueueSchedulingLifecycleState(now, queue);
-||||||| 80c960997e61f
-void BudgetPool::UpdateThrottlingStateForAllQueues(base::TimeTicks now) {
-  for (TaskQueue* queue : associated_task_queues_)
-    budget_pool_controller_->UpdateQueueSchedulingLifecycleState(now, queue);
-=======
 void BudgetPool::UpdateStateForAllThrottlers(base::TimeTicks now) {
+  std::vector<TaskQueueThrottler*> throttlers;
   for (TaskQueueThrottler* throttler : associated_throttlers_)
+    throttlers.push_back(throttler);
+  std::sort(throttlers.begin(), throttlers.end(), recordreplay::CompareByPointerId());
+  for (TaskQueueThrottler* throttler : throttlers)
     throttler->UpdateQueueState(now);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 }  // namespace scheduler

@@ -14,18 +14,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-<<<<<<< HEAD
-#include "base/no_destructor.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/no_destructor.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 

@@ -15,13 +15,8 @@
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/numerics/ostream_operators.h"
 #include "base/ranges/algorithm.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -31,6 +26,8 @@
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+
+#include "base/record_replay.h"
 
 using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpLevelOfDetail;
@@ -159,19 +156,9 @@ PaintFlags::FilterQuality GetDecodedFilterQuality(
 
 SoftwareImageDecodeCache::SoftwareImageDecodeCache(
     SkColorType color_type,
-<<<<<<< HEAD
-    size_t locked_memory_limit_bytes,
-    PaintImage::GeneratorClientId generator_client_id)
-    : lock_("SoftwareImageDecodeCache.lock_"),
-      decoded_images_(ImageMRUCache::NO_AUTO_EVICT),
-||||||| 80c960997e61f
-    size_t locked_memory_limit_bytes,
-    PaintImage::GeneratorClientId generator_client_id)
-    : decoded_images_(ImageMRUCache::NO_AUTO_EVICT),
-=======
     size_t locked_memory_limit_bytes)
-    : decoded_images_(ImageLRUCache::NO_AUTO_EVICT),
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+    : lock_("SoftwareImageDecodeCache.lock_"),
+      decoded_images_(ImageLRUCache::NO_AUTO_EVICT),
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
       generator_client_id_(PaintImage::GetNextGeneratorClientId()),

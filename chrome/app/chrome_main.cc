@@ -74,7 +74,6 @@ ChromeMain(int argc, const char** argv);
 #error Unknown platform.
 #endif
 
-<<<<<<< HEAD
 // On linux ChromeMain is the process entry point, whereas on macOS the main
 // function is in a different binary in chrome_exe_main_mac.cc. When we get to
 // ChromeMain we've already started recording/replaying, but still need to
@@ -262,43 +261,20 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
   MaybeStartProfiling();
 }
 
-#if defined(OS_WIN)
-DLLEXPORT int __cdecl ChromeMain(
-    HINSTANCE instance,
-    sandbox::SandboxInterfaceInfo* sandbox_info,
-    int64_t exe_entry_point_ticks,
-    base::PrefetchResultCode prefetch_result_code) {
-#elif defined(OS_POSIX)
-||||||| 80c960997e61f
-#if defined(OS_WIN)
-DLLEXPORT int __cdecl ChromeMain(
-    HINSTANCE instance,
-    sandbox::SandboxInterfaceInfo* sandbox_info,
-    int64_t exe_entry_point_ticks,
-    base::PrefetchResultCode prefetch_result_code) {
-#elif defined(OS_POSIX)
-=======
 #if BUILDFLAG(IS_WIN)
 DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
                                  sandbox::SandboxInterfaceInfo* sandbox_info,
                                  int64_t exe_entry_point_ticks) {
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 int ChromeMain(int argc, const char** argv) {
   int64_t exe_entry_point_ticks = 0;
 #else
 #error Unknown platform.
 #endif
 
-<<<<<<< HEAD
   RecordReplayAttach(&argc, &argv);
 
-#if defined(OS_WIN)
-||||||| 80c960997e61f
-#if defined(OS_WIN)
-=======
 #if BUILDFLAG(IS_WIN)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #if BUILDFLAG(USE_ALLOCATOR_SHIM) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // Call this early on in order to configure heap workarounds. This must be
   // called from chrome.dll. This may be a NOP on some platforms.

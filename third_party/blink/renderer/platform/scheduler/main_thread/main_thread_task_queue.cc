@@ -143,17 +143,11 @@ MainThreadTaskQueue::MainThreadTaskQueue(
   }
 }
 
-<<<<<<< HEAD
 MainThreadTaskQueue::~MainThreadTaskQueue() {
   recordreplay::UnregisterPointer(this);
-}
-||||||| 80c960997e61f
-MainThreadTaskQueue::~MainThreadTaskQueue() = default;
-=======
-MainThreadTaskQueue::~MainThreadTaskQueue() {
+
   DCHECK(!wake_up_budget_pool_);
 }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 void MainThreadTaskQueue::OnTaskStarted(
     const base::sequence_manager::Task& task,

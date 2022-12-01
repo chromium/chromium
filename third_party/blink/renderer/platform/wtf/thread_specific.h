@@ -31,13 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREAD_SPECIFIC_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREAD_SPECIFIC_H_
 
-<<<<<<< HEAD
-#include "base/macros.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/macros.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/threading/thread_local_storage.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -46,6 +39,8 @@
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
+
+#include "base/record_replay.h"
 
 namespace WTF {
 

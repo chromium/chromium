@@ -258,17 +258,9 @@ class BASE_EXPORT WaitableEvent {
   // Whether a thread invoking Wait() on this WaitableEvent should be considered
   // blocked as opposed to idle (and potentially replaced if part of a pool).
   bool waiting_is_blocking_ = true;
-<<<<<<< HEAD
 
   // When recording/replaying, this is used to order wait/signal calls.
   int record_replay_ordered_lock_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableEvent);
-||||||| 80c960997e61f
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableEvent);
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 };
 
 }  // namespace base

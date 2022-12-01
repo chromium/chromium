@@ -752,17 +752,9 @@ void ServiceWorkerGlobalScope::DispatchExtendableEventWithRespondWith(
     RespondWithObserver* respond_with_observer) {
   wait_until_observer->WillDispatchEvent();
   respond_with_observer->WillDispatchEvent();
-<<<<<<< HEAD
   DispatchEventResult dispatch_result = DispatchEvent(*event, "ServiceWorkerGlobalScope::DispatchExtendableEventWithRespondWith");
-  respond_with_observer->DidDispatchEvent(dispatch_result);
-||||||| 80c960997e61f
-  DispatchEventResult dispatch_result = DispatchEvent(*event);
-  respond_with_observer->DidDispatchEvent(dispatch_result);
-=======
-  DispatchEventResult dispatch_result = DispatchEvent(*event);
   respond_with_observer->DidDispatchEvent(ScriptController()->GetScriptState(),
                                           dispatch_result);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // false is okay because waitUntil() for events with respondWith() doesn't
   // care about the promise rejection or an uncaught runtime script error.
   wait_until_observer->DidDispatchEvent(false /* event_dispatch_failed */);

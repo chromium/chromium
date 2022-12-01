@@ -9,13 +9,10 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/containers/contains.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "components/variations/variations_crash_keys.h"
+
+#include "base/record_replay.h"
 
 namespace variations {
 
@@ -70,17 +67,8 @@ void ChildProcessFieldTrialSyncer::Init() {
   base::FieldTrial::ActiveGroups current_active_trials;
   base::FieldTrialList::GetActiveFieldTrialGroups(&current_active_trials);
   for (const auto& trial : current_active_trials) {
-<<<<<<< HEAD
-    if (!base::Contains(initially_active_trials_set, trial.trial_name)) {
-      observer_->OnFieldTrialGroupFinalized(trial.trial_name, trial.group_name);
-    }
-||||||| 80c960997e61f
-    if (!base::Contains(initially_active_trials_set, trial.trial_name))
-      observer_->OnFieldTrialGroupFinalized(trial.trial_name, trial.group_name);
-=======
     if (!base::Contains(initially_active_trials_set, trial.trial_name))
       activated_callback_.Run(trial.trial_name);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 }
 

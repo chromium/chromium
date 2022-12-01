@@ -149,29 +149,11 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   std::unique_ptr<ThreadGroup> foreground_thread_group_;
   std::unique_ptr<ThreadGroup> background_thread_group_;
 
-<<<<<<< HEAD
   // Group used for tasks posted non-deterministically when recording/replaying.
   std::unique_ptr<ThreadGroup> record_replay_unordered_thread_group_;
 
-  bool disable_job_yield_ = false;
-  bool disable_fair_scheduling_ = false;
-  std::atomic<bool> disable_job_update_priority_{false};
-
-  // Whether this TaskScheduler was started. Access controlled by
-  // |sequence_checker_|.
-  bool started_ = false;
-||||||| 80c960997e61f
-  bool disable_job_yield_ = false;
-  bool disable_fair_scheduling_ = false;
-  std::atomic<bool> disable_job_update_priority_{false};
-
-  // Whether this TaskScheduler was started. Access controlled by
-  // |sequence_checker_|.
-  bool started_ = false;
-=======
   // Whether this TaskScheduler was started.
   bool started_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   // Whether the --disable-best-effort-tasks switch is preventing execution of
   // BEST_EFFORT tasks until shutdown.

@@ -1782,13 +1782,7 @@ void XMLHttpRequest::EndLoading() {
 
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     LocalFrame* frame = window->GetFrame();
-<<<<<<< HEAD
-    if (frame && cors::IsOkStatus(status())) {
-||||||| 80c960997e61f
-    if (frame && cors::IsOkStatus(status()))
-=======
     if (frame && network::IsSuccessfulStatus(status()))
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       frame->GetPage()->GetChromeClient().AjaxSucceeded(frame);
     }
   }

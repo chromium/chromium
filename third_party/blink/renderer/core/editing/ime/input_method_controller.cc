@@ -408,16 +408,8 @@ void InputMethodController::DispatchBeforeInputFromComposition(
     ranges = TargetRangesForInputEvent(*node);
   InputEvent* before_input_event = InputEvent::CreateBeforeInput(
       input_type, data, InputTypeIsCancelable(input_type),
-<<<<<<< HEAD
-      InputEvent::EventIsComposing::kIsComposing, nullptr);
-  target->DispatchEvent(*before_input_event, "InputMethodController::DispatchBeforeInputFromComposition");
-||||||| 80c960997e61f
-      InputEvent::EventIsComposing::kIsComposing, nullptr);
-  target->DispatchEvent(*before_input_event);
-=======
       InputEvent::EventIsComposing::kIsComposing, ranges);
-  target->DispatchEvent(*before_input_event);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  target->DispatchEvent(*before_input_event, "InputMethodController::DispatchBeforeInputFromComposition");
 }
 
 // Used to insert/replace text during composition update and confirm

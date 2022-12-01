@@ -179,17 +179,8 @@ Performance::Performance(
           task_runner_,
           this,
           &Performance::FireResourceTimingBufferFull) {
-<<<<<<< HEAD
   recordreplay::RegisterPointer("Performance", this);
-  unix_at_zero_monotonic_ = ConvertSecondsToDOMHighResTimeStamp(
-      base::DefaultClock::GetInstance()->Now().ToDoubleT() -
-      tick_clock_->NowTicks().since_origin().InSecondsF());
-||||||| 80c960997e61f
-  unix_at_zero_monotonic_ = ConvertSecondsToDOMHighResTimeStamp(
-      base::DefaultClock::GetInstance()->Now().ToDoubleT() -
-      tick_clock_->NowTicks().since_origin().InSecondsF());
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+
   // |context| may be null in tests.
   if (context) {
     background_tracing_helper_ =

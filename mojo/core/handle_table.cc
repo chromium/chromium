@@ -8,13 +8,10 @@
 
 #include <limits>
 
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/cpu_reduction_experiment.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/memory_dump_manager.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -46,11 +43,6 @@ const char* GetNameForDispatcherType(Dispatcher::Type type) {
 
 }  // namespace
 
-<<<<<<< HEAD
-HandleTable::HandleTable() : lock_("HandleTable.lock_") {}
-||||||| 80c960997e61f
-HandleTable::HandleTable() = default;
-=======
 HandleTable::EntriesAccessor::EntriesAccessor() = default;
 
 HandleTable::EntriesAccessor::~EntriesAccessor() = default;
@@ -115,8 +107,7 @@ HandleTable::EntriesAccessor::GetUnderlyingMap() const {
   return handles_;
 }
 
-HandleTable::HandleTable() = default;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+HandleTable::HandleTable() : lock_("HandleTable.lock_") {}
 
 HandleTable::~HandleTable() = default;
 
@@ -168,24 +159,9 @@ bool HandleTable::AddDispatchersFromTransit(
   return true;
 }
 
-<<<<<<< HEAD
-scoped_refptr<Dispatcher> HandleTable::GetDispatcher(MojoHandle handle) const {
-  auto it = handles_.find(handle);
-  if (it == handles_.end()) {
-    return nullptr;
-  }
-  return it->second.dispatcher;
-||||||| 80c960997e61f
-scoped_refptr<Dispatcher> HandleTable::GetDispatcher(MojoHandle handle) const {
-  auto it = handles_.find(handle);
-  if (it == handles_.end())
-    return nullptr;
-  return it->second.dispatcher;
-=======
 scoped_refptr<Dispatcher> HandleTable::GetDispatcher(MojoHandle handle) {
   const scoped_refptr<Dispatcher>* dispatcher = entries_.GetDispatcher(handle);
   return dispatcher == nullptr ? nullptr : *dispatcher;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 MojoResult HandleTable::GetAndRemoveDispatcher(

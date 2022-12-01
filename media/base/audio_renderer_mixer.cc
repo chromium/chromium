@@ -21,14 +21,8 @@ AudioRendererMixer::AudioRendererMixer(const AudioParameters& output_params,
                                        scoped_refptr<AudioRendererSink> sink)
     : output_params_(output_params),
       audio_sink_(std::move(sink)),
-<<<<<<< HEAD
       lock_("AudioRendererMixer.lock_"),
-      master_converter_(output_params, output_params, true),
-||||||| 80c960997e61f
-      master_converter_(output_params, output_params, true),
-=======
       aggregate_converter_(output_params, output_params, true),
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       pause_delay_(kPauseDelay),
       last_play_time_(base::TimeTicks::Now()),
       // Initialize |playing_| to true since Start() results in an auto-play.

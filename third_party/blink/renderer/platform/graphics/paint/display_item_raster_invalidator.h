@@ -62,16 +62,8 @@ class DisplayItemRasterInvalidator {
   const DisplayItemRange& old_display_items_;
   const DisplayItemRange& new_display_items_;
   const ChunkToLayerMapper& mapper_;
-<<<<<<< HEAD
-  // Maps clients keys to indices of display items in old_display_items_.
-  HashMap<uintptr_t, Vector<DisplayItemIterator>>
-||||||| 80c960997e61f
-  // Maps clients to indices of display items in old_display_items_.
-  HashMap<const DisplayItemClient*, Vector<DisplayItemIterator>>
-=======
   // Maps clients to indices of display items in old_display_items_.
   HashMap<DisplayItemClientId, Vector<DisplayItemIterator>>
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       old_display_items_index_;
 };
 

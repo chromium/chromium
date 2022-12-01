@@ -18,10 +18,6 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/v8_helpers.h"
-<<<<<<< HEAD
-#include "v8/include/v8-inspector.h"
-||||||| 80c960997e61f
-=======
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function-callback.h"
@@ -29,7 +25,6 @@
 #include "v8/include/v8-json.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-value.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 using content::V8ValueConverter;
 

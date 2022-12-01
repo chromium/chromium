@@ -1811,27 +1811,10 @@ void PaintLayerScrollableArea::SetNeedsResnap(bool needs_resnap) {
 absl::optional<gfx::PointF>
 PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
-<<<<<<< HEAD
-  if (!RareData() || !RareData()->snap_container_data_) {
-    return base::nullopt;
-  }
-||||||| 80c960997e61f
-  if (!RareData() || !RareData()->snap_container_data_)
-    return base::nullopt;
-=======
   if (!RareData() || !RareData()->snap_container_data_)
     return absl::nullopt;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   cc::SnapContainerData& data = RareData()->snap_container_data_.value();
-<<<<<<< HEAD
-  if (!data.size()) {
-    return base::nullopt;
-  }
-||||||| 80c960997e61f
-  if (!data.size())
-    return base::nullopt;
-=======
   if (!data.size())
     return absl::nullopt;
 
@@ -1846,21 +1829,8 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     active_element_id =
         CompositorElementIdFromDOMNodeId(DOMNodeIds::IdForNode(active_element));
   }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   cc::TargetSnapAreaElementIds snap_targets;
-<<<<<<< HEAD
-  gfx::ScrollOffset snap_position;
-  base::Optional<FloatPoint> snap_point;
-  if (data.FindSnapPosition(strategy, &snap_position, &snap_targets)) {
-    snap_point = FloatPoint(snap_position.x(), snap_position.y());
-  }
-||||||| 80c960997e61f
-  gfx::ScrollOffset snap_position;
-  base::Optional<FloatPoint> snap_point;
-  if (data.FindSnapPosition(strategy, &snap_position, &snap_targets))
-    snap_point = FloatPoint(snap_position.x(), snap_position.y());
-=======
   gfx::PointF snap_position;
   absl::optional<gfx::PointF> snap_point;
   if (data.FindSnapPosition(strategy, &snap_position, &snap_targets,
@@ -1868,7 +1838,6 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     snap_point = gfx::PointF(snap_position.x(), snap_position.y());
   }
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   if (data.SetTargetSnapAreaElementIds(snap_targets))
     GetLayoutBox()->SetNeedsPaintPropertyUpdate();
   return snap_point;

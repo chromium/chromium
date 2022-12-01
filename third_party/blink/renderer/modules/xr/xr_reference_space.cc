@@ -218,18 +218,10 @@ void XRReferenceSpace::Trace(Visitor* visitor) const {
 
 void XRReferenceSpace::OnReset() {
   if (type_ != ReferenceSpaceType::kViewer) {
-<<<<<<< HEAD
-    DispatchEvent(
-        *XRReferenceSpaceEvent::Create(event_type_names::kReset, this), "XRReferenceSpace::OnReset");
-||||||| 80c960997e61f
-    DispatchEvent(
-        *XRReferenceSpaceEvent::Create(event_type_names::kReset, this));
-=======
     // DispatchEvent inherited from core/dom/events/event_target.h isn't const.
     XRReferenceSpace* mutable_this = const_cast<XRReferenceSpace*>(this);
     mutable_this->DispatchEvent(
-        *XRReferenceSpaceEvent::Create(event_type_names::kReset, mutable_this));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+        *XRReferenceSpaceEvent::Create(event_type_names::kReset, mutable_this), "XRReferenceSpace::OnReset");
   }
 }
 

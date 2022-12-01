@@ -19,20 +19,16 @@
 
 #include <memory>
 
-<<<<<<< HEAD
-#include "base/optional.h"
-#include "base/check.h"
-||||||| 80c960997e61f
-=======
 #include "base/allocator/early_zone_registration_mac.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "chrome/common/chrome_version.h"
 
 #if defined(HELPER_EXECUTABLE)
 #include "sandbox/mac/seatbelt_exec.h"  // nogncheck
 #endif
+
+#include "base/optional.h"
 
 extern "C" {
 // abort_report_np() records the message in a special section that both the
@@ -251,14 +247,10 @@ static void RecordReplayAttach(int* pargc, char*** pargv) {
 }
 
 __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
-<<<<<<< HEAD
   RecordReplayAttach(&argc, &argv);
 
-||||||| 80c960997e61f
-=======
   partition_alloc::EarlyMallocZoneRegistration();
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   uint32_t exec_path_size = 0;
   int rv = _NSGetExecutablePath(NULL, &exec_path_size);
   if (rv != -1) {

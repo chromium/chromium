@@ -2013,48 +2013,11 @@ String Node::textContent(bool convert_brs_to_newlines) const {
   return content.ReleaseString();
 }
 
-<<<<<<< HEAD
-void Node::setTextContent(const StringOrTrustedScript& string_or_trusted_script,
-                          ExceptionState& exception_state) {
-  String value =
-      string_or_trusted_script.IsString()
-          ? string_or_trusted_script.GetAsString()
-          : string_or_trusted_script.IsTrustedScript()
-                ? string_or_trusted_script.GetAsTrustedScript()->toString()
-                : g_empty_string;
-
-  // Force the text length to match when replaying, as a workaround for
-  // differences in the assigned text which cause the replay to fail as
-  // layout behavior diverges afterwards.
-  if (recordreplay::IsRecordingOrReplaying("values")) {
-    std::string contents = value.Utf8();
-    size_t recordedLength = recordreplay::RecordReplayValue("Node::setTextContent length", contents.length());
-    contents.resize(recordedLength, ' ');
-    recordreplay::RecordReplayBytes("Node::setTextContent string", &contents[0], recordedLength);
-    value = String::FromUTF8(&contents[0], recordedLength);
-
-    // https://linear.app/replay/issue/RUN-809
-    recordreplay::Assert("Node::setTextContent %zu", value.length());
-  }
-
-  setTextContent(value);
-||||||| 80c960997e61f
-void Node::setTextContent(const StringOrTrustedScript& string_or_trusted_script,
-                          ExceptionState& exception_state) {
-  String value =
-      string_or_trusted_script.IsString()
-          ? string_or_trusted_script.GetAsString()
-          : string_or_trusted_script.IsTrustedScript()
-                ? string_or_trusted_script.GetAsTrustedScript()->toString()
-                : g_empty_string;
-  setTextContent(value);
-=======
 V8UnionStringOrTrustedScript* Node::textContentForBinding() const {
   const String& value = textContent();
   if (value.IsNull())
     return nullptr;
   return MakeGarbageCollected<V8UnionStringOrTrustedScript>(value);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void Node::setTextContentForBinding(const V8UnionStringOrTrustedScript* value,
@@ -2072,7 +2035,23 @@ void Node::setTextContentForBinding(const V8UnionStringOrTrustedScript* value,
   NOTREACHED();
 }
 
-void Node::setTextContent(const String& text) {
+void Node::setTextContent(const String& text_arg) {
+  String text = text_arg;
+
+  // Force the text length to match when replaying, as a workaround for
+  // differences in the assigned text which cause the replay to fail as
+  // layout behavior diverges afterwards.
+  if (recordreplay::IsRecordingOrReplaying("values")) {
+    std::string contents = text.Utf8();
+    size_t recordedLength = recordreplay::RecordReplayValue("Node::setTextContent length", contents.length());
+    contents.resize(recordedLength, ' ');
+    recordreplay::RecordReplayBytes("Node::setTextContent string", &contents[0], recordedLength);
+    text = String::FromUTF8(&contents[0], recordedLength);
+
+    // https://linear.app/replay/issue/RUN-809
+    recordreplay::Assert("Node::setTextContent %zu", text.length());
+  }
+
   switch (getNodeType()) {
     case kAttributeNode:
     case kTextNode:

@@ -318,16 +318,9 @@ ScriptController::CreateNewInspectorIsolatedWorld(const String& world_name) {
   scoped_refptr<DOMWrapperWorld> world = DOMWrapperWorld::Create(
       GetIsolate(), DOMWrapperWorld::WorldType::kInspectorIsolated);
   // Bail out if we could not create an isolated world.
-  if (!world) {
+  if (!world)
     return nullptr;
-<<<<<<< HEAD
-  }
-  if (!world_name.IsEmpty()) {
-||||||| 80c960997e61f
-  if (!world_name.IsEmpty()) {
-=======
   if (!world_name.empty()) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     DOMWrapperWorld::SetNonMainWorldHumanReadableName(world->GetWorldId(),
                                                       world_name);
   }

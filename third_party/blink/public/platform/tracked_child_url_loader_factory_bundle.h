@@ -9,17 +9,12 @@
 #include <unordered_map>
 #include <utility>
 
-<<<<<<< HEAD
-#include "base/deterministic_containers.h"
-#include "base/sequenced_task_runner.h"
-||||||| 80c960997e61f
-#include "base/sequenced_task_runner.h"
-=======
 #include "base/task/sequenced_task_runner.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/web_common.h"
+
+#include "base/deterministic_containers.h"
 
 namespace blink {
 

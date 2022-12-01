@@ -128,18 +128,12 @@ TaskQueue::TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
                              : MakeRefCounted<internal::AssociatedThreadId>()),
       default_task_runner_(impl_ ? impl_->CreateTaskRunner(kTaskTypeNone)
                                  : CreateNullTaskRunner()),
-<<<<<<< HEAD
-      name_(impl_ ? impl_->GetName() : "") {
+      name_(impl_ ? impl_->GetProtoName() : QueueName::UNKNOWN_TQ) {
   // Pointer registration is needed for sorting in the following places:
   // TaskQueueThrottler::PumpThrottledTasks
   // BudgetPool::UpdateThrottlingStateForAllQueues
   recordreplay::RegisterPointer("TaskQueue", this);
 }
-||||||| 80c960997e61f
-      name_(impl_ ? impl_->GetName() : "") {}
-=======
-      name_(impl_ ? impl_->GetProtoName() : QueueName::UNKNOWN_TQ) {}
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 TaskQueue::~TaskQueue() {
   recordreplay::UnregisterPointer(this);

@@ -170,36 +170,17 @@ PageSchedulerImpl::PageSchedulerImpl(
       had_recent_title_or_favicon_update_(false),
       delegate_(delegate),
       delay_for_background_tab_freezing_(GetDelayForBackgroundTabFreezing()),
-<<<<<<< HEAD
-      freeze_on_network_idle_enabled_(base::FeatureList::IsEnabled(
-          blink::features::kFreezeBackgroundTabOnNetworkIdle)),
-      delay_for_background_and_network_idle_tab_freezing_(
-          GetDelayForBackgroundAndNetworkIdleTabFreezing()) {
-  // Pointer registration is needed for sorting in MainThreadSchedulerImpl.
-  recordreplay::RegisterPointer("PageSchedulerImpl", this);
-  page_lifecycle_state_tracker_.reset(new PageLifecycleStateTracker(
-      this, kDefaultPageVisibility == PageVisibilityState::kVisible
-                ? PageLifecycleState::kActive
-                : PageLifecycleState::kHiddenBackgrounded));
-||||||| 80c960997e61f
-      freeze_on_network_idle_enabled_(base::FeatureList::IsEnabled(
-          blink::features::kFreezeBackgroundTabOnNetworkIdle)),
-      delay_for_background_and_network_idle_tab_freezing_(
-          GetDelayForBackgroundAndNetworkIdleTabFreezing()) {
-  page_lifecycle_state_tracker_.reset(new PageLifecycleStateTracker(
-      this, kDefaultPageVisibility == PageVisibilityState::kVisible
-                ? PageLifecycleState::kActive
-                : PageLifecycleState::kHiddenBackgrounded));
-=======
       throttle_foreground_timers_(
           base::FeatureList::IsEnabled(features::kThrottleForegroundTimers)),
       foreground_timers_throttled_wake_up_interval_(
           GetForegroundTimersThrottledWakeUpInterval()) {
+  // Pointer registration is needed for sorting in MainThreadSchedulerImpl.
+  recordreplay::RegisterPointer("PageSchedulerImpl", this);
+
   current_lifecycle_state_ =
       (kDefaultPageVisibility == PageVisibilityState::kVisible
            ? PageLifecycleState::kActive
            : PageLifecycleState::kHiddenBackgrounded);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   do_throttle_cpu_time_callback_.Reset(base::BindRepeating(
       &PageSchedulerImpl::DoThrottleCPUTime, base::Unretained(this)));
   do_intensively_throttle_wake_ups_callback_.Reset(

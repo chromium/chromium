@@ -4,16 +4,9 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 
-<<<<<<< HEAD
-#include "base/no_destructor.h"
 #include "base/record_replay.h"
-#include "base/synchronization/lock.h"
-||||||| 80c960997e61f
-#include "base/no_destructor.h"
-#include "base/synchronization/lock.h"
-=======
+
 #include <ostream>
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
@@ -61,18 +54,12 @@ void PartitionAllocHooks::SetObserverHooks(AllocationObserverHook* alloc_hook,
 void PartitionAllocHooks::SetOverrideHooks(AllocationOverrideHook* alloc_hook,
                                            FreeOverrideHook* free_hook,
                                            ReallocOverrideHook realloc_hook) {
-<<<<<<< HEAD
   if (recordreplay::IsRecordingOrReplaying()) {
     // Always use the default allocators when recording/replaying.
     return;
   }
 
-  AutoLock guard(GetHooksLock());
-||||||| 80c960997e61f
-  AutoLock guard(GetHooksLock());
-=======
   internal::ScopedGuard guard(GetHooksLock());
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   PA_CHECK((!allocation_override_hook_ && !free_override_hook_ &&
             !realloc_override_hook_) ||

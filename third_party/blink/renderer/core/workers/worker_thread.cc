@@ -455,18 +455,11 @@ void WorkerThread::ChildThreadTerminatedOnWorkerThread(WorkerThread* child) {
 }
 
 WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy)
-<<<<<<< HEAD
-    : WorkerThread(worker_reporting_proxy, Thread::Current()->GetTaskRunner()) {
+    : WorkerThread(worker_reporting_proxy,
+                   Thread::Current()->GetDeprecatedTaskRunner()) {
   // Pointer registration is needed for sorting in CallOnAllWorkerThreads.
   recordreplay::RegisterPointer("WorkerThread", this);
 }
-||||||| 80c960997e61f
-    : WorkerThread(worker_reporting_proxy, Thread::Current()->GetTaskRunner()) {
-}
-=======
-    : WorkerThread(worker_reporting_proxy,
-                   Thread::Current()->GetDeprecatedTaskRunner()) {}
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 WorkerThread::WorkerThread(WorkerReportingProxy& worker_reporting_proxy,
                            scoped_refptr<base::SingleThreadTaskRunner>

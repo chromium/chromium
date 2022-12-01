@@ -96,16 +96,8 @@ void MIDIInput::DidReceiveMIDIData(unsigned port_index,
   if (data[0] == 0xf0 && !midiAccess()->sysexEnabled())
     return;
   DOMUint8Array* array =
-<<<<<<< HEAD
-      DOMUint8Array::Create(data, SafeCast<unsigned>(length));
-  DispatchEvent(*MakeGarbageCollected<MIDIMessageEvent>(time_stamp, array), "MIDIInput::DidReceiveMIDIData");
-||||||| 80c960997e61f
-      DOMUint8Array::Create(data, SafeCast<unsigned>(length));
-  DispatchEvent(*MakeGarbageCollected<MIDIMessageEvent>(time_stamp, array));
-=======
       DOMUint8Array::Create(data, base::checked_cast<unsigned>(length));
-  DispatchEvent(*MakeGarbageCollected<MIDIMessageEvent>(time_stamp, array));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  DispatchEvent(*MakeGarbageCollected<MIDIMessageEvent>(time_stamp, array), "MIDIInput::DidReceiveMIDIData");
 
   UseCounter::Count(GetExecutionContext(), WebFeature::kMIDIMessageEvent);
 }

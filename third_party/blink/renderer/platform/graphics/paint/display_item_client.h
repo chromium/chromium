@@ -5,14 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_H_
 
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-||||||| 80c960997e61f
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-=======
 #include "base/dcheck_is_on.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
@@ -20,6 +13,8 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -30,69 +25,25 @@ namespace blink {
 // dereferenced unless we can make sure the client is still alive.
 class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
  public:
-<<<<<<< HEAD
-  DisplayItemClient() {
-    record_replay_id_ = recordreplay::NewIdMainThread("DisplayItemClient");
-
-#if DCHECK_IS_ON()
-    OnCreate();
-#endif
-  }
-  virtual ~DisplayItemClient() {
-#if DCHECK_IS_ON()
-    OnDestroy();
-#endif
-  }
-||||||| 80c960997e61f
-  DisplayItemClient() {
-#if DCHECK_IS_ON()
-    OnCreate();
-#endif
-  }
-  virtual ~DisplayItemClient() {
-#if DCHECK_IS_ON()
-    OnDestroy();
-#endif
-  }
-=======
   DisplayItemClient()
       : paint_invalidation_reason_(
             static_cast<uint8_t>(PaintInvalidationReason::kJustCreated)),
-        marked_for_validation_(0) {}
+        marked_for_validation_(0) {
+    record_replay_id_ = recordreplay::NewIdMainThread("DisplayItemClient");
+  }
   DisplayItemClient(const DisplayItemClient&) = delete;
   DisplayItemClient& operator=(const DisplayItemClient&) = delete;
   virtual ~DisplayItemClient() = default;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
-<<<<<<< HEAD
-  // When recording/replaying, get a deterministic key based on the pointer ID
-  // which will behave consistently when used in hashtables or comparing the
-  // keys of possibly dead clients.
-  uintptr_t GetKey() const {
+  DisplayItemClientId Id() const {
+    // When recording/replaying, get a deterministic key based on the pointer ID
+    // which will behave consistently when used in hashtables or comparing the
+    // keys of possibly dead clients.
     if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
       return record_replay_id_;
     }
-    return (uintptr_t)this;
-  }
-
-#if DCHECK_IS_ON()
-  // Tests if this DisplayItemClient object has been created and has not been
-  // deleted yet.
-  bool IsAlive() const;
-  String SafeDebugName(bool known_to_be_safe = false) const;
-#endif
-||||||| 80c960997e61f
-#if DCHECK_IS_ON()
-  // Tests if this DisplayItemClient object has been created and has not been
-  // deleted yet.
-  bool IsAlive() const;
-  String SafeDebugName(bool known_to_be_safe = false) const;
-#endif
-=======
-  DisplayItemClientId Id() const {
     return reinterpret_cast<DisplayItemClientId>(this);
   }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   virtual String DebugName() const = 0;
 
@@ -165,33 +116,11 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
     marked_for_validation_ = 0;
   }
 
-<<<<<<< HEAD
-#if DCHECK_IS_ON()
-  void OnCreate();
-  void OnDestroy();
-#endif
-
-  mutable PaintInvalidationReason paint_invalidation_reason_ =
-      PaintInvalidationReason::kJustCreated;
-
-  // A deterministic ID is needed for GetKey.
-  int record_replay_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayItemClient);
-||||||| 80c960997e61f
-#if DCHECK_IS_ON()
-  void OnCreate();
-  void OnDestroy();
-#endif
-
-  mutable PaintInvalidationReason paint_invalidation_reason_ =
-      PaintInvalidationReason::kJustCreated;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayItemClient);
-=======
   mutable uint8_t paint_invalidation_reason_ : 7;
   mutable uint8_t marked_for_validation_ : 1;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+
+  // A deterministic ID is needed for Id().
+  int record_replay_id_ = 0;
 };
 
 inline bool operator==(const DisplayItemClient& client1,

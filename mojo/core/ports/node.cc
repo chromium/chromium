@@ -17,13 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
-<<<<<<< HEAD
-#include "base/optional.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/optional.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
@@ -37,6 +30,8 @@
 #else
 #include "base/rand_util.h"
 #endif
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -55,17 +50,11 @@ constexpr size_t kRandomNameCacheSize = 256;
 // to collisions between independently generated names in different processes.
 class RandomNameGenerator {
  public:
-<<<<<<< HEAD
   RandomNameGenerator() : lock_("RandomNameGenerator.lock_") {}
-||||||| 80c960997e61f
-  RandomNameGenerator() = default;
-=======
-  RandomNameGenerator() = default;
 
   RandomNameGenerator(const RandomNameGenerator&) = delete;
   RandomNameGenerator& operator=(const RandomNameGenerator&) = delete;
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   ~RandomNameGenerator() = default;
 
   PortName GenerateRandomPortName() {
@@ -770,19 +759,9 @@ int Node::OnUserMessage(const PortRef& port_ref,
   return OK;
 }
 
-<<<<<<< HEAD
-int Node::OnPortAccepted(std::unique_ptr<PortAcceptedEvent> event) {
-  PortRef port_ref;
-  if (GetPort(event->port_name(), &port_ref) != OK) {
-||||||| 80c960997e61f
-int Node::OnPortAccepted(std::unique_ptr<PortAcceptedEvent> event) {
-  PortRef port_ref;
-  if (GetPort(event->port_name(), &port_ref) != OK)
-=======
 int Node::OnPortAccepted(const PortRef& port_ref,
                          std::unique_ptr<PortAcceptedEvent> event) {
   if (!port_ref.is_valid())
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return ERROR_PORT_UNKNOWN;
   }
 
@@ -955,30 +934,16 @@ int Node::OnObserveProxyAck(const PortRef& port_ref,
   return OK;
 }
 
-<<<<<<< HEAD
-int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
+int Node::OnObserveClosure(const PortRef& port_ref,
+                           std::unique_ptr<ObserveClosureEvent> event) {
   // https://linear.app/replay/issue/RUN-549
   recordreplay::Assert("Node::OnObserveClosure Start %lu %lu",
                        event->port_name().v1, event->port_name().v2);
 
-||||||| 80c960997e61f
-int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
-=======
-int Node::OnObserveClosure(const PortRef& port_ref,
-                           std::unique_ptr<ObserveClosureEvent> event) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // OK if the port doesn't exist, as it may have been closed already.
-<<<<<<< HEAD
-  PortRef port_ref;
-  if (GetPort(event->port_name(), &port_ref) != OK) {
+  if (!port_ref.is_valid())
     // https://linear.app/replay/issue/RUN-549
     recordreplay::Assert("Node::OnObserveClosure #1");
-||||||| 80c960997e61f
-  PortRef port_ref;
-  if (GetPort(event->port_name(), &port_ref) != OK)
-=======
-  if (!port_ref.is_valid())
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return OK;
   }
 
@@ -1367,14 +1332,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
     PortLocker::AssertNoPortsLockedOnCurrentThread();
     base::ReleasableAutoLock ports_locker(&ports_lock_);
 
-<<<<<<< HEAD
-    base::Optional<PortLocker> locker(base::in_place, port_refs, 2);
-
-||||||| 80c960997e61f
-    base::Optional<PortLocker> locker(base::in_place, port_refs, 2);
-=======
     absl::optional<PortLocker> locker(absl::in_place, port_refs, 2);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     auto* port0 = locker->GetPort(port0_ref);
     auto* port1 = locker->GetPort(port1_ref);
 
@@ -1824,11 +1782,6 @@ int Node::ForwardUserMessagesFromProxy(const PortRef& port_ref) {
     int rv = PrepareToForwardUserMessage(port_ref, Port::kProxying,
                                          true /* ignore_closed_peer */,
                                          message.get(), &target_node);
-<<<<<<< HEAD
-    if (rv != OK) {
-||||||| 80c960997e61f
-    if (rv != OK)
-=======
     {
       // Mark the message as processed after we ran PrepareToForwardUserMessage.
       // This is important to prevent another thread from deleting the port
@@ -1837,9 +1790,7 @@ int Node::ForwardUserMessagesFromProxy(const PortRef& port_ref) {
       locker.port()->message_queue.MessageProcessed();
     }
     if (rv != OK)
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       return rv;
-    }
 
     delegate_->ForwardEvent(target_node, std::move(message));
   }

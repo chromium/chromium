@@ -8,16 +8,11 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-<<<<<<< HEAD
-#include "base/optional.h"
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-#include "base/optional.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/watcher_dispatcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace core {
@@ -70,23 +65,9 @@ class WatcherSet {
     ContextSet contexts;
   };
 
-<<<<<<< HEAD
-  Dispatcher* const owner_;
-  base::flat_map<WatcherDispatcher*, Entry, recordreplay::CompareByPointerId> watchers_;
-  base::Optional<HandleSignalsState> last_known_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherSet);
-||||||| 80c960997e61f
-  Dispatcher* const owner_;
-  base::flat_map<WatcherDispatcher*, Entry> watchers_;
-  base::Optional<HandleSignalsState> last_known_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherSet);
-=======
   const raw_ptr<Dispatcher> owner_;
-  base::flat_map<WatcherDispatcher*, Entry> watchers_;
+  base::flat_map<WatcherDispatcher*, Entry, recordreplay::CompareByPointerId> watchers_;
   absl::optional<HandleSignalsState> last_known_state_;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 };
 
 }  // namespace core

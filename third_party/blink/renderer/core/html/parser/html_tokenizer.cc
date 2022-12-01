@@ -242,22 +242,9 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     }
   }
 
-<<<<<<< HEAD
-  if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source)) {
-||||||| 80c960997e61f
-  if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source))
-=======
   UChar cc;
   if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source, cc))
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return HaveBufferedCharacterToken();
-<<<<<<< HEAD
-  }
-  UChar cc = input_stream_preprocessor_.NextInputCharacter();
-||||||| 80c960997e61f
-  UChar cc = input_stream_preprocessor_.NextInputCharacter();
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   // Source: http://www.whatwg.org/specs/web-apps/current-work/#tokenisation0
   switch (state_) {

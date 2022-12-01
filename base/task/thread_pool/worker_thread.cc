@@ -16,13 +16,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
@@ -45,6 +40,8 @@
     defined(PA_THREAD_CACHE_SUPPORTED)
 #include "base/allocator/partition_allocator/thread_cache.h"
 #endif
+
+#include "base/record_replay.h"
 
 namespace {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
@@ -146,17 +143,9 @@ WorkerThread::WorkerThread(ThreadType thread_type_hint,
     : thread_lock_(predecessor_lock),
       delegate_(std::move(delegate)),
       task_tracker_(std::move(task_tracker)),
-<<<<<<< HEAD
-      priority_hint_(priority_hint),
-      current_thread_priority_(GetDesiredThreadPriority()),
-      record_replay_unordered_(recordreplay::AreEventsDisallowed()) {
-||||||| 80c960997e61f
-      priority_hint_(priority_hint),
-      current_thread_priority_(GetDesiredThreadPriority()) {
-=======
       thread_type_hint_(thread_type_hint),
-      current_thread_type_(GetDesiredThreadType()) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+      current_thread_type_(GetDesiredThreadType()),
+      record_replay_unordered_(recordreplay::AreEventsDisallowed()) {
   DCHECK(delegate_);
   DCHECK(task_tracker_);
   DCHECK(CanUseBackgroundThreadTypeForWorkerThread() ||
@@ -297,22 +286,16 @@ void WorkerThread::UpdateThreadType(ThreadType desired_thread_type) {
 }
 
 void WorkerThread::ThreadMain() {
-<<<<<<< HEAD
   Optional<recordreplay::AutoDisallowEvents> disallow;
   if (record_replay_unordered_)
     disallow.emplace();
 
-  if (priority_hint_ == ThreadPriority::BACKGROUND) {
-||||||| 80c960997e61f
-  if (priority_hint_ == ThreadPriority::BACKGROUND) {
-=======
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(io_thread_task_runner_);
   FileDescriptorWatcher file_descriptor_watcher(io_thread_task_runner_);
 #endif
 
   if (thread_type_hint_ == ThreadType::kBackground) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     switch (delegate_->GetThreadLabel()) {
       case ThreadLabel::POOLED:
         RunBackgroundPooledWorker();

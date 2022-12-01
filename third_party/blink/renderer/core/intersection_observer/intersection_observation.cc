@@ -46,16 +46,6 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
 
 int64_t IntersectionObservation::ComputeIntersection(
     const IntersectionGeometry::RootGeometry& root_geometry,
-<<<<<<< HEAD
-    unsigned compute_flags) {
-  if (!ShouldCompute(compute_flags)) {
-    return;
-  }
-||||||| 80c960997e61f
-    unsigned compute_flags) {
-  if (!ShouldCompute(compute_flags))
-    return;
-=======
     unsigned compute_flags,
     absl::optional<base::TimeTicks>& monotonic_time) {
   DCHECK(Observer());
@@ -71,7 +61,6 @@ int64_t IntersectionObservation::ComputeIntersection(
   DOMHighResTimeStamp timestamp = observer_->GetTimeStamp(*monotonic_time);
   if (MaybeDelayAndReschedule(compute_flags, timestamp))
     return 0;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   DCHECK(observer_->root());
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
   IntersectionGeometry geometry(
@@ -83,16 +72,6 @@ int64_t IntersectionObservation::ComputeIntersection(
   return geometry.DidComputeGeometry() ? 1 : 0;
 }
 
-<<<<<<< HEAD
-void IntersectionObservation::ComputeIntersection(unsigned compute_flags) {
-  if (!ShouldCompute(compute_flags)) {
-    return;
-  }
-||||||| 80c960997e61f
-void IntersectionObservation::ComputeIntersection(unsigned compute_flags) {
-  if (!ShouldCompute(compute_flags))
-    return;
-=======
 int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
     absl::optional<base::TimeTicks>& monotonic_time) {
@@ -109,7 +88,6 @@ int64_t IntersectionObservation::ComputeIntersection(
   DOMHighResTimeStamp timestamp = observer_->GetTimeStamp(*monotonic_time);
   if (MaybeDelayAndReschedule(compute_flags, timestamp))
     return 0;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
   IntersectionGeometry geometry(
       observer_->root(), *Target(), observer_->RootMargin(),

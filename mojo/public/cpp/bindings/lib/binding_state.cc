@@ -3,21 +3,17 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/binding_state.h"
-<<<<<<< HEAD
-
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 
 #include <memory>
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)
 #include "mojo/public/cpp/bindings/lib/test_random_mojo_delays.h"
 #endif
+
+#include "base/record_replay.h"
 
 namespace mojo {
 namespace internal {

@@ -19,15 +19,9 @@ class PollableThreadSafeFlag {
   DISALLOW_NEW();
 
  public:
-<<<<<<< HEAD
   explicit PollableThreadSafeFlag(base::Lock* write_lock, const char* ordered_name = nullptr);
-||||||| 80c960997e61f
-  explicit PollableThreadSafeFlag(base::Lock* write_lock);
-=======
-  explicit PollableThreadSafeFlag(base::Lock* write_lock);
   PollableThreadSafeFlag(const PollableThreadSafeFlag&) = delete;
   PollableThreadSafeFlag& operator=(const PollableThreadSafeFlag&) = delete;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
   // Set the flag. May only be called if |write_lock| is held.
   void SetWhileLocked(bool value);

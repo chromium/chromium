@@ -4527,22 +4527,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   Member<LayoutObject> next_;
   Member<FragmentData> fragment_;
 
-  // Store state between styleWillChange and styleDidChange
-  static bool affects_parent_block_;
-
-<<<<<<< HEAD
-  FragmentData fragment_;
-
   // A deterministic ID is needed for hashing in the following places:
   // FragmentPaintPropertyTreeBuilder::UpdateTransform
   // LayoutObjectWithDepth ordering
   int record_replay_id_ = 0;
 
-||||||| 80c960997e61f
-  FragmentData fragment_;
+  // Store state between styleWillChange and styleDidChange
+  static bool affects_parent_block_;
 
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #if DCHECK_IS_ON()
   bool is_destroyed_ = false;
 #endif

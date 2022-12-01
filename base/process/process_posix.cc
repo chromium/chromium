@@ -322,46 +322,21 @@ void Process::Close() {
   // end up w/ a zombie when it does finally exit.
 }
 
-<<<<<<< HEAD
 static inline bool MaybeRecordingOrReplaying() {
   return true;
 }
 
-#if !defined(OS_NACL_NONSFI)
-||||||| 80c960997e61f
-#if !defined(OS_NACL_NONSFI)
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 bool Process::Terminate(int exit_code, bool wait) const {
   // exit_code isn't supportable.
   DCHECK(IsValid());
   CHECK_GT(process_, 0);
 
-<<<<<<< HEAD
   // When recording/replaying the child process is responsible for exiting
   // so that it can finish uploading any in progress recording.
   if (MaybeRecordingOrReplaying()) {
     return false;
   }
 
-  bool did_terminate = kill(process_, SIGTERM) == 0;
-
-  if (wait && did_terminate) {
-    if (WaitForExitWithTimeout(TimeDelta::FromSeconds(60), nullptr))
-      return true;
-    did_terminate = kill(process_, SIGKILL) == 0;
-    if (did_terminate)
-      return WaitForExit(nullptr);
-||||||| 80c960997e61f
-  bool did_terminate = kill(process_, SIGTERM) == 0;
-
-  if (wait && did_terminate) {
-    if (WaitForExitWithTimeout(TimeDelta::FromSeconds(60), nullptr))
-      return true;
-    did_terminate = kill(process_, SIGKILL) == 0;
-    if (did_terminate)
-      return WaitForExit(nullptr);
-=======
   // RESULT_CODE_KILLED_BAD_MESSAGE == 3, but layering prevents its use.
   // |wait| is always false when terminating badly-behaved processes.
   const bool maybe_compromised = !wait && exit_code == 3;
@@ -374,7 +349,6 @@ bool Process::Terminate(int exit_code, bool wait) const {
 #endif
     DPLOG_IF(ERROR, !was_killed) << "Unable to terminate process " << process_;
     return was_killed;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   // Terminate process giving it a chance to clean up.

@@ -82,15 +82,7 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
 
   if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
           frame.GetDocument()->GetExecutionContext())) {
-<<<<<<< HEAD
-    anchor_node->DispatchEvent(
-        *Event::CreateBubble(event_type_names::kBeforematch), "ElementFragmentAnchor::TryCreate");
-||||||| 80c960997e61f
-    anchor_node->DispatchEvent(
-        *Event::CreateBubble(event_type_names::kBeforematch));
-=======
     DisplayLockUtilities::RevealHiddenUntilFoundAncestors(*anchor_node);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   }
 
   return MakeGarbageCollected<ElementFragmentAnchor>(*anchor_node, frame);

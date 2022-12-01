@@ -14,14 +14,7 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-<<<<<<< HEAD
-#include "base/optional.h"
-#include "base/record_replay_ordered_atomic.h"
-||||||| 80c960997e61f
-#include "base/optional.h"
-=======
 #include "base/memory/raw_ptr.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/post_job.h"
@@ -29,6 +22,8 @@
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
+
+#include "base/record_replay_ordered_atomic.h"
 
 namespace base {
 namespace internal {

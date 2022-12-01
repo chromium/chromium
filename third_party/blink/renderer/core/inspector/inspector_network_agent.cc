@@ -35,13 +35,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/values.h"
-||||||| 80c960997e61f
-=======
 #include "base/numerics/safe_conversions.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -109,6 +103,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
+
+#include "base/record_replay.h"
 
 using crdtp::SpanFrom;
 using crdtp::json::ConvertCBORToJSON;
@@ -1231,30 +1227,15 @@ void InspectorNetworkAgent::WillSendRequestInternal(
   Maybe<String> maybe_frame_id;
   if (!frame_id.empty())
     maybe_frame_id = frame_id;
-<<<<<<< HEAD
-
-  double wallTime = base::Time::Now().ToDoubleT();
-
-||||||| 80c960997e61f
-=======
   if (loader && loader->GetFrame() && loader->GetFrame()->GetDocument()) {
     request_info->setIsSameSite(
         loader->GetFrame()->GetDocument()->SiteForCookies().IsFirstParty(
             GURL(request.Url())));
   }
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   GetFrontend()->requestWillBeSent(
       request_id, loader_id, documentURL, std::move(request_info),
-<<<<<<< HEAD
-      base::TimeTicks::Now().since_origin().InSecondsF(),
-      wallTime, std::move(initiator_object),
-||||||| 80c960997e61f
-      base::TimeTicks::Now().since_origin().InSecondsF(),
-      base::Time::Now().ToDoubleT(), std::move(initiator_object),
-=======
       timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),
       std::move(initiator_object), redirect_response.EmittedExtraInfo(),
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       BuildObjectForResourceResponse(redirect_response), resource_type,
       std::move(maybe_frame_id), request.HasUserGesture());
   if (options.synchronous_policy == SynchronousPolicy::kRequestSynchronously)
@@ -1402,15 +1383,7 @@ void InspectorNetworkAgent::WillSendRequest(
 
 void InspectorNetworkAgent::MarkResourceAsCached(DocumentLoader* loader,
                                                  uint64_t identifier) {
-<<<<<<< HEAD
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
-  GetFrontend()->requestServedFromCache(request_id);
-||||||| 80c960997e61f
-  GetFrontend()->requestServedFromCache(
-      IdentifiersFactory::RequestId(loader, identifier));
-=======
   GetFrontend()->requestServedFromCache(RequestId(loader, identifier));
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void InspectorNetworkAgent::DidReceiveResourceResponse(
@@ -1531,14 +1504,7 @@ void InspectorNetworkAgent::DidReceiveEncodedDataLength(
     DocumentLoader* loader,
     uint64_t identifier,
     size_t encoded_data_length) {
-<<<<<<< HEAD
-
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
-||||||| 80c960997e61f
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
-=======
   String request_id = RequestId(loader, identifier);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   resources_data_->AddPendingEncodedDataLength(request_id, encoded_data_length);
 }
 

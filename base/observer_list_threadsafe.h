@@ -12,15 +12,9 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
-<<<<<<< HEAD
-#include "base/debug/dump_without_crashing.h"
-#include "base/deterministic_containers.h"
-||||||| 80c960997e61f
-#include "base/debug/dump_without_crashing.h"
-=======
 #include "base/containers/contains.h"
+#include "base/deterministic_containers.h"
 #include "base/dcheck_is_on.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -107,11 +101,6 @@ class BASE_EXPORT ObserverListThreadSafeBase
 template <class ObserverType>
 class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
  public:
-<<<<<<< HEAD
-  ObserverListThreadSafe() : lock_("ObserverListThreadSafe.lock_") {}
-||||||| 80c960997e61f
-  ObserverListThreadSafe() = default;
-=======
   enum class AddObserverResult {
     kBecameNonEmpty,
     kWasAlreadyNonEmpty,
@@ -121,8 +110,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     kRemainsNonEmpty,
   };
 
-  ObserverListThreadSafe() = default;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  ObserverListThreadSafe() : lock_("ObserverListThreadSafe.lock_") {}
   explicit ObserverListThreadSafe(ObserverListPolicy policy)
       : policy_(policy), lock_("ObserverListThreadSafe.lock_") {}
   ObserverListThreadSafe(const ObserverListThreadSafe&) = delete;

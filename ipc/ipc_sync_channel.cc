@@ -14,12 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/memory/raw_ptr.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -36,6 +31,8 @@
 #if !BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #include "ipc/trace_ipc_message.h"
 #endif
+
+#include "base/record_replay.h"
 
 using base::WaitableEvent;
 

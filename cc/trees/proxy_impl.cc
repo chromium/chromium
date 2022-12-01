@@ -14,13 +14,8 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-||||||| 80c960997e61f
-=======
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -45,6 +40,8 @@
 #include "components/viz/service/display/record_replay_render.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+
+#include "base/record_replay.h"
 
 namespace cc {
 
@@ -338,24 +335,13 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     const ThreadUnsafeCommitState* unsafe_state,
     base::TimeTicks main_thread_start_time,
     const viz::BeginFrameArgs& commit_args,
-<<<<<<< HEAD
-    bool hold_commit_for_activation) {
+    bool scroll_and_viewport_changes_synced,
+    CommitTimestamps* commit_timestamps,
+    bool commit_timeout) {
   if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     recordreplay::OnReadyToCommit();
   }
 
-  TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
-  DCHECK(!commit_completion_event_);
-  DCHECK(IsImplThread() && IsMainThreadBlocked());
-||||||| 80c960997e61f
-    bool hold_commit_for_activation) {
-  TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
-  DCHECK(!commit_completion_event_);
-  DCHECK(IsImplThread() && IsMainThreadBlocked());
-=======
-    bool scroll_and_viewport_changes_synced,
-    CommitTimestamps* commit_timestamps,
-    bool commit_timeout) {
   {
     TRACE_EVENT_WITH_FLOW0(
         "viz,benchmark", "MainFrame.NotifyReadyToCommitOnImpl",
@@ -366,7 +352,6 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   DCHECK(IsImplThread());
   DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
          IsMainThreadBlocked());
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   DCHECK(scheduler_);
   DCHECK(scheduler_->CommitPending());
 

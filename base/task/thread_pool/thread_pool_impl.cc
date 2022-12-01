@@ -17,15 +17,6 @@
 #include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
-<<<<<<< HEAD
-#include "base/no_destructor.h"
-#include "base/record_replay.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/string_util.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 #include "base/task/task_features.h"
@@ -49,6 +40,8 @@
 #if BUILDFLAG(IS_APPLE)
 #include "base/task/thread_pool/thread_group_native_mac.h"
 #endif
+
+#include "base/record_replay.h"
 
 namespace base {
 namespace internal {
@@ -454,11 +447,6 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
   CHECK(task.task);
   DCHECK(sequence);
 
-<<<<<<< HEAD
-  if (!task_tracker_->WillPostTask(&task, sequence->shutdown_behavior())) {
-||||||| 80c960997e61f
-  if (!task_tracker_->WillPostTask(&task, sequence->shutdown_behavior()))
-=======
 #if BUILDFLAG(IS_WIN)
   // Force reading |task.posted_from.file_name()| to produce a useful crash
   // report if the address is invalid. A crash report generated later when the
@@ -469,9 +457,7 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
 #endif
 
   if (!task_tracker_->WillPostTask(&task, sequence->shutdown_behavior()))
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     return false;
-  }
 
   if (task.delayed_run_time.is_null()) {
     return PostTaskWithSequenceNow(std::move(task), std::move(sequence));
@@ -495,15 +481,6 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
 }
 
 bool ThreadPoolImpl::ShouldYield(const TaskSource* task_source) {
-<<<<<<< HEAD
-  if (disable_job_yield_) {
-    return false;
-  }
-||||||| 80c960997e61f
-  if (disable_job_yield_)
-    return false;
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   const TaskPriority priority = task_source->priority_racy();
   auto* const thread_group =
       GetThreadGroupForTraits({priority, task_source->thread_policy()});

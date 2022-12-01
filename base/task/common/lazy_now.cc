@@ -4,12 +4,8 @@
 
 #include "base/task/common/lazy_now.h"
 
-<<<<<<< HEAD:base/task/sequence_manager/lazy_now.cc
-#include "base/record_replay.h"
-||||||| 80c960997e61f:base/task/sequence_manager/lazy_now.cc
-=======
 #include "base/check.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae:base/task/common/lazy_now.cc
+#include "base/record_replay.h"
 #include "base/time/tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

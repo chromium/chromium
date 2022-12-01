@@ -9,23 +9,16 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-<<<<<<< HEAD
-#include "base/no_destructor.h"
-#include "base/record_replay.h"
-#include "base/stl_util.h"
-||||||| 80c960997e61f
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
-=======
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/c/system/core.h"
+
+#include "base/record_replay.h"
 
 // Used to make sure we finish recordings on the main thread, even if we're
 // blocked in a sync event.
@@ -66,7 +59,9 @@ scoped_refptr<SyncHandleRegistry> SyncHandleRegistry::current() {
   return *g_current_sync_handle_watcher.GetValuePointer();
 }
 
-SyncHandleRegistry::SyncHandleRegistry(base::PassKey<SyncHandleRegistry>) {}
+SyncHandleRegistry::SyncHandleRegistry(base::PassKey<SyncHandleRegistry>) {
+  recordreplay::RegisterPointer("SyncHandleRegistry", this);
+}
 
 bool SyncHandleRegistry::RegisterHandle(const Handle& handle,
                                         MojoHandleSignals handle_signals,
@@ -182,20 +177,8 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
   }
 }
 
-<<<<<<< HEAD
-SyncHandleRegistry::SyncHandleRegistry() {
-  recordreplay::RegisterPointer("SyncHandleRegistry", this);
-}
-
 SyncHandleRegistry::~SyncHandleRegistry() {
   recordreplay::UnregisterPointer(this);
 }
-||||||| 80c960997e61f
-SyncHandleRegistry::SyncHandleRegistry() = default;
-
-SyncHandleRegistry::~SyncHandleRegistry() = default;
-=======
-SyncHandleRegistry::~SyncHandleRegistry() = default;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 }  // namespace mojo

@@ -240,23 +240,15 @@ FontFace* FontFace::Create(Document* document,
   return nullptr;
 }
 
-<<<<<<< HEAD
-FontFace::FontFace(ExecutionContext* context)
-    : ExecutionContextClient(context), status_(kUnloaded) {
-  recordreplay::RegisterPointer("FontFace", this);
-}
-||||||| 80c960997e61f
-FontFace::FontFace(ExecutionContext* context)
-    : ExecutionContextClient(context), status_(kUnloaded) {}
-=======
 FontFace::FontFace(ExecutionContext* context,
                    const StyleRuleFontFace* style_rule,
                    bool is_user_style)
     : ExecutionContextClient(context),
       style_rule_(style_rule),
       status_(kUnloaded),
-      is_user_style_(is_user_style) {}
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+      is_user_style_(is_user_style) {
+  recordreplay::RegisterPointer("FontFace", this);
+}
 
 FontFace::FontFace(ExecutionContext* context,
                    const AtomicString& family,

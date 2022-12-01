@@ -323,9 +323,6 @@ void PageTimingMetricsSender::SendNow() {
       page_resource_data_use_.erase(resource->resource_id());
     }
   }
-<<<<<<< HEAD
-  std::sort(render_data_.input_timestamps.begin(),
-            render_data_.input_timestamps.end());
 
   // The number of CSS properties which we send can vary between recording
   // and replaying due to the use of weak pointers when noting CSS properties
@@ -339,11 +336,6 @@ void PageTimingMetricsSender::SendNow() {
                                     new_features_->animated_css_properties.size())
   );
 
-||||||| 80c960997e61f
-  std::sort(render_data_.input_timestamps.begin(),
-            render_data_.input_timestamps.end());
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
                       std::move(input_timing_delta_), mobile_friendliness_,

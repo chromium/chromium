@@ -14,13 +14,6 @@
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-<<<<<<< HEAD
-#include "base/record_replay.h"
-#include "base/strings/stringprintf.h"
-||||||| 80c960997e61f
-#include "base/strings/stringprintf.h"
-=======
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
@@ -50,6 +43,8 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+
+#include "base/record_replay.h"
 
 namespace {
 

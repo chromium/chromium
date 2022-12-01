@@ -2122,11 +2122,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // (which is responsible for painting the tickmarks).
   void InvalidatePaintForTickmarks();
 
-<<<<<<< HEAD
   int RecordReplayId() const { return record_replay_id_; }
 
-||||||| 80c960997e61f
-=======
   // Returns which of the border box space and contents space (maybe both)
   // the backgrounds should be painted into, if the LayoutBox is composited.
   // The caller may adjust the value by considering LCD-text etc. if needed and
@@ -2179,7 +2176,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // AnchorScrollData as a PhysicalOffset.
   PhysicalOffset ComputeAnchorScrollOffset() const;
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
  protected:
   ~LayoutBox() override;
 
@@ -2479,21 +2475,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Valid only when !IsInLayoutNGInlineFormattingContext().
   Member<InlineBox> inline_box_wrapper_;
 
-<<<<<<< HEAD
-  Persistent<LayoutBoxRareData> rare_data_;
-
-  // A deterministic ID is needed for sorting in various SnapCoordinator methods.
-  int record_replay_id_ = 0;
-||||||| 80c960997e61f
-  Persistent<LayoutBoxRareData> rare_data_;
-=======
   // The index of the first fragment item associated with this object in
   // |NGFragmentItems::Items()|. Zero means there are no such item.
   // Valid only when IsInLayoutNGInlineFormattingContext().
   wtf_size_t first_fragment_item_index_ = 0u;
 
   Member<LayoutBoxRareData> rare_data_;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+
+  // A deterministic ID is needed for sorting in various SnapCoordinator methods.
+  int record_replay_id_ = 0;
 };
 
 template <>

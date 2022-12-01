@@ -138,23 +138,13 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRectOutsets margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
-<<<<<<< HEAD
-  void* pointers[4];
-  Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
-  Persistent<void*> rare_data;
-  int record_replay_id;
-||||||| 80c960997e61f
-  void* pointers[4];
-  Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
-  Persistent<void*> rare_data;
-=======
   Member<void*> result;
   HeapVector<Member<const NGLayoutResult>, 1> layout_results;
   void* pointers[2];
   Member<void*> inline_box_wrapper;
   wtf_size_t first_fragment_item_index_;
   Member<void*> rare_data;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
+  int record_replay_id;
 };
 
 ASSERT_SIZE(LayoutBox, SameSizeAsLayoutBox);
@@ -486,11 +476,6 @@ LayoutBox::LayoutBox(ContainerNode* node)
     SetIsHTMLLegendElement();
 }
 
-<<<<<<< HEAD
-LayoutBox::~LayoutBox() {}
-||||||| 80c960997e61f
-LayoutBox::~LayoutBox() = default;
-=======
 void LayoutBox::Trace(Visitor* visitor) const {
   visitor->Trace(measure_result_);
   visitor->Trace(layout_results_);
@@ -500,7 +485,6 @@ void LayoutBox::Trace(Visitor* visitor) const {
 }
 
 LayoutBox::~LayoutBox() = default;
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 PaintLayerType LayoutBox::LayerTypeRequired() const {
   NOT_DESTROYED();

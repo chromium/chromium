@@ -2615,12 +2615,9 @@ void DocumentLoader::CommitNavigation() {
 }
 
 void DocumentLoader::CreateParserPostCommit() {
-<<<<<<< HEAD
   // https://linear.app/replay/issue/BAC-2424
   recordreplay::Assert("DocumentLoader::CreateParserPostCommit");
 
-||||||| 80c960997e61f
-=======
   if (RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled()) {
     auto& speculation_rules_header =
         response_.HttpHeaderField(http_names::kSpeculationRules);
@@ -2628,7 +2625,6 @@ void DocumentLoader::CreateParserPostCommit() {
         speculation_rules_header, GetFrame()->GetDocument(), *GetFrame());
   }
 
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   // DidObserveLoadingBehavior() must be called after DispatchDidCommitLoad() is
   // called for the metrics tracking logic to handle it properly.
   if (service_worker_network_provider_ &&

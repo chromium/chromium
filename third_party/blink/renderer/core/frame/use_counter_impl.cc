@@ -174,6 +174,11 @@ void UseCounterImpl::AddObserver(Observer* observer) {
 
 void UseCounterImpl::Count(const UseCounterFeature& feature,
                            const LocalFrame* source_frame) {
+  // Features can be accessed only while replaying, e.g. window.devicePixelRatio
+  // is accessed for reporting to the recorder.
+  if (recordreplay::AreEventsDisallowed())
+    return;
+
   if (!source_frame)
     return;
 
@@ -196,75 +201,10 @@ void UseCounterImpl::Count(CSSPropertyID property,
   DCHECK(IsCSSPropertyIDWithName(property) ||
          property == CSSPropertyID::kVariable);
 
-<<<<<<< HEAD
-  if (mute_count_)
-    return;
-
-  int sample_id = static_cast<int>(GetCSSSampleId(property));
-
-  switch (type) {
-    case CSSPropertyType::kDefault:
-      if (css_recorded_[sample_id])
-        return;
-      if (commit_state_ >= kCommited)
-        ReportAndTraceMeasurementByCSSSampleId(sample_id, source_frame, false);
-
-      css_recorded_.set(sample_id);
-      break;
-    case CSSPropertyType::kAnimation:
-      if (animated_css_recorded_[sample_id])
-        return;
-      if (commit_state_ >= kCommited)
-        ReportAndTraceMeasurementByCSSSampleId(sample_id, source_frame, true);
-
-      animated_css_recorded_.set(sample_id);
-      break;
-  }
-||||||| 80c960997e61f
-  if (mute_count_)
-    return;
-
-  int sample_id = static_cast<int>(GetCSSSampleId(property));
-  switch (type) {
-    case CSSPropertyType::kDefault:
-      if (css_recorded_[sample_id])
-        return;
-      if (commit_state_ >= kCommited)
-        ReportAndTraceMeasurementByCSSSampleId(sample_id, source_frame, false);
-
-      css_recorded_.set(sample_id);
-      break;
-    case CSSPropertyType::kAnimation:
-      if (animated_css_recorded_[sample_id])
-        return;
-      if (commit_state_ >= kCommited)
-        ReportAndTraceMeasurementByCSSSampleId(sample_id, source_frame, true);
-
-      animated_css_recorded_.set(sample_id);
-      break;
-  }
-=======
   Count({ToFeatureType(type), static_cast<uint32_t>(GetCSSSampleId(property))},
         source_frame);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
-<<<<<<< HEAD
-void UseCounterImpl::Count(WebFeature feature, const LocalFrame* source_frame) {
-  // Features can be accessed only while replaying, e.g. window.devicePixelRatio
-  // is accessed for reporting to the recorder.
-  if (recordreplay::AreEventsDisallowed())
-    return;
-
-  if (!source_frame)
-    return;
-  RecordMeasurement(feature, *source_frame);
-||||||| 80c960997e61f
-void UseCounterImpl::Count(WebFeature feature, const LocalFrame* source_frame) {
-  if (!source_frame)
-    return;
-  RecordMeasurement(feature, *source_frame);
-=======
 void UseCounterImpl::Count(WebFeature web_feature,
                            const LocalFrame* source_frame) {
   // PageDestruction is reserved as a scaling factor.
@@ -285,7 +225,6 @@ void UseCounterImpl::CountPermissionsPolicyUsage(
 
   Count({ToFeatureType(usage_type), static_cast<uint32_t>(feature)},
         &source_frame);
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 }
 
 void UseCounterImpl::NotifyFeatureCounted(WebFeature feature) {

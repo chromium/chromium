@@ -132,8 +132,7 @@ RegisteredTaskSource PriorityQueue::PopTaskSource() {
       task_source_and_sort_key.sort_key().priority());
   RegisteredTaskSource task_source =
       task_source_and_sort_key.take_task_source();
-<<<<<<< HEAD
-  container_.Pop();
+  container_.pop();
 
   // https://linear.app/replay/issue/RUN-753
   if (!recordreplay::AreEventsDisallowed()) {
@@ -141,11 +140,6 @@ RegisteredTaskSource PriorityQueue::PopTaskSource() {
                          recordreplay::PointerId(task_source.get()));
   }
 
-||||||| 80c960997e61f
-  container_.Pop();
-=======
-  container_.pop();
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
   return task_source;
 }
 
