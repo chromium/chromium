@@ -18,6 +18,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -945,6 +946,18 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mActivity.getWindow().setAttributes(attrs);
         updateShadowOffset();
         maybeInvokeResizeCallback();
+
+        // Status/navigation bar are not restored on T+. This makes host app visible
+        // at the area. To work around this, simulate user dragging the tab by 1 pixel
+        // upon exiting fullscreen.
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
+            int startY = attrs.y;
+            new Handler().post(() -> {
+                onDragStart(startY);
+                onDragMove(startY + 1);
+                onDragEnd(0);
+            });
+        }
     }
 
     @Override
