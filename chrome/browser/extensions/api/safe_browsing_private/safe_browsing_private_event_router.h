@@ -21,6 +21,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 
 namespace content {
 class BrowserContext;
@@ -79,7 +80,10 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   static const char kKeyPasswordBreachIdentitiesUrl[];
   static const char kKeyPasswordBreachIdentitiesUsername[];
   static const char kKeyUserJustification[];
+  static const char kKeyUrlCategory[];
+  static const char kKeyAction[];
 
+  static const char kKeyUrlFilteringInterstitialEvent[];
   static const char kKeyPasswordReuseEvent[];
   static const char kKeyPasswordChangedEvent[];
   static const char kKeyDangerousDownloadEvent[];
@@ -236,6 +240,14 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   void OnPasswordBreach(
       const std::string& trigger,
       const std::vector<std::pair<GURL, std::u16string>>& identities);
+
+  // Notifies listeners that the user saw an enterprise policy related
+  // interstitial.
+  void OnUrlFilteringInterstitial(
+      const GURL& url,
+      const std::string& threat_type,
+      const safe_browsing::RTLookupResponse& response,
+      safe_browsing::EventResult event_result);
 
   void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
 

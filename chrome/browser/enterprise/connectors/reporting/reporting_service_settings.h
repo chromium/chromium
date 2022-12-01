@@ -51,6 +51,8 @@ class ReportingServiceSettings {
       extensions::SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent,
       extensions::SafeBrowsingPrivateEventRouter::kKeyLoginEvent,
       extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent,
+      extensions::SafeBrowsingPrivateEventRouter::
+          kKeyUrlFilteringInterstitialEvent,
       kExtensionInstallEvent,
       kBrowserCrashEvent,
   };

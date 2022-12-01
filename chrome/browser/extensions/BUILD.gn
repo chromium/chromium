@@ -754,6 +754,7 @@ static_library("extensions") {
     "//components/omnibox/browser",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/signin/core/browser",
     "//components/translate/content/browser",
     "//content/public/browser",

@@ -85,6 +85,41 @@ void AddAnalysisConnectorVerdictToEvent(
             std::move(triggered_rule_info));
 }
 
+std::string ActionFromVerdictType(
+    safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
+  if (verdict_type == safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS)
+    return "BLOCK";
+  if (verdict_type == safe_browsing::RTLookupResponse::ThreatInfo::WARN)
+    return "WARN";
+  return "ACTION_UNKNOWN";
+}
+
+void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
+    const safe_browsing::RTLookupResponse& response,
+    base::Value::Dict& event) {
+  base::Value::List triggered_rule_info;
+
+  for (const safe_browsing::RTLookupResponse::ThreatInfo& threat_info :
+       response.threat_info()) {
+    base::Value::Dict triggered_rule;
+    triggered_rule.Set(
+        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
+        threat_info.matched_url_navigation_rule().rule_name());
+    triggered_rule.Set(
+        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+        threat_info.matched_url_navigation_rule().rule_id());
+    triggered_rule.Set(
+        extensions::SafeBrowsingPrivateEventRouter::kKeyUrlCategory,
+        threat_info.matched_url_navigation_rule().matched_url_category());
+    triggered_rule.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyAction,
+                       ActionFromVerdictType(threat_info.verdict_type()));
+
+    triggered_rule_info.Append(std::move(triggered_rule));
+  }
+  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo,
+            std::move(triggered_rule_info));
+}
+
 std::string MalwareRuleToThreatType(const std::string& rule_name) {
   if (rule_name == "uws") {
     return "POTENTIALLY_UNWANTED";
@@ -207,10 +242,14 @@ const char
         "username";
 const char SafeBrowsingPrivateEventRouter::kKeyUserJustification[] =
     "userJustification";
+const char SafeBrowsingPrivateEventRouter::kKeyUrlCategory[] = "urlCategory";
+const char SafeBrowsingPrivateEventRouter::kKeyAction[] = "action";
 
 // All new event names should be added to the array
 // `enterprise_connectors::ReportingServiceSettings::kAllReportingEvents` in
 // `chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h`
+const char SafeBrowsingPrivateEventRouter::kKeyUrlFilteringInterstitialEvent[] =
+    "urlFilteringInterstitialEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
     "passwordReuseEvent";
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent[] =
@@ -922,6 +961,31 @@ void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
 
   reporting_client_->ReportRealtimeEvent(
       kKeyPasswordBreachEvent, std::move(settings.value()), std::move(event));
+}
+
+void SafeBrowsingPrivateEventRouter::OnUrlFilteringInterstitial(
+    const GURL& url,
+    const std::string& threat_type,
+    const safe_browsing::RTLookupResponse& response,
+    safe_browsing::EventResult event_result) {
+  absl::optional<enterprise_connectors::ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() || settings->enabled_event_names.count(
+                                   kKeyUrlFilteringInterstitialEvent) == 0) {
+    return;
+  }
+  base::Value::Dict event;
+  event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyProfileUserName, GetProfileUserName());
+  event.Set(kKeyClickedThrough,
+            event_result == safe_browsing::EventResult::BYPASSED);
+  event.Set(kKeyThreatType, threat_type);
+  AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
+  event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
+
+  reporting_client_->ReportRealtimeEvent(kKeyUrlFilteringInterstitialEvent,
+                                         std::move(settings.value()),
+                                         std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::SetIdentityManagerForTesting(

@@ -198,6 +198,30 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             event_result);
   }
 
+  void TriggerOnUrlFilteringInterstitial(
+      safe_browsing::EventResult event_result,
+      const std::string& threat_type) {
+    safe_browsing::RTLookupResponse response;
+    auto* threat_info = response.add_threat_info();
+    if (event_result == safe_browsing::EventResult::WARNED ||
+        event_result == safe_browsing::EventResult::BYPASSED) {
+      threat_info->set_verdict_type(
+          safe_browsing::RTLookupResponse::ThreatInfo::WARN);
+    } else if (event_result == safe_browsing::EventResult::BLOCKED) {
+      threat_info->set_verdict_type(
+          safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
+    }
+    auto* matched_url_navigation_rule =
+        threat_info->mutable_matched_url_navigation_rule();
+    matched_url_navigation_rule->set_rule_id("test rule id");
+    matched_url_navigation_rule->set_rule_name("test rule name");
+    matched_url_navigation_rule->set_matched_url_category("test rule category");
+
+    SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+        ->OnUrlFilteringInterstitial(GURL("https://filteredurl.com"),
+                                     threat_type, response, event_result);
+  }
+
   void TriggerOnUnscannedFileEvent(safe_browsing::EventResult result) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnUnscannedFileEvent(
@@ -1032,6 +1056,126 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
                 SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
   EXPECT_EQ("scan_id",
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest,
+       TestOnUrlFilteringInterstitial_Blocked) {
+  SetUpRouters();
+
+  base::Value::Dict report;
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce(CaptureArg(&report));
+
+  TriggerOnUrlFilteringInterstitial(safe_browsing::EventResult::BLOCKED,
+                                    "ENTERPRISE_BLOCKED_SEEN");
+  base::RunLoop().RunUntilIdle();
+
+  Mock::VerifyAndClearExpectations(client_.get());
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  ASSERT_NE(nullptr, event_list);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event = wrapper.FindDict(
+      SafeBrowsingPrivateEventRouter::kKeyUrlFilteringInterstitialEvent);
+  ASSERT_NE(nullptr, event);
+
+  EXPECT_FALSE(
+      *event->FindBool(SafeBrowsingPrivateEventRouter::kKeyClickedThrough));
+  EXPECT_EQ("ENTERPRISE_BLOCKED_SEEN",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyThreatType));
+
+  const base::Value::List* triggered_rule_info =
+      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+  ASSERT_NE(nullptr, triggered_rule_info);
+  ASSERT_EQ(1u, triggered_rule_info->size());
+  const base::Value::Dict& triggered_rule = (*triggered_rule_info)[0].GetDict();
+  EXPECT_EQ(
+      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  EXPECT_EQ("test rule name",
+            *triggered_rule.FindString(
+                SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest,
+       TestOnUrlFilteringInterstitial_Warned) {
+  SetUpRouters();
+
+  base::Value::Dict report;
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce(CaptureArg(&report));
+
+  TriggerOnUrlFilteringInterstitial(safe_browsing::EventResult::WARNED,
+                                    "ENTERPRISE_WARNED_SEEN");
+  base::RunLoop().RunUntilIdle();
+
+  Mock::VerifyAndClearExpectations(client_.get());
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  ASSERT_NE(nullptr, event_list);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event = wrapper.FindDict(
+      SafeBrowsingPrivateEventRouter::kKeyUrlFilteringInterstitialEvent);
+  ASSERT_NE(nullptr, event);
+
+  EXPECT_FALSE(
+      *event->FindBool(SafeBrowsingPrivateEventRouter::kKeyClickedThrough));
+  EXPECT_EQ("ENTERPRISE_WARNED_SEEN",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyThreatType));
+
+  const base::Value::List* triggered_rule_info =
+      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+  ASSERT_NE(nullptr, triggered_rule_info);
+  ASSERT_EQ(1u, triggered_rule_info->size());
+  const base::Value::Dict& triggered_rule = (*triggered_rule_info)[0].GetDict();
+  EXPECT_EQ(
+      safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  EXPECT_EQ("test rule name",
+            *triggered_rule.FindString(
+                SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest,
+       TestOnUrlFilteringInterstitial_Bypassed) {
+  SetUpRouters();
+
+  base::Value::Dict report;
+  EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
+      .WillOnce(CaptureArg(&report));
+
+  TriggerOnUrlFilteringInterstitial(safe_browsing::EventResult::BYPASSED,
+                                    "ENTERPRISE_WARNED_BYPASS");
+  base::RunLoop().RunUntilIdle();
+
+  Mock::VerifyAndClearExpectations(client_.get());
+  const base::Value::List* event_list =
+      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
+  ASSERT_NE(nullptr, event_list);
+  ASSERT_EQ(1u, event_list->size());
+  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+  const base::Value::Dict* event = wrapper.FindDict(
+      SafeBrowsingPrivateEventRouter::kKeyUrlFilteringInterstitialEvent);
+  ASSERT_NE(nullptr, event);
+
+  EXPECT_TRUE(
+      *event->FindBool(SafeBrowsingPrivateEventRouter::kKeyClickedThrough));
+  EXPECT_EQ("ENTERPRISE_WARNED_BYPASS",
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyThreatType));
+
+  const base::Value::List* triggered_rule_info =
+      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+  ASSERT_NE(nullptr, triggered_rule_info);
+  ASSERT_EQ(1u, triggered_rule_info->size());
+  const base::Value::Dict& triggered_rule = (*triggered_rule_info)[0].GetDict();
+  EXPECT_EQ(
+      safe_browsing::EventResultToString(safe_browsing::EventResult::BYPASSED),
+      *event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  EXPECT_EQ("test rule name",
+            *triggered_rule.FindString(
+                SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
