@@ -29,9 +29,7 @@ import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.DarkModeStrategy;
 import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
-import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ITab;
-import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
 
@@ -226,12 +224,6 @@ public class BrowserImpl extends IBrowser.Stub {
         if (mWindowAndroid != null) {
             mWindowAndroid.handlePermissionResult(requestCode, permissions, grantResults);
         }
-    }
-
-    @Override
-    public void setBottomView(IObjectWrapper viewWrapper) {
-        StrictModeWorkaround.apply();
-        getViewController().setBottomView(ObjectWrapper.unwrap(viewWrapper, View.class));
     }
 
     @Override

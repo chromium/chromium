@@ -5,7 +5,6 @@
 package org.chromium.weblayer;
 
 import android.os.RemoteException;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +14,6 @@ import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 import org.chromium.weblayer_private.interfaces.ITab;
-import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 import java.util.Set;
@@ -336,21 +334,6 @@ class Browser {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
         mBrowserRestoreCallbacks.removeObserver(callback);
-    }
-
-    /**
-     * Sets the View shown at the bottom of the browser. A value of null removes the view.
-     *
-     * @param view The new bottom-view.
-     */
-    public void setBottomView(@Nullable View view) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            mImpl.setBottomView(ObjectWrapper.wrap(view));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
     }
 
     /**

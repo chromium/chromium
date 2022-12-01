@@ -364,10 +364,6 @@ public final class BrowserViewController
         mTopControlsContainerView.setAnimationsEnabled(animationsEnabled);
     }
 
-    public void setBottomView(View view) {
-        mBottomControlsContainerView.setView(view);
-    }
-
     public int getBottomContentHeightDelta() {
         return mBottomControlsContainerView.getContentHeightDelta();
     }
