@@ -7,8 +7,11 @@
 #include "base/json/json_reader.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
@@ -161,11 +164,15 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   virtual void SetMediaRouterFactory() {
     ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
         GetBrowserContext(), base::BindRepeating(&MockMediaRouter::Create));
-    content::BrowserContext* original_profile =
-        Profile::FromBrowserContext(ProfileManager::GetActiveUserProfile())
-            ->GetOriginalProfile();
+    Profile* default_profile =
+#if BUILDFLAG(IS_CHROMEOS)
+        ProfileManager::GetActiveUserProfile();
+#else
+        ProfileManager::GetLastUsedProfile();
+#endif
     ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
-        original_profile, base::BindRepeating(&MockMediaRouter::Create));
+        default_profile->GetOriginalProfile(),
+        base::BindRepeating(&MockMediaRouter::Create));
   }
 
   void CreateStarterForDefaultModes() {

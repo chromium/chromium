@@ -8,6 +8,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
@@ -46,6 +48,19 @@ void RunRouteResponseCallbacks(
   DCHECK(!connection);
   for (auto& callback : route_result_callbacks)
     std::move(callback).Run(result);
+}
+
+// Gets the profile to use for the `MediaRouteStarter` when there is no
+// `WebContents` initiator. On ChromeOS, this happens for example when the
+// `MediaRouteStarter` is called from the OS system tray.
+Profile* GetDefaultProfileForMediaRouteStarter() {
+// Use the main profile on ChromeOS. Desktop platforms don't have the concept
+// of a "main" profile, so pick the "last used" profile instead.
+#if BUILDFLAG(IS_CHROMEOS)
+  return ProfileManager::GetActiveUserProfile();
+#else
+  return ProfileManager::GetLastUsedProfile();
+#endif
 }
 
 }  // namespace
@@ -122,7 +137,7 @@ Profile* MediaRouteStarter::GetProfile() const {
   return GetWebContents() && GetWebContents()->GetBrowserContext()
              ? Profile::FromBrowserContext(
                    GetWebContents()->GetBrowserContext())
-             : ProfileManager::GetActiveUserProfile();
+             : GetDefaultProfileForMediaRouteStarter();
 }
 
 MediaRouter* MediaRouteStarter::GetMediaRouter() const {
@@ -304,7 +319,7 @@ void MediaRouteStarter::InitRemotePlaybackSources(
 
 content::BrowserContext* MediaRouteStarter::GetBrowserContext() const {
   return GetWebContents() ? GetWebContents()->GetBrowserContext()
-                          : ProfileManager::GetActiveUserProfile();
+                          : GetDefaultProfileForMediaRouteStarter();
 }
 
 url::Origin MediaRouteStarter::GetFrameOrigin() const {
