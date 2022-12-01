@@ -23,7 +23,7 @@ enum PressureSource {
     CallWith=ScriptState,
     MeasureAs=PressureObserver_Observe,
     RaisesException
-  ] void observe(PressureSource source);
+  ] Promise<void> observe(PressureSource source);
 
   [
     MeasureAs=PressureObserver_Unobserve

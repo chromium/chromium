@@ -20,6 +20,11 @@
 
 namespace blink {
 
+class ExceptionState;
+class ScriptPromise;
+class ScriptPromiseResolver;
+class ScriptState;
+
 class MODULES_EXPORT PressureObserverManager final
     : public GarbageCollected<PressureObserverManager>,
       public ExecutionContextLifecycleStateObserver,
@@ -36,7 +41,10 @@ class MODULES_EXPORT PressureObserverManager final
   PressureObserverManager(const PressureObserverManager&) = delete;
   PressureObserverManager& operator=(const PressureObserverManager&) = delete;
 
-  void AddObserver(V8PressureSource, blink::PressureObserver*);
+  ScriptPromise AddObserver(V8PressureSource,
+                            blink::PressureObserver*,
+                            ScriptState*,
+                            ExceptionState&);
   void RemoveObserver(V8PressureSource, blink::PressureObserver*);
   void RemoveObserverFromAllSources(blink::PressureObserver*);
 
@@ -65,6 +73,7 @@ class MODULES_EXPORT PressureObserverManager final
 
   void DidBindObserver(V8PressureSource,
                        blink::PressureObserver*,
+                       ScriptPromiseResolver*,
                        mojom::blink::PressureStatus);
 
   constexpr static size_t kPressureSourceSize = V8PressureSource::kEnumSize;

@@ -24,17 +24,9 @@ interface PressureObserver {
 enum PressureStatus {
   kOk,
 
-  // The underlying platform does not report compute pressure information.
-  //
-  // For example, this is reported on Linux if Chrome cannot access /proc.
+  // The underlying platform does not report compute pressure information or
+  // the renderer is not allowed access to the feature.
   kNotSupported,
-
-  // The renderer is not allowed access to the feature.
-  //
-  // This is only reported in conditions that the renderer process cannot check.
-  // Renderers that attempt to access the feature when they know they shouldn't
-  // will be terminated.
-  kSecurityError,
 };
 
 // The interface is implemented in the browser and consumed by renderers. The

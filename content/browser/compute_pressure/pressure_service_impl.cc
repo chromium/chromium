@@ -59,7 +59,7 @@ void PressureServiceImpl::BindObserver(
 
   if (!render_frame_host().IsActive() ||
       render_frame_host().IsNestedWithinFencedFrame()) {
-    std::move(callback).Run(blink::mojom::PressureStatus::kSecurityError);
+    std::move(callback).Run(blink::mojom::PressureStatus::kNotSupported);
     return;
   }
 

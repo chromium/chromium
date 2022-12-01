@@ -307,7 +307,7 @@ TEST_F(PressureServiceImplFencedFrameTest, BindObserverFromFencedFrame) {
   FakePressureObserver observer;
   EXPECT_EQ(fenced_frame_sync_service->BindObserver(
                 observer.BindNewPipeAndPassRemote()),
-            blink::mojom::PressureStatus::kSecurityError);
+            blink::mojom::PressureStatus::kNotSupported);
 }
 
 TEST_F(PressureServiceImplTest, BindObserver_NotSupported) {

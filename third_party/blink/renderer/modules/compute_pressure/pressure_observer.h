@@ -32,6 +32,7 @@ class ExceptionState;
 class PressureObserverManager;
 class PressureObserverOptions;
 class PressureRecord;
+class ScriptPromise;
 class ScriptState;
 
 class PressureObserver final : public ScriptWrappable {
@@ -48,7 +49,7 @@ class PressureObserver final : public ScriptWrappable {
                                   ExceptionState&);
 
   // PressureObserver IDL implementation.
-  void observe(ScriptState*, V8PressureSource, ExceptionState&);
+  ScriptPromise observe(ScriptState*, V8PressureSource, ExceptionState&);
   void unobserve(V8PressureSource source);
   void disconnect();
   HeapVector<Member<PressureRecord>> takeRecords();

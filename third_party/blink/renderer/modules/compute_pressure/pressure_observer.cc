@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
 
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_record.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
@@ -54,14 +55,14 @@ Vector<V8PressureSource> PressureObserver::supportedSources() {
       {V8PressureSource(V8PressureSource::Enum::kCpu)});
 }
 
-void PressureObserver::observe(ScriptState* script_state,
-                               V8PressureSource source,
-                               ExceptionState& exception_state) {
+ScriptPromise PressureObserver::observe(ScriptState* script_state,
+                                        V8PressureSource source,
+                                        ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
-    return;
+    return ScriptPromise();
   }
 
   // Checks whether the document is allowed by Permissions Policy to call
@@ -71,7 +72,7 @@ void PressureObserver::observe(ScriptState* script_state,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       kFeaturePolicyBlocked);
-    return;
+    return ScriptPromise();
   }
 
   if (!manager_) {
@@ -79,7 +80,7 @@ void PressureObserver::observe(ScriptState* script_state,
     manager_ = PressureObserverManager::From(*window);
   }
 
-  manager_->AddObserver(source, this);
+  return manager_->AddObserver(source, this, script_state, exception_state);
 }
 
 void PressureObserver::unobserve(V8PressureSource source) {
