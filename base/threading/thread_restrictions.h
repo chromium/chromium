@@ -24,16 +24,24 @@
 // scoped_blocking_call.h instead.
 //
 // Specific allowances that can be controlled in this file are:
+//
 // - Blocking call: Refers to any call that causes the calling thread to wait
 //   off-CPU. It includes but is not limited to calls that wait on synchronous
 //   file I/O operations: read or write a file from disk, interact with a pipe
 //   or a socket, rename or delete a file, enumerate files in a directory, etc.
 //   Acquiring a low contention lock is not considered a blocking call.
 //
+//   Prefer to allow a blocking call by posting a task to
+//   base::ThreadPoolInstance with base::MayBlock().
+//
 // - Waiting on a //base sync primitive: Refers to calling one of these methods:
 //   - base::WaitableEvent::*Wait*
 //   - base::ConditionVariable::*Wait*
 //   - base::Process::WaitForExit*
+//
+//   Prefer not to wait on //base sync primitives (see below for alternatives).
+//   When it is unavoidable, use ScopedAllowBaseSyncPrimitives in a task posted
+//   to base::ThreadPoolInstance with base::MayBlock().
 //
 // - Accessing singletons: Accessing global state (Singleton / LazyInstance) is
 //   problematic on threads whom aren't joined on shutdown as they can be using
@@ -50,18 +58,27 @@
 //  - DisallowBaseSyncPrimitives(): Disallows waiting on a //base sync primitive
 //    on the current thread.
 //  - DisallowSingleton(): Disallows using singletons on the current thread.
-//  - DisallowUnresponsiveTasks() Disallows blocking calls, waiting on a //base
+//  - DisallowUnresponsiveTasks(): Disallows blocking calls, waiting on a //base
 //    sync primitive, and long CPU work on the current thread.
 //
 // In addition, scoped-allowance mechanisms are offered to make an exception
 // within a scope for a behavior that is normally disallowed.
-//  - ScopedAllowBlocking(ForTesting): Allows blocking calls.
-//  - ScopedAllowBaseSyncPrimitives(ForTesting)(OutsideBlockingScope): Allow
-//    waiting on a //base sync primitive. The OutsideBlockingScope suffix allows
-//    uses in a scope where blocking is also disallowed.
+//  - ScopedAllowBlocking: Allows blocking calls. Prefer to use base::MayBlock()
+//    instead.
+//  - ScopedAllowBaseSyncPrimitives: Allows waiting on a //base sync primitive.
+//    Must also be in a scope where blocking calls are allowed.
+//  - ScopedAllowBaseSyncPrimitivesOutsideBlockingScope: Allow waiting on a
+//    //base sync primitive, even in a scope where blocking calls are
+//    disallowed. Prefer to use a combination of base::MayBlock() and
+//    ScopedAllowBaseSyncPrimitives.
 //
 // Avoid using allowances outside of unit tests. In unit tests, use allowances
-// with the suffix "ForTesting".
+// with the suffix "ForTesting":
+//  - ScopedAllowBlockingForTesting: Allows blocking calls in unit tests.
+//  - ScopedAllowBaseSyncPrimitivesForTesting: Allows waiting on a //base sync
+//    primitive in unit tests. For convenience this can be used in a scope
+//    where blocking calls are disallowed. Note that base::TestWaitableEvent can
+//    be used without this, also for convenience.
 //
 // Prefer making blocking calls from tasks posted to base::ThreadPoolInstance
 // with base::MayBlock().
