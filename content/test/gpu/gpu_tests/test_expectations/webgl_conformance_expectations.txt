@@ -336,10 +336,8 @@ crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/text
 [ fuchsia fuchsia-board-sherlock ] WebglExtension_EXT_float_blend [ Failure ]
 
 # GPU process crash
-crbug.com/1356275 [ fuchsia fuchsia-board-astro ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 
 # Flaky tests
-crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/functions/glsl-function* [ Failure ]
 
 # Anti-aliasing disabled on Fuchsia
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
@@ -349,7 +347,6 @@ crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/functions/
 crbug.com/1261867 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 # Failing on emulator seemingly due to network issues.
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
 
 ####################
 # Win failures     #
@@ -465,11 +462,9 @@ crbug.com/angleproject/5038 [ android passthrough ] conformance/extensions/ext-c
 crbug.com/angleproject/5038 [ android no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Was too difficult to suppress these failures on individual bots.
-crbug.com/1165751 [ android-marshmallow ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 # Also flaky on nexus9 non-webview (bug=834933) but can't specify both.
-crbug.com/352645 [ android ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
 
 # These video tests appear to be flaky.
 # TODO(crbug.com/1178518): This crbug caused the test to fail consistently. It
@@ -488,7 +483,6 @@ crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-comp
 # Timing out on this device for unknown reasons.
 crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for pixels in video related tests
-crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/* [ Failure ]
 
 # Android NVIDIA Shield TV
@@ -528,7 +522,6 @@ crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conform
 crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 # Misc failures
-crbug.com/angleproject/2988 [ android angle-opengles ] conformance/context/context-size-change.html [ Failure ]
 
 # Failing webgl passthrough test on nexus 5x.
 crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
@@ -563,18 +556,6 @@ crbug.com/1237319 [ chromeos angle-opengles passthrough intel ] conformance/exte
 # finder:enable-unused
 
 # Arm-based issues.
-crbug.com/1080400 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_color_buffer_half_float [ Failure ]
-crbug.com/1080356 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_frag_depth [ Failure ]
-crbug.com/1080375 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_float [ Failure ]
-crbug.com/1080402 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_float_linear [ Failure ]
-crbug.com/1080403 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_half_float [ Failure ]
-crbug.com/1080404 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_half_float_linear [ Failure ]
-crbug.com/1080407 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_color_buffer_float [ Failure ]
-crbug.com/1080379 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
-crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
-crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/1357064 [ chromeos chromeos-board-kevin no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 # Failing on chromeos-amd64-generic-rel.
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
