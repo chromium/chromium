@@ -2365,8 +2365,6 @@ crbug.com/876485 fast/performance/performance-measure-null-exception.html [ Fail
 crbug.com/630597 external/wpt/css/css-images/image-set/image-set-rendering.html [ Failure ]
 crbug.com/630597 external/wpt/css/css-images/image-set/image-set-content-rendering.html [ Failure ]
 
-crbug.com/604875 external/wpt/css/css-images/tiled-gradients.html [ Failure ]
-
 # CSS Color 4 interpolations
 crbug.com/1362022 external/wpt/css/css-images/gradient/gradient-eval-004.html [ Failure ]
 crbug.com/1362022 external/wpt/css/css-images/gradient/gradient-eval-006.html [ Failure ]
