@@ -25,7 +25,10 @@ component("accelerated_widget_mac") {
     "window_resize_helper_mac.h",
   ]
 
-  defines = [ "ACCELERATED_WIDGET_MAC_IMPLEMENTATION" ]
+  defines = [
+    "ACCELERATED_WIDGET_MAC_IMPLEMENTATION",
+    "GL_SILENCE_DEPRECATION",
+  ]
 
   deps = [
     "//base",

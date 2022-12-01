@@ -425,6 +425,8 @@ component("gl") {
     }
 
     deps += [ "//components/metal_util:metal_util_types" ]
+
+    defines += [ "GL_SILENCE_DEPRECATION" ]
   }
   if (is_android) {
     defines += [

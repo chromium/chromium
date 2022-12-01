@@ -58,6 +58,8 @@ component("init") {
     ]
 
     frameworks = [ "OpenGL.framework" ]
+
+    defines += [ "GL_SILENCE_DEPRECATION" ]
   } else if (use_ozone) {
     sources += [
       "gl_display_egl_util_ozone.cc",

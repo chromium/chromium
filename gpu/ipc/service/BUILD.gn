@@ -118,6 +118,7 @@ component("service") {
       "OpenGL.framework",
       "QuartzCore.framework",
     ]
+    defines += [ "GL_SILENCE_DEPRECATION" ]
   }
   if (is_android) {
     sources += [
