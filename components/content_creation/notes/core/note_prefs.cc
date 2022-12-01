@@ -26,12 +26,12 @@ void SetRandomOrder(PrefService* prefs,
                     const std::vector<NoteTemplateIds>& order) {
   DCHECK(prefs);
 
-  base::Value list_value(base::Value::Type::LIST);
+  base::Value::List list;
   for (size_t i = 0; i < order.size(); i++) {
-    list_value.Append(static_cast<int>(order[i]));
+    list.Append(static_cast<int>(order[i]));
   }
 
-  prefs->Set(kTemplatesRandomOrder, list_value);
+  prefs->SetList(kTemplatesRandomOrder, std::move(list));
 }
 
 absl::optional<std::vector<NoteTemplateIds>> TryGetRandomOrder(
