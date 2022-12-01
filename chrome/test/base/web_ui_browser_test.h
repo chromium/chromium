@@ -13,43 +13,14 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/web_ui_test_handler.h"
+#include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/devtools_listener.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/javascript_browser_test.h"
-#include "content/public/browser/devtools_agent_host_observer.h"
 
 namespace {
 class WebUITestMessageHandler;
-
-// Observes new DevToolsAgentHost's and ensures code coverage is enabled and
-// can be collected.
-class WebUICoverageObserver : public content::DevToolsAgentHostObserver {
- public:
-  explicit WebUICoverageObserver(base::FilePath devtools_code_coverage_dir);
-  ~WebUICoverageObserver() override;
-
-  bool CoverageEnabled();
-  void CollectCoverage(const std::string& test_name);
-
- protected:
-  // content::DevToolsAgentHostObserver
-  bool ShouldForceDevToolsAgentHostCreation() override;
-  void DevToolsAgentHostCreated(content::DevToolsAgentHost* host) override;
-  void DevToolsAgentHostAttached(content::DevToolsAgentHost* host) override;
-  void DevToolsAgentHostNavigated(content::DevToolsAgentHost* host) override;
-  void DevToolsAgentHostDetached(content::DevToolsAgentHost* host) override;
-  void DevToolsAgentHostCrashed(content::DevToolsAgentHost* host,
-                                base::TerminationStatus status) override;
-
- private:
-  using DevToolsAgentMap =  // agent hosts: have a unique devtools listener
-      std::map<content::DevToolsAgentHost*,
-               std::unique_ptr<coverage::DevToolsListener>>;
-  base::FilePath devtools_code_coverage_dir_;
-  DevToolsAgentMap devtools_agent_;
-};
-
-}  // namespace
+}
 
 namespace base {
 class Value;
@@ -168,7 +139,7 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
   }
 
   // Handles collection of code coverage.
-  std::unique_ptr<WebUICoverageObserver> coverage_handler_;
+  std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;
 
  private:
   // Loads all libraries added with AddLibrary(), and calls |function_name| with

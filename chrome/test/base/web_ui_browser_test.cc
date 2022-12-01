@@ -36,7 +36,6 @@
 #include "chrome/test/base/js_test_api.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/test_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/url_data_source.h"
@@ -143,72 +142,6 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
 
   content::WebUI* GetWebUI() override { return web_ui(); }
 };
-
-WebUICoverageObserver::WebUICoverageObserver(
-    base::FilePath devtools_code_coverage_dir)
-    : devtools_code_coverage_dir_(devtools_code_coverage_dir) {
-  content::DevToolsAgentHost::AddObserver(this);
-}
-
-WebUICoverageObserver::~WebUICoverageObserver() = default;
-
-bool WebUICoverageObserver::CoverageEnabled() {
-  return !devtools_code_coverage_dir_.empty();
-}
-
-void WebUICoverageObserver::CollectCoverage(const std::string& test_name) {
-  ASSERT_TRUE(CoverageEnabled());
-
-  content::DevToolsAgentHost::RemoveObserver(this);
-  content::RunAllTasksUntilIdle();
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath store =
-      devtools_code_coverage_dir_.AppendASCII("webui_javascript_code_coverage");
-  coverage::DevToolsListener::SetupCoverageStore(store);
-
-  for (auto& agent : devtools_agent_) {
-    auto* host = agent.first;
-    if (agent.second->HasCoverage(host))
-      agent.second->GetCoverage(host, store, test_name);
-    agent.second->Detach(host);
-  }
-
-  content::DevToolsAgentHost::DetachAllClients();
-}
-
-bool WebUICoverageObserver::ShouldForceDevToolsAgentHostCreation() {
-  return CoverageEnabled();
-}
-
-void WebUICoverageObserver::DevToolsAgentHostCreated(
-    content::DevToolsAgentHost* host) {
-  CHECK(devtools_agent_.find(host) == devtools_agent_.end());
-
-  uint32_t process_id = base::GetUniqueIdForProcess().GetUnsafeValue();
-  devtools_agent_[host] =
-      std::make_unique<coverage::DevToolsListener>(host, process_id);
-}
-
-void WebUICoverageObserver::DevToolsAgentHostAttached(
-    content::DevToolsAgentHost* host) {}
-
-void WebUICoverageObserver::DevToolsAgentHostNavigated(
-    content::DevToolsAgentHost* host) {
-  if (devtools_agent_.find(host) == devtools_agent_.end())
-    return;
-
-  devtools_agent_.find(host)->second->Navigated(host);
-}
-
-void WebUICoverageObserver::DevToolsAgentHostDetached(
-    content::DevToolsAgentHost* host) {}
-
-void WebUICoverageObserver::DevToolsAgentHostCrashed(
-    content::DevToolsAgentHost* host,
-    base::TerminationStatus status) {
-  ASSERT_TRUE(devtools_agent_.find(host) == devtools_agent_.end());
-}
 
 }  // namespace
 
@@ -518,8 +451,8 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage)) {
     base::FilePath devtools_code_coverage_dir =
         command_line->GetSwitchValuePath(switches::kDevtoolsCodeCoverage);
-    coverage_handler_ =
-        std::make_unique<WebUICoverageObserver>(devtools_code_coverage_dir);
+    coverage_handler_ = std::make_unique<DevToolsAgentCoverageObserver>(
+        devtools_code_coverage_dir);
   }
 
   logging::SetLogMessageHandler(&LogHandler);

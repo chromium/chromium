@@ -9170,6 +9170,8 @@ if (!is_android) {
       "../browser/web_applications/test/profile_test_helper.h",
       "../browser/web_applications/test/web_app_icon_test_utils.cc",
       "../browser/web_applications/test/web_app_icon_test_utils.h",
+      "base/devtools_agent_coverage_observer.cc",
+      "base/devtools_agent_coverage_observer.h",
       "base/devtools_listener.cc",
       "base/devtools_listener.h",
       "base/in_process_browser_test.cc",
