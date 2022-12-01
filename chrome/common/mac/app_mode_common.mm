@@ -29,8 +29,6 @@ const char kLaunchedForTest[] = "launched-for-test";
 const char kLaunchedAfterRebuild[] = "launched-after-rebuild";
 const char kIsNormalLaunch[] = "is-normal-launch";
 
-const char kAppShimError[] = "app-shim-error";
-
 NSString* const kCFBundleDocumentTypesKey = @"CFBundleDocumentTypes";
 NSString* const kCFBundleTypeExtensionsKey = @"CFBundleTypeExtensions";
 NSString* const kCFBundleTypeIconFileKey = @"CFBundleTypeIconFile";

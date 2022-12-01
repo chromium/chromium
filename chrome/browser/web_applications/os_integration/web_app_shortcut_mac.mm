@@ -678,18 +678,6 @@ bool UpdateAppShortcutsSubdirLocalizedName(
   return true;
 }
 
-std::unique_ptr<ShortcutInfo> BuildShortcutInfoFromBundle(
-    const base::FilePath& bundle_path) {
-  BundleInfoPlist bundle_info(bundle_path);
-  std::unique_ptr<ShortcutInfo> shortcut_info(new ShortcutInfo);
-  shortcut_info->extension_id = bundle_info.GetExtensionId();
-  shortcut_info->url = bundle_info.GetURL();
-  shortcut_info->title = bundle_info.GetTitle();
-  shortcut_info->profile_name = bundle_info.GetProfileName();
-  shortcut_info->profile_path = bundle_info.GetFullProfilePath();
-  return shortcut_info;
-}
-
 base::FilePath GetMultiProfileAppDataDir(base::FilePath app_data_dir) {
   // The kCrAppModeUserDataDirKey is expected to be a path in kWebAppDirname,
   // and the true user data dir is extracted by going three directories up.
@@ -768,17 +756,6 @@ std::list<BundleInfoPlist> SearchForBundlesById(const std::string& bundle_id) {
 }
 
 }  // namespace
-
-std::unique_ptr<ShortcutInfo> RecordAppShimErrorAndBuildShortcutInfo(
-    const base::FilePath& bundle_path) {
-  base::Version full_version = BundleInfoPlist(bundle_path).GetVersion();
-  uint32_t major_version = 0;
-  if (full_version.IsValid())
-    major_version = full_version.components()[0];
-  base::UmaHistogramSparse("Apps.AppShimErrorVersion", major_version);
-
-  return BuildShortcutInfoFromBundle(bundle_path);
-}
 
 bool AppShimLaunchDisabled() {
   return AppShimCreationDisabledForTest() &&

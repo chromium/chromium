@@ -77,10 +77,6 @@ extern const char kLaunchedAfterRebuild[];
 // process.
 extern const char kIsNormalLaunch[];
 
-// Path to an app shim bundle. Indicates to Chrome that this shim attempted to
-// launch but failed.
-extern const char kAppShimError[];
-
 // Keys for specifying the file types handled by an app.
 extern NSString* const kCFBundleDocumentTypesKey;
 extern NSString* const kCFBundleTypeExtensionsKey;

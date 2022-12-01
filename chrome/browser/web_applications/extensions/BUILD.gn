@@ -17,10 +17,7 @@ source_set("extensions") {
     "web_app_extension_shortcut.h",
   ]
   if (is_mac) {
-    sources += [
-      "web_app_extension_shortcut_mac.h",
-      "web_app_extension_shortcut_mac.mm",
-    ]
+    sources += [ "web_app_extension_shortcut_mac.mm" ]
   }
 
   # Enable the "exit_time_destructors" warning here to avoid accidentally

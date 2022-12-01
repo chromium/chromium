@@ -118,7 +118,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
-#include "chrome/browser/web_applications/extensions/web_app_extension_shortcut_mac.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -990,11 +989,6 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     silent_launch = true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_MAC)
-  if (web_app::MaybeRebuildShortcut(command_line))
-    return true;
-#endif
 
   if (process_startup == chrome::startup::IsProcessStartup::kNo &&
       command_line.HasSwitch(switches::kDumpBrowserHistograms)) {

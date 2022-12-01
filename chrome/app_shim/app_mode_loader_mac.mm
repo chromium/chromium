@@ -212,32 +212,28 @@ int LoadFrameworkAndStart(int argc, char** argv) {
       return ChromeAppModeStart(&info);
     }
 
+    // If the shim was launched by chrome, simply quit. Chrome will detect that
+    // the app shim has terminated, rebuild it (if it hadn't try to do so
+    // already), and launch it again.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            app_mode::kLaunchedByChromeProcessId)) {
+      NSLog(@"Loading Chrome failed, terminating");
+      return kErrorReturnValue;
+    }
+
     NSLog(@"Loading Chrome failed, launching Chrome with command line");
     base::CommandLine cr_command_line(executable_path);
     // The user_data_dir from the plist is actually the app data dir.
     cr_command_line.AppendSwitchPath(
         switches::kUserDataDir,
         plist_user_data_dir.DirName().DirName().DirName());
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            app_mode::kLaunchedByChromeProcessId)) {
-      // Pass --app-shim-error to have Chrome rebuild this shim.
-      // If Chrome has rebuilt this shim once already, then rebuilding doesn't
-      // fix the problem, so don't try again.
-      if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-              app_mode::kLaunchedAfterRebuild)) {
-        cr_command_line.AppendSwitchPath(app_mode::kAppShimError,
-                                         app_mode_bundle_path);
-      }
-    } else {
-      // If the shim was launched directly (instead of by Chrome), first ask
-      // Chrome to launch the app. Chrome will launch the shim again, the same
-      // error will occur and be handled above. This approach allows the app to
-      // be started without blocking on fixing the shim and guarantees that the
-      // profile is loaded when Chrome receives --app-shim-error.
-      cr_command_line.AppendSwitchPath(switches::kProfileDirectory,
-                                       profile_dir);
-      cr_command_line.AppendSwitchASCII(switches::kAppId, app_mode_id);
-    }
+    // If the shim was launched directly (instead of by Chrome), first ask
+    // Chrome to launch the app. Chrome will launch the shim again, the same
+    // error might occur, after which chrome will try to regenerate the
+    // shim.
+    cr_command_line.AppendSwitchPath(switches::kProfileDirectory, profile_dir);
+    cr_command_line.AppendSwitchASCII(switches::kAppId, app_mode_id);
+
     // Launch the executable directly since base::mac::OpenApplicationWithPath
     // doesn't pass command line arguments if the application is already
     // running.

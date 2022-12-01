@@ -1763,18 +1763,6 @@ chromium-metrics-reviews@google.com.
   <token key="InstallReason" variants="InstallReason"/>
 </histogram>
 
-<histogram name="Apps.AppShimErrorVersion" units="units" expires_after="M78">
-  <owner>jackhou@chromium.org</owner>
-  <summary>
-    Counts which major milestone versions of app_mode_loader are sending
-    --app-shim-error. --app-shim-error is sent as a command line argument to
-    Chrome when app_mode_loader was unable to dyload the Chrome Framework and
-    call ChromeAppModeMain. For example, when Chrome updates from 32-bit to
-    64-bit, an older shim will find the new framework version but fail to dyload
-    it.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppsInFolders{AppListFolderExperiment}" units="Apps"
     expires_after="2022-10-09">
   <obsolete>
