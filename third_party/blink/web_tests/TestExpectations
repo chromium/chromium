@@ -7629,14 +7629,6 @@ crbug.com/1370050 http/tests/devtools/sources/debugger-ui/debugger-save-to-temp-
 crbug.com/1279220 [ Win ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass Timeout ]
 crbug.com/1279220 [ Linux ] fast/scrolling/non-composited-scroller-in-position-fixed-scroller.html [ Failure Pass ]
 
-# Temporarily disable tests to show storage keys in DOMStorage instead of origin
-crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Crash Failure Pass Timeout ]
-crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Crash Failure Pass Timeout ]
-crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Crash Failure Pass Timeout ]
-crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Crash Failure Pass Timeout ]
-crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-websql.js [ Crash Failure Pass Timeout ]
-crbug.com/1349331 http/tests/devtools/oopif/oopif-storage.js [ Crash Failure Pass Timeout ]
-
 # Sheriff 2022-10-12
 crbug.com/1367495 [ Debug Linux ] virtual/threaded-no-composited-antialiasing/animations/direction-and-fill/animation-direction-reverse-timing-functions.html [ Failure Pass ]
 
