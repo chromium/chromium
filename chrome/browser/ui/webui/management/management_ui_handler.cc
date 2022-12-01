@@ -65,6 +65,8 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -742,9 +744,22 @@ void ManagementUIHandler::AddUpdateRequiredEolInfo(
   response->Set("eolAdminMessage", eol_admin_message);
 }
 
-void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
+void ManagementUIHandler::AddMonitoredNetworkPrivacyDisclosure(
     base::Value::Dict* response) const {
-  bool showProxyDisclosure = false;
+  bool showMonitoredNetworkDisclosure = false;
+
+  // Check for secure DNS templates with identifiers.
+  showMonitoredNetworkDisclosure =
+      SystemNetworkContextManager::GetStubResolverConfigReader()
+          ->GetDohWithIdentifiersDisplayServers()
+          .has_value();
+  if (showMonitoredNetworkDisclosure) {
+    response->Set("showMonitoredNetworkPrivacyDisclosure",
+                  showMonitoredNetworkDisclosure);
+    return;
+  }
+
+  // Check for proxy config.
   ash::NetworkHandler* network_handler = ash::NetworkHandler::Get();
   base::Value::Dict proxy_settings;
   // |ui_proxy_config_service| may be missing in tests. If the device is offline
@@ -765,10 +780,12 @@ void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
         proxy_settings.FindStringByDottedPath(base::JoinString(
             {::onc::network_config::kType, ::onc::kAugmentationActiveSetting},
             "."));
-    showProxyDisclosure = proxy_specification_mode &&
-                          *proxy_specification_mode != ::onc::proxy::kDirect;
+    showMonitoredNetworkDisclosure =
+        proxy_specification_mode &&
+        *proxy_specification_mode != ::onc::proxy::kDirect;
   }
-  response->Set("showProxyServerPrivacyDisclosure", showProxyDisclosure);
+  response->Set("showMonitoredNetworkPrivacyDisclosure",
+                showMonitoredNetworkDisclosure);
 }
 
 // static
@@ -815,7 +832,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
   if (enterprise_manager.empty())
     enterprise_manager = GetAccountManager(profile);
   AddUpdateRequiredEolInfo(&response);
-  AddProxyServerPrivacyDisclosure(&response);
+  AddMonitoredNetworkPrivacyDisclosure(&response);
 #else
   std::string enterprise_manager = GetAccountManager(profile);
 

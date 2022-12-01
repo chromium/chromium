@@ -75,7 +75,7 @@ class ManagementUiElement extends ManagementUiElementBase {
       pluginVmDataCollectionEnabled_: Boolean,
       eolAdminMessage_: String,
       eolMessage_: String,
-      showProxyServerPrivacyDisclosure_: Boolean,
+      showMonitoredNetworkPrivacyDisclosure_: Boolean,
       // </if>
 
       subtitle_: String,
@@ -103,7 +103,7 @@ class ManagementUiElement extends ManagementUiElementBase {
   private pluginVmDataCollectionEnabled_: boolean;
   private eolAdminMessage_: string;
   private eolMessage_: string;
-  private showProxyServerPrivacyDisclosure_: boolean;
+  private showMonitoredNetworkPrivacyDisclosure_: boolean;
   // </if>
 
   private subtitle_: string;
@@ -367,8 +367,8 @@ class ManagementUiElement extends ManagementUiElementBase {
       this.customerLogo_ = data.customerLogo;
       this.managementOverview_ = data.overview;
       this.eolMessage_ = data.eolMessage;
-      this.showProxyServerPrivacyDisclosure_ =
-          data.showProxyServerPrivacyDisclosure;
+      this.showMonitoredNetworkPrivacyDisclosure_ =
+          data.showMonitoredNetworkPrivacyDisclosure;
       try {
         // Sanitizing the message could throw an error if it contains non
         // supported markup.

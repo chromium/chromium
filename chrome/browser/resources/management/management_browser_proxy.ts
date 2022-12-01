@@ -34,7 +34,7 @@ interface ManagedDataResponse {
   showUpdateRequiredEol: boolean;
   eolMessage: string;
   eolAdminMessage: string;
-  showProxyServerPrivacyDisclosure: boolean;
+  showMonitoredNetworkPrivacyDisclosure: boolean;
 }
 
 interface ThreatProtectionPermission {

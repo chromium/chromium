@@ -61,6 +61,9 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/net/secure_dns_config.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -86,6 +89,8 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -115,7 +120,7 @@ struct ContextualManagementSourceUpdate {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string management_overview;
   std::u16string update_required_eol;
-  bool show_proxy_server_privacy_disclosure;
+  bool show_monitored_network_privacy_disclosure;
 #else
   std::u16string browser_management_notice;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -322,8 +327,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     extracted_.management_overview = ExtractPathFromDict(data, "overview");
     extracted_.update_required_eol = ExtractPathFromDict(data, "eolMessage");
     absl::optional<bool> showProxyDisclosure =
-        data.FindBool("showProxyServerPrivacyDisclosure");
-    extracted_.show_proxy_server_privacy_disclosure =
+        data.FindBool("showMonitoredNetworkPrivacyDisclosure");
+    extracted_.show_monitored_network_privacy_disclosure =
         showProxyDisclosure.has_value() && showProxyDisclosure.value();
 #else
     extracted_.browser_management_notice =
@@ -393,6 +398,10 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
     ash::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
+    stub_resolver_config_reader_ =
+        std::make_unique<StubResolverConfigReader>(&local_state_);
+    SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
+        stub_resolver_config_reader_.get());
     // The |DeviceSettingsTestBase| setup above instantiates
     // |FakeShillManagerClient| with a default environment which will post
     // tasks on the current thread to setup a initial network configuration with
@@ -502,8 +511,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     return extracted_.update_required_eol;
   }
 
-  bool GetShowProxyServerPrivacyDisclosure() const {
-    return extracted_.show_proxy_server_privacy_disclosure;
+  bool GetShowMonitoredNetworkPrivacyDisclosure() const {
+    return extracted_.show_monitored_network_privacy_disclosure;
   }
 #else
 
@@ -579,6 +588,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   std::unique_ptr<crostini::FakeCrostiniFeatures> crostini_features_;
   TestingPrefServiceSimple local_state_;
   TestingPrefServiceSimple user_prefs_;
+  std::unique_ptr<StubResolverConfigReader> stub_resolver_config_reader_;
   std::unique_ptr<TestDeviceCloudPolicyManagerAsh> manager_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   policy::ServerBackedStateKeysBroker state_keys_broker_;
@@ -1118,7 +1128,32 @@ TEST_F(ManagementUIHandlerTests, ReportDevicePeripheralsEnabled) {
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }
 
-TEST_F(ManagementUIHandlerTests, ShowProxyServerDisclosure) {
+TEST_F(ManagementUIHandlerTests,
+       ShowPrivacyDisclosureForSecureDnsWithIdentifiers) {
+  ResetTestConfig();
+  local_state_.Set(prefs::kDnsOverHttpsMode,
+                   base::Value(SecureDnsConfig::kModeSecure));
+  local_state_.Set(prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
+  local_state_.Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                   base::Value("www.test-dns.com"));
+
+  // Owned by |scoped_user_manager|.
+  auto user_manager = std::make_unique<user_manager::FakeUserManager>();
+  user_manager->set_local_state(&local_state_);
+  // The DNS templates with identifiers only work is a user is logged in.
+  const AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
+  user_manager->AddUser(account_id);
+  user_manager::ScopedUserManager scoper(std::move(user_manager));
+
+  base::RunLoop().RunUntilIdle();
+
+  GetTestConfig().managed_device = true;
+  SetUpProfileAndHandler();
+
+  EXPECT_TRUE(GetShowMonitoredNetworkPrivacyDisclosure());
+}
+
+TEST_F(ManagementUIHandlerTests, ShowPrivacyDisclosureForActiveProxy) {
   ResetTestConfig();
   // Set pref to use a proxy.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
@@ -1131,7 +1166,7 @@ TEST_F(ManagementUIHandlerTests, ShowProxyServerDisclosure) {
   GetTestConfig().managed_device = true;
   SetUpProfileAndHandler();
 
-  EXPECT_TRUE(GetShowProxyServerPrivacyDisclosure());
+  EXPECT_TRUE(GetShowMonitoredNetworkPrivacyDisclosure());
 }
 
 TEST_F(ManagementUIHandlerTests, ProxyServerDisclosureDeviceOffline) {
@@ -1158,7 +1193,7 @@ TEST_F(ManagementUIHandlerTests, ProxyServerDisclosureDeviceOffline) {
   GetTestConfig().managed_device = true;
   SetUpProfileAndHandler();
 
-  EXPECT_FALSE(GetShowProxyServerPrivacyDisclosure());
+  EXPECT_FALSE(GetShowMonitoredNetworkPrivacyDisclosure());
 
   ash::NetworkHandler::Get()->NetworkHandler::ShutdownPrefServices();
 }
@@ -1176,7 +1211,7 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
   GetTestConfig().managed_device = true;
   SetUpProfileAndHandler();
 
-  EXPECT_FALSE(GetShowProxyServerPrivacyDisclosure());
+  EXPECT_FALSE(GetShowMonitoredNetworkPrivacyDisclosure());
 
   ash::NetworkHandler::Get()->NetworkHandler::ShutdownPrefServices();
 }
