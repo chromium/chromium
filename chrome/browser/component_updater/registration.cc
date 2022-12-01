@@ -15,7 +15,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
-#include "chrome/browser/component_updater/autofill_regex_remover.h"
 #include "chrome/browser/component_updater/chrome_client_side_phishing_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
@@ -147,8 +146,6 @@ void RegisterComponentsForUpdate() {
     // The CRLSet component previously resided in a different location: delete
     // the old file.
     component_updater::DeleteLegacyCRLSet(path);
-
-    component_updater::DeleteAutofillRegex(path);
 
     component_updater::DeleteUrlParamFilter(path);
 

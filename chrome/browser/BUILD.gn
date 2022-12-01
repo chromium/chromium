@@ -314,8 +314,6 @@ static_library("browser") {
     "commerce/shopping_service_factory.h",
     "complex_tasks/task_tab_helper.cc",
     "complex_tasks/task_tab_helper.h",
-    "component_updater/autofill_regex_remover.cc",
-    "component_updater/autofill_regex_remover.h",
     "component_updater/chrome_client_side_phishing_component_installer.cc",
     "component_updater/chrome_client_side_phishing_component_installer.h",
     "component_updater/chrome_component_updater_configurator.cc",
