@@ -12,6 +12,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.feed.FeedAutoplaySettingsDelegate;
@@ -41,26 +42,32 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Sets up the Coordinator for Cormorant Creator surface.  It is based on the doc at
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
  */
 public class CreatorCoordinator
         implements FeedAutoplaySettingsDelegate, FeedContentFirstLoadWatcher {
-    private final ViewGroup mViewGroup;
+    private final ViewGroup mCreatorViewGroup;
     private CreatorMediator mMediator;
     private Activity mActivity;
     private NtpListContentManager mContentManager;
     private RecyclerView mRecyclerView;
     private View mProfileView;
+    private ViewGroup mLayoutView;
     private HybridListRenderer mHybridListRenderer;
     private SurfaceScope mSurfaceScope;
     private FeedSurfaceScopeDependencyProvider mDependencyProvider;
     private byte[] mWebFeedId;
-    private PropertyModel mCreatorProfileModel;
+    private PropertyModel mCreatorModel;
+    private boolean mIsFollowed;
     private PropertyModelChangeProcessor<PropertyModel, CreatorProfileView, PropertyKey>
             mCreatorProfileModelChangeProcessor;
-    private boolean mIsFollowed;
+    private PropertyModelChangeProcessor<PropertyModel, CreatorToolbarView, PropertyKey>
+            mCreatorToolbarModelChangeProcessor;
 
     private final SnackbarManager mSnackbarManager;
     private BottomSheetController mBottomSheetController;
@@ -71,6 +78,8 @@ public class CreatorCoordinator
     private Stream mStream;
     private String mTitle;
     private String mUrl;
+
+    private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
 
     public CreatorCoordinator(Activity activity, byte[] webFeedId, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, Profile profile, String title, String url) {
@@ -83,23 +92,32 @@ public class CreatorCoordinator
         mUrl = url;
         mRecyclerView = setUpView();
 
+        mProfileView =
+                (View) LayoutInflater.from(mActivity).inflate(R.layout.creator_profile, null);
+        List<NtpListContentManager.FeedContent> contentPreviewsList = new ArrayList<>();
+        contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
+                getContentPreviewsPaddingPx(), CREATOR_PROFILE_ID, mProfileView));
+        mContentManager.addContents(0, contentPreviewsList);
+
         // Inflate the XML
-        mViewGroup =
+        mCreatorViewGroup =
                 (ViewGroup) LayoutInflater.from(mActivity).inflate(R.layout.creator_activity, null);
-        mViewGroup.addView(mRecyclerView);
-        mProfileView = mViewGroup.findViewById(R.id.creator_profile);
+        mLayoutView = mCreatorViewGroup.findViewById(R.id.creator_layout);
+        mLayoutView.addView(mRecyclerView);
 
         // TODO(crbug.com/1377069): Add a JNI to get the follow status from CreatorBridge instead
         getIsFollowedStatus();
         initBottomSheet();
 
-        // Generate CreatorProfileModel
-        mCreatorProfileModel = generateCreatorProfileModel(mWebFeedId, mTitle, mUrl, mIsFollowed);
-        mCreatorProfileModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mCreatorProfileModel,
-                        (CreatorProfileView) mProfileView, CreatorProfileViewBinder::bind);
+        // Generate Creator Model
+        mCreatorModel = generateCreatorModel(mWebFeedId, mTitle, mUrl, mIsFollowed);
+        mCreatorProfileModelChangeProcessor = PropertyModelChangeProcessor.create(
+                mCreatorModel, (CreatorProfileView) mProfileView, CreatorProfileViewBinder::bind);
+        mCreatorToolbarModelChangeProcessor = PropertyModelChangeProcessor.create(
+                mCreatorModel, (CreatorToolbarView) mLayoutView, CreatorToolbarViewBinder::bind);
+        setUpToolbarListener();
 
-        mMediator = new CreatorMediator(mActivity, mCreatorProfileModel);
+        mMediator = new CreatorMediator(mActivity, mCreatorModel);
 
         // Create a FeedStream and bind it to the RecyclerView
         // TODO(crbug.com/1377505): Add CreatorActionDelegate to the FeedStream and enable it.
@@ -107,11 +125,11 @@ public class CreatorCoordinator
     }
 
     public ViewGroup getView() {
-        return mViewGroup;
+        return mCreatorViewGroup;
     }
 
-    public PropertyModel getCreatorProfileModel() {
-        return mCreatorProfileModel;
+    public PropertyModel getCreatorModel() {
+        return mCreatorModel;
     }
 
     private RecyclerView setUpView() {
@@ -141,8 +159,6 @@ public class CreatorCoordinator
             view.setId(R.id.creator_feed_stream_recycler_view);
             view.setClipToPadding(false);
             view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
-            view.setPadding(view.getPaddingLeft(), getContentPreviewsPaddingPx(),
-                    view.getPaddingRight(), view.getPaddingBottom());
         } else {
             view = null;
         }
@@ -155,13 +171,14 @@ public class CreatorCoordinator
         return mActivity.getResources().getDimensionPixelSize(R.dimen.content_previews_padding);
     }
 
-    private PropertyModel generateCreatorProfileModel(
+    private PropertyModel generateCreatorModel(
             byte[] webFeedId, String title, String url, boolean isFollowed) {
-        PropertyModel model = new PropertyModel.Builder(CreatorProfileProperties.ALL_KEYS)
-                                      .with(CreatorProfileProperties.WEB_FEED_ID_KEY, webFeedId)
-                                      .with(CreatorProfileProperties.TITLE_KEY, title)
-                                      .with(CreatorProfileProperties.URL_KEY, url)
-                                      .with(CreatorProfileProperties.IS_FOLLOWED_KEY, isFollowed)
+        PropertyModel model = new PropertyModel.Builder(CreatorProperties.ALL_KEYS)
+                                      .with(CreatorProperties.WEB_FEED_ID_KEY, webFeedId)
+                                      .with(CreatorProperties.TITLE_KEY, title)
+                                      .with(CreatorProperties.URL_KEY, url)
+                                      .with(CreatorProperties.IS_FOLLOWED_KEY, isFollowed)
+                                      .with(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY, false)
                                       .build();
         return model;
     }
@@ -190,15 +207,26 @@ public class CreatorCoordinator
 
             @Override
             public void setNavigationBarScrimFraction(float scrimFraction) {}
-        }, (ViewGroup) mViewGroup, mActivity.getResources().getColor(R.color.default_scrim_color));
+        }, mCreatorViewGroup, mActivity.getResources().getColor(R.color.default_scrim_color));
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        mViewGroup.addView(mBottomSheetContainer);
+        mCreatorViewGroup.addView(mBottomSheetContainer);
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
                 () -> mScrim, (sheet) -> {}, mActivity.getWindow(),
                 KeyboardVisibilityDelegate.getInstance(), () -> mBottomSheetContainer);
+    }
+
+    private void setUpToolbarListener() {
+        mRecyclerView.addOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                mCreatorModel.set(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY,
+                        mHybridListRenderer.getListLayoutHelper().findFirstVisibleItemPosition()
+                                > 0);
+            }
+        });
     }
 
     FeedStream createCreatorFeedStream() {

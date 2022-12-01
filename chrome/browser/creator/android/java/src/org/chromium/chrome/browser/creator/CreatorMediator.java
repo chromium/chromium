@@ -24,29 +24,25 @@ public class CreatorMediator {
     private byte[] mWebFeedId;
     private String mTitle;
     private String mUrl;
-    private PropertyModel mCreatorProfileModel;
+    private PropertyModel mCreatorModel;
     private boolean mFollowState;
 
-    CreatorMediator(Context context, PropertyModel creatorProfileModel) {
+    CreatorMediator(Context context, PropertyModel creatorModel) {
         mContext = context;
-        mCreatorProfileModel = creatorProfileModel;
-        mWebFeedId = mCreatorProfileModel.get(CreatorProfileProperties.WEB_FEED_ID_KEY);
+        mCreatorModel = creatorModel;
+        mWebFeedId = mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY);
         getCreator();
 
         // Set Follow OnClick Action
-        mCreatorProfileModel.set(
-                CreatorProfileProperties.ON_FOLLOW_CLICK_KEY, this::followClickHandler);
-        mCreatorProfileModel.set(
-                CreatorProfileProperties.ON_FOLLOWING_CLICK_KEY, this::followingClickHandler);
-
-        // TODO(crbug.com/1377071): Set up Title and URL dynamically using CreatorBridge
+        mCreatorModel.set(CreatorProperties.ON_FOLLOW_CLICK_KEY, this::followClickHandler);
+        mCreatorModel.set(CreatorProperties.ON_FOLLOWING_CLICK_KEY, this::followingClickHandler);
     }
 
     private void followClickHandler() {
         WebFeedBridge.followFromId(mWebFeedId,
                 /*isDurable=*/false, WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU, (result) -> {
                     if (result.requestStatus == SUCCESS) {
-                        mCreatorProfileModel.set(CreatorProfileProperties.IS_FOLLOWED_KEY, true);
+                        mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
                     }
                 });
     }
@@ -55,7 +51,7 @@ public class CreatorMediator {
         WebFeedBridge.unfollow(mWebFeedId,
                 /*isDurable=*/false, WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU, (result) -> {
                     if (result.requestStatus == SUCCESS) {
-                        mCreatorProfileModel.set(CreatorProfileProperties.IS_FOLLOWED_KEY, false);
+                        mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, false);
                     }
                 });
     }

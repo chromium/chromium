@@ -9,6 +9,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/profile_background" >
   <LinearLayout
       android:orientation="vertical"

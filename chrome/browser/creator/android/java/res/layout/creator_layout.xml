@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.creator.CreatorToolbarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layoutDirection="locale" >
+  <com.google.android.material.appbar.MaterialToolbar
+      android:id="@+id/action_bar"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      style="@style/CreatorActivityNoActionBar" >
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/creator_all_buttons_toolbar"
+        android:layout_gravity="end" >
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/creator_follow_button_toolbar"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="@style/CreatorFollowFilledButtonToolbar"
+          android:text="@string/menu_follow"
+          android:drawableStart="@drawable/follow_add"
+          android:visibility="gone" />
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/creator_following_button_toolbar"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="@style/CreatorFollowReverseButtonToolbar"
+          android:text="@string/menu_following"
+          android:drawableStart="@drawable/following_checkmark"
+          android:visibility="gone" />
+    </FrameLayout>
+  </com.google.android.material.appbar.MaterialToolbar>
+</org.chromium.chrome.browser.creator.CreatorToolbarView>

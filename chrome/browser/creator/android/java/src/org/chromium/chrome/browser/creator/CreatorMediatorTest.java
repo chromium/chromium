@@ -62,7 +62,7 @@ public class CreatorMediatorTest {
     private CreatorCoordinator mCreatorCoordinator;
     private CreatorMediator mCreatorMediator;
     private TestActivity mActivity;
-    private PropertyModel mCreatorProfileModel;
+    private PropertyModel mCreatorModel;
     private static final byte[] sWebFeedId = "webFeedId".getBytes();
 
     @Before
@@ -78,9 +78,9 @@ public class CreatorMediatorTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mCreatorCoordinator = new CreatorCoordinator(
                 mActivity, sWebFeedId, mSnackbarManager, mWindowAndroid, mProfile, mTitle, mUrl);
-        mCreatorProfileModel = mCreatorCoordinator.getCreatorProfileModel();
+        mCreatorModel = mCreatorCoordinator.getCreatorModel();
 
-        mCreatorMediator = new CreatorMediator(mActivity, mCreatorProfileModel);
+        mCreatorMediator = new CreatorMediator(mActivity, mCreatorModel);
     }
 
     @Test

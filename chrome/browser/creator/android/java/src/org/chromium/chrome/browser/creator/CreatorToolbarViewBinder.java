@@ -8,20 +8,20 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * ViewBinder class for the Creator Profile section
+ * ViewBinder class for the Creator Toolbar section
  */
-public class CreatorProfileViewBinder {
-    public static void bind(PropertyModel model, CreatorProfileView view, PropertyKey propertyKey) {
-        if (CreatorProperties.TITLE_KEY == propertyKey) {
-            view.setTitle(model.get(CreatorProperties.TITLE_KEY));
-        } else if (CreatorProperties.URL_KEY == propertyKey) {
-            view.setUrl(model.get(CreatorProperties.URL_KEY));
+public class CreatorToolbarViewBinder {
+    public static void bind(PropertyModel model, CreatorToolbarView view, PropertyKey propertyKey) {
+        if (CreatorProperties.IS_TOOLBAR_VISIBLE_KEY == propertyKey) {
+            view.setToolbarVisibility(model.get(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY),
+                    model.get(CreatorProperties.TITLE_KEY));
         } else if (CreatorProperties.IS_FOLLOWED_KEY == propertyKey) {
             view.setIsFollowedStatus(model.get(CreatorProperties.IS_FOLLOWED_KEY));
         } else if (CreatorProperties.ON_FOLLOW_CLICK_KEY == propertyKey) {
-            view.setFollowButtonOnClickListener(model.get(CreatorProperties.ON_FOLLOW_CLICK_KEY));
+            view.setFollowButtonToolbarOnClickListener(
+                    model.get(CreatorProperties.ON_FOLLOW_CLICK_KEY));
         } else if (CreatorProperties.ON_FOLLOWING_CLICK_KEY == propertyKey) {
-            view.setFollowingButtonOnClickListener(
+            view.setFollowingButtonToolbarOnClickListener(
                     model.get(CreatorProperties.ON_FOLLOWING_CLICK_KEY));
         }
     }

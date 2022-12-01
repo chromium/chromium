@@ -9,9 +9,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/creator/CreatorApiBridge.java",
     "java/src/org/chromium/chrome/browser/creator/CreatorCoordinator.java",
     "java/src/org/chromium/chrome/browser/creator/CreatorMediator.java",
-    "java/src/org/chromium/chrome/browser/creator/CreatorProfileProperties.java",
     "java/src/org/chromium/chrome/browser/creator/CreatorProfileView.java",
     "java/src/org/chromium/chrome/browser/creator/CreatorProfileViewBinder.java",
+    "java/src/org/chromium/chrome/browser/creator/CreatorProperties.java",
+    "java/src/org/chromium/chrome/browser/creator/CreatorToolbarView.java",
+    "java/src/org/chromium/chrome/browser/creator/CreatorToolbarViewBinder.java",
   ]
   deps = [
     ":creator_java_resources",
@@ -48,6 +50,7 @@ android_resources("creator_java_resources") {
     "java/res/drawable/following_checkmark.xml",
     "java/res/drawable/profile_background.xml",
     "java/res/layout/creator_activity.xml",
+    "java/res/layout/creator_layout.xml",
     "java/res/layout/creator_profile.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",

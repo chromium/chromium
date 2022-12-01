@@ -4,23 +4,14 @@
      found in the LICENSE file.
 -->
 
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layoutDirection="locale" >
-  <com.google.android.material.appbar.MaterialToolbar
-      android:id="@+id/action_bar"
-      android:layout_width="match_parent"
-      android:layout_height="?attr/actionBarSize"
-      style="@style/CreatorActivityNoActionBar" />
+    android:layout_height="wrap_content" >
   <include
-      layout="@layout/creator_profile"
-      android:id="@+id/creator_profile"
+      layout="@layout/creator_layout"
+      android:id="@+id/creator_layout"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:layout_marginEnd="16dp" />
-</LinearLayout>
+      android:layout_height="match_parent" />
+</FrameLayout>
