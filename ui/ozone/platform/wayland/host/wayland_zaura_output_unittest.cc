@@ -11,8 +11,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
-#include "ui/ozone/platform/wayland/test/mock_zaura_shell.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
+#include "ui/ozone/platform/wayland/test/test_zaura_shell.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::Values;

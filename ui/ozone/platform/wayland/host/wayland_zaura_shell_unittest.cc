@@ -5,8 +5,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/ozone/platform/wayland/test/mock_zaura_shell.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
+#include "ui/ozone/platform/wayland/test/test_zaura_shell.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using testing::Values;

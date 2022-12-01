@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/test/mock_zcr_touch_stylus.h"
+#include "ui/ozone/platform/wayland/test/test_zcr_touch_stylus.h"
 
 namespace wl {
 
-const struct zcr_touch_stylus_v2_interface kMockZcrTouchStylusImpl = {
+const struct zcr_touch_stylus_v2_interface kTestZcrTouchStylusImpl = {
     &DestroyResource,  // destroy
 };
 
-MockZcrTouchStylus::MockZcrTouchStylus(wl_resource* resource)
+TestZcrTouchStylus::TestZcrTouchStylus(wl_resource* resource)
     : ServerObject(resource) {}
 
-MockZcrTouchStylus::~MockZcrTouchStylus() = default;
+TestZcrTouchStylus::~TestZcrTouchStylus() = default;
 
 }  // namespace wl

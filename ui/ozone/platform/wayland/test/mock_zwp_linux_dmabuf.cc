@@ -8,7 +8,7 @@
 #include <wayland-server-core.h>
 
 #include "base/ranges/algorithm.h"
-#include "ui/ozone/platform/wayland/test/mock_buffer.h"
+#include "ui/ozone/platform/wayland/test/test_buffer.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 
 namespace wl {

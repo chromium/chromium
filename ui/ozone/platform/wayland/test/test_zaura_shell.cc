@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/test/mock_zaura_shell.h"
+#include "ui/ozone/platform/wayland/test/test_zaura_shell.h"
 
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
@@ -64,7 +64,7 @@ void GetAuraPopupForXdgPopup(wl_client* client,
                                          &kTestZAuraPopupImpl, id);
 }
 
-const struct zaura_shell_interface kMockZAuraShellImpl = {
+const struct zaura_shell_interface kTestZAuraShellImpl = {
     &GetAuraSurface,
     &GetAuraOutput,
     &SurfaceSubmissionInPixelCoordinates,
@@ -75,23 +75,23 @@ const struct zaura_shell_interface kMockZAuraShellImpl = {
 
 }  // namespace
 
-MockZAuraShell::MockZAuraShell()
+TestZAuraShell::TestZAuraShell()
     : GlobalObject(&zaura_shell_interface,
-                   &kMockZAuraShellImpl,
+                   &kTestZAuraShellImpl,
                    kZAuraShellVersion) {}
 
-MockZAuraShell::~MockZAuraShell() = default;
+TestZAuraShell::~TestZAuraShell() = default;
 
-void MockZAuraShell::SetBugFixes(std::vector<uint32_t> bug_fixes) {
+void TestZAuraShell::SetBugFixes(std::vector<uint32_t> bug_fixes) {
   bug_fixes_ = std::move(bug_fixes);
   MaybeSendBugFixes();
 }
 
-void MockZAuraShell::OnBind() {
+void TestZAuraShell::OnBind() {
   MaybeSendBugFixes();
 }
 
-void MockZAuraShell::MaybeSendBugFixes() {
+void TestZAuraShell::MaybeSendBugFixes() {
   if (resource() && wl_resource_get_version(resource()) >=
                         ZAURA_SHELL_BUG_FIX_SINCE_VERSION) {
     for (const uint32_t bug_fix : bug_fixes_)

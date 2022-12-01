@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZAURA_SHELL_H_
-#define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZAURA_SHELL_H_
+#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZAURA_SHELL_H_
+#define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZAURA_SHELL_H_
 
 #include <aura-shell-server-protocol.h>
 
@@ -12,14 +12,14 @@
 
 namespace wl {
 
-class MockZAuraShell : public GlobalObject {
+class TestZAuraShell : public GlobalObject {
  public:
-  MockZAuraShell();
+  TestZAuraShell();
 
-  MockZAuraShell(const MockZAuraShell&) = delete;
-  MockZAuraShell& operator=(const MockZAuraShell&) = delete;
+  TestZAuraShell(const TestZAuraShell&) = delete;
+  TestZAuraShell& operator=(const TestZAuraShell&) = delete;
 
-  ~MockZAuraShell() override;
+  ~TestZAuraShell() override;
 
   // Sets bug fixes and sends them out if the object is bound.
   void SetBugFixes(std::vector<uint32_t> bug_fixes);
@@ -35,4 +35,4 @@ class MockZAuraShell : public GlobalObject {
 
 }  // namespace wl
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZAURA_SHELL_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZAURA_SHELL_H_

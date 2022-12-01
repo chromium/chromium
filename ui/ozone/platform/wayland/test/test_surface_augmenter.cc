@@ -8,11 +8,11 @@
 
 #include "base/files/scoped_file.h"
 #include "base/notreached.h"
-#include "ui/ozone/platform/wayland/test/mock_buffer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_augmented_subsurface.h"
 #include "ui/ozone/platform/wayland/test/test_augmented_surface.h"
+#include "ui/ozone/platform/wayland/test/test_buffer.h"
 
 namespace wl {
 
@@ -27,9 +27,9 @@ void CreateSolidColorBuffer(struct wl_client* client,
                             int32_t width,
                             int32_t height) {
   std::vector<base::ScopedFD> fds;
-  CreateResourceWithImpl<::testing::NiceMock<MockBuffer>>(
+  CreateResourceWithImpl<::testing::NiceMock<TestBuffer>>(
       client, &wl_buffer_interface, wl_resource_get_version(resource),
-      &kMockWlBufferImpl, id, std::move(fds));
+      &kTestWlBufferImpl, id, std::move(fds));
 }
 
 void GetGetAugmentedSurface(struct wl_client* client,

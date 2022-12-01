@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_BUFFER_H_
-#define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_BUFFER_H_
+#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_BUFFER_H_
+#define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_BUFFER_H_
 
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 
@@ -15,17 +15,17 @@ struct wl_resource;
 
 namespace wl {
 
-extern const struct wl_buffer_interface kMockWlBufferImpl;
+extern const struct wl_buffer_interface kTestWlBufferImpl;
 
 // Manage wl_buffer object.
-class MockBuffer : public ServerObject {
+class TestBuffer : public ServerObject {
  public:
-  MockBuffer(wl_resource* resource, std::vector<base::ScopedFD>&& fds);
+  TestBuffer(wl_resource* resource, std::vector<base::ScopedFD>&& fds);
 
-  MockBuffer(const MockBuffer&) = delete;
-  MockBuffer& operator=(const MockBuffer&) = delete;
+  TestBuffer(const TestBuffer&) = delete;
+  TestBuffer& operator=(const TestBuffer&) = delete;
 
-  ~MockBuffer() override;
+  ~TestBuffer() override;
 
  private:
   std::vector<base::ScopedFD> fds_;
@@ -33,4 +33,4 @@ class MockBuffer : public ServerObject {
 
 }  // namespace wl
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_BUFFER_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_BUFFER_H_
