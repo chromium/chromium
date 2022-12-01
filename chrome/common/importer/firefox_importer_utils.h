@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/values.h"
 #include "build/build_config.h"
 
 class GURL;
 
 namespace base {
-class DictionaryValue;
 class FilePath;
 }
 
@@ -56,7 +56,7 @@ std::vector<FirefoxDetail> GetFirefoxDetails(
 // with that id.
 // Exposed for testing.
 std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
-    const base::DictionaryValue& root,
+    const base::Value::Dict& root,
     const std::string& firefox_install_id);
 
 // Detects version of Firefox and installation path for the given Firefox
@@ -68,20 +68,6 @@ bool GetFirefoxVersionAndPathFromProfile(const base::FilePath& profile_path,
 // Gets the full path of the profiles.ini file. This file records the profiles
 // that can be used by Firefox. Returns an empty path if failed.
 base::FilePath GetProfilesINI();
-
-// Parses the profile.ini file, and stores its information in |root|.
-// This file is a plain-text file. Key/value pairs are stored one per line, and
-// they are separated in different sections. For example:
-//   [General]
-//   StartWithLastProfile=1
-//
-//   [Profile0]
-//   Name=default
-//   IsRelative=1
-//   Path=Profiles/abcdefeg.default
-// We set "[value]" in path "<Section>.<Key>". For example, the path
-// "Genenral.StartWithLastProfile" has the value "1".
-void ParseProfileINI(const base::FilePath& file, base::DictionaryValue* root);
 
 // Returns the home page set in Firefox in a particular profile.
 GURL GetHomepage(const base::FilePath& profile_path);
