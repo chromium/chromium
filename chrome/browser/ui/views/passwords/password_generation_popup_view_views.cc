@@ -44,6 +44,12 @@ namespace {
 // field is too long.
 constexpr int kPasswordGenerationMaxWidth = 480;
 
+// Fixed dimensions of the minimized version of the popup, displayed in
+// `kPasswordStrengthIndicatorWithMinimizedState` experiment when the typed
+// password is weak and has over 5 characters.
+constexpr int kMinimizedPopupWidth = 42;
+constexpr int kMinimizedPopupHeight = 32;
+
 // The default icon size used in the password generation drop down.
 constexpr int kIconSize = 16;
 
@@ -372,8 +378,9 @@ void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
 }
 
 gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize() const {
+  // TODO(crbug.com/1345766): Explain this condition here and in other places.
   if (!password_view_) {
-    return GetLayoutManager()->GetPreferredSize(this);
+    return gfx::Size(kMinimizedPopupWidth, kMinimizedPopupHeight);
   }
 
   int width =
