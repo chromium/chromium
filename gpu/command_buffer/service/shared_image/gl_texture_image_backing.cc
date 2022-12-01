@@ -66,9 +66,6 @@ namespace gpu {
 
 namespace {
 
-using InitializeGLTextureParams =
-    GLTextureImageBackingHelper::InitializeGLTextureParams;
-
 // This value can't be cached as it may change for different contexts.
 bool SupportsUnpackSubimage() {
   return gl::g_current_gl_version->is_es3_capable ||
@@ -236,9 +233,9 @@ bool GLTextureImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   auto resource_format = format().resource_format();
 
   const GLuint texture_id = GetGLServiceId();
-  const GLenum gl_format = texture_params_.format;
-  const GLenum gl_type = texture_params_.type;
-  const GLenum gl_target = texture_params_.target;
+  const GLenum gl_format = format_desc_.data_format;
+  const GLenum gl_type = format_desc_.data_type;
+  const GLenum gl_target = format_desc_.target;
 
   // Actual stride of the given pixmap, not necessarily with the expected
   // alignment, or equal to expected stride.
@@ -294,8 +291,8 @@ bool GLTextureImageBacking::ReadbackToMemory(SkPixmap& pixmap) {
   viz::ResourceFormat resource_format = format().resource_format();
 
   const GLuint texture_id = GetGLServiceId();
-  GLenum gl_format = texture_params_.format;
-  GLenum gl_type = texture_params_.type;
+  GLenum gl_format = format_desc_.data_format;
+  GLenum gl_type = format_desc_.data_type;
 
   if (resource_format == viz::BGRX_8888 || resource_format == viz::RGBX_8888) {
     DCHECK_EQ(gl_format, static_cast<GLenum>(GL_RGB));
@@ -453,12 +450,17 @@ std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(
 
 void GLTextureImageBacking::InitializeGLTexture(
     GLuint service_id,
-    const InitializeGLTextureParams& params) {
+    const GLTextureImageBackingHelper::InitializeGLTextureParams& params) {
   GLTextureImageBackingHelper::MakeTextureAndSetParameters(
       params.target, service_id, params.framebuffer_attachment_angle,
       IsPassthrough() ? &passthrough_texture_ : nullptr,
       IsPassthrough() ? nullptr : &texture_);
-  texture_params_ = params;
+
+  format_desc_.data_format = params.format;
+  format_desc_.data_type = params.type;
+  format_desc_.target = params.target;
+  format_desc_.image_internal_format = params.internal_format;
+
   if (IsPassthrough()) {
     passthrough_texture_->SetEstimatedSize(
         viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));

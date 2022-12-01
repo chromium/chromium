@@ -51,11 +51,11 @@ bool GLSupportsFormat(viz::SharedImageFormat format) {
   return false;
 }
 
-GLFormat ToGLFormatExternalSampler(viz::SharedImageFormat format) {
+GLFormatDesc ToGLFormatDescExternalSampler(viz::SharedImageFormat format) {
   DCHECK(format.is_multi_plane());
   DCHECK(format.PrefersExternalSampler());
   const GLenum ext_format = format.HasAlpha() ? GL_RGBA : GL_RGB;
-  GLFormat gl_format;
+  GLFormatDesc gl_format;
   gl_format.data_type = GL_NONE;
   gl_format.data_format = ext_format;
   gl_format.image_internal_format = ext_format;
@@ -64,10 +64,10 @@ GLFormat ToGLFormatExternalSampler(viz::SharedImageFormat format) {
   return gl_format;
 }
 
-GLFormat ToGLFormat(viz::SharedImageFormat format,
-                    int plane_index,
-                    bool use_angle_rgbx_format) {
-  GLFormat gl_format;
+GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
+                            int plane_index,
+                            bool use_angle_rgbx_format) {
+  GLFormatDesc gl_format;
   gl_format.data_type = GLDataType(format);
   gl_format.data_format = GLDataFormat(format, plane_index);
   gl_format.image_internal_format = GLInternalFormat(format, plane_index);

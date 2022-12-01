@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_IMAGE_BACKING_H_
 
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 
 namespace gl {
 class GLImageEGL;
@@ -76,7 +77,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
   gles2::Texture* texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
 
-  GLTextureImageBackingHelper::InitializeGLTextureParams texture_params_;
+  GLFormatDesc format_desc_;
 
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
   scoped_refptr<gl::GLImageEGL> image_egl_;
