@@ -1234,43 +1234,46 @@ TEST_F(PolicyServiceTest, IsFirstPolicyLoadComplete) {
 TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value dict1 = base::Value(base::Value::Type::DICTIONARY);
-  dict1.SetBoolKey(kUrl3, false);
-  dict1.SetBoolKey(kUrl2, true);
-  base::Value dict2 = base::Value(base::Value::Type::DICTIONARY);
-  dict2.SetBoolKey(kUrl1, true);
-  dict2.SetBoolKey(kUrl2, false);
-  base::Value result = base::Value(base::Value::Type::DICTIONARY);
-  result.SetBoolKey(kUrl1, true);
-  result.SetBoolKey(kUrl2, true);
-  result.SetBoolKey(kUrl3, false);
+  base::Value::Dict dict1;
+  dict1.Set(kUrl3, false);
+  dict1.Set(kUrl2, true);
+  base::Value::Dict dict2;
+  dict2.Set(kUrl1, true);
+  dict2.Set(kUrl2, false);
+  base::Value::Dict result;
+  result.Set(kUrl1, true);
+  result.Set(kUrl2, true);
+  result.Set(kUrl3, false);
 
-  std::unique_ptr<base::Value> policy =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
-  policy->Append(base::Value(key::kExtensionSettings));
+  base::Value::List policy;
+  policy.Append(key::kExtensionSettings);
 
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyDictionaryMultipleSourceMergeList,
-                          policy->Clone());
-  policies_1.emplace_back(key::kExtensionSettings, std::move(dict1));
+                          base::Value(policy.Clone()));
+  policies_1.emplace_back(key::kExtensionSettings,
+                          base::Value(std::move(dict1)));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
 
   std::vector<std::pair<std::string, base::Value>> policies_2;
-  policies_2.emplace_back(key::kExtensionSettings, std::move(dict2));
+  policies_2.emplace_back(key::kExtensionSettings,
+                          base::Value(std::move(dict2)));
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                                       std::move(policies_2), chrome_namespace);
 
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyDictionaryMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kExtensionSettings)
                                   ->DeepCopy());
@@ -1289,20 +1292,20 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
 TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_InvalidType) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value dict_value(base::Value::Type::DICTIONARY);
-  dict_value.SetBoolKey(kUrl1, true);
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetBoolKey(kUrl1, true);
+  base::Value::Dict dict_value;
+  dict_value.Set(kUrl1, true);
+  base::Value::Dict result;
+  result.Set(kUrl1, true);
 
-  std::unique_ptr<base::Value> policy =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
-  policy->Append(base::Value(policy::key::kExtensionSettings));
+  base::Value::List policy;
+  policy.Append(policy::key::kExtensionSettings);
 
   // policy_bundle_1 is treated as a machine platform bundle.
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyDictionaryMultipleSourceMergeList,
-                          policy->Clone());
-  policies_1.emplace_back(key::kExtensionSettings, dict_value.Clone());
+                          base::Value(policy.Clone()));
+  policies_1.emplace_back(key::kExtensionSettings,
+                          base::Value(dict_value.Clone()));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
@@ -1320,12 +1323,14 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_InvalidType) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyDictionaryMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kExtensionSettings)
                                   ->DeepCopy());
@@ -1350,36 +1355,36 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_PrecedenceChange) {
   ids.insert(kAffiliationId1);
 
   // Initialize dictionaries of URLs used for ExtensionSettings policy values.
-  base::Value dict1 = base::Value(base::Value::Type::DICTIONARY);
-  dict1.SetBoolKey(kUrl2, true);
-  dict1.SetBoolKey(kUrl3, false);
-  base::Value dict2 = base::Value(base::Value::Type::DICTIONARY);
-  dict2.SetBoolKey(kUrl1, true);
-  dict2.SetBoolKey(kUrl2, false);
-  base::Value dict3 = base::Value(base::Value::Type::DICTIONARY);
-  dict3.SetBoolKey(kUrl3, true);
-  dict3.SetBoolKey(kUrl4, false);
-  base::Value result = base::Value(base::Value::Type::DICTIONARY);
-  result.SetBoolKey(kUrl1, true);
-  result.SetBoolKey(kUrl2, false);
-  result.SetBoolKey(kUrl3, true);
-  result.SetBoolKey(kUrl4, false);
+  base::Value::Dict dict1;
+  dict1.Set(kUrl2, true);
+  dict1.Set(kUrl3, false);
+  base::Value::Dict dict2;
+  dict2.Set(kUrl1, true);
+  dict2.Set(kUrl2, false);
+  base::Value::Dict dict3;
+  dict3.Set(kUrl3, true);
+  dict3.Set(kUrl4, false);
+  base::Value::Dict result;
+  result.Set(kUrl1, true);
+  result.Set(kUrl2, false);
+  result.Set(kUrl3, true);
+  result.Set(kUrl4, false);
 
-  std::unique_ptr<base::Value> policy =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
-  policy->Append(base::Value(key::kExtensionSettings));
+  base::Value::List policy;
+  policy.Append(key::kExtensionSettings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metapolicies
   // are defined here.
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyDictionaryMultipleSourceMergeList,
-                          policy->Clone());
+                          base::Value(policy.Clone()));
   policies_1.emplace_back(key::kCloudPolicyOverridesPlatformPolicy,
                           base::Value(true));
   policies_1.emplace_back(key::kCloudUserPolicyOverridesCloudMachinePolicy,
                           base::Value(true));
   policies_1.emplace_back(key::kCloudUserPolicyMerge, base::Value(true));
-  policies_1.emplace_back(key::kExtensionSettings, std::move(dict1));
+  policies_1.emplace_back(key::kExtensionSettings,
+                          base::Value(std::move(dict1)));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
@@ -1406,7 +1411,8 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_PrecedenceChange) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyDictionaryMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set(key::kCloudPolicyOverridesPlatformPolicy,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                       POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
@@ -1420,7 +1426,8 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_PrecedenceChange) {
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_1.Get(chrome_namespace)
                                   .Get(key::kExtensionSettings)
                                   ->DeepCopy());
@@ -1445,42 +1452,46 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_PrecedenceChange) {
 TEST_F(PolicyServiceTest, ListsPoliciesMerging) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value list1(base::Value::Type::LIST);
-  list1.Append(base::Value(kUrl3));
-  list1.Append(base::Value(kUrl2));
-  base::Value list2 = base::Value(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl1));
-  list2.Append(base::Value(kUrl2));
-  base::Value result = base::Value(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl3));
-  result.Append(base::Value(kUrl2));
-  result.Append(base::Value(kUrl1));
+  base::Value::List list1;
+  list1.Append(kUrl3);
+  list1.Append(kUrl2);
+  base::Value::List list2;
+  list2.Append(kUrl1);
+  list2.Append(kUrl2);
+  base::Value::List result;
+  result.Append(kUrl3);
+  result.Append(kUrl2);
+  result.Append(kUrl1);
 
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kDefaultSearchProviderEncodings));
+  base::Value::List policy;
+  policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
-  policies_1.emplace_back(key::kDefaultSearchProviderEncodings, list1.Clone());
+                          base::Value(policy.Clone()));
+  policies_1.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list1.Clone()));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
 
   std::vector<std::pair<std::string, base::Value>> policies_2;
-  policies_2.emplace_back(key::kDefaultSearchProviderEncodings, list2.Clone());
+  policies_2.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list2.Clone()));
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                                       std::move(policies_2), chrome_namespace);
 
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kDefaultSearchProviderEncodings)
                                   ->DeepCopy());
@@ -1499,18 +1510,18 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging) {
 TEST_F(PolicyServiceTest, ListsPoliciesMerging_InvalidType) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value list_value(base::Value::Type::LIST);
-  list_value.Append(base::Value(kUrl1));
-  base::Value result(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl1));
+  base::Value::List list_value;
+  list_value.Append(kUrl1);
+  base::Value::List result;
+  result.Append(kUrl1);
 
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kDefaultSearchProviderEncodings));
+  base::Value::List policy;
+  policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle.
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
+                          base::Value(policy.Clone()));
   policies_1.emplace_back(key::kDefaultSearchProviderEncodings,
                           list_value.Clone());
   auto policy_bundle_1 =
@@ -1531,12 +1542,14 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_InvalidType) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kDefaultSearchProviderEncodings)
                                   ->DeepCopy());
@@ -1561,27 +1574,28 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_CloudMetapolicy) {
   base::flat_set<std::string> ids;
   ids.insert(kAffiliationId1);
 
-  base::Value list1(base::Value::Type::LIST);
-  list1.Append(base::Value(kUrl1));
-  list1.Append(base::Value(kUrl2));
-  base::Value list2 = base::Value(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl2));
-  list2.Append(base::Value(kUrl3));
-  base::Value list3 = base::Value(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl3));
-  list2.Append(base::Value(kUrl4));
-  base::Value result = base::Value(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl1));
-  result.Append(base::Value(kUrl2));
-  result.Append(base::Value(kUrl3));
-  result.Append(base::Value(kUrl4));
+  base::Value::List list1;
+  list1.Append(kUrl1);
+  list1.Append(kUrl2);
+  base::Value::List list2;
+  list2.Append(kUrl2);
+  list2.Append(kUrl3);
+  base::Value::List list3;
+  list2.Append(kUrl3);
+  list2.Append(kUrl4);
+  base::Value::List result;
+  result.Append(kUrl1);
+  result.Append(kUrl2);
+  result.Append(kUrl3);
+  result.Append(kUrl4);
 
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kDefaultSearchProviderEncodings));
+  base::Value::List policy;
+  policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle.
   std::vector<std::pair<std::string, base::Value>> policies_1;
-  policies_1.emplace_back(key::kDefaultSearchProviderEncodings, list1.Clone());
+  policies_1.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list1.Clone()));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
@@ -1591,9 +1605,10 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_CloudMetapolicy) {
   // being set through CBCM.
   std::vector<std::pair<std::string, base::Value>> policies_2;
   policies_2.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
+                          base::Value(policy.Clone()));
   policies_2.emplace_back(key::kCloudUserPolicyMerge, base::Value(true));
-  policies_2.emplace_back(key::kDefaultSearchProviderEncodings, list2.Clone());
+  policies_2.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list2.Clone()));
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                                       std::move(policies_2), chrome_namespace);
   policy_bundle_2.Get(chrome_namespace).SetDeviceAffiliationIds(ids);
@@ -1601,7 +1616,8 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_CloudMetapolicy) {
   // policy_bundle_3 is treated as a user cloud bundle. The user affiliation IDs
   // are defined here to reflect what would happen in reality.
   std::vector<std::pair<std::string, base::Value>> policies_3;
-  policies_3.emplace_back(key::kDefaultSearchProviderEncodings, list3.Clone());
+  policies_3.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list3.Clone()));
   auto policy_bundle_3 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                                       std::move(policies_3), chrome_namespace);
   policy_bundle_3.Get(chrome_namespace).SetUserAffiliationIds(ids);
@@ -1612,7 +1628,8 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_CloudMetapolicy) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_CLOUD, policy->Clone(), nullptr);
+                      POLICY_SOURCE_CLOUD, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set(key::kCloudUserPolicyMerge, POLICY_LEVEL_MANDATORY,
                       POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                       base::Value(true), nullptr);
@@ -1620,7 +1637,8 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_CloudMetapolicy) {
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_3.Get(chrome_namespace)
                                   .Get(key::kDefaultSearchProviderEncodings)
                                   ->DeepCopy());
@@ -1645,25 +1663,27 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_CloudMetapolicy) {
 TEST_F(PolicyServiceTest, GroupPoliciesMergingDisabledForCloudUsers) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value list1(base::Value::Type::LIST);
-  list1.Append(base::Value(kUrl3));
-  base::Value list2(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl1));
-  base::Value list3(base::Value::Type::LIST);
-  list3.Append(base::Value(kUrl4));
-  base::Value result(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl3));
-  result.Append(base::Value(kUrl1));
+  base::Value::List list1;
+  list1.Append(kUrl3);
+  base::Value::List list2;
+  list2.Append(kUrl1);
+  base::Value::List list3;
+  list3.Append(kUrl4);
+  base::Value::List result;
+  result.Append(kUrl3);
+  result.Append(kUrl1);
 
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kExtensionInstallForcelist));
-  policy->Append(base::Value(policy::key::kExtensionInstallBlocklist));
+  base::Value::List policy;
+  policy.Append(policy::key::kExtensionInstallForcelist);
+  policy.Append(policy::key::kExtensionInstallBlocklist);
 
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
-  policies_1.emplace_back(key::kExtensionInstallForcelist, list1.Clone());
-  policies_1.emplace_back(key::kExtensionInstallBlocklist, list1.Clone());
+                          base::Value(policy.Clone()));
+  policies_1.emplace_back(key::kExtensionInstallForcelist,
+                          base::Value(list1.Clone()));
+  policies_1.emplace_back(key::kExtensionInstallBlocklist,
+                          base::Value(list1.Clone()));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
@@ -1675,21 +1695,26 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingDisabledForCloudUsers) {
       .Set(key::kPolicyAtomicGroupsEnabled, atomic_policy_enabled.DeepCopy());
 
   std::vector<std::pair<std::string, base::Value>> policies_2;
-  policies_2.emplace_back(key::kExtensionInstallForcelist, list2.Clone());
-  policies_2.emplace_back(key::kExtensionInstallBlocklist, list2.Clone());
-  policies_2.emplace_back(key::kExtensionInstallAllowlist, list3.Clone());
+  policies_2.emplace_back(key::kExtensionInstallForcelist,
+                          base::Value(list2.Clone()));
+  policies_2.emplace_back(key::kExtensionInstallBlocklist,
+                          base::Value(list2.Clone()));
+  policies_2.emplace_back(key::kExtensionInstallAllowlist,
+                          base::Value(list3.Clone()));
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                                       std::move(policies_2), chrome_namespace);
 
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kExtensionInstallForcelist)
                                   ->DeepCopy());
@@ -1715,25 +1740,27 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingDisabledForCloudUsers) {
 TEST_F(PolicyServiceTest, GroupPoliciesMergingEnabled) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value list1(base::Value::Type::LIST);
-  list1.Append(base::Value(kUrl3));
-  base::Value list2(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl1));
-  base::Value list3(base::Value::Type::LIST);
-  list3.Append(base::Value(kUrl4));
-  base::Value result(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl3));
-  result.Append(base::Value(kUrl1));
+  base::Value::List list1;
+  list1.Append(kUrl3);
+  base::Value::List list2;
+  list2.Append(kUrl1);
+  base::Value::List list3;
+  list3.Append(kUrl4);
+  base::Value::List result;
+  result.Append(kUrl3);
+  result.Append(kUrl1);
 
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kDefaultSearchProviderEncodings));
-  policy->Append(base::Value(policy::key::kExtensionInstallBlocklist));
+  base::Value::List policy;
+  policy.Append(policy::key::kDefaultSearchProviderEncodings);
+  policy.Append(policy::key::kExtensionInstallBlocklist);
 
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
-  policies_1.emplace_back(key::kDefaultSearchProviderEncodings, list1.Clone());
-  policies_1.emplace_back(key::kExtensionInstallBlocklist, list1.Clone());
+                          base::Value(policy.Clone()));
+  policies_1.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list1.Clone()));
+  policies_1.emplace_back(key::kExtensionInstallBlocklist,
+                          base::Value(list1.Clone()));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
@@ -1745,10 +1772,13 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingEnabled) {
       .Set(key::kPolicyAtomicGroupsEnabled, atomic_policy_enabled.DeepCopy());
 
   PolicyMap::Entry entry_list_3(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                                POLICY_SOURCE_CLOUD, list3.Clone(), nullptr);
+                                POLICY_SOURCE_CLOUD, base::Value(list3.Clone()),
+                                nullptr);
   std::vector<std::pair<std::string, base::Value>> policies_2;
-  policies_2.emplace_back(key::kDefaultSearchProviderEncodings, list2.Clone());
-  policies_2.emplace_back(key::kExtensionInstallBlocklist, list2.Clone());
+  policies_2.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list2.Clone()));
+  policies_2.emplace_back(key::kExtensionInstallBlocklist,
+                          base::Value(list2.Clone()));
   policies_2.emplace_back(key::kExtensionInstallAllowlist,
                           entry_list_3.value(base::Value::Type::LIST)->Clone());
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
@@ -1757,12 +1787,14 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingEnabled) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kDefaultSearchProviderEncodings)
                                   ->DeepCopy());
@@ -1794,33 +1826,34 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Successful) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value list1 = base::Value(base::Value::Type::LIST);
-  list1.Append(base::Value(kUrl1));
-  list1.Append(base::Value(kUrl2));
-  base::Value list2 = base::Value(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl2));
-  list2.Append(base::Value(kUrl3));
-  base::Value list3 = base::Value(base::Value::Type::LIST);
-  list3.Append(base::Value(kUrl3));
-  list3.Append(base::Value(kUrl4));
-  base::Value result = base::Value(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl1));
-  result.Append(base::Value(kUrl2));
-  result.Append(base::Value(kUrl3));
-  result.Append(base::Value(kUrl4));
+  base::Value::List list1;
+  list1.Append(kUrl1);
+  list1.Append(kUrl2);
+  base::Value::List list2;
+  list2.Append(kUrl2);
+  list2.Append(kUrl3);
+  base::Value::List list3;
+  list3.Append(kUrl3);
+  list3.Append(kUrl4);
+  base::Value::List result;
+  result.Append(kUrl1);
+  result.Append(kUrl2);
+  result.Append(kUrl3);
+  result.Append(kUrl4);
 
   // Populate separate policy bundles.
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kDefaultSearchProviderEncodings));
+  base::Value::List policy;
+  policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metadata
   // policies (PolicyListMultipleSourceMergeList, CloudUserPolicyMerge) are
   // defined here.
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
+                          base::Value(policy.Clone()));
   policies_1.emplace_back(key::kCloudUserPolicyMerge, base::Value(true));
-  policies_1.emplace_back(key::kDefaultSearchProviderEncodings, list1.Clone());
+  policies_1.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list1.Clone()));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
@@ -1828,7 +1861,8 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Successful) {
   // policy_bundle_2 is treated as a machine cloud bundle. The device
   // affiliation IDs are defined here to reflect what would happen in reality.
   std::vector<std::pair<std::string, base::Value>> policies_2;
-  policies_2.emplace_back(key::kDefaultSearchProviderEncodings, list2.Clone());
+  policies_2.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list2.Clone()));
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                                       std::move(policies_2), chrome_namespace);
   policy_bundle_2.Get(chrome_namespace).SetDeviceAffiliationIds(ids);
@@ -1836,7 +1870,8 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Successful) {
   // policy_bundle_3 is treated as a user cloud bundle. The user affiliation IDs
   // are defined here to reflect what would happen in reality.
   std::vector<std::pair<std::string, base::Value>> policies_3;
-  policies_3.emplace_back(key::kDefaultSearchProviderEncodings, list3.Clone());
+  policies_3.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list3.Clone()));
   auto policy_bundle_3 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                                       std::move(policies_3), chrome_namespace);
   policy_bundle_3.Get(chrome_namespace).SetUserAffiliationIds(ids);
@@ -1847,12 +1882,14 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Successful) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kDefaultSearchProviderEncodings)
                                   ->DeepCopy());
@@ -1887,30 +1924,31 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Unaffiliated) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value list1 = base::Value(base::Value::Type::LIST);
-  list1.Append(base::Value(kUrl1));
-  list1.Append(base::Value(kUrl2));
-  base::Value list2 = base::Value(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl3));
-  base::Value list3 = base::Value(base::Value::Type::LIST);
-  list3.Append(base::Value(kUrl4));
-  base::Value result = base::Value(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl1));
-  result.Append(base::Value(kUrl2));
-  result.Append(base::Value(kUrl3));
+  base::Value::List list1;
+  list1.Append(kUrl1);
+  list1.Append(kUrl2);
+  base::Value::List list2;
+  list2.Append(kUrl3);
+  base::Value::List list3;
+  list3.Append(kUrl4);
+  base::Value::List result;
+  result.Append(kUrl1);
+  result.Append(kUrl2);
+  result.Append(kUrl3);
 
   // Populate separate policy bundles.
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kDefaultSearchProviderEncodings));
+  base::Value::List policy;
+  policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metadata
   // policies (PolicyListMultipleSourceMergeList, CloudUserPolicyMerge) are
   // defined here.
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
+                          base::Value(policy.Clone()));
   policies_1.emplace_back(key::kCloudUserPolicyMerge, base::Value(true));
-  policies_1.emplace_back(key::kDefaultSearchProviderEncodings, list1.Clone());
+  policies_1.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list1.Clone()));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
@@ -1918,7 +1956,8 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Unaffiliated) {
   // policy_bundle_2 is treated as a machine cloud bundle. The device
   // affiliation IDs are defined here to reflect what would happen in reality.
   std::vector<std::pair<std::string, base::Value>> policies_2;
-  policies_2.emplace_back(key::kDefaultSearchProviderEncodings, list2.Clone());
+  policies_2.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list2.Clone()));
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                                       std::move(policies_2), chrome_namespace);
   policy_bundle_2.Get(chrome_namespace).SetDeviceAffiliationIds(device_ids);
@@ -1926,7 +1965,8 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Unaffiliated) {
   // policy_bundle_3 is treated as a user cloud bundle. The user affiliation IDs
   // are defined here to reflect what would happen in reality.
   std::vector<std::pair<std::string, base::Value>> policies_3;
-  policies_3.emplace_back(key::kDefaultSearchProviderEncodings, list3.Clone());
+  policies_3.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list3.Clone()));
   auto policy_bundle_3 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                                       std::move(policies_3), chrome_namespace);
   policy_bundle_3.Get(chrome_namespace).SetUserAffiliationIds(user_ids);
@@ -1937,12 +1977,14 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Unaffiliated) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kDefaultSearchProviderEncodings)
                                   ->DeepCopy());
@@ -1978,19 +2020,19 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_FalsePolicy) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value list1 = base::Value(base::Value::Type::LIST);
-  list1.Append(base::Value(kUrl1));
-  base::Value list2 = base::Value(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl2));
-  base::Value list3 = base::Value(base::Value::Type::LIST);
-  list3.Append(base::Value(kUrl3));
-  base::Value result = base::Value(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl1));
-  result.Append(base::Value(kUrl2));
+  base::Value::List list1;
+  list1.Append(kUrl1);
+  base::Value::List list2;
+  list2.Append(kUrl2);
+  base::Value::List list3;
+  list3.Append(kUrl3);
+  base::Value::List result;
+  result.Append(kUrl1);
+  result.Append(kUrl2);
 
   // Populate separate policy bundles.
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kDefaultSearchProviderEncodings));
+  base::Value::List policy;
+  policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metadata
   // policies (PolicyListMultipleSourceMergeList, CloudUserPolicyMerge) are
@@ -1998,9 +2040,10 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_FalsePolicy) {
   // policy values from being merged with values from other sources.
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
+                          base::Value(policy.Clone()));
   policies_1.emplace_back(key::kCloudUserPolicyMerge, base::Value(false));
-  policies_1.emplace_back(key::kDefaultSearchProviderEncodings, list1.Clone());
+  policies_1.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list1.Clone()));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
@@ -2008,7 +2051,8 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_FalsePolicy) {
   // policy_bundle_2 is treated as a machine cloud bundle. The device
   // affiliation IDs are defined here to reflect what would happen in reality.
   std::vector<std::pair<std::string, base::Value>> policies_2;
-  policies_2.emplace_back(key::kDefaultSearchProviderEncodings, list2.Clone());
+  policies_2.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list2.Clone()));
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                                       std::move(policies_2), chrome_namespace);
   policy_bundle_2.Get(chrome_namespace).SetDeviceAffiliationIds(ids);
@@ -2016,7 +2060,8 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_FalsePolicy) {
   // policy_bundle_3 is treated as a user cloud bundle. The user affiliation IDs
   // are defined here to reflect what would happen in reality.
   std::vector<std::pair<std::string, base::Value>> policies_3;
-  policies_3.emplace_back(key::kDefaultSearchProviderEncodings, list3.Clone());
+  policies_3.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list3.Clone()));
   auto policy_bundle_3 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                                       std::move(policies_3), chrome_namespace);
   policy_bundle_3.Get(chrome_namespace).SetUserAffiliationIds(ids);
@@ -2027,12 +2072,14 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_FalsePolicy) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kDefaultSearchProviderEncodings)
                                   ->DeepCopy());
@@ -2065,19 +2112,19 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Affiliated) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value list1 = base::Value(base::Value::Type::LIST);
-  list1.Append(base::Value(kUrl1));
-  base::Value list2 = base::Value(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl2));
-  base::Value list3 = base::Value(base::Value::Type::LIST);
-  list3.Append(base::Value(kUrl3));
-  base::Value result = base::Value(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl2));
-  result.Append(base::Value(kUrl3));
+  base::Value::List list1;
+  list1.Append(kUrl1);
+  base::Value::List list2;
+  list2.Append(kUrl2);
+  base::Value::List list3;
+  list3.Append(kUrl3);
+  base::Value::List result;
+  result.Append(kUrl2);
+  result.Append(kUrl3);
 
   // Populate separate policy bundles.
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kDefaultSearchProviderEncodings));
+  base::Value::List policy;
+  policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a user platform bundle. The metadata policies
   // (PolicyListMultipleSourceMergeList, CloudUserPolicyMerge) are defined here.
@@ -2085,16 +2132,18 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Affiliated) {
   // from any other source(s).
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
+                          base::Value(policy.Clone()));
   policies_1.emplace_back(key::kCloudUserPolicyMerge, base::Value(true));
-  policies_1.emplace_back(key::kDefaultSearchProviderEncodings, list1.Clone());
+  policies_1.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list1.Clone()));
   auto policy_bundle_1 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
                                       std::move(policies_1), chrome_namespace);
 
   // policy_bundle_2 is treated as a machine cloud bundle. The device
   // affiliation IDs are defined here to reflect what would happen in reality.
   std::vector<std::pair<std::string, base::Value>> policies_2;
-  policies_2.emplace_back(key::kDefaultSearchProviderEncodings, list2.Clone());
+  policies_2.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list2.Clone()));
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                                       std::move(policies_2), chrome_namespace);
   policy_bundle_2.Get(chrome_namespace).SetDeviceAffiliationIds(ids);
@@ -2103,7 +2152,8 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Affiliated) {
   // are defined here to reflect what would happen in reality.t,
   // entry_list_3.DeepCopy()); policy_map_3.SetUserAffiliationIds(ids);
   std::vector<std::pair<std::string, base::Value>> policies_3;
-  policies_3.emplace_back(key::kDefaultSearchProviderEncodings, list3.Clone());
+  policies_3.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list3.Clone()));
   auto policy_bundle_3 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                                       std::move(policies_3), chrome_namespace);
   policy_bundle_3.Get(chrome_namespace).SetUserAffiliationIds(ids);
@@ -2113,12 +2163,14 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Affiliated) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_1.Get(chrome_namespace)
                                   .Get(key::kDefaultSearchProviderEncodings)
                                   ->DeepCopy());
@@ -2152,27 +2204,28 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Unaffiliated) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value list1 = base::Value(base::Value::Type::LIST);
-  list1.Append(base::Value(kUrl1));
-  base::Value list2 = base::Value(base::Value::Type::LIST);
-  list2.Append(base::Value(kUrl2));
-  base::Value list3 = base::Value(base::Value::Type::LIST);
-  list3.Append(base::Value(kUrl3));
-  base::Value result = base::Value(base::Value::Type::LIST);
-  result.Append(base::Value(kUrl1));
+  base::Value::List list1;
+  list1.Append(kUrl1);
+  base::Value::List list2;
+  list2.Append(kUrl2);
+  base::Value::List list3;
+  list3.Append(kUrl3);
+  base::Value::List result;
+  result.Append(kUrl1);
 
   // Populate separate policy bundles.
-  std::unique_ptr<base::ListValue> policy = std::make_unique<base::ListValue>();
-  policy->Append(base::Value(policy::key::kDefaultSearchProviderEncodings));
+  base::Value::List policy;
+  policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metadata
   // policies (PolicyListMultipleSourceMergeList, CloudUserPolicyMerge) are
   // defined here.
   std::vector<std::pair<std::string, base::Value>> policies_1;
   policies_1.emplace_back(key::kPolicyListMultipleSourceMergeList,
-                          policy->Clone());
+                          base::Value(policy.Clone()));
   policies_1.emplace_back(key::kCloudUserPolicyMerge, base::Value(true));
-  policies_1.emplace_back(key::kDefaultSearchProviderEncodings, list1.Clone());
+  policies_1.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list1.Clone()));
   auto policy_bundle_1 =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies_1), chrome_namespace);
@@ -2181,14 +2234,16 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Unaffiliated) {
   // user GPO source are currently not merged with values from any other
   // source(s).
   std::vector<std::pair<std::string, base::Value>> policies_2;
-  policies_2.emplace_back(key::kDefaultSearchProviderEncodings, list2.Clone());
+  policies_2.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list2.Clone()));
   auto policy_bundle_2 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
                                       std::move(policies_2), chrome_namespace);
 
   // policy_bundle_3 is treated as a user cloud bundle. The user affiliation IDs
   // are defined here to reflect what would happen in reality.
   std::vector<std::pair<std::string, base::Value>> policies_3;
-  policies_3.emplace_back(key::kDefaultSearchProviderEncodings, list3.Clone());
+  policies_3.emplace_back(key::kDefaultSearchProviderEncodings,
+                          base::Value(list3.Clone()));
   auto policy_bundle_3 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                                       std::move(policies_3), chrome_namespace);
   policy_bundle_3.Get(chrome_namespace).SetUserAffiliationIds(user_ids);
@@ -2200,12 +2255,14 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Unaffiliated) {
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyListMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+                      POLICY_SOURCE_PLATFORM, base::Value(policy.Clone()),
+                      nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+                          POLICY_SOURCE_MERGED, base::Value(std::move(result)),
+                          nullptr);
   merged.AddConflictingPolicy(policy_bundle_2.Get(chrome_namespace)
                                   .Get(key::kDefaultSearchProviderEncodings)
                                   ->DeepCopy());
