@@ -1725,6 +1725,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.bottomToolbar setCloseAllButtonEnabled:enabled];
   [self.bottomToolbar setEditButtonEnabled:enabled];
   [self.topToolbar setEditButtonEnabled:enabled];
+  [self.topToolbar setNewTabButtonEnabled:enabled];
 }
 
 // Shows the two toolbars and the floating button. Suitable for use in
