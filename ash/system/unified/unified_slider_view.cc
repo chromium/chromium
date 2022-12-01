@@ -70,7 +70,7 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
                                      QuickSettingsSlider::Style slider_style) {
   if (!features::IsQsRevampEnabled()) {
     button_ = AddChildView(std::make_unique<IconButton>(
-        std::move(callback), IconButton::Type::kSmall, &icon,
+        std::move(callback), IconButton::Type::kMedium, &icon,
         accessible_name_id,
         /*is_togglable=*/true,
         /*has_border=*/true));

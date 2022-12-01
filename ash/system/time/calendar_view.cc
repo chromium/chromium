@@ -430,13 +430,13 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
                           base::Unretained(this), /*up=*/true),
-      IconButton::Type::kSmallFloating, &vector_icons::kCaretUpIcon,
+      IconButton::Type::kMediumFloating, &vector_icons::kCaretUpIcon,
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   down_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
                           base::Unretained(this), /*up=*/false),
-      IconButton::Type::kSmallFloating, &vector_icons::kCaretDownIcon,
+      IconButton::Type::kMediumFloating, &vector_icons::kCaretDownIcon,
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   tri_view->AddView(TriView::Container::END, button_container);
@@ -526,7 +526,7 @@ void CalendarView::CreateExtraTitleRowButtons() {
             base::BindRepeating(
                 &UnifiedSystemTrayController::HandleEnterpriseInfoAction,
                 base::Unretained(controller_)),
-            IconButton::Type::kSmall, &kSystemTrayManagedIcon,
+            IconButton::Type::kMedium, &kSystemTrayManagedIcon,
             IDS_ASH_CALENDAR_DISABLED_BY_ADMIN));
   }
 

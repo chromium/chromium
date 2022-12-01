@@ -238,7 +238,7 @@ PowerButton::PowerButton()
       button_content_(AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&PowerButton::OnButtonActivated,
                               base::Unretained(this)),
-          IconButton::Type::kSmallFloating,
+          IconButton::Type::kMediumFloating,
           &kUnifiedMenuPowerIcon,
           IDS_ASH_STATUS_TRAY_SHUTDOWN))),
       context_menu_(std::make_unique<MenuController>(/*button=*/this)) {

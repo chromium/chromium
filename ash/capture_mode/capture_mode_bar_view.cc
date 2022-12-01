@@ -69,7 +69,7 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
       settings_button_(AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&CaptureModeBarView::OnSettingsButtonPressed,
                               base::Unretained(this)),
-          IconButton::Type::kSmallFloating,
+          IconButton::Type::kMediumFloating,
           &kCaptureModeSettingsIcon,
           l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS),
           /*is_togglable=*/true,
@@ -77,7 +77,7 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
       close_button_(AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&CaptureModeBarView::OnCloseButtonPressed,
                               base::Unretained(this)),
-          IconButton::Type::kSmallFloating,
+          IconButton::Type::kMediumFloating,
           &kCaptureModeCloseIcon,
           l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE),
           /*is_togglable=*/false,

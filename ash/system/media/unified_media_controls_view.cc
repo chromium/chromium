@@ -116,7 +116,7 @@ UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
               },
               controller,
               this),
-          IconButton::Type::kSmall,
+          IconButton::Type::kMedium,
           &GetVectorIconForMediaAction(action),
           accessible_name_id),
       action_(action) {

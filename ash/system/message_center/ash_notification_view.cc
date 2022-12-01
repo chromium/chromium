@@ -1406,7 +1406,7 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
   auto snooze_button = std::make_unique<IconButton>(
       base::BindRepeating(&AshNotificationView::OnSnoozeButtonPressed,
                           base::Unretained(this)),
-      IconButton::Type::kSmallFloating, &kNotificationSnoozeButtonIcon,
+      IconButton::Type::kMediumFloating, &kNotificationSnoozeButtonIcon,
       IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP);
   snooze_button_ = action_buttons_row()->AddChildView(std::move(snooze_button));
 }

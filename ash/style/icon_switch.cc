@@ -47,7 +47,7 @@ IconButton* IconSwitch::AddButton(IconButton::PressedCallback callback,
                                   const gfx::VectorIcon* icon,
                                   const std::u16string& tooltip_text) {
   auto* button = AddChildView(std::make_unique<IconButton>(
-      callback, IconButton::Type::kSmallFloating, icon, tooltip_text,
+      callback, IconButton::Type::kMediumFloating, icon, tooltip_text,
       /*is_togglable=*/true, /*has_border=*/true));
   button->set_delegate(this);
   buttons_.push_back(button);

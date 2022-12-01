@@ -56,7 +56,7 @@ NotificationSwipeControlView::NotificationSwipeControlView(
     settings_button = std::make_unique<IconButton>(
         base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
                             base::Unretained(this), ButtonId::kSettings),
-        IconButton::Type::kSmall, &vector_icons::kSettingsOutlineIcon,
+        IconButton::Type::kMedium, &vector_icons::kSettingsOutlineIcon,
         IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME);
   } else {
     settings_button = std::make_unique<views::ImageButton>(

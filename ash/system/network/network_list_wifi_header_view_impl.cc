@@ -41,7 +41,7 @@ void NetworkListWifiHeaderViewImpl::AddExtraButtons() {
   std::unique_ptr<IconButton> join_wifi_button = std::make_unique<IconButton>(
       base::BindRepeating(&NetworkListWifiHeaderViewImpl::JoinWifiButtonPressed,
                           weak_factory_.GetWeakPtr()),
-      IconButton::Type::kSmall, &vector_icons::kWifiAddIcon,
+      IconButton::Type::kMedium, &vector_icons::kWifiAddIcon,
       IDS_ASH_STATUS_TRAY_OTHER_WIFI);
 
   join_wifi_button.get()->SetID(kJoinWifiButtonId);

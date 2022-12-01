@@ -47,7 +47,7 @@ class PageSwitcherButton : public IconButton {
   PageSwitcherButton(PressedCallback callback,
                      const std::u16string& accesible_name)
       : IconButton(std::move(callback),
-                   IconButton::Type::kSmallFloating,
+                   IconButton::Type::kMediumFloating,
                    /*icon=*/nullptr,
                    accesible_name,
                    /*is_togglable=*/false,

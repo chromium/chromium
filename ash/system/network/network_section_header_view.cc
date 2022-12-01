@@ -357,7 +357,7 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
   add_esim_button_ = new IconButton(
       base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
                           base::Unretained(this)),
-      IconButton::Type::kSmall, &icon, GetAddESimTooltipMessageId());
+      IconButton::Type::kMedium, &icon, GetAddESimTooltipMessageId());
   add_esim_button_->SetEnabled(enabled && !IsCellularDeviceInhibited());
   container()->AddView(TriView::Container::END, add_esim_button_);
   UpdateAddESimButtonVisibility();
@@ -460,7 +460,7 @@ void WifiSectionHeaderView::AddExtraButtons(bool enabled) {
   auto* join_button = new IconButton(
       base::BindRepeating(&WifiSectionHeaderView::JoinButtonPressed,
                           base::Unretained(this)),
-      IconButton::Type::kSmall, &vector_icons::kWifiAddIcon,
+      IconButton::Type::kMedium, &vector_icons::kWifiAddIcon,
       IDS_ASH_STATUS_TRAY_OTHER_WIFI);
   join_button->SetEnabled(enabled);
   container()->AddView(TriView::Container::END, join_button);

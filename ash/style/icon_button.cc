@@ -31,10 +31,10 @@
 namespace ash {
 namespace {
 
-constexpr int kXSmallButtonSize = 24;
-constexpr int kSmallButtonSize = 32;
-constexpr int kMediumButtonSize = 36;
-constexpr int kLargeButtonSize = 48;
+constexpr int kXSmallButtonSize = 20;
+constexpr int kSmallButtonSize = 24;
+constexpr int kMediumButtonSize = 32;
+constexpr int kLargeButtonSize = 36;
 
 // Icon size of the small, medium and large size buttons.
 constexpr int kIconSize = 20;

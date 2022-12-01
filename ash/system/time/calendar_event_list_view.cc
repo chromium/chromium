@@ -151,7 +151,7 @@ CalendarEventListView::CalendarEventListView(
       new IconButton(views::Button::PressedCallback(base::BindRepeating(
                          &CalendarViewController::CloseEventListView,
                          base::Unretained(calendar_view_controller))),
-                     IconButton::Type::kSmallFloating, &views::kIcCloseIcon,
+                     IconButton::Type::kMediumFloating, &views::kIcCloseIcon,
                      IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION);
   close_button_container_->AddChildView(close_button);
 

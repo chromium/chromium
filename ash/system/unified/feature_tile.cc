@@ -99,7 +99,7 @@ FeatureTile::FeatureTile(FeaturePodControllerBase* controller,
       drill_container_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
                               base::Unretained(controller)),
-          IconButton::Type::kXSmall, &kQuickSettingsRightArrowIcon,
+          IconButton::Type::kSmall, &kQuickSettingsRightArrowIcon,
           /*togglable=*/false,
           /*has_border=*/false));
 }

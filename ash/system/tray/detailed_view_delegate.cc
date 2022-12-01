@@ -46,22 +46,22 @@ views::Button* DetailedViewDelegate::CreateBackButton(
     views::Button::PressedCallback callback) {
   return new IconButton(
       std::move(callback),
-      features::IsQsRevampEnabled() ? IconButton::Type::kSmall
-                                    : IconButton::Type::kSmallFloating,
+      features::IsQsRevampEnabled() ? IconButton::Type::kMedium
+                                    : IconButton::Type::kMediumFloating,
       &kQuickSettingsLeftArrowIcon, IDS_ASH_STATUS_TRAY_PREVIOUS_MENU);
 }
 
 views::Button* DetailedViewDelegate::CreateInfoButton(
     views::Button::PressedCallback callback,
     int info_accessible_name_id) {
-  return new IconButton(std::move(callback), IconButton::Type::kSmall,
+  return new IconButton(std::move(callback), IconButton::Type::kMedium,
                         &kUnifiedMenuInfoIcon, info_accessible_name_id);
 }
 
 views::Button* DetailedViewDelegate::CreateSettingsButton(
     views::Button::PressedCallback callback,
     int setting_accessible_name_id) {
-  auto* button = new IconButton(std::move(callback), IconButton::Type::kSmall,
+  auto* button = new IconButton(std::move(callback), IconButton::Type::kMedium,
                                 &vector_icons::kSettingsOutlineIcon,
                                 setting_accessible_name_id);
   if (!TrayPopupUtils::CanOpenWebUISettings())
@@ -72,7 +72,7 @@ views::Button* DetailedViewDelegate::CreateSettingsButton(
 views::Button* DetailedViewDelegate::CreateHelpButton(
     views::Button::PressedCallback callback) {
   auto* button =
-      new IconButton(std::move(callback), IconButton::Type::kSmall,
+      new IconButton(std::move(callback), IconButton::Type::kMedium,
                      &vector_icons::kHelpOutlineIcon, IDS_ASH_STATUS_TRAY_HELP);
   // Help opens a web page, so treat it like Web UI settings.
   if (!TrayPopupUtils::CanOpenWebUISettings())

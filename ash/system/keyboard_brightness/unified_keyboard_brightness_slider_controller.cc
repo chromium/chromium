@@ -78,7 +78,7 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
         base::BindRepeating(
             &UnifiedKeyboardBrightnessView::OnKeyboardBacklightColorIconPressed,
             weak_factory_.GetWeakPtr()),
-        IconButton::Type::kSmall, &kUnifiedMenuKeyboardBacklightIcon,
+        IconButton::Type::kMedium, &kUnifiedMenuKeyboardBacklightIcon,
         IDS_ASH_STATUS_TRAY_KEYBOARD_BACKLIGHT_ACCESSIBLE_NAME);
 
     personalization_app::mojom::BacklightColor backlight_color =

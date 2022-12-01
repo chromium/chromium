@@ -152,7 +152,7 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   settings_button_ = new IconButton(
       base::BindRepeating(&Delegate::OpenConnectedDevicesSettings,
                           base::Unretained(delegate)),
-      IconButton::Type::kSmall, &kSystemMenuSettingsIcon,
+      IconButton::Type::kMedium, &kSystemMenuSettingsIcon,
       IDS_ASH_PHONE_HUB_CONNECTED_DEVICE_SETTINGS_LABEL);
   AddView(TriView::Container::END, settings_button_);
 

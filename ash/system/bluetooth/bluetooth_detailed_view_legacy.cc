@@ -153,7 +153,7 @@ void BluetoothDetailedViewLegacy::CreatePairNewDeviceView() {
       BluetoothDetailedViewChildId::kPairNewDeviceClickableView));
 
   std::unique_ptr<ash::IconButton> button = std::make_unique<ash::IconButton>(
-      views::Button::PressedCallback(), IconButton::Type::kSmall,
+      views::Button::PressedCallback(), IconButton::Type::kMedium,
       &kSystemMenuPlusIcon, IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
   button->SetCanProcessEventsWithinSubtree(/*can_process=*/false);
   button->SetFocusBehavior(

@@ -64,8 +64,8 @@ UnifiedVolumeView::UnifiedVolumeView(
           base::BindRepeating(&UnifiedVolumeSliderController::Delegate::
                                   OnAudioSettingsButtonClicked,
                               delegate->weak_ptr_factory_.GetWeakPtr()),
-          features::IsQsRevampEnabled() ? IconButton::Type::kSmallFloating
-                                        : IconButton::Type::kSmall,
+          features::IsQsRevampEnabled() ? IconButton::Type::kMediumFloating
+                                        : IconButton::Type::kMedium,
           &kQuickSettingsRightArrowIcon,
           IDS_ASH_STATUS_TRAY_AUDIO))) {
   CrasAudioHandler::Get()->AddAudioObserver(this);

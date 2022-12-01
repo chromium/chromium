@@ -277,8 +277,8 @@ void SearchResultActionsView::CreateImageButton(
           &SearchResultActionsViewDelegate::OnSearchResultActionActivated,
           base::Unretained(delegate_), action_index),
       features::IsProductivityLauncherEnabled()
-          ? IconButton::Type::kSmallFloating
-          : IconButton::Type::kMediumFloating,
+          ? IconButton::Type::kMediumFloating
+          : IconButton::Type::kLargeFloating,
       icon, action.tooltip_text));
   button->set_tag(action_index);
   subscriptions_.push_back(button->AddStateChangedCallback(

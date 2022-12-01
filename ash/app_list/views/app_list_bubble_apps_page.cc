@@ -696,7 +696,7 @@ void AppListBubbleAppsPage::InitContinueLabelContainer(
       continue_label_container_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&AppListBubbleAppsPage::OnToggleContinueSection,
                               base::Unretained(this)),
-          IconButton::Type::kXSmallFloating, &kChevronUpIcon,
+          IconButton::Type::kSmallFloating, &kChevronUpIcon,
           /*is_togglable=*/false,
           /*has_border=*/false));
   // See ButtonFocusSkipper in app_list_bubble_view.cc for focus handling.

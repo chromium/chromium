@@ -15,7 +15,7 @@ namespace ash {
 
 CollapseButton::CollapseButton(PressedCallback callback)
     : IconButton(std::move(callback),
-                 IconButton::Type::kSmallFloating,
+                 IconButton::Type::kMediumFloating,
                  &kUnifiedMenuExpandIcon,
                  IDS_ASH_STATUS_TRAY_COLLAPSE) {}
 

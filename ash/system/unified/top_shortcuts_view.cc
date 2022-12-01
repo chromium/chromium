@@ -220,7 +220,7 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
             controller->HandlePowerAction();
           },
           base::Unretained(controller)),
-      IconButton::Type::kSmall, &kUnifiedMenuPowerIcon,
+      IconButton::Type::kMedium, &kUnifiedMenuPowerIcon,
       reboot ? IDS_ASH_STATUS_TRAY_REBOOT : IDS_ASH_STATUS_TRAY_SHUTDOWN));
   power_button_->SetID(VIEW_ID_QS_POWER_BUTTON);
 
@@ -233,7 +233,7 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
               controller->HandleLockAction();
             },
             base::Unretained(controller)),
-        IconButton::Type::kSmall, &kUnifiedMenuLockIcon,
+        IconButton::Type::kMedium, &kUnifiedMenuLockIcon,
         IDS_ASH_STATUS_TRAY_LOCK));
     lock_button_->SetID(VIEW_ID_QS_LOCK_BUTTON);
   }
@@ -248,7 +248,7 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
                   controller->HandleSettingsAction();
                 },
                 base::Unretained(controller)),
-            IconButton::Type::kSmall, &vector_icons::kSettingsOutlineIcon,
+            IconButton::Type::kMedium, &vector_icons::kSettingsOutlineIcon,
             IDS_ASH_STATUS_TRAY_SETTINGS));
     settings_button_->SetID(VIEW_ID_QS_SETTINGS_BUTTON);
 

@@ -79,7 +79,7 @@ QuickSettingsFooter::QuickSettingsFooter(
               controller->HandleSettingsAction();
             },
             base::Unretained(controller)),
-        IconButton::Type::kSmall, &vector_icons::kSettingsOutlineIcon,
+        IconButton::Type::kMedium, &vector_icons::kSettingsOutlineIcon,
         IDS_ASH_STATUS_TRAY_SETTINGS));
     settings_button_->SetID(VIEW_ID_QS_SETTINGS_BUTTON);
 

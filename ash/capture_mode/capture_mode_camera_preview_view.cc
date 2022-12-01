@@ -65,7 +65,7 @@ CameraPreviewResizeButton::CameraPreviewResizeButton(
     views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon)
     : IconButton(std::move(callback),
-                 IconButton::Type::kSmallFloating,
+                 IconButton::Type::kMediumFloating,
                  &icon,
                  // the tooltip depends on the current expanded state of the
                  // button and will be updated by `CameraPreviewView`.

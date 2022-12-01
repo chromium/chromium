@@ -317,8 +317,8 @@ class SubmitFeedbackButton : public IconButton {
                          ->ShowChannelInfoGiveFeedback();
                    }),
                    features::IsQsRevampEnabled()
-                       ? IconButton::Type::kSmallFloating
-                       : IconButton::Type::kSmall,
+                       ? IconButton::Type::kMediumFloating
+                       : IconButton::Type::kMedium,
                    &kRequestFeedbackIcon,
                    IDS_ASH_STATUS_TRAY_REPORT_FEEDBACK),
         channel_(channel) {

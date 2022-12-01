@@ -12,7 +12,7 @@ std::unique_ptr<views::ImageButton>
 AshNotificationControlButtonFactory::CreateButton(
     views::Button::PressedCallback callback) {
   return std::make_unique<ash::IconButton>(
-      std::move(callback), ash::IconButton::Type::kXSmallFloating, nullptr,
+      std::move(callback), ash::IconButton::Type::kSmallFloating, nullptr,
       false, false);
 }
 

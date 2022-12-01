@@ -43,7 +43,7 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
     const gfx::VectorIcon* icon,
     const int accessible_name_id)
     : IconButton(std::move(callback),
-                 IconButton::Type::kMedium,
+                 IconButton::Type::kLarge,
                  icon,
                  accessible_name_id,
                  /*is_togglable=*/true,

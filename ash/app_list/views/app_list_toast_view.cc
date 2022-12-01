@@ -263,7 +263,7 @@ void AppListToastView::SetCloseButton(
   DCHECK(close_button_callback);
 
   close_button_ = AddChildView(std::make_unique<IconButton>(
-      close_button_callback, IconButton::Type::kSmallFloating,
+      close_button_callback, IconButton::Type::kMediumFloating,
       &vector_icons::kCloseIcon,
       IDS_ASH_LAUNCHER_CLOSE_SORT_TOAST_BUTTON_SPOKEN_TEXT));
   close_button_->SetProperty(views::kMarginsKey, kCloseButtonMargin);

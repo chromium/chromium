@@ -52,7 +52,7 @@ void ConfigureFeaturePodLabel(views::Label* label,
 FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
                                            bool is_togglable)
     : IconButton(std::move(callback),
-                 IconButton::Type::kMedium,
+                 IconButton::Type::kLarge,
                  /*icon=*/nullptr,
                  is_togglable,
                  /*has_border=*/true) {

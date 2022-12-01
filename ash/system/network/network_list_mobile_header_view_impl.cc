@@ -80,7 +80,7 @@ void NetworkListMobileHeaderViewImpl::AddExtraButtons() {
       base::BindRepeating(
           &NetworkListMobileHeaderViewImpl::AddESimButtonPressed,
           weak_factory_.GetWeakPtr()),
-      IconButton::Type::kSmall, &icon, /*is_togglable=*/false,
+      IconButton::Type::kMedium, &icon, /*is_togglable=*/false,
       /*has_border=*/false);
   add_esim_button.get()->SetID(kAddESimButtonId);
   add_esim_button_ = add_esim_button.get();
