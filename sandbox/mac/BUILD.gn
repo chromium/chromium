@@ -67,14 +67,10 @@ source_set("sandbox_unittests") {
 
   sources = [
     "mojom/mojom_traits_unittest.cc",
-    "sandbox_mac_compiler_unittest.mm",
-    "sandbox_mac_seatbelt_exec_unittest.cc",
+    "sandbox_compiler_unittest.cc",
+    "seatbelt_exec_unittest.cc",
     "seatbelt_extension_unittest.cc",
-  ]
-
-  frameworks = [
-    "CoreFoundation.framework",
-    "Foundation.framework",
+    "seatbelt_unittest.cc",
   ]
 
   deps = [
