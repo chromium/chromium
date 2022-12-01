@@ -2785,7 +2785,7 @@
 
     'gpu_tests_release_trybot_no_symbols_mac_code_coverage_chrome_for_testing': [
       'gpu_tests', 'release_trybot', 'no_symbols',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation', 'chrome_for_testing',
+      'use_clang_coverage', 'chrome_for_testing',
     ],
 
     # Keep in sync with
@@ -2805,7 +2805,7 @@
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_chrome_for_testing_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck', 'chrome_for_testing',
+      'use_clang_coverage', 'devtools_do_typecheck', 'chrome_for_testing',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient': [
@@ -2849,7 +2849,7 @@
 
     'gpu_tests_release_trybot_resource_allowlisting_code_coverage_chrome_for_testing': [
       'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation', 'chrome_for_testing',
+      'use_clang_coverage', 'chrome_for_testing',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient': [
