@@ -147,8 +147,8 @@ struct HandlerView {
   const raw_ref<const std::string> app_id;
   base::FilePath profile_path;
   bool has_origin_wildcard;
-  const raw_ref<base::Value> include_paths;
-  const raw_ref<base::Value> exclude_paths;
+  const raw_ref<base::Value::List> include_paths;
+  const raw_ref<base::Value::List> exclude_paths;
 };
 
 absl::optional<const HandlerView> GetConstHandlerView(

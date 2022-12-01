@@ -94,24 +94,22 @@ bool PathMatchesPathPattern(const std::string& url_path,
 // "Best" here is defined by this ordering: kInApp > kNone > kInBrowser.
 // |url_path| always starts with a '/', as it's the result of GURL::path().
 bool FindBestMatchingIncludePathChoice(const std::string& url_path,
-                                       const base::Value& include_paths,
+                                       const base::Value::List& include_paths,
                                        UrlHandlerSavedChoice* choice,
                                        base::Time* time) {
-  if (!include_paths.is_list())
-    return false;
-
   UrlHandlerSavedChoice best_choice = UrlHandlerSavedChoice::kInBrowser;
   base::Time most_recent_timestamp;
   bool found_match = false;
 
-  for (const auto& include_path_dict : include_paths.GetList()) {
-    if (!include_path_dict.is_dict())
+  for (const auto& include_path_value : include_paths) {
+    if (!include_path_value.is_dict())
       continue;
-    const std::string* include_path = include_path_dict.FindStringKey(kPath);
+    const base::Value::Dict& include_path_dict = include_path_value.GetDict();
+
+    const std::string* include_path = include_path_dict.FindString(kPath);
     if (!include_path)
       continue;
-    const absl::optional<int> choice_opt =
-        include_path_dict.FindIntKey(kChoice);
+    const absl::optional<int> choice_opt = include_path_dict.FindInt(kChoice);
     if (!choice_opt)
       continue;
     // Check enum. bounds before casting.
@@ -120,7 +118,7 @@ bool FindBestMatchingIncludePathChoice(const std::string& url_path,
       continue;
     auto current_choice = static_cast<UrlHandlerSavedChoice>(*choice_opt);
     absl::optional<base::Time> current_timestamp =
-        base::ValueToTime(include_path_dict.FindKey(kTimestamp));
+        base::ValueToTime(include_path_dict.Find(kTimestamp));
     if (!current_timestamp)
       continue;
 
@@ -151,11 +149,8 @@ bool FindBestMatchingIncludePathChoice(const std::string& url_path,
 // Return true if |url_path| matches any path in |exclude_paths|. A path in
 // |exclude_paths| can contain one wildcard '*' at the end.
 bool ExcludePathMatches(const std::string& url_path,
-                        const base::Value& exclude_paths) {
-  if (!exclude_paths.is_list())
-    return false;
-
-  for (const auto& exclude_path : exclude_paths.GetList()) {
+                        const base::Value::List& exclude_paths) {
+  for (const auto& exclude_path : exclude_paths) {
     if (!exclude_path.is_string())
       continue;
     if (PathMatchesPathPattern(url_path, exclude_path.GetString()))
@@ -167,14 +162,11 @@ bool ExcludePathMatches(const std::string& url_path,
 // Given a list of handlers that matched an origin, apply the rules in each
 // handler against |url| and return only handlers that match |url| by appending
 // to |matches|.
-void FilterAndAddMatches(const base::Value& all_handlers,
+void FilterAndAddMatches(const base::Value::List& all_handlers,
                          const GURL& url,
                          bool origin_trimmed,
                          std::vector<UrlHandlerLaunchParams>& matches) {
-  if (!all_handlers.is_list())
-    return;
-
-  for (const base::Value& handler : all_handlers.GetList()) {
+  for (const base::Value& handler : all_handlers) {
     absl::optional<const HandlerView> handler_view =
         GetConstHandlerView(handler);
     if (!handler_view)
@@ -187,7 +179,7 @@ void FilterAndAddMatches(const base::Value& all_handlers,
       continue;
 
     const std::string& url_path = url.path();
-    bool include_paths_exist = !handler_view->include_paths->GetList().empty();
+    bool include_paths_exist = !handler_view->include_paths->empty();
     UrlHandlerSavedChoice best_choice = UrlHandlerSavedChoice::kNone;
     base::Time latest_timestamp = base::Time::Min();
     if (include_paths_exist && !FindBestMatchingIncludePathChoice(
@@ -196,7 +188,7 @@ void FilterAndAddMatches(const base::Value& all_handlers,
       continue;
     }
 
-    bool exclude_paths_exist = !handler_view->exclude_paths->GetList().empty();
+    bool exclude_paths_exist = !handler_view->exclude_paths->empty();
     if (exclude_paths_exist &&
         ExcludePathMatches(url_path, *handler_view->exclude_paths)) {
       continue;
@@ -241,12 +233,12 @@ void FilterBySavedChoice(std::vector<UrlHandlerLaunchParams>& matches) {
   }
 }
 
-void FindMatchesImpl(const base::Value& pref_value,
+void FindMatchesImpl(const base::Value::Dict& pref_value,
                      const GURL& url,
                      std::vector<UrlHandlerLaunchParams>& matches,
                      const std::string& origin_str,
                      const bool origin_trimmed) {
-  const base::Value* const all_handlers = pref_value.FindListKey(origin_str);
+  const base::Value::List* const all_handlers = pref_value.FindList(origin_str);
   if (all_handlers) {
     DCHECK(UrlMatchesOrigin(url, origin_str, origin_trimmed));
     FilterAndAddMatches(*all_handlers, url, origin_trimmed, matches);
@@ -281,12 +273,10 @@ void TryDifferentOriginSubstrings(std::string origin_str, Operation op) {
 }
 
 // Returns the URL handlers stored in |pref_value| that match |url|'s origin.
-std::vector<UrlHandlerLaunchParams> FindMatches(const base::Value& pref_value,
-                                                const GURL& url) {
+std::vector<UrlHandlerLaunchParams> FindMatches(
+    const base::Value::Dict& pref_value,
+    const GURL& url) {
   std::vector<UrlHandlerLaunchParams> matches;
-
-  if (!pref_value.is_dict())
-    return matches;
 
   url::Origin origin = url::Origin::Create(url);
   if (origin.opaque())
@@ -307,25 +297,24 @@ std::vector<UrlHandlerLaunchParams> FindMatches(const base::Value& pref_value,
 
 base::Value GetIncludePathsValue(const std::vector<std::string>& include_paths,
                                  const base::Time& time) {
-  base::Value value(base::Value::Type::LIST);
+  base::Value::List list;
   // When no "paths" are specified in web-app-origin-association, all include
   // paths are allowed.
   for (const auto& include_path : include_paths.empty()
                                       ? std::vector<std::string>({kDefaultPath})
                                       : include_paths) {
-    base::Value path_dict(base::Value::Type::DICTIONARY);
-    path_dict.SetStringKey(kPath, include_path);
-    path_dict.SetIntKey(kChoice,
-                        static_cast<int>(UrlHandlerSavedChoice::kNone));
-    path_dict.SetKey(kTimestamp, base::TimeToValue(time));
-    value.Append(std::move(path_dict));
+    base::Value::Dict path_dict;
+    path_dict.Set(kPath, include_path);
+    path_dict.Set(kChoice, static_cast<int>(UrlHandlerSavedChoice::kNone));
+    path_dict.Set(kTimestamp, base::TimeToValue(time));
+    list.Append(std::move(path_dict));
   }
-  return value;
+  return base::Value(std::move(list));
 }
 
-base::Value GetExcludePathsValue(
+base::Value::List GetExcludePathsValue(
     const std::vector<std::string>& exclude_paths) {
-  base::Value value(base::Value::Type::LIST);
+  base::Value::List value;
   for (const auto& exclude_path : exclude_paths) {
     value.Append(exclude_path);
   }
@@ -336,14 +325,14 @@ base::Value NewHandler(const AppId& app_id,
                        const base::FilePath& profile_path,
                        const apps::UrlHandlerInfo& info,
                        const base::Time& time) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey(kAppId, app_id);
-  value.SetKey(kProfilePath, base::FilePathToValue(profile_path));
-  value.SetBoolKey(kHasOriginWildcard, info.has_origin_wildcard);
+  base::Value::Dict value;
+  value.Set(kAppId, app_id);
+  value.Set(kProfilePath, base::FilePathToValue(profile_path));
+  value.Set(kHasOriginWildcard, info.has_origin_wildcard);
   // Set include_paths and exclude paths from associated app.
-  value.SetKey(kIncludePaths, GetIncludePathsValue(info.paths, time));
-  value.SetKey(kExcludePaths, GetExcludePathsValue(info.exclude_paths));
-  return value;
+  value.Set(kIncludePaths, GetIncludePathsValue(info.paths, time));
+  value.Set(kExcludePaths, GetExcludePathsValue(info.exclude_paths));
+  return base::Value(std::move(value));
 }
 
 // If |match_app_id| is true, returns true if |handler| has dict. values equal
@@ -395,15 +384,14 @@ using PathSet = base::flat_set<std::string>;
 void UpdateSavedChoiceInIncludePaths(const PathSet& updated_include_paths,
                                      UrlHandlerSavedChoice choice,
                                      const base::Time& time,
-                                     base::Value& all_include_paths) {
+                                     base::Value::List& all_include_paths) {
   // |all_include_paths| is a list of include path dicts. Eg:
   // [ {
   //    "choice": 0,
   //    "path": "/abc",
   //    "timestamp": "-9223372036854775808"
   // } ]
-  auto& include_paths_list = all_include_paths.GetList();
-  for (base::Value& include_path_value : include_paths_list) {
+  for (base::Value& include_path_value : all_include_paths) {
     if (!include_path_value.is_dict())
       continue;
     base::Value::Dict& include_path_dict = include_path_value.GetDict();
@@ -423,16 +411,15 @@ void UpdateSavedChoiceInIncludePaths(const PathSet& updated_include_paths,
 PathSet UpdateSavedChoice(const GURL& url,
                           UrlHandlerSavedChoice choice,
                           const base::Time& time,
-                          base::Value& include_paths) {
+                          base::Value::List& include_paths) {
   // |include_paths| is a list of include path dicts. Eg:
   // [ {
   //    "choice": 0,
   //    "path": "/abc",
   //    "timestamp": "-9223372036854775808"
   // } ]
-  auto& include_paths_list = std::move(include_paths).GetList();
   std::vector<std::string> updated_include_paths;
-  for (base::Value& include_path_value : include_paths_list) {
+  for (base::Value& include_path_value : include_paths) {
     if (!include_path_value.is_dict())
       continue;
     base::Value::Dict& include_path_dict = include_path_value.GetDict();
@@ -592,22 +579,23 @@ void SaveChoice(PrefService* local_state,
 
 bool ShouldUpdateIncludePaths(const base::Value& current_handler,
                               const base::Value& new_handler) {
-  const base::Value* include_paths_lh =
-      current_handler.FindListKey(kIncludePaths);
-  const base::Value* include_paths_rh = new_handler.FindListKey(kIncludePaths);
+  const base::Value::List* include_paths_lh =
+      current_handler.GetDict().FindList(kIncludePaths);
+  const base::Value::List* include_paths_rh =
+      new_handler.GetDict().FindList(kIncludePaths);
   if (!include_paths_lh || !include_paths_rh)
     return true;
 
-  const base::Value::List& include_paths_list_lh = include_paths_lh->GetList();
-  const base::Value::List& include_paths_list_rh = include_paths_rh->GetList();
-  if (include_paths_list_lh.size() != include_paths_list_rh.size())
+  if (include_paths_lh->size() != include_paths_rh->size())
     return true;
 
-  for (size_t i = 0; i < include_paths_list_lh.size(); i++) {
-    DCHECK(include_paths_list_lh[i].is_dict());
-    DCHECK(include_paths_list_rh[i].is_dict());
-    const std::string* path_lh = include_paths_list_lh[i].FindStringKey(kPath);
-    const std::string* path_rh = include_paths_list_rh[i].FindStringKey(kPath);
+  for (size_t i = 0; i < include_paths_lh->size(); i++) {
+    DCHECK((*include_paths_lh)[i].is_dict());
+    DCHECK((*include_paths_rh)[i].is_dict());
+    const std::string* path_lh =
+        (*include_paths_lh)[i].GetDict().FindString(kPath);
+    const std::string* path_rh =
+        (*include_paths_rh)[i].GetDict().FindString(kPath);
     if (!path_lh || !path_rh)
       return true;
     if (*path_lh != *path_rh)
@@ -637,12 +625,13 @@ bool ShouldUpdateIncludePaths(const base::Value& current_handler,
 void MaybeUpdateIncludePaths(base::Value& current_handler,
                              base::Value& new_handler) {
   if (ShouldUpdateIncludePaths(current_handler, new_handler)) {
-    base::Value* new_include_paths = new_handler.FindListKey(kIncludePaths);
+    base::Value::List* new_include_paths =
+        new_handler.GetDict().FindList(kIncludePaths);
     if (new_include_paths) {
-      current_handler.SetKey(kIncludePaths, std::move(*new_include_paths));
+      current_handler.GetDict().Set(kIncludePaths,
+                                    std::move(*new_include_paths));
     } else {
-      current_handler.SetKey(kIncludePaths,
-                             base::Value(base::Value::Type::LIST));
+      current_handler.GetDict().Set(kIncludePaths, base::Value::List());
     }
   }
 }
@@ -652,11 +641,12 @@ void MaybeUpdateIncludePaths(base::Value& current_handler,
 // user preferences.
 void UpdateExcludePaths(base::Value& current_handler,
                         base::Value& new_handler) {
-  base::Value* new_exclude_paths = new_handler.FindListKey(kExcludePaths);
+  base::Value::List* new_exclude_paths =
+      new_handler.GetDict().FindList(kExcludePaths);
   if (new_exclude_paths) {
-    current_handler.SetKey(kExcludePaths, std::move(*new_exclude_paths));
+    current_handler.GetDict().Set(kExcludePaths, std::move(*new_exclude_paths));
   } else {
-    current_handler.SetKey(kExcludePaths, base::Value(base::Value::Type::LIST));
+    current_handler.GetDict().Set(kExcludePaths, base::Value::List());
   }
 }
 
@@ -772,7 +762,7 @@ void UpdateWebApp(PrefService* local_state,
                     if (origin_str != new_handler.origin.Serialize())
                       return false;
                     absl::optional<bool> current_has_origin_wildcard =
-                        current_handler.FindBoolKey(kHasOriginWildcard);
+                        current_handler.GetDict().FindBool(kHasOriginWildcard);
                     if (!current_has_origin_wildcard)
                       return false;
                     if (*current_has_origin_wildcard !=
@@ -876,10 +866,8 @@ std::vector<UrlHandlerLaunchParams> FindMatchingUrlHandlers(
   if (!url.is_valid())
     return {};
 
-  const base::Value& pref_value =
-      local_state->GetValue(prefs::kWebAppsUrlHandlerInfo);
-  if (!pref_value.is_dict())
-    return {};
+  const base::Value::Dict& pref_value =
+      local_state->GetDict(prefs::kWebAppsUrlHandlerInfo);
 
   return FindMatches(pref_value, url);
 }
@@ -939,29 +927,30 @@ absl::optional<const HandlerView> GetConstHandlerView(
     const base::Value& handler) {
   if (!handler.is_dict())
     return absl::nullopt;
+  const base::Value::Dict& handler_dict = handler.GetDict();
 
-  const std::string* const handler_app_id = handler.FindStringKey(kAppId);
+  const std::string* const handler_app_id = handler_dict.FindString(kAppId);
   if (!handler_app_id)
     return absl::nullopt;
 
   absl::optional<base::FilePath> handler_profile_path =
-      base::ValueToFilePath(handler.FindKey(kProfilePath));
+      base::ValueToFilePath(handler_dict.Find(kProfilePath));
   if (!handler_profile_path)
     return absl::nullopt;
 
   absl::optional<bool> has_origin_wildcard =
-      handler.FindBoolKey(kHasOriginWildcard);
+      handler_dict.FindBool(kHasOriginWildcard);
   if (!has_origin_wildcard)
     return absl::nullopt;
 
-  base::Value* include_paths =
-      const_cast<base::Value&>(handler).FindListKey(kIncludePaths);
-  if (!include_paths || !include_paths->is_list())
+  base::Value::List* include_paths =
+      const_cast<base::Value::Dict&>(handler_dict).FindList(kIncludePaths);
+  if (!include_paths)
     return absl::nullopt;
 
-  base::Value* exclude_paths =
-      const_cast<base::Value&>(handler).FindListKey(kExcludePaths);
-  if (!exclude_paths || !exclude_paths->is_list())
+  base::Value::List* exclude_paths =
+      const_cast<base::Value::Dict&>(handler_dict).FindList(kExcludePaths);
+  if (!exclude_paths)
     return absl::nullopt;
 
   HandlerView handler_view = {
