@@ -14,11 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const gtsPrettierrc = require('gts/.prettierrc.json');
 
 module.exports = {
-  bracketSpacing: false, // clang-format does not do this
-  semi: true, // https://google.github.io/styleguide/jsguide.html#disallowed-features-automatic-semicolon-insertion
-  singleQuote: true, // https://google.github.io/styleguide/jsguide.html#features-strings-use-single-quotes
-  trailingComma: 'es5',
-  useTabs: false, // https://google.github.io/styleguide/jsguide.html#whitespace-characters
+  ...gtsPrettierrc,
+  arrowParens: 'always', // https://google.github.io/styleguide/jsguide.html#features-functions-arrow-functions
 };
