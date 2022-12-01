@@ -10,7 +10,6 @@ import("//tools/typescript/ts_library.gni")
 
 js_type_check("closure_compile") {
   deps = [
-    ":fake_cros_audio_config",
     ":fake_personalization_search_handler",
     ":fake_settings_search_handler",
     ":fake_user_action_recorder",
@@ -27,12 +26,6 @@ js_library("fake_settings_search_handler") {
 
 js_library("fake_user_action_recorder") {
   deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile" ]
-}
-
-js_library("fake_cros_audio_config") {
-  deps = [
-    "//chromeos/ash/components/audio/public/mojom:mojom_js_library_for_compile",
-  ]
 }
 
 mojom("test_api_mojom") {
@@ -65,7 +58,6 @@ test_files = [
   "esim_install_error_dialog_test.js",
   "esim_remove_profile_dialog_test.js",
   "esim_rename_dialog_test.js",
-  "fake_cros_audio_config.js",
   "fake_input_method_private.js",
   "fake_language_settings_private.js",
   "fake_media_devices.js",

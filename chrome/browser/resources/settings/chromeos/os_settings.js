@@ -110,6 +110,8 @@ import * as searchResultIconMojomWebui from '../mojom-webui/search/search_result
 import * as userActionRecorderMojomWebui from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import * as settingMojomWebui from '../mojom-webui/setting.mojom-webui.js';
 
+import * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
+
 export {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 export {BrowserProxy as AppManagementComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 export {PageType, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
@@ -176,6 +178,7 @@ export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './se
 export {
   appNotificationHandlerMojomWebui,
   crosAudioConfigMojomWebui,
+  fakeCrosAudioConfig,
   personalizationSearchMojomWebui,
   routesMojomWebui,
   searchMojomWebui,

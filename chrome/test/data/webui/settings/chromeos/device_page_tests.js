@@ -4,18 +4,16 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
+import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-import {crosAudioConfigActiveFakeSpeaker, crosAudioConfigDefaultFakeMicJack, crosAudioConfigDefaultFakeSpeaker, crosAudioConfigInactiveFakeMicJack, defaultFakeAudioSystemProperties, FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 import {FakeSystemDisplay} from './fake_system_display.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
@@ -532,8 +530,8 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!Array<!AudioDevice>} */
       outputDevices: [
-        crosAudioConfigDefaultFakeSpeaker,
-        crosAudioConfigDefaultFakeMicJack,
+        fakeCrosAudioConfig.defaultFakeSpeaker,
+        fakeCrosAudioConfig.defaultFakeMicJack,
       ],
     };
 
@@ -546,8 +544,8 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!Array<!AudioDevice>} */
       outputDevices: [
-        crosAudioConfigDefaultFakeSpeaker,
-        crosAudioConfigDefaultFakeMicJack,
+        fakeCrosAudioConfig.defaultFakeSpeaker,
+        fakeCrosAudioConfig.defaultFakeMicJack,
       ],
     };
 
@@ -560,8 +558,8 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!Array<!AudioDevice>} */
       outputDevices: [
-        crosAudioConfigDefaultFakeSpeaker,
-        crosAudioConfigDefaultFakeMicJack,
+        fakeCrosAudioConfig.defaultFakeSpeaker,
+        fakeCrosAudioConfig.defaultFakeMicJack,
       ],
     };
 
@@ -574,8 +572,8 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!Array<!AudioDevice>} */
       outputDevices: [
-        crosAudioConfigDefaultFakeSpeaker,
-        crosAudioConfigDefaultFakeMicJack,
+        fakeCrosAudioConfig.defaultFakeSpeaker,
+        fakeCrosAudioConfig.defaultFakeMicJack,
       ],
     };
 
@@ -599,8 +597,8 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!Array<!AudioDevice>} */
       outputDevices: [
-        crosAudioConfigActiveFakeSpeaker,
-        crosAudioConfigInactiveFakeMicJack,
+        fakeCrosAudioConfig.fakeSpeakerActive,
+        fakeCrosAudioConfig.fakeMicJackInactive,
       ],
     };
 
@@ -611,7 +609,7 @@ suite('SettingsDevicePage', function() {
       await init();
 
       // FakeAudioConfig must be set before audio subpage is loaded.
-      crosAudioConfig = new FakeCrosAudioConfig();
+      crosAudioConfig = new fakeCrosAudioConfig.FakeCrosAudioConfig();
       setCrosAudioConfigForTesting(crosAudioConfig);
       return showAndGetDeviceSubpage('audio', routes.AUDIO)
           .then(function(page) {
@@ -626,7 +624,8 @@ suite('SettingsDevicePage', function() {
 
       // Test default properties.
       assertEquals(
-          defaultFakeAudioSystemProperties.outputVolumePercent,
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties
+              .outputVolumePercent,
           outputVolumeSlider.value);
 
       // Test min volume case.
@@ -713,10 +712,11 @@ suite('SettingsDevicePage', function() {
 
       // Test default properties.
       assertEquals(
-          crosAudioConfigDefaultFakeMicJack.id,
+          fakeCrosAudioConfig.defaultFakeMicJack.id,
           BigInt(outputDeviceDropdown.value));
       assertEquals(
-          defaultFakeAudioSystemProperties.outputDevices.length,
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties.outputDevices
+              .length,
           outputDeviceDropdown.length);
 
       // Test empty output devices case.
@@ -733,7 +733,7 @@ suite('SettingsDevicePage', function() {
           activeSpeakerFakeAudioSystemProperties);
       await flushTasks();
       assertEquals(
-          crosAudioConfigActiveFakeSpeaker.id,
+          fakeCrosAudioConfig.fakeSpeakerActive.id,
           BigInt(outputDeviceDropdown.value));
       assertEquals(
           activeSpeakerFakeAudioSystemProperties.outputDevices.length,

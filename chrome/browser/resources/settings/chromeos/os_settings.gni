@@ -210,6 +210,7 @@ non_web_component_files = [
   "chromeos/device_page/cros_audio_config.ts",
   "chromeos/device_page/device_page_browser_proxy.ts",
   "chromeos/device_page/drag_mixin.ts",
+  "chromeos/device_page/fake_cros_audio_config.ts",
   "chromeos/device_page/layout_mixin.ts",
   "chromeos/ensure_lazy_loaded.ts",
   "chromeos/find_shortcut_behavior.js",
