@@ -28,9 +28,9 @@ class RenderFrameImpl;
 // AXTreeDistiller
 //
 //  A class that creates and stores a distilled AXTree for a particular render
-//  frame. The main API is AXTreeDistiller::Distill(), which stores the passed-
-//  in callback and kicks off the distillation. Once a distilled AXTree is
-//  ready, the callback is called.
+//  frame. The main API is AXTreeDistiller::Distill(), which kicks off the
+//  snapshotting and distillation. Once a distilled AXTree is ready, calls a
+//  callback which had been passed in from the render frame.
 //  When |IsReadAnythingWithScreen2xEnabled()|, the distillation is performed
 //  by the Screen2x ML model in the utility process. Otherwise, distillation is
 //  done using rules defined in this file.
@@ -42,49 +42,51 @@ class CONTENT_EXPORT AXTreeDistiller {
   AXTreeDistiller(const AXTreeDistiller&) = delete;
   AXTreeDistiller& operator=(const AXTreeDistiller&) = delete;
 
-  // Snapshot and distill an AXTree on this render frame. Saves callback as
-  // |callback_|.
+  // Snapshot and distill an AXTree on this render frame.
+  // When |IsReadAnythingWithScreen2xEnabled|, this operation is done in the
+  // utility process by Screen2x. Otherwise, it is done by a rules-based
+  // algorithm in this process.
+  // The general pathway is:
+  //   1. Snapshot
+  //   2. DistillViaAlgorithm OR DistillViaScreen2x
+  //   3. RunCallback
+  // This pathway may be called multiple times before it has been completed, so
+  // we pass data from one method to the next rather than storing it in this
+  // class.
   void Distill(mojom::Frame::SnapshotAndDistillAXTreeCallback callback);
 
  private:
-  // Does nothing if |snapshot_| is already defined. Otherwise, takes a snapshot
-  // of the accessibility tree for |render_frame_| and caches it as |snapshot_|.
-  void SnapshotAXTree();
-
-  // If |content_node_ids_| is already defined, notifies the handler that the
-  // AXTree has already been distilled. Otherwise, distills |snapshot_| by
-  // identifying main content nodes and caching their IDs as
-  // |content_node_ids_|. When |IsReadAnythingWithScreen2xEnabled|, this
-  // process is done in the utility process by Screen2x. Otherwise, it is done
-  // by a rules-based algorithm in this process.
-  void DistillAXTree();
+  // Takes a snapshot of the accessibility tree for |render_frame_|.
+  void SnapshotAXTree(ui::AXTreeUpdate* snapshot);
 
   // Distills the AXTree via a rules-based algorithm.
-  void DistillViaAlgorithm();
+  void DistillViaAlgorithm(
+      mojom::Frame::SnapshotAndDistillAXTreeCallback callback,
+      const ui::AXTreeUpdate& snapshot);
 
-  // Run the callback, notifying the caller that an AXTree has been distilled.
+  // Runs |callback|, notifying the caller that an AXTree has been distilled.
   // This function is called asynchronously when the AXTree is distilled by
   // Screen2x and synchronously otherwise. It passes |snapshot_| and
   // |content_node_ids_| to |callback_.Run()|, which is defined in the browser
   // process.
-  void RunCallback();
+  void RunCallback(mojom::Frame::SnapshotAndDistillAXTreeCallback callback,
+                   const ui::AXTreeUpdate& snapshot,
+                   const std::vector<ui::AXNodeID>& content_node_ids);
 
   RenderFrameImpl* render_frame_;
-  std::unique_ptr<ui::AXTreeUpdate> snapshot_;
-  std::unique_ptr<std::vector<ui::AXNodeID>> content_node_ids_;
-
-  // A function  defined in the browser process and passed across the render
-  // frame to AXTreeDistiller.
-  mojom::Frame::SnapshotAndDistillAXTreeCallback callback_;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Passes |snapshot_| to the Screen2x ML model, which identifes the main
+  // Passes |snapshot| to the Screen2x ML model, which identifes the main
   // content nodes and calls |ProcessScreen2xResult()| on completion.
-  void ScheduleScreen2xRun();
+  void DistillViaScreen2x(
+      mojom::Frame::SnapshotAndDistillAXTreeCallback callback,
+      const ui::AXTreeUpdate& snapshot);
 
-  // Called by the Screen2x service from the utility process. Caches
-  // |content_node_ids| as |content_node_ids_|.
-  void ProcessScreen2xResult(const std::vector<ui::AXNodeID>& content_node_ids);
+  // Called by the Screen2x service from the utility process.
+  void ProcessScreen2xResult(
+      mojom::Frame::SnapshotAndDistillAXTreeCallback callback,
+      const ui::AXTreeUpdate& snapshot,
+      const std::vector<ui::AXNodeID>& content_node_ids);
 
   // The remote of the Screen2x main content extractor. The receiver lives in
   // the utility process.
