@@ -159,6 +159,22 @@ void IOSLanguageDetectionTabHelper::PageLoaded(
     StartLanguageDetection();
 }
 
+void IOSLanguageDetectionTabHelper::WebFrameDidBecomeAvailable(
+    web::WebState* web_state,
+    web::WebFrame* web_frame) {
+  DCHECK_EQ(web_state_, web_state);
+  if (web_frame->IsMainFrame() && waiting_for_main_frame_) {
+    waiting_for_main_frame_ = false;
+    StartLanguageDetection();
+  }
+}
+
+void IOSLanguageDetectionTabHelper::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  waiting_for_main_frame_ = false;
+}
+
 void IOSLanguageDetectionTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -187,6 +203,7 @@ void IOSLanguageDetectionTabHelper::StartLanguageDetection() {
 
   web::WebFrame* web_frame = web::GetMainFrame(web_state_);
   if (!web_frame) {
+    waiting_for_main_frame_ = true;
     return;
   }
 

@@ -75,6 +75,10 @@ class IOSLanguageDetectionTabHelper
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
+  void WebFrameDidBecomeAvailable(web::WebState* web_state,
+                                  web::WebFrame* web_frame) override;
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
@@ -118,6 +122,7 @@ class IOSLanguageDetectionTabHelper
   BooleanPrefMember translate_enabled_;
   std::string content_language_header_;
   base::ObserverList<Observer, true>::Unchecked observer_list_;
+  bool waiting_for_main_frame_ = false;
 
   base::WeakPtrFactory<IOSLanguageDetectionTabHelper> weak_method_factory_;
 
