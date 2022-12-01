@@ -49,11 +49,8 @@
 
 namespace {
 
-// TODO(https://crbug.com/1346734): Check whether any of the below should be
-// based on platform constants instead.
-
-constexpr int kWindowIconImageSize = 14;
-constexpr int kBackToTabImageSize = 14;
+constexpr int kWindowIconImageSize = 16;
+constexpr int kBackToTabImageSize = 16;
 
 // The height of the controls bar at the top of the window.
 constexpr int kTopControlsHeight = 30;
@@ -100,13 +97,6 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     : BrowserNonClientFrameView(frame, browser_view) {
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
       this, content::kMaxURLDisplayChars);
-
-  // Creates a window background with solid color.
-  // TODO(https://crbug.com/1346734): Need to figure out how to make this
-  // background color not overlap pip content. AddChildView() would cause it to
-  // overlap while now it never shows.
-  window_background_view_ = browser_view->contents_web_view()->AddChildViewAt(
-      std::make_unique<views::View>(), 0);
 
   // Creates a view that will hold all the control views.
   AddChildView(
@@ -280,8 +270,6 @@ gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
 
 void PictureInPictureBrowserFrameView::OnThemeChanged() {
   const auto* color_provider = GetColorProvider();
-  window_background_view_->SetBackground(views::CreateSolidBackground(
-      color_provider->GetColor(kColorPipWindowBackground)));
   window_title_->SetEnabledColor(
       color_provider->GetColor(kColorPipWindowForeground));
   for (ContentSettingImageView* view : content_setting_views_)

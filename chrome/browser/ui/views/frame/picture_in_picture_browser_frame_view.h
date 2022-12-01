@@ -172,7 +172,6 @@ class PictureInPictureBrowserFrameView
   // A model required to use LocationIconView.
   std::unique_ptr<LocationBarModel> location_bar_model_;
 
-  raw_ptr<views::View> window_background_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> controls_container_view_ = nullptr;
 
   // An icon to the left of the window title, which reuses the location icon in
