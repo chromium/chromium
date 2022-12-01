@@ -334,7 +334,8 @@ class Gmail2018SmoothPage(TopRealWorldDesktopPage):
 
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode != wpr_modes.WPR_REPLAY:
-      google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+      # google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+      google_login.ManualLoginGoogleAccount(action_runner)
     super(Gmail2018SmoothPage, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
         'window.gmonkey !== undefined &&'
@@ -361,7 +362,8 @@ class GoogleCalendar2018SmoothPage(TopRealWorldDesktopPage):
 
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode != wpr_modes.WPR_REPLAY:
-      google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+      # google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+      google_login.ManualLoginGoogleAccount(action_runner)
     super(GoogleCalendar2018SmoothPage, self).RunNavigateSteps(action_runner)
     action_runner.WaitForElement('span[class~="sm8sCf"]')
     action_runner.ExecuteJavaScript("""

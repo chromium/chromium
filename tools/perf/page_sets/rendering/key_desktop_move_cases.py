@@ -53,7 +53,8 @@ class GmailMouseScroll2018Page(KeyDesktopMoveCasesPage):
       }'''
 
   def RunNavigateSteps(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    # google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    google_login.ManualLoginGoogleAccount(action_runner)
     super(GmailMouseScroll2018Page, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
         'window.gmonkey !== undefined &&'

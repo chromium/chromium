@@ -490,7 +490,8 @@ class LoadGmailStory2019(_LoadingStory):
   SKIP_LOGIN = False
 
   def _Login(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    # google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    google_login.ManualLoginGoogleAccount(action_runner)
 
     # Navigating to http://mail.google.com immediately leads to an infinite
     # redirection loop due to a bug in WPR (see
@@ -513,7 +514,8 @@ class LoadChatStory2020(_LoadingStory):
   SKIP_LOGIN = False
 
   def _Login(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'chatfeature')
+    # google_login.NewLoginGoogleAccount(action_runner, 'chatfeature')
+    google_login.ManualLoginGoogleAccount(action_runner)
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
 
 
@@ -552,7 +554,8 @@ class LoadDriveStory2019(_LoadingStory):
   TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2019]
 
   def _Login(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    # google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    google_login.ManualLoginGoogleAccount(action_runner)
 
 
 ################################################################################
