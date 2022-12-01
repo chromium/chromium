@@ -49,16 +49,12 @@ class StyleAdjuster {
  private:
   static bool IsEditableElement(Element*, const ComputedStyleBuilder&);
   static bool IsPasswordFieldWithUnrevealedPassword(Element*);
-  static void AdjustEffectiveTouchAction(ComputedStyle&,
-                                         ComputedStyleBuilder&,
+  static void AdjustEffectiveTouchAction(ComputedStyleBuilder&,
                                          const ComputedStyle& parent_style,
                                          Element* element,
                                          bool is_svg_root);
-  static void AdjustOverflow(ComputedStyle&,
-                             ComputedStyleBuilder&,
-                             Element* element);
-  static void AdjustForForcedColorsMode(const ComputedStyle&,
-                                        ComputedStyleBuilder&);
+  static void AdjustOverflow(ComputedStyleBuilder&, Element* element);
+  static void AdjustForForcedColorsMode(ComputedStyleBuilder&);
   static void AdjustForSVGTextElement(ComputedStyleBuilder&);
 };
 

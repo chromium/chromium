@@ -86,17 +86,17 @@ bool IsOverflowClipOrVisible(EOverflow overflow) {
 }
 
 TouchAction AdjustTouchActionForElement(TouchAction touch_action,
-                                        const ComputedStyle& style,
+                                        const ComputedStyleBuilder& builder,
                                         const ComputedStyle& parent_style,
                                         Element* element) {
   Element* document_element = element->GetDocument().documentElement();
-  bool scrolls_overflow = style.ScrollsOverflow();
+  bool scrolls_overflow = builder.InternalStyle()->ScrollsOverflow();
   if (element && element == element->GetDocument().FirstBodyElement()) {
     // Body scrolls overflow if html root overflow is not visible or the
     // propagation of overflow is stopped by containment.
     if (parent_style.IsOverflowVisibleAlongBothAxes()) {
       if (!parent_style.ShouldApplyAnyContainment(*document_element) &&
-          !style.ShouldApplyAnyContainment(*element)) {
+          !builder.InternalStyle()->ShouldApplyAnyContainment(*element)) {
         scrolls_overflow = false;
       }
     }
@@ -143,7 +143,7 @@ void AdjustAnchorQueryStyles(ComputedStyleBuilder& builder) {
 
   // anchor() and anchor-size() can only be used on absolutely positioned
   // elements.
-  EPosition position = builder.InternalStyle()->GetPosition();
+  EPosition position = builder.GetPosition();
   if (position != EPosition::kAbsolute && position != EPosition::kFixed) {
     if (builder.Left().HasAnchorQueries())
       builder.SetLeft(Length::Auto());
@@ -236,13 +236,13 @@ static bool IsAtMediaUAShadowBoundary(const Element* element) {
 // inline-level. Media elements have a special rendering where the media
 // controls do not use a proper containing block model which means we need
 // to manually stop text-decorations to apply to text inside media controls.
-static bool StopPropagateTextDecorations(const ComputedStyle& style,
+static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
                                          const Element* element) {
-  return style.Display() == EDisplay::kInlineTable ||
-         style.Display() == EDisplay::kInlineBlock ||
-         style.Display() == EDisplay::kWebkitInlineBox ||
-         IsAtMediaUAShadowBoundary(element) || style.IsFloating() ||
-         style.HasOutOfFlowPosition() || IsOutermostSVGElement(element) ||
+  return builder.Display() == EDisplay::kInlineTable ||
+         builder.Display() == EDisplay::kInlineBlock ||
+         builder.Display() == EDisplay::kWebkitInlineBox ||
+         IsAtMediaUAShadowBoundary(element) || builder.IsFloating() ||
+         builder.HasOutOfFlowPosition() || IsOutermostSVGElement(element) ||
          IsA<HTMLRTElement>(element);
 }
 
@@ -259,9 +259,10 @@ static bool OverridesTextDecorationColors(const Element* element) {
 // FIXME: This helper is only needed because ResolveStyle passes a null
 // element to AdjustComputedStyle for pseudo-element styles, so we can't just
 // use element->isInTopLayer().
-static bool IsInTopLayer(const Element* element, const ComputedStyle& style) {
+static bool IsInTopLayer(const Element* element,
+                         const ComputedStyleBuilder& builder) {
   return (element && element->IsInTopLayer()) ||
-         style.StyleType() == kPseudoIdBackdrop;
+         builder.StyleType() == kPseudoIdBackdrop;
 }
 
 static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
@@ -334,11 +335,10 @@ static void AdjustStyleForFirstLetter(ComputedStyleBuilder& builder) {
                                           : EDisplay::kInline);
 }
 
-static void AdjustStyleForMarker(ComputedStyle& style,
-                                 ComputedStyleBuilder& builder,
+static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
                                  const ComputedStyle& parent_style,
                                  const Element& parent_element) {
-  if (style.StyleType() != kPseudoIdMarker)
+  if (builder.StyleType() != kPseudoIdMarker)
     return;
 
   bool is_inside =
@@ -348,9 +348,9 @@ static void AdjustStyleForMarker(ComputedStyle& style,
 
   if (is_inside) {
     Document& document = parent_element.GetDocument();
-    auto margins =
-        ListMarker::InlineMarginsForInside(document, style, parent_style);
-    LogicalToPhysicalSetter setter(style.GetWritingDirection(), builder,
+    auto margins = ListMarker::InlineMarginsForInside(
+        document, *builder.InternalStyle(), parent_style);
+    LogicalToPhysicalSetter setter(builder.GetWritingDirection(), builder,
                                    &ComputedStyleBuilder::SetMarginTop,
                                    &ComputedStyleBuilder::SetMarginRight,
                                    &ComputedStyleBuilder::SetMarginBottom,
@@ -368,7 +368,7 @@ static void AdjustStyleForMarker(ComputedStyle& style,
     // layout size of the marker.
     // TODO(kojii): absolute position looks more reasonable, and maybe required
     // in some cases, but this is currently blocked by crbug.com/734554
-    // style.SetPosition(EPosition::kAbsolute);
+    // builder.SetPosition(EPosition::kAbsolute);
   }
 }
 
@@ -494,8 +494,7 @@ static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
   }
 }
 
-void StyleAdjuster::AdjustOverflow(ComputedStyle& style,
-                                   ComputedStyleBuilder& builder,
+void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
                                    Element* element) {
   DCHECK(builder.OverflowX() != EOverflow::kVisible ||
          builder.OverflowY() != EOverflow::kVisible);
@@ -503,7 +502,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style,
   bool overflow_is_clip_or_visible =
       IsOverflowClipOrVisible(builder.OverflowY()) &&
       IsOverflowClipOrVisible(builder.OverflowX());
-  if (!overflow_is_clip_or_visible && style.IsDisplayTableBox()) {
+  if (!overflow_is_clip_or_visible && builder.IsDisplayTableBox()) {
     // Tables only support overflow:hidden and overflow:visible and ignore
     // anything else, see https://drafts.csswg.org/css2/visufx.html#overflow. As
     // a table is not a block container box the rules for resolving conflicting
@@ -544,43 +543,42 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style,
   }
 }
 
-static void AdjustStyleForDisplay(ComputedStyle& style,
-                                  ComputedStyleBuilder& builder,
+static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
                                   const ComputedStyle& layout_parent_style,
                                   const Element* element,
                                   Document* document) {
   // Blockify the children of flex, grid or LayoutCustom containers.
   if (layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) {
     builder.SetIsInBlockifyingDisplay();
-    if (style.Display() != EDisplay::kContents) {
-      builder.SetDisplay(EquivalentBlockDisplay(style.Display()));
-      if (!style.HasOutOfFlowPosition())
+    if (builder.Display() != EDisplay::kContents) {
+      builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
+      if (!builder.HasOutOfFlowPosition())
         builder.SetIsFlexOrGridOrCustomItem();
     }
     if (layout_parent_style.IsDisplayFlexibleOrGridBox())
       builder.SetIsFlexOrGridItem();
   }
 
-  if (style.Display() == EDisplay::kBlock)
+  if (builder.Display() == EDisplay::kBlock)
     return;
 
   // FIXME: Don't support this mutation for pseudo styles like first-letter or
   // first-line, since it's not completely clear how that should work.
-  if (style.Display() == EDisplay::kInline &&
-      style.StyleType() == kPseudoIdNone &&
-      style.GetWritingMode() != layout_parent_style.GetWritingMode())
+  if (builder.Display() == EDisplay::kInline &&
+      builder.StyleType() == kPseudoIdNone &&
+      builder.GetWritingMode() != layout_parent_style.GetWritingMode())
     builder.SetDisplay(EDisplay::kInlineBlock);
 
   // writing-mode does not apply to table row groups, table column groups, table
   // rows, and table columns.
   // TODO(crbug.com/736072): Borders specified with logical css properties will
   // not change to reflect new writing mode. ex: border-block-start.
-  if (style.Display() == EDisplay::kTableColumn ||
-      style.Display() == EDisplay::kTableColumnGroup ||
-      style.Display() == EDisplay::kTableFooterGroup ||
-      style.Display() == EDisplay::kTableHeaderGroup ||
-      style.Display() == EDisplay::kTableRow ||
-      style.Display() == EDisplay::kTableRowGroup) {
+  if (builder.Display() == EDisplay::kTableColumn ||
+      builder.Display() == EDisplay::kTableColumnGroup ||
+      builder.Display() == EDisplay::kTableFooterGroup ||
+      builder.Display() == EDisplay::kTableHeaderGroup ||
+      builder.Display() == EDisplay::kTableRow ||
+      builder.Display() == EDisplay::kTableRowGroup) {
     builder.SetWritingMode(layout_parent_style.GetWritingMode());
     builder.SetTextOrientation(layout_parent_style.GetTextOrientation());
     builder.UpdateFontOrientation();
@@ -615,7 +613,6 @@ bool StyleAdjuster::IsPasswordFieldWithUnrevealedPassword(Element* element) {
 }
 
 void StyleAdjuster::AdjustEffectiveTouchAction(
-    ComputedStyle& style,
     ComputedStyleBuilder& builder,
     const ComputedStyle& parent_style,
     Element* element,
@@ -627,12 +624,12 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
                             element->GetExecutionContext()->CanExecuteScripts(
                                 kNotAboutToExecuteScript);
   bool is_non_replaced_inline_elements =
-      style.IsDisplayInlineType() &&
-      !(style.IsDisplayReplacedType() || is_svg_root ||
+      builder.IsDisplayInlineType() &&
+      !(builder.IsDisplayReplacedType() || is_svg_root ||
         IsA<HTMLImageElement>(element) || is_replaced_canvas);
-  bool is_table_row_or_column = style.IsDisplayTableRowOrColumnType();
+  bool is_table_row_or_column = builder.IsDisplayTableRowOrColumnType();
   bool is_layout_object_needed =
-      element && element->LayoutObjectIsNeeded(style);
+      element && element->LayoutObjectIsNeeded(*builder.InternalStyle());
 
   TouchAction element_touch_action = TouchAction::kAuto;
   // Touch actions are only supported by elements that support both the CSS
@@ -640,7 +637,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   // See https://www.w3.org/TR/pointerevents/#the-touch-action-css-property.
   if (!is_non_replaced_inline_elements && !is_table_row_or_column &&
       is_layout_object_needed) {
-    element_touch_action = style.GetTouchAction();
+    element_touch_action = builder.GetTouchAction();
     // kInternalPanXScrolls is only for internal usage, GetTouchAction()
     // doesn't contain this bit. We set this bit when kPanX is set so it can be
     // cleared for eligible editable areas later on.
@@ -677,7 +674,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   // The panning-restricted cancellation should also apply to iframes, so we
   // allow (panning & local touch action) on the first descendant element of a
   // iframe element.
-  inherited_action = AdjustTouchActionForElement(inherited_action, style,
+  inherited_action = AdjustTouchActionForElement(inherited_action, builder,
                                                  parent_style, element);
 
   TouchAction enforced_by_policy = TouchAction::kNone;
@@ -707,7 +704,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     Frame* content_frame = frame_owner->ContentFrame();
     if (content_frame) {
       content_frame->SetInheritedEffectiveTouchAction(
-          style.EffectiveTouchAction());
+          builder.EffectiveTouchAction());
     }
   }
 }
@@ -739,18 +736,17 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
   }
 }
 
-void StyleAdjuster::AdjustForForcedColorsMode(const ComputedStyle& style,
-                                              ComputedStyleBuilder& builder) {
-  if (!style.InForcedColorsMode() ||
-      style.ForcedColorAdjust() != EForcedColorAdjust::kAuto)
+void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder) {
+  if (!builder.InForcedColorsMode() ||
+      builder.ForcedColorAdjust() != EForcedColorAdjust::kAuto)
     return;
 
   builder.SetTextShadow(ComputedStyleInitialValues::InitialTextShadow());
   builder.SetBoxShadow(ComputedStyleInitialValues::InitialBoxShadow());
   builder.SetColorScheme({"light", "dark"});
-  if (style.ShouldForceColor(style.AccentColor()))
+  if (builder.ShouldForceColor(builder.AccentColor()))
     builder.SetAccentColor(ComputedStyleInitialValues::InitialAccentColor());
-  if (!style.HasUrlBackgroundImage())
+  if (!builder.HasUrlBackgroundImage())
     builder.ClearBackgroundImage();
 }
 
@@ -781,13 +777,13 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   DCHECK(state.LayoutParentStyle());
   DCHECK(state.ParentStyle());
   ComputedStyleBuilder& builder = state.StyleBuilder();
-  ComputedStyle& style = *builder.MutableInternalStyle();
   const ComputedStyle& parent_style = *state.ParentStyle();
   const ComputedStyle& layout_parent_style = *state.LayoutParentStyle();
 
   auto* html_element = DynamicTo<HTMLElement>(element);
-  if (html_element && (style.Display() != EDisplay::kNone ||
-                       element->LayoutObjectIsNeeded(style))) {
+  if (html_element &&
+      (builder.Display() != EDisplay::kNone ||
+       element->LayoutObjectIsNeeded(*builder.InternalStyle()))) {
     AdjustStyleForHTMLElement(builder, *html_element);
   }
 
@@ -796,7 +792,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   bool is_mathml_element = RuntimeEnabledFeatures::MathMLCoreEnabled() &&
                            IsA<MathMLElement>(element);
 
-  if (style.Display() != EDisplay::kNone) {
+  if (builder.Display() != EDisplay::kNone) {
     if (svg_element)
       AdjustStyleForSvgElement(*svg_element, builder);
 
@@ -806,12 +802,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // to 'absolute'. Root elements that are in the top layer should just
     // be left alone because the fullscreen.css doesn't apply any style to
     // them.
-    if (IsInTopLayer(element, style) && !is_document_element) {
-      if (style.GetPosition() == EPosition::kStatic ||
-          style.GetPosition() == EPosition::kRelative) {
+    if (IsInTopLayer(element, builder) && !is_document_element) {
+      if (builder.GetPosition() == EPosition::kStatic ||
+          builder.GetPosition() == EPosition::kRelative) {
         builder.SetPosition(EPosition::kAbsolute);
       }
-      if (style.Display() == EDisplay::kContents) {
+      if (builder.Display() == EDisplay::kContents) {
         // See crbug.com/1240701 for more details.
         // https://fullscreen.spec.whatwg.org/#new-stacking-layer
         // If its specified display property is contents, it computes to block.
@@ -821,19 +817,18 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // Absolute/fixed positioned elements, floating elements and the document
     // element need block-like outside display.
-    if (style.Display() != EDisplay::kContents &&
-        (style.HasOutOfFlowPosition() || builder.IsFloating()))
-      builder.SetDisplay(EquivalentBlockDisplay(style.Display()));
+    if (builder.Display() != EDisplay::kContents &&
+        (builder.HasOutOfFlowPosition() || builder.IsFloating()))
+      builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
 
     if (is_document_element)
-      builder.SetDisplay(EquivalentBlockDisplay(style.Display()));
+      builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
 
     // math display values on non-MathML elements compute to flow display
     // values.
-    if ((!element || !is_mathml_element) &&
-        style.IsDisplayMathBox(style.Display())) {
+    if ((!element || !is_mathml_element) && builder.IsDisplayMathType()) {
       DCHECK(RuntimeEnabledFeatures::MathMLCoreEnabled());
-      builder.SetDisplay(style.Display() == EDisplay::kBlockMath
+      builder.SetDisplay(builder.Display() == EDisplay::kBlockMath
                              ? EDisplay::kBlock
                              : EDisplay::kInline);
     }
@@ -841,9 +836,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // We don't adjust the first letter style earlier because we may change the
     // display setting in AdjustStyleForHTMLElement() above.
     AdjustStyleForFirstLetter(builder);
-    AdjustStyleForMarker(style, builder, parent_style, state.GetElement());
+    AdjustStyleForMarker(builder, parent_style, state.GetElement());
 
-    AdjustStyleForDisplay(style, builder, layout_parent_style, element,
+    AdjustStyleForDisplay(builder, layout_parent_style, element,
                           element ? &element->GetDocument() : nullptr);
 
     // If this is a child of a LayoutNGCustom, we need the name of the parent
@@ -856,34 +851,36 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     bool is_in_main_frame = element && element->GetDocument().IsInMainFrame();
     // The root element of the main frame has no backdrop, so don't allow
     // it to have a backdrop filter either.
-    if (is_document_element && is_in_main_frame && style.HasBackdropFilter())
+    if (is_document_element && is_in_main_frame && builder.HasBackdropFilter())
       builder.MutableBackdropFilter().clear();
   } else {
     AdjustStyleForFirstLetter(builder);
   }
 
   // Make sure our z-index value is only applied if the object is positioned.
-  if (style.GetPosition() == EPosition::kStatic &&
+  if (builder.GetPosition() == EPosition::kStatic &&
       !LayoutParentStyleForcesZIndexToCreateStackingContext(
           layout_parent_style)) {
-    style.SetIsStackingContextWithoutContainment(false);
-    if (!style.HasAutoZIndex())
+    builder.SetIsStackingContextWithoutContainment(false);
+    if (!builder.HasAutoZIndex())
       builder.SetEffectiveZIndexZero(true);
-  } else if (!style.HasAutoZIndex()) {
-    style.SetIsStackingContextWithoutContainment(true);
+  } else if (!builder.HasAutoZIndex()) {
+    builder.SetIsStackingContextWithoutContainment(true);
   }
 
   if (builder.OverflowX() != EOverflow::kVisible ||
       builder.OverflowY() != EOverflow::kVisible) {
-    AdjustOverflow(style, builder,
-                   element ? element : state.GetPseudoElement());
+    AdjustOverflow(builder, element ? element : state.GetPseudoElement());
   }
 
   // Highlight pseudos propagate decorations with inheritance only.
-  if (StopPropagateTextDecorations(style, element) || state.IsForHighlight())
-    style.ClearAppliedTextDecorations();
-  else
-    style.RestoreParentTextDecorations(layout_parent_style);
+  if (StopPropagateTextDecorations(builder, element) ||
+      state.IsForHighlight()) {
+    builder.MutableInternalStyle()->ClearAppliedTextDecorations();
+  } else {
+    builder.MutableInternalStyle()->RestoreParentTextDecorations(
+        layout_parent_style);
+  }
 
   // The computed value of currentColor for highlight pseudos is the
   // color that would have been used if no highlights were applied,
@@ -891,18 +888,19 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   if (state.UsesHighlightPseudoInheritance() &&
       state.OriginatingElementStyle()) {
     const ComputedStyle* originating_style = state.OriginatingElementStyle();
-    if (style.ColorIsCurrentColor())
+    if (builder.ColorIsCurrentColor())
       builder.SetColor(originating_style->Color());
-    if (style.InternalVisitedColorIsCurrentColor()) {
+    if (builder.InternalVisitedColorIsCurrentColor()) {
       builder.SetInternalVisitedColor(
           originating_style->InternalVisitedColor());
     }
   }
 
-  if (style.Display() != EDisplay::kContents) {
-    style.ApplyTextDecorations(parent_style.VisitedDependentColorFast(
-                                   GetCSSPropertyTextDecorationColor()),
-                               OverridesTextDecorationColors(element));
+  if (builder.Display() != EDisplay::kContents) {
+    builder.MutableInternalStyle()->ApplyTextDecorations(
+        parent_style.VisitedDependentColorFast(
+            GetCSSPropertyTextDecorationColor()),
+        OverridesTextDecorationColors(element));
   }
 
   // Cull out any useless layers and also repeat patterns into additional
@@ -912,7 +910,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   // A subset of CSS properties should be forced at computed value time:
   // https://drafts.csswg.org/css-color-adjust-1/#forced-colors-properties.
-  AdjustForForcedColorsMode(style, builder);
+  AdjustForForcedColorsMode(builder);
 
   // Let the theme also have a crack at adjusting the style.
   LayoutTheme::GetTheme().AdjustStyle(element, builder);
@@ -931,7 +929,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.SetPosition(ComputedStyleInitialValues::InitialPosition());
     }
 
-    if (style.Display() == EDisplay::kContents &&
+    if (builder.Display() == EDisplay::kContents &&
         (is_svg_root ||
          (!IsA<SVGSVGElement>(element) && !IsA<SVGGElement>(element) &&
           !IsA<SVGUseElement>(element) && !IsA<SVGTSpanElement>(element)))) {
@@ -946,7 +944,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // SVG text layout code expects us to be a block-level style element.
     if ((IsA<SVGForeignObjectElement>(*element) ||
          IsA<SVGTextElement>(*element)) &&
-        style.IsDisplayInlineType())
+        builder.IsDisplayInlineType())
       builder.SetDisplay(EDisplay::kBlock);
 
     // Columns don't apply to svg text elements.
@@ -955,7 +953,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // Copy DominantBaseline to CssDominantBaseline without 'no-change',
     // 'reset-size', and 'use-script'.
-    auto baseline = style.DominantBaseline();
+    auto baseline = builder.DominantBaseline();
     if (baseline == EDominantBaseline::kUseScript) {
       // TODO(fs): The dominant-baseline and the baseline-table components
       // are set by determining the predominant script of the character data
@@ -968,7 +966,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetCssDominantBaseline(baseline);
 
   } else if (is_mathml_element) {
-    if (style.Display() == EDisplay::kContents) {
+    if (builder.Display() == EDisplay::kContents) {
       // https://drafts.csswg.org/css-display/#unbox-mathml
       builder.SetDisplay(EDisplay::kNone);
     }
@@ -980,19 +978,18 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // It is possible that this node is already in a sticky subtree (i.e. we have
   // nested sticky nodes) - in that case the bit will already be set via
   // inheritance from the ancestor and there is no harm to setting it again.
-  if (style.GetPosition() == EPosition::kSticky)
+  if (builder.GetPosition() == EPosition::kSticky)
     builder.SetSubtreeIsSticky(true);
 
   // If the inherited value of justify-items includes the 'legacy'
   // keyword (plus 'left', 'right' or 'center'), 'legacy' computes to
   // the the inherited value.  Otherwise, 'auto' computes to 'normal'.
   if (parent_style.JustifyItems().PositionType() == ItemPositionType::kLegacy &&
-      style.JustifyItems().GetPosition() == ItemPosition::kLegacy) {
+      builder.JustifyItems().GetPosition() == ItemPosition::kLegacy) {
     builder.SetJustifyItems(parent_style.JustifyItems());
   }
 
-  AdjustEffectiveTouchAction(style, builder, parent_style, element,
-                             is_svg_root);
+  AdjustEffectiveTouchAction(builder, parent_style, element, is_svg_root);
 
   bool is_media_control =
       element && element->ShadowPseudoId().StartsWith("-webkit-media-controls");
@@ -1002,7 +999,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.MutableBackgroundInternal().ClearImage();
   }
 
-  if (element && style.TextOverflow() == ETextOverflow::kEllipsis) {
+  if (element && builder.TextOverflow() == ETextOverflow::kEllipsis) {
     const AtomicString& pseudo_id = element->ShadowPseudoId();
     if (pseudo_id == shadow_element_names::kPseudoInputPlaceholder ||
         pseudo_id == shadow_element_names::kPseudoInternalInputSuggested) {
@@ -1030,9 +1027,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // needs to be legacy objects, in order to be fragmentable). Set a flag, so
     // that we can quickly determine whether we need to check that an element is
     // compatible with the block fragmentation implementation being used.
-    if (style.SpecifiesColumns() ||
+    if (builder.InternalStyle()->SpecifiesColumns() ||
         (element && element->GetDocument().Printing()))
       builder.SetInsideFragmentationContextWithNondeterministicEngine(true);
   }
 }
+
 }  // namespace blink

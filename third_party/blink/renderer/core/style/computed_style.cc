@@ -2188,12 +2188,6 @@ blink::Color ComputedStyle::ResolvedColor(const StyleColor& color,
   return color.Resolve(current_color, UsedColorScheme(), is_current_color);
 }
 
-bool ComputedStyle::ShouldForceColor(const StyleColor& unforced_color) const {
-  return InForcedColorsMode() &&
-         ForcedColorAdjust() == EForcedColorAdjust::kAuto &&
-         !unforced_color.IsSystemColorIncludingDeprecated();
-}
-
 bool ComputedStyle::StrokeDashArrayDataEquivalent(
     const ComputedStyle& other) const {
   return StrokeDashArray()->data == other.StrokeDashArray()->data;
