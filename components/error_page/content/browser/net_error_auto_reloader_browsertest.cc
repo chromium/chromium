@@ -17,6 +17,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -239,6 +240,32 @@ class NetErrorAutoReloaderBrowserTest : public content::ContentBrowserTest {
         network::mojom::ConnectionType::CONNECTION_NONE);
   }
 };
+
+// Return the child of `parent`, if it has one.
+content::RenderFrameHost* GetChild(content::RenderFrameHost& parent) {
+  content::RenderFrameHost* child_rfh = nullptr;
+  parent.ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+    if (&parent == rfh->GetParent()) {
+      CHECK(!child_rfh) << "Multiple children found";
+      child_rfh = rfh;
+    }
+  });
+  return child_rfh;
+}
+
+// Forces the currently scheduled auto-reload task in `wc` to execute
+// immediately. This allows tests to force normal forward-progress of the
+// delayed reload logic without waiting a long time or painfully messing around
+// with mock time in browser tests. It does nothing if there is no scheduled
+// auto-reload task.
+void ForceScheduledAutoReloadNowInWebContent(content::WebContents* wc) {
+  error_page::NetErrorAutoReloader* reloader =
+      error_page::NetErrorAutoReloader::FromWebContents(wc);
+  absl::optional<base::OneShotTimer>& timer =
+      reloader->next_reload_timer_for_testing();
+  if (timer && timer->IsRunning())
+    timer->FireNow();
+}
 
 // A successful navigation results in no auto-reload being scheduled.
 IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest, NoError) {
@@ -539,6 +566,120 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
 
   shell()->web_contents()->WasShown();
   EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
+}
+
+// Open a popup from a sandboxed iframe. The document in the popup fails to
+// load, because of a network error. Verifies that after the document has
+// reloaded, the sandbox flags are correctly preserved.
+IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
+                       AutoReloadPreserveSandbox) {
+  const GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL popup_url = GetTestUrl();
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create a sandboxed iframe:
+  content::WebContents* opener = shell()->web_contents();
+  content::RenderFrameHost* opener_top = opener->GetPrimaryMainFrame();
+  EXPECT_TRUE(ExecJs(opener_top, R"(
+    const iframe = document.createElement("iframe");
+    iframe.sandbox = "allow-popups allow-scripts";
+    iframe.src = location.href;
+    document.body.appendChild(iframe);
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(opener));
+  content::RenderFrameHost* opener_child = GetChild(*opener_top);
+  ASSERT_TRUE(opener_child);
+  using WebSandboxFlags = network::mojom::WebSandboxFlags;
+  EXPECT_TRUE(opener_child->IsSandboxed(WebSandboxFlags::kOrigin));
+  EXPECT_TRUE(opener_child->IsSandboxed(WebSandboxFlags::kDownloads));
+  EXPECT_FALSE(opener_child->IsSandboxed(WebSandboxFlags::kScripts));
+  EXPECT_FALSE(opener_child->IsSandboxed(WebSandboxFlags::kPopups));
+  EXPECT_EQ("null", EvalJs(opener_child, "window.origin"));
+
+  // Open a popup, initiated from the sandboxed iframe, while being offline.
+  content::WebContents* popup = nullptr;
+  {
+    auto interceptor = std::make_unique<NetErrorUrlInterceptor>(
+        popup_url, net::ERR_CONNECTION_RESET);
+    content::ShellAddedObserver shell_observer;
+    EXPECT_TRUE(
+        ExecJs(opener_child, content::JsReplace("window.open($1)", popup_url)));
+    popup = shell_observer.GetShell()->web_contents();
+    EXPECT_FALSE(WaitForLoadStop(popup));
+    content::RenderFrameHost* popup_rfh = popup->GetPrimaryMainFrame();
+    EXPECT_TRUE(popup_rfh->IsErrorDocument());
+    EXPECT_FALSE(popup_rfh->IsSandboxed(WebSandboxFlags::kOrigin));
+    EXPECT_FALSE(popup_rfh->IsSandboxed(WebSandboxFlags::kDownloads));
+    EXPECT_FALSE(popup_rfh->IsSandboxed(WebSandboxFlags::kScripts));
+    EXPECT_FALSE(popup_rfh->IsSandboxed(WebSandboxFlags::kPopups));
+    EXPECT_EQ("null", EvalJs(popup, "window.origin"));
+  }
+
+  // Simulate the network to go online again, and then the popup to load again.
+  {
+    content::TestNavigationManager navigation(popup, popup_url);
+    ForceScheduledAutoReloadNowInWebContent(popup);
+    navigation.WaitForNavigationFinished();
+    EXPECT_TRUE(navigation.was_successful());
+    EXPECT_TRUE(navigation.was_committed());
+    content::RenderFrameHost* popup_rfh = popup->GetPrimaryMainFrame();
+    EXPECT_FALSE(popup_rfh->IsErrorDocument());
+
+    // The popup must still be sandboxed.
+    EXPECT_TRUE(popup_rfh->IsSandboxed(WebSandboxFlags::kOrigin));
+    EXPECT_TRUE(popup_rfh->IsSandboxed(WebSandboxFlags::kDownloads));
+    EXPECT_FALSE(popup_rfh->IsSandboxed(WebSandboxFlags::kScripts));
+    EXPECT_FALSE(popup_rfh->IsSandboxed(WebSandboxFlags::kPopups));
+    EXPECT_EQ("null", EvalJs(popup, "window.origin"));
+  }
+}
+
+// Open a popup from a sandboxed iframe. The document fails to load, because of
+// a network error. When auto reloading it, check download is still blocked by
+// sandbox.
+// Regression test for https://crbug.com/1357366
+IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
+                       AutoReloadPreservePreserveDownloadBehavior) {
+  const GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL download_url =
+      embedded_test_server()->GetURL("/content-disposition-attachment.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create a sandboxed iframe:
+  content::WebContents* opener = shell()->web_contents();
+  content::RenderFrameHost* opener_top = opener->GetPrimaryMainFrame();
+  EXPECT_TRUE(ExecJs(opener_top, R"(
+    const iframe = document.createElement("iframe");
+    iframe.sandbox = "allow-popups allow-scripts";
+    iframe.src = location.href;
+    document.body.appendChild(iframe);
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(opener));
+  content::RenderFrameHost* opener_child = GetChild(*opener_top);
+  ASSERT_TRUE(opener_child);
+
+  // Open a popup toward a download, initiated from the sandboxed iframe, while
+  // being offline.
+  content::WebContents* popup = nullptr;
+  {
+    auto interceptor = std::make_unique<NetErrorUrlInterceptor>(
+        download_url, net::ERR_CONNECTION_RESET);
+    content::ShellAddedObserver shell_observer;
+    EXPECT_TRUE(ExecJs(opener_child,
+                       content::JsReplace("window.open($1)", download_url)));
+    popup = shell_observer.GetShell()->web_contents();
+    EXPECT_FALSE(WaitForLoadStop(popup));
+  }
+
+  // Simulate the network coming back online, followed by the popup loading
+  // again.
+  {
+    content::NavigationHandleObserver navigation(popup, download_url);
+    ForceScheduledAutoReloadNowInWebContent(popup);
+    EXPECT_FALSE(WaitForLoadStop(popup));
+    // TODO(https://crbug.com/1357366): This must be false instead.
+    EXPECT_TRUE(navigation.is_download());
+  }
 }
 
 class NetErrorAutoReloaderFencedFrameBrowserTest
