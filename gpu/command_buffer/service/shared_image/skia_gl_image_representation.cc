@@ -43,35 +43,46 @@ std::unique_ptr<SkiaGLImageRepresentation> SkiaGLImageRepresentation::Create(
     MemoryTypeTracker* tracker) {
   std::vector<sk_sp<SkPromiseImageTexture>> promise_textures;
   auto format = backing->format();
-  // Check if wrapped GL representation contains same number of
-  // SharedImageFormat plane(s) and essentially same number of texture(s) as the
-  // number for SharedImageFormat plane(s) from backing used to create
-  // GrBackendTexture(s).
-  DCHECK_EQ(format.NumberOfPlanes(),
-            gl_representation->format().NumberOfPlanes());
-  for (int plane_index = 0; plane_index < format.NumberOfPlanes();
-       plane_index++) {
+  bool angle_rgbx_internal_format =
+      context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
+
+  if (format.is_single_plane() || format.PrefersExternalSampler()) {
     GrBackendTexture backend_texture;
-    bool angle_rgbx_internal_format = context_state->feature_info()
-                                          ->feature_flags()
-                                          .angle_rgbx_internal_format;
-    // Use the format and size per plane for multiplanar formats.
-    GLenum plane_gl_storage_format =
-        TextureStorageFormat(format, angle_rgbx_internal_format, plane_index);
-    gfx::Size plane_size = format.GetPlaneSize(plane_index, backing->size());
     if (!GetGrBackendTexture(
             context_state->feature_info(),
-            gl_representation->GetTextureBase(plane_index)->target(),
-            plane_size,
-            gl_representation->GetTextureBase(plane_index)->service_id(),
-            plane_gl_storage_format,
+            gl_representation->GetTextureBase()->target(), backing->size(),
+            gl_representation->GetTextureBase()->service_id(),
+            TextureStorageFormat(format, angle_rgbx_internal_format),
             context_state->gr_context()->threadSafeProxy(), &backend_texture)) {
       return nullptr;
     }
     auto promise_texture = SkPromiseImageTexture::Make(backend_texture);
     if (!promise_texture)
       return nullptr;
-    promise_textures.push_back(promise_texture);
+    promise_textures.push_back(std::move(promise_texture));
+  } else {
+    for (int plane_index = 0; plane_index < format.NumberOfPlanes();
+         plane_index++) {
+      GrBackendTexture backend_texture;
+      // Use the format and size per plane for multiplanar formats.
+      GLenum plane_gl_storage_format =
+          TextureStorageFormat(format, angle_rgbx_internal_format, plane_index);
+      gfx::Size plane_size = format.GetPlaneSize(plane_index, backing->size());
+      if (!GetGrBackendTexture(
+              context_state->feature_info(),
+              gl_representation->GetTextureBase(plane_index)->target(),
+              plane_size,
+              gl_representation->GetTextureBase(plane_index)->service_id(),
+              plane_gl_storage_format,
+              context_state->gr_context()->threadSafeProxy(),
+              &backend_texture)) {
+        return nullptr;
+      }
+      auto promise_texture = SkPromiseImageTexture::Make(backend_texture);
+      if (!promise_texture)
+        return nullptr;
+      promise_textures.push_back(std::move(promise_texture));
+    }
   }
 
   return base::WrapUnique(new SkiaGLImageRepresentation(
