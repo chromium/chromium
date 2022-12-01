@@ -40,3 +40,5 @@ nn.com
 test.net
 # Unicode domain:
 fóó.com
+# Test domain for ß (deviation character)
+youtube.com

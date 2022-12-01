@@ -1209,7 +1209,12 @@ TEST_P(IDNSpoofCheckerTest, IDNToUnicodeDeviationCharacters) {
       {"xn--h2by8byc123p.in", u"\u0924\u094d\u200c\u0930\u093f.in", kUnsafe},
       // U+200C(ZWJ)
       {"xn--11b6iy14e.in", u"\u0915\u094d\u200d.in", kUnsafe},
-  };
+
+      // youtuße.com is always unsafe:
+      // - In Transitional mode, deviation characters are disallowed.
+      // - In Non-Transitional mode, skeleton of youtuße.com matches
+      //   youtube.com which is a test top domain.
+      {"xn--youtue-fta.com", u"youtu\u00dfe.com", kUnsafe}};
   for (const auto& test : kTestCases) {
     RunIDNToUnicodeTest(test);
   }
