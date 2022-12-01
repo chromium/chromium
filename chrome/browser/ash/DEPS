@@ -1,4 +1,10 @@
 include_rules = [
+  # Code in the ash-chrome binary cannot use lacros-chrome code.
+  "-chrome/browser/lacros",
+  "-chrome/browser/ui/lacros",
+  "-chrome/browser/ui/quick_answers/lacros",
+  "-chrome/browser/sync/test/lacros",
+
   # See README.md.
   "+ash",
 
