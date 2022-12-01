@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_P(MouseoverLCPTestWithHeuristicFlag,
                  /*expected=*/false);
 }
 
-class LargestContentfulPaintTypeTypeTest : public MetricIntegrationTest {
+class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
  private:
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
   AddWaiterAndExpectation(uint32_t expectedResourceCount = 1) {
@@ -675,21 +675,21 @@ class LargestContentfulPaintTypeTypeTest : public MetricIntegrationTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_PNG) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, ImageType_PNG) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kPNG;
   std::string imgSrc = "images/blue.png";
   TestImage(imgSrc, flag_set);
 }
 
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_JPG) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, ImageType_JPG) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kJPG;
   std::string imgSrc = "images/arrow-oriented-upright.jpg";
   TestImage(imgSrc, flag_set);
 }
 
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_WebP) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, ImageType_WebP) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kAnimatedImage |
                   blink::LargestContentfulPaintType::kWebP;
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_WebP) {
   TestImage(imgSrc, flag_set);
 }
 
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_GIF) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, ImageType_GIF) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kGIF |
                   blink::LargestContentfulPaintType::kAnimatedImage;
@@ -705,30 +705,42 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_GIF) {
   TestImage(imgSrc, flag_set);
 }
 
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_AVIF) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, ImageType_AVIF) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kAVIF;
   std::string imgSrc = "images/green.avif";
   TestImage(imgSrc, flag_set);
 }
 
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_SVG) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, ImageType_SVG) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kSVG;
   std::string imgSrc = "images/colors.svg";
   TestImage(imgSrc, flag_set);
 }
 
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, TextType) {
+// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TextType DISABLED_TextType
+#else
+#define MAYBE_TextType TextType
+#endif
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_TextType) {
   auto flag_set = blink::LargestContentfulPaintType::kText;
   std::string text = "This is to test LargestContentfulPaintType::kText";
   TestText(text, flag_set);
 }
 
+// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LargeTextAndImage_TextType DISABLED_LargeTextAndImage_TextType
+#else
+#define MAYBE_LargeTextAndImage_TextType LargeTextAndImage_TextType
+#endif
 // Case when text that is larger and comes before an image. The
 // LargestContentfulPaintType should be those of a text element.
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
-                       LargeTextAndImage_TextType) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
+                       MAYBE_LargeTextAndImage_TextType) {
   auto flag_set = blink::LargestContentfulPaintType::kText;
   std::string text =
       "This is a text that is larger and comes before an image. The "
@@ -739,10 +751,16 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
   TestTextAndImage(ElementOrder::kTextFirst, text, imgSrc, 1, flag_set);
 }
 
+// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ImageAndLargeText_TextType DISABLED_ImageAndLargeText_TextType
+#else
+#define MAYBE_ImageAndLargeText_TextType ImageAndLargeText_TextType
+#endif
 // Case when text that is larger and comes after an image. The
 // LargestContentfulPaintType should be those of a text element.
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
-                       ImageAndLargeText_TextType) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
+                       MAYBE_ImageAndLargeText_TextType) {
   auto flag_set = blink::LargestContentfulPaintType::kText;
   std::string text =
       "This is a text that is larger and comes after an image. The "
@@ -753,10 +771,16 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
   TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, 2, flag_set);
 }
 
+// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TextAndLargeImage_ImageType DISABLED_TextAndLargeImage_ImageType
+#else
+#define MAYBE_TextAndLargeImage_ImageType TextAndLargeImage_ImageType
+#endif
 // Case when a text that is smaller and comes before an Image. The
 // LargestContentfulPaintType should be those of an image element.
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
-                       TextAndLargeImage_ImageType) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
+                       MAYBE_TextAndLargeImage_ImageType) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kGIF |
                   blink::LargestContentfulPaintType::kAnimatedImage;
@@ -768,10 +792,16 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
   TestTextAndImage(ElementOrder::kTextFirst, text, imgSrc, 2, flag_set);
 }
 
+// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LargeImageAndText_ImageType DISABLED_LargeImageAndText_ImageType
+#else
+#define MAYBE_LargeImageAndText_ImageType LargeImageAndText_ImageType
+#endif
 // Case when a text that is smaller and comes after an Image. The
 // LargestContentfulPaintType should be those of an image element.
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
-                       LargeImageAndText_ImageType) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
+                       MAYBE_LargeImageAndText_ImageType) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kGIF |
                   blink::LargestContentfulPaintType::kAnimatedImage;
@@ -782,7 +812,13 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
   TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, 1, flag_set);
 }
 
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, DataURIType) {
+// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DataURIType DISABLED_DataURIType
+#else
+#define MAYBE_DataURIType DataURIType
+#endif
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_DataURIType) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kGIF |
                   blink::LargestContentfulPaintType::kAnimatedImage |
@@ -793,7 +829,13 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, DataURIType) {
   TestImage(imgSrc, flag_set);
 }
 
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, DataURIType_SVG) {
+// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DataURIType_SVG DISABLED_DataURIType_SVG
+#else
+#define MAYBE_DataURIType_SVG DataURIType_SVG
+#endif
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_DataURIType_SVG) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kSVG |
                   blink::LargestContentfulPaintType::kDataURI;
