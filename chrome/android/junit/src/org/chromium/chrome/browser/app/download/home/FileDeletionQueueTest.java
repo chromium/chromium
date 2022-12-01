@@ -120,7 +120,6 @@ public class FileDeletionQueueTest {
         // Callback<String> implementation.
         @Override
         public void onResult(String result) {
-            System.out.println("dtrainor: Releasing sempahore!");
             ThreadUtils.assertOnBackgroundThread();
             mWrappedCallback.onResult(result);
             mDeletedSemaphore.release();
