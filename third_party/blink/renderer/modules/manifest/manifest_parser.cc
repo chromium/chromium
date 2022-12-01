@@ -1902,6 +1902,9 @@ absl::optional<RGBA32> ManifestParser::ParseDarkColorOverride(
 
   for (wtf_size_t i = 0; i < colors_list->size(); ++i) {
     const JSONObject* list_item = JSONObject::Cast(colors_list->at(i));
+    if (!list_item)
+      continue;
+
     absl::optional<String> media_query =
         ParseString(list_item, "media", Trim(false));
     absl::optional<RGBA32> color = ParseColor(list_item, "color");

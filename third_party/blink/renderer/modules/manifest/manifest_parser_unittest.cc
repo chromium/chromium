@@ -5660,6 +5660,19 @@ TEST_F(ManifestParserTest, DarkColorOverrideParseRules) {
                 errors()[1]);
     }
 
+    // Override arrays don't contain objects.
+    {
+      auto& manifest = ParseManifest(R"({
+            "theme_colors": [true],
+            "background_colors":
+            [5, {"color": "#0000FF", "media": "(prefers-color-scheme: dark) "}]
+            })");
+      EXPECT_FALSE(manifest->has_dark_theme_color);
+      EXPECT_TRUE(manifest->has_dark_background_color);
+      EXPECT_EQ(manifest->dark_background_color, 0xFF0000FFu);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
     // Valid overrides should be parsed
     {
       auto& manifest = ParseManifest(R"({
