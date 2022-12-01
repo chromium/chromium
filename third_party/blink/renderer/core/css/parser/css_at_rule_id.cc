@@ -18,9 +18,7 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   if (EqualIgnoringASCIICase(name, "font-face"))
     return CSSAtRuleID::kCSSAtRuleFontFace;
   if (EqualIgnoringASCIICase(name, "font-palette-values")) {
-    if (RuntimeEnabledFeatures::FontPaletteEnabled())
-      return CSSAtRuleID::kCSSAtRuleFontPaletteValues;
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleFontPaletteValues;
   }
   if (EqualIgnoringASCIICase(name, "font-feature-values")) {
     if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled())

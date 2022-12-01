@@ -1356,8 +1356,6 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
 
 StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(
     CSSParserTokenStream& stream) {
-  DCHECK(RuntimeEnabledFeatures::FontPaletteEnabled());
-
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();

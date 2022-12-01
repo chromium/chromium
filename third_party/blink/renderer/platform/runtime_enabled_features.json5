@@ -1317,10 +1317,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      name: "FontPalette",
-      status: "stable",
-    },
-    {
       name: "FontSrcLocalMatching",
       // No status, as the web platform runtime enabled feature is controlled by
       // a Chromium level feature.

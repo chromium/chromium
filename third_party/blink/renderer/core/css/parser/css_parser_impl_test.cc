@@ -796,8 +796,6 @@ TEST(CSSParserImplTest, EmptyLayerStatementAfterRegularRule) {
 }
 
 TEST(CSSParserImplTest, FontPaletteValuesDisabled) {
-  ScopedFontPaletteForTest disabled_scope(false);
-
   // @font-palette-values rules should be ignored when the feature is disabled.
 
   using css_test_helpers::ParseRule;
@@ -811,7 +809,6 @@ TEST(CSSParserImplTest, FontPaletteValuesDisabled) {
 }
 
 TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
-  ScopedFontPaletteForTest enabled_scope(true);
   using css_test_helpers::ParseRule;
   ScopedNullExecutionContext execution_context;
   Document* document =
@@ -834,7 +831,6 @@ TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
 }
 
 TEST(CSSParserImplTest, FontFeatureValuesRuleParsing) {
-  ScopedFontPaletteForTest enabled_scope(true);
   using css_test_helpers::ParseRule;
   ScopedNullExecutionContext execution_context;
   Document* document =

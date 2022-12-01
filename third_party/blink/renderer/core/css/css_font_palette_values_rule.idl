@@ -4,7 +4,7 @@
 
 // https://drafts.csswg.org/css-fonts-4/#om-fontpalettevalues
 
-[Exposed=Window,RuntimeEnabled=FontPalette]
+[Exposed=Window]
 interface CSSFontPaletteValuesRule : CSSRule {
   readonly attribute CSSOMString name;
   readonly attribute CSSOMString fontFamily;

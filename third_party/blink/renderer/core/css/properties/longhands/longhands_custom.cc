@@ -2929,8 +2929,6 @@ const CSSValue* FontPalette::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  DCHECK(RuntimeEnabledFeatures::FontPaletteEnabled());
-
   blink::FontPalette* palette = style.GetFontDescription().GetFontPalette();
 
   if (!palette)
@@ -2956,7 +2954,6 @@ const CSSValue* FontPalette::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::FontPaletteEnabled());
   if (range.Peek().Id() == CSSValueID::kNormal ||
       range.Peek().Id() == CSSValueID::kLight ||
       range.Peek().Id() == CSSValueID::kDark) {

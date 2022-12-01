@@ -1064,7 +1064,6 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
       inherited: true,
       font: true,
-      runtime_flag: "FontPalette",
       converter: "ConvertFontPalette",
       type_name: "FontPalette",
       priority: "High",
@@ -6480,13 +6479,11 @@
       name: "base-palette",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "FontPalette",
     },
     {
       name: "override-colors",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "FontPalette",
     },
 
     // Shorthands
