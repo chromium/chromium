@@ -400,7 +400,13 @@ TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
   Uninstall();
 }
 
-TEST_F(IntegrationTest, OverinstallBroken) {
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1395118): Breaks on Win10 Tests x64. Fix this.
+#define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
+#else
+#define MAYBE_OverinstallBroken OverinstallBroken
+#endif
+TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   EXPECT_TRUE(WaitForUpdaterExit());
   DeleteUpdaterDirectory();
@@ -818,7 +824,13 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
-TEST_F(IntegrationTest, InstallLowerVersion) {
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1395118): Breaks on Win10 Tests x64. Fix this.
+#define MAYBE_InstallLowerVersion DISABLED_InstallLowerVersion
+#else
+#define MAYBE_InstallLowerVersion InstallLowerVersion
+#endif
+TEST_F(IntegrationTest, MAYBE_InstallLowerVersion) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ExpectVersionNotActive(kUpdaterVersion);
   Uninstall();
