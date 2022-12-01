@@ -556,64 +556,82 @@ const FeatureEntry::FeatureVariation
          std::size(kAdaptiveButtonCustomization_Voice), nullptr},
 };
 
-const FeatureEntry::FeatureParam kContextualPageActionPriceTracking_Quiet[] = {
+const FeatureEntry::FeatureParam kContextualPageActionsUiParams_Quiet[] = {
     {"action_chip", "false"},
 };
-const FeatureEntry::FeatureParam
-    kContextualPageActionPriceTracking_ActionChip[] = {
-        {"action_chip", "true"},
-        {"action_chip_time_ms", "3000"},
+const FeatureEntry::FeatureParam kContextualPageActionsUiParams_ActionChip[] = {
+    {"action_chip", "true"},
+    {"action_chip_time_ms", "3000"},
 };
 const FeatureEntry::FeatureParam
-    kContextualPageActionPriceTracking_ActionChip_6s[] = {
+    kContextualPageActionsUiParams_ActionChip_6s[] = {
         {"action_chip", "true"},
         {"action_chip_time_ms", "6000"},
 };
 const FeatureEntry::FeatureParam
-    kContextualPageActionPriceTracking_ActionChip_AltColor[] = {
+    kContextualPageActionsUiParams_ActionChip_AltColor[] = {
         {"action_chip", "true"},
         {"action_chip_time_ms", "3000"},
         {"action_chip_with_different_color", "true"},
 };
 const FeatureEntry::FeatureParam
-    kContextualPageActionPriceTracking_ActionChip_AltColor_6s[] = {
+    kContextualPageActionsUiParams_ActionChip_AltColor_6s[] = {
         {"action_chip", "true"},
         {"action_chip_time_ms", "6000"},
         {"action_chip_with_different_color", "true"},
 };
+
+const FeatureEntry::FeatureParam kContextualPageActions_DisableUi[]{
+    {"disable_ui", "true"},
+};
+const FeatureEntry::FeatureVariation kContextualPageActionsVariations[] = {
+    {"Disable UI", kContextualPageActions_DisableUi},
+};
+
 const FeatureEntry::FeatureVariation
     kContextualPageActionPriceTrackingVariations[] = {
-        {"Quiet", kContextualPageActionPriceTracking_Quiet,
-         std::size(kContextualPageActionPriceTracking_Quiet), nullptr},
-        {"Action Chip", kContextualPageActionPriceTracking_ActionChip,
-         std::size(kContextualPageActionPriceTracking_ActionChip), nullptr},
-        {"Action Chip - 6s", kContextualPageActionPriceTracking_ActionChip_6s,
-         std::size(kContextualPageActionPriceTracking_ActionChip_6s), nullptr},
+        {"Quiet", kContextualPageActionsUiParams_Quiet,
+         std::size(kContextualPageActionsUiParams_Quiet), nullptr},
+        {"Action Chip", kContextualPageActionsUiParams_ActionChip,
+         std::size(kContextualPageActionsUiParams_ActionChip), nullptr},
+        {"Action Chip - 6s", kContextualPageActionsUiParams_ActionChip_6s,
+         std::size(kContextualPageActionsUiParams_ActionChip_6s), nullptr},
         {"Action Chip - Alternative Color",
-         kContextualPageActionPriceTracking_ActionChip_AltColor,
-         std::size(kContextualPageActionPriceTracking_ActionChip_AltColor),
+         kContextualPageActionsUiParams_ActionChip_AltColor,
+         std::size(kContextualPageActionsUiParams_ActionChip_AltColor),
          nullptr},
         {"Action Chip - Alternative Color - 6s",
-         kContextualPageActionPriceTracking_ActionChip_AltColor_6s,
-         std::size(kContextualPageActionPriceTracking_ActionChip_AltColor_6s),
+         kContextualPageActionsUiParams_ActionChip_AltColor_6s,
+         std::size(kContextualPageActionsUiParams_ActionChip_AltColor_6s),
          nullptr},
 };
 
 const FeatureEntry::FeatureParam
-    kContextualPageActionReaderMode_NoRateLimiting[] = {
+    kContextualPageActionReaderMode_ActionChip_NotRateLimited[] = {
+        {"action_chip", "true"},
+        {"action_chip_time_ms", "3000"},
         {"reader_mode_session_rate_limiting", "false"},
 };
-const FeatureEntry::FeatureParam kContextualPageActionReaderMode_RateLimited[] =
-    {
-        {"reader_mode_session_rate_limiting", "true"},
-};
-
 const FeatureEntry::FeatureVariation
     kContextualPageActionReaderModeVariations[] = {
-        {"Use rate limiting", kContextualPageActionReaderMode_RateLimited,
-         std::size(kContextualPageActionReaderMode_RateLimited), nullptr},
-        {"Don't rate limit", kContextualPageActionReaderMode_NoRateLimiting,
-         std::size(kContextualPageActionReaderMode_NoRateLimiting), nullptr},
+        {"Quiet", kContextualPageActionsUiParams_Quiet,
+         std::size(kContextualPageActionsUiParams_Quiet), nullptr},
+        {"Action Chip", kContextualPageActionsUiParams_ActionChip,
+         std::size(kContextualPageActionsUiParams_ActionChip), nullptr},
+        {"Action Chip - 6s", kContextualPageActionsUiParams_ActionChip_6s,
+         std::size(kContextualPageActionsUiParams_ActionChip_6s), nullptr},
+        {"Action Chip - Alternative Color",
+         kContextualPageActionsUiParams_ActionChip_AltColor,
+         std::size(kContextualPageActionsUiParams_ActionChip_AltColor),
+         nullptr},
+        {"Action Chip - Alternative Color - 6s",
+         kContextualPageActionsUiParams_ActionChip_AltColor_6s,
+         std::size(kContextualPageActionsUiParams_ActionChip_AltColor_6s),
+         nullptr},
+        {"Action Chip - Not rate limited",
+         kContextualPageActionReaderMode_ActionChip_NotRateLimited,
+         std::size(kContextualPageActionReaderMode_ActionChip_NotRateLimited),
+         nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -4113,21 +4131,23 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualPageActionsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          segmentation_platform::features::kContextualPageActions,
-         kContextualPageActionPriceTrackingVariations,
+         kContextualPageActionsVariations,
          "ContextualPageActions")},
     {"contextual-page-actions-with-price-tracking",
      flag_descriptions::kContextualPageActionsPriceTrackingName,
      flag_descriptions::kContextualPageActionsPriceTrackingDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         segmentation_platform::features::kContextualPageActionPriceTracking)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         segmentation_platform::features::kContextualPageActionPriceTracking,
+         kContextualPageActionPriceTrackingVariations,
+         "ContextualPageActionPriceTracking")},
     {"contextual-page-actions-reader-mode",
      flag_descriptions::kContextualPageActionsReaderModeName,
      flag_descriptions::kContextualPageActionsReaderModeDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          segmentation_platform::features::kContextualPageActionReaderMode,
          kContextualPageActionReaderModeVariations,
-         "ContextualPageActions")},
+         "ContextualPageActionReaderMode")},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},

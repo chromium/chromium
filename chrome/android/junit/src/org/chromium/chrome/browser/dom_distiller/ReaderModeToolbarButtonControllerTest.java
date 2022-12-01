@@ -97,7 +97,7 @@ public class ReaderModeToolbarButtonControllerTest {
         mTestValues.addFeatureFlagOverride(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
         mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", "true");
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE, "action_chip", "true");
 
         ReaderModeToolbarButtonController controller = createController();
 

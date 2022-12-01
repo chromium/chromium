@@ -104,6 +104,19 @@ public class AdaptiveToolbarFeatures {
         return false;
     }
 
+    private static String getFeatureNameForButtonVariant(
+            @AdaptiveToolbarButtonVariant int variant) {
+        switch (variant) {
+            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+                return ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING;
+            case AdaptiveToolbarButtonVariant.READER_MODE:
+                return ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE;
+            default:
+                throw new IllegalArgumentException(
+                        "Provided button variant not assigned to feature");
+        }
+    }
+
     /**
      * Returns whether the adaptive toolbar is enabled with segmentation and customization.
      *
@@ -121,27 +134,30 @@ public class AdaptiveToolbarFeatures {
     }
 
     /** @return Whether the contextual page actions should show the action chip version. */
-    public static boolean shouldShowActionChip() {
+    public static boolean shouldShowActionChip(@AdaptiveToolbarButtonVariant int buttonVariant) {
+        if (!isDynamicAction(buttonVariant)) return false;
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", false);
+                getFeatureNameForButtonVariant(buttonVariant), "action_chip", false);
     }
 
     /**
      * @return The amount of time the action chip should remain expanded in milliseconds. Default is
      *         3 seconds.
      */
-    public static int getContextualPageActionDelayMs() {
+    public static int getContextualPageActionDelayMs(
+            @AdaptiveToolbarButtonVariant int buttonVariant) {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip_time_ms",
+                getFeatureNameForButtonVariant(buttonVariant), "action_chip_time_ms",
                 DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS);
     }
 
     /**
      * @return Whether the CPA action chip should use a different background color when expanded.
      */
-    public static boolean shouldUseAlternativeActionChipColor() {
+    public static boolean shouldUseAlternativeActionChipColor(
+            @AdaptiveToolbarButtonVariant int buttonVariant) {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip_with_different_color",
+                getFeatureNameForButtonVariant(buttonVariant), "action_chip_with_different_color",
                 false);
     }
 
@@ -174,8 +190,8 @@ public class AdaptiveToolbarFeatures {
 
     public static boolean isReaderModeRateLimited() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "reader_mode_session_rate_limiting",
-                true);
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
+                "reader_mode_session_rate_limiting", true);
     }
 
     /**
