@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Router, routes, SafetyCheckIconStatus, SettingsSafetyCheckNotificationPermissionsElement, SettingsSafetyCheckUnusedSitePermissionsElement} from 'chrome://settings/settings.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {Router, routes, SafetyCheckIconStatus, SettingsSafetyCheckNotificationPermissionsElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckUnusedSitePermissionsElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {NotificationPermission, UnusedSitePermissions, SiteSettingsPermissionsBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertSafetyCheckChild} from './safety_check_test_utils.js';
 import {TestSiteSettingsPermissionsBrowserProxy} from './test_site_settings_permissions_browser_proxy.js';
@@ -184,5 +187,130 @@ suite('SafetyCheckNotificationPermissionsUiTests', function() {
     assertEquals(
         routes.SITE_SETTINGS_NOTIFICATIONS,
         Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('SafetyCheckPagePermissionModulesTest', function() {
+  let page: SettingsSafetyCheckPageElement;
+  let prefsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let permissionsBrowserProxy: TestSiteSettingsPermissionsBrowserProxy;
+  const notificationElementName =
+      'settings-safety-check-notification-permissions';
+  const unusedSiteElementName = 'settings-safety-check-unused-site-permissions';
+  const notificationMockData = [
+    {
+      origin: 'www.example1.com',
+      notificationInfoString: 'About 4 notifications a day',
+    },
+  ];
+  const unusedSiteMockData = [
+    {
+      origin: 'www.example1.com',
+      permissions: ['location', 'camera'],
+    },
+  ];
+
+  setup(function() {
+    prefsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(prefsBrowserProxy);
+    permissionsBrowserProxy = new TestSiteSettingsPermissionsBrowserProxy();
+    SiteSettingsPermissionsBrowserProxyImpl.setInstance(
+        permissionsBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  function createPage() {
+    page = document.createElement('settings-safety-check-page');
+    document.body.appendChild(page);
+    flush();
+  }
+
+  async function createPageForNotificationPermissions(
+      mockData: NotificationPermission[]) {
+    prefsBrowserProxy.setNotificationPermissionReview(mockData);
+    createPage();
+    await prefsBrowserProxy.whenCalled('getNotificationPermissionReview');
+    await flushTasks();
+  }
+
+  async function createPageForUnusedSitePermissions(
+      mockData: UnusedSitePermissions[]) {
+    permissionsBrowserProxy.setUnusedSitePermissions(mockData);
+    createPage();
+    await permissionsBrowserProxy.whenCalled(
+        'getRevokedUnusedSitePermissionsList');
+    await flushTasks();
+  }
+
+  teardown(function() {
+    page.remove();
+  });
+
+  test('notificationPermissionModuleVisible', async () => {
+    await createPageForNotificationPermissions(notificationMockData);
+
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+
+    webUIListenerCallback(
+        'notification-permission-review-list-maybe-changed', []);
+    await flushTasks();
+
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+  });
+
+  test('notificationPermissionModuleFeatureDisabled', async () => {
+    loadTimeData.overrideValues(
+        {safetyCheckNotificationPermissionsEnabled: false});
+    await createPageForNotificationPermissions(notificationMockData);
+
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+    // Re-enable the notification permission feature.
+    loadTimeData.overrideValues(
+        {safetyCheckNotificationPermissionsEnabled: true});
+  });
+
+  test('notificationPermissionModuleEmptyList', async () => {
+    await createPageForNotificationPermissions([]);
+
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+
+    webUIListenerCallback(
+        'notification-permission-review-list-maybe-changed',
+        notificationMockData);
+    await flushTasks();
+
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+  });
+
+  test('unusedSitePermissionsModuleVisible', async () => {
+    await createPageForUnusedSitePermissions(unusedSiteMockData);
+
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector(unusedSiteElementName)));
+  });
+
+  test('unusedSitePermissionsModuleFeatureDisabled', async () => {
+    loadTimeData.overrideValues(
+        {safetyCheckUnusedSitePermissionsEnabled: false});
+    await createPageForUnusedSitePermissions(unusedSiteMockData);
+
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector(unusedSiteElementName)));
+
+    // Re-enable the unused site permissions feature.
+    loadTimeData.overrideValues(
+        {safetyCheckUnusedSitePermissionsEnabled: true});
+  });
+
+  test('unusedSitePermissionsModuleEmptyList', async () => {
+    await createPageForUnusedSitePermissions([]);
+
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector(unusedSiteElementName)));
   });
 });

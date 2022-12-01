@@ -35,6 +35,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from '../site_settings/site_settings_permissions_browser_proxy.js';
 import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckParentStatus} from './safety_check_browser_proxy.js';
@@ -97,8 +98,11 @@ export class SettingsSafetyCheckPageElement extends
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private safetyCheckUnusedSitePermissionsEnabled_: boolean;
   private notificationPermissionSites_: NotificationPermission[] = [];
+  private unusedSitePermissions_: UnusedSitePermissions[] = [];
   private siteSettingsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
+  private permissionsBrowserProxy_: SiteSettingsPermissionsBrowserProxy =
+      SiteSettingsPermissionsBrowserProxyImpl.getInstance();
   private safetyCheckBrowserProxy_: SafetyCheckBrowserProxy =
       SafetyCheckBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -132,6 +136,15 @@ export class SettingsSafetyCheckPageElement extends
 
     this.notificationPermissionSites_ =
         await this.siteSettingsBrowserProxy_.getNotificationPermissionReview();
+
+    // Register for updates on the unused site permission list.
+    this.addWebUiListener(
+        'unused-permission-review-list-maybe-changed',
+        (sites: UnusedSitePermissions[]) =>
+            this.onUnusedSitePermissionListChanged_(sites));
+
+    this.unusedSitePermissions_ = await this.permissionsBrowserProxy_
+                                      .getRevokedUnusedSitePermissionsList();
   }
 
   /** Triggers the safety check. */
@@ -200,6 +213,15 @@ export class SettingsSafetyCheckPageElement extends
   private shouldShowNotificationPermissions_(): boolean {
     return this.notificationPermissionSites_.length !== 0 &&
         this.safetyCheckNotificationPermissionsEnabled_;
+  }
+
+  private onUnusedSitePermissionListChanged_(sites: UnusedSitePermissions[]) {
+    this.unusedSitePermissions_ = sites;
+  }
+
+  private shouldShowUnusedSitePermissions_(): boolean {
+    return this.safetyCheckUnusedSitePermissionsEnabled_ &&
+        this.unusedSitePermissions_.length !== 0;
   }
 }
 

@@ -48,7 +48,9 @@
       </settings-safety-check-chrome-cleaner-child>
 </if>
     </iron-collapse>
-    <template is="dom-if" if="[[safetyCheckUnusedSitePermissionsEnabled_]]"
+    <template is="dom-if"
+        if="[[shouldShowUnusedSitePermissions_(
+          unusedSitePermissions_, safetyCheckUnusedSitePermissionsEnabled_)]]"
         restamp>
       <settings-safety-check-unused-site-permissions>
       </settings-safety-check-unused-site-permissions>
