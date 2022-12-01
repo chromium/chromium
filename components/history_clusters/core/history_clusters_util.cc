@@ -245,6 +245,12 @@ void CullNonProminentOrDuplicateClusters(
     std::vector<history::Cluster>& clusters,
     std::set<GURL>* seen_single_visit_cluster_urls) {
   DCHECK(seen_single_visit_cluster_urls);
+  if (GetConfig()
+          .should_show_all_clusters_unconditionally_on_prominent_ui_surfaces) {
+    // Do not cull if we should just show everything.
+    return;
+  }
+
   if (query.empty()) {
     // For the empty-query state, only show clusters with
     // `should_show_on_prominent_ui_surfaces` set to true. This restriction is

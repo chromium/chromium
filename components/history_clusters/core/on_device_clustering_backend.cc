@@ -406,12 +406,6 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     for (const auto& finalizer : cluster_finalizers) {
       finalizer->FinalizeCluster(cluster);
     }
-    if (GetConfig()
-            .should_show_all_clusters_unconditionally_on_prominent_ui_surfaces) {
-      // Override the `should_show_on_prominent_ui_surfaces` bit if set by
-      // config.
-      cluster.should_show_on_prominent_ui_surfaces = true;
-    }
     visits_in_clusters.emplace_back(cluster.visits.size());
     keyword_sizes.emplace_back(cluster.keyword_to_data_map.size());
   }
