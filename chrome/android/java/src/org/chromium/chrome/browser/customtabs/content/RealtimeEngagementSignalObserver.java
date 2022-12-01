@@ -43,11 +43,11 @@ import org.chromium.ui.base.WindowAndroid;
 @ActivityScope
 class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     private static final int SCROLL_STATE_MAX_PERCENTAGE_NOT_INCREASING = -1;
-    // Limit the granularity of data the embedder receives. 
+    // Limit the granularity of data the embedder receives.
     private static final int SCROLL_PERCENTAGE_GRANULARITY = 5;
 
     private final CustomTabsConnection mConnection;
-    private final TabObserverRegistrar mTabObserverRegisterar;
+    private final TabObserverRegistrar mTabObserverRegistrar;
 
     @Nullable
     private final CustomTabsSessionToken mSession;
@@ -75,10 +75,10 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             CustomTabsConnection connection, @Nullable CustomTabsSessionToken session) {
         mConnection = connection;
         mSession = session;
-        mTabObserverRegisterar = tabObserverRegistrar;
+        mTabObserverRegistrar = tabObserverRegistrar;
 
         // Do not register observer via tab#addObserver, so it can change tabs when necessary.
-        mTabObserverRegisterar.registerActivityTabObserver(this);
+        mTabObserverRegistrar.registerActivityTabObserver(this);
     }
 
     // extends CustomTabTabObserver
@@ -91,6 +91,11 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     protected void onObservingDifferentTab(@NonNull Tab tab) {
         removeWebContentsDependencies(mWebContents);
         maybeStartSendingRealTimeEngagementSignals(tab);
+    }
+
+    @Override
+    protected void onAllTabsClosed() {
+        removeWebContentsDependencies(mWebContents);
     }
 
     // extends TabObserver
