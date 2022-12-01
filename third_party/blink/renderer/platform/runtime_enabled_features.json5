@@ -2583,7 +2583,7 @@
     // was enabled.
     {
       name: "SpeculationRules",
-      implied_by: ["SpeculationRulesPrefetchProxy", "SpeculationRulesPrefetchWithSubresources", "Prerender2", "SpeculationRulesDocumentRules"],
+      implied_by: ["SpeculationRulesPrefetchProxy", "SpeculationRulesPrefetchWithSubresources", "Prerender2", "SpeculationRulesDocumentRules", "SpeculationRulesRelativeToDocument"],
       origin_trial_feature_name: "SpeculationRules__DONOTUSE",
     },
     {
@@ -2616,6 +2616,9 @@
     {
       name: "SpeculationRulesReferrerPolicyKey",
       base_feature: "SpeculationRulesReferrerPolicyKey",
+    },
+    {
+      name: "SpeculationRulesRelativeToDocument",
     },
     {
       name: "SrcsetMaxDensity",

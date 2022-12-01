@@ -348,11 +348,14 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
   // If predicateType is "href_matches"
   if (predicate_type == "href_matches") {
-    // TODO(crbug/1371522): Add the explainer to
-    // https://github.com/WICG/nav-speculation/blob/main/triggers.md#document-rules
+    // Explainer:
+    // https://github.com/WICG/nav-speculation/blob/main/triggers.md#using-the-documents-base-url-for-external-speculation-rule-sets
 
-    // For now, use the ruleset's base url as the base url for prefetch rules.
+    // For now, use the ruleset's base URL to construct the predicates.
     KURL base_url = ruleset_base_url;
+    const bool relative_to_enabled =
+        RuntimeEnabledFeatures::SpeculationRulesRelativeToDocumentEnabled(
+            execution_context);
 
     for (wtf_size_t i = 0; i < input->size(); ++i) {
       const String key = input->at(i).first;
@@ -361,7 +364,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       } else if (key == "relative_to") {
         // If "relative_to" is present, its value must be "document".
         String relative_to;
-        if (!input->GetString("relative_to", &relative_to) ||
+        if (!relative_to_enabled ||
+            !input->GetString("relative_to", &relative_to) ||
             relative_to != "document") {
           return nullptr;
         }

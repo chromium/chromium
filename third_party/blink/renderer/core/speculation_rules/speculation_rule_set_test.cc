@@ -147,10 +147,13 @@ class SpeculationRuleSetTest : public ::testing::Test {
                          KURL("https://example.com/"), execution_context_);
   }
 
-  ExecutionContext* execution_context() { return execution_context_.Get(); }
+  NullExecutionContext* execution_context() {
+    return static_cast<NullExecutionContext*>(execution_context_.Get());
+  }
 
  private:
   ScopedSpeculationRulesPrefetchProxyForTest enable_prefetch_{true};
+  ScopedSpeculationRulesRelativeToDocumentForTest enable_relative_to_{true};
   ScopedPrerender2ForTest enable_prerender2_{true};
   Persistent<ExecutionContext> execution_context_;
 };
@@ -237,6 +240,32 @@ TEST_F(SpeculationRuleSetTest, ResolvesURLs) {
                   "https://example.org/", "http://example.net/")));
 }
 
+TEST_F(SpeculationRuleSetTest, ResolvesURLsWithRelativeTo) {
+  // Document base URL.
+  execution_context()->SetURL(KURL("https://document.com/foo/"));
+
+  // "relative_to" only affects relative URLs: "bar" and "/baz".
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": [
+            "bar",
+            "/baz",
+            "//example.org/",
+            "http://example.net/"
+          ],
+          "relative_to": "document"
+        }]
+      })",
+      KURL("https://example.com/foo/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesListOfURLs(
+                  "https://document.com/foo/bar", "https://document.com/baz",
+                  "https://example.org/", "http://example.net/")));
+}
+
 TEST_F(SpeculationRuleSetTest, RequiresAnonymousClientIPWhenCrossOrigin) {
   auto* rule_set = CreateRuleSet(
       R"({
@@ -319,6 +348,16 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
 
       // A rule with a legacy value for referrer_policy.
       R"({"source": "list", "urls": ["/"], "referrer_policy": "never"},)"
+
+      // Invalid value of "relative_to".
+      R"({"source": "list",
+          "urls": ["/no-source.html"],
+          "relative_to": 2022},)"
+
+      // Invalid string value of "relative_to".
+      R"({"source": "list",
+          "urls": ["/no-source.html"],
+          "relative_to": "not_document"},)"
 
       // Invalid URLs within a list rule should be discarded.
       // This includes totally invalid ones and ones with unacceptable schemes.
@@ -1168,8 +1207,7 @@ TEST_F(DocumentRulesTest, HrefMatchesWithBaseURL) {
 
 // Testing on http://bar.com requesting a ruleset from http://foo.com.
 TEST_F(DocumentRulesTest, HrefMatchesWithBaseURLAndRelativeTo) {
-  static_cast<NullExecutionContext*>(execution_context())
-      ->SetURL(KURL{"http://bar.com"});
+  execution_context()->SetURL(KURL{"http://bar.com"});
 
   auto* with_relative_to = CreatePredicate(
       R"(
@@ -1269,11 +1307,24 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
                     "invalid_key": "invalid_val"}
         },)"
 
-      // Bad value of "relative_to".
+      // Invalid values of "relative_to".
+      R"({
+          "source": "document",
+          "where": {"href_matches": "/hello.html",
+                    "relative_to": 2022}
+        },)"
       R"({
           "source": "document",
           "where": {"href_matches": "/hello.html",
                     "relative_to": "not_document"}
+        },)"
+
+      // "relative_to" appears at speculation rule level instead of the
+      // "href_matches" clause.
+      R"({
+          "source": "document",
+          "where": {"href_matches": "/hello"},
+          "relative_to": "document"
         },)"
 
       // Currently the spec does not allow three keys.

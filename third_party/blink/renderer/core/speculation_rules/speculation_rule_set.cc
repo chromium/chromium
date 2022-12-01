@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
@@ -55,10 +54,10 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       ExecutionContext* context) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
 
-  // If input has any key other than "source", "urls", "requires", and
-  // "target_hint", then return null.
-  const char* const kKnownKeys[] = {"source", "urls", "requires", "target_hint",
-                                    "where"};
+  // If input has any key other than "source", "urls", "requires", "target_hint"
+  // and "relative_to", then return null.
+  const char* const kKnownKeys[] = {"source",      "urls",  "requires",
+                                    "target_hint", "where", "relative_to"};
   for (wtf_size_t i = 0; i < input->size(); ++i) {
     const String& input_key = input->at(i).first;
     const bool conditionally_known_key =
@@ -70,6 +69,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
   bool document_rules_enabled =
       RuntimeEnabledFeatures::SpeculationRulesDocumentRulesEnabled(context);
+  const bool relative_to_enabled =
+      RuntimeEnabledFeatures::SpeculationRulesRelativeToDocumentEnabled(
+          context);
 
   // If input["source"] does not exist or is neither the string "list" nor the
   // string "document", then return null.
@@ -83,6 +85,21 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     // If input["where"] exists, then return null.
     if (input->Get("where"))
       return nullptr;
+
+    // For now, use the given base URL to construct the list rules.
+    KURL base_url_to_parse = base_url;
+    // If "relative_to" is present:
+    if (JSONValue* relative_to = input->Get("relative_to")) {
+      // If the value of "relative_to" is not a string, or the string value is
+      // not "document", the ruleset is invalid.
+      if (String value; !relative_to_enabled ||
+                        !relative_to->AsString(&value) || value != "document") {
+        return nullptr;
+      }
+      // If "relative_to": "document" is present, use the document's base URL to
+      // construct the list rules.
+      base_url_to_parse = context->BaseURL();
+    }
 
     // Let urls be an empty list.
     // If input["urls"] does not exist, is not a list, or has any element which
@@ -100,7 +117,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
 
       // Let parsedURL be the result of parsing urlString with baseURL.
       // If parsedURL is failure, then continue.
-      KURL parsed_url(base_url, url_string);
+      KURL parsed_url(base_url_to_parse, url_string);
       if (!parsed_url.IsValid() || !parsed_url.ProtocolIsInHTTPFamily())
         continue;
 
@@ -123,6 +140,10 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     // Otherwise, set predicate to the result of parsing a document rule
     // predicate given input["where"] and baseURL.
     else {
+      // "relative_to" outside the "href_matches" clause is not allowed for
+      // document rules.
+      if (input->Get("relative_to"))
+        return nullptr;
       document_rule_predicate =
           DocumentRulePredicate::Parse(input->GetJSONObject("where"), base_url,
                                        context, IGNORE_EXCEPTION_FOR_TESTING);
