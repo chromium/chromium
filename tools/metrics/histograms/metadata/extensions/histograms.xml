@@ -348,28 +348,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ContentVerification.ComputedHashesInitTime"
-    units="ms" expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    How long a successful initialization of computed_hashes.json file takes.
-    Recorded when content verification needs to retrieve block hashes.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ContentVerification.ComputedHashesReadResult"
-    enum="BooleanSuccess" expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Whether or not computed_hashes.json file read and parse succeeded. Recorded
-    when content verification needs to retrieve block hashes.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ContentVerification.ComputeHashesOnInstallResult"
     enum="BooleanSuccess" expires_after="2023-12-01">
   <owner>vkovalova@google.com</owner>

@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
-#include "extensions/browser/content_verifier/scoped_uma_recorder.h"
 
 namespace extensions {
 
@@ -36,11 +35,6 @@ const int kVersion = 2;
 namespace {
 
 using SortedFilePathSet = std::set<base::FilePath>;
-
-const char kUMAComputedHashesReadResult[] =
-    "Extensions.ContentVerification.ComputedHashesReadResult";
-const char kUMAComputedHashesInitTime[] =
-    "Extensions.ContentVerification.ComputedHashesInitTime";
 
 }  // namespace
 
@@ -103,8 +97,6 @@ absl::optional<ComputedHashes> ComputedHashes::CreateFromFile(
     Status* status) {
   DCHECK(status);
   *status = Status::UNKNOWN;
-  ScopedUMARecorder<kUMAComputedHashesReadResult, kUMAComputedHashesInitTime>
-      uma_recorder;
   std::string contents;
   if (!base::ReadFileToString(path, &contents)) {
     *status = Status::READ_FAILED;
@@ -186,7 +178,6 @@ absl::optional<ComputedHashes> ComputedHashes::CreateFromFile(
     }
     data.Add(relative_path, *block_size, std::move(hashes));
   }
-  uma_recorder.RecordSuccess();
   *status = Status::SUCCESS;
   return ComputedHashes(std::move(data));
 }
