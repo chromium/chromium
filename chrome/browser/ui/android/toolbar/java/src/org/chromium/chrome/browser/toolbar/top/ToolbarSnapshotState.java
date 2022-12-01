@@ -62,9 +62,9 @@ public class ToolbarSnapshotState {
     private final int mTabCount;
     private final ButtonData mOptionalButtonData;
     private final @VisualState int mVisualState;
-    private String mUrlText = "";
+    private final String mUrlText;
     @Nullable
-    private CharSequence mVisibleTextPrefixHint;
+    private final CharSequence mVisibleTextPrefixHint;
     private final @DrawableRes int mSecurityIcon;
     private final ColorStateList mColorStateList;
     private final boolean mIsShowingUpdateBadgeDuringLastCapture;
@@ -82,6 +82,9 @@ public class ToolbarSnapshotState {
         mVisualState = visualState;
         mUrlText = urlText;
         mVisibleTextPrefixHint = visibleTextPrefixHint;
+        if (visibleTextPrefixHint != null) {
+            assert isValidVisibleTextPrefixHint(urlText, visibleTextPrefixHint);
+        }
         mSecurityIcon = securityIcon;
         mColorStateList = colorStateList;
         mIsShowingUpdateBadgeDuringLastCapture = isShowingUpdateBadgeDuringLastCapture;
@@ -128,10 +131,7 @@ public class ToolbarSnapshotState {
     private boolean isVisibleUrlTextSame(ToolbarSnapshotState that) {
         if (mVisibleTextPrefixHint != null
                 && TextUtils.equals(mVisibleTextPrefixHint, that.mVisibleTextPrefixHint)) {
-            if (TextUtils.indexOf(mUrlText, mVisibleTextPrefixHint) >= 0) return true;
-            assert false : "The visible hint, " + mVisibleTextPrefixHint
-                           + ", should always be part of the URL text, "
-                           + mUrlText;
+            return true;
         }
         return TextUtils.equals(mUrlText, that.mUrlText);
     }
@@ -143,5 +143,17 @@ public class ToolbarSnapshotState {
 
     int getTabCount() {
         return mTabCount;
+    }
+
+    /**
+     * Determines the validity of the hint text given the passed in full text.
+     * @param fullText The full text that should start with the hint.
+     * @param hintText The hint text to be checked.
+     * @return Whether the full text starts with the specified hint text.
+     */
+    static boolean isValidVisibleTextPrefixHint(CharSequence fullText, CharSequence hintText) {
+        if (fullText == null || TextUtils.isEmpty(hintText)) return false;
+        if (hintText.length() > fullText.length()) return false;
+        return TextUtils.indexOf(fullText, hintText, 0, hintText.length()) == 0;
     }
 }

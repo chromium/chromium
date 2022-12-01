@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1616,10 +1617,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private ToolbarSnapshotState generateToolbarSnapshotState() {
+        UrlBarData urlBarData = getToolbarDataProvider().getUrlBarData();
+        String displayedUrlText = urlBarData.displayText.toString();
+        CharSequence prefixHint = mLocationBar.getOmniboxVisibleTextPrefixHint();
+        boolean isValidPrefixHint =
+                ToolbarSnapshotState.isValidVisibleTextPrefixHint(displayedUrlText, prefixHint);
         return new ToolbarSnapshotState(getTint().getDefaultColor(),
-                mTabCountProvider.getTabCount(), mButtonData, mVisualState,
-                getToolbarDataProvider().getCurrentUrl(),
-                mLocationBar.getOmniboxVisibleTextPrefixHint(),
+                mTabCountProvider.getTabCount(), mButtonData, mVisualState, displayedUrlText,
+                isValidPrefixHint ? prefixHint : null,
                 getToolbarDataProvider().getSecurityIconResource(false),
                 ImageViewCompat.getImageTintList(mHomeButton),
                 getMenuButtonCoordinator().isShowingUpdateBadge(),
