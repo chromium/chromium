@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GoogleServiceAuthError;
 
@@ -23,14 +24,103 @@ class SharedURLLoaderFactory;
 
 namespace ash::quick_start {
 
+struct FidoAssertionInfo;
+
 class SecondDeviceAuthBroker {
  public:
-  enum class AttestationErrorType { kTransientError, kPermanentError };
+  enum class AttestationErrorType {
+    // The error was temporary / transient and the request can be tried again.
+    kTransientError,
+
+    // The error was permanent and the request should not be retried.
+    kPermanentError,
+  };
+
+  // Fields which are common in most `RefreshTokenCallback` responses.
+  struct RefreshTokenBaseResponse {
+    // User's email. May be empty.
+    std::string email;
+  };
+
+  // `RefreshTokenCallback` request failed with a parsing error.
+  struct RefreshTokenParsingErrorResponse {};
+
+  // `RefreshTokenCallback` request failed with an unknown error.
+  struct RefreshTokenUnknownErrorResponse {};
+
+  // `RefreshTokenCallback` request completed successfully.
+  struct RefreshTokenSuccessResponse : public RefreshTokenBaseResponse {
+    // Login Scoped OAuth Refresh Token.
+    std::string refresh_token;
+  };
+
+  // `RefreshTokenCallback` request was rejected.
+  struct RefreshTokenRejectionResponse : public RefreshTokenBaseResponse {
+    enum Reason {
+      // Google's authentication server rejected the request but did not tell us
+      // why. `email` field may be empty in this case.
+      kUnknownReason,
+
+      // The token on the source device is invalid.
+      kInvalidOAuthToken,
+
+      // Sign in with this account type is not supported.
+      kAccountNotSupported,
+
+      // Sign-in device is less secure.
+      kLessSecureDevice,
+
+      // Session is already authenticated.
+      kAlreadyAuthenticated,
+
+      // Session has expired.
+      kSessionExpired,
+
+      // Challenge expired error thrown during FIDO assertion verification.
+      kChallengeExpired,
+
+      // Credential ID mismatch thrown during FIDO assertion verification.
+      kCredentialIdMismatch,
+    };
+
+    Reason reason;
+  };
+
+  // The user needs to be presented with additional challenges on the target
+  // device, in response to `RefreshTokenCallback`.
+  struct RefreshTokenAdditionalChallengesOnSourceResponse
+      : public RefreshTokenBaseResponse {
+    // The url to be loaded in a webview to show additional challenges.
+    std::string fallback_url;
+
+    // Session identifier for target session. Do NOT log this field anywhere.
+    // May be empty.
+    std::string target_session_identifier;
+  };
+
+  // The user needs to be presented with additional challenges on the target
+  // device, in response to `RefreshTokenCallback`.
+  struct RefreshTokenAdditionalChallengesOnTargetResponse
+      : public RefreshTokenBaseResponse {
+    // The url to be loaded in a webview to show additional challenges.
+    std::string fallback_url;
+  };
 
   using ChallengeBytesCallback = base::OnceCallback<void(
       const base::expected<std::string, GoogleServiceAuthError>&)>;
   using AttestationCertificateCallback = base::OnceCallback<void(
       const base::expected<std::string, AttestationErrorType>&)>;
+
+  // Possible set of response types for `RefreshTokenCallback`.
+  using RefreshTokenResponse =
+      absl::variant<RefreshTokenUnknownErrorResponse,
+                    RefreshTokenSuccessResponse,
+                    RefreshTokenParsingErrorResponse,
+                    RefreshTokenRejectionResponse,
+                    RefreshTokenAdditionalChallengesOnSourceResponse,
+                    RefreshTokenAdditionalChallengesOnTargetResponse>;
+  using RefreshTokenCallback =
+      base::OnceCallback<void(const RefreshTokenResponse&)>;
 
   // Constructs an instance of `SecondDeviceAuthBroker`.
   SecondDeviceAuthBroker(
@@ -54,6 +144,15 @@ class SecondDeviceAuthBroker {
   void FetchAttestationCertificate(
       const std::string& fido_credential_id,
       AttestationCertificateCallback certificate_callback);
+
+  // Fetches a Login Scoped OAuth Refresh Token (LST).
+  // `certificate` is a PEM encoded certificate chain retrieved earlier using
+  // `FetchAttestationCertificate()`.
+  // `refresh_token_callback` is completed with one of a possible set of result
+  // types. See the type definition of `RefreshTokenResponse` for reference.
+  void FetchRefreshToken(const FidoAssertionInfo& fido_assertion_info,
+                         const std::string& certificate,
+                         RefreshTokenCallback refresh_token_callback);
 
  private:
   // Callback for handling challenge bytes response from Gaia.

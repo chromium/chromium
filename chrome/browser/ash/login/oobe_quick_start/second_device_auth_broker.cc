@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -271,6 +272,14 @@ void SecondDeviceAuthBroker::FetchAttestationCertificate(
       /*callback=*/
       base::BindOnce(&RunAttestationCertificateCallback,
                      std::move(certificate_callback)));
+}
+
+void SecondDeviceAuthBroker::FetchRefreshToken(
+    const FidoAssertionInfo& fido_assertion_info,
+    const std::string& certificate,
+    RefreshTokenCallback refresh_token_callback) {
+  // Fetch auth code. If successful, fetch refresh token.
+  NOTIMPLEMENTED();
 }
 
 }  //  namespace ash::quick_start
