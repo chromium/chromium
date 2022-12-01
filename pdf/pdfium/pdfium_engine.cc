@@ -23,6 +23,7 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -642,6 +643,11 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
                          std::vector<gfx::Rect>& ready,
                          std::vector<gfx::Rect>& pending) {
   gfx::Rect leftover = rect;
+
+  // Set a timer here to check how long it takes to finish rendering and
+  // painting the visible pages.
+  base::TimeTicks begin_time = base::TimeTicks::Now();
+
   for (size_t i = 0; i < visible_pages_.size(); ++i) {
     int index = visible_pages_[i];
     // Convert the current page's rectangle to screen rectangle.  We do this
@@ -707,6 +713,9 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
       ready.push_back(dirty_in_screen);
     }
   }
+
+  base::UmaHistogramMediumTimes("PDF.RenderAndPaintVisiblePagesTime",
+                                base::TimeTicks::Now() - begin_time);
 }
 
 void PDFiumEngine::PostPaint() {
