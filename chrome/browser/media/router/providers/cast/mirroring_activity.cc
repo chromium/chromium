@@ -463,8 +463,9 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
   host_->Start(
       SessionParameters::New(
           session_type, cast_data_.ip_endpoint.address(), cast_data_.model_name,
-          session.destination_id(), message_handler_->source_id(),
-          cast_source->target_playout_delay(), GetMirroringRefreshInterval()),
+          sink_.sink().name(), session.destination_id(),
+          message_handler_->source_id(), cast_source->target_playout_delay(),
+          route().media_source().IsRemotePlaybackSource(), absl::nullopt),
       std::move(observer_remote), std::move(channel_remote),
       std::move(channel_to_service_receiver_));
 }

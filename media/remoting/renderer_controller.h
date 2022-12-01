@@ -170,6 +170,7 @@ class RendererController final : public mojom::RemotingSource,
   bool HasAudioCapability(mojom::RemotingSinkAudioCapability capability) const;
   bool HasFeatureCapability(mojom::RemotingSinkFeature capability) const;
   bool SinkSupportsRemoting() const;
+  bool ShouldBeRemoting() const;
 
   // Callback from RpcMessenger when sending message to remote sink.
   void SendMessageToSink(std::vector<uint8_t> message);
@@ -190,7 +191,7 @@ class RendererController final : public mojom::RemotingSource,
 
   // When the sink is available for remoting, this describes its metadata. When
   // not available, this is empty. Updated by OnSinkAvailable/Gone().
-  mojom::RemotingSinkMetadata sink_metadata_;
+  mojom::RemotingSinkMetadataPtr sink_metadata_;
 
   // Indicates whether remoting is started.
   bool remote_rendering_started_ = false;
@@ -235,6 +236,10 @@ class RendererController final : public mojom::RemotingSource,
   GURL url_after_redirects_;
 
   bool is_hls_ = false;
+
+  // True if the browser has requested to start remoting without fullscreening
+  // the media content. The value is reset to False when it switches back to
+  // local rendering.
   bool is_media_remoting_requested_ = false;
 
   // Records session events of interest.

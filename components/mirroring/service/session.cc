@@ -218,11 +218,9 @@ void AddStreamObject(int stream_index,
 // Convert the sink capabilities to media::mojom::RemotingSinkMetadata.
 media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
     const std::vector<std::string>& capabilities,
-    const std::string& receiver_name,
-    const mojom::SessionParameters& params,
-    const std::string& receiver_build_version) {
+    const mojom::SessionParameters& params) {
   media::mojom::RemotingSinkMetadata sink_metadata;
-  sink_metadata.friendly_name = receiver_name;
+  sink_metadata.friendly_name = params.receiver_friendly_name;
 
   for (const auto& capability : capabilities) {
     if (capability == "audio") {
@@ -779,9 +777,13 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
       media_remoter_->OnMirroringResumed();
   }
 
-  if (initially_starting_session &&
-      ShouldQueryForRemotingCapabilities(session_params_.receiver_model_name)) {
-    QueryCapabilitiesForRemoting();
+  if (initially_starting_session) {
+    if (session_params_.is_remote_playback) {
+      InitMediaRemoter({});
+    } else if (ShouldQueryForRemotingCapabilities(
+                   session_params_.receiver_model_name)) {
+      QueryCapabilitiesForRemoting();
+    }
   }
 
   if (initially_starting_session && observer_)
@@ -988,6 +990,13 @@ void Session::QueryCapabilitiesForRemoting() {
       base::BindOnce(&Session::OnCapabilitiesResponse, base::Unretained(this)));
 }
 
+void Session::InitMediaRemoter(const std::vector<std::string>& caps) {
+  DCHECK(!media_remoter_);
+  rpc_dispatcher_ = std::make_unique<RpcDispatcherImpl>(*message_dispatcher_);
+  media_remoter_ = std::make_unique<MediaRemoter>(
+      *this, ToRemotingSinkMetadata(caps, session_params_), *rpc_dispatcher_);
+}
+
 void Session::OnCapabilitiesResponse(const ReceiverResponse& response) {
   if (state_ == STOPPED)
     return;
@@ -1022,21 +1031,7 @@ void Session::OnCapabilitiesResponse(const ReceiverResponse& response) {
     return;
   }
 
-  const std::vector<std::string>& caps = response.capabilities().media_caps;
-
-  std::string build_version;
-  std::string friendly_name;
-  if (setup_querier_) {
-    build_version = setup_querier_->build_version();
-    friendly_name = setup_querier_->friendly_name();
-  }
-
-  rpc_dispatcher_ = std::make_unique<RpcDispatcherImpl>(*message_dispatcher_);
-  media_remoter_ = std::make_unique<MediaRemoter>(
-      *this,
-      ToRemotingSinkMetadata(caps, friendly_name, session_params_,
-                             build_version),
-      *rpc_dispatcher_);
+  InitMediaRemoter(response.capabilities().media_caps);
 }
 
 }  // namespace mirroring

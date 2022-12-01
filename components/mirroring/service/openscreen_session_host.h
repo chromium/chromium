@@ -189,6 +189,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   void NegotiateMirroring();
   void NegotiateRemoting();
 
+  // Initialize `media_remoter_` and `rpc_dispatcher_`.
+  void InitMediaRemoter(
+      const openscreen::cast::RemotingCapabilities& capabilities);
+
   // Called to provide Open Screen with access to this host's network proxy.
   network::mojom::NetworkContext* GetNetworkContext();
 

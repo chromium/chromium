@@ -132,13 +132,8 @@ RendererController::~RendererController() {
 void RendererController::OnSinkAvailable(
     mojom::RemotingSinkMetadataPtr metadata) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  sink_metadata_ = std::move(metadata);
 
-  sink_metadata_ = *metadata;
-
-  if (!SinkSupportsRemoting()) {
-    OnSinkGone();
-    return;
-  }
   UpdateAndMaybeSwitch(SINK_AVAILABLE, UNKNOWN_STOP_TRIGGER);
 }
 
@@ -147,7 +142,7 @@ void RendererController::OnSinkGone() {
 
   // Prevent the clients to start any future remoting sessions. Won't affect the
   // behavior of the currently-running session (if any).
-  sink_metadata_ = mojom::RemotingSinkMetadata();
+  sink_metadata_ = nullptr;
 }
 
 void RendererController::OnStarted() {
@@ -156,7 +151,7 @@ void RendererController::OnStarted() {
   VLOG(1) << "Remoting started successively.";
   if (remote_rendering_started_ && client_) {
     metrics_recorder_.DidStartSession();
-    client_->SwitchToRemoteRenderer(sink_metadata_.friendly_name);
+    client_->SwitchToRemoteRenderer(sink_metadata_->friendly_name);
   }
 }
 
@@ -164,6 +159,7 @@ void RendererController::OnStartFailed(mojom::RemotingStartFailReason reason) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   VLOG(1) << "Failed to start remoting:" << reason;
+  is_media_remoting_requested_ = false;
   if (remote_rendering_started_) {
     metrics_recorder_.WillStopSession(START_RACE);
     metrics_recorder_.StartSessionFailed(reason);
@@ -175,6 +171,7 @@ void RendererController::OnStopped(mojom::RemotingStopReason reason) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   VLOG(1) << "Remoting stopped: " << reason;
+  is_media_remoting_requested_ = false;
   OnSinkGone();
   UpdateAndMaybeSwitch(UNKNOWN_START_TRIGGER, GetStopTrigger(reason));
 }
@@ -220,6 +217,7 @@ void RendererController::OnRemotePlaybackDisabled(bool disabled) {
 
 void RendererController::OnMediaRemotingRequested() {
   is_media_remoting_requested_ = true;
+  UpdateAndMaybeSwitch(REQUESTED_BY_BROWSER, UNKNOWN_STOP_TRIGGER);
 }
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
@@ -467,6 +465,15 @@ RemotingCompatibility RendererController::GetCompatibility() const {
   if (!has_video() && !has_audio())
     return RemotingCompatibility::kNoAudioNorVideo;
 
+  if (client_->Duration() <= kMinRemotingMediaDurationInSec)
+    return RemotingCompatibility::kDurationBelowThreshold;
+
+  // When `is_media_remoting_requested_`, it is guaranteed that the sink is
+  // compatible. So there's no need to check for compatibilities.
+  if (is_media_remoting_requested_) {
+    return RemotingCompatibility::kCompatible;
+  }
+
   if (has_video()) {
     RemotingCompatibility compatibility = GetVideoCompatibility();
     if (compatibility != RemotingCompatibility::kCompatible)
@@ -478,10 +485,6 @@ RemotingCompatibility RendererController::GetCompatibility() const {
     if (compatibility != RemotingCompatibility::kCompatible)
       return compatibility;
   }
-
-  if (client_->Duration() <= kMinRemotingMediaDurationInSec)
-    return RemotingCompatibility::kDurationBelowThreshold;
-
   return RemotingCompatibility::kCompatible;
 }
 
@@ -495,15 +498,7 @@ void RendererController::UpdateAndMaybeSwitch(StartTrigger start_trigger,
                                               StopTrigger stop_trigger) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  // Being the dominant visible content is the signal that starts remote
-  // rendering.
-  // Also, only switch to remoting when media is playing. Since the renderer is
-  // created when video starts loading, the receiver would display a black
-  // screen if switching to remoting while paused. Thus, the user experience is
-  // improved by not starting remoting until playback resumes.
-  bool should_be_remoting = client_ && !encountered_renderer_fatal_error_ &&
-                            is_dominant_content_ && !is_paused_ &&
-                            SinkSupportsRemoting();
+  bool should_be_remoting = ShouldBeRemoting();
   if (should_be_remoting) {
     const RemotingCompatibility compatibility = GetCompatibility();
     metrics_recorder_.RecordCompatibility(compatibility);
@@ -520,8 +515,10 @@ void RendererController::UpdateAndMaybeSwitch(StartTrigger start_trigger,
   } else if (delayed_start_stability_timer_.IsRunning()) {
     DCHECK(!remote_rendering_started_);
     CancelDelayedStart();
+    is_media_remoting_requested_ = false;
   } else {
     remote_rendering_started_ = false;
+    is_media_remoting_requested_ = false;
     DCHECK_NE(UNKNOWN_STOP_TRIGGER, stop_trigger);
     metrics_recorder_.WillStopSession(stop_trigger);
     if (client_)
@@ -536,6 +533,7 @@ void RendererController::WaitForStabilityBeforeStart(
   DCHECK(!delayed_start_stability_timer_.IsRunning());
   DCHECK(!remote_rendering_started_);
   DCHECK(client_);
+  DCHECK(SinkSupportsRemoting());
 
   delayed_start_stability_timer_.Start(
       FROM_HERE, kDelayedStart,
@@ -552,7 +550,7 @@ void RendererController::OnDelayedStartTimerFired(
     StartTrigger start_trigger,
     unsigned decoded_frame_count_before_delay,
     base::TimeTicks delayed_start_time) {
-  DCHECK(is_dominant_content_);
+  DCHECK(is_dominant_content_ || is_media_remoting_requested_);
   DCHECK(!remote_rendering_started_);
   DCHECK(client_);  // This task is canceled otherwise.
 
@@ -630,21 +628,46 @@ void RendererController::SetClient(MediaObserverClient* client) {
 
 bool RendererController::HasVideoCapability(
     mojom::RemotingSinkVideoCapability capability) const {
-  return base::Contains(sink_metadata_.video_capabilities, capability);
+  return sink_metadata_ &&
+         base::Contains(sink_metadata_->video_capabilities, capability);
 }
 
 bool RendererController::HasAudioCapability(
     mojom::RemotingSinkAudioCapability capability) const {
-  return base::Contains(sink_metadata_.audio_capabilities, capability);
+  return sink_metadata_ &&
+         base::Contains(sink_metadata_->audio_capabilities, capability);
 }
 
 bool RendererController::HasFeatureCapability(
     RemotingSinkFeature capability) const {
-  return base::Contains(sink_metadata_.features, capability);
+  return sink_metadata_ && base::Contains(sink_metadata_->features, capability);
 }
 
 bool RendererController::SinkSupportsRemoting() const {
+  // when `is_media_remoting_requested_` is true, all discovered sinks are
+  // compatible with this media content.
+  if (is_media_remoting_requested_) {
+    return !sink_metadata_.is_null();
+  }
   return HasFeatureCapability(RemotingSinkFeature::RENDERING);
+}
+
+bool RendererController::ShouldBeRemoting() const {
+  // Starts remote rendering when the media is the dominant content or the
+  // browser has sent an explicit request.
+  if (!is_dominant_content_ && !is_media_remoting_requested_) {
+    return false;
+  }
+  // Only switch to remoting when media is playing. Since the renderer is
+  // created when video starts loading, the receiver would display a black
+  // screen if switching to remoting while paused. Thus, the user experience is
+  // improved by not starting remoting until playback resumes.
+  if (is_paused_ || encountered_renderer_fatal_error_ || !client_ ||
+      !SinkSupportsRemoting()) {
+    return false;
+  }
+
+  return true;
 }
 
 void RendererController::SendMessageToSink(std::vector<uint8_t> message) {

@@ -882,12 +882,11 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
     mojo::PendingRemote<mirroring::mojom::CastMessageChannel> channel_remote;
     channel_receiver_.Bind(channel_remote.InitWithNewPipeAndPassReceiver());
 
-    const std::string receiver_model_name{};
     auto session_params = mirroring::mojom::SessionParameters::New(
         mirroring::mojom::SessionType::AUDIO_AND_VIDEO, endpoint.address(),
-        receiver_model_name, "sender-123", "receiver-456",
-        base::Milliseconds(kTargetPlayoutDelayMs), absl::nullopt);
-
+        "model_name", "friendly_name", "sender-123", "receiver-456",
+        base::Milliseconds(kTargetPlayoutDelayMs),
+        false /* is_remote_playback */, absl::nullopt);
     host_->Start(std::move(session_params), std::move(observer_remote),
                  std::move(channel_remote),
                  channel_to_service_.BindNewPipeAndPassReceiver());

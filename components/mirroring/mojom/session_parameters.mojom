@@ -28,6 +28,9 @@ struct SessionParameters {
   // TODO(crbug.com/1015467): Receivers should report capabilities.
   string receiver_model_name;
 
+  // Used to display on the UI surface. e.g. "Living Room TV".
+  string receiver_friendly_name;
+
   // Used to route Cast messages (like OFFER and GET_CAPABILITIES) between this
   // mirroring session and the Cast receiver over the Cast V2 (TLS) socket
   // between Chrome and the receiver.
@@ -43,6 +46,10 @@ struct SessionParameters {
   // video senders. Omission of this parameter instructs the session to use
   // the default configured value.
   mojo_base.mojom.TimeDelta? target_playout_delay;
+
+  // Used to inform Session that it should initialize the MediaRemoter without
+  // querying the receiver device for its capabilities.
+  bool is_remote_playback;
 
   // The interval elapsed before the service requests a refresh frame from the
   // video capture source.  Refresh frames help the video encoder converge to a

@@ -86,10 +86,9 @@ int NumberOfEncodeThreads() {
 // Convert the sink capabilities to media::mojom::RemotingSinkMetadata.
 media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
     const openscreen::cast::RemotingCapabilities& capabilities,
-    const std::string& receiver_name,
-    const mojom::SessionParameters& params) {
+    const std::string& friendly_name) {
   media::mojom::RemotingSinkMetadata sink_metadata;
-  sink_metadata.friendly_name = receiver_name;
+  sink_metadata.friendly_name = friendly_name;
 
   for (const openscreen::cast::AudioCapability capability :
        capabilities.audio) {
@@ -481,8 +480,14 @@ void OpenscreenSessionHost::OnNegotiated(
   if (initially_starting_session) {
     // We should only request capabilities once, in order to avoid instantiating
     // the media remoter multiple times.
-    session_->RequestCapabilities();
-
+    if (session_params_.is_remote_playback) {
+      // Initialize `media_remoter_` without capabilities for Remote Playback
+      // Media Source.
+      openscreen::cast::RemotingCapabilities capabilities;
+      InitMediaRemoter(capabilities);
+    } else {
+      session_->RequestCapabilities();
+    }
     if (observer_) {
       observer_->DidStart();
     }
@@ -518,17 +523,7 @@ void OpenscreenSessionHost::OnCapabilitiesDetermined(
   if (state_ == State::kStopped)
     return;
 
-  // TODO(crbug.com/1077786): the friendly name should come from the media
-  // router.
-  const std::string friendly_name =
-      setup_querier_ ? setup_querier_->friendly_name() : std::string();
-
-  rpc_dispatcher_ =
-      std::make_unique<OpenscreenRpcDispatcher>(session_->session_messenger());
-  media_remoter_ = std::make_unique<MediaRemoter>(
-      *this,
-      ToRemotingSinkMetadata(capabilities, friendly_name, session_params_),
-      *rpc_dispatcher_);
+  InitMediaRemoter(capabilities);
 }
 
 void OpenscreenSessionHost::OnError(
@@ -997,6 +992,17 @@ void OpenscreenSessionHost::NegotiateRemoting() {
 
   session_->NegotiateRemoting(ToOpenscreenAudioConfig(audio_config),
                               ToOpenscreenVideoConfig(video_config));
+}
+
+void OpenscreenSessionHost::InitMediaRemoter(
+    const openscreen::cast::RemotingCapabilities& capabilities) {
+  rpc_dispatcher_ =
+      std::make_unique<OpenscreenRpcDispatcher>(session_->session_messenger());
+  media_remoter_ = std::make_unique<MediaRemoter>(
+      *this,
+      ToRemotingSinkMetadata(capabilities,
+                             session_params_.receiver_friendly_name),
+      *rpc_dispatcher_);
 }
 
 network::mojom::NetworkContext* OpenscreenSessionHost::GetNetworkContext() {

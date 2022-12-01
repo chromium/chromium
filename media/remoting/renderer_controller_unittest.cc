@@ -37,18 +37,18 @@ PipelineMetadata DefaultMetadata(VideoCodec codec) {
 
 const char kDefaultReceiver[] = "TestingChromeCast";
 
-mojom::RemotingSinkMetadata GetDefaultSinkMetadata(bool enable) {
-  mojom::RemotingSinkMetadata metadata;
+mojom::RemotingSinkMetadataPtr GetDefaultSinkMetadata(bool enable) {
+  mojom::RemotingSinkMetadataPtr metadata = mojom::RemotingSinkMetadata::New();
   if (enable) {
-    metadata.features.push_back(mojom::RemotingSinkFeature::RENDERING);
+    metadata->features.push_back(mojom::RemotingSinkFeature::RENDERING);
   } else {
-    metadata.features.clear();
+    metadata->features.clear();
   }
-  metadata.video_capabilities.push_back(
+  metadata->video_capabilities.push_back(
       mojom::RemotingSinkVideoCapability::CODEC_VP8);
-  metadata.audio_capabilities.push_back(
+  metadata->audio_capabilities.push_back(
       mojom::RemotingSinkAudioCapability::CODEC_BASELINE_SET);
-  metadata.friendly_name = kDefaultReceiver;
+  metadata->friendly_name = kDefaultReceiver;
   return metadata;
 }
 
@@ -93,9 +93,9 @@ class RendererControllerTest : public ::testing::Test,
     is_remote_playback_compatible_ = is_compatible;
   }
 
-  void InitializeControllerAndBecomeDominant(
+  void InitializeControllerWithSink(
       const PipelineMetadata& pipeline_metadata,
-      const mojom::RemotingSinkMetadata& sink_metadata) {
+      mojom::RemotingSinkMetadataPtr sink_metadata) {
     EXPECT_FALSE(is_rendering_remotely_);
     EXPECT_TRUE(sink_name_.empty());
     controller_->clock_ = &clock_;
@@ -104,7 +104,7 @@ class RendererControllerTest : public ::testing::Test,
     RunUntilIdle();
     EXPECT_FALSE(is_rendering_remotely_);
     EXPECT_FALSE(disable_pipeline_suspend_);
-    controller_->OnSinkAvailable(sink_metadata.Clone());
+    controller_->OnSinkAvailable(std::move(sink_metadata));
     RunUntilIdle();
     EXPECT_FALSE(is_rendering_remotely_);
     EXPECT_FALSE(disable_pipeline_suspend_);
@@ -116,12 +116,18 @@ class RendererControllerTest : public ::testing::Test,
     RunUntilIdle();
     EXPECT_FALSE(is_rendering_remotely_);
     EXPECT_FALSE(disable_pipeline_suspend_);
+    controller_->OnPlaying();
+    RunUntilIdle();
+  }
+
+  void InitializeControllerAndBecomeDominant(
+      const PipelineMetadata& pipeline_metadata,
+      mojom::RemotingSinkMetadataPtr sink_metadata) {
+    InitializeControllerWithSink(pipeline_metadata, std::move(sink_metadata));
     controller_->OnBecameDominantVisibleContent(true);
     RunUntilIdle();
     EXPECT_FALSE(is_rendering_remotely_);
     EXPECT_FALSE(disable_pipeline_suspend_);
-    controller_->OnPlaying();
-    RunUntilIdle();
   }
 
   bool IsInDelayedStart() const {
@@ -157,6 +163,8 @@ class RendererControllerTest : public ::testing::Test,
     EXPECT_FALSE(IsInDelayedStart());
   }
 
+  bool ShouldBeRemoting() const { return controller_->ShouldBeRemoting(); }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
 
  protected:
@@ -170,6 +178,21 @@ class RendererControllerTest : public ::testing::Test,
   std::unique_ptr<RendererController> controller_;
   double duration_in_sec_ = 120;  // 2m duration.
 };
+
+TEST_F(RendererControllerTest, ShouldBeRemoting) {
+  InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
+                                        GetDefaultSinkMetadata(true));
+  EXPECT_TRUE(ShouldBeRemoting());
+
+  controller_->OnBecameDominantVisibleContent(false);
+  EXPECT_FALSE(ShouldBeRemoting());
+
+  controller_->OnMediaRemotingRequested();
+  EXPECT_TRUE(ShouldBeRemoting());
+
+  controller_->OnSinkGone();
+  EXPECT_FALSE(ShouldBeRemoting());
+}
 
 TEST_F(RendererControllerTest, ToggleRendererOnDominantChange) {
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
@@ -216,17 +239,33 @@ TEST_F(RendererControllerTest, ToggleRendererOnSinkCapabilities) {
   controller_->OnSinkGone();  // Bye-bye useless sink!
   RunUntilIdle();
   ExpectInLocalRendering();
+
   // A sink that *does* support remote rendering *does* cause the controller to
   // toggle remote rendering on.
-  controller_->OnSinkAvailable(GetDefaultSinkMetadata(true).Clone());
-  RunUntilIdle();
-  EXPECT_FALSE(is_rendering_remotely_);
-  controller_->OnBecameDominantVisibleContent(true);
+  controller_->OnSinkAvailable(GetDefaultSinkMetadata(true));
   RunUntilIdle();
   ExpectInDelayedStart();
   DelayedStartEnds();
   RunUntilIdle();
   ExpectInRemoting();  // All requirements now satisfied.
+}
+
+TEST_F(RendererControllerTest, ToggleRendererOnMediaRemotingRequest) {
+  InitializeControllerWithSink(DefaultMetadata(VideoCodec::kVP8), nullptr);
+  ExpectInLocalRendering();
+
+  // Should not start media remoting when there is no sink.
+  controller_->OnMediaRemotingRequested();
+  RunUntilIdle();
+  ExpectInLocalRendering();
+
+  // Start media remoting when there are available sinks.
+  controller_->OnSinkAvailable(GetDefaultSinkMetadata(false));
+  RunUntilIdle();
+  ExpectInDelayedStart();
+  DelayedStartEnds();
+  RunUntilIdle();
+  ExpectInRemoting();
 }
 
 TEST_F(RendererControllerTest, WithVP9VideoCodec) {
@@ -237,12 +276,12 @@ TEST_F(RendererControllerTest, WithVP9VideoCodec) {
   ExpectInLocalRendering();
 
   controller_->OnSinkGone();  // Bye-bye useless sink!
-  mojom::RemotingSinkMetadata sink_metadata = GetDefaultSinkMetadata(true);
-  sink_metadata.video_capabilities.push_back(
+  mojom::RemotingSinkMetadataPtr sink_metadata = GetDefaultSinkMetadata(true);
+  sink_metadata->video_capabilities.push_back(
       mojom::RemotingSinkVideoCapability::CODEC_VP9);
   // A sink that *does* support VP9 video codec *does* cause the controller to
   // toggle remote rendering on.
-  controller_->OnSinkAvailable(sink_metadata.Clone());
+  controller_->OnSinkAvailable(std::move(sink_metadata));
   RunUntilIdle();
   ExpectInDelayedStart();
   DelayedStartEnds();
@@ -260,12 +299,12 @@ TEST_F(RendererControllerTest, WithHEVCVideoCodec) {
   controller_->OnSinkGone();  // Bye-bye useless sink!
   RunUntilIdle();
   ExpectInLocalRendering();
-  mojom::RemotingSinkMetadata sink_metadata = GetDefaultSinkMetadata(true);
-  sink_metadata.video_capabilities.push_back(
+  mojom::RemotingSinkMetadataPtr sink_metadata = GetDefaultSinkMetadata(true);
+  sink_metadata->video_capabilities.push_back(
       mojom::RemotingSinkVideoCapability::CODEC_HEVC);
   // A sink that *does* support HEVC video codec *does* cause the controller to
   // toggle remote rendering on.
-  controller_->OnSinkAvailable(sink_metadata.Clone());
+  controller_->OnSinkAvailable(std::move(sink_metadata));
   RunUntilIdle();
   ExpectInDelayedStart();
   DelayedStartEnds();
@@ -288,12 +327,12 @@ TEST_F(RendererControllerTest, WithAACAudioCodec) {
   controller_->OnSinkGone();  // Bye-bye useless sink!
   RunUntilIdle();
   ExpectInLocalRendering();
-  mojom::RemotingSinkMetadata sink_metadata = GetDefaultSinkMetadata(true);
-  sink_metadata.audio_capabilities.push_back(
+  mojom::RemotingSinkMetadataPtr sink_metadata = GetDefaultSinkMetadata(true);
+  sink_metadata->audio_capabilities.push_back(
       mojom::RemotingSinkAudioCapability::CODEC_AAC);
   // A sink that *does* support AAC audio codec *does* cause the controller to
   // toggle remote rendering on.
-  controller_->OnSinkAvailable(sink_metadata.Clone());
+  controller_->OnSinkAvailable(std::move(sink_metadata));
   RunUntilIdle();
   ExpectInDelayedStart();
   DelayedStartEnds();
@@ -315,12 +354,12 @@ TEST_F(RendererControllerTest, WithOpusAudioCodec) {
 
   controller_->OnSinkGone();  // Bye-bye useless sink!
   RunUntilIdle();
-  mojom::RemotingSinkMetadata sink_metadata = GetDefaultSinkMetadata(true);
-  sink_metadata.audio_capabilities.push_back(
+  mojom::RemotingSinkMetadataPtr sink_metadata = GetDefaultSinkMetadata(true);
+  sink_metadata->audio_capabilities.push_back(
       mojom::RemotingSinkAudioCapability::CODEC_OPUS);
   // A sink that *does* support Opus audio codec *does* cause the controller to
   // toggle remote rendering on.
-  controller_->OnSinkAvailable(sink_metadata.Clone());
+  controller_->OnSinkAvailable(std::move(sink_metadata));
   RunUntilIdle();
   ExpectInDelayedStart();
   DelayedStartEnds();
@@ -331,7 +370,6 @@ TEST_F(RendererControllerTest, WithOpusAudioCodec) {
 TEST_F(RendererControllerTest, StartFailedWithHighFrameRate) {
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
-  RunUntilIdle();
   ExpectInDelayedStart();
   DelayedStartEnds(60);
   RunUntilIdle();
@@ -339,12 +377,11 @@ TEST_F(RendererControllerTest, StartFailedWithHighFrameRate) {
 }
 
 TEST_F(RendererControllerTest, StartSuccessWithHighFrameRate) {
-  mojom::RemotingSinkMetadata sink_metadata = GetDefaultSinkMetadata(true);
-  sink_metadata.video_capabilities.push_back(
+  mojom::RemotingSinkMetadataPtr sink_metadata = GetDefaultSinkMetadata(true);
+  sink_metadata->video_capabilities.push_back(
       mojom::RemotingSinkVideoCapability::SUPPORT_4K);
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
-                                        sink_metadata);
-  RunUntilIdle();
+                                        std::move(sink_metadata));
   ExpectInDelayedStart();
   DelayedStartEnds(60);
   RunUntilIdle();
@@ -352,10 +389,8 @@ TEST_F(RendererControllerTest, StartSuccessWithHighFrameRate) {
 }
 
 TEST_F(RendererControllerTest, PacingTooSlowly) {
-  mojom::RemotingSinkMetadata sink_metadata = GetDefaultSinkMetadata(true);
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
-                                        sink_metadata);
-  RunUntilIdle();
+                                        GetDefaultSinkMetadata(true));
   ExpectInDelayedStart();
   DelayedStartEnds(false);
   RunUntilIdle();
@@ -363,7 +398,7 @@ TEST_F(RendererControllerTest, PacingTooSlowly) {
   controller_->OnRendererFatalError(StopTrigger::PACING_TOO_SLOWLY);
   RunUntilIdle();
   ExpectInLocalRendering();
-  controller_->OnSinkAvailable(sink_metadata.Clone());
+  controller_->OnSinkAvailable(GetDefaultSinkMetadata(true));
   RunUntilIdle();
   controller_->OnBecameDominantVisibleContent(false);
   RunUntilIdle();
@@ -377,7 +412,6 @@ TEST_F(RendererControllerTest, StartFailed) {
   controller_ = FakeRemoterFactory::CreateController(true);
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
-  RunUntilIdle();
   ExpectInDelayedStart();
   DelayedStartEnds();
   RunUntilIdle();
@@ -388,7 +422,6 @@ TEST_F(RendererControllerTest, SetClientNullptr) {
   controller_ = FakeRemoterFactory::CreateController(true);
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
-  RunUntilIdle();
   controller_->SetClient(nullptr);
   RunUntilIdle();
   ExpectInLocalRendering();

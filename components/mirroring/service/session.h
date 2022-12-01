@@ -155,6 +155,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   // Send GET_CAPABILITIES message.
   void QueryCapabilitiesForRemoting();
 
+  // Initialize `media_remoter_` and `rpc_dispatcher_`.
+  void InitMediaRemoter(const std::vector<std::string>& caps);
+
   void OnAsyncInitializeDone(const SupportedProfiles& profiles);
 
   // Provided by client.
