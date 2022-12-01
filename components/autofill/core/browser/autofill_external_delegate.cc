@@ -426,6 +426,8 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
     suggestions->push_back(Suggestion(value));
     suggestions->back().frontend_id = POPUP_ITEM_ID_CLEAR_FORM;
     suggestions->back().icon = "clearIcon";
+    suggestions->back().acceptance_a11y_announcement =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
   }
 
   // Append the 'Autofill settings' menu item, or the menu item specified in the

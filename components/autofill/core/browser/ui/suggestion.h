@@ -161,6 +161,10 @@ struct Suggestion {
 
   // If specified, this text will be played back as voice over for a11y.
   absl::optional<std::u16string> voice_over;
+
+  // If specified, this text will be played back if the user accepts this
+  // suggestion.
+  absl::optional<std::u16string> acceptance_a11y_announcement;
 };
 
 #if defined(UNIT_TEST)

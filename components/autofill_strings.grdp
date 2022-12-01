@@ -92,6 +92,14 @@
     , '''
   </message>
 
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM" desc="Screen reader announcement indicating that current form was autofilled.">
+    The form was filled in
+  </message>
+
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM" desc="Screen reader announcement indicating that current form autofilled values were cleared.">
+    The autofilled info was cleared from the form
+  </message>
+
   <message name="IDS_AUTOFILL_HIDE_SUGGESTIONS" desc="The text displayed at the Autofill popup to allow the user to hide the suggestions menu." meaning="Hides the suggestion list.">
     Hide suggestions
   </message>

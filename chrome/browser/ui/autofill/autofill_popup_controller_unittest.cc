@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -141,6 +142,7 @@ class MockAutofillPopupView : public AutofillPopupView {
               (override));
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
   MOCK_METHOD(absl::optional<int32_t>, GetAxUniqueId, (), (override));
+  MOCK_METHOD(void, AxAnnounce, (const std::u16string&), (override));
 };
 
 class TestAutofillPopupController : public AutofillPopupControllerImpl {

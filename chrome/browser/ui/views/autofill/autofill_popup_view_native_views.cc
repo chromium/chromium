@@ -1445,6 +1445,16 @@ absl::optional<int32_t> AutofillPopupViewNativeViews::GetAxUniqueId() {
       AutofillPopupBaseView::GetViewAccessibility().GetUniqueId());
 }
 
+void AutofillPopupViewNativeViews::AxAnnounce(const std::u16string& text) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser)
+    return;
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return;
+  browser_view->GetViewAccessibility().AnnounceText(text);
+}
+
 void AutofillPopupViewNativeViews::OnWidgetVisibilityChanged(
     views::Widget* widget,
     bool visible) {

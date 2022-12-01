@@ -21,8 +21,10 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/strings/grit/components_strings.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace suggestion_selection {
@@ -130,6 +132,8 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
       suggestions.back().match = prefix_matched_suggestion
                                      ? Suggestion::PREFIX_MATCH
                                      : Suggestion::SUBSTRING_MATCH;
+      suggestions.back().acceptance_a11y_announcement =
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
     }
   }
 

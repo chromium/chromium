@@ -502,6 +502,9 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     }
   }
 
+  suggestion.acceptance_a11y_announcement =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
+
   return suggestion;
 }
 

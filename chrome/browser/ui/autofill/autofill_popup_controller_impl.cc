@@ -328,6 +328,12 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
         ->NotifyEvent("autofill_virtual_card_suggestion_accepted");
   }
 
+  absl::optional<std::u16string> announcement =
+      suggestion.acceptance_a11y_announcement;
+  if (announcement) {
+    std::ignore = view_.Call(&AutofillPopupView::AxAnnounce, *announcement);
+  }
+
   delegate_->DidAcceptSuggestion(suggestion, index);
 }
 

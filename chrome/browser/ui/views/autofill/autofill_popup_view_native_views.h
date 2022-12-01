@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_POPUP_VIEW_NATIVE_VIEWS_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -103,6 +104,7 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   void Show() override;
   void Hide() override;
   absl::optional<int32_t> GetAxUniqueId() override;
+  void AxAnnounce(const std::u16string& text) override;
 
   // AutofillPopupBaseView:
   // TODO(crbug.com/831603): Remove these overrides and the corresponding

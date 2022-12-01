@@ -33,6 +33,9 @@ class AutofillPopupView {
   // Refreshes the position and redraws popup when suggestions change.
   virtual void OnSuggestionsChanged() = 0;
 
+  // Makes accessibility announcement.
+  virtual void AxAnnounce(const std::u16string& text) = 0;
+
   // Return the autofill popup view's ax unique id.
   virtual absl::optional<int32_t> GetAxUniqueId() = 0;
 
