@@ -50,6 +50,7 @@ bool GLSupportsFormat(viz::SharedImageFormat format) {
   // No support for multiplanar formats.
   return false;
 }
+
 GLFormat ToGLFormatExternalSampler(viz::SharedImageFormat format) {
   DCHECK(format.is_multi_plane());
   DCHECK(format.PrefersExternalSampler());
@@ -62,6 +63,7 @@ GLFormat ToGLFormatExternalSampler(viz::SharedImageFormat format) {
   gl_format.target = GL_TEXTURE_EXTERNAL_OES;
   return gl_format;
 }
+
 GLFormat ToGLFormat(viz::SharedImageFormat format,
                     int plane_index,
                     bool use_angle_rgbx_format) {
@@ -74,9 +76,11 @@ GLFormat ToGLFormat(viz::SharedImageFormat format,
   gl_format.target = GL_TEXTURE_2D;
   return gl_format;
 }
+
 GLenum GLDataType(viz::SharedImageFormat format) {
   if (format.is_single_plane())
     return viz::GLDataType(format.resource_format());
+
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
       return GL_UNSIGNED_BYTE;
@@ -88,28 +92,32 @@ GLenum GLDataType(viz::SharedImageFormat format) {
       return GL_HALF_FLOAT_OES;
   }
 }
+
 GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   if (format.is_single_plane())
     return viz::GLDataFormat(format.resource_format());
+
   // For multiplanar formats without external sampler, GL formats are per plane.
   // For single channel planes Y, U, V, A return GL_RED_EXT.
   // For 2 channel plane UV return GL_RG_EXT.
   int num_channels = format.NumChannelsInPlane(plane_index);
-  DCHECK_GT(num_channels, 0);
+  DCHECK_LE(num_channels, 2);
   return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
 }
+
 GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   if (format.is_single_plane())
     return viz::GLInternalFormat(format.resource_format());
+
   // For multiplanar formats without external sampler, GL formats are per plane.
   // For single channel 8-bit planes Y, U, V, A return GL_RED_EXT.
   // For single channel 10-bit planes Y return GL_R16_EXT.
   // For 2 channel plane 8-bit UV return GL_RG_EXT.
   // For 2 channel plane 16-bit UV return GL_RG16_EXT.
   int num_channels = format.NumChannelsInPlane(plane_index);
-  DCHECK_GT(num_channels, 0);
+  DCHECK_LE(num_channels, 2);
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
       return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
@@ -121,6 +129,7 @@ GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
       return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
   }
 }
+
 GLenum TextureStorageFormat(viz::SharedImageFormat format,
                             bool use_angle_rgbx_format,
                             int plane_index) {
@@ -128,13 +137,14 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
   if (format.is_single_plane())
     return viz::TextureStorageFormat(format.resource_format(),
                                      use_angle_rgbx_format);
+
   // For multiplanar formats without external sampler, GL formats are per plane.
   // For single channel 8-bit planes Y, U, V, A return GL_R8_EXT.
   // For single channel 10-bit planes Y return GL_R16_EXT.
   // For 2 channel plane 8-bit UV return GL_RG8_EXT.
   // For 2 channel plane 16-bit UV return GL_RG16_EXT.
   int num_channels = format.NumChannelsInPlane(plane_index);
-  DCHECK_GT(num_channels, 0);
+  DCHECK_LE(num_channels, 2);
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
       return num_channels == 2 ? GL_RG8_EXT : GL_R8_EXT;
@@ -151,6 +161,7 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
 bool HasVkFormat(viz::SharedImageFormat format) {
   return viz::HasVkFormat(format.resource_format());
 }
+
 VkFormat ToVkFormat(viz::SharedImageFormat format) {
   return viz::ToVkFormat(format.resource_format());
 }
@@ -159,6 +170,7 @@ VkFormat ToVkFormat(viz::SharedImageFormat format) {
 wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
   return viz::ToDawnFormat(format.resource_format());
 }
+
 WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format) {
   return viz::ToWGPUFormat(format.resource_format());
 }

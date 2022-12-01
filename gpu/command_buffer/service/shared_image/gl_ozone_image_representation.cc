@@ -5,8 +5,10 @@
 #include "gpu/command_buffer/service/shared_image/gl_ozone_image_representation.h"
 #include <memory>
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
@@ -25,34 +27,94 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
+namespace {
+
+// Returns BufferFormat for given `format` and `plane_index`.
+gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
+                                          int plane_index) {
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  DCHECK_LE(num_channels, 2);
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return num_channels == 2 ? gfx::BufferFormat::RG_88
+                               : gfx::BufferFormat::R_8;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+    case viz::SharedImageFormat::ChannelFormat::k16:
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return num_channels == 2 ? gfx::BufferFormat::RG_1616
+                               : gfx::BufferFormat::R_16;
+  }
+  NOTREACHED();
+  return gfx::BufferFormat::RGBA_8888;
+}
+
+gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
+                                int plane_index) {
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+  switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+      switch (plane_index) {
+        case 0:
+          return gfx::BufferPlane::Y;
+        case 1:
+          return gfx::BufferPlane::V;
+        case 2:
+          return gfx::BufferPlane::U;
+      }
+    case viz::SharedImageFormat::PlaneConfig::kY_UV:
+      switch (plane_index) {
+        case 0:
+          return gfx::BufferPlane::Y;
+        case 1:
+          return gfx::BufferPlane::UV;
+      }
+    case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
+      switch (plane_index) {
+        case 0:
+          return gfx::BufferPlane::Y;
+        case 1:
+          return gfx::BufferPlane::UV;
+        case 2:
+          return gfx::BufferPlane::A;
+      }
+  }
+  NOTREACHED();
+  return gfx::BufferPlane::DEFAULT;
+}
+
+}  // namespace
+
 namespace gpu {
 
-GLOzoneImageRepresentationShared::TextureHolder::TextureHolder(
-    std::unique_ptr<ui::NativePixmapGLBinding> binding,
-    gles2::Texture* texture)
+using TextureHolder = GLOzoneImageRepresentationShared::TextureHolder;
+
+TextureHolder::TextureHolder(std::unique_ptr<ui::NativePixmapGLBinding> binding,
+                             gles2::Texture* texture)
     : binding_(std::move(binding)), texture_(texture) {}
 
-GLOzoneImageRepresentationShared::TextureHolder::TextureHolder(
+TextureHolder::TextureHolder(
     std::unique_ptr<ui::NativePixmapGLBinding> binding,
     scoped_refptr<gles2::TexturePassthrough> texture_passthrough)
     : binding_(std::move(binding)),
       texture_passthrough_(std::move(texture_passthrough)) {}
 
-GLOzoneImageRepresentationShared::TextureHolder::~TextureHolder() {
+TextureHolder::~TextureHolder() {
   if (texture_)
     texture_->RemoveLightweightRef(!context_lost_);
 }
 
-void GLOzoneImageRepresentationShared::TextureHolder::MarkContextLost() {
+void TextureHolder::MarkContextLost() {
   context_lost_ = true;
   if (texture_passthrough_)
     texture_passthrough_->MarkContextLost();
 }
 
-bool GLOzoneImageRepresentationShared::TextureHolder::WasContextLost() {
+bool TextureHolder::WasContextLost() {
   return context_lost_;
 }
 
+// static
 bool GLOzoneImageRepresentationShared::BeginAccess(
     GLenum mode,
     OzoneImageBacking* ozone_backing,
@@ -81,6 +143,7 @@ bool GLOzoneImageRepresentationShared::BeginAccess(
   return ozone_backing->VaSync();
 }
 
+// static
 void GLOzoneImageRepresentationShared::EndAccess(
     bool need_end_fence,
     GLenum mode,
@@ -98,11 +161,14 @@ void GLOzoneImageRepresentationShared::EndAccess(
                            std::move(fence));
 }
 
+// static
 std::unique_ptr<ui::NativePixmapGLBinding>
 GLOzoneImageRepresentationShared::GetBinding(
-    SharedImageBacking* backing,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    gfx::BufferPlane plane,
+    gfx::BufferFormat buffer_format,
+    gfx::BufferPlane buffer_plane,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
     GLuint& gl_texture_service_id,
     GLenum& target) {
   ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
@@ -113,8 +179,8 @@ GLOzoneImageRepresentationShared::GetBinding(
     return nullptr;
   }
 
-  gfx::BufferFormat buffer_format = ToBufferFormat(backing->format());
-  target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
+  target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format,
+                                                           buffer_plane)
                ? GL_TEXTURE_2D
                : gpu::GetPlatformSpecificTextureTarget();
 
@@ -123,9 +189,8 @@ GLOzoneImageRepresentationShared::GetBinding(
   api->glGenTexturesFn(1, &gl_texture_service_id);
 
   std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
-      gl_ozone->ImportNativePixmap(std::move(pixmap), buffer_format, plane,
-                                   backing->size(), backing->color_space(),
-                                   target, gl_texture_service_id);
+      gl_ozone->ImportNativePixmap(pixmap, buffer_format, buffer_plane, size,
+                                   color_space, target, gl_texture_service_id);
   if (!np_gl_binding) {
     DLOG(ERROR) << "Failed to create NativePixmapGLBinding.";
     api->glDeleteTexturesFn(1, &gl_texture_service_id);
@@ -136,6 +201,156 @@ GLOzoneImageRepresentationShared::GetBinding(
 }
 
 // static
+scoped_refptr<TextureHolder>
+GLOzoneImageRepresentationShared::CreateTextureHolder(
+    SharedImageBacking* backing,
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    gfx::BufferFormat buffer_format,
+    gfx::BufferPlane buffer_plane,
+    const gfx::Size& size) {
+  GLenum target;
+  GLuint gl_texture_service_id;
+  std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
+      GLOzoneImageRepresentationShared::GetBinding(
+          pixmap, buffer_format, buffer_plane, size, backing->color_space(),
+          gl_texture_service_id, target);
+  if (!np_gl_binding) {
+    return nullptr;
+  }
+
+  gles2::Texture* texture =
+      gles2::CreateGLES2TextureWithLightRef(gl_texture_service_id, target);
+
+  GLuint internal_format = np_gl_binding->GetInternalFormat();
+  GLenum gl_format = np_gl_binding->GetDataFormat();
+  GLenum gl_type = np_gl_binding->GetDataType();
+  texture->SetLevelInfo(target, 0, internal_format, backing->size().width(),
+                        backing->size().height(), 1, 0, gl_format, gl_type,
+                        backing->ClearedRect());
+  texture->SetImmutable(true, true);
+
+  return base::MakeRefCounted<TextureHolder>(std::move(np_gl_binding), texture);
+}
+
+// static
+scoped_refptr<TextureHolder>
+GLOzoneImageRepresentationShared::CreateTextureHolderPassthrough(
+    SharedImageBacking* backing,
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    gfx::BufferFormat buffer_format,
+    gfx::BufferPlane buffer_plane,
+    const gfx::Size& size) {
+  GLenum target;
+  GLuint gl_texture_service_id;
+  std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
+      GLOzoneImageRepresentationShared::GetBinding(
+          pixmap, buffer_format, buffer_plane, size, backing->color_space(),
+          gl_texture_service_id, target);
+  if (!np_gl_binding) {
+    return nullptr;
+  }
+
+  GLuint internal_format = np_gl_binding->GetInternalFormat();
+  GLenum gl_format = np_gl_binding->GetDataFormat();
+  GLenum gl_type = np_gl_binding->GetDataType();
+  scoped_refptr<gles2::TexturePassthrough> texture_passthrough =
+      base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
+          gl_texture_service_id, target, internal_format,
+          backing->size().width(), backing->size().height(),
+          /*depth=*/1, /*border=*/0, gl_format, gl_type);
+
+  return base::MakeRefCounted<TextureHolder>(std::move(np_gl_binding),
+                                             std::move(texture_passthrough));
+}
+
+// static
+std::vector<scoped_refptr<TextureHolder>>
+GLOzoneImageRepresentationShared::CreateShared(
+    SharedImageBacking* backing,
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    gfx::BufferPlane plane,
+    bool is_passthrough,
+    std::vector<scoped_refptr<TextureHolder>>* cached_texture_holders) {
+  std::vector<scoped_refptr<TextureHolder>> texture_holders;
+  viz::SharedImageFormat format = backing->format();
+  if (cached_texture_holders && !cached_texture_holders->empty()) {
+    if (!format.PrefersExternalSampler()) {
+      DCHECK_EQ(static_cast<int>(cached_texture_holders->size()),
+                format.NumberOfPlanes());
+    }
+    texture_holders = *cached_texture_holders;
+  }
+
+  if (texture_holders.empty()) {
+    if (format.is_single_plane()) {
+      // Create a single texture holder with format and size of the backing. For
+      // legacy multiplanar formats eg. ResourceFormat::YUV_420_BIPLANAR, the
+      // plane must be DEFAULT.
+      auto size = backing->size();
+      auto buffer_format = ToBufferFormat(format);
+      if (format.IsLegacyMultiplanar()) {
+        DCHECK_EQ(plane, gfx::BufferPlane::DEFAULT);
+      }
+      auto buffer_plane = plane;
+      scoped_refptr<TextureHolder> holder;
+      if (is_passthrough) {
+        holder = CreateTextureHolderPassthrough(
+            backing, std::move(pixmap), buffer_format, buffer_plane, size);
+      } else {
+        holder = CreateTextureHolder(backing, std::move(pixmap), buffer_format,
+                                     buffer_plane, size);
+      }
+      if (!holder)
+        return {};
+      texture_holders.push_back(std::move(holder));
+    } else if (format.PrefersExternalSampler()) {
+      // Create a single texture holder with format of the NativePixmap, size of
+      // the backing and DEFAULT plane
+      auto size = backing->size();
+      auto buffer_format = pixmap->GetBufferFormat();
+      DCHECK_EQ(plane, gfx::BufferPlane::DEFAULT);
+      auto buffer_plane = plane;
+      scoped_refptr<TextureHolder> holder;
+      if (is_passthrough) {
+        holder = CreateTextureHolderPassthrough(
+            backing, std::move(pixmap), buffer_format, buffer_plane, size);
+      } else {
+        holder = CreateTextureHolder(backing, std::move(pixmap), buffer_format,
+                                     buffer_plane, size);
+      }
+      if (!holder)
+        return {};
+      texture_holders.push_back(std::move(holder));
+    } else {
+      // Create N texture holders with format using GetBufferFormatForPlane(),
+      // size using GetPlaneSize() and plane using GetBufferPlane()
+      DCHECK_EQ(plane, gfx::BufferPlane::DEFAULT);
+      for (int plane_index = 0; plane_index < format.NumberOfPlanes();
+           plane_index++) {
+        auto size = format.GetPlaneSize(plane_index, backing->size());
+        auto buffer_format = GetBufferFormatForPlane(format, plane_index);
+        auto buffer_plane = GetBufferPlane(format, plane_index);
+        scoped_refptr<TextureHolder> holder;
+        if (is_passthrough) {
+          holder = CreateTextureHolderPassthrough(
+              backing, pixmap, buffer_format, buffer_plane, size);
+        } else {
+          holder = CreateTextureHolder(backing, pixmap, buffer_format,
+                                       buffer_plane, size);
+        }
+        if (!holder)
+          return {};
+        texture_holders.push_back(std::move(holder));
+      }
+    }
+
+    if (cached_texture_holders)
+      *cached_texture_holders = texture_holders;
+  }
+  return texture_holders;
+}
+
+// static
 std::unique_ptr<GLTextureOzoneImageRepresentation>
 GLTextureOzoneImageRepresentation::Create(
     SharedImageManager* manager,
@@ -143,61 +358,33 @@ GLTextureOzoneImageRepresentation::Create(
     MemoryTypeTracker* tracker,
     scoped_refptr<gfx::NativePixmap> pixmap,
     gfx::BufferPlane plane,
-    scoped_refptr<TextureHolder>* cached_texture_holder) {
-  scoped_refptr<TextureHolder> texture_holder;
-  if (cached_texture_holder)
-    texture_holder = *cached_texture_holder;
-
-  if (!texture_holder) {
-    GLenum target;
-    GLuint gl_texture_service_id;
-    std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
-        GLOzoneImageRepresentationShared::GetBinding(
-            backing, std::move(pixmap), plane, gl_texture_service_id, target);
-    if (!np_gl_binding) {
-      return nullptr;
-    }
-
-    gles2::Texture* texture =
-        gles2::CreateGLES2TextureWithLightRef(gl_texture_service_id, target);
-
-    GLuint internal_format = np_gl_binding->GetInternalFormat();
-    GLenum gl_format = np_gl_binding->GetDataFormat();
-    GLenum gl_type = np_gl_binding->GetDataType();
-    texture->SetLevelInfo(target, 0, internal_format, backing->size().width(),
-                          backing->size().height(), 1, 0, gl_format, gl_type,
-                          backing->ClearedRect());
-    texture->SetImmutable(true, true);
-
-    texture_holder =
-        base::MakeRefCounted<TextureHolder>(std::move(np_gl_binding), texture);
-
-    if (cached_texture_holder)
-      *cached_texture_holder = texture_holder;
-  }
-
+    std::vector<scoped_refptr<TextureHolder>>* cached_texture_holders) {
+  std::vector<scoped_refptr<TextureHolder>> texture_holders =
+      GLOzoneImageRepresentationShared::CreateShared(
+          backing, std::move(pixmap), plane,
+          /*is_passthrough=*/false, cached_texture_holders);
   return base::WrapUnique<GLTextureOzoneImageRepresentation>(
       new GLTextureOzoneImageRepresentation(manager, backing, tracker,
-                                            std::move(texture_holder)));
+                                            std::move(texture_holders)));
 }
 
 GLTextureOzoneImageRepresentation::GLTextureOzoneImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    scoped_refptr<GLOzoneImageRepresentationShared::TextureHolder>
-        texture_holder)
+    std::vector<scoped_refptr<TextureHolder>> texture_holders)
     : GLTextureImageRepresentation(manager, backing, tracker),
-      texture_holder_(std::move(texture_holder)) {}
+      texture_holders_(std::move(texture_holders)) {}
 
 GLTextureOzoneImageRepresentation::~GLTextureOzoneImageRepresentation() {
-  if (!has_context())
-    texture_holder_->MarkContextLost();
+  if (!has_context()) {
+    for (auto& texture_holder : texture_holders_)
+      texture_holder->MarkContextLost();
+  }
 }
 
 gles2::Texture* GLTextureOzoneImageRepresentation::GetTexture(int plane_index) {
-  DCHECK_EQ(plane_index, 0);
-  return texture_holder_->texture();
+  return texture_holders_[plane_index]->texture();
 }
 
 bool GLTextureOzoneImageRepresentation::BeginAccess(GLenum mode) {
@@ -225,41 +412,14 @@ GLTexturePassthroughOzoneImageRepresentation::Create(
     MemoryTypeTracker* tracker,
     scoped_refptr<gfx::NativePixmap> pixmap,
     gfx::BufferPlane plane,
-    scoped_refptr<TextureHolder>* cached_texture_holder) {
-  scoped_refptr<TextureHolder> texture_holder;
-  if (cached_texture_holder)
-    texture_holder = *cached_texture_holder;
-
-  if (!texture_holder) {
-    GLenum target;
-    GLuint gl_texture_service_id;
-    std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
-        GLOzoneImageRepresentationShared::GetBinding(
-            backing, std::move(pixmap), plane, gl_texture_service_id, target);
-    if (!np_gl_binding) {
-      return nullptr;
-    }
-
-    GLuint internal_format = np_gl_binding->GetInternalFormat();
-    GLenum gl_format = np_gl_binding->GetDataFormat();
-    GLenum gl_type = np_gl_binding->GetDataType();
-
-    scoped_refptr<gles2::TexturePassthrough> texture_passthrough =
-        base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
-            gl_texture_service_id, target, internal_format,
-            backing->size().width(), backing->size().height(),
-            /*depth=*/1, /*border=*/0, gl_format, gl_type);
-
-    texture_holder = base::MakeRefCounted<TextureHolder>(
-        std::move(np_gl_binding), std::move(texture_passthrough));
-
-    if (cached_texture_holder)
-      *cached_texture_holder = texture_holder;
-  }
-
+    std::vector<scoped_refptr<TextureHolder>>* cached_texture_holders) {
+  std::vector<scoped_refptr<TextureHolder>> texture_holders =
+      GLOzoneImageRepresentationShared::CreateShared(
+          backing, std::move(pixmap), plane,
+          /*is_passthrough=*/true, cached_texture_holders);
   return base::WrapUnique<GLTexturePassthroughOzoneImageRepresentation>(
       new GLTexturePassthroughOzoneImageRepresentation(
-          manager, backing, tracker, std::move(texture_holder)));
+          manager, backing, tracker, std::move(texture_holders)));
 }
 
 GLTexturePassthroughOzoneImageRepresentation::
@@ -267,22 +427,22 @@ GLTexturePassthroughOzoneImageRepresentation::
         SharedImageManager* manager,
         SharedImageBacking* backing,
         MemoryTypeTracker* tracker,
-        scoped_refptr<GLOzoneImageRepresentationShared::TextureHolder>
-            texture_holder)
+        std::vector<scoped_refptr<TextureHolder>> texture_holders)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
-      texture_holder_(std::move(texture_holder)) {}
+      texture_holders_(std::move(texture_holders)) {}
 
 GLTexturePassthroughOzoneImageRepresentation::
     ~GLTexturePassthroughOzoneImageRepresentation() {
-  if (!has_context())
-    texture_holder_->MarkContextLost();
+  if (!has_context()) {
+    for (auto& texture_holder : texture_holders_)
+      texture_holder->MarkContextLost();
+  }
 }
 
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughOzoneImageRepresentation::GetTexturePassthrough(
     int plane_index) {
-  DCHECK_EQ(plane_index, 0);
-  return texture_holder_->texture_passthrough();
+  return texture_holders_[plane_index]->texture_passthrough();
 }
 
 bool GLTexturePassthroughOzoneImageRepresentation::BeginAccess(GLenum mode) {

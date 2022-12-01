@@ -226,6 +226,21 @@ bool SharedImageFormat::IsCompressed() const {
   return is_single_plane() && resource_format() == ResourceFormat::ETC1;
 }
 
+bool SharedImageFormat::IsLegacyMultiplanar() const {
+  if (!is_single_plane())
+    return false;
+
+  switch (resource_format()) {
+    case ResourceFormat::YVU_420:
+    case ResourceFormat::YUV_420_BIPLANAR:
+    case ResourceFormat::YUVA_420_TRIPLANAR:
+    case ResourceFormat::P010:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool SharedImageFormat::operator==(const SharedImageFormat& o) const {
   if (plane_type_ != o.plane_type())
     return false;
