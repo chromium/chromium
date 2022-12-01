@@ -7,6 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/test/root_view_controller_test.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -15,14 +16,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// Test object that exposes the inner state for test verification.
-@interface GridViewController (Testing)
-@property(nonatomic, readonly) NSMutableArray<TabSwitcherItem*>* items;
-@property(nonatomic, readonly) NSUInteger selectedIndex;
-@property(nonatomic, readonly) UICollectionView* collectionView;
-@property(nonatomic, assign, getter=isViewAppeared) BOOL viewAppeared;
-@end
 
 // Fake object that conforms to GridViewControllerDelegate.
 @interface FakeGridViewControllerDelegate
