@@ -43,6 +43,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
       const NetworkListViewControllerImpl&) = delete;
   ~NetworkListViewControllerImpl() override;
 
+  void SetDefaultNetworkForTesting(
+      chromeos::network_config::mojom::NetworkStatePropertiesPtr
+          default_network);
+
  protected:
   TrayNetworkStateModel* model() { return model_; }
 
@@ -157,6 +161,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // Focuses on last selected view in NetworkDetailedNetworkView scroll list.
   void FocusLastSelectedView();
 
+  const chromeos::network_config::mojom::NetworkStateProperties*
+  GetDefaultNetwork();
+
   TrayNetworkStateModel* model_;
 
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
@@ -185,6 +192,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
   bool is_vpn_connected_;
   bool is_mobile_network_enabled_;
   bool is_wifi_enabled_;
+
+  chromeos::network_config::mojom::NetworkStatePropertiesPtr
+      default_network_for_testing_ = nullptr;
 
   NetworkDetailedNetworkView* network_detailed_network_view_;
   NetworkIdToViewMap network_id_to_view_map_;

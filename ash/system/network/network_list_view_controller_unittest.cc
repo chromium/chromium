@@ -55,6 +55,8 @@ using ::chromeos::network_config::mojom::ConnectionStateType;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
 using ::testing::_;
+using ::testing::IsNull;
+using ::testing::NotNull;
 using ::testing::Return;
 
 const std::string kCellularName = "cellular";
@@ -143,6 +145,16 @@ class TestNetworkStateHandlerObserver : public NetworkStateHandlerObserver {
   size_t wifi_scan_request_count_ = 0;
   size_t tether_scan_request_count_ = 0;
 };
+
+NetworkStatePropertiesPtr GetDefaultNetworkWithProxy(const std::string& guid) {
+  auto default_network =
+      chromeos::network_config::mojom::NetworkStateProperties::New();
+  default_network->guid = guid;
+  default_network->proxy_mode =
+      ::chromeos::network_config::mojom::ProxyMode::kAutoDetect;
+
+  return default_network;
+}
 
 }  // namespace
 
@@ -544,6 +556,11 @@ class NetworkListViewControllerTest : public AshTestBase,
   bool HasScanTimerStarted() {
     return network_list_view_controller_impl_->network_scan_repeating_timer_
         .IsRunning();
+  }
+
+  void SetDefaultNetworkForTesting(NetworkStatePropertiesPtr default_network) {
+    network_list_view_controller_impl_->SetDefaultNetworkForTesting(
+        std::move(default_network));
   }
 
   NetworkStateHandler* network_state_handler() {
@@ -1132,7 +1149,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiStatusMessage) {
                            /*wifi_network_count=*/1);
 }
 
-TEST_P(NetworkListViewControllerTest, HasConnectionWarning) {
+TEST_P(NetworkListViewControllerTest, ConnectionWarningVpn) {
   EXPECT_EQ(nullptr, GetConnectionWarning());
 
   AddVpnDevice();
@@ -1141,8 +1158,8 @@ TEST_P(NetworkListViewControllerTest, HasConnectionWarning) {
       kVpnName, NetworkType::kVPN, ConnectionStateType::kConnected));
   UpdateNetworkList(networks);
 
-  EXPECT_NE(nullptr, GetConnectionWarning());
-  EXPECT_NE(nullptr, GetConnectionLabelView());
+  ASSERT_THAT(GetConnectionWarning(), NotNull());
+  ASSERT_THAT(GetConnectionLabelView(), NotNull());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
       GetConnectionLabelView()->GetText());
@@ -1151,6 +1168,16 @@ TEST_P(NetworkListViewControllerTest, HasConnectionWarning) {
   // Clear all devices and make sure warning is no longer being shown.
   network_state_helper()->ClearDevices();
   EXPECT_EQ(nullptr, GetConnectionWarning());
+}
+
+TEST_P(NetworkListViewControllerTest, ConnectionWarningProxy) {
+  EXPECT_THAT(GetConnectionWarning(), IsNull());
+
+  SetDefaultNetworkForTesting(GetDefaultNetworkWithProxy(kWifiName));
+  AddWifiDevice();
+
+  ASSERT_THAT(GetConnectionWarning(), NotNull());
+  ASSERT_THAT(GetConnectionLabelView(), NotNull());
 }
 
 TEST_P(NetworkListViewControllerTest, NetworkScanning) {

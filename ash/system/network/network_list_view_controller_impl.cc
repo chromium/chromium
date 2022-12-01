@@ -332,7 +332,7 @@ void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(
 
 size_t NetworkListViewControllerImpl::ShowConnectionWarningIfVpnOrProxy(
     size_t index) {
-  const NetworkStateProperties* default_network = model()->default_network();
+  const NetworkStateProperties* default_network = GetDefaultNetwork();
   bool using_proxy =
       default_network && default_network->proxy_mode != ProxyMode::kDirect;
 
@@ -347,6 +347,18 @@ size_t NetworkListViewControllerImpl::ShowConnectionWarningIfVpnOrProxy(
   }
 
   return index;
+}
+
+void NetworkListViewControllerImpl::SetDefaultNetworkForTesting(
+    NetworkStatePropertiesPtr default_network) {
+  default_network_for_testing_ = std::move(default_network);
+}
+
+const NetworkStateProperties*
+NetworkListViewControllerImpl::GetDefaultNetwork() {
+  if (default_network_for_testing_)
+    return default_network_for_testing_.get();
+  return model()->default_network();
 }
 
 bool NetworkListViewControllerImpl::ShouldMobileDataSectionBeShown() {
