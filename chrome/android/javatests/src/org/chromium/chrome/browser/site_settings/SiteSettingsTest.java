@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeUp;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
@@ -1364,6 +1365,31 @@ public class SiteSettingsTest {
         testExpectedPreferences(SiteSettingsCategory.Type.SITE_DATA,
                 BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
                 BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testOnlyExpectedExceptionsSiteData() {
+        createCookieExceptions();
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.SITE_DATA);
+
+        onView(withText("primary.com")).check(matches(isDisplayed()));
+        onView(withText("secondary.com")).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testOnlyExpectedExceptionsThirdPartyCookies() {
+        createCookieExceptions();
+        SiteSettingsTestUtils.startSiteSettingsCategory(
+                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+
+        onView(withText("primary.com")).check(doesNotExist());
+        onView(withText("secondary.com")).check(matches(isDisplayed()));
     }
 
     @Test

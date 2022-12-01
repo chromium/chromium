@@ -209,9 +209,32 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
             resetList();
 
+            sites = applyFilters(sites);
+
             int chooserDataType = mCategory.getObjectChooserDataType();
-            boolean hasEntries =
-                    chooserDataType == -1 ? addWebsites(sites) : addChosenObjects(sites);
+            if (chooserDataType == -1) {
+                addWebsites(sites);
+            } else {
+                addChosenObjects(sites);
+            }
+        }
+
+        private Collection<Website> applyFilters(Collection<Website> sites) {
+            @SiteSettingsCategory.Type
+            int type = mCategory.getType();
+            if (type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES
+                    || type == SiteSettingsCategory.Type.SITE_DATA) {
+                Collection<Website> filtered = new ArrayList<>();
+                boolean isThirdPartyCategory =
+                        type == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES;
+                for (Website site : sites) {
+                    if (site.representsThirdPartiesOnSite() == isThirdPartyCategory) {
+                        filtered.add(site);
+                    }
+                }
+                return filtered;
+            }
+            return sites;
         }
     }
 
