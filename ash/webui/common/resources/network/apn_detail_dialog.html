@@ -54,6 +54,7 @@
       <div>[[i18n('apnDetailAdvancedSettings')]]</div>
     </cr-expand-button>
     <iron-collapse opened="[[advancedSettingsExpanded_]]">
+    <!-- TODO(b/162365553): Add validation. -->
       <div id="authenticationTypeSelection" class="dropdown-section">
         <div id="authenticationTypeLabel" class="cr-form-field-label">
           [[i18n('apnDetailAuthType')]]
@@ -62,7 +63,7 @@
             value="{{selectedAuthType_::change}}"
             aria-labelledby="authenticationTypeLabel">
           <template is="dom-repeat"
-              items="[[authTypes_]]">
+              items="[[AuthenticationTypes]]">
               <option value="[[item]]"
                   selected="[[isEqual_(item, selectedAuthType_)]]">
                 [[getAuthTypeLocalizedLabel_(item)]]
@@ -71,36 +72,36 @@
         </select>
       </div>
       <div class="cr-form-field-label">
-        [[i18n('apnDetailAPNTypes')]]
+        [[i18n('apnDetailApnTypes')]]
       </div>
       <div id="checkboxContainer" class="checkbox-section">
         <cr-checkbox id="apnDefaultTypeCheckbox"
             aria-labelledby="apnDefaultTypelabel">
           <div id="apnDefaultTypelabel" class="checkbox-text-area">
-            [[i18n('apnDetailAPNTypeDefault')]]
+            [[i18n('apnDetailApnTypeDefault')]]
           </div>
         </cr-checkbox>
         <cr-checkbox id="apnAttachTypeCheckbox"
             aria-labelledby="apnAttachTypeLabel">
           <div id="apnAttachTypeLabel" class="checkbox-text-area">
-            [[i18n('apnDetailAPNTypeAttach')]]
+            [[i18n('apnDetailApnTypeAttach')]]
           </div>
         </cr-checkbox>
       </div>
       <div id="ipTypeSelection" class="dropdown-section">
         <div id="ipTypeLabel" class="cr-form-field-label">
-          [[i18n('apnDetailIPType')]]
+          [[i18n('apnDetailIpType')]]
         </div>
           <select id="ipTypeDropDown" class="md-select select-field"
-              value="{{selectedIPType_::change}}"
+              value="{{selectedIpType_::change}}"
               aria-labelledby="ipTypeLabel">
-          <template is="dom-repeat"
-              items="[[ipTypes_]]">
-            <option value="[[item]]"
-                selected="[[isEqual_(item, selectedIPType_)]]">
-              [[getIPTypeLocalizedLabel_(item)]]
-            </option>
-          </template>
+            <template is="dom-repeat"
+                items="[[IpTypes]]">
+              <option value="[[item]]"
+                  selected="[[isEqual_(item, selectedIpType_)]]">
+                [[getIpTypeLocalizedLabel_(item)]]
+              </option>
+            </template>
         </select>
       </div>
     </iron-collapse>

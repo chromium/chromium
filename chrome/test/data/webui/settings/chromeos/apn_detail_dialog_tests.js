@@ -112,9 +112,9 @@ suite('ApnDetailDialog', function() {
         assertOptions(
             [
               apnDetailDialog.i18n('apnDetailTypeAuto'),
-              apnDetailDialog.i18n('apnDetailIPTypeIPV4'),
-              apnDetailDialog.i18n('apnDetailIPTypeIPV6'),
-              apnDetailDialog.i18n('apnDetailIPTypeIPV4_IPV6'),
+              apnDetailDialog.i18n('apnDetailIpTypeIpv4'),
+              apnDetailDialog.i18n('apnDetailIpTypeIpv6'),
+              apnDetailDialog.i18n('apnDetailIpTypeIpv4_Ipv6'),
             ],
             ipTypeOptionNodes);
       });

@@ -24,22 +24,35 @@ import {getTemplate} from './apn_detail_dialog.html.js';
  * Possible authentication types shown in the APN detail dialog.
  * @enum {string}
  */
-export const AUTHENTICATION_TYPES = {
+const AuthenticationType = {
   AUTOMATIC: 'auth_type_automatic',
   PAP: 'auth_type_pap',
   CHAP: 'auth_type_chap',
 };
 
+const AuthenticationTypes = [
+  AuthenticationType.AUTOMATIC,
+  AuthenticationType.PAP,
+  AuthenticationType.CHAP,
+];
+
 /**
  * Possible IP types shown in the APN detail dialog.
  * @enum {string}
  */
-export const IP_TYPES = {
+const IpType = {
   AUTOMATIC: 'ip_type_automatic',
   IPv4: 'ip_type_ipv4',
   IPv6: 'ip_type_ipv6',
   IPv4_IPv6: 'ip_type_ipv4_ipv6',
 };
+
+const IpTypes = [
+  IpType.AUTOMATIC,
+  IpType.IPv4,
+  IpType.IPv6,
+  IpType.IPv4_IPv6,
+];
 
 /**
  * @constructor
@@ -68,39 +81,33 @@ class ApnDetailDialog extends ApnDetailDialogElementBase {
       },
 
       /** @private */
-      authTypes_: {
+      AuthenticationTypes: {
         type: Array,
-        value: [
-          AUTHENTICATION_TYPES.AUTOMATIC,
-          AUTHENTICATION_TYPES.PAP,
-          AUTHENTICATION_TYPES.CHAP,
-        ],
+        value: AuthenticationTypes,
         readOnly: true,
       },
 
       /** @private */
-      ipTypes_: {
+      IpTypes: {
         type: Array,
-        value: [
-          IP_TYPES.AUTOMATIC,
-          IP_TYPES.IPv4,
-          IP_TYPES.IPv6,
-          IP_TYPES.IPv4_IPv6,
-        ],
+        value: IpTypes,
         readOnly: true,
       },
 
-      /** @private */
-      selectedIPType_: {
-        type: String,
-        value: IP_TYPES.AUTOMATIC,
-
-      },
-
-      /** @private */
+      /**
+       * @private
+       */
       selectedAuthType_: {
         type: String,
-        value: AUTHENTICATION_TYPES.AUTOMATIC,
+        value: AuthenticationTypes[0],
+      },
+
+      /**
+       * @private
+       */
+      selectedIpType_: {
+        type: String,
+        value: IpTypes[0],
       },
     };
   }
@@ -118,36 +125,36 @@ class ApnDetailDialog extends ApnDetailDialogElementBase {
 
   /**
    * Returns the localized label for the auth type.
-   * @param {string} type
+   * @param {AuthenticationType} type
    * @private
    */
   getAuthTypeLocalizedLabel_(type) {
-    if (type === AUTHENTICATION_TYPES.AUTOMATIC) {
-      return this.i18n('apnDetailTypeAuto');
-    } else if (type === AUTHENTICATION_TYPES.CHAP) {
-      return this.i18n('apnDetailAuthTypeCHAP');
-    } else if (type === AUTHENTICATION_TYPES.PAP) {
-      return this.i18n('apnDetailAuthTypePAP');
+    switch (type) {
+      case AuthenticationType.AUTOMATIC:
+        return this.i18n('apnDetailTypeAuto');
+      case AuthenticationType.CHAP:
+        return this.i18n('apnDetailAuthTypeCHAP');
+      case AuthenticationType.PAP:
+        return this.i18n('apnDetailAuthTypePAP');
     }
-    console.error('Invalid Authentication type detected');
   }
 
   /**
    * Returns the localized label for the ip type.
-   * @param {string} type
+   * @param {IpType} type
    * @private
    */
-  getIPTypeLocalizedLabel_(type) {
-    if (type === IP_TYPES.AUTOMATIC) {
-      return this.i18n('apnDetailTypeAuto');
-    } else if (type === IP_TYPES.IPv4) {
-      return this.i18n('apnDetailIPTypeIPV4');
-    } else if (type === IP_TYPES.IPv6) {
-      return this.i18n('apnDetailIPTypeIPV6');
-    } else if (type === IP_TYPES.IPv4_IPv6) {
-      return this.i18n('apnDetailIPTypeIPV4_IPV6');
+  getIpTypeLocalizedLabel_(type) {
+    switch (type) {
+      case IpType.AUTOMATIC:
+        return this.i18n('apnDetailTypeAuto');
+      case IpType.IPv4:
+        return this.i18n('apnDetailIpTypeIpv4');
+      case IpType.IPv6:
+        return this.i18n('apnDetailIpTypeIpv6');
+      case IpType.IPv4_IPv6:
+        return this.i18n('apnDetailIpTypeIpv4_Ipv6');
     }
-    console.error('Invalid IP type detected');
   }
 
   /**
