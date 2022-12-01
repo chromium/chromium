@@ -4,6 +4,8 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 
+#include <ostream>
+
 namespace offline_pages {
 
 namespace {
