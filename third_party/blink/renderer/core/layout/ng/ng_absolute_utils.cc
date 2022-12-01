@@ -90,38 +90,45 @@ inline LayoutUnit StaticPositionEndInset(StaticPositionEdge edge,
   }
 }
 
-// Computes the available-size, accounting for insets and the static-position.
-LayoutUnit ComputeAvailableSize(const LayoutUnit available_size,
-                                const absl::optional<LayoutUnit>& inset_start,
-                                const absl::optional<LayoutUnit>& inset_end,
-                                const LayoutUnit static_position_offset,
-                                StaticPositionEdge static_position_edge,
-                                bool is_table) {
+// Computes the available-space as an (offset, size) pair, accounting for insets
+// and the static-position.
+std::pair<LayoutUnit, LayoutUnit> ComputeAvailableSpaceInOneAxis(
+    const LayoutUnit available_size,
+    const absl::optional<LayoutUnit>& inset_start,
+    const absl::optional<LayoutUnit>& inset_end,
+    const LayoutUnit static_position_offset,
+    StaticPositionEdge static_position_edge,
+    bool is_table) {
   DCHECK_NE(available_size, kIndefiniteSize);
+  LayoutUnit computed_offset;
   LayoutUnit computed_available_size;
 
   if (!inset_start && !inset_end) {
-    // If both our insets are auto, the available-size is defined by the
+    // If both our insets are auto, the available-space is defined by the
     // static-position.
     switch (static_position_edge) {
       case kStart:
-        // The available-size for the start static-position "grows" towards the
+        // The available-space for the start static-position "grows" towards the
         // end edge.
         // |      *----------->|
+        computed_offset = static_position_offset;
         computed_available_size = available_size - static_position_offset;
         break;
-      case kCenter:
-        // The available-size for the center static-position "grows" towards
+      case kCenter: {
+        // The available-space for the center static-position "grows" towards
         // both edges (equally), and stops when it hits the first one.
         // |<-----*----->      |
-        computed_available_size =
-            2 * std::min(static_position_offset,
-                         available_size - static_position_offset);
+        LayoutUnit half_computed_available_size = std::min(
+            static_position_offset, available_size - static_position_offset);
+        computed_offset = static_position_offset - half_computed_available_size;
+        computed_available_size = 2 * half_computed_available_size;
         break;
+      }
       case kEnd:
-        // The available-size for the end static-position "grows" towards the
+        // The available-space for the end static-position "grows" towards the
         // start edge.
         // |<-----*            |
+        computed_offset = LayoutUnit();
         computed_available_size = static_position_offset;
         break;
     }
@@ -130,6 +137,7 @@ LayoutUnit ComputeAvailableSize(const LayoutUnit available_size,
     computed_available_size = available_size -
                               inset_start.value_or(LayoutUnit()) -
                               inset_end.value_or(LayoutUnit());
+    computed_offset = inset_start.value_or(LayoutUnit());
   }
 
   // The available-size given to tables isn't allowed to exceed the
@@ -139,7 +147,8 @@ LayoutUnit ComputeAvailableSize(const LayoutUnit available_size,
   }
 
   // Ensure the computed available-size isn't negative.
-  return computed_available_size.ClampNegativeToZero();
+  return std::make_pair(computed_offset,
+                        computed_available_size.ClampNegativeToZero());
 }
 
 // Computes the insets, and margins if necessary.
@@ -311,20 +320,23 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
           insets.BlockEnd()};
 }
 
-LogicalSize ComputeOutOfFlowAvailableSize(
+LogicalRect ComputeOutOfFlowAvailableRect(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
     const NGLogicalOutOfFlowInsets& insets,
     const NGLogicalStaticPosition& static_position) {
   const bool is_table = node.IsTable();
-  return {ComputeAvailableSize(
-              space.AvailableSize().inline_size, insets.inline_start,
-              insets.inline_end, static_position.offset.inline_offset,
-              GetStaticPositionEdge(static_position.inline_edge), is_table),
-          ComputeAvailableSize(
-              space.AvailableSize().block_size, insets.block_start,
-              insets.block_end, static_position.offset.block_offset,
-              GetStaticPositionEdge(static_position.block_edge), is_table)};
+  LayoutUnit inline_offset, inline_size;
+  std::tie(inline_offset, inline_size) = ComputeAvailableSpaceInOneAxis(
+      space.AvailableSize().inline_size, insets.inline_start, insets.inline_end,
+      static_position.offset.inline_offset,
+      GetStaticPositionEdge(static_position.inline_edge), is_table);
+  LayoutUnit block_offset, block_size;
+  std::tie(block_offset, block_size) = ComputeAvailableSpaceInOneAxis(
+      space.AvailableSize().block_size, insets.block_start, insets.block_end,
+      static_position.offset.block_offset,
+      GetStaticPositionEdge(static_position.block_edge), is_table);
+  return LogicalRect(inline_offset, block_offset, inline_size, block_size);
 }
 
 bool ComputeOutOfFlowInlineDimensions(

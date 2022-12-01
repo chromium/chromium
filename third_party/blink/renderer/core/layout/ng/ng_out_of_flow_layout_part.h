@@ -328,14 +328,17 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const LayoutBox* only_layout,
       bool is_first_run = true,
       const NGLogicalAnchorQueryMap* anchor_queries = nullptr);
-  bool TryCalculateOffset(const NodeInfo& node_info,
-                          const ComputedStyle& style,
-                          const LayoutBox* only_layout,
-                          const NGLogicalAnchorQueryMap* anchor_queries,
-                          const LayoutObject* implicit_anchor,
-                          bool try_fit_container_rect,
-                          bool is_first_run,
-                          OffsetInfo* const offset_info);
+  // Calculates offsets with the given ComputedStyle. Returns nullopt if
+  // |try_fit_available_space| is true and the layout result does not fit the
+  // available space.
+  absl::optional<OffsetInfo> TryCalculateOffset(
+      const NodeInfo& node_info,
+      const ComputedStyle& style,
+      const LayoutBox* only_layout,
+      const NGLogicalAnchorQueryMap* anchor_queries,
+      const LayoutObject* implicit_anchor,
+      bool try_fit_available_space,
+      bool is_first_run);
 
   const NGLayoutResult* Layout(
       const NodeToLayout& oof_node_to_layout,

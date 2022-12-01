@@ -52,8 +52,9 @@ ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
                        NGAnchorEvaluatorImpl* anchor_evaluator);
 
-CORE_EXPORT LogicalSize
-ComputeOutOfFlowAvailableSize(const NGBlockNode&,
+// https://www.w3.org/TR/css-position-3/#inset-modified-containing-block
+CORE_EXPORT LogicalRect
+ComputeOutOfFlowAvailableRect(const NGBlockNode&,
                               const NGConstraintSpace&,
                               const NGLogicalOutOfFlowInsets&,
                               const NGLogicalStaticPosition&);

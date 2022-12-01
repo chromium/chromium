@@ -1585,13 +1585,12 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
 
   wtf_size_t fallback_index = 1;
   while (true) {
-    const bool test_if_margin_box_fits = next_fallback_style;
-    OffsetInfo offset_info;
-    if (TryCalculateOffset(node_info, *style, only_layout, anchor_queries,
-                           implicit_anchor, test_if_margin_box_fits,
-                           is_first_run, &offset_info)) {
-      return offset_info;
-    }
+    const bool try_fit_available_space = next_fallback_style;
+    absl::optional<OffsetInfo> offset_info = TryCalculateOffset(
+        node_info, *style, only_layout, anchor_queries, implicit_anchor,
+        try_fit_available_space, is_first_run);
+    if (offset_info)
+      return *offset_info;
 
     // If the result doesn't fit its containing block, try the next rule.
     DCHECK(next_fallback_style);
@@ -1601,15 +1600,15 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   }
 }
 
-bool NGOutOfFlowLayoutPart::TryCalculateOffset(
+absl::optional<NGOutOfFlowLayoutPart::OffsetInfo>
+NGOutOfFlowLayoutPart::TryCalculateOffset(
     const NodeInfo& node_info,
     const ComputedStyle& candidate_style,
     const LayoutBox* only_layout,
     const NGLogicalAnchorQueryMap* anchor_queries,
     const LayoutObject* implicit_anchor,
-    bool test_if_margin_box_fits,
-    bool is_first_run,
-    OffsetInfo* const offset_info) {
+    bool try_fit_available_space,
+    bool is_first_run) {
   const WritingDirectionMode candidate_writing_direction =
       candidate_style.GetWritingDirection();
   const auto container_writing_direction =
@@ -1628,14 +1627,15 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
   //  - The candidate has an inline container (instead of the default
   //    containing-block).
   // Note: Only check for cache results if this is our first layout pass.
-  if (is_first_run && !test_if_margin_box_fits && allow_first_tier_oof_cache_ &&
+  if (is_first_run && !try_fit_available_space && allow_first_tier_oof_cache_ &&
       !node_info.inline_container) {
     if (const NGLayoutResult* cached_result =
             node_info.node.CachedLayoutResultForOutOfFlowPositioned(
                 container_content_size_in_candidate_writing_mode)) {
-      offset_info->initial_layout_result = cached_result;
-      offset_info->has_cached_layout_result = true;
-      return true;
+      OffsetInfo offset_info;
+      offset_info.initial_layout_result = cached_result;
+      offset_info.has_cached_layout_result = true;
+      return offset_info;
     }
   }
 
@@ -1669,9 +1669,11 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
       candidate_style, node_info.constraint_space.AvailableSize(),
       anchor_evaluator);
 
-  const LogicalSize computed_available_size =
-      ComputeOutOfFlowAvailableSize(node_info.node, node_info.constraint_space,
+  const LogicalRect computed_available_rect =
+      ComputeOutOfFlowAvailableRect(node_info.node, node_info.constraint_space,
                                     insets, node_info.static_position);
+
+  const LogicalSize computed_available_size = computed_available_rect.size;
 
   const NGBoxStrut border_padding =
       ComputeBorders(node_info.constraint_space, node_info.node) +
@@ -1684,8 +1686,9 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
         computed_available_size, ReplacedSizeMode::kNormal, anchor_evaluator);
   }
 
-  NGLogicalOutOfFlowDimensions& node_dimensions = offset_info->node_dimensions;
-  offset_info->inline_size_depends_on_min_max_sizes =
+  OffsetInfo offset_info;
+  NGLogicalOutOfFlowDimensions& node_dimensions = offset_info.node_dimensions;
+  offset_info.inline_size_depends_on_min_max_sizes =
       ComputeOutOfFlowInlineDimensions(
           node_info.node, candidate_style, node_info.constraint_space, insets,
           border_padding, node_info.static_position, computed_available_size,
@@ -1693,22 +1696,19 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
           &node_dimensions);
 
   // Check if the inline dimension fits.
-  const LogicalRect& container_rect = node_info.container_info.rect;
-  const LogicalSize container_size_in_candidate_writing_mode =
-      node_info.container_physical_content_size.ConvertToLogical(
-          candidate_writing_direction.GetWritingMode());
-  if (test_if_margin_box_fits) {
-    if (node_dimensions.MarginBoxInlineStart() < 0 ||
+  if (try_fit_available_space) {
+    if (node_dimensions.MarginBoxInlineStart() <
+            computed_available_rect.offset.inline_offset ||
         node_dimensions.MarginBoxInlineEnd() >
-            container_size_in_candidate_writing_mode.inline_size) {
-      return false;
+            computed_available_rect.InlineEndOffset()) {
+      return absl::nullopt;
     }
   }
 
   // We may have already pre-computed our block-dimensions when determining
   // our min/max sizes, only run if needed.
   if (node_dimensions.size.block_size == kIndefiniteSize) {
-    offset_info->initial_layout_result = ComputeOutOfFlowBlockDimensions(
+    offset_info.initial_layout_result = ComputeOutOfFlowBlockDimensions(
         node_info.node, candidate_style, node_info.constraint_space, insets,
         border_padding, node_info.static_position, computed_available_size,
         replaced_size, container_writing_direction, anchor_evaluator,
@@ -1716,17 +1716,18 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
   }
 
   // Check if the block dimension fits.
-  if (test_if_margin_box_fits) {
-    if (node_dimensions.MarginBoxBlockStart() < 0 ||
+  if (try_fit_available_space) {
+    if (node_dimensions.MarginBoxBlockStart() <
+            computed_available_rect.offset.block_offset ||
         node_dimensions.MarginBoxBlockEnd() >
-            container_size_in_candidate_writing_mode.block_size) {
-      return false;
+            computed_available_rect.BlockEndOffset()) {
+      return absl::nullopt;
     }
   }
 
-  offset_info->disable_first_tier_cache |=
+  offset_info.disable_first_tier_cache |=
       anchor_evaluator->HasAnchorFunctions();
-  offset_info->block_estimate = node_dimensions.size.block_size;
+  offset_info.block_estimate = node_dimensions.size.block_size;
 
   // Calculate the offsets.
   const NGBoxStrut inset =
@@ -1735,9 +1736,10 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
 
   // |inset| is relative to the container's padding-box. Convert this to being
   // relative to the default container's border-box.
-  offset_info->offset = container_rect.offset;
-  offset_info->offset.inline_offset += inset.inline_start;
-  offset_info->offset.block_offset += inset.block_start;
+  const LogicalRect& container_rect = node_info.container_info.rect;
+  offset_info.offset = container_rect.offset;
+  offset_info.offset.inline_offset += inset.inline_start;
+  offset_info.offset.block_offset += inset.block_start;
 
   if (!only_layout && !container_builder_->IsBlockFragmentationContextRoot()) {
     // OOFs contained by an inline that's been split into continuations are
@@ -1747,10 +1749,10 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
     // block fragmentation is involved, though, since all OOFs are then child
     // fragments of the nearest fragmentainer.
     AdjustOffsetForSplitInline(node_info.node, container_builder_,
-                               offset_info->offset);
+                               offset_info.offset);
   }
 
-  return true;
+  return offset_info;
 }
 
 const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
