@@ -23,6 +23,11 @@ namespace features {
 // When enabled, move() will result in a promise rejection when the specified
 // destination to move to exists.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove);
+// TODO(crbug.com/1394837): Remove this flag eventually.
+// When enabled, a user gesture is required to rename a file if the site does
+// not have write access to the parent. See http://b/254157070 for more context.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation);
 }  // namespace features
 
 namespace storage {

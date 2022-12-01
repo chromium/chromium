@@ -40,6 +40,9 @@ namespace features {
 BASE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove,
              "FileSystemAccessDoNotOverwriteOnMove",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation,
+             "FileSystemAccessRenameWithoutParentAccessRequiresUserActivation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace content {
@@ -371,10 +374,34 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
           FileSystemAccessPermissionContext::UserAction::kNone));
   // The site cannot write to the destination entry if write access is
   // explicitly denied.
-  // TODO(crbug.com/1381621): Consider adding a user gesture requirement if the
-  // destination handle is in the PermissionStatus::ASK state.
-  if (dest_handle->GetWritePermissionStatus() ==
-      blink::mojom::PermissionStatus::DENIED) {
+  auto dest_status = dest_handle->GetWritePermissionStatus();
+  if (dest_status == blink::mojom::PermissionStatus::DENIED) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kPermissionDenied));
+    return;
+  }
+
+  // Ideally we would just check the status of `dest_handle` here, which will
+  // inherit the permissions of its parent if its permission state is not yet
+  // set. However, this permission inheritance logic is not included in the
+  // MockFileSystemAccessPermissionGrants our unit tests use. This is safe
+  // because, due to permission inheritance, a GRANTED state for the parent
+  // implies a GRANTED state for the child, as long as the child is not
+  // explicitly DENIED (which is checked above).
+  auto has_write_access =
+      dest_status == blink::mojom::PermissionStatus::GRANTED ||
+      dir_handle->GetWritePermissionStatus() ==
+          blink::mojom::PermissionStatus::GRANTED;
+  // Require a user gesture if the write access to the destination is not
+  // explicitly granted.
+  if (!has_write_access && !has_transient_user_activation &&
+      base::FeatureList::IsEnabled(
+          features::
+              kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation)) {
+    DCHECK_NE(dest_status, blink::mojom::PermissionStatus::DENIED);
+    // Files in the OPFS always have write access and should never be gated on a
+    // user gesture requirement.
+    DCHECK_NE(dest_url.type(), storage::kFileSystemTypeTemporary);
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kPermissionDenied));
     return;
@@ -412,10 +439,6 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
 
   // Only allow overwriting moves if we have write access to the destination or
   // its parent.
-  auto has_write_access = (dest_handle->GetWritePermissionStatus() ==
-                               blink::mojom::PermissionStatus::GRANTED ||
-                           dir_handle->GetWritePermissionStatus() ==
-                               blink::mojom::PermissionStatus::GRANTED);
   if (has_write_access &&
       !base::FeatureList::IsEnabled(
           features::kFileSystemAccessDoNotOverwriteOnMove)) {
