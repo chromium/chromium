@@ -290,7 +290,7 @@ void WebContentsViewAndroid::SetOverscrollControllerEnabled(bool enabled) {
 void WebContentsViewAndroid::OnCapturerCountChanged() {}
 
 void WebContentsViewAndroid::FullscreenStateChanged(bool is_fullscreen) {
-  if (select_popup_)
+  if (is_fullscreen && select_popup_)
     select_popup_->HideMenu();
 }
 
