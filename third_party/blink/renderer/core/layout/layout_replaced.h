@@ -70,7 +70,10 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // This function returns the local rect of the replaced content. The rectangle
   // is in the coordinate space of the element's physical border-box and assumes
   // no clipping.
-  virtual PhysicalRect ReplacedContentRect() const;
+  PhysicalRect ReplacedContentRect() const;
+  virtual PhysicalRect ReplacedContentRectFrom(
+      const LayoutSize size,
+      const NGPhysicalBoxStrut& border_padding) const;
 
   // This is used by a few special elements, e.g. <video>, <iframe> to ensure
   // a persistent sizing under different subpixel offset, because these
@@ -174,6 +177,8 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // intrinsic size of the replaced contents, stretch to fit CSS content box
   // according to object-fit, object-position and object-view-box.
   PhysicalRect ComputeReplacedContentRect(
+      const LayoutSize size,
+      const NGPhysicalBoxStrut& border_padding,
       const LayoutSize* overridden_intrinsic_size = nullptr) const;
 
   LayoutUnit IntrinsicContentLogicalHeight() const override {
@@ -211,6 +216,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // BoxLayoutExtraInput is associated to this box.
   NGPhysicalBoxStrut BorderPaddingFromNG() const;
 
+  // This returns a local rectangle excluding border_padding.
+  PhysicalRect PhysicalContentBoxRectFrom(
+      const LayoutSize size,
+      const NGPhysicalBoxStrut& border_padding) const;
+
  private:
   // Computes a rect, relative to the element's content's natural size, that
   // should be used as the content source when rendering this element. This
@@ -219,6 +229,8 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const LayoutSize* overridden_intrinsic_size = nullptr) const;
 
   PhysicalRect ComputeObjectFitAndPositionRect(
+      const LayoutSize size,
+      const NGPhysicalBoxStrut& border_padding,
       const LayoutSize* overridden_intrinsic_size) const;
 
   MinMaxSizes PreferredLogicalWidths() const final;

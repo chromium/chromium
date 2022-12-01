@@ -201,16 +201,19 @@ void LayoutVideo::UpdatePlayer(bool is_in_layout) {
     Layer()->SetNeedsCompositingInputsUpdate();
 }
 
-PhysicalRect LayoutVideo::ReplacedContentRect() const {
+PhysicalRect LayoutVideo::ReplacedContentRectFrom(
+    const LayoutSize size,
+    const NGPhysicalBoxStrut& border_padding) const {
   NOT_DESTROYED();
   if (GetDisplayMode() == kVideo) {
     // Video codecs may need to restart from an I-frame when the output is
     // resized. Round size in advance to avoid 1px snap difference.
-    return PreSnappedRectForPersistentSizing(ComputeReplacedContentRect());
+    return PreSnappedRectForPersistentSizing(
+        ComputeReplacedContentRect(size, border_padding));
   }
   // If we are displaying the poster image no pre-rounding is needed, but the
   // size of the image should be used for fitting instead.
-  return ComputeReplacedContentRect(&cached_image_size_);
+  return ComputeReplacedContentRect(size, border_padding, &cached_image_size_);
 }
 
 bool LayoutVideo::SupportsAcceleratedRendering() const {
