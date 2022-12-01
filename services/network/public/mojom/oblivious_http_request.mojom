@@ -17,6 +17,20 @@ struct ObliviousHttpRequestBody {
   string content_type;
 };
 
+struct ObliviousHttpPaddingParameters {
+  // Whether to add a random number of bytes following an exponential
+  // probability distribution with mean `exponential_mean` extra bytes.
+  bool add_exponential_pad;
+  uint16 exponential_mean;
+
+  // Whether to pad the request to the next power of 2 in length. If the request
+  // is already a power of 2 in length, no padding is added.
+  // If both `add_exponential_pad` and `pad_to_next_power_of_two` are enabled,
+  // the result from `add_exponential_pad` is padded to the next higher power of
+  // 2.
+  bool pad_to_next_power_of_two;
+};
+
 struct ObliviousHttpRequest {
   url.mojom.Url relay_url;
   MutableNetworkTrafficAnnotationTag traffic_annotation;
@@ -36,6 +50,9 @@ struct ObliviousHttpRequest {
 
   // Contains trust token params for inner request.
   network.mojom.TrustTokenParams? trust_token_params;
+
+  // Padding parameters to apply to the inner request before encryption.
+  ObliviousHttpPaddingParameters? padding_params;
 };
 
 // Callback interface for Oblivious HTTP Requests.

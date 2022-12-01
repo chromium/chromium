@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/load_flags.h"
@@ -291,6 +292,37 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
         return base::Value(std::move(dict));
       });
 
+  // Padding
+  size_t padded_length = bhttp_payload.size();
+  if (state->request->padding_params) {
+    if (state->request->padding_params->add_exponential_pad) {
+      double uniform_rand = base::RandDouble();
+      // Map the uniform random to exponential distribution.
+      // The CDF for exponential is `CDF(x) = 1-exp(-x/mu)`
+      // So the inverse CDF is `x = -LN(1-CDF(x))*mu`.
+      size_t pad_length =
+          std::ceil(-std::log(1 - uniform_rand) *
+                    state->request->padding_params->exponential_mean);
+      padded_length += pad_length;
+    }
+    if (state->request->padding_params->pad_to_next_power_of_two) {
+      size_t new_size = 1;
+      while (new_size < padded_length) {
+        new_size <<= 1;
+      }
+      padded_length = new_size;
+    }
+  }
+  std::string padded_payload;
+  if (padded_length > bhttp_payload.size()) {
+    // Zero pad payload up to padded_length.
+    padded_payload =
+        bhttp_payload + std::string(padded_length - bhttp_payload.size(), '\0');
+  } else {
+    DCHECK_EQ(bhttp_payload.size(), padded_length);
+    padded_payload = std::move(bhttp_payload);
+  }
+
   // Encrypt
   auto maybe_client = StatefulObliviousHttpClient::CreateFromKeyConfig(
       std::move(state->request->key_config));
@@ -300,7 +332,7 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
   }
   state->ohttp_client = std::move(maybe_client);
   auto maybe_encrypted_blob =
-      state->ohttp_client->EncryptRequest(std::move(bhttp_payload));
+      state->ohttp_client->EncryptRequest(std::move(padded_payload));
   if (!maybe_encrypted_blob) {
     RespondWithError(id, net::ERR_FAILED);
     return;

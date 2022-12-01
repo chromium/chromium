@@ -170,11 +170,11 @@ class TestObliviousHttpRequestHandler : public testing::Test {
         ohttp_gateway_->CreateObliviousHttpResponse(*payload, ohttp_context);
     ASSERT_TRUE(response.ok()) << response.status();
 
-    loader_factory()->AddResponse(
+    EXPECT_TRUE(loader_factory()->SimulateResponseForPendingRequest(
         /*url=*/relay_url,
-        /*head=*/network::CreateURLResponseHead(net::HTTP_OK),
-        /*content=*/response->EncapsulateAndSerialize(),
-        /*status=*/network::URLLoaderCompletionStatus());
+        /*completion_status=*/network::URLLoaderCompletionStatus(),
+        /*response_head=*/network::CreateURLResponseHead(net::HTTP_OK),
+        /*content=*/response->EncapsulateAndSerialize()));
   }
 
   std::string CreateTestKeyConfig() {
@@ -399,5 +399,149 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesMultipleRequests) {
 
     RespondToPendingRequest("Response a");
     client_a.WaitForCall();
+  }
+}
+
+TEST_F(TestObliviousHttpRequestHandler, PadsUpToNextPowerOfTwo) {
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
+  {
+    TestOhttpClient client("response body", net::OK);
+    network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
+    request->padding_params =
+        network::mojom::ObliviousHttpPaddingParameters::New(
+            /*add_exponential_pad=*/false, /*exponential_mean=*/0,
+            /*pad_to_next_power_of_two=*/true);
+
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
+    const network::ResourceRequest* pending_request;
+    ASSERT_TRUE(loader_factory()->IsPending(kRelayURL, &pending_request));
+    ASSERT_TRUE(pending_request->request_body);
+    ASSERT_EQ(1u, pending_request->request_body->elements()->size());
+
+    std::string body = std::string(pending_request->request_body->elements()
+                                       ->at(0)
+                                       .As<network::DataElementBytes>()
+                                       .AsStringPiece());
+    std::string plain_text_body = DecryptRequest(body);
+
+    EXPECT_EQ(256u, plain_text_body.size());
+    EXPECT_EQ(std::string(56, '\0'), plain_text_body.substr(200));
+  }
+}
+
+TEST_F(TestObliviousHttpRequestHandler, DoesntPadsIfAlreadyPowerOfTwo) {
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
+  {
+    TestOhttpClient client("response body", net::OK);
+    network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
+    request->padding_params =
+        network::mojom::ObliviousHttpPaddingParameters::New(
+            /*add_exponential_pad=*/false, /*exponential_mean=*/0,
+            /*pad_to_next_power_of_two=*/false);
+    request->request_body = network::mojom::ObliviousHttpRequestBody::New(
+        /*content=*/std::string(380, ' '),
+        /*content_type=*/"application/testdata");
+
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
+    const network::ResourceRequest* pending_request;
+    ASSERT_TRUE(loader_factory()->IsPending(kRelayURL, &pending_request));
+    ASSERT_TRUE(pending_request->request_body);
+    ASSERT_EQ(1u, pending_request->request_body->elements()->size());
+
+    std::string body = std::string(pending_request->request_body->elements()
+                                       ->at(0)
+                                       .As<network::DataElementBytes>()
+                                       .AsStringPiece());
+    std::string plain_text_body = DecryptRequest(body);
+
+    EXPECT_EQ(512u, plain_text_body.size());
+    EXPECT_EQ(std::string(380, ' '), plain_text_body.substr(512 - 380));
+  }
+}
+
+TEST_F(TestObliviousHttpRequestHandler, PadsExponentiallyRandomly) {
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
+  const size_t kNumRuns = 100;
+  double accum_size = 0;
+  double accum_size_squared = 0;
+  for (size_t i = 0; i < kNumRuns; i++) {
+    {
+      TestOhttpClient client("response body", net::OK);
+      network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
+      request->padding_params =
+          network::mojom::ObliviousHttpPaddingParameters::New(
+              /*add_exponential_pad=*/true, /*exponential_mean=*/10,
+              /*pad_to_next_power_of_two=*/false);
+
+      handler->StartRequest(std::move(request), client.CreatePendingRemote());
+      const network::ResourceRequest* pending_request;
+      ASSERT_TRUE(loader_factory()->IsPending(kRelayURL, &pending_request));
+      ASSERT_TRUE(pending_request->request_body);
+      ASSERT_EQ(1u, pending_request->request_body->elements()->size());
+
+      std::string body = std::string(pending_request->request_body->elements()
+                                         ->at(0)
+                                         .As<network::DataElementBytes>()
+                                         .AsStringPiece());
+      accum_size += body.size();
+      accum_size_squared += body.size() * body.size();
+    }
+  }
+
+  double mean = accum_size / kNumRuns;
+  double variance = accum_size_squared / kNumRuns - mean * mean;
+  // True variance should be 100, but we're not running enough iterations for
+  // the estimate to converge. This at least excludes the case where the padding
+  // is constant.
+  EXPECT_LT(200l, mean);
+  EXPECT_GT(210l, mean);
+  EXPECT_LT(16l, variance);
+  EXPECT_GT(256l, variance);
+}
+
+TEST_F(TestObliviousHttpRequestHandler,
+       PadsBothExponentiallyRandomlyAndPowerOfTwo) {
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
+  base::flat_set<size_t> sizes_seen;
+  while (sizes_seen.size() < 2) {
+    TestOhttpClient client("response body", net::OK);
+    network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
+    request->padding_params =
+        network::mojom::ObliviousHttpPaddingParameters::New(
+            /*add_exponential_pad=*/true, /*exponential_mean=*/10,
+            /*pad_to_next_power_of_two=*/true);
+    // Set message size to 246 bytes plus an average of 10 bytes padding.
+    request->request_body = network::mojom::ObliviousHttpRequestBody::New(
+        /*content=*/std::string(114, ' '),
+        /*content_type=*/"application/testdata");
+
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
+    const network::ResourceRequest* pending_request;
+    ASSERT_TRUE(loader_factory()->IsPending(kRelayURL, &pending_request));
+    ASSERT_TRUE(pending_request->request_body);
+    ASSERT_EQ(1u, pending_request->request_body->elements()->size());
+
+    std::string body = std::string(pending_request->request_body->elements()
+                                       ->at(0)
+                                       .As<network::DataElementBytes>()
+                                       .AsStringPiece());
+
+    std::string plain_text_body = DecryptRequest(body);
+    size_t body_size = plain_text_body.size();
+    sizes_seen.insert(body_size);
+
+    // body_size must be a power of 2.
+    // That means all of the bits except the high bit are 0.
+    size_t cur = body_size;
+    bool has_bad_bits = false;
+    while (cur > 1) {
+      has_bad_bits |= (cur & 0x1) != 0u;
+      cur >>= 1;
+    }
+    EXPECT_FALSE(has_bad_bits) << "Got non-power of 2 body size " << body_size;
   }
 }
