@@ -27,12 +27,11 @@ namespace apps {
 // objects once the decode is done.
 class AppIconDecoder {
  public:
-  explicit AppIconDecoder(
-      const base::FilePath& base_path,
-      const std::string& app_id,
-      int32_t size_in_dip,
-      base::OnceCallback<void(AppIconDecoder* decoder, gfx::ImageSkia icon)>
-          callback);
+  AppIconDecoder(const base::FilePath& base_path,
+                 const std::string& app_id,
+                 int32_t size_in_dip,
+                 base::OnceCallback<void(AppIconDecoder* decoder,
+                                         gfx::ImageSkia icon)> callback);
   AppIconDecoder(const AppIconDecoder&) = delete;
   AppIconDecoder& operator=(const AppIconDecoder&) = delete;
   ~AppIconDecoder();
@@ -44,8 +43,7 @@ class AppIconDecoder {
   // requests.
   class DecodeRequest : public ImageDecoder::ImageRequest {
    public:
-    explicit DecodeRequest(ui::ResourceScaleFactor scale_factor,
-                           AppIconDecoder& host);
+    DecodeRequest(ui::ResourceScaleFactor scale_factor, AppIconDecoder& host);
 
     DecodeRequest(const DecodeRequest&) = delete;
     DecodeRequest& operator=(const DecodeRequest&) = delete;
@@ -82,6 +80,17 @@ class AppIconDecoder {
   std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
 
   base::WeakPtrFactory<AppIconDecoder> weak_ptr_factory_{this};
+};
+
+// This class is used for testing only to disable the out-of process icon
+// decoding.
+class ScopedDecodeRequestForTesting {
+ public:
+  ScopedDecodeRequestForTesting();
+  ScopedDecodeRequestForTesting(const ScopedDecodeRequestForTesting&) = delete;
+  ScopedDecodeRequestForTesting& operator=(
+      const ScopedDecodeRequestForTesting&) = delete;
+  ~ScopedDecodeRequestForTesting();
 };
 
 }  // namespace apps

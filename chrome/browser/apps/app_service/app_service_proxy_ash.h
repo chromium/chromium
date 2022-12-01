@@ -137,6 +137,12 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       std::unique_ptr<apps::AppPlatformMetricsService>
           app_platform_metrics_service);
   void RegisterPublishersForTesting();
+  void ReadIconsForTesting(AppType app_type,
+                           const std::string& app_id,
+                           int32_t size_in_dip,
+                           const IconKey& icon_key,
+                           IconType icon_type,
+                           LoadIconCallback callback);
 
  private:
   // For access to Initialize.

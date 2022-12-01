@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/layout.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace {
 
@@ -20,6 +21,8 @@ data_decoder::DataDecoder& GetDataDecoder() {
 }  // namespace
 
 namespace apps {
+
+bool g_decode_request_for_testing = false;
 
 AppIconDecoder::DecodeRequest::DecodeRequest(
     ui::ResourceScaleFactor scale_factor,
@@ -70,6 +73,24 @@ void AppIconDecoder::Start() {
 void AppIconDecoder::OnIconRead(
     std::map<ui::ResourceScaleFactor, std::vector<uint8_t>> icon_datas) {
   for (auto& [scale_factor, icon_data] : icon_datas) {
+    if (icon_data.empty()) {
+      DiscardDecodeRequest();
+      return;
+    }
+
+    if (g_decode_request_for_testing) {
+      SkBitmap bitmap;
+      if (!icon_data.empty() &&
+          gfx::PNGCodec::Decode(
+              reinterpret_cast<const unsigned char*>(&icon_data.front()),
+              icon_data.size(), &bitmap)) {
+        UpdateImageSkia(scale_factor, bitmap);
+      } else {
+        DiscardDecodeRequest();
+      }
+      continue;
+    }
+
     // Create DecodeRequest to decode images safely in a sandboxed service per
     // ARC app icons' security requests.
     decode_requests_.emplace_back(
@@ -102,6 +123,14 @@ void AppIconDecoder::DiscardDecodeRequest() {
   // all decode requests saved in `decode_requests_` can be destroyed, so we
   // don't need to free  DecodeRequest's objects in `decode_requests_`.
   std::move(callback_).Run(this, gfx::ImageSkia());
+}
+
+ScopedDecodeRequestForTesting::ScopedDecodeRequestForTesting() {
+  g_decode_request_for_testing = true;
+}
+
+ScopedDecodeRequestForTesting::~ScopedDecodeRequestForTesting() {
+  g_decode_request_for_testing = false;
 }
 
 }  // namespace apps

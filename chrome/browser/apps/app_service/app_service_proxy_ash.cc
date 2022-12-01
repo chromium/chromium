@@ -372,6 +372,16 @@ void AppServiceProxyAsh::RegisterPublishersForTesting() {
   }
 }
 
+void AppServiceProxyAsh::ReadIconsForTesting(AppType app_type,
+                                             const std::string& app_id,
+                                             int32_t size_in_dip,
+                                             const IconKey& icon_key,
+                                             IconType icon_type,
+                                             LoadIconCallback callback) {
+  ReadIcons(app_type, app_id, size_in_dip, icon_key, icon_type,
+            std::move(callback));
+}
+
 void AppServiceProxyAsh::Shutdown() {
   crosapi_subscriber_ = nullptr;
 

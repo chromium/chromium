@@ -38,7 +38,7 @@ class AppPublisher {
   explicit AppPublisher(AppServiceProxy* proxy);
   AppPublisher(const AppPublisher&) = delete;
   AppPublisher& operator=(const AppPublisher&) = delete;
-  ~AppPublisher();
+  virtual ~AppPublisher();
 
   // Returns an app object from the provided parameters
   static AppPtr MakeApp(AppType app_type,
