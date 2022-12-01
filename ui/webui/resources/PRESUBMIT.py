@@ -82,6 +82,7 @@ def _CheckNoDisallowedJS(input_api, output_api):
   # Ignore legacy files from the js/ subfolder along with tools/.
   EXCLUDE_PATH_PREFIXES = [
     'ui/webui/resources/js/assert.js',
+    'ui/webui/resources/js/cr.m.js',
     'ui/webui/resources/js/dom_automation_controller.js',
     'ui/webui/resources/js/ios/',
     'ui/webui/resources/js/load_time_data.m.js',
