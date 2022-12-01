@@ -51,6 +51,9 @@ test("services_unittests") {
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",
     ]
+    if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
+      deps += [ "//base:base_profiler_test_support_library" ]
+    }
   }
 
   if (is_chromeos_ash || is_linux) {

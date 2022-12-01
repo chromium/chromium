@@ -613,7 +613,11 @@ TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
         // TODO(ssid): This frame is currently skipped from inserting. Find a
         // way to specify that this frame is scanned in the trace.
         frame_details.frame_name = "Scanned";
-      } else if (!frame_details.has_valid_module()) {
+      } else if (frame_details.module_id.empty() ||
+                 !frame_details.has_valid_module()) {
+        // For AOT modules the build id is empty. Set full pathname for these
+        // modules, so that deobfuscation logic can work, since it depends on
+        // getting full path name to extract package name.
         frame_details.SetSystemModuleInfo(frame.instruction_pointer);
       }
     }
