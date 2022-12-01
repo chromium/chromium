@@ -1506,8 +1506,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 - (void)registerServicesMenuTypesTo:(NSApplication*)app {
   // Note that RenderWidgetHostViewCocoa implements NSServicesRequests which
   // handles requests from services.
-  NSArray* types = @[ base::mac::CFToNSCast(kUTTypeUTF8PlainText) ];
-  [app registerServicesMenuSendTypes:types returnTypes:types];
+  [app registerServicesMenuSendTypes:@[ NSPasteboardTypeString ]
+                         returnTypes:@[ NSPasteboardTypeString ]];
 }
 
 // Returns null if the profile is not loaded in memory.

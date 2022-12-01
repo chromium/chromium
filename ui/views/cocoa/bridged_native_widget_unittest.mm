@@ -1956,8 +1956,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_WriteToPasteboard) {
   const std::string test_string = "foo bar baz";
   InstallTextField(test_string);
 
-  NSArray* types =
-      @[ NSStringPboardType, base::mac::CFToNSCast(kUTTypeUTF8PlainText) ];
+  NSArray* types = @[ NSPasteboardTypeString ];
 
   // Try to write with no selection. This will succeed, but the string will be
   // empty.

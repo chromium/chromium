@@ -1316,10 +1316,9 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 // Currently we only support reading and writing plain strings.
 - (id)validRequestorForSendType:(NSString*)sendType
                      returnType:(NSString*)returnType {
-  NSString* const utf8Type = base::mac::CFToNSCast(kUTTypeUTF8PlainText);
-  BOOL canWrite =
-      [sendType isEqualToString:utf8Type] && [self selectedRange].length > 0;
-  BOOL canRead = [returnType isEqualToString:utf8Type];
+  BOOL canWrite = [sendType isEqualToString:NSPasteboardTypeString] &&
+                  [self selectedRange].length > 0;
+  BOOL canRead = [returnType isEqualToString:NSPasteboardTypeString];
   // Valid if (sendType, returnType) is either (string, nil), (nil, string),
   // or (string, string).
   BOOL valid =
@@ -1333,13 +1332,25 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 // NSServicesMenuRequestor protocol
 
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard*)pboard types:(NSArray*)types {
-  // NB: The NSServicesMenuRequestor protocol has not (as of macOS 12) been
-  // upgraded to request UTIs rather than obsolete PboardType constants. Handle
-  // either for when it is upgraded.
+  // /!\ Compatibility hack!
+  //
+  // The NSServicesMenuRequestor protocol does not pass in the correct
+  // NSPasteboardType constants in the `types` array, verified through macOS 13
+  // (FB11838671). To keep the code below clean, if an obsolete type is passed
+  // in, rewrite the array.
+  //
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  if ([types containsObject:NSStringPboardType] &&
+      ![types containsObject:NSPasteboardTypeString]) {
+    types = [types arrayByAddingObject:NSPasteboardTypeString];
+  }
+#pragma clang diagnostic pop
+  // /!\ End compatibility hack.
+
   bool wasAbleToWriteAtLeastOneType = false;
 
-  if ([types containsObject:NSStringPboardType] ||
-      [types containsObject:base::mac::CFToNSCast(kUTTypeUTF8PlainText)]) {
+  if ([types containsObject:NSPasteboardTypeString]) {
     bool result = false;
     std::u16string selection_text;
     if (_bridge)
@@ -1357,8 +1368,15 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard*)pboard {
   NSArray* objects = [pboard readObjectsForClasses:@[ [NSString class] ]
                                            options:nil];
-  DCHECK([objects count] == 1);
-  [self insertText:[objects lastObject]];
+  if (!objects.count) {
+    return NO;
+  }
+
+  // It's expected that there only will be one string object on the pasteboard,
+  // but if there is more than one, catenate them. This is the same compat
+  // technique used by the compatibility call, -[NSPasteboard stringForType:].
+  NSString* allTheText = [objects componentsJoinedByString:@"\n"];
+  [self insertText:allTheText];
   return YES;
 }
 
