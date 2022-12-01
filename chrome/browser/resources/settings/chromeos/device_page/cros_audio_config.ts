@@ -10,10 +10,15 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {CrosAudioConfig, CrosAudioConfigInterface} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
+import {CrosAudioConfig, CrosAudioConfigInterface as CrosAudioConfigMojomInterface} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 
-import {FakeCrosAudioConfig} from './fake_cros_audio_config.js';
+import {FakeCrosAudioConfig, FakeCrosAudioConfigInterface} from './fake_cros_audio_config.js';
 
+// Type alias to enable use of in-progress api when `getCrosAudioConfig` returns
+// a `FakeCrosAudioConfig` and ensure additional check not required when the
+// current mojom interface is used.
+export type CrosAudioConfigInterface = Required<CrosAudioConfigMojomInterface>&
+    Partial<FakeCrosAudioConfigInterface>;
 let crosAudioConfig: CrosAudioConfigInterface|null = null;
 
 /** Use FakeCrosAudioConfig implementation in `getCrosAudioConfig`. */

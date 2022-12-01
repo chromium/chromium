@@ -7,6 +7,8 @@
  * Fake implementation of CrosAudioConfig for testing.
  */
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
 import {AudioDevice, AudioDeviceType, AudioSystemProperties, AudioSystemPropertiesObserverInterface, CrosAudioConfigInterface, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 
 export const defaultFakeMicJack: AudioDevice = {
@@ -43,7 +45,18 @@ export const defaultFakeAudioSystemProperties: AudioSystemProperties = {
   outputMuteState: MuteState.kNotMuted,
 };
 
-export class FakeCrosAudioConfig implements CrosAudioConfigInterface {
+/** Creates an audio device based on provided device and isActive override. */
+export function createAudioDevice(
+    baseDevice: AudioDevice, isActive: boolean): AudioDevice {
+  assert(!!baseDevice);
+  return ({...baseDevice, isActive});
+}
+
+export interface FakeCrosAudioConfigInterface extends CrosAudioConfigInterface {
+  setActiveDevice(outputDevice: AudioDevice): void;
+}
+
+export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
   private audioSystemProperties: AudioSystemProperties =
       defaultFakeAudioSystemProperties;
   private observers: AudioSystemPropertiesObserverInterface[] = [];
@@ -51,6 +64,19 @@ export class FakeCrosAudioConfig implements CrosAudioConfigInterface {
   observeAudioSystemProperties(
       observer: AudioSystemPropertiesObserverInterface): void {
     this.observers.push(observer);
+    this.notifyAudioSystemPropertiesUpdated();
+  }
+
+  /**
+   * Sets the active output device and notifies observers.
+   */
+  setActiveDevice(outputDevice: AudioDevice): void {
+    const devices = this.audioSystemProperties.outputDevices.map(
+        (device: AudioDevice): AudioDevice =>
+            createAudioDevice(device, device.id === outputDevice.id));
+    assert(
+        devices.find((device: AudioDevice) => device.id === outputDevice.id));
+    this.audioSystemProperties.outputDevices = devices;
     this.notifyAudioSystemPropertiesUpdated();
   }
 

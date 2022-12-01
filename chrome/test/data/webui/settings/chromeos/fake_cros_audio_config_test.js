@@ -83,4 +83,21 @@ suite('FakeCrosAudioConfig', function() {
 
     mockController.verifyMocks();
   });
+
+  test('VerifySetActiveDeviceTriggersMatchingPropertyUpdate', () => {
+    /** @type {crosAudioConfigMojomWebui.AudioSystemProperties} */
+    const updatedProperties = {
+      ...defaultProperties,
+      outputDevices: [
+        fakeCrosAudioConfig.createAudioDevice(
+            fakeCrosAudioConfig.defaultFakeSpeaker, /*isActive=*/ true),
+        fakeCrosAudioConfig.createAudioDevice(
+            fakeCrosAudioConfig.defaultFakeMicJack, /*isActive=*/ false),
+      ],
+    };
+    onPropertiesUpdated.addExpectation(updatedProperties);
+    crosAudioConfig.setActiveDevice(fakeCrosAudioConfig.defaultFakeSpeaker);
+
+    mockController.verifyMocks();
+  });
 });
