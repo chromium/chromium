@@ -4072,6 +4072,21 @@
             ]
         }
     ],
+    "DiscoverFeedMultiColumn": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DiscoverFeedMultiColumn"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisruptiveNotificationPermissionRevocation": [
         {
             "platforms": [
@@ -10798,6 +10813,21 @@
                     "enable_features": [
                         "IPH_TabAudioMuting",
                         "TabAudioMuting"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TabGroupsForTablets": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGroupsForTablets"
                     ]
                 }
             ]
