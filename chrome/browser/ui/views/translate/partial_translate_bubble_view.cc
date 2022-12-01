@@ -192,6 +192,7 @@ void PartialTranslateBubbleView::Init() {
   // NOTE: The waiting view should be added last to avoid it having default
   // focus when shown.
   translate_view_waiting_ = AddChildView(CreateViewWaiting());
+  ComputeLargestViewStateWidth();
 
   AddAccelerator(ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE));
 
@@ -431,10 +432,6 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
     UpdateLanguageTabNames();
     model_->Translate(web_contents_);
     target_language_changed_ = true;
-    // Update max width of text selection label to match width of bubble, which
-    // changes with the lengths of the languages displayed in the tabbed pane.
-    partial_text_label_->SizeToFit(
-        tab_view_top_row_->GetPreferredSize().width());
     SwitchView(PartialTranslateBubbleModel::VIEW_STATE_WAITING);
     if (from_source_language_view) {
       translate::ReportPartialTranslateBubbleUiAction(
@@ -960,6 +957,16 @@ void PartialTranslateBubbleView::SetWindowTitle(
   }
 }
 
+void PartialTranslateBubbleView::ComputeLargestViewStateWidth() {
+  for (views::View* view : children()) {
+    if (view == translate_view_)
+      continue;
+    int width = view->GetPreferredSize().width();
+    if (width > largest_view_state_width_)
+      largest_view_state_width_ = width;
+  }
+}
+
 void PartialTranslateBubbleView::UpdateViewState(
     PartialTranslateBubbleModel::ViewState view_state) {
   model_->SetViewState(view_state);
@@ -980,10 +987,8 @@ void PartialTranslateBubbleView::SwitchView(
   SwitchTabForViewState(view_state);
   // The initial partial translation uses "Detected Language" as the source by
   // default, so |partial_text_label_| needs to be resized after receiving the
-  // actual source language string in the response.
+  // actual source language string. This is done in UpdateTextForViewState.
   UpdateLanguageTabNames();
-  UpdateTextForViewState(view_state);
-  partial_text_label_->SizeToFit(tab_view_top_row_->GetPreferredSize().width());
   UpdateTextForViewState(view_state);
 
   // In cases where we are switching from the waiting view, the spinner should
@@ -1015,6 +1020,17 @@ void PartialTranslateBubbleView::UpdateTextForViewState(
              PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE) {
     partial_text_label_->SetText(model_->GetSourceText());
     SetTextAlignmentForLocaleTextDirection(model_->GetSourceLanguageCode());
+  }
+
+  // Resize the text label to match the width of the bubble. This will depend on
+  // either the preferred width of the tabbed pane, or
+  // |largest_view_state_width_|, which serves as a lower bound.
+  if (tab_view_top_row_->GetPreferredSize().width() <
+      largest_view_state_width_) {
+    partial_text_label_->SizeToFit(largest_view_state_width_);
+  } else {
+    partial_text_label_->SizeToFit(
+        tab_view_top_row_->GetPreferredSize().width());
   }
 
   AnnounceForAccessibility(view_state);

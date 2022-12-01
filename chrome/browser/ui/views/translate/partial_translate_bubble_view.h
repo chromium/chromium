@@ -181,6 +181,12 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   // is not shown, for accessibility purposes.
   void SetWindowTitle(PartialTranslateBubbleModel::ViewState view_state);
 
+  // Finds and saves the width of the bubble's largest child view, excluding
+  // |translate_view_|. This value is needed to properly resize
+  // |partial_text_label_| as the width of the tabbed pane changes with changes
+  // in selected languages.
+  void ComputeLargestViewStateWidth();
+
   // Updates the view state. Whenever the view state is updated, the title needs
   // to be updated for accessibility.
   void UpdateViewState(PartialTranslateBubbleModel::ViewState view_state);
@@ -279,6 +285,10 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   std::unique_ptr<WebContentMouseHandler> mouse_handler_;
 
   std::u16string text_selection_;
+
+  // The width of the largest non-|translate_view_| child view at
+  // initialization.
+  int largest_view_state_width_ = 0;
 
   base::OnceClosure on_closing_;
 
