@@ -454,8 +454,10 @@ class CONTENT_EXPORT MediaStreamManager
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest,
                            MultiCaptureIntermediateErrorOnOpening);
 
-  // Contains all data needed to keep track of requests.
+  // Contains common data needed to keep track of requests.
   class DeviceRequest;
+  // Contains data specific for GetOpenDevice requests
+  class GetOpenDeviceRequest;
 
   // |DeviceRequests| is a list to ensure requests are processed in the order
   // they arrive. The first member of the pair is the label of the

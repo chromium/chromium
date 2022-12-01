@@ -775,7 +775,20 @@ class MediaStreamManager::DeviceRequest {
         RequestTypeToString(request_type)));
   }
 
-  ~DeviceRequest() { RunMojoCallbacks(); }
+  virtual ~DeviceRequest() {
+    if (generate_streams_cb_) {
+      std::move(generate_streams_cb_)
+          .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+               /*label=*/std::string(),
+               /*stream_devices_set=*/nullptr,
+               /*pan_tilt_zoom_allowed=*/false);
+    }
+
+    if (open_device_cb) {
+      std::move(open_device_cb)
+          .Run(false /* success */, std::string(), MediaStreamDevice());
+    }
+  }
 
   void set_request_type(MediaStreamRequestType type) { request_type_ = type; }
   MediaStreamRequestType request_type() const { return request_type_; }
@@ -953,26 +966,6 @@ class MediaStreamManager::DeviceRequest {
                                               video_type_, is_secure);
   }
 
-  void RunMojoCallbacks() {
-    if (generate_streams_cb_) {
-      std::move(generate_streams_cb_)
-          .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
-               /*label=*/std::string(),
-               /*stream_devices_set=*/nullptr,
-               /*pan_tilt_zoom_allowed=*/false);
-    }
-
-    if (get_open_device_cb) {
-      std::move(get_open_device_cb)
-          .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, nullptr);
-    }
-
-    if (open_device_cb) {
-      std::move(open_device_cb)
-          .Run(false /* success */, std::string(), MediaStreamDevice());
-    }
-  }
-
   // This function checks if the request is for the getDisplayMediaSet API.
   bool IsGetDisplayMediaSet() const {
     return stream_controls_.video.stream_type ==
@@ -1000,6 +993,10 @@ class MediaStreamManager::DeviceRequest {
 
   bool HasGenerateStreamsCallback() const {
     return !generate_streams_cb_.is_null();
+  }
+
+  virtual void FinalizeRequestFailed(MediaStreamRequestResult result) {
+    NOTREACHED();
   }
 
   // The render process id that requested this stream to be generated and that
@@ -1039,14 +1036,6 @@ class MediaStreamManager::DeviceRequest {
   // It can be null if the requester has no interest to know the result.
   // Currently it is only used by |DEVICE_ACCESS| type.
   MediaAccessRequestCallback media_access_request_cb;
-
-  // This callback is used by transferred MediaStreamTracks to access and clone
-  // an existing open MediaStreamDevice (identified by its session_id). If the
-  // device is found, it is returned to this callback along with a
-  // MediaStreamRequestResult::OK. Otherwise, returns
-  // MediaStreamRequestResult::INVALID_STATE along with absl::nullopt instead of
-  // a MediaStreamDevice.
-  GetOpenDeviceCallback get_open_device_cb;
 
   // This callback is only used by pepper and tries to open the device
   // identified by device_id. If it is opened successfully, it returns this
@@ -1126,6 +1115,64 @@ class MediaStreamManager::DeviceRequest {
   int target_frame_id_;
   std::string label_;
   GenerateStreamsCallback generate_streams_cb_;
+};
+
+class MediaStreamManager::GetOpenDeviceRequest
+    : public MediaStreamManager::DeviceRequest {
+ public:
+  GetOpenDeviceRequest(
+      int requesting_process_id,
+      int requesting_frame_id,
+      int requester_id,
+      int page_request_id,
+      MediaDeviceSaltAndOrigin salt_and_origin,
+      DeviceStoppedCallback device_stopped_cb,
+      DeviceChangedCallback device_changed_cb,
+      DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+      GetOpenDeviceCallback get_open_device_cb)
+      : DeviceRequest(requesting_process_id,
+                      requesting_frame_id,
+                      requester_id,
+                      page_request_id,
+                      /*user_gesture=*/false,
+                      /*audio_stream_selection_info_ptr=*/nullptr,
+                      blink::MEDIA_GET_OPEN_DEVICE,
+                      StreamControls(),
+                      std::move(salt_and_origin),
+                      std::move(device_stopped_cb),
+                      std::move(device_changed_cb),
+                      std::move(device_request_state_change_cb),
+                      std::move(device_capture_handle_change_cb)),
+        get_open_device_cb_(std::move(get_open_device_cb)) {
+    DCHECK(get_open_device_cb_);
+  }
+
+  ~GetOpenDeviceRequest() override {
+    if (get_open_device_cb_) {
+      std::move(get_open_device_cb_)
+          .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, nullptr);
+    }
+  }
+
+  GetOpenDeviceCallback&& MoveGetOpenDeviceCallback() {
+    return std::move(get_open_device_cb_);
+  }
+
+  void FinalizeRequestFailed(MediaStreamRequestResult result) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK(get_open_device_cb_);
+    std::move(get_open_device_cb_).Run(result, /*response=*/nullptr);
+  }
+
+ private:
+  // This callback is used by transferred MediaStreamTracks to access and clone
+  // an existing open MediaStreamDevice (identified by its session_id). If the
+  // device is found, it is returned to this callback along with a
+  // MediaStreamRequestResult::OK. Otherwise, returns
+  // MediaStreamRequestResult::INVALID_STATE along with absl::nullopt instead of
+  // a MediaStreamDevice.
+  GetOpenDeviceCallback get_open_device_cb_;
 };
 
 // static
@@ -1382,15 +1429,15 @@ void MediaStreamManager::GetOpenDevice(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer));
 
-  std::unique_ptr<DeviceRequest> request = std::make_unique<DeviceRequest>(
-      render_process_id, render_frame_id, requester_id, page_request_id,
-      /*user_gesture=*/false, /*audio_stream_selection_info_ptr=*/nullptr,
-      blink::MEDIA_GET_OPEN_DEVICE, StreamControls(),
-      std::move(salt_and_origin), std::move(device_stopped_cb),
-      std::move(device_changed_cb), std::move(device_request_state_change_cb),
-      std::move(device_capture_handle_change_cb));
+  std::unique_ptr<DeviceRequest> request =
+      std::make_unique<GetOpenDeviceRequest>(
+          render_process_id, render_frame_id, requester_id, page_request_id,
+          std::move(salt_and_origin), std::move(device_stopped_cb),
+          std::move(device_changed_cb),
+          std::move(device_request_state_change_cb),
+          std::move(device_capture_handle_change_cb),
+          std::move(get_open_device_cb));
 
-  request->get_open_device_cb = std::move(get_open_device_cb);
   DeviceRequest* const request_ptr = request.get();
   const std::string new_label = AddRequest(std::move(request));
 
@@ -2526,7 +2573,7 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
                                                DeviceRequest* request) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(request);
-  DCHECK(request->get_open_device_cb);
+  DCHECK(request->request_type() == blink::MEDIA_GET_OPEN_DEVICE);
   // GetOpenDevice is only available with exactly one stream.
   DCHECK_EQ(request->stream_devices_set.stream_devices.size(), 1u);
   const blink::mojom::StreamDevices& stream_devices =
@@ -2545,6 +2592,9 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
   // user denies mic/camera.
   SubscribeToPermissionController(label, request);
 
+  // TODO(crbug.com/1386165): Call the response-callback (get_open_device_cb_ in
+  // this case) using a virtual method in PanTiltZoomPermissionChecked when a
+  // subclass has been added also for GenerateStream requests.
   base::OnceCallback<void(bool)> ptz_callback = base::BindOnce(
       [](const std::string& label, GetOpenDeviceCallback callback,
          MediaStreamDevice device, bool pan_tilt_zoom_allowed) {
@@ -2552,7 +2602,8 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
             MediaStreamRequestResult::OK,
             GetOpenDeviceResponse::New(label, device, pan_tilt_zoom_allowed));
       },
-      label, std::move(request->get_open_device_cb),
+      label,
+      static_cast<GetOpenDeviceRequest*>(request)->MoveGetOpenDeviceCallback(),
       blink::IsVideoInputMediaType(request->video_type())
           ? stream_devices.video_device.value()
           : stream_devices.audio_device.value());
@@ -2650,8 +2701,7 @@ void MediaStreamManager::FinalizeRequestFailed(
       break;
     }
     case blink::MEDIA_GET_OPEN_DEVICE: {
-      DCHECK(request->get_open_device_cb);
-      std::move(request->get_open_device_cb).Run(result, /*response=*/nullptr);
+      request->FinalizeRequestFailed(result);
       break;
     }
     case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY: {
