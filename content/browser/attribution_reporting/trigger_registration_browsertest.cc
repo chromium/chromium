@@ -107,12 +107,14 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   const auto& trigger_data = data_host->trigger_data();
 
   EXPECT_EQ(trigger_data.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->reporting_origin,
+  EXPECT_EQ(trigger_data.front().reporting_origin,
             *SuitableOrigin::Create(register_url));
   EXPECT_THAT(
-      trigger_data.front()->event_triggers,
-      ElementsAre(Pointee(Field(&blink::mojom::EventTriggerData::data, 1)),
-                  Pointee(Field(&blink::mojom::EventTriggerData::data, 2))));
+      trigger_data.front().event_triggers,
+      EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(ElementsAre(
+          EventTriggerDataMatches(EventTriggerDataMatcherConfig(/*data=*/1)),
+          EventTriggerDataMatches(
+              EventTriggerDataMatcherConfig(/*data=*/2))))));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -145,21 +147,23 @@ IN_PROC_BROWSER_TEST_F(
   const auto& trigger_data1 = data_hosts.front()->trigger_data();
 
   EXPECT_EQ(trigger_data1.size(), 1u);
-  EXPECT_EQ(trigger_data1.front()->reporting_origin,
+  EXPECT_EQ(trigger_data1.front().reporting_origin,
             *SuitableOrigin::Create(register_url));
-  EXPECT_THAT(
-      trigger_data1.front()->event_triggers,
-      ElementsAre(Pointee(Field(&blink::mojom::EventTriggerData::data, 5))));
+  EXPECT_THAT(trigger_data1.front().event_triggers,
+              EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(
+                  ElementsAre(EventTriggerDataMatches(
+                      EventTriggerDataMatcherConfig(/*data=*/5))))));
 
   data_hosts.back()->WaitForTriggerData(/*num_trigger_data=*/1);
   const auto& trigger_data2 = data_hosts.back()->trigger_data();
 
   EXPECT_EQ(trigger_data2.size(), 1u);
-  EXPECT_EQ(trigger_data2.front()->reporting_origin,
+  EXPECT_EQ(trigger_data2.front().reporting_origin,
             *SuitableOrigin::Create(register_url));
-  EXPECT_THAT(
-      trigger_data2.front()->event_triggers,
-      ElementsAre(Pointee(Field(&blink::mojom::EventTriggerData::data, 7))));
+  EXPECT_THAT(trigger_data2.front().event_triggers,
+              EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(
+                  ElementsAre(EventTriggerDataMatches(
+                      EventTriggerDataMatcherConfig(/*data=*/7))))));
 }
 
 }  // namespace content

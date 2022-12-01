@@ -61,6 +61,30 @@ bool IsValidForSource(const FilterValues& filter_values) {
          IsValidForSourceOrTrigger(filter_values);
 }
 
+// Records the Conversions.FiltersPerFilterData metric.
+void RecordFiltersPerFilterData(base::HistogramBase::Sample count) {
+  const int kExclusiveMaxHistogramValue = 101;
+
+  static_assert(
+      kMaxFiltersPerSource < kExclusiveMaxHistogramValue,
+      "Bump the version for histogram Conversions.FiltersPerFilterData");
+
+  // The metrics are called potentially many times while parsing an attribution
+  // header, therefore using the macros to avoid the overhead of taking a lock
+  // and performing a map lookup.
+  UMA_HISTOGRAM_COUNTS_100("Conversions.FiltersPerFilterData", count);
+}
+
+// Records the Conversions.ValuesPerFilter metric.
+void RecordValuesPerFilter(base::HistogramBase::Sample count) {
+  const int kExclusiveMaxHistogramValue = 101;
+
+  static_assert(kMaxValuesPerFilter < kExclusiveMaxHistogramValue,
+                "Bump the version for histogram Conversions.ValuesPerFilter");
+
+  UMA_HISTOGRAM_COUNTS_100("Conversions.ValuesPerFilter", count);
+}
+
 base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
     base::Value* input_value,
     bool is_filter_data) {
@@ -118,28 +142,6 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
 }
 
 }  // namespace
-
-void RecordFiltersPerFilterData(base::HistogramBase::Sample count) {
-  const int kExclusiveMaxHistogramValue = 101;
-
-  static_assert(
-      kMaxFiltersPerSource < kExclusiveMaxHistogramValue,
-      "Bump the version for histogram Conversions.FiltersPerFilterData");
-
-  // The metrics are called potentially many times while parsing an attribution
-  // header, therefore using the macros to avoid the overhead of taking a lock
-  // and performing a map lookup.
-  UMA_HISTOGRAM_COUNTS_100("Conversions.FiltersPerFilterData", count);
-}
-
-void RecordValuesPerFilter(base::HistogramBase::Sample count) {
-  const int kExclusiveMaxHistogramValue = 101;
-
-  static_assert(kMaxValuesPerFilter < kExclusiveMaxHistogramValue,
-                "Bump the version for histogram Conversions.ValuesPerFilter");
-
-  UMA_HISTOGRAM_COUNTS_100("Conversions.ValuesPerFilter", count);
-}
 
 // static
 absl::optional<FilterData> FilterData::Create(FilterValues filter_values) {

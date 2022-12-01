@@ -5,6 +5,9 @@
 module attribution_reporting.mojom;
 
 enum TriggerRegistrationError {
+  kInvalidJson,
+  kRootWrongType,
+
   kFiltersWrongType,
   kFiltersTooManyKeys,
   kFiltersKeyTooLong,

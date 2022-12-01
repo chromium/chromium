@@ -10,11 +10,16 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_registration.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-shared.h"
@@ -264,6 +269,239 @@ struct BLINK_COMMON_EXPORT
 
     out->source_event_id = data.source_event_id();
     out->priority = data.priority();
+    out->debug_reporting = data.debug_reporting();
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AttributionFiltersDataView,
+                 attribution_reporting::Filters> {
+  static const attribution_reporting::FilterValues& filter_values(
+      const attribution_reporting::Filters& filters) {
+    return filters.filter_values();
+  }
+
+  static bool Read(blink::mojom::AttributionFiltersDataView data,
+                   attribution_reporting::Filters* out) {
+    attribution_reporting::FilterValues filter_values;
+    if (!data.ReadFilterValues(&filter_values))
+      return false;
+
+    absl::optional<attribution_reporting::Filters> filters =
+        attribution_reporting::Filters::Create(std::move(filter_values));
+    if (!filters.has_value())
+      return false;
+
+    *out = std::move(*filters);
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::EventTriggerDataDataView,
+                 attribution_reporting::EventTriggerData> {
+  static uint64_t data(const attribution_reporting::EventTriggerData& data) {
+    return data.data;
+  }
+
+  static int64_t priority(const attribution_reporting::EventTriggerData& data) {
+    return data.priority;
+  }
+
+  static absl::optional<uint64_t> dedup_key(
+      const attribution_reporting::EventTriggerData& data) {
+    return data.dedup_key;
+  }
+
+  static const attribution_reporting::Filters& filters(
+      const attribution_reporting::EventTriggerData& data) {
+    return data.filters;
+  }
+
+  static const attribution_reporting::Filters& not_filters(
+      const attribution_reporting::EventTriggerData& data) {
+    return data.not_filters;
+  }
+
+  static bool Read(blink::mojom::EventTriggerDataDataView data,
+                   attribution_reporting::EventTriggerData* out) {
+    if (!data.ReadDedupKey(&out->dedup_key))
+      return false;
+
+    if (!data.ReadFilters(&out->filters))
+      return false;
+
+    if (!data.ReadNotFilters(&out->not_filters))
+      return false;
+
+    out->data = data.data();
+    out->priority = data.priority();
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AttributionAggregatableTriggerDataDataView,
+                 attribution_reporting::AggregatableTriggerData> {
+  static absl::uint128 key_piece(
+      const attribution_reporting::AggregatableTriggerData& data) {
+    return data.key_piece();
+  }
+
+  static const attribution_reporting::AggregatableTriggerData::Keys&
+  source_keys(const attribution_reporting::AggregatableTriggerData& data) {
+    return data.source_keys();
+  }
+
+  static const attribution_reporting::Filters& filters(
+      const attribution_reporting::AggregatableTriggerData& data) {
+    return data.filters();
+  }
+
+  static const attribution_reporting::Filters& not_filters(
+      const attribution_reporting::AggregatableTriggerData& data) {
+    return data.not_filters();
+  }
+
+  static bool Read(
+      blink::mojom::AttributionAggregatableTriggerDataDataView data,
+      attribution_reporting::AggregatableTriggerData* out) {
+    absl::uint128 key_piece;
+    if (!data.ReadKeyPiece(&key_piece))
+      return false;
+
+    attribution_reporting::AggregatableTriggerData::Keys source_keys;
+    if (!data.ReadSourceKeys(&source_keys))
+      return false;
+
+    attribution_reporting::Filters filters;
+    if (!data.ReadFilters(&filters))
+      return false;
+
+    attribution_reporting::Filters not_filters;
+    if (!data.ReadNotFilters(&not_filters))
+      return false;
+
+    auto aggregatable_trigger_data =
+        attribution_reporting::AggregatableTriggerData::Create(
+            key_piece, std::move(source_keys), std::move(filters),
+            std::move(not_filters));
+    if (!aggregatable_trigger_data)
+      return false;
+
+    *out = std::move(*aggregatable_trigger_data);
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AttributionTriggerDataDataView,
+                 attribution_reporting::TriggerRegistration> {
+  static const attribution_reporting::SuitableOrigin& reporting_origin(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.reporting_origin;
+  }
+
+  static const std::vector<attribution_reporting::EventTriggerData>&
+  event_triggers(const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.event_triggers.vec();
+  }
+
+  static const attribution_reporting::Filters& filters(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.filters;
+  }
+
+  static const attribution_reporting::Filters& not_filters(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.not_filters;
+  }
+
+  static const std::vector<attribution_reporting::AggregatableTriggerData>&
+  aggregatable_trigger_data(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.aggregatable_trigger_data.vec();
+  }
+
+  static const attribution_reporting::AggregatableValues::Values&
+  aggregatable_values(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.aggregatable_values.values();
+  }
+
+  static absl::optional<uint64_t> debug_key(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.debug_key;
+  }
+
+  static absl::optional<uint64_t> aggregatable_dedup_key(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.aggregatable_dedup_key;
+  }
+
+  static bool debug_reporting(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.debug_reporting;
+  }
+
+  static bool Read(blink::mojom::AttributionTriggerDataDataView data,
+                   attribution_reporting::TriggerRegistration* out) {
+    if (!data.ReadReportingOrigin(&out->reporting_origin))
+      return false;
+
+    std::vector<attribution_reporting::EventTriggerData> event_triggers;
+    if (!data.ReadEventTriggers(&event_triggers))
+      return false;
+
+    auto event_triggers_list =
+        attribution_reporting::EventTriggerDataList::Create(
+            std::move(event_triggers));
+    if (!event_triggers_list)
+      return false;
+
+    out->event_triggers = std::move(*event_triggers_list);
+
+    if (!data.ReadFilters(&out->filters))
+      return false;
+
+    if (!data.ReadNotFilters(&out->not_filters))
+      return false;
+
+    std::vector<attribution_reporting::AggregatableTriggerData>
+        aggregatable_trigger_data;
+    if (!data.ReadAggregatableTriggerData(&aggregatable_trigger_data))
+      return false;
+
+    auto aggregatable_trigger_data_list =
+        attribution_reporting::AggregatableTriggerDataList::Create(
+            std::move(aggregatable_trigger_data));
+    if (!aggregatable_trigger_data_list)
+      return false;
+
+    out->aggregatable_trigger_data = std::move(*aggregatable_trigger_data_list);
+
+    attribution_reporting::AggregatableValues::Values values;
+    if (!data.ReadAggregatableValues(&values))
+      return false;
+
+    auto aggregatable_values =
+        attribution_reporting::AggregatableValues::Create(std::move(values));
+    if (!aggregatable_values)
+      return false;
+
+    out->aggregatable_values = std::move(*aggregatable_values);
+
+    if (!data.ReadDebugKey(&out->debug_key))
+      return false;
+
+    if (!data.ReadAggregatableDedupKey(&out->aggregatable_dedup_key))
+      return false;
+
     out->debug_reporting = data.debug_reporting();
     return true;
   }

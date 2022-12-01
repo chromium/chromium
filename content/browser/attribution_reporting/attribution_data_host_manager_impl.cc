@@ -15,12 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
-#include "components/attribution_reporting/aggregatable_trigger_data.h"
-#include "components/attribution_reporting/aggregatable_values.h"
-#include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -64,19 +58,17 @@ void RecordTriggerQueueEvent(TriggerQueueEvent event) {
 // numeric values should never be reused.
 enum class DataHandleStatus {
   kSuccess = 0,
-  kUntrustworthyOrigin = 1,
-  kContextError = 2,
-  kInvalidData = 3,
+  kContextError = 1,
 
-  kMaxValue = kInvalidData,
+  kMaxValue = kContextError,
 };
 
 void RecordSourceDataHandleStatus(DataHandleStatus status) {
-  base::UmaHistogramEnumeration("Conversions.SourceDataHandleStatus", status);
+  base::UmaHistogramEnumeration("Conversions.SourceDataHandleStatus2", status);
 }
 
 void RecordTriggerDataHandleStatus(DataHandleStatus status) {
-  base::UmaHistogramEnumeration("Conversions.TriggerDataHandleStatus", status);
+  base::UmaHistogramEnumeration("Conversions.TriggerDataHandleStatus2", status);
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -99,45 +91,6 @@ const base::FeatureParam<base::TimeDelta> kTriggerDelay{
     base::Seconds(5)};
 
 constexpr size_t kMaxDelayedTriggers = 30;
-
-absl::optional<attribution_reporting::AggregatableTriggerDataList> FromMojo(
-    std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr> mojo) {
-  if (mojo.size() >
-      attribution_reporting::kMaxAggregatableTriggerDataPerTrigger) {
-    return absl::nullopt;
-  }
-
-  std::vector<attribution_reporting::AggregatableTriggerData>
-      aggregatable_trigger_data;
-  aggregatable_trigger_data.reserve(mojo.size());
-
-  for (auto& aggregatable_trigger : mojo) {
-    absl::optional<attribution_reporting::Filters> filters =
-        attribution_reporting::Filters::Create(
-            std::move(aggregatable_trigger->filters->filter_values));
-    if (!filters.has_value())
-      return absl::nullopt;
-
-    absl::optional<attribution_reporting::Filters> not_filters =
-        attribution_reporting::Filters::Create(
-            std::move(aggregatable_trigger->not_filters->filter_values));
-    if (!not_filters.has_value())
-      return absl::nullopt;
-
-    absl::optional<attribution_reporting::AggregatableTriggerData> data =
-        attribution_reporting::AggregatableTriggerData::Create(
-            aggregatable_trigger->key_piece,
-            std::move(aggregatable_trigger->source_keys), std::move(*filters),
-            std::move(*not_filters));
-    if (!data.has_value())
-      return absl::nullopt;
-
-    aggregatable_trigger_data.push_back(std::move(*data));
-  }
-
-  return attribution_reporting::AggregatableTriggerDataList::Create(
-      std::move(aggregatable_trigger_data));
-}
 
 enum class RegistrationType {
   kNone,
@@ -401,9 +354,9 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
-    blink::mojom::AttributionTriggerDataPtr data) {
+    attribution_reporting::TriggerRegistration data) {
   // This is validated by the Mojo typemapping.
-  DCHECK(data->reporting_origin.IsValid());
+  DCHECK(data.reporting_origin.IsValid());
 
   FrozenContext& context = receivers_.current_context();
 
@@ -428,102 +381,13 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     context.registration_type = RegistrationType::kTrigger;
   }
 
-  absl::optional<attribution_reporting::Filters> filters =
-      attribution_reporting::Filters::Create(
-          std::move(data->filters->filter_values));
-  if (!filters.has_value()) {
-    RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
-    mojo::ReportBadMessage("AttributionDataHost: Invalid top-level filters.");
-    return;
-  }
-
-  absl::optional<attribution_reporting::Filters> not_filters =
-      attribution_reporting::Filters::Create(
-          std::move(data->not_filters->filter_values));
-  if (!not_filters.has_value()) {
-    RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
-    mojo::ReportBadMessage(
-        "AttributionDataHost: Invalid top-level negated filters.");
-    return;
-  }
-
-  if (data->event_triggers.size() >
-      attribution_reporting::kMaxEventTriggerData) {
-    RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
-    mojo::ReportBadMessage("AttributionDataHost: Too many event triggers.");
-    return;
-  }
-
-  std::vector<attribution_reporting::EventTriggerData> event_triggers;
-  event_triggers.reserve(data->event_triggers.size());
-
-  for (auto& event_trigger : data->event_triggers) {
-    absl::optional<attribution_reporting::Filters> event_filters =
-        attribution_reporting::Filters::Create(
-            std::move(event_trigger->filters->filter_values));
-    if (!event_filters.has_value()) {
-      RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
-      mojo::ReportBadMessage(
-          "AttributionDataHost: Invalid event-trigger filters.");
-      return;
-    }
-
-    absl::optional<attribution_reporting::Filters> not_event_filters =
-        attribution_reporting::Filters::Create(
-            std::move(event_trigger->not_filters->filter_values));
-    if (!not_event_filters.has_value()) {
-      RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
-      mojo::ReportBadMessage(
-          "AttributionDataHost: Invalid event-trigger not_filters.");
-      return;
-    }
-
-    event_triggers.emplace_back(
-        event_trigger->data, event_trigger->priority, event_trigger->dedup_key,
-        std::move(*event_filters), std::move(*not_event_filters));
-  }
-
-  absl::optional<attribution_reporting::AggregatableTriggerDataList>
-      aggregatable_trigger_data =
-          FromMojo(std::move(data->aggregatable_trigger_data));
-  if (!aggregatable_trigger_data.has_value()) {
-    RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
-    mojo::ReportBadMessage(
-        "AttributionDataHost: Invalid aggregatable trigger data.");
-    return;
-  }
-
-  absl::optional<attribution_reporting::AggregatableValues>
-      aggregatable_values = attribution_reporting::AggregatableValues::Create(
-          std::move(data->aggregatable_values));
-  if (!aggregatable_values.has_value()) {
-    RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
-    mojo::ReportBadMessage("AttributionDataHost: Invalid aggregatable values.");
-    return;
-  }
-
   RecordTriggerDataHandleStatus(DataHandleStatus::kSuccess);
 
   context.num_data_registered++;
 
-  auto event_trigger_data_list =
-      attribution_reporting::EventTriggerDataList::Create(
-          std::move(event_triggers));
-  DCHECK(event_trigger_data_list);
-
-  // TODO(crbug.com/1394029): Parse aggregation_coordinator_identifier field
-  // from response header.
-
-  AttributionTrigger trigger(
-      attribution_reporting::TriggerRegistration(
-          std::move(data->reporting_origin), std::move(*filters),
-          std::move(*not_filters), data->debug_key,
-          data->aggregatable_dedup_key, std::move(*event_trigger_data_list),
-          std::move(*aggregatable_trigger_data),
-          std::move(*aggregatable_values), data->debug_reporting,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
-      /*destination_origin=*/context.context_origin,
-      context.is_within_fenced_frame);
+  AttributionTrigger trigger(std::move(data),
+                             /*destination_origin=*/context.context_origin,
+                             context.is_within_fenced_frame);
 
   // Handle the trigger immediately if we're not waiting for any sources to be
   // registered.

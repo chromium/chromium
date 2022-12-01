@@ -36,6 +36,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
                         mojom::TriggerRegistrationError>
   FromJSON(base::Value& value);
 
+  AggregatableTriggerData();
+
   ~AggregatableTriggerData();
 
   AggregatableTriggerData(const AggregatableTriggerData&);
@@ -58,7 +60,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
                           Filters filters,
                           Filters not_filters);
 
-  absl::uint128 key_piece_;
+  absl::uint128 key_piece_ = 0;
   Keys source_keys_;
   Filters filters_;
   Filters not_filters_;

@@ -19591,9 +19591,7 @@ Called by update_net_error_codes.py.-->
 
 <enum name="ConversionDataHandleStatus">
   <int value="0" label="Success"/>
-  <int value="1" label="Untrustworthy origin"/>
-  <int value="2" label="Context error"/>
-  <int value="3" label="Invalid data"/>
+  <int value="1" label="Context error"/>
 </enum>
 
 <enum name="ConversionDestinationLimitResult">

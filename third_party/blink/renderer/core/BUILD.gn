@@ -1686,16 +1686,3 @@ fuzzer_test("permissions_policy_fuzzer") {
   dict = "//third_party/blink/renderer/core/permissions_policy/permissions_policy.dict"
   seed_corpus = "//third_party/blink/renderer/core/permissions_policy/permissions_policy_corpus"
 }
-
-fuzzer_test("attribution_trigger_registration_fuzzer") {
-  sources = [ "frame/attribution_trigger_registration_fuzzer.cc" ]
-  deps = [
-    ":core",
-    "//testing/libfuzzer/proto:json_proto",
-    "//testing/libfuzzer/proto:json_proto_converter",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
-    "//third_party/libprotobuf-mutator",
-  ]
-  seed_corpus =
-      "//components/attribution_reporting/trigger_registration_fuzzer_corpus"
-}

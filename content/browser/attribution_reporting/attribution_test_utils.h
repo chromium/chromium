@@ -23,6 +23,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/bounded_list.h"
@@ -33,6 +34,7 @@
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -60,11 +62,6 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
-
-namespace attribution_reporting {
-class AggregatableTriggerData;
-struct TriggerRegistration;
-}  // namespace attribution_reporting
 
 namespace mojo {
 
@@ -140,7 +137,7 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
     return source_data_;
   }
 
-  const std::vector<blink::mojom::AttributionTriggerDataPtr>& trigger_data()
+  const std::vector<attribution_reporting::TriggerRegistration>& trigger_data()
       const {
     return trigger_data_;
   }
@@ -153,13 +150,13 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(attribution_reporting::SourceRegistration) override;
   void TriggerDataAvailable(
-      blink::mojom::AttributionTriggerDataPtr data) override;
+      attribution_reporting::TriggerRegistration) override;
 
   size_t min_source_data_count_ = 0;
   std::vector<attribution_reporting::SourceRegistration> source_data_;
 
   size_t min_trigger_data_count_ = 0;
-  std::vector<blink::mojom::AttributionTriggerDataPtr> trigger_data_;
+  std::vector<attribution_reporting::TriggerRegistration> trigger_data_;
 
   base::RunLoop wait_loop_;
   mojo::Receiver<blink::mojom::AttributionDataHost> receiver_{this};
@@ -994,12 +991,18 @@ struct TriggerRegistrationMatcherConfig {
       reporting_origin = ::testing::_;
   ::testing::Matcher<const attribution_reporting::Filters&> filters =
       ::testing::_;
+  ::testing::Matcher<const attribution_reporting::Filters&> not_filters =
+      ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
   ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
       event_triggers = ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
       ::testing::_;
   ::testing::Matcher<bool> debug_reporting = ::testing::_;
+  ::testing::Matcher<const attribution_reporting::AggregatableTriggerDataList&>
+      aggregatable_trigger_data = ::testing::_;
+  ::testing::Matcher<const attribution_reporting::AggregatableValues&>
+      aggregatable_values = ::testing::_;
 
   TriggerRegistrationMatcherConfig() = delete;
   explicit TriggerRegistrationMatcherConfig(
@@ -1007,12 +1010,19 @@ struct TriggerRegistrationMatcherConfig {
           reporting_origin = ::testing::_,
       ::testing::Matcher<const attribution_reporting::Filters&> filters =
           ::testing::_,
+      ::testing::Matcher<const attribution_reporting::Filters&> not_filters =
+          ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
       ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
           event_triggers = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
           ::testing::_,
-      ::testing::Matcher<bool> debug_reporting = ::testing::_);
+      ::testing::Matcher<bool> debug_reporting = ::testing::_,
+      ::testing::Matcher<
+          const attribution_reporting::AggregatableTriggerDataList&>
+          aggregatable_trigger_data = ::testing::_,
+      ::testing::Matcher<const attribution_reporting::AggregatableValues&>
+          aggregatable_values = ::testing::_);
   ~TriggerRegistrationMatcherConfig();
 };
 

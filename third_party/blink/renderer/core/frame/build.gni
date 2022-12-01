@@ -7,8 +7,6 @@ blink_core_sources_frame = [
   "ad_tracker.h",
   "ad_script_identifier.cc",
   "ad_script_identifier.h",
-  "attribution_response_parsing.cc",
-  "attribution_response_parsing.h",
   "attribution_src_loader.cc",
   "attribution_src_loader.h",
   "bar_prop.cc",
@@ -256,7 +254,6 @@ if (target_os != "android") {
 
 blink_core_tests_frame = [
   "ad_tracker_test.cc",
-  "attribution_response_parsing_test.cc",
   "attribution_src_loader_test.cc",
   "browser_controls_test.cc",
   "child_frame_compositing_helper_test.cc",

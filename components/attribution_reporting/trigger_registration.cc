@@ -6,6 +6,10 @@
 
 #include <utility>
 
+#include "base/json/json_reader.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
@@ -16,12 +20,27 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
 namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
+
+// Records the Conversions.AggregatableTriggerDataLength metric.
+void RecordAggregatableTriggerDataPerTrigger(
+    base::HistogramBase::Sample count) {
+  const int kExclusiveMaxHistogramValue = 101;
+
+  static_assert(
+      kMaxAggregatableTriggerDataPerTrigger < kExclusiveMaxHistogramValue,
+      "Bump the version for histogram "
+      "Conversions.AggregatableTriggerDataLength");
+
+  base::UmaHistogramCounts100("Conversions.AggregatableTriggerDataLength",
+                              count);
+}
 
 }  // namespace
 
@@ -53,6 +72,9 @@ TriggerRegistration::Parse(base::Value::Dict registration,
   if (!aggregatable_trigger_data.has_value())
     return base::unexpected(aggregatable_trigger_data.error());
 
+  RecordAggregatableTriggerDataPerTrigger(
+      aggregatable_trigger_data->vec().size());
+
   auto aggregatable_values =
       AggregatableValues::FromJSON(registration.Find("aggregatable_values"));
   if (!aggregatable_values.has_value())
@@ -73,6 +95,23 @@ TriggerRegistration::Parse(base::Value::Dict registration,
       debug_reporting,
       aggregation_service::mojom::AggregationCoordinator::kDefault);
 }
+
+// static
+base::expected<TriggerRegistration, TriggerRegistrationError>
+TriggerRegistration::Parse(base::StringPiece json,
+                           SuitableOrigin reporting_origin) {
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
+  if (!value)
+    return base::unexpected(TriggerRegistrationError::kInvalidJson);
+
+  if (!value->is_dict())
+    return base::unexpected(TriggerRegistrationError::kRootWrongType);
+
+  return Parse(std::move(*value).TakeDict(), std::move(reporting_origin));
+}
+
+TriggerRegistration::TriggerRegistration() = default;
 
 TriggerRegistration::TriggerRegistration(SuitableOrigin reporting_origin)
     : reporting_origin(std::move(reporting_origin)) {}

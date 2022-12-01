@@ -23,6 +23,7 @@ namespace attribution_reporting {
 class SuitableOrigin;
 
 struct SourceRegistration;
+struct TriggerRegistration;
 }  // namespace attribution_reporting
 
 namespace base {
@@ -91,7 +92,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(attribution_reporting::SourceRegistration) override;
   void TriggerDataAvailable(
-      blink::mojom::AttributionTriggerDataPtr data) override;
+      attribution_reporting::TriggerRegistration) override;
 
   void OnReceiverDisconnected();
   void OnSourceEligibleDataHostFinished(base::TimeTicks register_time);

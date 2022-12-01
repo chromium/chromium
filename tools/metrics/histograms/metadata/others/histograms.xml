@@ -4299,7 +4299,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceDataHandleStatus"
+<histogram name="Conversions.SourceDataHandleStatus2"
     enum="ConversionDataHandleStatus" expires_after="M117">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -4460,7 +4460,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.TriggerDataHandleStatus"
+<histogram name="Conversions.TriggerDataHandleStatus2"
     enum="ConversionDataHandleStatus" expires_after="M117">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>

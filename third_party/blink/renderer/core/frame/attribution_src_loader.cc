@@ -16,6 +16,8 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_registration.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/structured_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,7 +32,6 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -687,11 +688,9 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   DCHECK_EQ(type_, SrcType::kTrigger);
   DCHECK(!json.IsNull());
 
-  auto trigger_data = mojom::blink::AttributionTriggerData::New();
-  trigger_data->reporting_origin = std::move(reporting_origin);
-
-  if (!attribution_response_parsing::ParseTriggerRegistrationHeader(
-          json, *trigger_data)) {
+  auto trigger_data = attribution_reporting::TriggerRegistration::Parse(
+      StringUTF8Adaptor(json).AsStringPiece(), std::move(reporting_origin));
+  if (!trigger_data.has_value()) {
     LogAuditIssue(loader_->local_frame_->DomWindow(),
                   AttributionReportingIssueType::kInvalidRegisterTriggerHeader,
                   /*element=*/nullptr, request_id,
@@ -699,7 +698,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     return;
   }
 
-  data_host_->TriggerDataAvailable(std::move(trigger_data));
+  data_host_->TriggerDataAvailable(std::move(*trigger_data));
 }
 
 }  // namespace blink

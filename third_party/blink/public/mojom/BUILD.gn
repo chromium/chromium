@@ -251,6 +251,7 @@ mojom("mojom_platform") {
     ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
     "//cc/mojom",
+    "//components/aggregation_service:mojom",
     "//components/payments/mojom",
     "//components/schema_org/common:mojom",
     "//components/services/filesystem/public/mojom",
@@ -561,6 +562,26 @@ mojom("mojom_platform") {
         {
           mojom = "blink.mojom.AttributionSourceData"
           cpp = "::attribution_reporting::SourceRegistration"
+
+          # Avoid expensive copies by forcing Mojo methods to take the type by
+          # value, not const ref
+          move_only = true
+        },
+        {
+          mojom = "blink.mojom.AttributionFilters"
+          cpp = "::attribution_reporting::Filters"
+        },
+        {
+          mojom = "blink.mojom.EventTriggerData"
+          cpp = "::attribution_reporting::EventTriggerData"
+        },
+        {
+          mojom = "blink.mojom.AttributionAggregatableTriggerData"
+          cpp = "::attribution_reporting::AggregatableTriggerData"
+        },
+        {
+          mojom = "blink.mojom.AttributionTriggerData"
+          cpp = "::attribution_reporting::TriggerRegistration"
 
           # Avoid expensive copies by forcing Mojo methods to take the type by
           # value, not const ref

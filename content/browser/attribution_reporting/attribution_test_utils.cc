@@ -123,7 +123,7 @@ void MockDataHost::SourceDataAvailable(
 }
 
 void MockDataHost::TriggerDataAvailable(
-    blink::mojom::AttributionTriggerDataPtr data) {
+    attribution_reporting::TriggerRegistration data) {
   trigger_data_.push_back(std::move(data));
   if (trigger_data_.size() < min_trigger_data_count_) {
     return;
@@ -1363,17 +1363,26 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
 TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
     ::testing::Matcher<const SuitableOrigin&> reporting_origin,
     ::testing::Matcher<const attribution_reporting::Filters&> filters,
+    ::testing::Matcher<const attribution_reporting::Filters&> not_filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
     ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
         event_triggers,
     ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key,
-    ::testing::Matcher<bool> debug_reporting)
+    ::testing::Matcher<bool> debug_reporting,
+    ::testing::Matcher<
+        const attribution_reporting::AggregatableTriggerDataList&>
+        aggregatable_trigger_data,
+    ::testing::Matcher<const attribution_reporting::AggregatableValues&>
+        aggregatable_values)
     : reporting_origin(std::move(reporting_origin)),
       filters(std::move(filters)),
+      not_filters(std::move(not_filters)),
       debug_key(std::move(debug_key)),
       event_triggers(std::move(event_triggers)),
       aggregatable_dedup_key(std::move(aggregatable_dedup_key)),
-      debug_reporting(std::move(debug_reporting)) {}
+      debug_reporting(std::move(debug_reporting)),
+      aggregatable_trigger_data(std::move(aggregatable_trigger_data)),
+      aggregatable_values(std::move(aggregatable_values)) {}
 
 TriggerRegistrationMatcherConfig::~TriggerRegistrationMatcherConfig() = default;
 
@@ -1385,6 +1394,9 @@ TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
             cfg.reporting_origin),
       Field("filters", &attribution_reporting::TriggerRegistration::filters,
             cfg.filters),
+      Field("not_filters",
+            &attribution_reporting::TriggerRegistration::not_filters,
+            cfg.not_filters),
       Field("debug_key", &attribution_reporting::TriggerRegistration::debug_key,
             cfg.debug_key),
       Field("event_triggers",
@@ -1395,7 +1407,14 @@ TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
             cfg.aggregatable_dedup_key),
       Field("debug_reporting",
             &attribution_reporting::TriggerRegistration::debug_reporting,
-            cfg.debug_reporting));
+            cfg.debug_reporting),
+      Field("aggregatable_trigger_data",
+            &attribution_reporting::TriggerRegistration::
+                aggregatable_trigger_data,
+            cfg.aggregatable_trigger_data),
+      Field("aggregatable_values",
+            &attribution_reporting::TriggerRegistration::aggregatable_values,
+            cfg.aggregatable_values));
 }
 
 AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(

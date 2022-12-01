@@ -86,6 +86,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
 
  private:
   friend struct SourceRegistration;
+  friend struct TriggerRegistration;
   friend mojo::DefaultConstructTraits;
 
   // Creates an invalid instance for use with Mojo deserialization, which

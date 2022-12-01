@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
@@ -23,7 +22,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
-#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -50,6 +48,7 @@ namespace {
 
 using ::attribution_reporting::SourceRegistration;
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::TriggerRegistration;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 using ::blink::mojom::AttributionNavigationType;
@@ -67,9 +66,9 @@ using ::testing::Optional;
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
 constexpr char kSourceDataHandleStatusMetric[] =
-    "Conversions.SourceDataHandleStatus";
+    "Conversions.SourceDataHandleStatus2";
 constexpr char kTriggerDataHandleStatusMetric[] =
-    "Conversions.TriggerDataHandleStatus";
+    "Conversions.TriggerDataHandleStatus2";
 
 constexpr char kRegisterSourceJson[] =
     R"json({"source_event_id":"5","destination":"https://destination.example"})json";
@@ -114,51 +113,6 @@ struct RemoteDataHost {
     data_host.reset();
     task_environment->RunUntilIdle();
   }
-};
-
-struct AttributionFilterSizeTestCase {
-  const char* description;
-  bool valid;
-
-  size_t filter_count;
-  size_t filter_size;
-  size_t value_count;
-  size_t value_size;
-
-  using Map = base::flat_map<std::string, std::vector<std::string>>;
-
-  Map AsMap() const {
-    Map map;
-
-    for (size_t i = 0; i < filter_count; i++) {
-      // Give each filter a unique name while respecting the desired size.
-      std::string filter(filter_size, 'A' + i);
-      std::vector<std::string> values(value_count,
-                                      std::string(value_size, '*'));
-      map.emplace(std::move(filter), std::move(values));
-    }
-
-    DCHECK_EQ(map.size(), filter_count);
-    return map;
-  }
-};
-
-constexpr AttributionFilterSizeTestCase kAttributionFilterSizeTestCases[] = {
-    {"empty", true, 0, 0, 0, 0},
-    {"max_filters", true, attribution_reporting::kMaxFiltersPerSource, 1, 0, 0},
-    {"too_many_filters", false, attribution_reporting::kMaxFiltersPerSource + 1,
-     1, 0, 0},
-    {"max_filter_size", true, 1,
-     attribution_reporting::kMaxBytesPerFilterString, 0, 0},
-    {"excessive_filter_size", false, 1,
-     attribution_reporting::kMaxBytesPerFilterString + 1, 0, 0},
-    {"max_values", true, 1, 0, attribution_reporting::kMaxValuesPerFilter, 0},
-    {"too_many_values", false, 1, 0,
-     attribution_reporting::kMaxValuesPerFilter + 1, 0},
-    {"max_value_size", true, 1, 0, 1,
-     attribution_reporting::kMaxBytesPerFilterString},
-    {"excessive_value_size", false, 1, 0, 1,
-     attribution_reporting::kMaxBytesPerFilterString + 1},
 };
 
 class AttributionDataHostManagerImplTest : public testing::Test {
@@ -293,25 +247,22 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
       *SuitableOrigin::Deserialize("https://trigger.example");
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
+
+  auto filters = *AttributionFilters::Create({{"a", {"b"}}});
+  auto event_trigger_data_filters = *AttributionFilters::Create({{"c", {"d"}}});
+  auto event_trigger_data_not_filters =
+      *AttributionFilters::Create({{"e", {"f"}}});
+
   EXPECT_CALL(
       mock_manager_,
       HandleTrigger(AttributionTriggerMatches(AttributionTriggerMatcherConfig(
           TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
-              reporting_origin,
-              *AttributionFilters::Create({
-                  {"a", {"b"}},
-              }),
-              Optional(789),
+              reporting_origin, filters, AttributionFilters(), Optional(789),
               EventTriggerDataListMatches(
                   EventTriggerDataListMatcherConfig(ElementsAre(
                       EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-                          1, 2, Optional(3),
-                          *AttributionFilters::Create({
-                              {"c", {"d"}},
-                          }),
-                          *AttributionFilters::Create({
-                              {"e", {"f"}},
-                          }))),
+                          1, 2, Optional(3), event_trigger_data_filters,
+                          event_trigger_data_not_filters)),
                       EventTriggerDataMatches(EventTriggerDataMatcherConfig(
                           4, 5, Eq(absl::nullopt), AttributionFilters(),
                           AttributionFilters()))))),
@@ -326,33 +277,22 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
         data_host_remote.data_host.BindNewPipeAndPassReceiver(),
         destination_origin, /*is_within_fenced_frame=*/false);
 
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin = reporting_origin;
-    trigger_data->debug_key = 789;
+    TriggerRegistration trigger_data(reporting_origin);
+    trigger_data.debug_key = 789;
+    trigger_data.filters = filters;
+    trigger_data.event_triggers =
+        *attribution_reporting::EventTriggerDataList::Create(
+            {attribution_reporting::EventTriggerData(
+                 /*data=*/1, /*priority=*/2,
+                 /*dedup_key=*/3, event_trigger_data_filters,
+                 event_trigger_data_not_filters),
+             attribution_reporting::EventTriggerData(
+                 /*data=*/4, /*priority=*/5,
+                 /*dedup_key=*/absl::nullopt, /*filters=*/AttributionFilters(),
+                 /*not_filters=*/AttributionFilters())});
 
-    trigger_data->filters = blink::mojom::AttributionFilters::New(
-        attribution_reporting::FilterValues({{"a", {"b"}}}));
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-    trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
-        /*data=*/1,
-        /*priority=*/2, /*dedup_key=*/3,
-        /*filters=*/
-        blink::mojom::AttributionFilters::New(
-            attribution_reporting::FilterValues({{"c", {"d"}}})),
-        /*not_filters=*/
-        blink::mojom::AttributionFilters::New(
-            attribution_reporting::FilterValues({{"e", {"f"}}}))));
-
-    trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
-        /*data=*/4,
-        /*priority=*/5,
-        /*dedup_key=*/absl::nullopt,
-        /*filters=*/blink::mojom::AttributionFilters::New(),
-        /*not_filters=*/blink::mojom::AttributionFilters::New()));
-
-    trigger_data->aggregatable_dedup_key = 123;
-    trigger_data->debug_reporting = true;
+    trigger_data.aggregatable_dedup_key = 123;
+    trigger_data.debug_reporting = true;
 
     data_host_remote.data_host->TriggerDataAvailable(std::move(trigger_data));
     data_host_remote.data_host.FlushForTesting();
@@ -362,311 +302,6 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                                1);
   // kSuccess = 0.
   histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 0, 1);
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       TriggerDataHost_TopLevelFilterSizeCheckPerformed) {
-  for (const auto& test_case : kAttributionFilterSizeTestCases) {
-    base::HistogramTester histograms;
-
-    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
-    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://trigger.example"),
-        /*is_within_fenced_frame=*/false);
-
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-
-    trigger_data->filters =
-        blink::mojom::AttributionFilters::New(test_case.AsMap());
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
-
-    if (!test_case.valid) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Invalid top-level filters.");
-    }
-
-    // kSuccess = 0, kInvalidData = 3.
-    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
-                                  test_case.valid ? 0 : 3, 1);
-  }
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       TriggerDataHost_EventTriggerDataFilterSizeCheckPerformed) {
-  for (const auto& test_case : kAttributionFilterSizeTestCases) {
-    base::HistogramTester histograms;
-
-    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
-    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://trigger.example"),
-        /*is_within_fenced_frame=*/false);
-
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-    trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
-        /*data=*/0,
-        /*priority=*/0,
-        /*dedup_key=*/absl::nullopt,
-        /*filters=*/blink::mojom::AttributionFilters::New(test_case.AsMap()),
-        /*not_filters=*/blink::mojom::AttributionFilters::New()));
-
-    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
-
-    if (!test_case.valid) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Invalid event-trigger filters.");
-    }
-
-    // kSuccess = 0, kInvalidData = 3.
-    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
-                                  test_case.valid ? 0 : 3, 1);
-  }
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       TriggerDataHost_EventTriggerDataNotFilterSizeCheckPerformed) {
-  for (const auto& test_case : kAttributionFilterSizeTestCases) {
-    base::HistogramTester histograms;
-
-    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
-    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://trigger.example"),
-        /*is_within_fenced_frame=*/false);
-
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-    trigger_data->event_triggers.push_back(blink::mojom::EventTriggerData::New(
-        /*data=*/0,
-        /*priority=*/0,
-        /*dedup_key=*/absl::nullopt,
-        /*filters=*/blink::mojom::AttributionFilters::New(),
-        /*not_filters=*/
-        blink::mojom::AttributionFilters::New(test_case.AsMap())));
-
-    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
-
-    if (!test_case.valid) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Invalid event-trigger not_filters.");
-    }
-
-    // kSuccess = 0, kInvalidData = 3.
-    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
-                                  test_case.valid ? 0 : 3, 1);
-  }
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       TriggerDataHost_EventTriggerDataSizeCheckPerformed) {
-  const struct {
-    size_t size;
-    bool expected;
-  } kTestCases[] = {
-      {attribution_reporting::kMaxEventTriggerData, true},
-      {attribution_reporting::kMaxEventTriggerData + 1, false},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    base::HistogramTester histograms;
-
-    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.expected);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://trigger.example"),
-        /*is_within_fenced_frame=*/false);
-
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-
-    for (size_t i = 0; i < test_case.size; ++i) {
-      trigger_data->event_triggers.push_back(
-          blink::mojom::EventTriggerData::New(
-              /*data=*/0,
-              /*priority=*/0,
-              /*dedup_key=*/absl::nullopt,
-              /*filters=*/blink::mojom::AttributionFilters::New(),
-              /*not_filters=*/blink::mojom::AttributionFilters::New()));
-    }
-
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.expected);
-
-    if (!test_case.expected) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Too many event triggers.");
-    }
-
-    // kSuccess = 0, kInvalidData = 3.
-    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
-                                  test_case.expected ? 0 : 3, 1);
-  }
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       TriggerDataHost_AggregatableTriggerDataCheckPerformed) {
-  const struct {
-    size_t size;
-    bool expected;
-  } kTestCases[] = {
-      {attribution_reporting::kMaxAggregatableTriggerDataPerTrigger, true},
-      {attribution_reporting::kMaxAggregatableTriggerDataPerTrigger + 1, false},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    base::HistogramTester histograms;
-
-    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.expected);
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://trigger.example"),
-        /*is_within_fenced_frame=*/false);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-    for (size_t i = 0; i < test_case.size; ++i) {
-      trigger_data->aggregatable_trigger_data.push_back(
-          blink::mojom::AttributionAggregatableTriggerData::New(
-              /*key_piece=*/345, /*source_keys=*/std::vector<std::string>{"a"},
-              /*filters=*/blink::mojom::AttributionFilters::New(),
-              /*not_filters=*/blink::mojom::AttributionFilters::New()));
-    }
-
-    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.expected);
-
-    if (!test_case.expected) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Invalid aggregatable trigger data.");
-    }
-
-    // kSuccess = 0, kInvalidData = 3.
-    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
-                                  test_case.expected ? 0 : 3, 1);
-  }
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       TriggerDataHost_AggregatableValuesSizeCheckPerformed) {
-  const struct {
-    size_t size;
-    bool expected;
-  } kTestCases[] = {
-      {attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger, true},
-      {attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1, false},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    base::HistogramTester histograms;
-
-    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.expected);
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://trigger.example"),
-        /*is_within_fenced_frame=*/false);
-
-    mojo::test::BadMessageObserver bad_message_observer;
-
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-    for (size_t i = 0; i < test_case.size; ++i) {
-      trigger_data->aggregatable_values.emplace(base::NumberToString(i), 1);
-    }
-
-    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-
-    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.expected);
-
-    if (!test_case.expected) {
-      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-                "AttributionDataHost: Invalid aggregatable values.");
-    }
-
-    // kSuccess = 0, kInvalidData = 3.
-    histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
-                                  test_case.expected ? 0 : 3, 1);
-  }
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -698,17 +333,14 @@ TEST_F(AttributionDataHostManagerImplTest,
         data_host_remote.data_host.BindNewPipeAndPassReceiver(),
         destination_origin, /*is_within_fenced_frame=*/false);
 
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin = reporting_origin;
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
+    TriggerRegistration trigger_data(reporting_origin);
 
-    data_host_remote.data_host->TriggerDataAvailable(trigger_data.Clone());
+    data_host_remote.data_host->TriggerDataAvailable(trigger_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(1);
 
-    data_host_remote.data_host->TriggerDataAvailable(trigger_data.Clone());
+    data_host_remote.data_host->TriggerDataAvailable(trigger_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(2);
@@ -737,8 +369,8 @@ TEST_F(AttributionDataHostManagerImplTest,
                                 1);
   // kSuccess = 0.
   histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 0, 3);
-  // kContextError = 2.
-  histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 2, 1);
+  // kContextError = 1.
+  histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -786,12 +418,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     {
       mojo::test::BadMessageObserver bad_message_observer;
 
-      auto trigger_data = blink::mojom::AttributionTriggerData::New();
-      trigger_data->reporting_origin = reporting_origin;
-      trigger_data->filters = blink::mojom::AttributionFilters::New();
-      trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-      data_host_remote.data_host->TriggerDataAvailable(std::move(trigger_data));
+      data_host_remote.data_host->TriggerDataAvailable(
+          TriggerRegistration(reporting_origin));
       data_host_remote.data_host.FlushForTesting();
 
       EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
@@ -810,8 +438,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectTotalCount("Conversions.RegisteredTriggersPerDataHost", 0);
   // kSuccess = 0.
   histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 0, 3);
-  // kContextError = 2.
-  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 2, 1);
+  // kContextError = 1.
+  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -886,9 +514,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus2", 0, 1);
   histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus2", 3, 1);
 
-  // kSuccess = 0, kContextError = 2
+  // kSuccess = 0, kContextError = 1.
   histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 2);
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 2, 0);
+  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 1, 0);
 
   // kContextMenu = 2.
   histograms.ExpectBucketCount(
@@ -946,12 +574,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     // Because there is a connected data host in source mode, this trigger
     // should be delayed.
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://report.test");
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-    trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    trigger_data_host_remote->TriggerDataAvailable(TriggerRegistration(
+        *SuitableOrigin::Deserialize("https://report.test")));
     trigger_data_host_remote.FlushForTesting();
 
     task_environment_.FastForwardBy(base::Seconds(5) - base::Microseconds(1));
@@ -1004,12 +628,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // Because there is a connected data host in source mode, this trigger should
   // be delayed.
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote->TriggerDataAvailable(
+      TriggerRegistration(*SuitableOrigin::Deserialize("https://report.test")));
   trigger_data_host_remote.FlushForTesting();
 
   task_environment_.FastForwardBy(base::Seconds(5) - base::Microseconds(1));
@@ -1147,11 +767,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // Because there is a connected data host in source mode, this trigger should
   // be delayed.
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin = reporter;
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote->TriggerDataAvailable(TriggerRegistration(reporter));
   trigger_data_host_remote.FlushForTesting();
 
   task_environment_.FastForwardBy(base::Seconds(5) - base::Microseconds(1));
@@ -1206,12 +822,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       *SuitableOrigin::Deserialize("https://page2.example"),
       /*is_within_fenced_frame=*/false);
 
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote->TriggerDataAvailable(
+      TriggerRegistration(*SuitableOrigin::Deserialize("https://report.test")));
   trigger_data_host_remote.FlushForTesting();
 
   CheckTriggerQueueHistograms(histograms, {.skipped_queue = 1});
@@ -1255,12 +867,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       *SuitableOrigin::Deserialize("https://page2.example"),
       /*is_within_fenced_frame=*/false);
 
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote->TriggerDataAvailable(
+      TriggerRegistration(*SuitableOrigin::Deserialize("https://report.test")));
   trigger_data_host_remote.FlushForTesting();
 
   CheckTriggerQueueHistograms(histograms, {.skipped_queue = 1});
@@ -1286,12 +894,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   source_data_host_remote.reset();
 
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote->TriggerDataAvailable(
+      TriggerRegistration(*SuitableOrigin::Deserialize("https://report.test")));
   trigger_data_host_remote.FlushForTesting();
 
   CheckTriggerQueueHistograms(histograms, {.skipped_queue = 1});
@@ -1314,13 +918,10 @@ TEST_F(AttributionDataHostManagerImplTest, TwoTriggerReceivers) {
       *SuitableOrigin::Deserialize("https://page2.example"),
       /*is_within_fenced_frame=*/false);
 
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
+  TriggerRegistration trigger_data(
+      *SuitableOrigin::Deserialize("https://report.test"));
 
-  trigger_data_host_remote1->TriggerDataAvailable(trigger_data.Clone());
+  trigger_data_host_remote1->TriggerDataAvailable(trigger_data);
   trigger_data_host_remote2->TriggerDataAvailable(std::move(trigger_data));
 
   trigger_data_host_remote1.FlushForTesting();
@@ -1365,12 +966,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_manager_.NotifyNavigationFailure(attribution_src_token);
 
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote->TriggerDataAvailable(
+      TriggerRegistration(*SuitableOrigin::Deserialize("https://report.test")));
   trigger_data_host_remote.FlushForTesting();
 
   CheckTriggerQueueHistograms(histograms, {.skipped_queue = 1});
@@ -1425,11 +1022,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*is_within_fenced_frame=*/false);
 
   auto send_trigger = [&](const SuitableOrigin& reporting_origin) {
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin = reporting_origin;
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-    trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    trigger_data_host_remote->TriggerDataAvailable(
+        TriggerRegistration(reporting_origin));
   };
 
   send_trigger(reporting_origin1);
@@ -1472,12 +1066,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       *SuitableOrigin::Deserialize("https://page2.example"),
       /*is_within_fenced_frame=*/false);
 
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://report.test");
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote->TriggerDataAvailable(
+      TriggerRegistration(*SuitableOrigin::Deserialize("https://report.test")));
   trigger_data_host_remote.FlushForTesting();
 
   task_environment_.FastForwardBy(base::Seconds(2));
@@ -1516,11 +1106,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*is_within_fenced_frame=*/false);
 
   auto send_trigger = [&](const SuitableOrigin& reporting_origin) {
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin = reporting_origin;
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-    trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+    trigger_data_host_remote->TriggerDataAvailable(
+        TriggerRegistration(reporting_origin));
   };
 
   for (size_t i = 0; i < kMaxDelayedTriggers; i++) {
@@ -1588,12 +1175,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
 
   // Because there is still a connected data host in source mode, this trigger
   // should be delayed.
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://report2.test");
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-  trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  trigger_data_host_remote->TriggerDataAvailable(TriggerRegistration(
+      *SuitableOrigin::Deserialize("https://report2.test")));
   trigger_data_host_remote.FlushForTesting();
 
   task_environment_.FastForwardBy(base::Seconds(5) - base::Microseconds(1));
@@ -1624,45 +1207,6 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationDataHostNotRegistered) {
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
-       TriggerDataHost_AggregatableValuesCheckPerformed) {
-  const struct {
-    const char* description;
-    bool valid;
-    base::flat_map<std::string, uint32_t> values;
-  } kTestCases[] = {
-      {"negative", false, {{"key", -1}}},
-      {"zero", false, {{"key", 0}}},
-      {"max limit", true, {{"key", 65536}}},
-      {"out of range", false, {{"key", 65537}}},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
-    EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
-
-    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
-        data_host_remote.BindNewPipeAndPassReceiver(),
-        *SuitableOrigin::Deserialize("https://trigger.example"),
-        /*is_within_fenced_frame=*/false);
-
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin =
-        *SuitableOrigin::Deserialize("https://reporter.example");
-
-    trigger_data->filters = blink::mojom::AttributionFilters::New();
-    trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-    trigger_data->aggregatable_values = test_case.values;
-
-    data_host_remote->TriggerDataAvailable(std::move(trigger_data));
-    data_host_remote.FlushForTesting();
-
-    Mock::VerifyAndClear(&mock_manager_);
-  }
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
        NavigationDataHost_CannotRegisterTrigger) {
   base::HistogramTester histograms;
 
@@ -1680,21 +1224,16 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   mojo::test::BadMessageObserver bad_message_observer;
 
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin =
-      *SuitableOrigin::Deserialize("https://r.test");
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-  data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  data_host_remote->TriggerDataAvailable(
+      TriggerRegistration(*SuitableOrigin::Deserialize("https://r.test")));
   data_host_remote.FlushForTesting();
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "AttributionDataHost: Navigation-bound data hosts cannot register "
             "triggers.");
 
-  // kContextError = 2.
-  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 2, 1);
+  // kContextError = 1.
+  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -1790,12 +1329,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       data_host_remote.BindNewPipeAndPassReceiver(), destination_origin,
       /*is_within_fenced_frame=*/true);
 
-  auto trigger_data = blink::mojom::AttributionTriggerData::New();
-  trigger_data->reporting_origin = reporting_origin;
-  trigger_data->filters = blink::mojom::AttributionFilters::New();
-  trigger_data->not_filters = blink::mojom::AttributionFilters::New();
-
-  data_host_remote->TriggerDataAvailable(std::move(trigger_data));
+  data_host_remote->TriggerDataAvailable(TriggerRegistration(reporting_origin));
   data_host_remote.FlushForTesting();
 }
 

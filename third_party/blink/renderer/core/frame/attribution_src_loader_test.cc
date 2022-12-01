@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
@@ -84,7 +85,8 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     return source_data_;
   }
 
-  const Vector<mojom::blink::AttributionTriggerDataPtr>& trigger_data() const {
+  const Vector<attribution_reporting::TriggerRegistration>& trigger_data()
+      const {
     return trigger_data_;
   }
 
@@ -102,13 +104,13 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
   }
 
   void TriggerDataAvailable(
-      mojom::blink::AttributionTriggerDataPtr data) override {
+      attribution_reporting::TriggerRegistration data) override {
     trigger_data_.push_back(std::move(data));
   }
 
   Vector<attribution_reporting::SourceRegistration> source_data_;
 
-  Vector<mojom::blink::AttributionTriggerDataPtr> trigger_data_;
+  Vector<attribution_reporting::TriggerRegistration> trigger_data_;
 
   size_t disconnects_ = 0;
   mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};

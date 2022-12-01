@@ -143,6 +143,8 @@ AggregatableTriggerData::FromJSON(base::Value& value) {
                                  std::move(*filters), std::move(*not_filters));
 }
 
+AggregatableTriggerData::AggregatableTriggerData() = default;
+
 AggregatableTriggerData::AggregatableTriggerData(absl::uint128 key_piece,
                                                  Keys source_keys,
                                                  Filters filters,

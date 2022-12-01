@@ -48,33 +48,13 @@ namespace {
 using ::attribution_reporting::SuitableOrigin;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
-using ::testing::Field;
+using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::Pair;
-using ::testing::Pointee;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
-
-MATCHER_P(AggregationKeyPieceIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.key_piece, result_listener);
-}
-
-MATCHER_P(SourceKeysAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.source_keys, result_listener);
-}
-
-MATCHER_P(FiltersAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.filters, result_listener);
-}
-
-MATCHER_P(NotFiltersAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.not_filters, result_listener);
-}
-
-MATCHER_P(FilterValuesAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.filter_values, result_listener);
-}
 
 }  // namespace
 
@@ -934,24 +914,23 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
   if (!data_host)
     loop.Run();
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
-  const auto& trigger_data = data_host->trigger_data();
 
-  EXPECT_EQ(trigger_data.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->reporting_origin,
-            *SuitableOrigin::Create(register_url));
-  EXPECT_THAT(trigger_data.front()->filters->filter_values, IsEmpty());
-  EXPECT_FALSE(trigger_data.front()->debug_key);
-  EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 7u);
   EXPECT_THAT(
-      trigger_data.front()->event_triggers.front()->filters->filter_values,
-      IsEmpty());
-  EXPECT_THAT(
-      trigger_data.front()->event_triggers.front()->not_filters->filter_values,
-      IsEmpty());
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger_data, IsEmpty());
-  EXPECT_THAT(trigger_data.front()->aggregatable_values, IsEmpty());
-  EXPECT_FALSE(trigger_data.front()->aggregatable_dedup_key);
+      data_host->trigger_data(),
+      ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
+          /*reporting_origin=*/*SuitableOrigin::Create(register_url),
+          /*filters=*/attribution_reporting::Filters(),
+          /*not_filters=*/attribution_reporting::Filters(),
+          /*debug_key=*/Eq(absl::nullopt),
+          EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(
+              ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+                  /*data=*/7))))),
+          /*aggregatable_dedup_key=*/Eq(absl::nullopt),
+          /*debug_reporting=*/false,
+          /*aggregatable_trigger_data=*/
+          attribution_reporting::AggregatableTriggerDataList(),
+          /*aggregatable_values=*/
+          attribution_reporting::AggregatableValues()))));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -996,44 +975,44 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   if (!data_host)
     loop.Run();
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
-  const auto& trigger_data = data_host->trigger_data();
 
-  EXPECT_EQ(trigger_data.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->reporting_origin,
-            *SuitableOrigin::Create(register_url));
   EXPECT_THAT(
-      trigger_data.front()->filters->filter_values,
-      ElementsAre(Pair("w", IsEmpty()), Pair("x", ElementsAre("y", "z"))));
-  EXPECT_EQ(trigger_data.front()->debug_key, 789u);
-  EXPECT_EQ(trigger_data.front()->event_triggers.size(), 2u);
-
-  // Verify first trigger.
-  const auto& event_trigger_datas = trigger_data.front()->event_triggers;
-  EXPECT_EQ(event_trigger_datas.front()->data, 1u);
-  EXPECT_EQ(event_trigger_datas.front()->priority, 5);
-  EXPECT_EQ(event_trigger_datas.front()->dedup_key, 1024u);
-  EXPECT_THAT(event_trigger_datas.front()->filters->filter_values,
-              ElementsAre(Pair("a", ElementsAre("b"))));
-  EXPECT_THAT(event_trigger_datas.front()->not_filters->filter_values,
-              ElementsAre(Pair("c", IsEmpty())));
-
-  // Verify second trigger.
-  EXPECT_EQ(event_trigger_datas.back()->data, 2u);
-  EXPECT_EQ(event_trigger_datas.back()->priority, 10);
-  EXPECT_FALSE(event_trigger_datas.back()->dedup_key);
-  EXPECT_THAT(event_trigger_datas.back()->filters->filter_values, IsEmpty());
-  EXPECT_THAT(
-      event_trigger_datas.back()->not_filters->filter_values,
-      ElementsAre(Pair("d", ElementsAre("e", "f")), Pair("g", IsEmpty())));
-
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger_data,
-              ElementsAre(Pointee(AllOf(AggregationKeyPieceIs(absl::MakeUint128(
-                                            /*high=*/0, /*low=*/1)),
-                                        SourceKeysAre(ElementsAre("key"))))));
-
-  EXPECT_THAT(trigger_data.front()->aggregatable_values,
-              ElementsAre(Pair("key", 123)));
-  EXPECT_EQ(trigger_data.front()->aggregatable_dedup_key, 123u);
+      data_host->trigger_data(),
+      ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
+          /*reporting_origin=*/*SuitableOrigin::Create(register_url),
+          /*filters=*/
+          *attribution_reporting::Filters::Create(
+              {{"w", {}}, {"x", {"y", "z"}}}),
+          /*not_filters=*/
+          *attribution_reporting::Filters::Create({{"a", {"b"}}}),
+          /*debug_key=*/Optional(789),
+          EventTriggerDataListMatches(
+              EventTriggerDataListMatcherConfig(ElementsAre(
+                  attribution_reporting::EventTriggerData(
+                      /*data=*/1,
+                      /*priority=*/5, /*dedup_key=*/1024, /*filters=*/
+                      *attribution_reporting::Filters::Create({{"a", {"b"}}}),
+                      /*not_filters=*/
+                      *attribution_reporting::Filters::Create({{"c", {}}})),
+                  attribution_reporting::EventTriggerData(
+                      /*data=*/2, /*priority=*/10,
+                      /*dedup_key=*/absl::nullopt,
+                      /*filters=*/attribution_reporting::Filters(),
+                      /*not_filters=*/
+                      *attribution_reporting::Filters::Create(
+                          {{"d", {"e", "f"}}, {"g", {}}}))))),
+          /*aggregatable_dedup_key=*/Optional(123),
+          /*debug_reporting=*/true,
+          /*aggregatable_trigger_data=*/
+          *attribution_reporting::AggregatableTriggerDataList::Create(
+              {*attribution_reporting::AggregatableTriggerData::Create(
+                  /*key_piece=*/absl::MakeUint128(/*high=*/0, /*low=*/1),
+                  /*source_keys=*/{"key"},
+                  /*filters=*/attribution_reporting::Filters(),
+                  /*not_filters=*/attribution_reporting::Filters())}),
+          /*aggregatable_values=*/
+          *attribution_reporting::AggregatableValues::Create(
+              {{"key", 123}})))));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1060,33 +1039,36 @@ IN_PROC_BROWSER_TEST_F(
   if (!data_host)
     loop.Run();
   data_host->WaitForTriggerData(/*num_trigger_data=*/1);
-  const auto& trigger_data = data_host->trigger_data();
-
-  EXPECT_EQ(trigger_data.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->reporting_origin,
-            *SuitableOrigin::Create(register_url));
-  EXPECT_THAT(trigger_data.front()->event_triggers, IsEmpty());
 
   EXPECT_THAT(
-      trigger_data.front()->aggregatable_trigger_data,
-      ElementsAre(
-          Pointee(AllOf(
-              AggregationKeyPieceIs(absl::MakeUint128(/*high=*/0, /*low=*/1)),
-              SourceKeysAre(ElementsAre("key1")),
-              FiltersAre(Pointee(
-                  FilterValuesAre(ElementsAre(Pair("a", ElementsAre("b")))))),
-              NotFiltersAre(Pointee(
-                  FilterValuesAre(ElementsAre(Pair("c", IsEmpty()))))))),
-          Pointee(AllOf(
-              AggregationKeyPieceIs(absl::MakeUint128(/*high=*/0, /*low=*/0)),
-              SourceKeysAre(IsEmpty()),
-              FiltersAre(Pointee(FilterValuesAre(IsEmpty()))),
-              NotFiltersAre(Pointee(
-                  FilterValuesAre(ElementsAre(Pair("d", ElementsAre("e", "f")),
-                                              Pair("g", IsEmpty())))))))));
-
-  EXPECT_THAT(trigger_data.front()->aggregatable_values,
-              ElementsAre(Pair("key1", 123), Pair("key2", 456)));
+      data_host->trigger_data(),
+      ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
+          /*reporting_origin=*/*SuitableOrigin::Create(register_url),
+          /*filters=*/attribution_reporting::Filters(),
+          /*not_filters=*/attribution_reporting::Filters(),
+          /*debug_key=*/Eq(absl::nullopt),
+          /*event_triggers=*/attribution_reporting::EventTriggerDataList(),
+          /*aggregatable_dedup_key=*/Eq(absl::nullopt),
+          /*debug_reporting=*/false,
+          /*aggregatable_trigger_data=*/
+          *attribution_reporting::AggregatableTriggerDataList::Create(
+              {*attribution_reporting::AggregatableTriggerData::Create(
+                   /*key_piece=*/absl::MakeUint128(/*high=*/0, /*low=*/1),
+                   /*source_keys=*/{"key1"},
+                   /*filters=*/
+                   *attribution_reporting::Filters::Create({{"a", {"b"}}}),
+                   /*not_filters=*/
+                   *attribution_reporting::Filters::Create({{"c", {}}})),
+               *attribution_reporting::AggregatableTriggerData::Create(
+                   /*key_piece=*/absl::MakeUint128(/*high=*/0, /*low=*/0),
+                   /*source_keys=*/{},
+                   /*filters=*/attribution_reporting::Filters(),
+                   /*not_filters=*/
+                   *attribution_reporting::Filters::Create(
+                       {{"d", {"e", "f"}}, {"g", {}}}))}),
+          /*aggregatable_values=*/
+          *attribution_reporting::AggregatableValues::Create(
+              {{"key1", 123}, {"key2", 456}})))));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -1115,10 +1097,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   const auto& trigger_data = data_host->trigger_data();
 
   EXPECT_EQ(trigger_data.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->reporting_origin,
+  EXPECT_EQ(trigger_data.front().reporting_origin,
             *SuitableOrigin::Create(register_url));
-  EXPECT_EQ(trigger_data.front()->event_triggers.size(), 1u);
-  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 7u);
+  EXPECT_EQ(trigger_data.front().event_triggers.vec().size(), 1u);
+  EXPECT_EQ(trigger_data.front().event_triggers.vec().front().data, 7u);
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -1174,8 +1156,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Only the second trigger is registered.
   EXPECT_EQ(trigger_data.size(), 1u);
-  EXPECT_THAT(trigger_data.front()->aggregatable_trigger_data, SizeIs(2));
-  EXPECT_THAT(trigger_data.front()->aggregatable_values, SizeIs(2));
+  EXPECT_THAT(trigger_data.front().aggregatable_trigger_data.vec(), SizeIs(2));
+  EXPECT_THAT(trigger_data.front().aggregatable_values.values(), SizeIs(2));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -1204,12 +1186,12 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   const auto& trigger_data = data_host->trigger_data();
 
   EXPECT_EQ(trigger_data.size(), 2u);
-  EXPECT_EQ(trigger_data.front()->reporting_origin,
+  EXPECT_EQ(trigger_data.front().reporting_origin,
             *SuitableOrigin::Create(register_url));
 
   // Both triggers should be processed.
-  EXPECT_EQ(trigger_data.front()->event_triggers.front()->data, 5u);
-  EXPECT_EQ(trigger_data.back()->event_triggers.front()->data, 7u);
+  EXPECT_EQ(trigger_data.front().event_triggers.vec().front().data, 5u);
+  EXPECT_EQ(trigger_data.back().event_triggers.vec().front().data, 7u);
 
   // Middle redirect source should be ignored.
   EXPECT_EQ(data_host->source_data().size(), 0u);

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
@@ -21,11 +22,18 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace mojo {
+struct DefaultConstructTraits;
+}  // namespace mojo
+
 namespace attribution_reporting {
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   static base::expected<TriggerRegistration, mojom::TriggerRegistrationError>
   Parse(base::Value::Dict, SuitableOrigin reporting_origin);
+
+  static base::expected<TriggerRegistration, mojom::TriggerRegistrationError>
+  Parse(base::StringPiece json, SuitableOrigin reporting_origin);
 
   explicit TriggerRegistration(SuitableOrigin reporting_origin);
 
@@ -60,6 +68,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   bool debug_reporting = false;
   aggregation_service::mojom::AggregationCoordinator aggregation_coordinator =
       aggregation_service::mojom::AggregationCoordinator::kDefault;
+
+ private:
+  friend mojo::DefaultConstructTraits;
+
+  // Creates an invalid instance for use with Mojo deserialization, which
+  // requires types to be default-constructible.
+  TriggerRegistration();
 };
 
 }  // namespace attribution_reporting

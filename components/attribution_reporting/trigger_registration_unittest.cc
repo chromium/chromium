@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/invoke.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -22,6 +23,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,6 +39,26 @@ TriggerRegistration TriggerRegistrationWith(SuitableOrigin reporting_origin,
   TriggerRegistration r(std::move(reporting_origin));
   base::invoke<F, TriggerRegistration&>(std::move(f), r);
   return r;
+}
+
+base::expected<TriggerRegistration, TriggerRegistrationError>
+ParseWithAggregatableTriggerData(size_t n, SuitableOrigin reporting_origin) {
+  base::Value::List list;
+  for (size_t i = 0; i < n; ++i) {
+    base::Value::Dict data;
+    data.Set("key_piece", "0x1");
+
+    base::Value::List source_keys;
+    source_keys.Append("abc");
+    data.Set("source_keys", std::move(source_keys));
+
+    list.Append(std::move(data));
+  }
+
+  base::Value::Dict dict;
+  dict.Set("aggregatable_trigger_data", std::move(list));
+  return TriggerRegistration::Parse(std::move(dict),
+                                    std::move(reporting_origin));
 }
 
 TEST(TriggerRegistrationTest, Parse) {
@@ -246,33 +268,35 @@ TEST(TriggerRegistrationTest, Parse_AggregatableTriggerDataCount) {
   const auto reporting_origin =
       *SuitableOrigin::Deserialize("https://r.example");
 
-  const auto parse_with_aggregatable_trigger_data = [&](size_t n) {
-    base::Value::List list;
-    for (size_t i = 0; i < n; ++i) {
-      base::Value::Dict data;
-      data.Set("key_piece", "0x1");
-
-      base::Value::List source_keys;
-      source_keys.Append("abc");
-      data.Set("source_keys", std::move(source_keys));
-
-      list.Append(std::move(data));
-    }
-
-    base::Value::Dict dict;
-    dict.Set("aggregatable_trigger_data", std::move(list));
-    return TriggerRegistration::Parse(std::move(dict), reporting_origin);
-  };
-
   for (size_t count = 0; count <= kMaxAggregatableTriggerDataPerTrigger;
        ++count) {
-    EXPECT_TRUE(parse_with_aggregatable_trigger_data(count).has_value());
+    EXPECT_TRUE(
+        ParseWithAggregatableTriggerData(count, reporting_origin).has_value());
   }
 
-  EXPECT_EQ(parse_with_aggregatable_trigger_data(
-                kMaxAggregatableTriggerDataPerTrigger + 1),
+  EXPECT_EQ(ParseWithAggregatableTriggerData(
+                kMaxAggregatableTriggerDataPerTrigger + 1, reporting_origin),
             base::unexpected(
                 TriggerRegistrationError::kAggregatableTriggerDataListTooLong));
+}
+
+TEST(TriggerRegistrationTest, Parse_RecordsMetrics) {
+  using ::base::Bucket;
+  using ::testing::ElementsAre;
+
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://r.example");
+
+  base::HistogramTester histograms;
+
+  for (size_t count : std::vector<size_t>{
+           0, 1, 1, 3, kMaxAggregatableTriggerDataPerTrigger + 1}) {
+    ParseWithAggregatableTriggerData(count, reporting_origin);
+  }
+
+  EXPECT_THAT(
+      histograms.GetAllSamples("Conversions.AggregatableTriggerDataLength"),
+      ElementsAre(Bucket(0, 1), Bucket(1, 2), Bucket(3, 1)));
 }
 
 }  // namespace
