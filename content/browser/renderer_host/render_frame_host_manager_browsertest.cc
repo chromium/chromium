@@ -996,7 +996,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(orig_site_instance.get() != nullptr);
   RenderFrameHostManager* opener_manager =
       static_cast<WebContentsImpl*>(opener_contents)
-          ->GetRenderManagerForTesting();
+          ->GetPrimaryFrameTree()
+          .root()
+          ->render_manager();
 
   // 1) Open two more windows, one named.  These initially have openers but no
   // reference to each other.  We will later post a message between them.
@@ -1044,7 +1046,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       new_shell2, embedded_test_server()->GetURL("/post_message.html")));
   EXPECT_EQ(orig_site_instance.get(), new_contents->GetSiteInstance());
   RenderFrameHostManager* new_manager =
-      static_cast<WebContentsImpl*>(new_contents)->GetRenderManagerForTesting();
+      static_cast<WebContentsImpl*>(new_contents)
+          ->GetPrimaryFrameTree()
+          .root()
+          ->render_manager();
 
   // We now have three windows.  The opener should have a RenderFrameProxyHost
   // for the new SiteInstanceGroup, but the _blank window should not.
@@ -1157,7 +1162,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(orig_site_instance.get() != nullptr);
   RenderFrameHostManager* opener_manager =
       static_cast<WebContentsImpl*>(opener_contents)
-          ->GetRenderManagerForTesting();
+          ->GetPrimaryFrameTree()
+          .root()
+          ->render_manager();
 
   // 1) Open a named target=foo window. We will later post a message between the
   // opener and the new window.
@@ -3527,22 +3534,27 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* next_rfh =
-      web_contents->GetRenderManagerForTesting()->speculative_frame_host();
+  RenderFrameHostImpl* next_rfh = web_contents->GetPrimaryFrameTree()
+                                      .root()
+                                      ->render_manager()
+                                      ->speculative_frame_host();
   ASSERT_TRUE(next_rfh);
 
   // Navigate to the same new site and verify that we commit in the same RFH.
   GURL cross_site_url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
   TestNavigationObserver navigation_observer(web_contents, 1);
   shell()->LoadURL(cross_site_url2);
-  EXPECT_EQ(
-      next_rfh,
-      web_contents->GetRenderManagerForTesting()->speculative_frame_host());
+  EXPECT_EQ(next_rfh, web_contents->GetPrimaryFrameTree()
+                          .root()
+                          ->render_manager()
+                          ->speculative_frame_host());
   navigation_observer.Wait();
   EXPECT_EQ(cross_site_url2, web_contents->GetLastCommittedURL());
   EXPECT_EQ(next_rfh, web_contents->GetPrimaryMainFrame());
-  EXPECT_FALSE(
-      web_contents->GetRenderManagerForTesting()->speculative_frame_host());
+  EXPECT_FALSE(web_contents->GetPrimaryFrameTree()
+                   .root()
+                   ->render_manager()
+                   ->speculative_frame_host());
 }
 
 // Check that if a sandboxed subframe opens a cross-process popup such that the

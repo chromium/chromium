@@ -630,8 +630,7 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   EXPECT_EQ(nullptr, contents()->GetSpeculativePrimaryMainFrame());
   // We keep a proxy for the original RFH's SiteInstanceGroup.
   EXPECT_TRUE(contents()
-                  ->GetRenderManagerForTesting()
-                  ->current_frame_host()
+                  ->GetPrimaryMainFrame()
                   ->browsing_context_state()
                   ->GetRenderFrameProxyHost(instance1->group()));
   EXPECT_EQ(orig_rvh_delete_count, 0);
@@ -655,8 +654,7 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   EXPECT_EQ(instance1, contents()->GetSiteInstance());
   // There should be a proxy for the pending RFH SiteInstance.
   EXPECT_TRUE(contents()
-                  ->GetRenderManagerForTesting()
-                  ->current_frame_host()
+                  ->GetPrimaryMainFrame()
                   ->browsing_context_state()
                   ->GetRenderFrameProxyHost(instance2->group()));
   EXPECT_EQ(pending_rvh_delete_count, 0);

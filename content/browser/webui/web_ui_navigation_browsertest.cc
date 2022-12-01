@@ -817,8 +817,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // TODO(crbug.com/1044951): Since we swap BrowsingInstances, we shouldn't
   // keep a proxy for the second tab in the first tab's SiteInstance.
   RenderFrameProxyHost* initial_rfph =
-      new_web_contents->GetRenderManagerForTesting()
-          ->current_frame_host()
+      new_web_contents->GetPrimaryMainFrame()
           ->browsing_context_state()
           ->GetRenderFrameProxyHost(
               static_cast<SiteInstanceImpl*>(site_instance1)->group());
