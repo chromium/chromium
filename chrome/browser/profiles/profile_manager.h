@@ -105,11 +105,16 @@ class ProfileManager : public Profile::Delegate {
   // Get the profile for the user which created the current session.
   // Note that in case of a guest account this will return a 'suitable' profile.
   static Profile* GetPrimaryUserProfile();
+#endif
 
+  // WARNING: do not use this function on Desktop platforms (Windows, Mac,
+  // Linux). See https://crbug.com/1264436 for more info.
+  // TODO(https://crbug.com/1264436): restrict this function to Android and
+  // ChromeOS.
+  //
   // Get the profile for the currently active user.
   // Note that in case of a guest account this will return a 'suitable' profile.
   static Profile* GetActiveUserProfile();
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
   // Load and return the initial profile for browser. On ChromeOS, this returns
