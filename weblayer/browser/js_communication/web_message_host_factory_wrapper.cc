@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "absl/types/variant.h"
 #include "base/memory/raw_ptr.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
@@ -40,11 +41,11 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
       std::unique_ptr<js_injection::WebMessage> message) override {
     std::unique_ptr<WebMessage> m = std::make_unique<WebMessage>();
     auto& payload = message->message;
-    if (!payload->is_string_value()) {
+    if (!absl::holds_alternative<std::u16string>(payload)) {
       // Ignore non-string messages, not supported by weblayer.
       return;
     }
-    m->message = std::move(payload->get_string_value());
+    m->message = std::move(absl::get<std::u16string>(payload));
     connection_->OnPostMessage(std::move(m));
   }
   void OnBackForwardCacheStateChanged() override {
@@ -53,10 +54,7 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
 
   // WebMessageReplyProxy:
   void PostWebMessage(std::unique_ptr<WebMessage> message) override {
-    js_injection::mojom::JsWebMessagePtr js_message =
-        js_injection::mojom::JsWebMessage::NewStringValue(
-            std::move(message->message));
-    proxy_->PostWebMessage(std::move(js_message));
+    proxy_->PostWebMessage(std::move(message->message));
   }
   bool IsInBackForwardCache() override {
     return proxy_->IsInBackForwardCache();
