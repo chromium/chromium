@@ -199,8 +199,7 @@
 
   _scrolledToEdge = scrolledToEdge;
 
-  _scrolledToBottomBackgroundView.hidden = !scrolledToEdge;
-  _scrolledBackgroundView.hidden = scrolledToEdge;
+  [self updateBackgroundVisibility];
 }
 
 #pragma mark Close Tabs
@@ -396,6 +395,8 @@
 }
 
 - (void)updateLayout {
+  [self updateBackgroundVisibility];
+
   // Search mode doesn't have bottom toolbar or floating buttons, Handle it and
   // return early in that case.
   if (self.mode == TabGridModeSearch) {
@@ -499,6 +500,18 @@
   [_toolbar setBackgroundImage:[UIImage new]
             forToolbarPosition:UIBarPositionAny
                     barMetrics:UIBarMetricsDefault];
+}
+
+// Updates the visibility of the backgrounds based on the state of the TabGrid.
+- (void)updateBackgroundVisibility {
+  if (self.mode == TabGridModeSearch) {
+    _scrolledToBottomBackgroundView.hidden = YES;
+    _scrolledBackgroundView.hidden = YES;
+    return;
+  }
+
+  _scrolledToBottomBackgroundView.hidden = !_scrolledToEdge;
+  _scrolledBackgroundView.hidden = _scrolledToEdge;
 }
 
 @end
