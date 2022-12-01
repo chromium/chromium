@@ -158,7 +158,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
       base::BindOnce(
           IgnoreResult(&TriggerManager::FinishCollectingThreatDetails),
           base::Unretained(trigger_manager_), TriggerType::AD_SAMPLE,
-          base::Unretained(web_contents()), base::TimeDelta(),
+          base::UnsafeDanglingUntriaged(web_contents()), base::TimeDelta(),
           /*did_proceed=*/false, /*num_visits=*/0, error_options),
       base::Milliseconds(finish_report_delay_ms_));
 
