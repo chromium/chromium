@@ -199,8 +199,6 @@ void PolicyLoaderLacros::SetComponentPolicy(
     // The data is also good; expose the policies.
     component_policy_->Get(policy_pair.first).Swap(&component_policy_map);
   }
-  // TODO(igorcov): crbug.com/1301854 Remove after bug fix.
-  SYSLOG(INFO) << "New component policy installed";
 }
 
 enterprise_management::PolicyData* PolicyLoaderLacros::GetPolicyData() {
