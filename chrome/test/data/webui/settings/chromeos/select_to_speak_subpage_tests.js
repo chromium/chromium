@@ -44,6 +44,21 @@ suite('SelectToSpeakSubpageTests', function() {
     assertTrue(voiceSwitchingPref.value);
   });
 
+  test('enhanced network voices pref and toggle synced', function() {
+    // Make sure enhanced network voices toggle is off, matching default pref
+    // state.
+    const enhancedNetworkVoicesToggle =
+        page.shadowRoot.querySelector('#enhancedNetworkVoicesToggle');
+    assertFalse(enhancedNetworkVoicesToggle.checked);
+
+    // Toggle enhanced network voices off, and verify voice_switching pref is
+    // enabled.
+    enhancedNetworkVoicesToggle.click();
+    const enhancedNetworkVoicesPref =
+        page.getPref('settings.a11y.select_to_speak_enhanced_network_voices');
+    assertTrue(enhancedNetworkVoicesPref.value);
+  });
+
   test('word highlight pref and toggle synced', function() {
     // Make sure word highlight toggle is on, matching default pref state.
     const wordHighlightToggle =

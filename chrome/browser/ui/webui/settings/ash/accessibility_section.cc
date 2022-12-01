@@ -723,6 +723,10 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE},
       {"selectToSpeakOptionsVoiceSwitchingDescription",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_SWITCHING_DESCRIPTION},
+      {"selectToSpeakOptionsEnhancedNetworkVoicesDescription",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICES_DESCRIPTION},
+      {"selectToSpeakOptionsEnhancedNetworkVoicesSubtitle",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICES_SUBTITLE},
       {"selectToSpeakOptionsHighlightDescription",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_DESCRIPTION},
       {"selectToSpeakOptionsHighlightColorDescription",
@@ -922,6 +926,9 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddString("a11yLearnMoreUrl",
                          chrome::kChromeAccessibilityHelpURL);
+
+  html_source->AddString("selectToSpeakLearnMoreUrl",
+                         chrome::kSelectToSpeakLearnMoreURL);
 
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",

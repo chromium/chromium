@@ -108,10 +108,10 @@ found in the LICENSE file.
   }
 </style>
 
-<template is="dom-if"
-    if="[[isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_]]">
-  <h2>$i18n{selectToSpeakOptionsSpeech}</h2>
-  <div class="sub-item">
+<h2>$i18n{selectToSpeakOptionsSpeech}</h2>
+<div class="sub-item">
+  <template is="dom-if"
+      if="[[isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_]]">
     <settings-toggle-button
         id="voiceSwitchingToggle"
         class="settings-box continuation"
@@ -119,8 +119,17 @@ found in the LICENSE file.
         label="$i18n{selectToSpeakOptionsVoiceSwitchingDescription}"
         deep-link-focus-id$="[[Setting.kSelectToSpeakVoiceSwitching]]">
     </settings-toggle-button>
-  </div>
-</template>
+  </template>
+  <settings-toggle-button
+      id="enhancedNetworkVoicesToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.select_to_speak_enhanced_network_voices}}"
+      label="$i18n{selectToSpeakOptionsEnhancedNetworkVoicesDescription}"
+      sub-label="$i18n{selectToSpeakOptionsEnhancedNetworkVoicesSubtitle}"
+      learn-more-url="$i18n{selectToSpeakLearnMoreUrl}"
+      deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoices]]">
+  </settings-toggle-button>
+</div>
 
 <h2>$i18n{selectToSpeakOptionsHighlight}</h2>
 <div class="highlight-example-container sub-item">

@@ -1242,6 +1242,12 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_SWITCHING_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to toggle automatic voice switching.">
     Automatically change language to match selected content
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICES_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for the control to enable support for high-quality voices streamed from the interent when the device is online.">
+    Use natural voice when device is online
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICES_SUBTITLE" desc="In the Select-to-speak settings subpage, informational text related to the Select-to-speak control that enables support for high-quality voices, mentioning that enabling these voices will send text to Google for processing and generating audio.">
+    Text will be sent to Google for processing.
+  </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to pick word highlight color.">
     Highlight color
   </message>

@@ -431,6 +431,9 @@ const char kOsSettingsSearchHelpURL[] =
 const char kPeripheralDataAccessHelpURL[] =
     "https://support.google.com/chromebook?p=connect_thblt_usb4_accy";
 
+const char kSelectToSpeakLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=select_to_speak";
+
 const char kTPMFirmwareUpdateLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=tpm_update";
 
