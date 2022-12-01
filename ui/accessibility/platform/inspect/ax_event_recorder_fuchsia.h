@@ -22,8 +22,7 @@ class AX_EXPORT AXEventRecorderFuchsia : public AXEventRecorder {
 
   ~AXEventRecorderFuchsia() override;
 
- private:
-  static AXEventRecorderFuchsia* instance_;
+  bool instantiated_;
 };
 
 }  // namespace ui

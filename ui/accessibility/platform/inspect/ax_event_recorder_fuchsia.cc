@@ -10,18 +10,12 @@
 
 namespace ui {
 
-// static
-AXEventRecorderFuchsia* AXEventRecorderFuchsia::instance_ = nullptr;
-
 AXEventRecorderFuchsia::AXEventRecorderFuchsia(base::ProcessId pid,
                                                const AXTreeSelector& selector) {
-  CHECK(!instance_) << "There can be only one instance of"
-                    << " AccessibilityEventRecorder at a time.";
-  instance_ = this;
+  CHECK(!instantiated_) << "There can be only one instance of"
+                        << " AccessibilityEventRecorder at a time.";
 }
 
-AXEventRecorderFuchsia::~AXEventRecorderFuchsia() {
-  instance_ = nullptr;
-}
+AXEventRecorderFuchsia::~AXEventRecorderFuchsia() = default;
 
 }  // namespace ui
