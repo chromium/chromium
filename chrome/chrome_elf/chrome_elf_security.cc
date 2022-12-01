@@ -82,8 +82,6 @@ class ExtensionPointDisableSet {
 }  // namespace
 
 void EarlyBrowserSecurity() {
-  typedef decltype(SetProcessMitigationPolicy)* SetProcessMitigationPolicyFunc;
-
   // This function is called from within DllMain.
   // Don't do anything naughty while we have the loader lock.
   NTSTATUS ret_val = STATUS_SUCCESS;
@@ -107,20 +105,13 @@ void EarlyBrowserSecurity() {
 
   nt::CloseRegKey(handle);
 
-  if (::IsWindows8OrGreater()) {
-    SetProcessMitigationPolicyFunc set_process_mitigation_policy =
-        reinterpret_cast<SetProcessMitigationPolicyFunc>(::GetProcAddress(
-            ::GetModuleHandleW(L"kernel32.dll"), "SetProcessMitigationPolicy"));
-    if (set_process_mitigation_policy) {
-      // Disable extension points in this process.
-      // (Legacy hooking.)
-      PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY policy = {};
-      policy.DisableExtensionPoints = true;
-      set_process_mitigation_policy(ProcessExtensionPointDisablePolicy, &policy,
-                                    sizeof(policy));
-      ExtensionPointDisableSet::GetInstance()->SetExtensionPointDisabled(true);
-    }
-  }
+  // Disable extension points (legacy hooking) in this process.
+  PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY policy = {};
+  policy.DisableExtensionPoints = true;
+  SetProcessMitigationPolicy(ProcessExtensionPointDisablePolicy, &policy,
+                             sizeof(policy));
+  ExtensionPointDisableSet::GetInstance()->SetExtensionPointDisabled(true);
+
   return;
 }
 
