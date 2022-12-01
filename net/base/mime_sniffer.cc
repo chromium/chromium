@@ -577,7 +577,7 @@ static const MagicNumber kByteOrderMark[] = {
 static bool SniffBinary(base::StringPiece content,
                         bool* have_enough_content,
                         std::string* result) {
-  // There is no concensus about exactly how to sniff for binary content.
+  // There is no consensus about exactly how to sniff for binary content.
   // * IE 7: Don't sniff for binary looking bytes, but trust the file extension.
   // * Firefox 3.5: Sniff first 4096 bytes for a binary looking byte.
   // Here, we side with FF, but with a smaller buffer. This size was chosen
