@@ -721,7 +721,7 @@ void ProxyMain::Stop() {
 }
 
 void ProxyMain::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {
-  TRACE_EVENT0("cc", "ThreadProxy::SetMutator");
+  TRACE_EVENT0("cc", "ProxyMain::SetMutator");
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyImpl::InitializeMutatorOnImpl,
@@ -730,7 +730,7 @@ void ProxyMain::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {
 
 void ProxyMain::SetPaintWorkletLayerPainter(
     std::unique_ptr<PaintWorkletLayerPainter> painter) {
-  TRACE_EVENT0("cc", "ThreadProxy::SetPaintWorkletLayerPainter");
+  TRACE_EVENT0("cc", "ProxyMain::SetPaintWorkletLayerPainter");
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyImpl::InitializePaintWorkletLayerPainterOnImpl,
