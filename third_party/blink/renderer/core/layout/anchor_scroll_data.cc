@@ -35,8 +35,9 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!anchor_query)
     return nullptr;
 
+  // TODO(xiaochengh): Also check implicit anchor.
   if (const NGPhysicalFragment* fragment =
-          anchor_query->Fragment(*layout_object->StyleRef().AnchorScroll())) {
+          anchor_query->Fragment(layout_object->StyleRef().AnchorScroll())) {
     return fragment->GetLayoutObject();
   }
   return nullptr;

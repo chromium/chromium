@@ -39,9 +39,12 @@ class NGAnchorQueryTest : public RenderingTest,
   Vector<AtomicString> ValidAnchorNames(const Element& element) const {
     Vector<AtomicString> names;
     if (const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(element)) {
-      for (const auto& it : *anchor_query) {
-        if (!it.value->is_invalid)
-          names.push_back(it.key->GetName());
+      for (auto entry : *anchor_query) {
+        if (!entry.value->is_invalid) {
+          if (auto** name = absl::get_if<const ScopedCSSName*>(&entry.key)) {
+            names.push_back((*name)->GetName());
+          }
+        }
       }
     }
     return names;
@@ -52,8 +55,11 @@ struct AnchorTestData {
   static Vector<AnchorTestData> ToList(
       const NGPhysicalAnchorQuery& anchor_query) {
     Vector<AnchorTestData> items;
-    for (const auto& it : anchor_query)
-      items.push_back(AnchorTestData{it.key->GetName(), it.value->rect});
+    for (auto entry : anchor_query) {
+      if (auto** name = absl::get_if<const ScopedCSSName*>(&entry.key)) {
+        items.push_back(AnchorTestData{(*name)->GetName(), entry.value->rect});
+      }
+    }
     std::sort(items.begin(), items.end(),
               [](const AnchorTestData& a, const AnchorTestData& b) {
                 return CodeUnitCompare(a.name, b.name) < 0;

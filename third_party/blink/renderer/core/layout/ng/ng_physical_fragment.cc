@@ -554,6 +554,12 @@ bool NGPhysicalFragment::IsMonolithic() const {
   return false;
 }
 
+bool NGPhysicalFragment::IsImplicitAnchor() const {
+  if (Element* element = DynamicTo<Element>(GetNode()))
+    return element->HasAnchoredPopover();
+  return false;
+}
+
 const FragmentData* NGPhysicalFragment::GetFragmentData() const {
   const LayoutBox* box = DynamicTo<LayoutBox>(GetLayoutObject());
   if (!box) {

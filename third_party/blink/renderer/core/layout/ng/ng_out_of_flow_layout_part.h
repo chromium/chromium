@@ -332,6 +332,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                           const ComputedStyle& style,
                           const LayoutBox* only_layout,
                           const NGLogicalAnchorQueryMap* anchor_queries,
+                          const LayoutObject* implicit_anchor,
                           bool try_fit_container_rect,
                           bool is_first_run,
                           OffsetInfo* const offset_info);

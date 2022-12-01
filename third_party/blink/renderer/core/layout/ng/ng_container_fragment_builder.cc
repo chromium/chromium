@@ -77,18 +77,21 @@ void NGContainerFragmentBuilder::PropagateChildAnchors(
     const NGPhysicalFragment& child,
     const LogicalOffset& child_offset) {
   absl::optional<NGLogicalAnchorQuery::SetOptions> options;
-  if (child.IsBox() && child.Style().AnchorName()) {
+  if (child.IsBox() &&
+      (child.Style().AnchorName() || child.IsImplicitAnchor())) {
     // Set the child's `anchor-name` before propagating its descendants', so
     // that ancestors have precedence over their descendants.
-    const ScopedCSSName& anchor_name = *child.Style().AnchorName();
     DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
+    LogicalRect rect{child_offset,
+                     child.Size().ConvertToLogical(GetWritingMode())};
     options = AnchorQuerySetOptions(
         child, node_, IsBlockFragmentationContextRoot() || HasItems());
-    EnsureAnchorQuery().Set(
-        anchor_name, child,
-        LogicalRect{child_offset,
-                    child.Size().ConvertToLogical(GetWritingMode())},
-        *options);
+    if (child.Style().AnchorName()) {
+      EnsureAnchorQuery().Set(child.Style().AnchorName(), child, rect,
+                              *options);
+    }
+    if (child.IsImplicitAnchor())
+      EnsureAnchorQuery().Set(child.GetLayoutObject(), child, rect, *options);
   }
 
   // Propagate any descendants' anchor references.

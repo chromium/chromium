@@ -105,7 +105,8 @@ class NGAbsoluteUtilsTest : public RenderingTest {
                        container_writing_direction.GetWritingMode()));
     NGLogicalAnchorQuery anchor_query;
     NGAnchorEvaluatorImpl anchor_evaluator(
-        anchor_query, container_converter,
+        anchor_query, /* implicit_anchor */
+        nullptr, container_converter,
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
@@ -133,7 +134,8 @@ class NGAbsoluteUtilsTest : public RenderingTest {
                        container_writing_direction.GetWritingMode()));
     NGLogicalAnchorQuery anchor_query;
     NGAnchorEvaluatorImpl anchor_evaluator(
-        anchor_query, container_converter,
+        anchor_query, /* implicit_anchor */
+        nullptr, container_converter,
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */

@@ -1567,18 +1567,20 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
 
   // If `@position-fallback` exists, let |TryCalculateOffset| check if the
   // result fits.
-  Element* element = nullptr;
+  Element* element = DynamicTo<Element>(node_info.node.GetDOMNode());
   const ComputedStyle* next_fallback_style = nullptr;
-  if (UNLIKELY(style->PositionFallback())) {
-    DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
-    element = DynamicTo<Element>(node_info.node.GetDOMNode());
-    if (element) {
+  const LayoutObject* implicit_anchor = nullptr;
+  if (element) {
+    if (UNLIKELY(style->PositionFallback())) {
+      DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
       if (const ComputedStyle* fallback_style =
               element->StyleForPositionFallback(0)) {
         style = fallback_style;
         next_fallback_style = element->StyleForPositionFallback(1);
       }
     }
+    if (element->ImplicitAnchorElement())
+      implicit_anchor = element->ImplicitAnchorElement()->GetLayoutObject();
   }
 
   wtf_size_t fallback_index = 1;
@@ -1586,8 +1588,8 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     const bool test_if_margin_box_fits = next_fallback_style;
     OffsetInfo offset_info;
     if (TryCalculateOffset(node_info, *style, only_layout, anchor_queries,
-                           test_if_margin_box_fits, is_first_run,
-                           &offset_info)) {
+                           implicit_anchor, test_if_margin_box_fits,
+                           is_first_run, &offset_info)) {
       return offset_info;
     }
 
@@ -1604,6 +1606,7 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
     const ComputedStyle& candidate_style,
     const LayoutBox* only_layout,
     const NGLogicalAnchorQueryMap* anchor_queries,
+    const LayoutObject* implicit_anchor,
     bool test_if_margin_box_fits,
     bool is_first_run,
     OffsetInfo* const offset_info) {
@@ -1647,14 +1650,15 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
         node_info.node.GetLayoutBox()->Container();
     DCHECK(css_containing_block);
     anchor_evaluator_storage.emplace(
-        *anchor_queries, *css_containing_block, container_converter,
-        candidate_writing_direction,
+        *anchor_queries, implicit_anchor, *css_containing_block,
+        container_converter, candidate_writing_direction,
         container_converter.ToPhysical(node_info.container_info.rect).offset);
   } else if (const NGLogicalAnchorQuery* anchor_query =
                  container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
     anchor_evaluator_storage.emplace(
-        *anchor_query, container_converter, candidate_writing_direction,
+        *anchor_query, implicit_anchor, container_converter,
+        candidate_writing_direction,
         container_converter.ToPhysical(node_info.container_info.rect).offset);
   } else {
     anchor_evaluator_storage.emplace();

@@ -205,12 +205,6 @@ crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ance
 # --- Skia roll test suppressions
 # --- END Skia roll test suppresions
 
-# ====== Popover and Anchor Positioning failures from here ======
-
-crbug.com/1380112 external/wpt/html/semantics/popovers/popover-anchor-display.tentative.html [ Failure ]
-
-# ====== Popover and Anchor Positioning failures to here ======
-
 # Disable tests for DevTools frontend CL (crrev.com/c/4044821)
 crbug.com/1383735 http/tests/devtools/elements/styles-1/add-new-rule-inline-style-csp.js [ Failure Pass ]
 crbug.com/1383735 http/tests/devtools/modify-cross-domain-rule.js [ Failure Pass ]

@@ -3770,8 +3770,12 @@ void LayoutObject::InsertedIntoTree() {
   if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock())
     flow_thread->FlowThreadDescendantWasInserted(this);
 
-  if (MayHaveAnchorQuery())
+  if (const Element* element = DynamicTo<Element>(GetNode());
+      element && element->HasAnchoredPopover()) {
+    MarkMayHaveAnchorQuery();
+  } else if (MayHaveAnchorQuery()) {
     Parent()->MarkMayHaveAnchorQuery();
+  }
 }
 
 enum FindReferencingScrollAnchorsBehavior { kDontClear, kClear };

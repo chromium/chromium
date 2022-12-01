@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -25,8 +26,126 @@ class LayoutObject;
 class NGLogicalAnchorQuery;
 class NGLogicalAnchorQueryMap;
 class NGPhysicalFragment;
-class ScopedCSSName;
 struct NGLogicalAnchorReference;
+
+using NGAnchorKey = absl::variant<const ScopedCSSName*, const LayoutObject*>;
+
+// This class is conceptually a concatenation of two hash maps with different
+// key types but the same value type. To save memory, we don't implement it as
+// one hash map with a unified key type; Otherwise, the size of each key will be
+// increased by at least one pointer, which is undesired.
+template <typename NGAnchorReference>
+class NGAnchorQueryBase : public GarbageCollectedMixin {
+  using NamedAnchorMap =
+      HeapHashMap<Member<const ScopedCSSName>, Member<NGAnchorReference>>;
+  using ImplicitAnchorMap =
+      HeapHashMap<Member<const LayoutObject>, Member<NGAnchorReference>>;
+
+ public:
+  bool IsEmpty() const {
+    return named_anchors_.empty() && implicit_anchors_.empty();
+  }
+
+  const NGAnchorReference* AnchorReference(const NGAnchorKey& key) const {
+    if (const ScopedCSSName* const* name =
+            absl::get_if<const ScopedCSSName*>(&key)) {
+      return AnchorReference(named_anchors_, *name);
+    }
+    return AnchorReference(implicit_anchors_,
+                           absl::get<const LayoutObject*>(key));
+  }
+
+  struct AddResult {
+    Member<NGAnchorReference>* stored_value;
+    bool is_new_entry;
+    STACK_ALLOCATED();
+  };
+  AddResult insert(const NGAnchorKey& key, NGAnchorReference* reference) {
+    if (const ScopedCSSName* const* name =
+            absl::get_if<const ScopedCSSName*>(&key)) {
+      return insert(named_anchors_, *name, reference);
+    }
+    return insert(implicit_anchors_, absl::get<const LayoutObject*>(key),
+                  reference);
+  }
+
+  class Iterator {
+    STACK_ALLOCATED();
+
+    using NamedAnchorMap = typename NGAnchorQueryBase::NamedAnchorMap;
+    using ImplicitAnchorMap = typename NGAnchorQueryBase::ImplicitAnchorMap;
+
+   public:
+    Iterator(const NGAnchorQueryBase* anchor_query,
+             typename NamedAnchorMap::const_iterator named_map_iterator,
+             typename ImplicitAnchorMap::const_iterator implicit_map_iterator)
+        : anchor_query_(anchor_query),
+          named_map_iterator_(named_map_iterator),
+          implicit_map_iterator_(implicit_map_iterator) {}
+
+    struct Entry {
+      NGAnchorKey key;
+      NGAnchorReference* value;
+      STACK_ALLOCATED();
+    };
+    Entry operator*() const {
+      if (named_map_iterator_ != anchor_query_->named_anchors_.end())
+        return Entry{named_map_iterator_->key, named_map_iterator_->value};
+      return Entry{implicit_map_iterator_->key, implicit_map_iterator_->value};
+    }
+
+    bool operator==(const Iterator& other) const {
+      return named_map_iterator_ == other.named_map_iterator_ &&
+             implicit_map_iterator_ == other.implicit_map_iterator_;
+    }
+    bool operator!=(const Iterator& other) const { return !operator==(other); }
+
+    Iterator& operator++() {
+      if (named_map_iterator_ != anchor_query_->named_anchors_.end())
+        ++named_map_iterator_;
+      else
+        ++implicit_map_iterator_;
+      return *this;
+    }
+
+   private:
+    const NGAnchorQueryBase* anchor_query_;
+    typename NamedAnchorMap::const_iterator named_map_iterator_;
+    typename ImplicitAnchorMap::const_iterator implicit_map_iterator_;
+  };
+  Iterator begin() const {
+    return Iterator{this, named_anchors_.begin(), implicit_anchors_.begin()};
+  }
+  Iterator end() const {
+    return Iterator{this, named_anchors_.end(), implicit_anchors_.end()};
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(named_anchors_);
+    visitor->Trace(implicit_anchors_);
+  }
+
+ private:
+  friend class Iterator;
+
+  template <typename AnchorMapType, typename KeyType>
+  static const NGAnchorReference* AnchorReference(const AnchorMapType& anchors,
+                                                  const KeyType& key) {
+    auto it = anchors.find(key);
+    return it != anchors.end() ? it->value : nullptr;
+  }
+
+  template <typename AnchorMapType, typename KeyType>
+  static AddResult insert(AnchorMapType& anchors,
+                          const KeyType& key,
+                          NGAnchorReference* reference) {
+    auto result = anchors.insert(key, reference);
+    return AddResult{&result.stored_value->value, result.is_new_entry};
+  }
+
+  NamedAnchorMap named_anchors_;
+  ImplicitAnchorMap implicit_anchors_;
+};
 
 struct CORE_EXPORT NGPhysicalAnchorReference
     : public GarbageCollected<NGPhysicalAnchorReference> {
@@ -40,36 +159,19 @@ struct CORE_EXPORT NGPhysicalAnchorReference
   bool is_invalid = false;
 };
 
-class CORE_EXPORT NGPhysicalAnchorQuery {
+class CORE_EXPORT NGPhysicalAnchorQuery
+    : public NGAnchorQueryBase<NGPhysicalAnchorReference> {
   DISALLOW_NEW();
 
  public:
-  bool IsEmpty() const { return anchor_references_.empty(); }
+  using Base = NGAnchorQueryBase<NGPhysicalAnchorReference>;
 
-  const NGPhysicalAnchorReference* AnchorReference(
-      const ScopedCSSName& name) const;
-  const PhysicalRect* Rect(const ScopedCSSName& name) const;
-  const NGPhysicalFragment* Fragment(const ScopedCSSName& name) const;
-
-  using NGPhysicalAnchorReferenceMap =
-      HeapHashMap<Member<const ScopedCSSName>,
-                  Member<NGPhysicalAnchorReference>>;
-  NGPhysicalAnchorReferenceMap::const_iterator begin() const {
-    return anchor_references_.begin();
-  }
-  NGPhysicalAnchorReferenceMap::const_iterator end() const {
-    return anchor_references_.end();
-  }
+  const NGPhysicalAnchorReference* AnchorReference(const NGAnchorKey&) const;
+  const PhysicalRect* Rect(const NGAnchorKey&) const;
+  const NGPhysicalFragment* Fragment(const NGAnchorKey&) const;
 
   void SetFromLogical(const NGLogicalAnchorQuery& logical_query,
                       const WritingModeConverter& converter);
-
-  void Trace(Visitor* visitor) const;
-
- private:
-  friend class NGLogicalAnchorQuery;
-
-  NGPhysicalAnchorReferenceMap anchor_references_;
 };
 
 struct CORE_EXPORT NGLogicalAnchorReference
@@ -92,17 +194,17 @@ struct CORE_EXPORT NGLogicalAnchorReference
 };
 
 class CORE_EXPORT NGLogicalAnchorQuery
-    : public GarbageCollected<NGLogicalAnchorQuery> {
+    : public GarbageCollected<NGLogicalAnchorQuery>,
+      public NGAnchorQueryBase<NGLogicalAnchorReference> {
  public:
+  using Base = NGAnchorQueryBase<NGLogicalAnchorReference>;
+
   // Returns an empty instance.
   static const NGLogicalAnchorQuery& Empty();
 
-  bool IsEmpty() const { return anchor_references_.empty(); }
-
-  const NGLogicalAnchorReference* AnchorReference(
-      const ScopedCSSName& name) const;
-  const LogicalRect* Rect(const ScopedCSSName& name) const;
-  const NGPhysicalFragment* Fragment(const ScopedCSSName& name) const;
+  const NGLogicalAnchorReference* AnchorReference(const NGAnchorKey&) const;
+  const LogicalRect* Rect(const NGAnchorKey&) const;
+  const NGPhysicalFragment* Fragment(const NGAnchorKey&) const;
 
   enum class SetOptions {
     // A valid entry. The call order is in the tree order.
@@ -112,11 +214,11 @@ class CORE_EXPORT NGLogicalAnchorQuery
     // An invalid entry.
     kInvalid,
   };
-  void Set(const ScopedCSSName& name,
+  void Set(const NGAnchorKey&,
            const NGPhysicalFragment& fragment,
            const LogicalRect& rect,
            SetOptions);
-  void Set(const ScopedCSSName& name,
+  void Set(const NGAnchorKey&,
            NGLogicalAnchorReference* reference,
            bool maybe_out_of_order = false);
   void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
@@ -124,10 +226,10 @@ class CORE_EXPORT NGLogicalAnchorQuery
                        const LogicalOffset& additional_offset,
                        SetOptions);
 
-  // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
-  // the query is invalid (e.g., no targets or wrong axis.)
+  // Evaluate the |anchor_value| for the given reference. Returns |nullopt| if
+  // the query is invalid (due to wrong axis).
   absl::optional<LayoutUnit> EvaluateAnchor(
-      const ScopedCSSName* anchor_name,
+      const NGLogicalAnchorReference& reference,
       AnchorValue anchor_value,
       float percentage,
       LayoutUnit available_size,
@@ -136,18 +238,10 @@ class CORE_EXPORT NGLogicalAnchorQuery
       const PhysicalOffset& offset_to_padding_box,
       bool is_y_axis,
       bool is_right_or_bottom) const;
-  absl::optional<LayoutUnit> EvaluateSize(const ScopedCSSName* anchor_name,
-                                          AnchorSizeValue anchor_size_value,
-                                          WritingMode container_writing_mode,
-                                          WritingMode self_writing_mode) const;
-
-  void Trace(Visitor* visitor) const;
-
- private:
-  friend class NGPhysicalAnchorQuery;
-
-  HeapHashMap<Member<const ScopedCSSName>, Member<NGLogicalAnchorReference>>
-      anchor_references_;
+  LayoutUnit EvaluateSize(const NGLogicalAnchorReference& reference,
+                          AnchorSizeValue anchor_size_value,
+                          WritingMode container_writing_mode,
+                          WritingMode self_writing_mode) const;
 };
 
 class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
@@ -159,10 +253,12 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   NGAnchorEvaluatorImpl() = default;
 
   NGAnchorEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query,
+                        const LayoutObject* implicit_anchor,
                         const WritingModeConverter& container_converter,
                         WritingDirectionMode self_writing_direction,
                         const PhysicalOffset& offset_to_padding_box)
       : anchor_query_(&anchor_query),
+        implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
         offset_to_padding_box_(offset_to_padding_box) {
@@ -172,11 +268,13 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   // This constructor takes |NGLogicalAnchorQueryMap| and |containing_block|
   // instead of |NGLogicalAnchorQuery|.
   NGAnchorEvaluatorImpl(const NGLogicalAnchorQueryMap& anchor_queries,
+                        const LayoutObject* implicit_anchor,
                         const LayoutObject& containing_block,
                         const WritingModeConverter& container_converter,
                         WritingDirectionMode self_writing_direction,
                         const PhysicalOffset& offset_to_padding_box)
       : anchor_queries_(&anchor_queries),
+        implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
@@ -198,6 +296,8 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
     is_right_or_bottom_ = is_right_or_bottom;
   }
 
+  // Evaluates the given anchor query. Returns nullopt if the query invalid
+  // (e.g., no target or wrong axis).
   absl::optional<LayoutUnit> Evaluate(
       const CalculationExpressionNode&) const override;
 
@@ -213,6 +313,7 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
 
   mutable const NGLogicalAnchorQuery* anchor_query_ = nullptr;
   const NGLogicalAnchorQueryMap* anchor_queries_ = nullptr;
+  const LayoutObject* implicit_anchor_ = nullptr;
   const LayoutObject* containing_block_ = nullptr;
   const WritingModeConverter container_converter_{
       {WritingMode::kHorizontalTb, TextDirection::kLtr}};

@@ -412,6 +412,11 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
   if (style.AnchorName())
     return true;
 
+  if (const Element* element = DynamicTo<Element>(GetNode())) {
+    if (element->HasAnchoredPopover())
+      return true;
+  }
+
   return ComputeIsAbsoluteContainer(&style) ||
          NGOutlineUtils::HasPaintedOutline(style, GetNode()) ||
          CanBeHitTestTargetPseudoNodeStyle(style);

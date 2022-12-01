@@ -1884,6 +1884,10 @@ void HTMLElement::PopoverAnchorElementChanged() {
   if (new_anchor)
     new_anchor->IncrementAnchoredPopoverCount();
   GetPopoverData()->setAnchorElement(new_anchor);
+  if (GetLayoutObject()) {
+    GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
+        layout_invalidation_reason::kAnchorPositioning);
+  }
 }
 
 void HTMLElement::SetNeedsRepositioningForSelectMenu(bool flag) {

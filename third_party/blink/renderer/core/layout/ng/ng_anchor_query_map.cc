@@ -78,14 +78,18 @@ struct NGStitchedAnchorReference
 
 // This creates anchor queries in the stitched coordinate system. The result
 // can be converted to a |NGLogicalAnchorQuery|.
-struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
+struct NGStitchedAnchorQuery
+    : public GarbageCollected<NGStitchedAnchorQuery>,
+      public NGAnchorQueryBase<NGStitchedAnchorReference> {
+  using Base = NGAnchorQueryBase<NGStitchedAnchorReference>;
+
   // Convert |this| to a |NGLogicalAnchorQuery|. The result is a regular
   // |NGLogicalAnchorQuery| except that its coordinate system is stitched
   // (i.e., as if they weren't fragmented.)
   NGLogicalAnchorQuery* StitchedAnchorQuery() const {
     auto* anchor_query = MakeGarbageCollected<NGLogicalAnchorQuery>();
-    for (const auto& it : references)
-      anchor_query->Set(*it.key, it.value->StitchedAnchorReference());
+    for (const auto entry : *this)
+      anchor_query->Set(entry.key, entry.value->StitchedAnchorReference());
     return anchor_query;
   }
 
@@ -102,15 +106,15 @@ struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
     const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery();
     if (!anchor_query)
       return;
-    for (const auto& it : *anchor_query) {
-      DCHECK(it.value->fragment);
-      AddAnchorReference(*it.key, *it.value->fragment,
-                         it.value->rect + offset_from_fragmentainer,
+    for (auto entry : *anchor_query) {
+      DCHECK(entry.value->fragment);
+      AddAnchorReference(entry.key, *entry.value->fragment,
+                         entry.value->rect + offset_from_fragmentainer,
                          fragmentainer, Conflict::kFirstInCallOrder);
     }
   }
 
-  void AddAnchorReference(const ScopedCSSName& anchor_name,
+  void AddAnchorReference(const NGAnchorKey& key,
                           const NGPhysicalFragment& fragment,
                           const PhysicalRect& physical_rect_in_fragmentainer,
                           const FragmentainerContext& fragmentainer,
@@ -119,12 +123,12 @@ struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
         fragmentainer.converter.ToLogical(physical_rect_in_fragmentainer);
     auto* new_value = MakeGarbageCollected<NGStitchedAnchorReference>(
         fragment, rect_in_fragmentainer, fragmentainer);
-    const auto result = references.insert(&anchor_name, new_value);
+    const auto result = Base::insert(key, new_value);
     if (result.is_new_entry)
       return;
 
     // If this is a fragment of the existing box, unite it with other fragments.
-    NGStitchedAnchorReference* existing = result.stored_value->value;
+    NGStitchedAnchorReference* existing = *result.stored_value;
     const LayoutObject* existing_object = existing->fragment->GetLayoutObject();
     DCHECK(existing_object);
     const LayoutObject* new_object = new_value->fragment->GetLayoutObject();
@@ -148,11 +152,6 @@ struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
         break;
     }
   }
-
-  void Trace(Visitor* visitor) const { visitor->Trace(references); }
-
-  HeapHashMap<Member<const ScopedCSSName>, Member<NGStitchedAnchorReference>>
-      references;
 };
 
 // This collects |NGStitchedAnchorQuery| for each containing block.
@@ -299,8 +298,10 @@ struct NGStitchedAnchorQueries {
                          const PhysicalOffset& offset_from_fragmentainer,
                          const FragmentainerContext& fragmentainer) {
     DCHECK(fragment.IsOutOfFlowPositioned());
-    if (!fragment.Style().AnchorName() && !fragment.AnchorQuery())
+    if (!fragment.Style().AnchorName() && !fragment.IsImplicitAnchor() &&
+        !fragment.AnchorQuery()) {
       return;
+    }
     // OOF fragments in block-fragmentation context are children of the
     // fragmentainers, but they should be added to anchor queries of their
     // containing block chain. Traverse the containing block chain and add
@@ -326,7 +327,13 @@ struct NGStitchedAnchorQueries {
           EnsureStitchedAnchorQuery(*containing_block);
       if (fragment.Style().AnchorName()) {
         query.AddAnchorReference(
-            *fragment.Style().AnchorName(), fragment,
+            fragment.Style().AnchorName(), fragment,
+            {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
+            NGStitchedAnchorQuery::Conflict::kOverwriteIfBefore);
+      }
+      if (fragment.IsImplicitAnchor()) {
+        query.AddAnchorReference(
+            layout_object, fragment,
             {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
             NGStitchedAnchorQuery::Conflict::kOverwriteIfBefore);
       }
