@@ -70,6 +70,10 @@ bool IsShareToGoogleCollectionsEnabled() {
   return base::FeatureList::IsEnabled(share::kShareToGoogleCollections);
 }
 
+bool IsWebShareable(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS();
+}
+
 }  // namespace
 
 SharingHubAction::SharingHubAction(int command_id,
@@ -138,8 +142,11 @@ void SharingHubModel::GetFirstPartyActionList(
 }
 
 void SharingHubModel::GetThirdPartyActionList(
+    content::WebContents* contents,
     std::vector<SharingHubAction>* list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsWebShareable(contents->GetLastCommittedURL()))
+    return;
   for (const auto& action : third_party_action_list_) {
     list->push_back(action);
   }

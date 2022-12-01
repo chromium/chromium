@@ -71,7 +71,8 @@ class SharingHubModel : public sharing::ShareTargetsObserver {
                                std::vector<SharingHubAction>* list);
   // Populates the vector with third party Sharing Hub actions, ordered by
   // appearance in the dialog.
-  void GetThirdPartyActionList(std::vector<SharingHubAction>* list);
+  void GetThirdPartyActionList(content::WebContents* web_contents,
+                               std::vector<SharingHubAction>* list);
 
   // Executes the third party action indicated by |id|, i.e. opens a popup to
   // the corresponding webpage. The |url| is the URL to share, and the |title|

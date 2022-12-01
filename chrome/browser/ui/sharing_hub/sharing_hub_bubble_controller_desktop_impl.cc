@@ -155,7 +155,7 @@ SharingHubBubbleControllerDesktopImpl::GetThirdPartyActions() {
 
   SharingHubModel* model = GetSharingHubModel();
   if (model)
-    model->GetThirdPartyActionList(&actions);
+    model->GetThirdPartyActionList(&GetWebContents(), &actions);
 
   return actions;
 }
