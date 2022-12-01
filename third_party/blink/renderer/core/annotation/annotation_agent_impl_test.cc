@@ -690,4 +690,51 @@ TEST_F(AnnotationAgentImplTest, AgentScrollIntoViewZoomed) {
   EXPECT_TRUE(ExpectInViewport(*element_foo));
 }
 
+// Test that calling ScrollIntoView while layout is dirty causes the page to
+// update layout and correctly ScrollIntoView the agent.
+TEST_F(AnnotationAgentImplTest, ScrollIntoViewWithDirtyLayout) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        position: absolute;
+        top: 100px;
+      }
+    </style>
+    <p id='text'>FOO BAR</p>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* element_text = GetDocument().getElementById("text");
+
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_text, 0, 3, "FOO");
+  auto* agent_foo = CreateAgentForRange(range_foo);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectInViewport(*element_text));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  agent_foo->Attach();
+  ASSERT_TRUE(agent_foo->IsAttached());
+  host_foo.FlushForTesting();
+
+  element_text->setAttribute(html_names::kStyleAttr, "top: 2000px");
+
+  // Invoking ScrollIntoView on the agent should perform layout and then cause
+  // the attached content to scroll into the viewport.
+  host_foo.agent_->ScrollIntoView();
+  host_foo.FlushForTesting();
+
+  EXPECT_TRUE(ExpectInViewport(*element_text));
+  EXPECT_GT(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset().y(),
+            1000);
+}
+
 }  // namespace blink

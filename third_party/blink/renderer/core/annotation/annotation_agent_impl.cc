@@ -124,9 +124,12 @@ void AnnotationAgentImpl::ScrollIntoView() const {
 
   Node& first_node = *range.Nodes().begin();
 
+  Document& document = *owning_container_->GetSupplementable();
+  document.EnsurePaintLocationDataValidForNode(
+      &first_node, DocumentUpdateReason::kFindInPage);
+
   // TODO(bokan): Bring in all the autoexpand details and BeforeMatch logic
   // from TextFragmentAnchor.
-  // TODO(bokan): This probably requires we perform layout.
   DCHECK(first_node.GetLayoutObject());
 
   // Set the bounding box height to zero because we want to center the top of
