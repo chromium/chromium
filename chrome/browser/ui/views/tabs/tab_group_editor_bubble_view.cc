@@ -112,7 +112,7 @@ class TabGroupEditorBubbleDelegate : public ui::DialogModelDelegate {
  public:
   TabGroupEditorBubbleDelegate(const Browser* browser,
                                const tab_groups::TabGroupId& group)
-      : browser_(browser), group_(group) {}
+      : browser_(browser), group_(group), title_at_opening_(GetTitle()) {}
 
   TabGroupEditorBubbleDelegate(const TabGroupEditorBubbleDelegate&) = delete;
   TabGroupEditorBubbleDelegate& operator=(const TabGroupEditorBubbleDelegate&) =
@@ -120,6 +120,18 @@ class TabGroupEditorBubbleDelegate : public ui::DialogModelDelegate {
 
   ~TabGroupEditorBubbleDelegate() override = default;
 
+  void SetGroupTitle(std::u16string title) {
+    TabGroup* const tab_group =
+        browser_->tab_strip_model()->group_model()->GetTabGroup(group_);
+
+    const tab_groups::TabGroupVisualData* const current_visual_data =
+        tab_group->visual_data();
+
+    tab_groups::TabGroupVisualData new_data(
+        title, current_visual_data->color(),
+        current_visual_data->is_collapsed());
+    tab_group->SetVisualData(new_data, true);
+  }
   void NewTabInGroupPressed() {
     TabStripModel* const model = browser_->tab_strip_model();
     if (!model->group_model())
@@ -174,9 +186,116 @@ class TabGroupEditorBubbleDelegate : public ui::DialogModelDelegate {
     dialog_model()->host()->Close();
   }
 
+  void OnBubbleClose() {
+    // If we're doing the "create a tab group" tutorial, note whether the user
+    // actually entered a tab name.
+    if (browser_->window()->IsFeaturePromoActive(
+            feature_engagement::kIPHDesktopTabGroupsNewGroupFeature)) {
+      UMA_HISTOGRAM_BOOLEAN("Tutorial.TabGroup.EditedTitle",
+                            !GetTitle().empty());
+    }
+
+    if (title_at_opening_ != GetTitle()) {
+      base::RecordAction(
+          base::UserMetricsAction("TabGroups_TabGroupBubble_NameChanged"));
+    }
+  }
+
+  std::u16string GetTitle() {
+    return browser_->tab_strip_model()
+        ->group_model()
+        ->GetTabGroup(group_)
+        ->visual_data()
+        ->title();
+  }
+
  private:
   const raw_ptr<const Browser> browser_;
   const tab_groups::TabGroupId group_;
+  const std::u16string title_at_opening_;
+};
+
+class TitleField : public views::Textfield {
+ public:
+  // TODO(pbos): Add me back lol.
+  //  METADATA_HEADER(TitleField);
+  TitleField(TabGroupEditorBubbleDelegate* delegate,
+             bool stop_context_menu_propagation,
+             std::u16string title)
+      : title_field_controller_(delegate),
+        stop_context_menu_propagation_(stop_context_menu_propagation) {
+    SetText(title);
+    SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_TAB_GROUP_HEADER_CXMENU_TAB_GROUP_TITLE_ACCESSIBLE_NAME));
+    SetPlaceholderText(l10n_util::GetStringUTF16(
+        IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER));
+    set_controller(&title_field_controller_);
+    SetProperty(views::kElementIdentifierKey, kTabGroupEditorBubbleId);
+  }
+
+  ~TitleField() override = default;
+
+  // views::Textfield:
+  void ShowContextMenu(const gfx::Point& p,
+                       ui::MenuSourceType source_type) override {
+    // There is no easy way to stop the propagation of a ShowContextMenu event,
+    // which is sometimes used to open the bubble itself. So when the bubble is
+    // opened this way, we manually hide the textfield's context menu the first
+    // time. Otherwise, the textfield, which is automatically focused, would
+    // show an extra context menu when the bubble first opens.
+    if (stop_context_menu_propagation_) {
+      stop_context_menu_propagation_ = false;
+      return;
+    }
+    views::Textfield::ShowContextMenu(p, source_type);
+  }
+
+ private:
+  class TitleFieldController : public views::TextfieldController {
+   public:
+    explicit TitleFieldController(TabGroupEditorBubbleDelegate* delegate)
+        : delegate_(delegate) {}
+    ~TitleFieldController() override = default;
+
+    // views::TextfieldController:
+    void ContentsChanged(views::Textfield* sender,
+                         const std::u16string& new_contents) override {
+      delegate_->SetGroupTitle(sender->GetText());
+    }
+    bool HandleKeyEvent(views::Textfield* sender,
+                        const ui::KeyEvent& key_event) override {
+      // For special actions, only respond to key pressed events, to be
+      // consistent with other views like buttons and dialogs.
+      if (key_event.type() != ui::EventType::ET_KEY_PRESSED) {
+        return false;
+      }
+
+      const ui::KeyboardCode key_code = key_event.key_code();
+      if (key_code == ui::VKEY_ESCAPE) {
+        sender->GetWidget()->CloseWithReason(
+            views::Widget::ClosedReason::kEscKeyPressed);
+        return true;
+      }
+      if (key_code == ui::VKEY_RETURN) {
+        sender->GetWidget()->CloseWithReason(
+            views::Widget::ClosedReason::kUnspecified);
+        return true;
+      }
+
+      return false;
+    }
+
+   private:
+    const raw_ptr<TabGroupEditorBubbleDelegate> delegate_;
+  };
+
+  TitleFieldController title_field_controller_;
+
+  // Whether the context menu should be hidden the first time it shows.
+  // Needed because there is no easy way to stop the propagation of a
+  // ShowContextMenu event, which is sometimes used to open the bubble
+  // itself.
+  bool stop_context_menu_propagation_;
 };
 
 }  // namespace
@@ -203,10 +322,20 @@ views::Widget* TabGroupEditorBubbleView::Show(
 
     ui::DialogModel::Builder dialog_builder(std::move(bubble_delegate_unique));
 
-    // TODO(pbos): This still does not include the title field, divider or color
-    // picker.
-
+    // TODO(pbos): This does not include the color picker, or the
+    // saved-tab-group items that're under a flag.
     dialog_builder.OverrideShowCloseButton(false)
+        .SetDialogDestroyingCallback(
+            base::BindOnce(&TabGroupEditorBubbleDelegate::OnBubbleClose,
+                           base::Unretained(bubble_delegate)))
+        .AddCustomField(
+            std::make_unique<views::BubbleDialogModelHost::CustomView>(
+                std::make_unique<::TitleField>(bubble_delegate,
+                                               stop_context_menu_propagation,
+                                               bubble_delegate->GetTitle()),
+                views::BubbleDialogModelHost::FieldType::kControl),
+            kTabGroupEditorBubbleId)
+        .SetInitiallyFocusedField(kTabGroupEditorBubbleId)
         .AddSeparator()
         .AddCustomField(CreateMenuItemCustomView(
             l10n_util::GetStringUTF16(
@@ -335,7 +464,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   title_field_ =
       AddChildView(std::make_unique<TitleField>(stop_context_menu_propagation));
   title_field_->SetText(title);
-  title_field_->SetAccessibleName(u"Group title");
+  title_field_->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_TAB_GROUP_HEADER_CXMENU_TAB_GROUP_TITLE_ACCESSIBLE_NAME));
   title_field_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER));
   title_field_->set_controller(&title_field_controller_);
