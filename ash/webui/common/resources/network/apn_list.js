@@ -26,6 +26,9 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
+    /** The GUID of the network to display details for. */
+    guid: String,
+
     /**@type {!ManagedCellularProperties}*/
     managedCellularProperties: {
       type: Object,

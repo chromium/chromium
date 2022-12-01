@@ -9,78 +9,63 @@
 import './network_shared.css.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ApnProperties, ApnState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {ApnProperties, ApnState, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {getTemplate} from './apn_list_item.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'apn-list-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ApnListItemBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ApnListItem extends ApnListItemBase {
+  static get is() {
+    return 'apn-list-item';
+  }
 
-  properties: {
-    /**@type {!ApnProperties}*/
-    apn: {
-      type: Object,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    isConnected: {
-      type: Boolean,
-      value() {
-        return false;
+  static get properties() {
+    return {
+      /** The GUID of the network to display details for. */
+      guid: String,
+
+      /**@type {!ApnProperties}*/
+      apn: {type: Object},
+
+      isConnected: {
+        type: Boolean,
+        value: true,
       },
-    },
 
-    isAutoDetected: {
-      type: Boolean,
-      value() {
-        return false;
+      isAutoDetected: {
+        type: Boolean,
+        value: true,
       },
-    },
-
-    /** @private */
-    isDisabled_: {
-      reflectToAttribute: true,
-      type: Boolean,
-      computed: 'computeIsDisabled_(apn)',
-    },
-
-    /**
-     * TODO(b/162365553): Implement.
-     *  @private
-     */
-    shouldShowDetailsMenuItem_: {
-      type: Boolean,
-      value() {
-        return true;
+      /** @private */
+      isDisabled_: {
+        reflectToAttribute: true,
+        type: Boolean,
+        computed: 'computeIsDisabled_(apn)',
       },
-    },
+    };
+  }
 
-    /**
-     * TODO(b/162365553): Implement.
-     *  @private
-     */
-    shouldShowDisableMenuItem_: {
-      type: Boolean,
-      value() {
-        return true;
-      },
-    },
-
-    /**
-     * TODO(b/162365553): Implement.
-     *  @private
-     */
-    shouldShowRemoveMenuItem_: {
-      type: Boolean,
-      value() {
-        return true;
-      },
-    },
-  },
+  constructor() {
+    super();
+    /** @private {!CrosNetworkConfigRemote} */
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+  }
 
   /**
    * Opens the three dots menu.
@@ -89,28 +74,66 @@ Polymer({
   onMenuButtonClicked_(event) {
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu)
         .showAt(/** @type {!HTMLElement} */ (event.target));
-  },
+  }
 
   /**
    * Opens APN Details dialog.
    * TODO(b/162365553): Implement.
    * @private
    */
-  onDetailsClicked_() {},
+  onDetailsClicked_() {}
 
   /**
    * Disables the selected APN.
    * TODO(b/162365553): Implement.
    * @private
    */
-  onDisableClicked_() {},
+  onDisableClicked_() {}
 
   /**
    * Removes the selected APN.
-   * TODO(b/162365553): Implement.
    * @private
    */
-  onRemoveClicked_() {},
+  onRemoveClicked_() {
+    assert(this.guid);
+    assert(this.apn);
+    if (!this.apn.id) {
+      console.error('Only custom APNs can be removed.');
+      return;
+    }
+
+    this.networkConfig_.removeCustomApn(
+        this.guid, /** @type {string} */ (this.apn.id));
+  }
+
+  /**
+   * Returns true if detail menu button should be shown.
+   * TODO(b/162365553): Implement.
+   * @return {boolean}
+   * @private
+   */
+  shouldShowDetailsMenuItem_() {
+    return true;
+  }
+
+  /**
+   * Returns true if disable menu button should be shown.
+   * TODO(b/162365553): Implement.
+   * @return {boolean}
+   * @private
+   */
+  shouldShowDisableMenuItem_() {
+    return true;
+  }
+
+  /**
+   * Returns true if remove menu button should be shown.
+   * @return {boolean}
+   * @private
+   */
+  shouldShowRemoveMenuItem_() {
+    return !!this.apn && !!this.apn.id;
+  }
 
   /**
    * Returns true if the apn is disabled.
@@ -119,5 +142,7 @@ Polymer({
    */
   computeIsDisabled_() {
     return !!this.apn.id && this.apn.state === ApnState.kDisabled;
-  },
-});
+  }
+}
+
+customElements.define(ApnListItem.is, ApnListItem);

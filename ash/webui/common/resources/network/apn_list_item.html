@@ -62,15 +62,18 @@
 </cr-icon-button>
 
 <cr-action-menu id="dotsMenu" role-description="[[i18n('menu')]]">
-  <button class="dropdown-item" hidden="[[!shouldShowDetailsMenuItem_]]"
+  <button id="detailsButton" class="dropdown-item"
+      hidden="[[!shouldShowDetailsMenuItem_(apn)]]"
       on-click="onDetailsClicked_">
     [[i18n('apnMenuDetails')]]
   </button>
-  <button class="dropdown-item" hidden="[[!shouldShowDisableMenuItem_]]"
+  <button id="disableButton" class="dropdown-item"
+      hidden="[[!shouldShowDisableMenuItem_(apn)]]"
       on-click="onDisableClicked_">
     [[i18n('apnMenuDisable')]]
   </button>
-  <button class="dropdown-item" hidden="[[!shouldShowRemoveMenuItem_]]"
+  <button id="removeButton" class="dropdown-item"
+      hidden="[[!shouldShowRemoveMenuItem_(apn)]]"
       on-click="onRemoveClicked_">
     [[i18n('apnMenuRemove')]]
   </button>

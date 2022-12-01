@@ -139,28 +139,16 @@ export class FakeNetworkConfig {
     this.serverCas_ = [];
     this.userCerts_ = [];
 
-    ['getNetworkState',
-     'getNetworkStateList',
-     'getDeviceStateList',
-     'getManagedProperties',
-     'setNetworkTypeEnabledState',
-     'requestNetworkScan',
-     'getGlobalPolicy',
-     'getVpnProviders',
-     'getNetworkCertificates',
-     'setProperties',
-     'setCellularSimState',
-     'startConnect',
-     'startDisconnect',
-     'configureNetwork',
-     'getAlwaysOnVpn',
-     'getSupportedVpnTypes',
-     'requestTrafficCounters',
-     'resetTrafficCounters',
-     'setTrafficCountersAutoReset',
-    ].forEach((methodName) => {
-      this.resolverMap_.set(methodName, new PromiseResolver());
-    });
+    ['getNetworkState', 'getNetworkStateList', 'getDeviceStateList',
+     'getManagedProperties', 'setNetworkTypeEnabledState', 'requestNetworkScan',
+     'getGlobalPolicy', 'getVpnProviders', 'getNetworkCertificates',
+     'setProperties', 'setCellularSimState', 'startConnect', 'startDisconnect',
+     'configureNetwork', 'getAlwaysOnVpn', 'getSupportedVpnTypes',
+     'requestTrafficCounters', 'resetTrafficCounters',
+     'setTrafficCountersAutoReset', 'removeCustomApn']
+        .forEach((methodName) => {
+          this.resolverMap_.set(methodName, new PromiseResolver());
+        });
   }
 
   /**
@@ -774,5 +762,23 @@ export class FakeNetworkConfig {
       this.setAutoResetValues_(guid, autoReset, resetDay);
       resolve(true);
     });
+  }
+
+  /**
+   * @param {string} guid
+   * @param {string} apnId
+   */
+  removeCustomApn(guid, apnId) {
+    assert(guid);
+    assert(apnId);
+    const managed = this.managedProperties_.get(guid);
+    if (!!managed && !!managed.typeProperties &&
+        !!managed.typeProperties.cellular &&
+        Array.isArray(managed.typeProperties.cellular.customApnList)) {
+      managed.typeProperties.cellular.customApnList =
+          managed.typeProperties.cellular.customApnList.filter(
+              apn => apn.id !== apnId);
+    }
+    this.methodCalled('removeCustomApn');
   }
 }
