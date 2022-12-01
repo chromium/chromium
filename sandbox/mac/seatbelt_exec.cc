@@ -236,17 +236,14 @@ bool SeatbeltExecServer::ApplySandboxProfile(const mac::SandboxPolicy& policy) {
   }
   weak_params.push_back(nullptr);
 
-  char* error = nullptr;
-  int rv = Seatbelt::InitWithParams(policy.profile().c_str(), 0,
-                                    weak_params.data(), &error);
-  if (error) {
-    logging::Error("SeatbeltExecServer: Failed to initialize sandbox: %d %s",
-                   rv, error);
-    Seatbelt::FreeError(error);
-    return false;
+  std::string error;
+  bool ok = Seatbelt::InitWithParams(policy.profile().c_str(), 0,
+                                     weak_params.data(), &error);
+  if (!ok) {
+    logging::Error("SeatbeltExecServer: Failed to initialize sandbox: %s",
+                   error.c_str());
   }
-
-  return rv == 0;
+  return ok;
 }
 
 bool SeatbeltExecServer::ReadString(std::string* str) {

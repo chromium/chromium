@@ -149,10 +149,9 @@ bool SafeDMG::EnableSandbox() {
         " (allow file-write* (subpath \"%s\"))", unpack_path);
   }
 
-  char* sbox_error;
-  if (sandbox::Seatbelt::Init(sbox_profile.c_str(), 0, &sbox_error) != 0) {
+  std::string sbox_error;
+  if (!sandbox::Seatbelt::Init(sbox_profile.c_str(), 0, &sbox_error)) {
     LOG(ERROR) << "Failed to initialize sandbox: " << sbox_error;
-    sandbox::Seatbelt::FreeError(sbox_error);
     return false;
   }
 
