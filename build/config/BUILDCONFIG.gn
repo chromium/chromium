@@ -669,6 +669,7 @@ foreach(_target_type, [ "action" ]) {
         if (defined(invoker.inputs)) {
           foreach(input, invoker.inputs) {
             re_inputs += [ rebase_path(input, rbe_exec_root) ]
+            inputs += [ input ]
           }
         }
         if (defined(invoker.sources)) {
@@ -687,6 +688,7 @@ foreach(_target_type, [ "action" ]) {
         # Write input/output lists to files as these can grow extremely large.
         re_inputs_file = "$target_gen_dir/${target_name}__remote_inputs.rsp"
         write_file(re_inputs_file, re_inputs)
+        inputs += [ re_inputs_file ]
         re_outputs_file = "$target_gen_dir/${target_name}__remote_outputs.rsp"
         write_file(re_outputs_file, re_outputs)
 
