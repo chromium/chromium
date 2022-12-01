@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/app_stream_launcher_item.h"
 #include "ash/system/phonehub/app_stream_launcher_view.h"
@@ -239,8 +240,8 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateHeaderView() {
                                /*adjust_height_for_width =*/true)
           .WithWeight(1));
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // TODO(b/259299246) Finalize the text and read from the resource
-  title->SetText(u"Apps on your phone");
+  title->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_APP_STREAM_LAUNCHER_TITLE));
 
   return header;
 }
