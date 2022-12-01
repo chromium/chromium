@@ -487,12 +487,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
 
     // Draw will only fail if the SkSurface and SkDDL are incompatible.
     bool draw_success = scoped_output_device_paint_->Draw(ddl);
-#if BUILDFLAG(IS_OZONE)
-    if (!draw_success)
-      DLOG(ERROR) << "output_sk_surface()->draw() failed.";
-#else
     DCHECK(draw_success);
-#endif  // USE_OZONE
 
     destroy_after_swap_.emplace_back(std::move(ddl));
 
