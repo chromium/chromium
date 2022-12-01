@@ -219,6 +219,7 @@ UserContext StubAuthenticator::ExpectedUserContextWithTransformedKey() const {
     cryptohome::AuthFactorsSet factors;
     factors.Put(cryptohome::AuthFactorType::kPassword);
     factors.Put(cryptohome::AuthFactorType::kPin);
+    factors.Put(cryptohome::AuthFactorType::kRecovery);
     cryptohome::AuthFactorRef ref(
         cryptohome::AuthFactorType::kPassword,
         cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel});

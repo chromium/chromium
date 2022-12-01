@@ -190,7 +190,7 @@ void ConsolidatedConsentScreen::ShowImpl() {
   // user.
   data.Set("showRecoveryOption", context()->ask_about_recovery_consent);
   // Default value for recovery opt toggle.
-  data.Set("recoveryOptionDefault", context()->ask_about_recovery_consent);
+  data.Set("recoveryOptionDefault", context()->recovery_factor_opted_in);
 
   view_->Show(std::move(data));
 }

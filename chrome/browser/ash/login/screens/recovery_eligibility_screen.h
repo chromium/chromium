@@ -18,10 +18,16 @@ class RecoveryEligibilityScreen : public BaseScreen {
  public:
   enum class Result { PROCEED, NOT_APPLICABLE };
   static std::string GetResultString(Result result);
+  static bool ShouldSkipRecoverySetupBecauseOfPolicy();
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   explicit RecoveryEligibilityScreen(const ScreenExitCallback& exit_callback);
   ~RecoveryEligibilityScreen() override;
+
+  ScreenExitCallback get_exit_callback_for_testing() { return exit_callback_; }
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
 
  private:
   // BaseScreen:

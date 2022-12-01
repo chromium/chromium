@@ -3837,6 +3837,7 @@ if (!is_android) {
         "../browser/ash/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.cc",
         "../browser/ash/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.h",
         "../browser/ash/login/screens/recommend_apps_screen_browsertest.cc",
+        "../browser/ash/login/screens/recovery_eligibility_screen_browsertest.cc",
         "../browser/ash/login/screens/smart_privacy_protection_screen_browsertest.cc",
         "../browser/ash/login/screens/sync_consent_browsertest.cc",
         "../browser/ash/login/screens/terms_of_service_screen_browsertest.cc",

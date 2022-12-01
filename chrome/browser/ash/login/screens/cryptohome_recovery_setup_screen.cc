@@ -48,6 +48,7 @@ void CryptohomeRecoverySetupScreen::ShowImpl() {
       quick_unlock::QuickUnlockFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
   CHECK(quick_unlock_storage);
+  CHECK(context()->extra_factors_auth_session);
   const std::string token = quick_unlock_storage->CreateAuthToken(
       *context()->extra_factors_auth_session);
   auth::GetRecoveryFactorEditor().Configure(

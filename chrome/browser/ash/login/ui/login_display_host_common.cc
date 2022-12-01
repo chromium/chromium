@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
+#include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
@@ -513,10 +515,9 @@ void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
 
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
-  // TODO(b/239804500): Check if recovery screen should be skipped because of
-  // policy.
   if (PinSetupScreen::ShouldSkipBecauseOfPolicy() &&
-      !chromeos::features::IsCryptohomeRecoverySetupEnabled())
+      !chromeos::features::IsCryptohomeRecoverySetupEnabled() &&
+      RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy())
     return;
 
   wizard_context_->extra_factors_auth_session =
