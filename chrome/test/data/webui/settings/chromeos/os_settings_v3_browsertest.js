@@ -425,6 +425,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
+ ['FakeCrosAudioConfig', 'fake_cros_audio_config_test.js'],
  ['FilesPage', 'os_files_page_test.js'],
  ['FingerprintPage', 'fingerprint_browsertest_chromeos.js'],
  ['FindShortcutBehaviorTest', 'find_shortcut_behavior_test.js'],

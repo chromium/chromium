@@ -58,6 +58,7 @@ test_files = [
   "esim_install_error_dialog_test.js",
   "esim_remove_profile_dialog_test.js",
   "esim_rename_dialog_test.js",
+  "fake_cros_audio_config_test.js",
   "fake_input_method_private.js",
   "fake_language_settings_private.js",
   "fake_media_devices.js",
