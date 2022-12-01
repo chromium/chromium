@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 113 tests; 108 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 113 tests; 110 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS src set
 PASS src changed
 PASS src removed
@@ -56,8 +56,8 @@ PASS referrerpolicy no-referrer to absent, src already set
 PASS referrerpolicy no-referrer to empty, src already set
 PASS referrerpolicy no-referrer to no-referrer-when-downgrade, src already set
 PASS referrerpolicy no-referrer to invalid, src already set
-FAIL inserted into picture assert_unreached: update the image data didn't run Reached unreachable code
-FAIL removed from picture assert_unreached: update the image data didn't run Reached unreachable code
+PASS inserted into picture
+PASS removed from picture
 PASS parent is picture, previous source inserted
 PASS parent is picture, previous source removed
 PASS parent is picture, previous source has srcset set
