@@ -9,6 +9,15 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <wingdi.h>
+
+#include "base/win/scoped_gdi_object.h"
+#include "base/win/scoped_hdc.h"
+#include "base/win/scoped_select_object.h"
+#include "ui/gfx/gdi_util.h"
+#endif
+
 namespace gl {
 // static
 GLuint GLTestHelper::CreateTexture(GLenum target) {
@@ -87,5 +96,49 @@ bool GLTestHelper::CheckPixelsWithError(int x,
 
   return !bad_count;
 }
+
+#if BUILDFLAG(IS_WIN)
+// static
+std::vector<SkColor> GLTestHelper::ReadBackWindow(HWND window,
+                                                  const gfx::Size& size) {
+  base::win::ScopedCreateDC mem_hdc(::CreateCompatibleDC(nullptr));
+  DCHECK(mem_hdc.IsValid());
+
+  BITMAPV4HEADER hdr;
+  gfx::CreateBitmapV4HeaderForARGB888(size.width(), size.height(), &hdr);
+
+  void* bits = nullptr;
+  base::win::ScopedBitmap bitmap(
+      ::CreateDIBSection(mem_hdc.Get(), reinterpret_cast<BITMAPINFO*>(&hdr),
+                         DIB_RGB_COLORS, &bits, nullptr, 0));
+  DCHECK(bitmap.is_valid());
+
+  base::win::ScopedSelectObject select_object(mem_hdc.Get(), bitmap.get());
+
+  // Grab a copy of the window. Use PrintWindow because it works even when the
+  // window's partially occluded. The PW_RENDERFULLCONTENT flag is undocumented,
+  // but works starting in Windows 8.1. It allows for capturing the contents of
+  // the window that are drawn using DirectComposition.
+  UINT flags = PW_CLIENTONLY | PW_RENDERFULLCONTENT;
+
+  BOOL result = PrintWindow(window, mem_hdc.Get(), flags);
+  if (!result)
+    PLOG(ERROR) << "Failed to print window";
+
+  GdiFlush();
+
+  std::vector<SkColor> pixels(size.width() * size.height());
+  memcpy(pixels.data(), bits, pixels.size() * sizeof(SkColor));
+  return pixels;
+}
+
+// static
+SkColor GLTestHelper::ReadBackWindowPixel(HWND window,
+                                          const gfx::Point& point) {
+  gfx::Size size(point.x() + 1, point.y() + 1);
+  auto pixels = ReadBackWindow(window, size);
+  return pixels[size.width() * point.y() + point.x()];
+}
+#endif
 
 }  // namespace gl

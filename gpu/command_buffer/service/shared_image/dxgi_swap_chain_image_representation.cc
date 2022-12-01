@@ -135,17 +135,39 @@ SkiaGLImageRepresentationDXGISwapChain::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+  if (!IsCleared() && gfx::Rect(size()) != update_rect) {
+    LOG(ERROR) << "First draw to surface must draw to everything";
+    return {};
+  }
+
   std::vector<sk_sp<SkSurface>> surfaces =
       SkiaGLImageRepresentation::BeginWriteAccess(
           final_msaa_count, surface_props, update_rect, begin_semaphores,
           end_semaphores, end_state);
 
   if (!surfaces.empty()) {
-    static_cast<DXGISwapChainImageBacking*>(backing())->set_swap_rect(
+    static_cast<DXGISwapChainImageBacking*>(backing())->AddSwapRect(
         update_rect);
   }
 
   return surfaces;
+}
+
+void SkiaGLImageRepresentationDXGISwapChain::EndWriteAccess() {
+  SkiaGLImageRepresentation::EndWriteAccess();
+
+  // For FLIP_SEQUENTIAL swap chains, a successful present will unbind the back
+  // buffer from the graphics pipeline. The state caching layers in Skia/ANGLE
+  // are unaware of our Present1 calls and incorrectly assume the back buffer
+  // texture remains bound. To work around this, we'll recreate the SkSurfaces
+  // for every draw to ensure that Skia/ANGLE will rebind out back buffer.
+  // See:
+  // https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_2/nf-dxgi1_2-idxgiswapchain1-present1#remarks
+  //
+  // This only needs to happen on Present, but we have it on EndWriteAccess for
+  // convenience. It's possible to have multiple draws per Present, but we
+  // assume that 1:1 is the most common case.
+  SkiaGLImageRepresentation::ClearCachedSurfaces();
 }
 
 }  // namespace gpu

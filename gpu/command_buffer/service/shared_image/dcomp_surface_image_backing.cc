@@ -105,8 +105,8 @@ class DCompSurfaceImageBacking::D3DTextureGLSurfaceEGL
         display_->GetDisplay(), EGL_D3D_TEXTURE_ANGLE, buffer, GetConfig(),
         pbuffer_attribs.data());
     if (!surface_) {
-      DLOG(ERROR) << "eglCreatePbufferFromClientBuffer failed with error "
-                  << ui::GetLastEGLErrorString();
+      LOG(ERROR) << "eglCreatePbufferFromClientBuffer failed with error "
+                 << ui::GetLastEGLErrorString();
       return false;
     }
 
@@ -240,7 +240,7 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDraw(
   }
 
   if (!IsCleared() && gfx::Rect(size()) != update_rect) {
-    DLOG(ERROR) << "First draw to surface must draw to everything";
+    LOG(ERROR) << "First draw to surface must draw to everything";
     return nullptr;
   }
 
@@ -257,7 +257,7 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDraw(
         << "Concurrent writes to multiple DCompSurfaceImageBacking "
            "not allowed.";
 
-    DLOG(ERROR) << "BeginDraw failed: " << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "BeginDraw failed: " << logging::SystemErrorCodeToString(hr);
     return nullptr;
   }
 
@@ -310,7 +310,10 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDraw(
                                       final_msaa_count, 0, framebuffer_info);
   auto surface = SkSurface::MakeFromBackendRenderTarget(
       context_state->gr_context(), render_target, surface_origin(), color_type,
-      color_space().ToSkColorSpace(), &surface_props);
+      color_space().ToSkColorSpace(
+          // TODO(crbug/1385874): Read SDR white level from current frame
+          gfx::ColorSpace::kDefaultSDRWhiteLevel),
+      &surface_props);
   DCHECK(surface);
 
   return surface;

@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
@@ -124,11 +125,11 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
   if (SUCCEEDED(dxgi_swap_chain.As(&swap_chain_3))) {
     hr = swap_chain_3->SetColorSpace1(
         gfx::ColorSpaceWin::GetDXGIColorSpace(color_space));
-    DCHECK_EQ(hr, S_OK) << "SetColorSpace1 failed: "
+    DCHECK_EQ(hr, S_OK) << ", SetColorSpace1 failed: "
                         << logging::SystemErrorCodeToString(hr);
     if (IsWaitableSwapChainEnabled()) {
       hr = swap_chain_3->SetMaximumFrameLatency(GetMaxWaitableQueuedFrames());
-      DCHECK_EQ(hr, S_OK) << "SetMaximumFrameLatency failed: "
+      DCHECK_EQ(hr, S_OK) << ", SetMaximumFrameLatency failed: "
                           << logging::SystemErrorCodeToString(hr);
     }
   }
@@ -177,27 +178,44 @@ void DXGISwapChainImageBacking::Update(
   DCHECK(!in_fence);
 }
 
+void DXGISwapChainImageBacking::AddSwapRect(const gfx::Rect& swap_rect) {
+  if (pending_swap_rect_.has_value()) {
+    // Force a Present if there's already a pending swap rect. For normal usage
+    // of this backing, we normally expect one Skia write access to overlay read
+    // access.
+    // We'll log a message so it appears in the GPU log in case it aids in
+    // debugging.
+    LOG(WARNING) << "Multiple skia write accesses per overlay access, flushing "
+                    "pending swap.";
+    Present(false);
+  }
+
+  pending_swap_rect_ = swap_rect;
+}
+
 bool DXGISwapChainImageBacking::Present(
     bool should_synchronize_present_with_vblank) {
-  if (!swap_rect_.has_value()) {
-    DLOG(ERROR) << "Could not present without an update rect";
-    return false;
+  if (!pending_swap_rect_.has_value()) {
+    DVLOG(1) << "Skipping present without an update rect";
+    return true;
   }
 
   HRESULT hr, device_removed_reason;
   const bool use_swap_chain_tearing =
       gl::DirectCompositionSwapChainTearingEnabled();
+  const bool force_present_interval_0 =
+      base::FeatureList::IsEnabled(features::kDXGISwapChainPresentInterval0);
   UINT interval = first_swap_ || !should_synchronize_present_with_vblank ||
-                          use_swap_chain_tearing
+                          use_swap_chain_tearing || force_present_interval_0
                       ? 0
                       : 1;
   UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
   TRACE_EVENT2("gpu", "DirectCompositionChildSurfaceWin::PresentSwapChain",
                "has_alpha", !SkAlphaTypeIsOpaque(alpha_type()), "dirty_rect",
-               swap_rect_.value().ToString());
+               pending_swap_rect_->ToString());
   DXGI_PRESENT_PARAMETERS params = {};
-  RECT dirty_rect = swap_rect_.value().ToRECT();
+  RECT dirty_rect = pending_swap_rect_.value().ToRECT();
   params.DirtyRectsCount = 1;
   params.pDirtyRects = &dirty_rect;
   hr = dxgi_swap_chain_->Present1(interval, flags, &params);
@@ -205,7 +223,7 @@ bool DXGISwapChainImageBacking::Present(
   // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only
   // indicates that the window is occluded and we can stop rendering.
   if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
-    DLOG(ERROR) << "Present1 failed: " << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "Present1 failed: " << logging::SystemErrorCodeToString(hr);
     return false;
   }
 
@@ -230,7 +248,7 @@ bool DXGISwapChainImageBacking::Present(
     }
   }
 
-  swap_rect_.reset();
+  pending_swap_rect_.reset();
 
   return true;
 }
