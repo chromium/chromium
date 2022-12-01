@@ -13,20 +13,21 @@
 #include "ui/views/layout/flex_layout.h"
 
 namespace ui::ime {
-const int kPadding = 4;
-const int kBetweenSpacing = 8;
+const int kTopBottomPadding = 4;
+const int kLeftRightPadding = 2;
+const int kBetweenSpacing = 4;
 const int kBorderRadius = 2;
-const int kCandidateSquareSide = 20;
+const int kCandidateSquareSide = 24;
 const views::Label::CustomFont kCandidateTextFont = {
     .font_list = gfx::FontList(gfx::FontList({"Roboto"},
                                              gfx::Font::NORMAL,
-                                             14,
+                                             16,
                                              gfx::Font::Weight::MEDIUM))};
 const views::Label::CustomFont kIndexFont = {
     .font_list = gfx::FontList(gfx::FontList({"Roboto"},
                                              gfx::Font::NORMAL,
                                              10,
-                                             gfx::Font::Weight::NORMAL))};
+                                             gfx::Font::Weight::MEDIUM))};
 
 IndexedSuggestionCandidateButton::IndexedSuggestionCandidateButton(
     PressedCallback callback,
@@ -36,7 +37,10 @@ IndexedSuggestionCandidateButton::IndexedSuggestionCandidateButton(
     : views::Button(std::move(callback)) {
   SetAccessibleName(candidate_text);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(kPadding),
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets()
+          .set_left_right(kLeftRightPadding, kLeftRightPadding)
+          .set_top_bottom(kTopBottomPadding, kTopBottomPadding),
       /* between_child_spacing=*/kBetweenSpacing));
 
   if (create_legacy_candidate) {
