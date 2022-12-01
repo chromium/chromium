@@ -203,8 +203,6 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
     {"linkDoctorPrefDesc", IDS_SETTINGS_LINKDOCTOR_PREF_DESC},
     {"driveSuggestPref", IDS_DRIVE_SUGGEST_PREF},
     {"driveSuggestPrefDesc", IDS_DRIVE_SUGGEST_PREF_DESC},
-    {"autofillAssistantPref", IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF},
-    {"autofillAssistantPrefDesc", IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF_DESC},
     {"priceEmailNotificationsPref", IDS_PRICE_TRACKING_SETTINGS_TITLE},
     {"priceEmailNotificationsPrefDesc",
      IDS_PRICE_TRACKING_SETTINGS_EMAIL_DESCRIPTION},

@@ -123,16 +123,6 @@ void ConsentAuditorImpl::RecordAccountPasswordsConsent(
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
 
-void ConsentAuditorImpl::RecordAutofillAssistantConsent(
-    const CoreAccountId& account_id,
-    const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) {
-  std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
-  *specifics->mutable_autofill_assistant_consent() = consent;
-
-  consent_sync_bridge_->RecordConsent(std::move(specifics));
-}
-
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 ConsentAuditorImpl::GetControllerDelegate() {
   if (consent_sync_bridge_) {

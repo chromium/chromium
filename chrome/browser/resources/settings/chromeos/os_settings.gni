@@ -312,7 +312,6 @@ non_web_component_files = [
   "prefs/prefs.ts",
   "prefs/prefs_mixin.ts",
   "prefs/prefs_types.ts",
-  "privacy_page/autofill_assistant_browser_proxy.ts",
   "privacy_page/privacy_page_browser_proxy.ts",
   "relaunch_mixin.ts",
   "router.js",

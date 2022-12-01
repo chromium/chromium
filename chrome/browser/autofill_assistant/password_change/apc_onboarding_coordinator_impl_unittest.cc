@@ -41,9 +41,6 @@ namespace {
 constexpr char kUrl[] = "https://www.example.com";
 constexpr char kOtherUrlWithSameDomain[] = "https://www.example.com/login";
 
-constexpr int kRevokationDescriptionId1 = 234;
-constexpr int kRevokationDescriptionId2 = 356;
-
 using consent_auditor::FakeConsentAuditor;
 
 class TestApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinatorImpl {
@@ -116,58 +113,6 @@ TEST_F(ApcOnboardingCoordinatorImplTest,
   // Consent is still registered as in the pref.
   EXPECT_TRUE(GetPrefs()->GetBoolean(
       autofill_assistant::prefs::kAutofillAssistantConsent));
-}
-
-TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndAccept) {
-  // The default is false.
-  EXPECT_FALSE(GetPrefs()->GetBoolean(
-      autofill_assistant::prefs::kAutofillAssistantConsent));
-
-  // Create a mock controller.
-  raw_ptr<MockAssistantOnboardingController> controller =
-      new MockAssistantOnboardingController();
-  EXPECT_CALL(*coordinator(), CreateOnboardingController)
-      .WillOnce([controller]() {
-        return base::WrapUnique<AssistantOnboardingController>(controller);
-      });
-  EXPECT_CALL(*coordinator(), CreateOnboardingPrompt);
-
-  // Prepare to extract the callback to the controller.
-  AssistantOnboardingController::Callback controller_callback;
-  EXPECT_CALL(*controller, Show).WillOnce(MoveArg<1>(&controller_callback));
-
-  // Start the onboarding.
-  base::MockCallback<ApcOnboardingCoordinator::Callback> coordinator_callback;
-  coordinator()->PerformOnboarding(coordinator_callback.Get());
-
-  // And call the controller.
-  ASSERT_TRUE(controller_callback);
-  EXPECT_CALL(coordinator_callback, Run(true));
-  // Use sample model data for the callback.
-  const AssistantOnboardingInformation model =
-      ApcOnboardingCoordinator::CreateOnboardingInformation();
-  std::move(controller_callback)
-      .Run(true, model.button_accept_text_id,
-           {model.title_id, model.description_id, model.consent_text_id,
-            model.learn_more_title_id});
-
-  // Consent is saved in the pref.
-  EXPECT_TRUE(GetPrefs()->GetBoolean(
-      autofill_assistant::prefs::kAutofillAssistantConsent));
-
-  // Consent is also recorded via the `ConsentAuditor`.
-  ASSERT_THAT(consent_auditor()->recorded_consents(), SizeIs(1));
-  const sync_pb::UserConsentSpecifics& consent_specifics =
-      consent_auditor()->recorded_consents().front();
-  ASSERT_TRUE(consent_specifics.has_autofill_assistant_consent());
-  EXPECT_EQ(consent_specifics.autofill_assistant_consent().status(),
-            sync_pb::UserConsentTypes::ConsentStatus::
-                UserConsentTypes_ConsentStatus_GIVEN);
-  EXPECT_TRUE(
-      consent_specifics.autofill_assistant_consent().has_confirmation_grd_id());
-  EXPECT_THAT(
-      consent_specifics.autofill_assistant_consent().description_grd_ids(),
-      Not(IsEmpty()));
 }
 
 TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndDecline) {
@@ -263,31 +208,4 @@ TEST_F(ApcOnboardingCoordinatorImplTest,
   // No prompt is ever created if the navigation does not finish.
   EXPECT_CALL(*coordinator(), CreateOnboardingController).Times(0);
   EXPECT_CALL(*coordinator(), CreateOnboardingPrompt).Times(0);
-}
-
-TEST_F(ApcOnboardingCoordinatorImplTest, RevokeConsent) {
-  // Simulate previously given consent.
-  GetPrefs()->SetBoolean(autofill_assistant::prefs::kAutofillAssistantConsent,
-                         true);
-
-  coordinator()->RevokeConsent(
-      {kRevokationDescriptionId1, kRevokationDescriptionId2});
-
-  // Consent is now revoked.
-  EXPECT_FALSE(GetPrefs()->GetBoolean(
-      autofill_assistant::prefs::kAutofillAssistantConsent));
-
-  // Consent is also recorded via the `ConsentAuditor`.
-  ASSERT_THAT(consent_auditor()->recorded_consents(), SizeIs(1));
-  const sync_pb::UserConsentSpecifics& consent_specifics =
-      consent_auditor()->recorded_consents().front();
-  ASSERT_TRUE(consent_specifics.has_autofill_assistant_consent());
-  EXPECT_EQ(consent_specifics.autofill_assistant_consent().status(),
-            sync_pb::UserConsentTypes::ConsentStatus::
-                UserConsentTypes_ConsentStatus_NOT_GIVEN);
-  EXPECT_FALSE(
-      consent_specifics.autofill_assistant_consent().has_confirmation_grd_id());
-  EXPECT_THAT(
-      consent_specifics.autofill_assistant_consent().description_grd_ids(),
-      SizeIs(2));
 }

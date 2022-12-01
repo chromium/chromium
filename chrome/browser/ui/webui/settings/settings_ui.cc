@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
 #include "chrome/browser/ui/webui/settings/appearance_handler.h"
-#include "chrome/browser/ui/webui/settings/autofill_assistant_handler.h"
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 #include "chrome/browser/ui/webui/settings/downloads_handler.h"
 #include "chrome/browser/ui/webui/settings/extension_control_handler.h"
@@ -392,11 +391,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // Add the metrics handler to write uma stats.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
-  // Add the handler for personalization options, e.g. Autofill Assistant
-  // consent.
-  web_ui->AddMessageHandler(std::make_unique<AutofillAssistantHandler>(
-      std::vector<int>{IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF,
-                       IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF_DESC}));
 
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kSettingsResources, kSettingsResourcesSize),

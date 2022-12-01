@@ -257,32 +257,4 @@ TEST_F(ConsentAuditorImplTest, RecordAssistantActivityControlConsent) {
             consent.assistant_activity_control_consent().setting_type());
 }
 
-TEST_F(ConsentAuditorImplTest, RecordAutofillAssistantAssistantConsent) {
-  AutofillAssistantConsent assistant_consent;
-  assistant_consent.set_status(UserConsentTypes::GIVEN);
-  assistant_consent.set_confirmation_grd_id(kConfirmationMessageId);
-  for (int id : kDescriptionMessageIds) {
-    assistant_consent.add_description_grd_ids(id);
-  }
-
-  consent_auditor()->RecordAutofillAssistantConsent(kAccountId,
-                                                    assistant_consent);
-
-  const std::vector<UserConsentSpecifics> consents =
-      consent_sync_bridge()->GetRecordedUserConsents();
-  ASSERT_EQ(consents.size(), 1u);
-  const UserConsentSpecifics& consent = consents[0];
-
-  EXPECT_EQ(consent.account_id(), kAccountId.ToString());
-  EXPECT_EQ(consent.locale(), kCurrentAppLocale);
-
-  EXPECT_TRUE(consent.has_autofill_assistant_consent());
-  const AutofillAssistantConsent& actual_consent =
-      consent.autofill_assistant_consent();
-  EXPECT_THAT(actual_consent.description_grd_ids(),
-              ElementsAreArray(kDescriptionMessageIds));
-  EXPECT_EQ(actual_consent.confirmation_grd_id(), kConfirmationMessageId);
-  EXPECT_EQ(actual_consent.status(), UserConsentTypes::GIVEN);
-}
-
 }  // namespace consent_auditor

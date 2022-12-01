@@ -147,14 +147,7 @@ void ApcOnboardingCoordinatorImpl::RecordConsentGiven(
 }
 
 void ApcOnboardingCoordinatorImpl::WriteToConsentAuditor(
-    const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  ConsentAuditorFactory::GetForProfile(profile)->RecordAutofillAssistantConsent(
-      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountId(
-          signin::ConsentLevel::kSignin),
-      consent);
-}
+    const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) {}
 
 PrefService* ApcOnboardingCoordinatorImpl::GetPrefs() {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext())

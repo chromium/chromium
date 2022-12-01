@@ -1613,8 +1613,6 @@ static_library("ui") {
       "webui/settings/accessibility_main_handler.h",
       "webui/settings/appearance_handler.cc",
       "webui/settings/appearance_handler.h",
-      "webui/settings/autofill_assistant_handler.cc",
-      "webui/settings/autofill_assistant_handler.h",
       "webui/settings/browser_lifetime_handler.cc",
       "webui/settings/browser_lifetime_handler.h",
       "webui/settings/captions_handler.cc",

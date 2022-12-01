@@ -63,15 +63,6 @@ void FakeConsentAuditor::RecordAccountPasswordsConsent(
   recorded_consents_.push_back(std::move(consent_specifics));
 }
 
-void FakeConsentAuditor::RecordAutofillAssistantConsent(
-    const CoreAccountId& account_id,
-    const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) {
-  account_id_ = account_id;
-  sync_pb::UserConsentSpecifics consent_specifics;
-  *consent_specifics.mutable_autofill_assistant_consent() = consent;
-  recorded_consents_.push_back(std::move(consent_specifics));
-}
-
 void FakeConsentAuditor::RecordGaiaConsent(
     const CoreAccountId& account_id,
     consent_auditor::Feature feature,

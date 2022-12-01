@@ -282,14 +282,6 @@
     Sign in to sync and personalize Chrome across your devices
   </message>
 
-  <!-- Autofill Assistant settings -->
-  <message name="IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF" desc="The documentation string of the 'Use Google Assistant' preference to help with automated flows on the web">
-    Google Assistant in Chrome
-  </message>
-  <message name="IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF_DESC" desc="The description of the 'Use Google Assistant' preference to help with automated flows on the web">
-    Google Assistant in Chrome can complete actions across websites for you
-  </message>
-
   <!-- Performance Page -->
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION" desc="Description for the memory saver mode setting">
     When on, Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them. <ph name="BEGIN_LINK">&lt;a id="highEfficiencyLearnMore" target="_blank" href="$1" aria-label="$2"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph> or <ph name="BEGIN_LINK_2">&lt;a id="highEfficiencySendFeedback" is="action-link" aria-label="$3"&gt;</ph>send feedback<ph name="END_LINK_2">&lt;/a&gt;</ph>
