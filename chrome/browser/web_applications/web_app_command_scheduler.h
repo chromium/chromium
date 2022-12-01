@@ -136,6 +136,12 @@ class WebAppCommandScheduler {
   // OS.
   void SyncRunOnOsLoginMode(const AppId& app_id, base::OnceClosure callback);
 
+  // Set app to disabled, This is Chrome OS specific and no-op on other
+  // platforms.
+  void SetAppIsDisabled(const AppId& app_id,
+                        bool is_disabled,
+                        base::OnceClosure callback);
+
   // Schedules provided callback after `lock` is granted. The callback can
   // access web app resources through the `lock`.
   // If the system is shutting down, or has already shut down, then the callback

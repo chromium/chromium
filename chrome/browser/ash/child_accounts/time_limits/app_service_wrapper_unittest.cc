@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -222,8 +224,8 @@ class AppServiceWrapperTest : public ::testing::Test {
     }
 
     if (app_id.app_type() == apps::AppType::kWeb) {
-      WebAppProvider::GetForTest(&profile_)->sync_bridge().SetAppIsDisabled(
-          app_id.app_id(), disabled);
+      WebAppProvider::GetForTest(&profile_)->scheduler().SetAppIsDisabled(
+          app_id.app_id(), disabled, base::DoNothing());
       task_environment_.RunUntilIdle();
       return;
     }

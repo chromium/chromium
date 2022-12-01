@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -295,6 +297,26 @@ void WebAppCommandScheduler::ClearWebAppBrowsingData(
       std::make_unique<FullSystemLockDescription>(),
       base::BindOnce(web_app::ClearWebAppBrowsingData, begin_time, end_time,
                      std::move(done)));
+}
+
+void WebAppCommandScheduler::SetAppIsDisabled(const AppId& app_id,
+                                              bool is_disabled,
+                                              base::OnceClosure callback) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(callback));
+    return;
+  }
+
+  provider_->scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
+      std::make_unique<web_app::AppLockDescription,
+                       base::flat_set<web_app::AppId>>({app_id}),
+      base::BindOnce(
+          [](const web_app::AppId& app_id, bool is_disabled,
+             web_app::AppLock& lock) {
+            lock.sync_bridge().SetAppIsDisabled(lock, app_id, is_disabled);
+          },
+          app_id, is_disabled));
 }
 
 template <class LockType, class DescriptionType>

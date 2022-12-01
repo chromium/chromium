@@ -229,7 +229,9 @@ void WebAppSyncBridge::SetAppWindowControlsOverlayEnabled(const AppId& app_id,
     web_app->SetWindowControlsOverlayEnabled(enabled);
 }
 
-void WebAppSyncBridge::SetAppIsDisabled(const AppId& app_id, bool is_disabled) {
+void WebAppSyncBridge::SetAppIsDisabled(AppLock& lock,
+                                        const AppId& app_id,
+                                        bool is_disabled) {
   if (!IsChromeOsDataMandatory())
     return;
 

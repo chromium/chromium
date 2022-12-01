@@ -42,6 +42,7 @@ struct EntityData;
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
+class AppLock;
 class SyncInstallDelegate;
 class WebAppCommandManager;
 class WebAppDatabase;
@@ -87,7 +88,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
                              UserDisplayMode user_display_mode,
                              bool is_user_action);
 
-  void SetAppIsDisabled(const AppId& app_id, bool is_disabled);
+  void SetAppIsDisabled(AppLock& lock, const AppId& app_id, bool is_disabled);
 
   void UpdateAppsDisableMode();
 

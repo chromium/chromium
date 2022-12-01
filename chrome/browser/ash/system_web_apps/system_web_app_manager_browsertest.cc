@@ -53,6 +53,7 @@
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -1499,6 +1500,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
         policy::policy_prefs::kSystemFeaturesDisableList);
     update->clear();
   }
+  SystemWebAppManager::GetWebAppProvider(browser()->profile())
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
   EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(*settings_id));
   EXPECT_FALSE(apps::IconEffects::kBlocked &
                GetAppIconKey(*settings_id)->icon_effects);
@@ -1520,6 +1524,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
         policy::policy_prefs::kSystemFeaturesDisableList);
     update->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
   }
+  SystemWebAppManager::GetWebAppProvider(browser()->profile())
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
 
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy, GetAppReadiness(*settings_id));
   EXPECT_TRUE(apps::IconEffects::kBlocked &
@@ -1531,6 +1538,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
         policy::policy_prefs::kSystemFeaturesDisableList);
     update->clear();
   }
+  SystemWebAppManager::GetWebAppProvider(browser()->profile())
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
   EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(*settings_id));
   EXPECT_FALSE(apps::IconEffects::kBlocked &
                GetAppIconKey(*settings_id)->icon_effects);

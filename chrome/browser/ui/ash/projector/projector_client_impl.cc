@@ -13,6 +13,8 @@
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
@@ -23,6 +25,8 @@
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -312,15 +316,7 @@ void ProjectorClientImpl::SetAppIsDisabled(bool disabled) {
                                         kWebAppProviderOnRegistryReady);
     return;
   }
-  auto* sync_bridge = &web_app_provider->sync_bridge();
-  // TODO(b/240497023): convert to dcheck once confirm that the pointer is
-  // always available at this point.
-  if (!sync_bridge) {
-    RecordPolicyChangeHandlingError(
-        ash::ProjectorPolicyChangeHandlingError::kSyncBridge);
-    return;
-  }
 
-  sync_bridge->SetAppIsDisabled(ash::kChromeUITrustedProjectorSwaAppId,
-                                disabled);
+  web_app_provider->scheduler().SetAppIsDisabled(
+      ash::kChromeUITrustedProjectorSwaAppId, disabled, base::DoNothing());
 }

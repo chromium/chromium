@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -790,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
               IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
   }
 
-  web_app_sync_bridge.SetAppIsDisabled(app_id, true);
+  provider().scheduler().SetAppIsDisabled(app_id, true, base::DoNothing());
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 3U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
@@ -798,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon |
                 IconEffects::kBlocked);
 
-  web_app_sync_bridge.SetAppIsDisabled(app2_id, true);
+  provider().scheduler().SetAppIsDisabled(app2_id, true, base::DoNothing());
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 4U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app2_id);
@@ -806,14 +807,14 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardMask |
                 IconEffects::kBlocked);
 
-  web_app_sync_bridge.SetAppIsDisabled(app_id, false);
+  provider().scheduler().SetAppIsDisabled(app_id, false, base::DoNothing());
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 5U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
 
-  web_app_sync_bridge.SetAppIsDisabled(app2_id, false);
+  provider().scheduler().SetAppIsDisabled(app2_id, false, base::DoNothing());
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 6U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app2_id);
