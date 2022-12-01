@@ -178,8 +178,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that returning from "Manage Passwords..." leaves the keyboard and the
 // icons in the right state.
-// TODO(crbug.com/1234759): Re-enable after fixing flake.
-- (void)DISABLED_testPasswordsStateAfterPresentingManagePasswords {
+- (void)testPasswordsStateAfterPresentingManagePasswords {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -200,8 +199,8 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   [[EarlGrey selectElementWithMatcher:SettingsPasswordMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap Cancel Button.
-  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+  // Tap Done Button.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   // Verify the status of the icons.
@@ -302,7 +301,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
       selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap Cancel Button.
+  // Tap Done Button.
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
@@ -555,9 +554,10 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 }
 
 // Tests password generation on manual fallback.
-- (void)testPasswordGenerationOnManualFallback {
+// TODO(crbug.com/1394448): enable the test with fix.
+- (void)DISABLED_testPasswordGenerationOnManualFallback {
   // Disable the test on iOS 15.3 due to build failure.
-  // TODO(crbug.com/1306530): enable the test with fix.
+  // TODO(crbug.com/1304685): enable the test with fix.
   if (@available(iOS 15.3, *)) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.3.");
   }
