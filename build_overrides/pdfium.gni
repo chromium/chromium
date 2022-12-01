@@ -20,6 +20,3 @@ pdf_use_partition_alloc_override = use_partition_alloc
 
 # Allow to use Skia backend at run time.
 pdf_use_skia_override = true
-
-# Disable use of Skia backend, paths only (experimental)
-pdf_use_skia_paths_override = false
