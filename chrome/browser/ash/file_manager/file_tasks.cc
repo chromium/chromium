@@ -111,6 +111,7 @@ const char kActionIdWebDriveOfficeExcel[] = "open-web-drive-office-excel";
 const char kActionIdWebDriveOfficePowerPoint[] =
     "open-web-drive-office-powerpoint";
 const char kActionIdOpenInOffice[] = "open-in-office";
+const char kActionIdOpenWeb[] = "OPEN_WEB";
 
 const char kODFSExtensionId[] = "ajdgmkbkgifbokednjgbmieaemeighkg";
 
@@ -163,13 +164,6 @@ std::string ParseFilesAppActionId(const std::string& action_id) {
   }
 
   return action_id;
-}
-
-bool IsExtensionInstalled(Profile* profile, const std::string& extension_id) {
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  return registry->GetExtensionById(
-             extension_id, extensions::ExtensionRegistry::ENABLED) != nullptr;
 }
 
 // Returns true if the `task` is a Web Drive Office task.
@@ -512,8 +506,6 @@ bool FileIsOnODFS(const FileSystemURL& url, Profile* profile) {
   return true;
 }
 
-const char kOpenWebActionId[] = "OPEN_WEB";
-
 // Pre-condition: |url| is for a file which is on ODFS already.
 void OpenODFSUrl(Profile* profile,
                  const TaskDescriptor& task,
@@ -527,7 +519,7 @@ void OpenODFSUrl(Profile* profile,
   }
 
   parser.file_system()->ExecuteAction(
-      {parser.file_path()}, kOpenWebActionId,
+      {parser.file_path()}, kActionIdOpenWeb,
       base::BindOnce(
           [](Profile* profile, const TaskDescriptor& task,
              const std::vector<FileSystemURL>& file_urls,
@@ -1176,6 +1168,13 @@ void ChooseAndSetDefaultTask(Profile* profile,
       return;
     }
   }
+}
+
+bool IsExtensionInstalled(Profile* profile, const std::string& extension_id) {
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  return registry->GetExtensionById(extension_id,
+                                    extensions::ExtensionRegistry::ENABLED);
 }
 
 bool IsHtmlFile(const base::FilePath& path) {

@@ -28,7 +28,7 @@ namespace ash::cloud_upload {
 // upload is completed, which is when the `OneDriveUploadHandler` goes out of
 // scope.
 class OneDriveUploadHandler
-    : public file_manager::io_task::IOTaskController::Observer,
+    : public ::file_manager::io_task::IOTaskController::Observer,
       public base::RefCounted<OneDriveUploadHandler> {
  public:
   using UploadCallback =
@@ -61,7 +61,7 @@ class OneDriveUploadHandler
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
-      const file_manager::io_task::ProgressStatus& status) override;
+      const ::file_manager::io_task::ProgressStatus& status) override;
 
   // Called after the the request has been made to open files app on the
   // destination file.
@@ -70,10 +70,10 @@ class OneDriveUploadHandler
 
   Profile* const profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  file_manager::io_task::IOTaskController* io_task_controller_;
+  ::file_manager::io_task::IOTaskController* io_task_controller_;
   scoped_refptr<CloudUploadNotificationManager> notification_manager_;
   const storage::FileSystemURL source_url_;
-  file_manager::io_task::IOTaskId observed_task_id_;
+  ::file_manager::io_task::IOTaskId observed_task_id_;
   UploadCallback callback_;
   base::WeakPtrFactory<OneDriveUploadHandler> weak_ptr_factory_{this};
 };

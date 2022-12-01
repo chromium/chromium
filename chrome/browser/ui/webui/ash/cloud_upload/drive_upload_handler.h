@@ -31,7 +31,7 @@ namespace ash::cloud_upload {
 // Calls the UploadCallback with the uploaded file's hosted URL once the upload
 // is completed, which is when `DriveUploadHandler` goes out of scope.
 class DriveUploadHandler
-    : public file_manager::io_task::IOTaskController::Observer,
+    : public ::file_manager::io_task::IOTaskController::Observer,
       public drivefs::DriveFsHostObserver,
       public base::RefCounted<DriveUploadHandler> {
  public:
@@ -65,7 +65,7 @@ class DriveUploadHandler
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
-      const file_manager::io_task::ProgressStatus& status) override;
+      const ::file_manager::io_task::ProgressStatus& status) override;
 
   // DriveFsHostObserver:
   void OnUnmounted() override;
@@ -84,18 +84,18 @@ class DriveUploadHandler
 
   Profile* const profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  file_manager::io_task::IOTaskController* io_task_controller_;
+  ::file_manager::io_task::IOTaskController* io_task_controller_;
   drive::DriveIntegrationService* const drive_integration_service_;
   scoped_refptr<CloudUploadNotificationManager> notification_manager_;
   const storage::FileSystemURL source_url_;
-  file_manager::io_task::IOTaskId observed_task_id_;
+  ::file_manager::io_task::IOTaskId observed_task_id_;
   base::FilePath observed_relative_drive_path_;
   int move_progress_ = 0;
   int sync_progress_ = 0;
   base::OneShotTimer alternate_url_timeout_;
   base::OneShotTimer alternate_url_poll_timer_;
   UploadCallback callback_;
-  std::unique_ptr<file_manager::ScopedSuppressDriveNotificationsForPath>
+  std::unique_ptr<::file_manager::ScopedSuppressDriveNotificationsForPath>
       scoped_suppress_drive_notifications_for_path_ = nullptr;
   base::WeakPtrFactory<DriveUploadHandler> weak_ptr_factory_{this};
 };
