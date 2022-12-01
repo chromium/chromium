@@ -222,8 +222,7 @@ export class UnselectTextMacro extends RepeatableKeyPressMacro {
     }
 
     const data = this.inputController_.getEditableNodeData();
-    if (!data || !data.value ||
-        data.node.textSelStart === data.node.textSelEnd) {
+    if (!data || !data.value || data.selStart === data.selEnd) {
       return this.createFailureCheckContextResult_(MacroError.BAD_CONTEXT);
     }
 
