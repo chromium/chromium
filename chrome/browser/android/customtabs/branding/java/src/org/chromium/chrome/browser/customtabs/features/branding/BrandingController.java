@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -87,7 +88,7 @@ public class BrandingController {
      * @param context Context used to fetch package information for embedded app.
      * @param packageName The package name for the embedded app.
      * @param appName The appName shown on the branding toast.
-     * @param exceptionReporter Optional reporter that reports wrong state quitely.
+     * @param exceptionReporter Optional reporter that reports wrong state quietly.
      */
     public BrandingController(Context context, String packageName, String appName,
             @Nullable PureJavaExceptionReporter exceptionReporter) {
@@ -158,6 +159,9 @@ public class BrandingController {
             default:
                 assert false : "Unreachable state!";
         }
+
+        // Post histogram recording after UI updates.
+        recordNumberOfClientAppsHistogram();
     }
 
     private void showToolbarBranding(long durationMs) {
@@ -203,6 +207,14 @@ public class BrandingController {
         if (mExceptionReporter != null) {
             mExceptionReporter.createAndUploadReport(new Throwable(message));
         }
+    }
+
+    private void recordNumberOfClientAppsHistogram() {
+        PostTask.postTask(TaskTraits.BEST_EFFORT, mCallbackController.makeCancelable(() -> {
+            int numberOfPackages = SharedPreferencesBrandingTimeStorage.getInstance().getSize();
+            RecordHistogram.recordCount100Histogram(
+                    "CustomTabs.Branding.NumberOfClients", numberOfPackages);
+        }));
     }
 
     @BrandingDecision

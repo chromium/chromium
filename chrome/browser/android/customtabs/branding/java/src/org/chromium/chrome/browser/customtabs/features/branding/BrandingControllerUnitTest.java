@@ -30,17 +30,20 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -106,6 +109,9 @@ public class BrandingControllerUnitTest {
                 .assertShownEmptyLocationBar(true)
                 .assertShownBrandingLocationBar(false)
                 .assertShownRegularLocationBar(true);
+
+        ShadowLooper.idleMainLooper();
+        assertTotalNumberOfPackageRecorded(1); // 1 new package
     }
 
     @Test
@@ -258,6 +264,25 @@ public class BrandingControllerUnitTest {
                 "Toast should be canceled when controller destroyed.", shadowToast.isCancelled());
     }
 
+    @Test
+    public void testNumberOfPackageNames() {
+        SharedPreferencesBrandingTimeStorage storage =
+                SharedPreferencesBrandingTimeStorage.getInstance();
+        storage.put("stubPackageA", 1L);
+        storage.put("stubPackageB", 1L);
+        storage.put("stubPackageC", 1L);
+        ShadowLooper.idleMainLooper();
+        assertEquals("3 Stub package name should be in the storage.", 3, storage.getSize());
+
+        new BrandingCheckTester()
+                .newBrandingController()
+                .onToolbarInitialized()
+                .idleMainLooper() // Finish Branding checker.
+                .assertShownToastBranding(true);
+        ShadowLooper.idleMainLooper();
+        assertTotalNumberOfPackageRecorded(4); // 3 old package + 1 new package
+    }
+
     class BrandingCheckTester {
         public BrandingCheckTester newBrandingController() {
             Context context = ContextUtils.getApplicationContext();
@@ -318,5 +343,12 @@ public class BrandingControllerUnitTest {
             mBrandingController.destroy();
             return this;
         }
+    }
+
+    private void assertTotalNumberOfPackageRecorded(int sample) {
+        String histogram = "CustomTabs.Branding.NumberOfClients";
+        assertEquals(
+                String.format(Locale.US, "<%s> not recorded for count <%d>", histogram, sample), 1,
+                RecordHistogram.getHistogramValueCountForTesting(histogram, sample));
     }
 }
