@@ -58,7 +58,7 @@ export function sizeToString(size: number) {
  * @returns A human-readable string of the log event.
  */
 export function logEventToString(event: LogEvent) {
-  let result = `[${timestampToString(event.timestamp)}] ${event.event}`;
+  let result = `[${new Date(event.timestampMs).toISOString()}] ${event.event}`;
   if (event.message) {
     result += ` (${event.message})`;
   }

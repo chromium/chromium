@@ -164,7 +164,9 @@ export class MetricsInternalsAppElement extends CustomElement {
 
     const template = this.$('#uma-log-row-template') as HTMLTemplateElement;
 
-    for (const log of logs) {
+    // Iterate through the logs in reverse order so that the most recent log
+    // shows up first.
+    for (const log of logs.slice(0).reverse()) {
       const row = template.content.cloneNode(true) as HTMLElement;
       const [type, hash, timestamp, size, events] = row.querySelectorAll('td');
 
@@ -192,7 +194,9 @@ export class MetricsInternalsAppElement extends CustomElement {
       const eventsText =
           events.querySelector<HTMLElement>('.uma-log-events-text');
       assert(eventsText);
-      for (const event of log.events) {
+      // Iterate through the events in reverse order so that the most recent
+      // event shows up first.
+      for (const event of log.events.slice(0).reverse()) {
         const div = document.createElement('div');
         div.textContent = logEventToString(event);
         eventsText.appendChild(div);

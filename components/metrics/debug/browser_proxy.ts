@@ -25,7 +25,7 @@ export interface KeyValue {
  */
 export interface LogEvent {
   event: string;
-  timestamp: string;
+  timestampMs: number;
   message?: string;
 }
 

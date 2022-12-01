@@ -46,10 +46,8 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
       MetricsLogsEventManager::LogEvent event;
 
       // The timestamp at which the event occurred. This is the number of
-      // seconds since Epoch. This field is a string for consistency reasons
-      // (the |timestamp| field of the Log struct is also a string, due to how
-      // logs are stored in the metrics systems).
-      std::string timestamp;
+      // milliseconds since Epoch.
+      double timestampMs;
 
       // An optional message associated with the event.
       absl::optional<std::string> message;
@@ -113,7 +111,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
   //       events: [
   //         {
   //           event: string, // e.g. "Trimmed"
-  //           timestamp: string,
+  //           timestamp: number,
   //           message?: string
   //         },
   //         ...

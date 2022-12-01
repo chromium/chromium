@@ -94,7 +94,7 @@ void MetricsServiceObserver::OnLogEvent(MetricsLogsEventManager::LogEvent event,
 
   Log::Event log_event;
   log_event.event = event;
-  log_event.timestamp = base::NumberToString(base::Time::Now().ToTimeT());
+  log_event.timestampMs = base::Time::Now().ToJsTimeIgnoringNull();
   if (!message.empty())
     log_event.message = std::string(message);
   log->events.push_back(std::move(log_event));
@@ -134,7 +134,7 @@ bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
     for (const Log::Event& event : log->events) {
       base::Value::Dict log_event_dict;
       log_event_dict.Set("event", EventToString(event.event));
-      log_event_dict.Set("timestamp", event.timestamp);
+      log_event_dict.Set("timestampMs", event.timestampMs);
       if (event.message.has_value())
         log_event_dict.Set("message", event.message.value());
       log_events_list.Append(std::move(log_event_dict));

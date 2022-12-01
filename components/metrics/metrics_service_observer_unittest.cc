@@ -566,10 +566,9 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   ASSERT_TRUE(first_log_event_string->is_string());
   EXPECT_EQ(first_log_event_string->GetString(), "Staged");
   base::Value* first_log_event_timestamp =
-      first_log_event_dict.Find("timestamp");
+      first_log_event_dict.Find("timestampMs");
   ASSERT_TRUE(first_log_event_timestamp);
-  ASSERT_TRUE(first_log_event_timestamp->is_string());
-  EXPECT_FALSE(first_log_event_timestamp->GetString().empty());
+  ASSERT_TRUE(first_log_event_timestamp->is_double());
 
   base::Value& second_log_event = log_events_list[1];
   ASSERT_TRUE(second_log_event.is_dict());
@@ -579,10 +578,9 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   ASSERT_TRUE(second_log_event_string->is_string());
   EXPECT_EQ(second_log_event_string->GetString(), "Uploading");
   base::Value* second_log_event_timestamp =
-      second_log_event_dict.Find("timestamp");
+      second_log_event_dict.Find("timestampMs");
   ASSERT_TRUE(second_log_event_timestamp);
-  ASSERT_TRUE(second_log_event_timestamp->is_string());
-  EXPECT_FALSE(second_log_event_timestamp->GetString().empty());
+  ASSERT_TRUE(second_log_event_timestamp->is_double());
 
   service.RemoveLogsObserver(&logs_observer);
 }
