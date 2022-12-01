@@ -33,7 +33,6 @@ FileSystemSyncAccessHandle::FileSystemSyncAccessHandle(
 }
 
 void FileSystemSyncAccessHandle::Trace(Visitor* visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScriptWrappable::Trace(visitor);
   visitor->Trace(file_delegate_);
   visitor->Trace(access_handle_remote_);
