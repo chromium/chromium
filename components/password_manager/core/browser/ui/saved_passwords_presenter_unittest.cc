@@ -43,7 +43,7 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 struct MockSavedPasswordsPresenterObserver : SavedPasswordsPresenter::Observer {
-  MOCK_METHOD(void, OnEdited, (const PasswordForm&), (override));
+  MOCK_METHOD(void, OnEdited, (const CredentialUIEntry&), (override));
   MOCK_METHOD(void, OnSavedPasswordsChanged, (), (override));
 };
 
@@ -272,7 +272,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   updated.password_issues.clear();
 
   // Verify that editing a password triggers the right notifications.
-  EXPECT_CALL(observer, OnEdited(updated));
+  EXPECT_CALL(observer, OnEdited(CredentialUIEntry(updated)));
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
             presenter().EditSavedCredentials(CredentialUIEntry(form),
@@ -324,7 +324,7 @@ TEST_P(SavedPasswordsPresenterWithPasswordNotesTest, EditOnlyUsername) {
   // Verify that editing a username triggers the right notifications.
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(observer, OnEdited(updated_username));
+  EXPECT_CALL(observer, OnEdited(CredentialUIEntry(updated_username)));
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
             presenter().EditSavedCredentials(CredentialUIEntry(form),
@@ -389,7 +389,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsernameClearsPartialIssues) {
   CredentialUIEntry credential_to_edit(form);
   credential_to_edit.username = kNewUsername;
 
-  EXPECT_CALL(observer, OnEdited(updated_username));
+  EXPECT_CALL(observer, OnEdited(CredentialUIEntry(updated_username)));
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
             presenter().EditSavedCredentials(CredentialUIEntry(form),
@@ -432,8 +432,8 @@ TEST_P(SavedPasswordsPresenterWithPasswordNotesTest, EditOnlyPassword) {
 
   base::HistogramTester histogram_tester;
   // Verify that editing a password triggers the right notifications.
-  EXPECT_CALL(observer, OnEdited(updated_password));
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
+  EXPECT_CALL(observer, OnEdited(CredentialUIEntry(updated_password)));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
             presenter().EditSavedCredentials(CredentialUIEntry(form),
                                              credential_to_edit));
@@ -647,8 +647,8 @@ TEST_P(SavedPasswordsPresenterWithPasswordNotesTest, EditUsernameAndPassword) {
 
   base::HistogramTester histogram_tester;
   // Verify that editing username and password triggers the right notifications.
-  EXPECT_CALL(observer, OnEdited(updated_both));
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
+  EXPECT_CALL(observer, OnEdited(CredentialUIEntry(updated_both)));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
             presenter().EditSavedCredentials(CredentialUIEntry(form),
                                              credential_to_edit));
@@ -778,8 +778,7 @@ TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
   updated_duplicate_form.date_password_modified = base::Time::Now();
   updated_duplicate_form.password_issues.clear();
 
-  EXPECT_CALL(observer, OnEdited(updated_form));
-  EXPECT_CALL(observer, OnEdited(updated_duplicate_form));
+  EXPECT_CALL(observer, OnEdited(CredentialUIEntry(updated_form)));
   // The notification that the logins have changed arrives after both updates
   // are sent to the store and db. This means that there will be 2 requests
   // from the presenter to get the updated credentials, BUT they are both sent

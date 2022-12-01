@@ -14,8 +14,6 @@ class PrefService;
 
 namespace password_manager {
 
-struct PasswordForm;
-
 // This class serves as an apdater for the BulkLeakCheckService and exposes an
 // API that is intended to be consumed from the settings page.
 class BulkLeakCheckServiceAdapter : public SavedPasswordsPresenter::Observer {
@@ -45,7 +43,7 @@ class BulkLeakCheckServiceAdapter : public SavedPasswordsPresenter::Observer {
 
  private:
   // SavedPasswordsPresenter::Observer:
-  void OnEdited(const PasswordForm& form) override;
+  void OnEdited(const CredentialUIEntry& form) override;
 
   // Weak handles to a presenter and service, respectively. These must be not
   // null and must outlive the adapter.

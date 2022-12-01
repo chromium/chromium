@@ -419,7 +419,11 @@ SavedPasswordsPresenter::EditSavedCredentials(
     } else {
       store.UpdateLogin(new_form);
     }
-    NotifyEdited(new_form);
+  }
+
+  // Only change in username or password is interesting for OnEdited listeners.
+  if (username_changed || password_changed) {
+    NotifyEdited(updated_credential);
   }
 
   password_manager::metrics_util::LogPasswordEditResult(username_changed,
@@ -493,9 +497,10 @@ void SavedPasswordsPresenter::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SavedPasswordsPresenter::NotifyEdited(const PasswordForm& password) {
+void SavedPasswordsPresenter::NotifyEdited(
+    const CredentialUIEntry& credential) {
   for (auto& observer : observers_)
-    observer.OnEdited(password);
+    observer.OnEdited(credential);
 }
 
 void SavedPasswordsPresenter::NotifySavedPasswordsChanged() {

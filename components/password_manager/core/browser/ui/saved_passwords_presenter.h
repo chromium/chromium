@@ -51,7 +51,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
     // OnEdited() will be invoked synchronously if EditPassword() is invoked
     // with a password that was present in cache.
     // |password.password_value| will be equal to |new_password| in this case.
-    virtual void OnEdited(const PasswordForm& password) {}
+    virtual void OnEdited(const CredentialUIEntry& password) {}
     // OnSavedPasswordsChanged() gets invoked asynchronously after a change to
     // the underlying password store happens. This might be due to a call to
     // EditPassword(), but can also happen if passwords are added or removed due
@@ -198,7 +198,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void OnGetAllGroupsResultsFrom(const std::vector<GroupedFacets>& results);
 
   // Notify observers about changes in the compromised credentials.
-  void NotifyEdited(const PasswordForm& password);
+  void NotifyEdited(const CredentialUIEntry& password);
   void NotifySavedPasswordsChanged();
 
   void RemoveObservers();

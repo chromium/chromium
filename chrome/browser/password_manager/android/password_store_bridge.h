@@ -56,7 +56,7 @@ class PasswordStoreBridge
   // SavedPasswordsPresenter::Observer:
   void OnSavedPasswordsChanged() override;
 
-  void OnEdited(const password_manager::PasswordForm& form) override;
+  void OnEdited(const password_manager::CredentialUIEntry& form) override;
 
   // Callback executed after clearing the password store. It re-initializes
   // `saved_passwords_presenter_`.

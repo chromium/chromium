@@ -77,12 +77,13 @@ size_t BulkLeakCheckServiceAdapter::GetPendingChecksCount() const {
   return service_->GetPendingChecksCount();
 }
 
-void BulkLeakCheckServiceAdapter::OnEdited(const PasswordForm& form) {
+void BulkLeakCheckServiceAdapter::OnEdited(
+    const CredentialUIEntry& credential) {
   if (CanStartLeakCheck(*prefs_)) {
-    // Here no extra canonicalization is needed, as there are no other forms we
-    // could de-dupe before we pass it on to the service.
+    // Here no extra canonicalization is needed, as there are no other
+    // credentials we could de-dupe before we pass it on to the service.
     std::vector<LeakCheckCredential> credentials;
-    credentials.emplace_back(form.username_value, form.password_value);
+    credentials.emplace_back(credential.username, credential.password);
     service_->CheckUsernamePasswordPairs(std::move(credentials));
   }
 }

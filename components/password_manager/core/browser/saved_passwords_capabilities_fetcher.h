@@ -55,7 +55,6 @@ class SavedPasswordsCapabilitiesFetcher
 
  private:
   // SavedPasswordsPresenter::Observer:
-  void OnEdited(const PasswordForm& form) override;
   void OnSavedPasswordsChanged() override;
 
   // Fetches capabilities for all origins in cache.

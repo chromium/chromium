@@ -109,13 +109,6 @@ bool SavedPasswordsCapabilitiesFetcher::IsScriptAvailable(
   return domains_it->second.has_script;
 }
 
-void SavedPasswordsCapabilitiesFetcher::OnEdited(const PasswordForm& form) {
-  // OnEdited() only gets called if a the password was edited via
-  // `saved_passwords_presenter_`, so even if the password gets edited
-  // elsewhere, we wouldn't end up here.
-  NOTREACHED();
-}
-
 void SavedPasswordsCapabilitiesFetcher::OnSavedPasswordsChanged() {
   // If there is still a pending update from the `SavedPasswordsPresenter`,
   // return early and perform the updates once that is in.

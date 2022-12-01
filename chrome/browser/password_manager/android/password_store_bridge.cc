@@ -115,13 +115,14 @@ void PasswordStoreBridge::OnSavedPasswordsChanged() {
           saved_passwords_presenter_.GetSavedCredentials().size()));
 }
 
-void PasswordStoreBridge::OnEdited(const PasswordForm& form) {
+void PasswordStoreBridge::OnEdited(
+    const password_manager::CredentialUIEntry& credential) {
   JNIEnv* env = base::android::AttachCurrentThread();
   // Notifies java counter side that a credential has been edited.
   Java_PasswordStoreBridge_onEditCredential(
       env, java_bridge_,
       Java_PasswordStoreBridge_createPasswordStoreCredential(
-          env, url::GURLAndroid::FromNativeGURL(env, form.url),
-          base::android::ConvertUTF16ToJavaString(env, form.username_value),
-          base::android::ConvertUTF16ToJavaString(env, form.password_value)));
+          env, url::GURLAndroid::FromNativeGURL(env, credential.GetURL()),
+          base::android::ConvertUTF16ToJavaString(env, credential.username),
+          base::android::ConvertUTF16ToJavaString(env, credential.password)));
 }

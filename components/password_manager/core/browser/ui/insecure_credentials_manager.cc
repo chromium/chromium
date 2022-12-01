@@ -181,11 +181,11 @@ void InsecureCredentialsManager::OnWeakCheckDone(
   NotifyInsecureCredentialsChanged();
 }
 
-void InsecureCredentialsManager::OnEdited(const PasswordForm& form) {
+void InsecureCredentialsManager::OnEdited(const CredentialUIEntry& credential) {
   // The WeakCheck is a Desktop only feature for now. Disable on Mobile to
   // avoid pulling in a big dependency on zxcvbn.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  const std::u16string& password = form.password_value;
+  const std::u16string& password = credential.password;
   if (weak_passwords_.contains(password) || !IsWeak(password)) {
     // Either the password is already known to be weak, or it is not weak at
     // all. In both cases there is nothing to do.
