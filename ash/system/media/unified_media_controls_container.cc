@@ -11,8 +11,8 @@
 namespace ash {
 
 namespace {
-constexpr int kContainerHeight = 72;
-constexpr auto kContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
+constexpr int kContainerHeight = 80;
+constexpr auto kContainerInsets = gfx::Insets::TLBR(8, 16, 16, 16);
 }  // namespace
 
 UnifiedMediaControlsContainer::UnifiedMediaControlsContainer()
