@@ -310,6 +310,9 @@ class FormStructure {
   static std::vector<FieldGlobalId> FindFieldsEligibleForManualFilling(
       const std::vector<FormStructure*>& forms);
 
+  const std::vector<std::unique_ptr<AutofillField>>& fields() const {
+    return fields_;
+  }
   const AutofillField* field(size_t index) const;
   AutofillField* field(size_t index);
   size_t field_count() const;
@@ -373,7 +376,7 @@ class FormStructure {
 
   bool all_fields_are_passwords() const { return all_fields_are_passwords_; }
 
-  const FormSignature form_signature() const { return form_signature_; }
+  FormSignature form_signature() const { return form_signature_; }
 
   void set_form_signature(FormSignature signature) {
     form_signature_ = signature;

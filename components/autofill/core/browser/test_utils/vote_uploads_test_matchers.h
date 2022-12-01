@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -18,113 +19,58 @@
 
 namespace autofill {
 
-// Matches a FormStructure if its signature is the same as that of the
-// PasswordForm |form|.
-MATCHER_P(SignatureIsSameAs,
-          form,
-          std::string(negation ? "signature isn't " : "signature is ") +
-              FormStructure(form.form_data).FormSignatureAsStr()) {
-  if (FormStructure(form.form_data).FormSignatureAsStr() ==
-      arg.FormSignatureAsStr())
-    return true;
+using ::testing::ContainerEq;
+using ::testing::Contains;
+using ::testing::Field;
+using ::testing::Property;
+using ::testing::ResultOf;
 
-  *result_listener << "signature is " << arg.FormSignatureAsStr() << " instead";
-  return false;
+inline FormStructureTestApi test_api(const FormStructure* form) {
+  return FormStructureTestApi(const_cast<FormStructure*>(form));
 }
 
-MATCHER_P(SignatureIs,
-          signature,
-          std::string(negation ? "signature isn't " : "signature is ") +
-              base::NumberToString(signature.value())) {
-  if (signature == arg.form_signature())
-    return true;
-
-  *result_listener << "signature is " << arg.form_signature() << " instead";
-  return false;
+inline auto SignatureIsSameAs(const FormData& form) {
+  return Property("form_signature", &FormStructure::form_signature,
+                  CalculateFormSignature(form));
 }
 
-// The matcher argument is a FormStructure.
-MATCHER_P(
-    SubmissionEventIsSameAs,
-    expected_submission_event,
-    std::string(negation ? "submission event isn't " : "submission event is ") +
-        base::NumberToString(static_cast<int>(expected_submission_event))) {
-  FormStructureTestApi test_api(const_cast<FormStructure*>(&arg));
-  if (expected_submission_event == test_api.get_submission_event())
-    return true;
-
-  *result_listener << "submission event is " << test_api.get_submission_event()
-                   << " instead";
-  return false;
+inline auto SignatureIs(FormSignature sig) {
+  return Property("form_signature", &FormStructure::form_signature, sig);
 }
 
-// Consumes a FormFieldData as `arg` and a map of field name (u16string) to
-// a ServerFieldType type.
-MATCHER_P(UploadedAutofillTypesAre, expected_types, "") {
-  size_t fields_matched_type_count = 0;
-  bool conflict_found = false;
-  for (const auto& field : arg) {
-    fields_matched_type_count +=
-        base::Contains(expected_types, field->name) ? 1 : 0;
-    if (field->possible_types().size() > 1) {
-      *result_listener << (conflict_found ? ", " : "") << "Field "
-                       << field->name << ": has several possible types";
-      conflict_found = true;
+inline auto SubmissionEventIsSameAs(mojom::SubmissionIndicatorEvent exp) {
+  auto get_submission_event = [](const FormStructure& form) {
+    return test_api(&form).get_submission_event();
+  };
+  return ResultOf("get_submission_event", get_submission_event, exp);
+}
+
+inline auto UploadedAutofillTypesAre(
+    std::map<std::u16string, ServerFieldTypeSet> expected_types) {
+  // Normalize the actual and expected sets by removing all UNKNOWN_TYPEs.
+  auto get_possible_field_types = [](const FormStructure& actual) {
+    std::map<std::u16string, ServerFieldTypeSet> type_map;
+    for (const auto& field : actual) {
+      ServerFieldTypeSet types = field->possible_types();
+      types.erase(UNKNOWN_TYPE);
+      if (!types.empty())
+        type_map[field->name] = types;
     }
-
-    ServerFieldType expected_vote =
-        base::Contains(expected_types, field->name)
-            ? expected_types.find(field->name)->second
-            : UNKNOWN_TYPE;
-    ServerFieldType actual_vote = field->possible_types().empty()
-                                      ? UNKNOWN_TYPE
-                                      : *field->possible_types().begin();
-    if (expected_vote != actual_vote) {
-      *result_listener << (conflict_found ? ", " : "") << "Field "
-                       << field->name << ": expected vote " << expected_vote
-                       << " but found " << actual_vote;
-      conflict_found = true;
-    }
-  }
-  if (expected_types.size() != fields_matched_type_count) {
-    *result_listener << (conflict_found ? ", " : "")
-                     << "Some types were expected but not found in the vote";
-    return false;
-  }
-
-  return !conflict_found;
+    return type_map;
+  };
+  for (auto& [field_name, types] : expected_types)
+    types.erase(UNKNOWN_TYPE);
+  base::EraseIf(expected_types, [](const auto& p) { return p.second.empty(); });
+  return ResultOf("get_possible_field_types", get_possible_field_types,
+                  ContainerEq(expected_types));
 }
 
-// Consumes a FormFieldData as `arg` and a map of field name (u16string) to
-// a ServerFieldTypeSet type.
-MATCHER_P(UploadedAutofillTypesAreSet, expected_types, "") {
-  size_t fields_matched_type_count = 0;
-  bool conflict_found = false;
-  for (const auto& field : arg) {
-    fields_matched_type_count +=
-        base::Contains(expected_types, field->name) ? 1 : 0;
-    ServerFieldTypeSet unknown_type_set = {ServerFieldType::UNKNOWN_TYPE};
-    ServerFieldTypeSet expected_votes =
-        base::Contains(expected_types, field->name)
-            ? expected_types.find(field->name)->second
-            : unknown_type_set;
-    ServerFieldTypeSet actual_votes = field->possible_types().empty()
-                                          ? unknown_type_set
-                                          : field->possible_types();
-    if (expected_votes != actual_votes) {
-      *result_listener << (conflict_found ? ", " : "") << "Field "
-                       << field->name << ": expected votes " << expected_votes
-                       << " but found " << actual_votes;
-      conflict_found = true;
-    }
-  }
-  if (expected_types.size() != fields_matched_type_count) {
-    *result_listener << (conflict_found ? ", " : "")
-                     << "Some types were expected but not found in the vote";
-    return false;
-  }
-
-  return !conflict_found;
+inline auto UploadedAutofillTypesAre(
+    const std::map<std::u16string, ServerFieldType>& expected_types) {
+  std::map<std::u16string, ServerFieldTypeSet> map;
+  for (const auto& [field_name, type] : expected_types)
+    map[field_name] = {type};
+  return UploadedAutofillTypesAre(map);
 }
 
 }  // namespace autofill

@@ -24,7 +24,6 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -753,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
     };
     // The indentation reflects the nesting of frames.
     // clang-format off
-    EXPECT_THAT(FormStructureTestApi(const_cast<FormStructure*>(form)).fields(),
+    EXPECT_THAT(form->fields(),
                 ElementsAre(
                     // $3/3.html
                     m("d.com", name),
@@ -865,11 +864,10 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
                            Field(&AutofillField::origin,
                                  Property(&url::Origin::host, Eq("a.com")))));
     };
-    EXPECT_THAT(FormStructureTestApi(const_cast<FormStructure*>(form)).fields(),
-                ElementsAre(m(name), m(num), m(exp), m(cvc),  //
-                            m(name), m(num), m(exp), m(cvc),  //
-                            m(name), m(num), m(exp), m(cvc),  //
-                            m(name), m(num), m(exp), m(cvc)));
+    EXPECT_THAT(form->fields(), ElementsAre(m(name), m(num), m(exp), m(cvc),  //
+                                            m(name), m(num), m(exp), m(cvc),  //
+                                            m(name), m(num), m(exp), m(cvc),  //
+                                            m(name), m(num), m(exp), m(cvc)));
   }
   const FormData& form_data = form->ToFormData();
   FillCard(main_frame(), form_data, form_data.fields[0]);

@@ -10115,11 +10115,11 @@ TEST_P(BrowserAutofillManagerVotingTest, Submission) {
   };
 
   // Ensure that vote is submitted after form submission.
-  EXPECT_CALL(*download_manager_,
-              StartUploadRequest(
-                  AllOf(SignatureIs(CalculateFormSignature(form_)),
-                        UploadedAutofillTypesAreSet(expected_vote_types)),
-                  _, _, _, /*observed_submission=*/true, _))
+  EXPECT_CALL(
+      *download_manager_,
+      StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
+                               UploadedAutofillTypesAre(expected_vote_types)),
+                         _, _, _, /*observed_submission=*/true, _))
       .Times(1);
   FormSubmitted(form_);
 }
@@ -10142,11 +10142,11 @@ TEST_P(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
           ServerFieldType::CREDIT_CARD_NAME_FIRST}},
         {u"lastname", {ServerFieldType::EMPTY_TYPE}},
     };
-    EXPECT_CALL(*download_manager_,
-                StartUploadRequest(
-                    AllOf(SignatureIs(first_form_signature),
-                          UploadedAutofillTypesAreSet(expected_vote_types)),
-                    _, _, _, /*observed_submission=*/false, _))
+    EXPECT_CALL(
+        *download_manager_,
+        StartUploadRequest(AllOf(SignatureIs(first_form_signature),
+                                 UploadedAutofillTypesAre(expected_vote_types)),
+                           _, _, _, /*observed_submission=*/false, _))
         .Times(1);
   }
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
@@ -10165,11 +10165,11 @@ TEST_P(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
        {ServerFieldType::NAME_LAST, ServerFieldType::CREDIT_CARD_NAME_LAST,
         ServerFieldType::NAME_LAST_SECOND}},
   };
-  EXPECT_CALL(*download_manager_,
-              StartUploadRequest(
-                  AllOf(SignatureIs(first_form_signature),
-                        UploadedAutofillTypesAreSet(expected_vote_types)),
-                  _, _, _, /*observed_submission=*/false, _))
+  EXPECT_CALL(
+      *download_manager_,
+      StartUploadRequest(AllOf(SignatureIs(first_form_signature),
+                               UploadedAutofillTypesAre(expected_vote_types)),
+                         _, _, _, /*observed_submission=*/false, _))
       .Times(1);
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
@@ -10192,12 +10192,12 @@ TEST_P(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
        {ServerFieldType::NAME_LAST, ServerFieldType::NAME_LAST_SECOND}},
       {u"zip", {ServerFieldType::EMPTY_TYPE}},
   };
-  EXPECT_CALL(*download_manager_,
-              StartUploadRequest(
-                  AllOf(SignatureIs(second_form_signature),
-                        UploadedAutofillTypesAreSet(expected_vote_types)),
-                  _, _, _,
-                  /*observed_submission=*/true, _))
+  EXPECT_CALL(
+      *download_manager_,
+      StartUploadRequest(AllOf(SignatureIs(second_form_signature),
+                               UploadedAutofillTypesAre(expected_vote_types)),
+                         _, _, _,
+                         /*observed_submission=*/true, _))
       .Times(1);
   FormSubmitted(form_);
 }
@@ -10212,11 +10212,11 @@ TEST_P(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
        {ServerFieldType::NAME_FIRST, ServerFieldType::CREDIT_CARD_NAME_FIRST}},
       {u"lastname", {ServerFieldType::EMPTY_TYPE}},
   };
-  EXPECT_CALL(*download_manager_,
-              StartUploadRequest(
-                  AllOf(SignatureIs(CalculateFormSignature(form_)),
-                        UploadedAutofillTypesAreSet(expected_vote_types)),
-                  _, _, _, /*observed_submission=*/false, _))
+  EXPECT_CALL(
+      *download_manager_,
+      StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
+                               UploadedAutofillTypesAre(expected_vote_types)),
+                         _, _, _, /*observed_submission=*/false, _))
       .Times(1);
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
@@ -10240,11 +10240,11 @@ TEST_P(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
   if (!base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes)) {
     // If AutofillDelayBlurVotes is disabled, the blur vote is actually sent.
     // Otherwise, it is overridden by the form submission vote.
-    EXPECT_CALL(*download_manager_,
-                StartUploadRequest(
-                    AllOf(SignatureIs(CalculateFormSignature(form_)),
-                          UploadedAutofillTypesAreSet(expected_vote_types)),
-                    _, _, _, /*observed_submission=*/false, _))
+    EXPECT_CALL(
+        *download_manager_,
+        StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
+                                 UploadedAutofillTypesAre(expected_vote_types)),
+                           _, _, _, /*observed_submission=*/false, _))
         .Times(1);
   } else {
     // If kAutofillDelayBlurVotes is enabled, the blur vote will be ignored and
@@ -10252,11 +10252,11 @@ TEST_P(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
   }
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
-  EXPECT_CALL(*download_manager_,
-              StartUploadRequest(
-                  AllOf(SignatureIs(CalculateFormSignature(form_)),
-                        UploadedAutofillTypesAreSet(expected_vote_types)),
-                  _, _, _, /*observed_submission=*/true, _))
+  EXPECT_CALL(
+      *download_manager_,
+      StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
+                               UploadedAutofillTypesAre(expected_vote_types)),
+                         _, _, _, /*observed_submission=*/true, _))
       .Times(1);
   FormSubmitted(form_);
 }
