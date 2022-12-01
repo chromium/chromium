@@ -59,9 +59,6 @@
                   '|components/crash/android/' \
                   '|components/minidump_uploader/'
     },
-    'android_crazy_linker': {
-      'filepath': 'third_party/android_crazy_linker/'
-    },
     'android_flags': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/flags/'
     },
@@ -2257,7 +2254,6 @@
                                'chikamune+watch@chromium.org'],
     'android_crash_reporting': ['asvitkine+watch@chromium.org',
                                 'wnwen+watch@chromium.org'],
-    'android_crazy_linker': ['johnmaguire+watch@google.com'],
     'android_flags': ['hnakashima+watch@chromium.org'],
     'android_infobars': ['dfalcantara+watch@chromium.org'],
     'android_infra': ['agrieve+watch@chromium.org',

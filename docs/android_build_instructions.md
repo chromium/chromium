@@ -184,14 +184,11 @@ depending on the version of Android running on a device. Chrome uses this
 feature to package optimized versions for different OS versions.
 
 1. `chrome_modern_public_bundle` (ChromeModernPublic.aab)
-   * `minSdkVersion=21` (Lollipop).
-   * Uses [Crazy Linker](https://cs.chromium.org/chromium/src/base/android/linker/BUILD.gn?rcl=6bb29391a86f2be58c626170156cbfaa2cbc5c91&l=9).
-   * Stores native library with "crazy." prefix to prevent extraction.
+   * `minSdkVersion=25` (Nougat).
    * WebView packaged independently (`system_webview_bundle`).
 2. `monochrome_public_bundle` (MonochromePublic.aab)
-   * `minSdkVersion=24` (Nougat).
+   * `minSdkVersion=25` (Nougat).
    * Contains both Chrome and WebView (to save disk space).
-   * Does not use Crazy Linker (WebView requires system linker).
 3. `trichrome_chrome_bundle` (TrichromeChrome.aab)
    * `minSdkVersion=29` (Android 10).
    * Native code shared with WebView through a "Static Shared Library APK": `trichrome_library_apk` 

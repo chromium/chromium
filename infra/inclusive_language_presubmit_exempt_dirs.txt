@@ -261,8 +261,6 @@ third_party/afl/src 3 1
 third_party/afl/src/docs 11 2
 third_party/afl/src/llvm_mode 1 1
 third_party/afl/src/qemu_mode 1 1
-third_party/android_crazy_linker 1 1
-third_party/android_crazy_linker/src/src 1 1
 third_party/android_deps 1 1
 third_party/android_deps_autorolled 1 1
 third_party/android_deps/buildSrc/src/main/groovy 25 2
