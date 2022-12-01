@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/contextual_search/core/browser/public.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
@@ -436,42 +437,49 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   JSONStringValueDeserializer deserializer(proper_json);
   std::unique_ptr<base::Value> root =
       deserializer.Deserialize(nullptr, nullptr);
-  const std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(std::move(root));
+  const base::Value::Dict* dict = root->GetIfDict();
   if (!dict)
     return;
 
-  dict->GetString(kContextualSearchPreventPreload, prevent_preload);
-  dict->GetString(kContextualSearchResponseSearchTermParam, search_term);
-  dict->GetString(kContextualSearchResponseLanguageParam, lang);
+  auto extract_string = [&dict](base::StringPiece key, std::string* out) {
+    const std::string* string_pointer = dict->FindString(key);
+    if (string_pointer)
+      *out = *string_pointer;
+  };
+
+  extract_string(kContextualSearchPreventPreload, prevent_preload);
+  extract_string(kContextualSearchResponseSearchTermParam, search_term);
+  extract_string(kContextualSearchResponseLanguageParam, lang);
 
   // For the display_text, if not present fall back to the "search_term".
-  if (!dict->GetString(kContextualSearchResponseDisplayTextParam,
-                       display_text)) {
+  if (const std::string* display_text_pointer =
+          dict->FindString(kContextualSearchResponseDisplayTextParam);
+      display_text_pointer) {
+    *display_text = *display_text_pointer;
+  } else {
     *display_text = *search_term;
   }
-  dict->GetString(kContextualSearchResponseMidParam, mid);
+  extract_string(kContextualSearchResponseMidParam, mid);
 
   // Extract mentions for selection expansion.
   if (!field_trial_->IsDecodeMentionsDisabled()) {
-    const base::Value* mentions_list =
-        dict->FindListKey(kContextualSearchMentionsKey);
+    const base::Value::List* mentions_list =
+        dict->FindList(kContextualSearchMentionsKey);
     // Note that because we've deserialized the json and it's not used later, we
     // can just take the list without worrying about putting it back.
-    if (mentions_list && mentions_list->GetList().size() >= 2)
-      ExtractMentionsStartEnd(mentions_list->GetList(), mention_start,
-                              mention_end);
+    if (mentions_list && mentions_list->size() >= 2u)
+      ExtractMentionsStartEnd(*mentions_list, mention_start, mention_end);
   }
 
   // If either the selected text or the resolved term is not the search term,
   // use it as the alternate term.
   std::string selected_text;
-  dict->GetString(kContextualSearchResponseSelectedTextParam, &selected_text);
+  extract_string(kContextualSearchResponseSelectedTextParam, &selected_text);
   if (selected_text != *search_term) {
     *alternate_term = selected_text;
   } else {
     std::string resolved_term;
-    dict->GetString(kContextualSearchResponseResolvedTermParam, &resolved_term);
+    extract_string(kContextualSearchResponseResolvedTermParam, &resolved_term);
     if (resolved_term != *search_term) {
       *alternate_term = resolved_term;
     }
@@ -480,14 +488,14 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   // Contextual Cards V1+ Integration.
   // Get the basic Bar data for Contextual Cards integration directly
   // from the root.
-  dict->GetString(kContextualSearchCaption, caption);
-  dict->GetString(kContextualSearchThumbnail, thumbnail_url);
+  extract_string(kContextualSearchCaption, caption);
+  extract_string(kContextualSearchThumbnail, thumbnail_url);
 
   // Contextual Cards V2+ Integration.
   // Get the Single Action data.
-  dict->GetString(kContextualSearchAction, quick_action_uri);
+  extract_string(kContextualSearchAction, quick_action_uri);
   std::string quick_action_category_string;
-  dict->GetString(kContextualSearchCategory, &quick_action_category_string);
+  extract_string(kContextualSearchCategory, &quick_action_category_string);
   if (!quick_action_category_string.empty()) {
     if (quick_action_category_string == kActionCategoryAddress) {
       *quick_action_category = QUICK_ACTION_CATEGORY_ADDRESS;
@@ -504,14 +512,14 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
 
   // Contextual Cards V4+ may also provide full search URLs to use in the
   // overlay.
-  dict->GetString(kContextualSearchSearchUrlFull, search_url_full);
-  dict->GetString(kContextualSearchSearchUrlPreload, search_url_preload);
+  extract_string(kContextualSearchSearchUrlFull, search_url_full);
+  extract_string(kContextualSearchSearchUrlPreload, search_url_preload);
 
   // Contextual Cards V5+ integration can provide the primary card tag, so
   // clients can tell what kind of card they have received.
   // TODO(donnd): make sure this works with a non-integer or missing value!
   absl::optional<int> maybe_coca_card_tag =
-      dict->FindIntKey(kContextualSearchCardTag);
+      dict->FindInt(kContextualSearchCardTag);
   if (coca_card_tag && maybe_coca_card_tag)
     *coca_card_tag = *maybe_coca_card_tag;
 
@@ -520,7 +528,7 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   // Cards and output that into the log.
   // TODO(donnd): remove after full Contextual Cards integration.
   std::string contextual_cards_diagnostic;
-  dict->GetString("diagnostic", &contextual_cards_diagnostic);
+  extract_string("diagnostic", &contextual_cards_diagnostic);
   if (contextual_cards_diagnostic.empty()) {
     DVLOG(0) << "No diagnostic data in the response.";
   } else {
@@ -531,8 +539,8 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   // Extract an arbitrary Related Searches payload as JSON and return to Java
   // for decoding.
   // TODO(donnd): remove soon (once the server is updated);
-  if (base::Value* rsearches_json_value =
-          dict->FindKey(kRelatedSearchesSuggestions))
+  if (const base::Value* rsearches_json_value =
+          dict->Find(kRelatedSearchesSuggestions))
     base::JSONWriter::Write(*rsearches_json_value, related_searches_json);
 }
 
