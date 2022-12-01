@@ -244,8 +244,6 @@ ContentAnalysisDialog::ContentAnalysisDialog(
 
   SetupButtons();
 
-  first_shown_timestamp_ = base::TimeTicks::Now();
-
   if (download_item_)
     download_item_->AddObserver(this);
 
@@ -272,16 +270,17 @@ ContentAnalysisDialog::ContentAnalysisDialog(
         bypass_justification_text_length_->GetColorProvider()->GetColor(
             ui::kColorAlertHighSeverity));
   }
-
-  if (observer_for_testing)
-    observer_for_testing->ViewsFirstShown(this, first_shown_timestamp_);
 }
 
 void ContentAnalysisDialog::ShowDialogNow() {
-  // If the web contents is still valid when the delay timer goes off, show the
-  // dialog now.
-  if (web_contents_)
+  // If the web contents is still valid when the delay timer goes off and the
+  // dialog has not yet been shown, show it now.
+  if (web_contents_ && !contents_view_) {
+    first_shown_timestamp_ = base::TimeTicks::Now();
     constrained_window::ShowWebModalDialogViews(this, web_contents_);
+    if (observer_for_testing)
+      observer_for_testing->ViewsFirstShown(this, first_shown_timestamp_);
+  }
 }
 
 std::u16string ContentAnalysisDialog::GetWindowTitle() const {
@@ -531,12 +530,18 @@ void ContentAnalysisDialog::UpdateViews() {
 void ContentAnalysisDialog::UpdateDialog() {
   if (!contents_view_) {
     // If the dialog is no longer pending, a final verdict was received before
-    // the dalog was displayed.  In this case close the dialog.  Otherwise the
-    // dialog will leak.
-    if (!is_pending())
-      CancelDialogAndDelete();
+    // the dalog was displayed.  If the verdict is success and this is not a
+    // cloud analysis, don't bother the user at all and close the dialog.
+    // Otherwise make sure it show right away with the verdict.
+    if (!is_pending()) {
+      if (is_success() || !is_cloud_) {
+        CancelDialogAndDelete();
+      } else {
+        ShowDialogNow();
+      }
 
-    return;
+      return;
+    }
   }
 
   DCHECK(is_result());
