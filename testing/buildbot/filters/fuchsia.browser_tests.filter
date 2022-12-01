@@ -120,13 +120,6 @@
 -ExtensionWebRequestApiTest.WebRequestPacRequestProtection
 -ExtensionWebRequestApiTest.WebSocketRequestOnWorker
 
-# TODO(crbug.com/1326971):
-# ../../chrome/browser/privacy_budget/privacy_budget_browsertest.cc:505: Failure
-# Value of: base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)
-#   Actual: false
-# Expected: true
--PrivacyBudgetFieldtrialConfigTest.LoadsSettingsFromFieldTrialConfig
-
 # TODO(crbug.com/1326641): [backend_impl.cc(1705)] Check failed: hash & mask_ ==
 # cache_entry->entry()->Data()->hash & mask_ (63255 vs. 61987)
 -ProcessManagementTest.ProcessOverflow
