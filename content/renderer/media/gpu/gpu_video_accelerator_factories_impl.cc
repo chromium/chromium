@@ -441,7 +441,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
     return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
   }
 #endif
-  auto capabilities = context_provider_->ContextCapabilities();
+  const auto& capabilities = context_provider_->ContextCapabilities();
   const size_t bit_depth = media::BitDepth(pixel_format);
   if (bit_depth > 8) {
     if (capabilities.image_ycbcr_p010 && bit_depth == 10)
@@ -481,13 +481,30 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
 #endif
   }
 
-  if (capabilities.image_ycbcr_420v &&
-      !capabilities.image_ycbcr_420v_disabled_for_video_frames) {
-    return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB;
+  if (capabilities.texture_rg ||
+      (capabilities.image_ycbcr_420v &&
+       !capabilities.image_ycbcr_420v_disabled_for_video_frames)) {
+    return media::GpuVideoAcceleratorFactories::OutputFormat::NV12;
   }
-  if (capabilities.texture_rg)
-    return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB;
   return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
+}
+
+bool GpuVideoAcceleratorFactoriesImpl::UseSharedImagePerPlane(
+    OutputFormat output_format) {
+  const auto& capabilities = context_provider_->ContextCapabilities();
+  // Use per plane shared image if we can't bind NV12 GMB as one shared image.
+  if (output_format == GpuVideoAcceleratorFactories::OutputFormat::NV12 &&
+      (!capabilities.image_ycbcr_420v ||
+       capabilities.image_ycbcr_420v_disabled_for_video_frames)) {
+    return true;
+  }
+  // Use per plane shared image if we can't bind P010 GMB as one shared image.
+  if (output_format == GpuVideoAcceleratorFactories::OutputFormat::P010 &&
+      !capabilities.image_ycbcr_p010) {
+    return true;
+  }
+  // Otherwise, bind each multi-planar GMB as a single shared image.
+  return false;
 }
 
 gpu::SharedImageInterface*

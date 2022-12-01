@@ -55,19 +55,6 @@
 
 namespace media {
 
-BASE_FEATURE(kMultiPlaneSoftwareVideoSharedImages,
-             "MultiPlaneSoftwareVideoSharedImages",
-#if BUILDFLAG(IS_MAC)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-bool GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled() {
-  return base::FeatureList::IsEnabled(kMultiPlaneSoftwareVideoSharedImages);
-}
-
 // Implementation of a pool of GpuMemoryBuffers used to back VideoFrames.
 class GpuMemoryBufferVideoFramePool::PoolImpl
     : public base::RefCountedThreadSafe<
@@ -287,14 +274,11 @@ gfx::BufferFormat GpuMemoryBufferFormat(
       DCHECK_LE(plane, 2u);
       return gfx::BufferFormat::R_8;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
-      DCHECK_LE(plane, 1u);
+      DCHECK_EQ(0u, plane);
       return gfx::BufferFormat::P010;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
-      DCHECK_LE(plane, 1u);
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
+      DCHECK_EQ(0u, plane);
       return gfx::BufferFormat::YUV_420_BIPLANAR;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
-      DCHECK_LE(plane, 1u);
-      return plane == 0 ? gfx::BufferFormat::R_8 : gfx::BufferFormat::RG_88;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
       DCHECK_EQ(0u, plane);
       return gfx::BufferFormat::BGRA_1010102;
@@ -323,8 +307,7 @@ size_t PlanesPerCopy(GpuVideoAcceleratorFactories::OutputFormat format) {
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
       return 1;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       return 2;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
@@ -339,8 +322,7 @@ VideoPixelFormat VideoFormat(
   switch (format) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
       return PIXEL_FORMAT_I420;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       return PIXEL_FORMAT_NV12;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       return PIXEL_FORMAT_P016LE;
@@ -364,12 +346,9 @@ size_t NumGpuMemoryBuffers(GpuVideoAcceleratorFactories::OutputFormat format) {
   switch (format) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
       return 3;
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       return 1;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
-      return 1;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
-      return 2;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
       return 1;
@@ -386,9 +365,10 @@ size_t NumGpuMemoryBuffers(GpuVideoAcceleratorFactories::OutputFormat format) {
 
 // The number of shared images for a given format. Note that a single
 // GpuMemoryBuffer can be mapped to several SharedImages (one for each plane).
-size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format) {
-  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
+size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format,
+                       bool use_shared_image_per_plane) {
+  if (use_shared_image_per_plane) {
+    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12 ||
         format == GpuVideoAcceleratorFactories::OutputFormat::P010) {
       return 2;
     }
@@ -396,36 +376,42 @@ size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format) {
   return NumGpuMemoryBuffers(format);
 }
 
-// In the case of a format where a single GpuMemoryBuffer is used by multiple
-// planes' shared images, this function returns the index of the PlaneResource
-// in which the GpuMemoryBuffer for a plane is to be found.
-size_t GpuMemoryBufferPlaneResourceIndexForPlane(
+// When a single plane of a GpuMemoryBuffer is to bound to a SharedImage, this
+// method will indicate that plane's format.
+gfx::BufferFormat GetSharedImageBufferFormat(
     GpuVideoAcceleratorFactories::OutputFormat format,
-    size_t plane) {
-  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
-        format == GpuVideoAcceleratorFactories::OutputFormat::P010) {
-      return 0;
+    size_t plane,
+    bool use_shared_image_per_plane) {
+  if (use_shared_image_per_plane) {
+    switch (format) {
+      case GpuVideoAcceleratorFactories::OutputFormat::P010:
+        DCHECK_LE(plane, 1u);
+        return plane == 0u ? gfx::BufferFormat::R_16
+                           : gfx::BufferFormat::RG_1616;
+      case GpuVideoAcceleratorFactories::OutputFormat::NV12:
+        DCHECK_LE(plane, 1u);
+        return plane == 0u ? gfx::BufferFormat::R_8 : gfx::BufferFormat::RG_88;
+      default:
+        break;
     }
   }
-  return plane;
+  return GpuMemoryBufferFormat(format, plane);
 }
 
 // When a single plane of a GpuMemoryBuffer is to bound to a SharedImage, this
 // method will indicate that plane.
 gfx::BufferPlane GetSharedImageBufferPlane(
     GpuVideoAcceleratorFactories::OutputFormat format,
-    size_t plane) {
-  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
+    size_t plane,
+    bool use_shared_image_per_plane) {
+  if (use_shared_image_per_plane) {
+    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12 ||
         format == GpuVideoAcceleratorFactories::OutputFormat::P010) {
       switch (plane) {
         case 0:
           return gfx::BufferPlane::Y;
         case 1:
           return gfx::BufferPlane::UV;
-        case 2:
-          return gfx::BufferPlane::A;
         default:
           NOTREACHED();
           break;
@@ -689,8 +675,7 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
   switch (output_format) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       DCHECK_EQ(video_frame->visible_rect().x() % 2, 0);
       DCHECK_EQ(video_frame->visible_rect().y() % 2, 0);
       if (!gfx::IsOddWidthMultiPlanarBuffersAllowed())
@@ -1027,7 +1012,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
           static_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1));
       break;
 
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB: {
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12: {
       const size_t rows_to_copy_y = VideoFrame::Rows(
           VideoFrame::kYPlane, VideoFormat(output_format), rows_to_copy);
       const size_t rows_to_copy_uv = VideoFrame::Rows(
@@ -1041,25 +1026,6 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
           bytes_per_row_uv, video_frame,
           static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
           static_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1));
-      break;
-    }
-
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB: {
-      const size_t rows_to_copy_y = VideoFrame::Rows(
-          VideoFrame::kYPlane, VideoFormat(output_format), rows_to_copy);
-      const size_t rows_to_copy_uv = VideoFrame::Rows(
-          VideoFrame::kUVPlane, VideoFormat(output_format), rows_to_copy);
-      const size_t bytes_per_row_y = VideoFrame::RowBytes(
-          VideoFrame::kYPlane, VideoFormat(output_format), coded_size.width());
-      const size_t bytes_per_row_uv = VideoFrame::RowBytes(
-          VideoFrame::kUVPlane, VideoFormat(output_format), coded_size.width());
-      gfx::GpuMemoryBuffer* buffer2 =
-          frame_resources->plane_resources[1].gpu_memory_buffer.get();
-      CopyRowsToNV12Buffer(
-          row, rows_to_copy_y, rows_to_copy_uv, bytes_per_row_y,
-          bytes_per_row_uv, video_frame,
-          static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
-          static_cast<uint8_t*>(buffer2->memory(0)), buffer2->stride(0));
       break;
     }
 
@@ -1146,17 +1112,24 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     return nullptr;
   }
 
+  const bool use_shared_image_per_plane =
+      base::FeatureList::IsEnabled(kMultiPlaneSoftwareVideoSharedImages) ||
+      gpu_factories_->UseSharedImagePerPlane(output_format_);
+  const size_t num_shared_images =
+      NumSharedImages(output_format_, use_shared_image_per_plane);
+  const size_t num_gpu_memory_buffers = NumGpuMemoryBuffers(output_format_);
+
   gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
   bool is_webgpu_compatible = false;
   // Set up the planes creating the mailboxes needed to refer to the textures.
-  for (size_t plane = 0; plane < NumSharedImages(output_format_); plane++) {
-    size_t gpu_memory_buffer_plane =
-        GpuMemoryBufferPlaneResourceIndexForPlane(output_format_, plane);
+  for (size_t plane = 0; plane < num_shared_images; plane++) {
+    // Except I420 where GMB planes map 1:1 with shared image planes, other
+    // formats only have one plane - this logic works for all formats/modes.
+    const size_t gmb_plane = std::min(plane, num_gpu_memory_buffers - 1);
 
     PlaneResource& plane_resource = frame_resources->plane_resources[plane];
     gfx::GpuMemoryBuffer* gpu_memory_buffer =
-        frame_resources->plane_resources[gpu_memory_buffer_plane]
-            .gpu_memory_buffer.get();
+        frame_resources->plane_resources[gmb_plane].gpu_memory_buffer.get();
 
 #if BUILDFLAG(IS_MAC)
     // Shared image uses iosurface as native resource which is compatible to
@@ -1173,9 +1146,9 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     }
 #endif
 
-    const gfx::BufferFormat buffer_format =
-        GpuMemoryBufferFormat(output_format_, plane);
-    unsigned texture_target = gpu_factories_->ImageTextureTarget(buffer_format);
+    const gfx::BufferFormat plane_format = GetSharedImageBufferFormat(
+        output_format_, plane, use_shared_image_per_plane);
+    unsigned texture_target = gpu_factories_->ImageTextureTarget(plane_format);
     // Bind the texture and create or rebind the image.
     if (gpu_memory_buffer && plane_resource.mailbox.IsZero()) {
       uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
@@ -1192,10 +1165,13 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       }
 #endif
 
+      const gfx::BufferPlane buffer_plane = GetSharedImageBufferPlane(
+          output_format_, plane, use_shared_image_per_plane);
+
       plane_resource.mailbox = sii->CreateSharedImage(
           gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
-          GetSharedImageBufferPlane(output_format_, plane), color_space,
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+          buffer_plane, color_space, kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, usage);
     } else if (!plane_resource.mailbox.IsZero()) {
       sii->UpdateSharedImage(frame_resources->sync_token,
                              plane_resource.mailbox);
@@ -1208,7 +1184,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   // mailboxes refer to will be used only after all the previous commands posted
   // in the SharedImageInterface have been processed.
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
-  for (size_t plane = 0; plane < NumSharedImages(output_format_); plane++)
+  for (size_t plane = 0; plane < num_shared_images; plane++)
     mailbox_holders[plane].sync_token = sync_token;
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
@@ -1230,20 +1206,22 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
   bool allow_overlay = false;
 #if BUILDFLAG(IS_WIN)
-  // Windows direct composition path only supports dual GMB NV12 video overlays.
-  allow_overlay = (output_format_ ==
-                   GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB);
-#else
+  // Windows direct composition path only supports NV12 shmem GMB overlays.
+  allow_overlay =
+      (output_format_ == GpuVideoAcceleratorFactories::OutputFormat::NV12);
+#else  // BUILDFLAG(IS_WIN)
   switch (output_format_) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
       allow_overlay = allow_i420_overlay;
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
+#if BUILDFLAG(IS_MAC)
       allow_overlay = true;
-      break;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
-      // Only used on Windows where we can't use single NV12 textures.
+#else
+      // ChromeOS only supports overlays for single GMB NV12/P010 frames.
+      allow_overlay = !use_shared_image_per_plane;
+#endif
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
@@ -1265,7 +1243,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
       break;
   }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
   frame->metadata().allow_overlay = allow_overlay;
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible = is_webgpu_compatible;

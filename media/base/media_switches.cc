@@ -451,7 +451,7 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
 // frames created by video capture.
 BASE_FEATURE(kMultiPlaneVideoCaptureSharedImages,
              "MultiPlaneVideoCaptureSharedImages",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -1250,6 +1250,16 @@ BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,
              "FuchsiaMediacodecVideoEncoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_FUCHSIA)
+
+// Enables binding software NV12 GMBs as separate shared images.
+BASE_FEATURE(kMultiPlaneSoftwareVideoSharedImages,
+             "MultiPlaneSoftwareVideoSharedImages",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
