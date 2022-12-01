@@ -10,7 +10,9 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller+private.h"
 #import "ios/chrome/browser/ui/autofill/cells/cvc_header_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item+private.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
@@ -23,23 +25,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-@interface CardUnmaskPromptViewController ()
-// Exposed to simulate form submissions.
-- (void)onVerifyTapped;
-// Exposed for testing the addition of the expiration date link.
-- (void)showUpdateExpirationDateLink;
-// Exposed for testing the setup of the update expiration date form.
-- (void)showUpdateExpirationDateForm;
-// Exposed for testing the setup of the ViewController after an error.
-- (void)onErrorAlertDismissedAndShouldCloseOnDismiss:(BOOL)closeOnDismiss;
-@end
-
-@interface ExpirationDateEditItem ()
-// Making both properties writable for testing.
-@property(nonatomic, readwrite, copy) NSString* month;
-@property(nonatomic, readwrite, copy) NSString* year;
-@end
 
 namespace {
 

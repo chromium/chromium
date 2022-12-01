@@ -79,6 +79,7 @@ source_set("bridges") {
     "card_name_fix_flow_view_bridge.mm",
     "card_unmask_prompt_view_bridge.h",
     "card_unmask_prompt_view_bridge.mm",
+    "card_unmask_prompt_view_controller+private.h",
     "card_unmask_prompt_view_controller.h",
     "card_unmask_prompt_view_controller.mm",
     "create_card_unmask_prompt_view_bridge.h",

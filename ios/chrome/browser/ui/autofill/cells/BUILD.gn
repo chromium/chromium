@@ -15,6 +15,7 @@ source_set("cells") {
     "cvc_header_item.mm",
     "cvc_item.h",
     "cvc_item.mm",
+    "expiration_date_edit_item+private.h",
     "expiration_date_edit_item.h",
     "expiration_date_edit_item.mm",
     "expiration_date_edit_item_delegate.h",

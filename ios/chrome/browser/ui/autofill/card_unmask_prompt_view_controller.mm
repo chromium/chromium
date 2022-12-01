@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller+private.h"
 #import "ios/chrome/browser/ui/autofill/cells/cvc_header_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item_delegate.h"
