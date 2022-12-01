@@ -5371,6 +5371,17 @@ fuzzer_test("net_cookie_partition_key_fuzzer") {
   ]
 }
 
+fuzzer_test("net_cookie_util_parsing_fuzzer") {
+  sources = [ "cookies/cookie_util_parsing_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//net",
+  ]
+  dict = "data/fuzzer_dictionaries/net_cookies_fuzzer.dict"
+  libfuzzer_options = [ "max_len=8192" ]
+  seed_corpus = "data/fuzzer_data/cookies/"
+}
+
 fuzzer_test("net_parse_cookie_line_fuzzer") {
   sources = [ "cookies/parse_cookie_line_fuzzer.cc" ]
   deps = [

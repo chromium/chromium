@@ -32,6 +32,9 @@ namespace {
 struct RequestCookieParsingTest {
   std::string str;
   base::StringPairs parsed;
+  // Used for malformed cookies where the parsed-then-serialized string does not
+  // match the original string.
+  std::string serialized;
 };
 
 void CheckParse(const std::string& str,
@@ -247,6 +250,47 @@ TEST(CookieUtilTest, TestRequestCookieParsing) {
     SCOPED_TRACE(testing::Message() << "Test " << i);
     CheckParse(tests[i].str, tests[i].parsed);
     CheckSerialize(tests[i].parsed, tests[i].str);
+  }
+}
+
+TEST(CookieUtilTest, TestRequestCookieParsing_Malformed) {
+  std::vector<RequestCookieParsingTest> tests;
+
+  // Missing equal sign.
+  tests.emplace_back();
+  tests.back().str = "key";
+  tests.back().parsed.emplace_back(
+      std::make_pair(std::string("key"), std::string()));
+  tests.back().serialized = "key=";
+
+  // Quoted value with unclosed quote.
+  tests.emplace_back();
+  tests.back().str = "key=\"abcdef";
+
+  // Quoted value with unclosed quote followed by regular value.
+  tests.emplace_back();
+  tests.back().str = "key=\"abcdef; otherkey=1234";
+
+  // Quoted value with unclosed quote followed by another quoted value.
+  tests.emplace_back();
+  tests.back().str = "key=\"abcdef; otherkey=\"1234\"";
+  tests.back().parsed.emplace_back(
+      std::make_pair(std::string("key"), std::string("\"abcdef; otherkey=\"")));
+  tests.back().parsed.emplace_back(
+      std::make_pair(std::string("234\""), std::string()));
+  tests.back().serialized = "key=\"abcdef; otherkey=\"; 234\"=";
+
+  // Regular value followed by quoted value with unclosed quote.
+  tests.emplace_back();
+  tests.back().str = "key=abcdef; otherkey=\"1234";
+  tests.back().parsed.emplace_back(
+      std::make_pair(std::string("key"), std::string("abcdef")));
+  tests.back().serialized = "key=abcdef";
+
+  for (size_t i = 0; i < tests.size(); i++) {
+    SCOPED_TRACE(testing::Message() << "Test " << i);
+    CheckParse(tests[i].str, tests[i].parsed);
+    CheckSerialize(tests[i].parsed, tests[i].serialized);
   }
 }
 

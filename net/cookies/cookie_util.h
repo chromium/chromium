@@ -134,8 +134,9 @@ using ParsedRequestCookies = std::vector<ParsedRequestCookie>;
 // Assumes that |header_value| is the cookie header value of a HTTP Request
 // following the cookie-string schema of RFC 6265, section 4.2.1, and returns
 // cookie name/value pairs. If cookie values are presented in double quotes,
-// these will appear in |parsed_cookies| as well. Assumes that the cookie
-// header is written by Chromium and therefore well-formed.
+// these will appear in |parsed_cookies| as well. The cookie header can be
+// written by non-Chromium consumers (such as extensions), so the header may not
+// be well-formed.
 NET_EXPORT void ParseRequestCookieLine(const std::string& header_value,
                                        ParsedRequestCookies* parsed_cookies);
 
