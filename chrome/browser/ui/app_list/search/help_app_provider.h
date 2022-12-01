@@ -17,15 +17,12 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
-namespace ash {
-namespace help_app {
+namespace ash::help_app {
 class SearchHandler;
-}  // namespace help_app
-}  // namespace ash
+}  // namespace ash::help_app
 
 namespace gfx {
 class ImageSkia;
@@ -61,7 +58,8 @@ class HelpAppProvider : public SearchProvider,
                         public apps::AppRegistryCache::Observer,
                         public ash::help_app::mojom::SearchResultsObserver {
  public:
-  explicit HelpAppProvider(Profile* profile);
+  HelpAppProvider(Profile* profile,
+                  ash::help_app::SearchHandler* search_handler);
   ~HelpAppProvider() override;
 
   HelpAppProvider(const HelpAppProvider&) = delete;

@@ -9,8 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "ash/webui/help_app_ui/help_app_manager.h"
-#include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "base/feature_list.h"
@@ -69,6 +67,7 @@ HelpAppResult::HelpAppResult(
   set_id(ash::kChromeUIHelpAppURL + url_path_);
   set_relevance(relevance);
   SetTitle(result->title);
+  SetCategory(Category::kHelp);
   SetResultType(ResultType::kHelpApp);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::HELP_APP_DEFAULT);
@@ -94,8 +93,9 @@ void HelpAppResult::Open(int event_flags) {
       std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 }
 
-HelpAppProvider::HelpAppProvider(Profile* profile)
-    : profile_(profile), search_handler_(nullptr) {
+HelpAppProvider::HelpAppProvider(Profile* profile,
+                                 ash::help_app::SearchHandler* search_handler)
+    : profile_(profile), search_handler_(search_handler) {
   DCHECK(profile_);
 
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
@@ -107,9 +107,7 @@ HelpAppProvider::HelpAppProvider(Profile* profile)
     // Only get the help app manager if the launcher search feature is enabled.
     return;
   }
-  search_handler_ =
-      ash::help_app::HelpAppManagerFactory::GetForBrowserContext(profile_)
-          ->search_handler();
+
   if (!search_handler_) {
     return;
   }
@@ -170,7 +168,7 @@ void HelpAppProvider::OnSearchReturned(
   SearchProvider::Results search_results;
   for (const auto& result : sorted_results) {
     if (result->relevance_score < kMinScore) {
-      break;
+      continue;
     }
 
     search_results.emplace_back(std::make_unique<HelpAppResult>(

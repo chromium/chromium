@@ -7455,6 +7455,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/files/zero_state_file_provider_unittest.cc",
       "../browser/ui/app_list/search/games/game_provider_unittest.cc",
       "../browser/ui/app_list/search/games/game_result_unittest.cc",
+      "../browser/ui/app_list/search/help_app_provider_unittest.cc",
       "../browser/ui/app_list/search/help_app_zero_state_provider_unittest.cc",
       "../browser/ui/app_list/search/keyboard_shortcut_provider_unittest.cc",
       "../browser/ui/app_list/search/keyboard_shortcut_result_unittest.cc",
