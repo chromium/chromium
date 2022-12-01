@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -27,6 +28,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "components/feedback/system_logs/system_logs_source.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_internals_util.h"
 #include "components/sync/driver/sync_service.h"
@@ -97,6 +100,9 @@ constexpr char kAccountTypeKey[] = "account_type";
 constexpr char kLacrosStatus[] = "lacros_status";
 constexpr char kDemoModeConfigKey[] = "demo_mode_config";
 constexpr char kOnboardingTime[] = "ONBOARDING_TIME";
+constexpr char kFreeDiskSpace[] = "FREE_DISK_SPACE";
+constexpr char kTotalDiskSpace[] = "TOTAL_DISK_SPACE";
+constexpr char kChronosHomeDirectory[] = "/home/user/chronos";
 #else
 constexpr char kOsVersionTag[] = "OS VERSION";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -186,6 +192,77 @@ std::string GetDisplayInfoString(
   return entry;
 }
 
+// Called from a worker thread via PostTaskAndReply.
+void PopulateEntriesAsync(std::unique_ptr<SystemLogsResponse> response,
+                          SysLogsSourceCallback callback) {
+  auto populate_entries = [](SystemLogsResponse* response) {
+    DCHECK(response);
+
+    chromeos::system::StatisticsProvider* stats =
+        chromeos::system::StatisticsProvider::GetInstance();
+    DCHECK(stats);
+
+    // Get the HWID.
+    std::string hwid;
+    if (!stats->GetMachineStatistic(chromeos::system::kHardwareClassKey, &hwid))
+      VLOG(1) << "Couldn't get machine statistic 'hardware_class'.";
+    else
+      response->emplace(kHWIDKey, hwid);
+
+    // Get the firmware version.
+    response->emplace(kChromeOsFirmwareVersion,
+                      chromeos::version_loader::GetFirmware());
+  };
+
+  SystemLogsResponse* response_ptr = response.get();
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(populate_entries, response_ptr),
+      base::BindOnce(std::move(callback), std::move(response)));
+}
+
+void PopulateDiskSpaceLogsAsync(std::unique_ptr<SystemLogsResponse> response,
+                                SysLogsSourceCallback callback) {
+  auto on_get_free_disk_space = [](std::unique_ptr<SystemLogsResponse> response,
+                                   SysLogsSourceCallback callback,
+                                   absl::optional<int64_t> free_space) {
+    auto on_get_total_disk_space =
+        [](std::unique_ptr<SystemLogsResponse> response,
+           SysLogsSourceCallback callback,
+           absl::optional<int64_t> total_space) {
+          if (total_space.has_value()) {
+            response->emplace(kTotalDiskSpace,
+                              base::NumberToString(total_space.value()));
+          }
+          PopulateEntriesAsync(std::move(response), std::move(callback));
+        };
+
+    if (free_space.has_value()) {
+      response->emplace(kFreeDiskSpace,
+                        base::NumberToString(free_space.value()));
+    }
+
+    // Might be null in some tests.
+    if (ash::SpacedClient::Get()) {
+      ash::SpacedClient::Get()->GetTotalDiskSpace(
+          kChronosHomeDirectory,
+          base::BindOnce(on_get_total_disk_space, std::move(response),
+                         std::move(callback)));
+    }
+  };
+
+  // Might be null in some tests.
+  if (ash::SpacedClient::Get()) {
+    ash::SpacedClient::Get()->GetFreeDiskSpace(
+        kChronosHomeDirectory,
+        base::BindOnce(on_get_free_disk_space, std::move(response),
+                       std::move(callback)));
+  } else {
+    PopulateEntriesAsync(std::move(response), std::move(callback));
+  }
+}
+
 // Called from the main (UI) thread, invokes |callback| when complete.
 void PopulateMonitorInfoAsync(
     crosapi::mojom::CrosDisplayConfigController* cros_display_config_ptr,
@@ -208,26 +285,11 @@ void PopulateMonitorInfoAsync(
           response, std::move(callback)));
 }
 
-// Called from a worker thread via PostTaskAndReply.
-void PopulateEntriesAsync(SystemLogsResponse* response) {
-  DCHECK(response);
-
-  chromeos::system::StatisticsProvider* stats =
-      chromeos::system::StatisticsProvider::GetInstance();
-  DCHECK(stats);
-
-  // Get the HWID.
-  if (const absl::optional<base::StringPiece> hwid =
-          stats->GetMachineStatistic(chromeos::system::kHardwareClassKey)) {
-    response->emplace(kHWIDKey, std::string(hwid.value()));
-  } else {
-    VLOG(1) << "Couldn't get machine statistic 'hardware_class'.";
-  }
-
-  // Get the firmware version.
-  response->emplace(kChromeOsFirmwareVersion,
-                    chromeos::version_loader::GetFirmware());
+void OnPopulateMonitorInfoAsync(std::unique_ptr<SystemLogsResponse> response,
+                                SysLogsSourceCallback callback) {
+  PopulateDiskSpaceLogsAsync(std::move(response), std::move(callback));
 }
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::string GetChromeVersionString() {
@@ -367,19 +429,12 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   PopulateLocalStateSettings(response.get());
   PopulateOnboardingTime(response.get());
 
-  // Chain asynchronous fetchers: PopulateMonitorInfoAsync, PopulateEntriesAsync
+  // Chain asynchronous fetchers: PopulateMonitorInfoAsync,
+  // PopulateEntriesAsync, PopulateDiskSpaceAsync
   PopulateMonitorInfoAsync(
       cros_display_config_.get(), response.get(),
-      base::BindOnce(
-          [](std::unique_ptr<SystemLogsResponse> response,
-             SysLogsSourceCallback callback) {
-            SystemLogsResponse* response_ptr = response.get();
-            base::ThreadPool::PostTaskAndReply(
-                FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-                base::BindOnce(&PopulateEntriesAsync, response_ptr),
-                base::BindOnce(std::move(callback), std::move(response)));
-          },
-          std::move(response), std::move(callback)));
+      base::BindOnce(&OnPopulateMonitorInfoAsync, std::move(response),
+                     std::move(callback)));
 #else
   // On other platforms, we're done. Invoke the callback.
   std::move(callback).Run(std::move(response));

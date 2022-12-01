@@ -10,6 +10,8 @@
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -78,6 +80,21 @@ TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {
   }
 }
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ChromeInternalLogSourceTest, FreeAndTotalDiskSpacePresent) {
+  ash::SpacedClient::InitializeFake();
+  ash::FakeSpacedClient::Get()->set_free_disk_space(1000);
+  ash::FakeSpacedClient::Get()->set_total_disk_space(100000);
+
+  auto response = GetChromeInternalLogs();
+  auto free_disk_space = response->at("FREE_DISK_SPACE");
+  auto total_disk_space = response->at("TOTAL_DISK_SPACE");
+
+  EXPECT_EQ(free_disk_space, "1000");
+  EXPECT_EQ(total_disk_space, "100000");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 }  // namespace system_logs

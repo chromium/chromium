@@ -7635,6 +7635,7 @@ test("unit_tests") {
       "//chromeos/ash/components/dbus/image_loader",
       "//chromeos/ash/components/dbus/seneschal",
       "//chromeos/ash/components/dbus/shill",
+      "//chromeos/ash/components/dbus/spaced",
       "//chromeos/ash/components/dbus/update_engine",
       "//chromeos/ash/components/dbus/update_engine:proto",
       "//chromeos/ash/components/disks",
