@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class PasswordsNavigationObserver : public content::WebContentsObserver {
@@ -36,9 +34,6 @@ class PasswordsNavigationObserver : public content::WebContentsObserver {
   // Wait for navigation to succeed.
   void Wait();
 
-  // Returns the RenderFrameHost that navigated.
-  content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
-
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -47,7 +42,6 @@ class PasswordsNavigationObserver : public content::WebContentsObserver {
 
  private:
   std::string wait_for_path_;
-  raw_ptr<content::RenderFrameHost, DanglingUntriaged> render_frame_host_;
   bool quit_on_entry_committed_ = false;
   base::RunLoop run_loop_;
 };
