@@ -3051,9 +3051,6 @@ TEST(AXEventGeneratorTest, NoParentChangedOnIgnoredNode) {
       event_generator,
       UnorderedElementsAre(
           HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 47),
-          HasEventAtNode(AXEventGenerator::Event::STATE_CHANGED, 100),
-          HasEventAtNode(AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED,
-                         100),
           HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 168)));
   // These are the events that shouldn't be happening:
   // HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 100),
@@ -3247,9 +3244,6 @@ TEST(AXEventGeneratorTest, ParentChangedOnIgnoredNodeFiresOnChildren) {
       event_generator,
       UnorderedElementsAre(
           HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 47),
-          HasEventAtNode(AXEventGenerator::Event::STATE_CHANGED, 100),
-          HasEventAtNode(AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED,
-                         100),
           HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 168),
           HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 102),
           HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 103),

@@ -74,9 +74,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerAuraLinuxTest,
                            TestEmitChildrenChanged);
   // AXTreeObserver methods.
-  void OnNodeDataWillChange(ui::AXTree* tree,
-                            const ui::AXNodeData& old_node_data,
-                            const ui::AXNodeData& new_node_data) override;
+  void OnIgnoredWillChange(
+      ui::AXTree* tree,
+      ui::AXNode* node,
+      bool is_ignored_new_value,
+      bool is_changing_unignored_parents_children) override;
   void OnSubtreeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
   void OnAtomicUpdateFinished(
       ui::AXTree* tree,

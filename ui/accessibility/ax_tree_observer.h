@@ -34,9 +34,11 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
   // callstack. Do not hold a reference to the node or any relative nodes such
   // as ancestors or descendants described by the node or its node data outside
   // of these events.
-  virtual void OnIgnoredWillChange(AXTree* tree,
-                                   AXNode* node,
-                                   bool is_ignored_new_value) {}
+  virtual void OnIgnoredWillChange(
+      AXTree* tree,
+      AXNode* node,
+      bool is_ignored_new_value,
+      bool is_changing_unignored_parents_children) {}
   virtual void OnNodeDataWillChange(AXTree* tree,
                                     const AXNodeData& old_node_data,
                                     const AXNodeData& new_node_data) {}

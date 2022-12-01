@@ -324,15 +324,25 @@ class AX_EXPORT AXTree {
   // Notify the delegate that `node` will change its data attributes, including
   // its ignored state.
   void NotifyNodeAttributesWillChange(AXNode* node,
+                                      AXTreeUpdateState& update_state,
                                       const AXTreeData* optional_old_tree_data,
                                       const AXNodeData& old_data,
                                       const AXTreeData* new_tree_data,
                                       const AXNodeData& new_data);
 
+  // Notify the delegate that `node` will change its its ignored state.
+  void NotifyNodeIgnoredStateWillChange(
+      AXNode* node,
+      const AXTreeData* optional_old_tree_data,
+      const AXNodeData& old_data,
+      const AXTreeData* new_tree_data,
+      const AXNodeData& new_data);
+
   // Notify the delegate that `node` has changed its data attributes, including
   // its ignored state.
   void NotifyNodeAttributesHaveBeenChanged(
       AXNode* node,
+      AXTreeUpdateState& update_state,
       const AXTreeData* optional_old_tree_data,
       const AXNodeData& old_data,
       const AXTreeData* new_tree_data,

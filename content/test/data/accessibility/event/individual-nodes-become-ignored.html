@@ -1,0 +1,25 @@
+<html>
+  <body>
+    <!-- Show/Hide events only need to occur on the root of what's shown/hidden,
+     not for each descendant. -->
+    <div role="main" id="root">
+      <span role="group" id="child1">   <!-- becomes ignored -->
+        <span role="link" id="grandchild1">1</span>
+      </span>
+      <span role="group" id="child2">   <!-- becomes ignored -->
+        <span role="link" id="grandchild2">   <!-- becomes ignored -->
+          2
+        </span>
+      </span>
+    </div>
+    <script>
+      function go() {
+        // Setting the role to "none" makes the node ignored, while the lang
+        // attribute makes it "ignored but included in tree".
+        document.querySelector('#child1').role = 'none';
+        document.querySelector('#child2').role = 'none';
+        document.querySelector('#grandchild2').role = 'none';
+      }
+    </script>
+  </body>
+</html>

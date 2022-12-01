@@ -288,9 +288,11 @@ void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
                       tree_->event_data()->event_intents);
 }
 
-void AXEventGenerator::OnIgnoredWillChange(AXTree* tree,
-                                           AXNode* node,
-                                           bool is_ignored_new_value) {
+void AXEventGenerator::OnIgnoredWillChange(
+    AXTree* tree,
+    AXNode* node,
+    bool is_ignored_new_value,
+    bool is_changing_unignored_parents_children) {
   // If the node had been ignored and invisible before it changes to unignored,
   // then we should not fire `EVENT::PARENT_CHANGED` on its children because
   // they were previously unknown to ATs as they were in a hidden subtree.
@@ -390,6 +392,8 @@ void AXEventGenerator::OnStateChanged(AXTree* tree,
   DCHECK_NE(state, ax::mojom::State::kIgnored)
       << "The ignored state should be handled in "
          "`AXEventGenerator::OnIgnoredChanged` and not in this method.";
+  if (node->IsIgnored())
+    return;
   AddEvent(node, Event::STATE_CHANGED);
   AddEvent(node, Event::WIN_IACCESSIBLE_STATE_CHANGED);
 

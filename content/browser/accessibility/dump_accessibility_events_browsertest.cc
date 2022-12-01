@@ -730,6 +730,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsIndividualNodesBecomeIgnored) {
+  RunEventTest(FILE_PATH_LITERAL("individual-nodes-become-ignored.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    AccessibilityEventsIndividualNodesBecomeIgnoredButIncluded) {
+  RunEventTest(
+      FILE_PATH_LITERAL("individual-nodes-become-ignored-but-included.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsInnerHtmlChange) {
   RunEventTest(FILE_PATH_LITERAL("inner-html-change.html"));
 }

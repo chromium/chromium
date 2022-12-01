@@ -250,9 +250,11 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
 
  protected:
   // AXTreeObserver overrides.
-  void OnIgnoredWillChange(AXTree* tree,
-                           AXNode* node,
-                           bool is_ignored_new_value) override;
+  void OnIgnoredWillChange(
+      AXTree* tree,
+      AXNode* node,
+      bool is_ignored_new_value,
+      bool is_changing_unignored_parents_children) override;
   void OnNodeDataChanged(AXTree* tree,
                          const AXNodeData& old_node_data,
                          const AXNodeData& new_node_data) override;
