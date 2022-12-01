@@ -116,8 +116,7 @@ MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)
 
 const CachedMatchedProperties* MatchedPropertiesCache::Find(
     const Key& key,
-    const StyleResolverState& style_resolver_state,
-    const MatchResult& match_result) {
+    const StyleResolverState& style_resolver_state) {
   DCHECK(key.IsValid());
   Cache::iterator it = cache_.find(key.hash_);
   if (it == cache_.end())
@@ -130,11 +129,6 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   if (cache_item->computed_style->InsideLink() !=
       style_resolver_state.StyleBuilder().InsideLink())
     return nullptr;
-  if (cache_item->computed_style->CanAffectAnimations() !=
-      (style_resolver_state.CanAffectAnimations() ||
-       match_result.ConditionallyAffectsAnimations())) {
-    return nullptr;
-  }
   if (!cache_item->DependenciesEqual(style_resolver_state))
     return nullptr;
   return cache_item;

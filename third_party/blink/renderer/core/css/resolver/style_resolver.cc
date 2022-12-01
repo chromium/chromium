@@ -1854,22 +1854,12 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   bool is_inherited_cache_hit = false;
   bool is_non_inherited_cache_hit = false;
   const CachedMatchedProperties* cached_matched_properties =
-      key.IsValid() ? matched_properties_cache_.Find(key, state, match_result)
-                    : nullptr;
+      key.IsValid() ? matched_properties_cache_.Find(key, state) : nullptr;
 
   AtomicString pseudo_argument = state.StyleBuilder().PseudoArgument();
   if (cached_matched_properties && MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_hit, 1);
-
-    if (cached_matched_properties->computed_style->CanAffectAnimations()) {
-      // Need to set this flag from the cached ComputedStyle to make
-      // ShouldStoreOldStyle() correctly return true. We do not collect matching
-      // rules when the cache is hit, and the flag is set as part of that
-      // process for the full style resolution.
-      state.SetCanAffectAnimations();
-    }
-
     // We can build up the style by copying non-inherited properties from an
     // earlier style object built using the same exact style declarations. We
     // then only need to apply the inherited properties, if any, as their values
@@ -2141,12 +2131,9 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
     UseCountLegacyOverlapping(GetDocument(), *non_legacy_style, *state.Style());
   }
 
-  // NOTE: These flags need to be set before the entry is added to the matched
-  // properties cache, or it will be wrong on cache hits.
+  // NOTE: This flag needs to be set before the entry is added to the
+  // matched properties cache, or it will be wrong on cache hits.
   state.StyleBuilder().SetInlineStyleLostCascade(cascade.InlineStyleLost());
-  if (state.CanAffectAnimations() || result.ConditionallyAffectsAnimations()) {
-    state.StyleBuilder().SetCanAffectAnimations();
-  }
 
   MaybeAddToMatchedPropertiesCache(state, cache_success, result);
 
