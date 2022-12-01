@@ -289,8 +289,13 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     return keyboard.topRowKeys.map((keyId: TopRowKey) => topRowKeyMap[keyId]);
   }
 
-  protected getDescriptionLabel_(): TrustedHTML {
-    return this.i18nAdvanced('keyboardTesterInstruction', {attrs: ['id']});
+  protected getDescriptionLabel_(): string {
+    return this.i18n('keyboardTesterInstruction');
+  }
+
+  protected getShortcutInstructionLabel_(): TrustedHTML {
+    return this.i18nAdvanced(
+        'keyboardTesterShortcutInstruction', {attrs: ['id']});
   }
 
   private addEventListeners(): void {

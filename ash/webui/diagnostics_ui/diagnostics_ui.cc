@@ -228,6 +228,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
        IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_FOCUS_LOSS_MESSAGE},
       {"keyboardTesterInstruction",
        IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_INSTRUCTION},
+      {"keyboardTesterShortcutInstruction",
+       IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_SHORTCUT_INSTRUCTION},
       {"keyboardTesterTitle", IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_TITLE},
       {"keyboardText", IDS_DIAGNOSTICS_KEYBOARD},
       {"joinNetworkLinkText", IDS_DIAGNOSTICS_JOIN_NETWORK_LINK_TEXT},

@@ -51,7 +51,7 @@
     font-weight: var(--diagnostics-regular-font-weight);
     line-height: 20px;
     margin: 0;
-    padding-bottom: 24px;
+    padding-bottom: 8px;
   }
 
   #diagram-border {
@@ -84,19 +84,33 @@
     margin-inline-end: 12px;
   }
 
+  #shortcutInstruction {
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 14px;
+    font-weight: var(--diagnostics-regular-font-weight);
+    line-height: 20px;
+    margin:0;
+    padding-bottom: 24px;
+  }
+
   #shortcutKeyAlt,
   #shortcutKeyEsc {
     border: 1px solid var(--cros-color-prominent);
     border-radius: 10px;
     color: var(--cros-button-label-color-secondary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
     font-weight: var(--diagnostics-medium-font-weight);
-    padding: 0 4px;
+    line-height: 20px;
+    margin: 0 2px;
+    padding: 0 6px;
   }
 </style>
 <cr-dialog id="dialog" on-close="handleClose">
-  <div slot="title" aria-labelledby="description">[[i18n('keyboardTesterTitle')]]</div>
+  <div slot="title" aria-labelledby="description shortcutInstruction">[[i18n('keyboardTesterTitle')]]</div>
   <div slot="body">
-    <p id="description" inner-h-t-m-l="[[getDescriptionLabel_()]]"></p>
+    <p id="description">[[getDescriptionLabel_()]]</p>
+    <p id="shortcutInstruction" inner-h-t-m-l="[[getShortcutInstructionLabel_()]]"></p>
     <template is="dom-if" if="[[layoutIsKnown_]]">
       <div id="diagram-border">
         <keyboard-diagram

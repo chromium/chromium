@@ -1224,7 +1224,10 @@ Try tapping the mic to ask me anything.
         For more help, go to the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Help Center<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_INSTRUCTION" desc="Instruction text in a keyboard testing UI. Appears above a visual representation showing the keys currently pressed on the keyboard.">
-        Type any key on your keyboard. You can press up to 4 keys at the same time. Press <ph name="LINK1_BEGIN">&lt;a id="shortcutKeyEsc"&gt;</ph>esc<ph name="LINK1_END">&lt;/a&gt;</ph> + <ph name="LINK2_BEGIN">&lt;a id="shortcutKeyAlt"&gt;</ph>alt<ph name="LINK2_END">&lt;/a&gt;</ph> to close the dialog.
+        Type any key on your keyboard. You can press up to 4 keys at the same time.
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_SHORTCUT_INSTRUCTION" desc="Instruction text in a keyboard testing UI that tells the user the keyboard shortcut to close the tester. Appears above a visual representation showing the keys currently pressed on the keyboard.">
+        Press <ph name="ALT_SHORTCUT_START">&lt;a id="shortcutKeyAlt"&gt;</ph>alt<ph name="ALT_SHORTCUT_END">&lt;/a&gt;</ph> + <ph name="ESC_SHORTCUT_START">&lt;a id="shortcutKeyEsc"&gt;</ph>esc<ph name="ESC_SHORTCUT_END">&lt;/a&gt;</ph> to close the dialog.
       </message>
       <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_TITLE" desc="Title for a dialog allowing the user to test their keyboard.">
         Test your keyboard
