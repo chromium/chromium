@@ -1287,7 +1287,7 @@ void TimeView::TimeView(ClockLayout clock_layout,
         std::make_unique<HorizontalLabelView>());
   vertical_label_ =
      AddChildView(
-        std::make_unique<VerticalLabelView());
+        std::make_unique<VerticalLabelView>());
   ...
 }
 
