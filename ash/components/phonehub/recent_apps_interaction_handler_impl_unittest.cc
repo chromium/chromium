@@ -39,7 +39,8 @@ class FakeClickHandler : public RecentAppClickObserver {
   std::string get_package_name() { return package_name; }
 
   void OnRecentAppClicked(
-      const Notification::AppMetadata& app_metadata) override {
+      const Notification::AppMetadata& app_metadata,
+      eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) override {
     package_name = app_metadata.package_name;
   }
 
@@ -250,7 +251,9 @@ TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {
       /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true,
       expected_user_id);
 
-  handler().NotifyRecentAppClicked(expected_app_metadata);
+  handler().NotifyRecentAppClicked(
+      expected_app_metadata,
+      eche_app::mojom::AppStreamLaunchEntryPoint::RECENT_APPS);
 
   EXPECT_EQ(expected_package_name, GetPackageName());
 }

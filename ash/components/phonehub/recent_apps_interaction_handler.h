@@ -64,7 +64,8 @@ class RecentAppsInteractionHandler {
   virtual void RemoveRecentAppClickObserver(RecentAppClickObserver* observer);
 
   virtual void NotifyRecentAppClicked(
-      const Notification::AppMetadata& app_metadata) = 0;
+      const Notification::AppMetadata& app_metadata,
+      eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) = 0;
   virtual void NotifyRecentAppAddedOrUpdated(
       const Notification::AppMetadata& app_metadata,
       base::Time last_accessed_timestamp) = 0;

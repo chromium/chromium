@@ -135,6 +135,7 @@ static_library("phonehub") {
     "//ash/constants",
     "//ash/resources/vector_icons",
     "//ash/webui/eche_app_ui:eche_app_ui_pref",
+    "//ash/webui/eche_app_ui/mojom:mojom",
     "//base",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",

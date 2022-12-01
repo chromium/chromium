@@ -19,6 +19,7 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -234,7 +235,8 @@ void PhoneHubRecentAppsView::Update() {
 
         auto pressed_callback = base::BindRepeating(
             &phonehub::RecentAppsInteractionHandler::NotifyRecentAppClicked,
-            base::Unretained(recent_apps_interaction_handler_), recent_app);
+            base::Unretained(recent_apps_interaction_handler_), recent_app,
+            eche_app::mojom::AppStreamLaunchEntryPoint::RECENT_APPS);
         recent_app_button_list_.push_back(
             recent_app_buttons_view_->AddRecentAppButton(
                 std::make_unique<PhoneHubRecentAppButton>(

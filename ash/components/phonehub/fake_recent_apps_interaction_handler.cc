@@ -16,7 +16,8 @@ FakeRecentAppsInteractionHandler::FakeRecentAppsInteractionHandler() = default;
 FakeRecentAppsInteractionHandler::~FakeRecentAppsInteractionHandler() = default;
 
 void FakeRecentAppsInteractionHandler::NotifyRecentAppClicked(
-    const Notification::AppMetadata& app_metadata) {
+    const Notification::AppMetadata& app_metadata,
+    eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) {
   if (base::Contains(package_name_to_click_count_, app_metadata.package_name)) {
     package_name_to_click_count_.at(app_metadata.package_name)++;
     return;

@@ -20,6 +20,7 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
@@ -167,7 +168,8 @@ void AppStreamLauncherView::AppIconActivated(
       phone_hub_manager_->GetRecentAppsInteractionHandler();
   if (!interaction_handler_)
     return;
-  interaction_handler_->NotifyRecentAppClicked(app);
+  interaction_handler_->NotifyRecentAppClicked(
+      app, eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
 }
 
 void AppStreamLauncherView::UpdateFromDataModel() {

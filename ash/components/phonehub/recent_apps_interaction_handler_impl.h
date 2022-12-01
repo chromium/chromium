@@ -41,7 +41,8 @@ class RecentAppsInteractionHandlerImpl
 
   // RecentAppsInteractionHandler:
   void NotifyRecentAppClicked(
-      const Notification::AppMetadata& app_metadata) override;
+      const Notification::AppMetadata& app_metadata,
+      ash::eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) override;
   void AddRecentAppClickObserver(RecentAppClickObserver* observer) override;
   void RemoveRecentAppClickObserver(RecentAppClickObserver* observer) override;
   void NotifyRecentAppAddedOrUpdated(

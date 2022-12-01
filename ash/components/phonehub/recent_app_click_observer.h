@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_PHONEHUB_RECENT_APP_CLICK_OBSERVER_H_
 
 #include "ash/components/phonehub/notification.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
@@ -18,7 +19,8 @@ class RecentAppClickObserver : public base::CheckedObserver {
   // Called when the user clicks the recent app which has an open
   // action in the PhoneHub.
   virtual void OnRecentAppClicked(
-      const Notification::AppMetadata& app_metadata) = 0;
+      const Notification::AppMetadata& app_metadata,
+      eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) = 0;
 };
 
 }  // namespace phonehub

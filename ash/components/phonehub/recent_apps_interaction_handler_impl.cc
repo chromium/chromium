@@ -69,9 +69,10 @@ void RecentAppsInteractionHandlerImpl::RemoveRecentAppClickObserver(
 }
 
 void RecentAppsInteractionHandlerImpl::NotifyRecentAppClicked(
-    const Notification::AppMetadata& app_metadata) {
+    const Notification::AppMetadata& app_metadata,
+    eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) {
   for (auto& observer : observer_list_)
-    observer.OnRecentAppClicked(app_metadata);
+    observer.OnRecentAppClicked(app_metadata, entrypoint);
 }
 
 // Load the |recent_app_metadata_list_| from |pref_service_| if there is a

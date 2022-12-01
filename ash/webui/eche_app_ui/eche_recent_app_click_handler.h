@@ -12,6 +12,7 @@
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/callback.h"
 
 namespace ash {
@@ -49,7 +50,8 @@ class EcheRecentAppClickHandler
 
   // phonehub::RecentAppClickObserver:
   void OnRecentAppClicked(
-      const phonehub::Notification::AppMetadata& app_metadata) override;
+      const phonehub::Notification::AppMetadata& app_metadata,
+      mojom::AppStreamLaunchEntryPoint entrypoint) override;
 
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
