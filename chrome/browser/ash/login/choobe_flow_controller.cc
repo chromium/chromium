@@ -8,10 +8,14 @@
 
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -54,10 +58,11 @@ void ChoobeFlowController::Start() {
   }
 }
 
-void ChoobeFlowController::Stop() {
+void ChoobeFlowController::Stop(PrefService& prefs) {
   eligible_screens_.clear();
   selected_screens_.clear();
   is_choobe_flow_active_ = false;
+  prefs.ClearPref(prefs::kChoobeSelectedScreens);
 }
 
 std::vector<ChoobeFlowController::OptionalScreen>
@@ -71,22 +76,52 @@ bool ChoobeFlowController::ShouldScreenBeSkipped(OobeScreenId screen_id) {
   return selected_screens_.find(screen_id) == selected_screens_.end();
 }
 
+bool ChoobeFlowController::IsOptionalScreen(OobeScreenId screen_id) {
+  for (const auto& screen : kOptionalScreens) {
+    if (screen.screen_id.AsId() == screen_id) {
+      return true;
+    }
+  }
+  return WizardController::default_controller()->HasScreen(screen_id);
+}
+
 std::vector<ChoobeFlowController::OptionalScreenResource>
 ChoobeFlowController::GetOptionalScreensResources() {
   std::vector<ChoobeFlowController::OptionalScreenResource> titles;
-  for (auto screen : kOptionalScreens) {
+  for (const auto& screen : kOptionalScreens) {
     titles.push_back(screen.title_resource);
   }
   return titles;
 }
 
-void ChoobeFlowController::OnScreensSelected(base::Value::List screens) {
+void ChoobeFlowController::OnScreensSelected(PrefService& prefs,
+                                             base::Value::List screens_ids) {
   if (!is_choobe_flow_active_)
     NOTREACHED() << "Screens should only be selected when is_choobe_active_";
 
-  for (auto& screen : screens) {
-    std::string cur = screen.GetString();
-    selected_screens_.insert(OobeScreenId(cur));
+  for (const auto& screen_id : screens_ids) {
+    const auto id = OobeScreenId(screen_id.GetString());
+    CHECK(IsOptionalScreen(id));
+    selected_screens_.insert(id);
+  }
+
+  prefs.SetList(prefs::kChoobeSelectedScreens, std::move(screens_ids));
+}
+
+void ChoobeFlowController::MaybeResumeChoobe(const PrefService& prefs) {
+  if (!prefs.HasPrefPath(prefs::kChoobeSelectedScreens))
+    return;
+
+  const auto& selected_screens_ids =
+      prefs.GetList(prefs::kChoobeSelectedScreens);
+  for (const auto& screen_id : selected_screens_ids) {
+    const auto id = OobeScreenId(screen_id.GetString());
+    if (IsOptionalScreen(id)) {
+      selected_screens_.insert(id);
+    } else {
+      LOG(WARNING) << "The selected screen " << screen_id.GetString()
+                   << "was not found during the resuming of CHOOBE.";
+    }
   }
 }
 

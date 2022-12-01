@@ -11,6 +11,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 
+class PrefService;
+
 namespace ash {
 
 // Controls the CHOOBE flow which is a part of the onboarding flow.
@@ -52,7 +54,8 @@ class ChoobeFlowController {
   // * Clears `eligible_screens_` and `selected_screens_`.
   // * Sets `is_choobe_flow_active_` to `false` so that future calls to
   //   `ShouldScreenBeSkipped(screen_id)` returns `false`.
-  void Stop();
+  // * Clears `kChoobeSelectedScreens` preference from `prefs`.
+  void Stop(PrefService& prefs);
 
   // Returns `true` if CHOOBE is active and the user has selected the screen.
   bool ShouldScreenBeSkipped(OobeScreenId screen_id);
@@ -60,14 +63,23 @@ class ChoobeFlowController {
   // Returns screens that the user is eligible to go through.
   std::vector<OptionalScreen> GetEligibleCHOOBEScreens();
 
+  // Returns whether a screen is one of CHOOBE oprional screens.
+  static bool IsOptionalScreen(OobeScreenId screen_id);
+
   // Returns string resources for all optional screens stored in
   // `kNonFoundationalScreens`.
   static std::vector<OptionalScreenResource> GetOptionalScreensResources();
 
-  // Populates `selected_screens_` with screens selected by the user.
-  void OnScreensSelected(base::Value::List screens);
+  // Populates `selected_screens_` with `screens_ids`.
+  // Persists `screens_ids` using `prefs`.
+  void OnScreensSelected(PrefService& prefs, base::Value::List screens_ids);
 
   bool IsChoobeFlowActive() { return is_choobe_flow_active_; }
+
+  // If there are persisted selected screens list in `prefs`, insert its
+  // items to `selected_screens_` set, and set `is_choobe_flow_active_`
+  // to `true`.
+  void MaybeResumeChoobe(const PrefService& prefs);
 
  private:
   // Screens that the user can select in the CHOOBE screen. Populated by

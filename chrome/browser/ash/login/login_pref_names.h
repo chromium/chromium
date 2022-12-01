@@ -35,6 +35,7 @@ extern const char kOobeLocaleChangedOnWelcomeScreen[];
 // CloudReady won't be available anymore.
 extern const char kRevenOobeConsolidatedConsentAccepted[];
 extern const char kUrlParameterToAutofillSAMLUsername[];
+extern const char kChoobeSelectedScreens[];
 
 }  // namespace prefs
 }  // namespace ash

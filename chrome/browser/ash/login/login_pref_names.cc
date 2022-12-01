@@ -134,5 +134,9 @@ const char kOobeLocaleChangedOnWelcomeScreen[] =
 const char kUrlParameterToAutofillSAMLUsername[] =
     "saml.UrlParameterToAutofillSAMLUsername";
 
+// List of screens selected from the CHOOBE screen. This list is used to resume
+// CHOOBE flow if it's not completed yet.
+const char kChoobeSelectedScreens[] = "choobe_selected_screens";
+
 }  // namespace prefs
 }  // namespace ash

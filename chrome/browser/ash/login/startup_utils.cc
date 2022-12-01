@@ -133,6 +133,10 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterBooleanPref(prefs::kRevenOobeConsolidatedConsentAccepted,
                                   false);
   }
+
+  if (features::IsOobeChoobeEnabled()) {
+    registry->RegisterListPref(prefs::kChoobeSelectedScreens);
+  }
   OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }
 
