@@ -37,8 +37,8 @@ TEST(UrlUtilTest, AppendQueryParameter) {
   // unsafe characters should be escaped.
   EXPECT_EQ("http://example.com/path?existing=one&na+me=v.alue%3D",
             AppendQueryParameter(GURL("http://example.com/path?existing=one"),
-                                 "na me", "v.alue=").spec());
-
+                                 "na me", "v.alue=")
+                .spec());
 }
 
 TEST(UrlUtilTest, AppendOrReplaceQueryParameter) {
@@ -453,6 +453,7 @@ TEST(UrlUtilTest, CompliantHost) {
       {"9a", true},
       {"9_", true},
       {"a.", true},
+      {".a", false},
       {"a.a", true},
       {"9.a", true},
       {"a.9", true},
@@ -469,12 +470,64 @@ TEST(UrlUtilTest, CompliantHost) {
       {"1-2.a_b", true},
       {"a.b.c.d.e", true},
       {"1.2.3.4.5", true},
+      {"1.2.3..4.5", false},
       {"1.2.3.4.5.", true},
+      {"1.2.3.4.5..", false},
+      {"%20%20noodles.blorg", false},
+      {"noo dles.blorg ", false},
+      {"noo dles.blorg. ", false},
+      {"^noodles.blorg", false},
+      {"noodles^.blorg", false},
+      {"noo&dles.blorg", false},
+      {"noodles.blorg`", false},
+      {"www.noodles.blorg", true},
+      {"1www.noodles.blorg", true},
+      {"www.2noodles.blorg", true},
+      {"www.n--oodles.blorg", true},
+      {"www.noodl_es.blorg", true},
+      {"www.no-_odles.blorg", true},
+      {"www_.noodles.blorg", true},
+      {"www.noodles.blorg.", true},
+      {"_privet._tcp.local", true},
+      // 63-char label (before or without dot) allowed
+      {"z23456789a123456789a123456789a123456789a123456789a123456789a123", true},
+      {"z23456789a123456789a123456789a123456789a123456789a123456789a123.",
+       true},
+      // 64-char label (before or without dot) disallowed
+      {"123456789a123456789a123456789a123456789a123456789a123456789a1234",
+       false},
+      {"123456789a123456789a123456789a123456789a123456789a123456789a1234.",
+       false},
+      // 253-char host allowed
+      {"abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+       "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+       "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+       "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abc",
+       true},
+      // 253-char+dot host allowed
+      {"abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+       "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+       "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+       "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abc.",
+       true},
+      // 254-char host disallowed
+      {"123456789.123456789.123456789.123456789.123456789.123456789.123456789."
+       "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
+       "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
+       "123456789.123456789.123456789.123456789.1234",
+       false},
+      // 254-char+dot host disallowed
+      {"123456789.123456789.123456789.123456789.123456789.123456789.123456789."
+       "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
+       "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
+       "123456789.123456789.123456789.123456789.1234.",
+       false},
   };
 
   for (const auto& compliant_host : compliant_host_cases) {
     EXPECT_EQ(compliant_host.expected_output,
-              IsCanonicalizedHostCompliant(compliant_host.host));
+              IsCanonicalizedHostCompliant(compliant_host.host))
+        << compliant_host.host;
   }
 }
 

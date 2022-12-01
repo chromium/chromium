@@ -52,7 +52,10 @@ TEST(DnsHostsTest, ParseHosts) {
       "127.0.0.3 .foo # entries with leading dot are ignored\n"
       "127.0.0.3 . # just a dot is ignored\n"
       "127.0.0.4 bar. # trailing dot is allowed, for now\n"
-      "gibberish";
+      "gibberish\n"
+      "127.0.0.5 fóó.test # canonicalizes to 'xn--f-vgaa.test' due to RFC3490\n"
+      "127.0.0.6 127.0.0.1 # ignore IP host\n"
+      "2048::3 [::1] # ignore IP host";
 
   const ExpectedHostsEntry kEntries[] = {
       {"localhost", ADDRESS_FAMILY_IPV4, "127.0.0.1"},
@@ -68,6 +71,7 @@ TEST(DnsHostsTest, ParseHosts) {
       {"cache4", ADDRESS_FAMILY_IPV4, "127.0.0.1"},
       {"cache5", ADDRESS_FAMILY_IPV4, "127.0.0.2"},
       {"bar.", ADDRESS_FAMILY_IPV4, "127.0.0.4"},
+      {"xn--f-vgaa.test", ADDRESS_FAMILY_IPV4, "127.0.0.5"},
   };
 
   DnsHosts expected_hosts, actual_hosts;

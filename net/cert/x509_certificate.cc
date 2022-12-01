@@ -468,7 +468,7 @@ bool X509Certificate::VerifyHostname(
   // and DNS names, via dNSName subjectAltNames.
   // Validate that the host conforms to the DNS preferred name syntax, in
   // either relative or absolute form, and exclude the "root" label for DNS.
-  if (reference_name == "." || !IsValidDNSDomain(reference_name))
+  if (reference_name == "." || !IsCanonicalizedHostCompliant(reference_name))
     return false;
 
   // CanonicalizeHost does not normalize absolute vs relative DNS names. If

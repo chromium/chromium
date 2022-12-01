@@ -43,27 +43,17 @@ NET_EXPORT bool DNSDomainFromDot(base::StringPiece dotted, std::string* out);
 NET_EXPORT bool DNSDomainFromUnrestrictedDot(base::StringPiece dotted,
                                              std::string* out);
 
-// Checks that a hostname is valid. Simple wrapper around DNSDomainFromDot.
-NET_EXPORT_PRIVATE bool IsValidDNSDomain(base::StringPiece dotted);
-
-// Checks that a hostname is valid. Simple wrapper around
-// DNSDomainFromUnrestrictedDot.
-NET_EXPORT_PRIVATE bool IsValidUnrestrictedDNSDomain(base::StringPiece dotted);
-
-// Returns true if the character is valid in a DNS hostname label, whether in
-// the first position or later in the label.
+// Returns true iff `dotted` is acceptable to be encoded as a DNS name. That is
+// that it is non-empty and fits size limitations. Also must match the expected
+// structure of dot-separated labels, each non-empty and fitting within
+// additional size limitations, and an optional dot at the end. See RFCs 1035
+// and 2181.
 //
-// This function asserts a looser form of the restrictions in RFC 7719 (section
-// 2; https://tools.ietf.org/html/rfc7719#section-2): hostnames can include
-// characters a-z, A-Z, 0-9, -, and _, and any of those characters (except -)
-// are legal in the first position. The looser rules are necessary to support
-// service records (initial _), and non-compliant but attested hostnames that
-// include _. These looser rules also allow Punycode and hence IDN.
-//
-// TODO(crbug.com/1065133): In the future, when we can remove support for
-// invalid names, this can be a private implementation detail of
-// `DNSDomainFromDot`, and need not be NET_EXPORT_PRIVATE.
-NET_EXPORT_PRIVATE bool IsValidHostLabelCharacter(char c, bool is_first_char);
+// No validation is performed for correctness of characters within a label.
+// As explained by RFC 2181, commonly cited rules for such characters are not
+// DNS restrictions, but actually restrictions for Internet hostnames. For such
+// validation, see IsCanonicalizedHostCompliant().
+NET_EXPORT_PRIVATE bool IsValidDnsName(base::StringPiece dotted);
 
 // Converts a domain in DNS format to a dotted string. Excludes the dot at the
 // end.  Returns nullopt on malformed input.

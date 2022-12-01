@@ -41,7 +41,7 @@ void SystemDnsResolverMojoImpl::Resolve(
     int32_t flags,
     uint64_t network,
     ResolveCallback callback) {
-  if (hostname && !net::IsValidUnrestrictedDNSDomain(*hostname)) {
+  if (hostname && !net::IsValidDnsName(*hostname)) {
     std::move(callback).Run(net::AddressList(), 0, net::ERR_NAME_NOT_RESOLVED);
     return;
   }

@@ -201,8 +201,7 @@ std::string HashHost(base::StringPiece canonicalized_host) {
 
 // Returns true if the intersection of |a| and |b| is not empty. If either
 // |a| or |b| is empty, returns false.
-bool HashesIntersect(const HashValueVector& a,
-                     const HashValueVector& b) {
+bool HashesIntersect(const HashValueVector& a, const HashValueVector& b) {
   for (const auto& hash : a) {
     if (base::Contains(b, hash))
       return true;
@@ -221,24 +220,18 @@ bool AddHash(const char* sha256_hash, HashValueVector* out) {
 // used in DNS: "\x03www\x06google\x03com", lowercases that, and returns
 // the result.
 std::string CanonicalizeHost(const std::string& host) {
-  // We cannot perform the operations as detailed in the spec here as |host|
-  // has already undergone IDN processing before it reached us. Thus, we check
-  // that there are no invalid characters in the host and lowercase the result.
+  // We cannot perform the operations as detailed in the spec here as `host`
+  // has already undergone IDN processing before it reached us. Thus, we
+  // lowercase the input (probably redudnant since most input here has been
+  // lowercased through URL canonicalization) and check that there are no
+  // invalid characters in the host (via DNSDomainFromDot()).
+  std::string lowered_host = base::ToLowerASCII(host);
+
   std::string new_host;
-  if (!DNSDomainFromDot(host, &new_host)) {
+  if (!DNSDomainFromDot(lowered_host, &new_host)) {
     // DNSDomainFromDot can fail if any label is > 63 bytes or if the whole
     // name is >255 bytes. However, search terms can have those properties.
     return std::string();
-  }
-
-  for (size_t i = 0; new_host[i]; i += new_host[i] + 1) {
-    const unsigned label_length = static_cast<unsigned>(new_host[i]);
-    if (!label_length)
-      break;
-
-    for (size_t j = 0; j < label_length; ++j) {
-      new_host[i + 1 + j] = static_cast<char>(tolower(new_host[i + 1 + j]));
-    }
   }
 
   return new_host;
@@ -1396,8 +1389,7 @@ bool TransportSecurityState::STSState::ShouldUpgradeToSSL() const {
 TransportSecurityState::STSStateIterator::STSStateIterator(
     const TransportSecurityState& state)
     : iterator_(state.enabled_sts_hosts_.begin()),
-      end_(state.enabled_sts_hosts_.end()) {
-}
+      end_(state.enabled_sts_hosts_.end()) {}
 
 TransportSecurityState::STSStateIterator::~STSStateIterator() = default;
 

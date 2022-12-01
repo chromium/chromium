@@ -4,18 +4,38 @@
 
 #include "services/network/resolve_host_request.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/url_canon.h"
 
 namespace network {
+
+namespace {
+
+// Attempts URL canonicalization, but if unable, returns `host` without change.
+std::string MaybeCanonicalizeHost(std::string host) {
+  url::CanonHostInfo info;
+  std::string canonicalized = net::CanonicalizeHost(host, &info);
+  if (info.family == url::CanonHostInfo::BROKEN) {
+    return host;
+  } else {
+    return canonicalized;
+  }
+}
+
+}  // namespace
 
 ResolveHostRequest::ResolveHostRequest(
     net::HostResolver* resolver,
@@ -28,8 +48,11 @@ ResolveHostRequest::ResolveHostRequest(
   DCHECK(net_log);
 
   if (host->is_host_port_pair()) {
+    // net::HostResolver expects canonicalized hostnames.
+    net::HostPortPair host_port_pair = host->get_host_port_pair();
+    host_port_pair.set_host(MaybeCanonicalizeHost(host_port_pair.host()));
     internal_request_ = resolver->CreateRequest(
-        host->get_host_port_pair(), network_anonymization_key,
+        host_port_pair, network_anonymization_key,
         net::NetLogWithSource::Make(
             net_log, net::NetLogSourceType::NETWORK_SERVICE_HOST_RESOLVER),
         optional_parameters);

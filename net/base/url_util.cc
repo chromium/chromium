@@ -132,8 +132,7 @@ GURL AppendOrReplaceRef(const GURL& url, const base::StringPiece& ref) {
 }
 
 QueryIterator::QueryIterator(const GURL& url)
-    : url_(url),
-      at_end_(!url.is_valid()) {
+    : url_(url), at_end_(!url.is_valid()) {
   if (!at_end_) {
     query_ = url.parsed_for_possibly_invalid_spec().query;
     Advance();
@@ -173,7 +172,7 @@ bool QueryIterator::IsAtEnd() const {
 }
 
 void QueryIterator::Advance() {
-  DCHECK (!at_end_);
+  DCHECK(!at_end_);
   key_.reset();
   value_.reset();
   unescaped_value_.clear();
@@ -249,7 +248,6 @@ bool ParseHostAndPort(base::StringPiece input, std::string* host, int* port) {
 
   return true;  // Success.
 }
-
 
 std::string GetHostAndPort(const GURL& url) {
   // For IPv6 literals, GURL::host() already includes the brackets so it is
@@ -346,13 +344,17 @@ std::string CanonicalizeHost(base::StringPiece host,
 }
 
 bool IsCanonicalizedHostCompliant(base::StringPiece host) {
-  if (host.empty())
+  if (host.empty() || host.size() > 254 ||
+      (host.back() != '.' && host.size() == 254)) {
     return false;
+  }
 
   bool in_component = false;
   bool most_recent_component_started_alphanumeric = false;
+  size_t label_size = 0;
 
   for (char c : host) {
+    ++label_size;
     if (!in_component) {
       most_recent_component_started_alphanumeric = IsHostCharAlphanumeric(c);
       if (!most_recent_component_started_alphanumeric && (c != '-') &&
@@ -362,10 +364,21 @@ bool IsCanonicalizedHostCompliant(base::StringPiece host) {
       in_component = true;
     } else if (c == '.') {
       in_component = false;
+      if (label_size > 64 || label_size == 1) {
+        // Label should not be empty or longer than 63 characters (+1 for '.'
+        // character included in `label_size`).
+        return false;
+      } else {
+        label_size = 0;
+      }
     } else if (!IsHostCharAlphanumeric(c) && (c != '-') && (c != '_')) {
       return false;
     }
   }
+
+  // Check for too-long label when not ended with final '.'.
+  if (label_size > 63)
+    return false;
 
   return most_recent_component_started_alphanumeric;
 }

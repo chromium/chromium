@@ -774,7 +774,7 @@ int MockHostResolverBase::LoadIntoCache(
 
   // Just like the real resolver, refuse to do anything with invalid
   // hostnames.
-  if (!IsValidDNSDomain(endpoint.GetHostnameWithoutBrackets()))
+  if (!IsValidDnsName(endpoint.GetHostnameWithoutBrackets()))
     return ERR_NAME_NOT_RESOLVED;
 
   RequestImpl request(endpoint, network_anonymization_key, optional_parameters,
@@ -933,7 +933,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
 
   // Just like the real resolver, refuse to do anything with invalid
   // hostnames.
-  if (!IsValidDNSDomain(
+  if (!IsValidDnsName(
           request->request_endpoint().GetHostnameWithoutBrackets())) {
     request->SetError(ERR_NAME_NOT_RESOLVED);
     return ERR_NAME_NOT_RESOLVED;
@@ -1376,18 +1376,17 @@ void RuleBasedHostResolverProc::AddRuleInternal(const Rule& rule) {
   Rule fixed_rule = rule;
   // SystemResolverProc expects valid DNS addresses.
   // So for kResolverTypeSystem rules:
+  // * CHECK that replacement is empty (empty domain names mean use a direct
+  //   lookup) or a valid DNS name (which includes IP addresses).
   // * If the replacement is an IP address, switch to an IP literal rule.
-  // * If it's a non-empty invalid domain name, switch to a fail rule (Empty
-  // domain names mean use a direct lookup).
   if (fixed_rule.resolver_type == Rule::kResolverTypeSystem) {
+    CHECK(fixed_rule.replacement.empty() ||
+          IsValidDnsName(fixed_rule.replacement));
+
     IPAddress ip_address;
     bool valid_address = ip_address.AssignFromIPLiteral(fixed_rule.replacement);
     if (valid_address) {
       fixed_rule.resolver_type = Rule::kResolverTypeIPLiteral;
-    } else if (!fixed_rule.replacement.empty() &&
-               !IsValidDNSDomain(fixed_rule.replacement)) {
-      // TODO(mmenke): Can this be replaced with a DCHECK instead?
-      fixed_rule.resolver_type = Rule::kResolverTypeFail;
     }
   }
 

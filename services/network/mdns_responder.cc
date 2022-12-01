@@ -385,10 +385,13 @@ CreateResponseToMdnsNameGeneratorServiceQuery(
       1, CreateTxtRecordWithNames(ttl, kMdnsNameGeneratorServiceInstanceName,
                                   mdns_names));
 
-  net::DnsResponse response(0 /* id */, true /* is_authoritative */, answers,
-                            {} /* authority_records */,
-                            {} /* additional_records */,
-                            absl::nullopt /* query */);
+  net::DnsResponse response(/*id=*/0, /*is_authoritative=*/true, answers,
+                            /*authority_records=*/{},
+                            /*additional_records=*/{},
+                            /*query=*/absl::nullopt,
+                            /*rcode=*/net::dns_protocol::kRcodeNOERROR,
+                            /*validate_records=*/true,
+                            /*validate_names_as_internet_hostnames=*/false);
   DCHECK(response.io_buffer() != nullptr);
   auto buf =
       base::MakeRefCounted<net::IOBufferWithSize>(response.io_buffer_size());

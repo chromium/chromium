@@ -1598,6 +1598,35 @@ TEST_F(HostResolverTest, RespectsDisablingAdditionalQueryTypes) {
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
 }
 
+TEST_F(HostResolverTest, CanonicalizesInputHost) {
+  auto inner_resolver = std::make_unique<net::MockHostResolver>();
+  inner_resolver->set_synchronous_mode(true);
+  inner_resolver->rules()->AddRule("name.test", "1.2.3.4");
+
+  HostResolver resolver(inner_resolver.get(), net::NetLog::Get());
+
+  base::RunLoop run_loop;
+  mojo::Remote<mojom::ResolveHostHandle> control_handle;
+  mojom::ResolveHostParametersPtr optional_parameters =
+      mojom::ResolveHostParameters::New();
+  optional_parameters->control_handle =
+      control_handle.BindNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
+  TestResolveHostClient response_client(&pending_response_client, &run_loop);
+
+  resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                           net::HostPortPair("NaMe.test", 165)),
+                       net::NetworkAnonymizationKey(),
+                       std::move(optional_parameters),
+                       std::move(pending_response_client));
+  run_loop.Run();
+
+  EXPECT_EQ(net::OK, response_client.top_level_result_error());
+  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+              testing::ElementsAre(CreateExpectedEndPoint("1.2.3.4", 165)));
+  EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
+}
+
 #if BUILDFLAG(ENABLE_MDNS)
 TEST_F(HostResolverTest, MdnsListener_AddressResult) {
   auto inner_resolver = std::make_unique<net::MockHostResolver>();

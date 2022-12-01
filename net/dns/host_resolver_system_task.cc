@@ -235,9 +235,9 @@ HostResolverSystemTask::HostResolverSystemTask(
       net_log_(job_net_log),
       network_(network) {
   if (hostname_) {
-    // |host| should be a valid domain name. HostResolverImpl::Resolve has
-    // checks to fail early if this is not the case.
-    DCHECK(IsValidDNSDomain(*hostname_)) << "Invalid hostname: " << *hostname_;
+    // |host| should be a valid domain name. HostResolverManager has checks to
+    // fail early if this is not the case.
+    DCHECK(IsValidDnsName(*hostname_)) << "Invalid hostname: " << *hostname_;
   }
   // If a resolver_proc has not been specified, try to use a default if one is
   // set, as it may be in tests.

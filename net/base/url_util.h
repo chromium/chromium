@@ -23,7 +23,7 @@ class GURL;
 namespace url {
 struct CanonHostInfo;
 class SchemeHostPort;
-}
+}  // namespace url
 
 namespace net {
 
@@ -175,10 +175,13 @@ NET_EXPORT std::string CanonicalizeHost(base::StringPiece host,
 // Returns true if |host| is not an IP address and is compliant with a set of
 // rules based on RFC 1738 and tweaked to be compatible with the real world.
 // The rules are:
-//   * One or more components separated by '.'
+//   * One or more non-empty labels separated by '.', each no more than 63
+//     characters.
 //   * Each component contains only alphanumeric characters and '-' or '_'
 //   * The last component begins with an alphanumeric character
 //   * Optional trailing dot after last component (means "treat as FQDN")
+//   * Total size (including optional trailing dot, whether or not actually
+//     present in `host`) no more than 254 characters.
 //
 // NOTE: You should only pass in hosts that have been returned from
 // CanonicalizeHost(), or you may not get accurate results.

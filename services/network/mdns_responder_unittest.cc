@@ -69,7 +69,7 @@ std::string CreateMdnsQuery(uint16_t query_id,
                             const std::string& dotted_name,
                             uint16_t qtype = net::dns_protocol::kTypeA) {
   std::string qname;
-  net::DNSDomainFromDot(dotted_name, &qname);
+  CHECK(net::DNSDomainFromUnrestrictedDot(dotted_name, &qname));
   net::DnsQuery query(query_id, qname, qtype);
   return std::string(query.io_buffer()->data(), query.io_buffer()->size());
 }
@@ -121,10 +121,13 @@ std::string CreateResponseToMdnsNameGeneratorServiceQueryWithCacheFlush(
   const std::string owned_rdata(txt_record.rdata);
   txt_record.SetOwnedRdata(owned_rdata);
   std::vector<net::DnsResourceRecord> answers(1, txt_record);
-  net::DnsResponse response_cache_flush(0 /* id */, true /* is_authoritative */,
-                                        answers, {} /* authority_records */,
-                                        {} /* additional_records */,
-                                        absl::nullopt /* query */);
+  net::DnsResponse response_cache_flush(
+      /*id=*/0, /*is_authoritative=*/true, answers, /*authority_records=*/{},
+      /*additional_records=*/{},
+      /*query=*/absl::nullopt,
+      /*rcode=*/net::dns_protocol::kRcodeNOERROR,
+      /*validate_records=*/true,
+      /*validate_names_as_internet_hostnames=*/false);
   DCHECK(response_cache_flush.io_buffer() != nullptr);
   buf = base::MakeRefCounted<net::IOBufferWithSize>(
       response_cache_flush.io_buffer_size());

@@ -1983,9 +1983,18 @@ TEST(DnsResponseResultExtractorTest, ValidatesAliasNames) {
 TEST(DnsResponseResultExtractorTest, CanonicalizesAliasNames) {
   const IPAddress kExpected(192, 168, 0, 1);
   constexpr char kName[] = "address.test";
+  constexpr char kCname[] = "\005ALIAS\004test\000";
 
+  // Need to build records directly in order to manually encode alias target
+  // name because BuildTestDnsAddressResponseWithCname() uses DNSDomainFromDot()
+  // which does not support non-URL-canonicalized names.
+  std::vector<DnsResourceRecord> answers = {
+      BuildTestDnsRecord(kName, dns_protocol::kTypeCNAME,
+                         std::string(kCname, sizeof(kCname) - 1)),
+      BuildTestAddressRecord("alias.test", kExpected)};
   DnsResponse response =
-      BuildTestDnsAddressResponseWithCname(kName, kExpected, "ALIAS.test.");
+      BuildTestDnsResponse(kName, dns_protocol::kTypeA, answers);
+
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);

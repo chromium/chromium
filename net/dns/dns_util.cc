@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
@@ -29,8 +30,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
-#include <netinet/in.h>
 #include <net/if.h>
+#include <netinet/in.h>
 #if !BUILDFLAG(IS_ANDROID)
 #include <ifaddrs.h>
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -47,6 +48,13 @@ namespace {
 bool DNSDomainFromDot(base::StringPiece dotted,
                       bool is_unrestricted,
                       std::string* out) {
+  // Use full IsCanonicalizedHostCompliant() validation if not
+  // `is_unrestricted`. All subsequent validity checks should not apply unless
+  // `is_unrestricted` because IsCanonicalizedHostCompliant() is expected to be
+  // more strict than any validation here.
+  if (!is_unrestricted && !IsCanonicalizedHostCompliant(dotted))
+    return false;
+
   const char* buf = dotted.data();
   size_t n = dotted.size();
   char label[dns_protocol::kMaxLabelLength];
@@ -62,19 +70,22 @@ bool DNSDomainFromDot(base::StringPiece dotted,
     --n;
     if (ch == '.') {
       // Don't allow empty labels per http://crbug.com/456391.
-      if (!labellen)
+      if (!labellen) {
+        DCHECK(is_unrestricted);
         return false;
-      if (namelen + labellen + 1 > sizeof name)
+      }
+      if (namelen + labellen + 1 > sizeof name) {
+        DCHECK(is_unrestricted);
         return false;
+      }
       name[namelen++] = static_cast<char>(labellen);
       memcpy(name + namelen, label, labellen);
       namelen += labellen;
       labellen = 0;
       continue;
     }
-    if (labellen >= sizeof label)
-      return false;
-    if (!is_unrestricted && !IsValidHostLabelCharacter(ch, labellen == 0)) {
+    if (labellen >= sizeof label) {
+      DCHECK(is_unrestricted);
       return false;
     }
     label[labellen++] = ch;
@@ -82,18 +93,24 @@ bool DNSDomainFromDot(base::StringPiece dotted,
 
   // Allow empty label at end of name to disable suffix search.
   if (labellen) {
-    if (namelen + labellen + 1 > sizeof name)
+    if (namelen + labellen + 1 > sizeof name) {
+      DCHECK(is_unrestricted);
       return false;
+    }
     name[namelen++] = static_cast<char>(labellen);
     memcpy(name + namelen, label, labellen);
     namelen += labellen;
     labellen = 0;
   }
 
-  if (namelen + 1 > sizeof name)
+  if (namelen + 1 > sizeof name) {
+    DCHECK(is_unrestricted);
     return false;
-  if (namelen == 0)  // Empty names e.g. "", "." are not valid.
+  }
+  if (namelen == 0) {  // Empty names e.g. "", "." are not valid.
+    DCHECK(is_unrestricted);
     return false;
+  }
   name[namelen++] = 0;  // This is the root label (of length 0).
 
   *out = std::string(name, namelen);
@@ -128,19 +145,9 @@ bool DNSDomainFromUnrestrictedDot(base::StringPiece dotted, std::string* out) {
   return DNSDomainFromDot(dotted, true /* is_unrestricted */, out);
 }
 
-bool IsValidDNSDomain(base::StringPiece dotted) {
-  std::string dns_formatted;
-  return DNSDomainFromDot(dotted, &dns_formatted);
-}
-
-bool IsValidUnrestrictedDNSDomain(base::StringPiece dotted) {
+bool IsValidDnsName(base::StringPiece dotted) {
   std::string dns_formatted;
   return DNSDomainFromUnrestrictedDot(dotted, &dns_formatted);
-}
-
-bool IsValidHostLabelCharacter(char c, bool is_first_char) {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-         (c >= '0' && c <= '9') || (!is_first_char && c == '-') || c == '_';
 }
 
 absl::optional<std::string> DnsDomainToString(base::StringPiece dns_name,

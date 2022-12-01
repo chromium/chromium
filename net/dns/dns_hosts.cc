@@ -5,6 +5,7 @@
 #include "net/dns/dns_hosts.h"
 
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -12,7 +13,9 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "net/base/url_util.h"
 #include "net/dns/dns_util.h"
+#include "url/url_canon.h"
 
 using base::StringPiece;
 
@@ -84,9 +87,7 @@ class HostsParser {
   // Fast-forwards the parser to the next line.  Should be called if an IP
   // address doesn't parse, to avoid wasting time tokenizing hostnames that
   // will be ignored.
-  void SkipRestOfLine() {
-    pos_ = text_.find("\n", pos_);
-  }
+  void SkipRestOfLine() { pos_ = text_.find("\n", pos_); }
 
   // Returns whether the last-parsed token is an IP address (true) or a
   // hostname (false).
@@ -158,10 +159,18 @@ void ParseHostsWithCommaMode(const std::string& contents,
         }
       }
     } else {
-      DnsHostsKey key(std::string(parser.token()), family);
-      if (!IsValidDNSDomain(key.first))
+      url::CanonHostInfo canonicalization_info;
+      std::string canonicalized_host =
+          CanonicalizeHost(parser.token(), &canonicalization_info);
+
+      // Skip if token is invalid for host canonicalization, or if it
+      // canonicalizes as an IP address.
+      if (canonicalization_info.family != url::CanonHostInfo::NEUTRAL)
         continue;
-      key.first = base::ToLowerASCII(key.first);
+
+      DnsHostsKey key(std::move(canonicalized_host), family);
+      if (!IsCanonicalizedHostCompliant(key.first))
+        continue;
       IPAddress* mapped_ip = &(*dns_hosts)[key];
       if (mapped_ip->empty())
         *mapped_ip = ip;
