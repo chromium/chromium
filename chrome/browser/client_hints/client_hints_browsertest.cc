@@ -2675,15 +2675,14 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
 
   // Add setting for the host.
-  std::unique_ptr<base::ListValue> client_hints_list =
-      std::make_unique<base::ListValue>();
-  client_hints_list->Append(42 /* client hint value */);
-  auto client_hints_dictionary = std::make_unique<base::DictionaryValue>();
-  client_hints_dictionary->SetList(client_hints::kClientHintsSettingKey,
-                                   std::move(client_hints_list));
+  base::Value::List client_hints_list;
+  client_hints_list.Append(42 /* client hint value */);
+  base::Value::Dict client_hints_dictionary;
+  client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
+                              base::Value(std::move(client_hints_list)));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       without_accept_ch_url(), GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary->Clone());
+      base::Value(std::move(client_hints_dictionary)));
 
   // Reading the settings should now return one setting.
   host_content_settings_map->GetSettingsForOneType(
