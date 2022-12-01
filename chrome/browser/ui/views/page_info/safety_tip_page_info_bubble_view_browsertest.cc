@@ -900,6 +900,18 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_TRUE(IsUIShowing());
 }
 
+// Tests that a hostname on a safe TLD can spoof another hostname without a
+// lookalike warning.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       TriggersOnCharacterSwapSafeTLD_CanSpoof) {
+  const GURL kNavigatedUrl = GetURL("digitla.gov");
+  const GURL kTargetUrl = GetURL("digital.gov");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+}
+
 // Navigate to a domain within a character swap of 1 to a top domain,
 // but the character swap is at the registry. This should not be flagged
 // as a character swap match.

@@ -1455,3 +1455,9 @@ ComboSquattingType GetComboSquattingType(
 
   return ComboSquattingType::kNone;
 }
+
+bool IsSafeTLD(const std::string& hostname) {
+  // This is intentionally kept simple and currently ignores hostnames with
+  // ccTLDs (e.g. gov.in).
+  return base::EndsWith(hostname, ".gov") || base::EndsWith(hostname, ".mil");
+}

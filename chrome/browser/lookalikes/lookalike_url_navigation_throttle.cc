@@ -410,7 +410,7 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
   // Don't warn on non-public domains.
   if (net::HostStringIsLocalhost(url.host()) ||
       net::IsHostnameNonUnique(url.host()) ||
-      GetETLDPlusOne(url.host()).empty()) {
+      GetETLDPlusOne(url.host()).empty() || IsSafeTLD(url.host())) {
     return false;
   }
 

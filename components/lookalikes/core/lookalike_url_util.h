@@ -303,4 +303,8 @@ ComboSquattingType GetComboSquattingType(
     const std::vector<DomainInfo>& engaged_sites,
     std::string* matched_domain);
 
+// Returns true if `etld_plus_one` has a TLD that's considered safe for
+// lookalike checks, such as government sites.
+bool IsSafeTLD(const std::string& hostname);
+
 #endif  // COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_

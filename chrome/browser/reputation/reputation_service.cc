@@ -193,10 +193,11 @@ void ReputationService::GetReputationStatusWithEngagedSites(
     done_checking_reputation_status = true;
   }
 
-  // 3. Protect against bad false positives by allowing top domains.
-  // Empty domain_and_registry happens on private domains.
+  // 3. Protect against bad false positives by allowing top domains and safe
+  // TLDs. Empty domain_and_registry happens on private domains.
   if (navigated_domain.domain_and_registry.empty() ||
-      IsTopDomain(navigated_domain)) {
+      IsTopDomain(navigated_domain) ||
+      IsSafeTLD(navigated_domain.domain_and_registry)) {
     done_checking_reputation_status = true;
   }
 

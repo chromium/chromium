@@ -795,6 +795,24 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
   CheckNoUkm();
 }
 
+// Tests that a hostname on a safe TLD can spoof another hostname without a
+// lookalike warning.
+IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
+                       Idn_SafeTLD_CanSpoof) {
+  base::HistogramTester histograms;
+  SetEngagementScore(browser(), GURL("https://digital.gov"), kHighEngagement);
+  const GURL kNavigatedUrl = GetURL("digitál.gov");
+  // Even if the navigated site has a low engagement score, it should be
+  // considered for lookalike suggestions.
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  // Advance clock to force a fetch of new engaged sites list.
+  test_clock()->Advance(base::Hours(1));
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 0);
+  CheckNoUkm();
+}
+
 // Navigate to a domain within an edit distance of 1 to a top domain.
 // This should record metrics, but should not show a lookalike warning
 // interstitial yet.
