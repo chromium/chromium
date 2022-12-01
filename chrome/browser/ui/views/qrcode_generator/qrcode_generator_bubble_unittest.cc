@@ -228,7 +228,7 @@ TEST_F(QRCodeGeneratorBubbleUITest, ImageShowsAfterErrorState) {
 }
 
 TEST_F(QRCodeGeneratorBubbleUITest,
-       PlaceholderImageShowsAfterTextFieldEmptied) {
+       PreviousImageShowsAfterAttemptDeleteAllText) {
   bubble()->Show();
 
   EXPECT_TRUE(ImagePlaceholderShowing());
@@ -270,12 +270,14 @@ TEST_F(QRCodeGeneratorBubbleUITest,
     EXPECT_TRUE(download_button()->GetEnabled());
   }
 
+  // Deleting all text is not allowed, which makes invalid URL.
   textfield()->SelectAll(false);
   textfield()->DeleteRange(textfield()->GetSelectedRange());
 
+  // Still shows previous state.
   EXPECT_TRUE(ImageShowing());
-  EXPECT_TRUE(ImagePlaceholderShowing());
-  EXPECT_FALSE(download_button()->GetEnabled());
+  EXPECT_FALSE(ImagePlaceholderShowing());
+  EXPECT_TRUE(download_button()->GetEnabled());
 }
 
 TEST_F(QRCodeGeneratorBubbleUITest, LabelHidesAfterErrorState) {

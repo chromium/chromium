@@ -127,14 +127,8 @@ void QRCodeGeneratorBubble::OnThemeChanged() {
 }
 
 void QRCodeGeneratorBubble::UpdateQRContent() {
-  if (textfield_url_->GetText().empty()) {
-    DisplayPlaceholderImage();
-    HideErrors(false);
-    return;
-  }
-
   mojom::GenerateQRCodeRequestPtr request = mojom::GenerateQRCodeRequest::New();
-  request->data = base::UTF16ToASCII(textfield_url_->GetText());
+  request->data = url_.spec();
   request->should_render = true;
   request->center_image = mojom::CenterImage::CHROME_DINO;
   request->render_module_style = mojom::ModuleStyle::CIRCLES;
@@ -344,7 +338,14 @@ void QRCodeGeneratorBubble::ContentsChanged(
     const std::u16string& new_contents) {
   DCHECK_EQ(sender, textfield_url_);
   if (sender == textfield_url_) {
-    url_ = GURL(base::UTF16ToUTF8(new_contents));
+    if (bottom_error_label_->GetVisible())
+      HideErrors(false);
+    GURL new_url(new_contents);
+    if (!new_url.is_valid()) {
+      textfield_url_->SetText(base::UTF8ToUTF16(url_.spec()));
+      return;
+    }
+    url_ = new_url;
     UpdateQRContent();
 
     static bool first_edit = true;
