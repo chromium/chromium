@@ -306,9 +306,9 @@ class NavigationManagerImpl : public NavigationManager {
     // DetachFromWebView().
     int GetCurrentItemIndex() const;
 
-    // Returns the visible WKWebView URL. If navigation manager is detached,
-    // returns an empty GURL.
-    GURL GetVisibleWebViewURL() const;
+    // Returns the visible WKWebView origin (host) URL. If navigation manager is
+    // detached, returns an empty GURL.
+    const GURL& GetVisibleWebViewOriginURL() const;
 
     // Returns the NavigationItem associated with the WKBackForwardListItem at
     // `index`. If `create_if_missing` is true and the WKBackForwardListItem
@@ -325,6 +325,10 @@ class NavigationManagerImpl : public NavigationManager {
    private:
     NavigationManagerImpl* navigation_manager_;
     bool attached_to_web_view_;
+
+    mutable GURL cached_visible_origin_url_;
+    mutable NSString* cached_visible_host_nsstring_;
+    mutable NSString* cached_visible_scheme_nsstring_;
 
     std::vector<std::unique_ptr<NavigationItemImpl>> cached_items_;
     int cached_current_item_index_;

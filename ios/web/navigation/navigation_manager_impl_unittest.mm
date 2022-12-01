@@ -73,6 +73,14 @@ bool AppendingUrlRewriter(GURL* url, BrowserState* browser_state) {
   return false;
 }
 
+// Class that exposes GetVisibleWebViewURL.
+class NavigationManagerImplWithVisibleURL : public NavigationManagerImpl {
+ public:
+  const GURL& GetVisibleWebViewOriginURL() const {
+    return web_view_cache_.GetVisibleWebViewOriginURL();
+  }
+};
+
 // Mock class for NavigationManagerDelegate.
 class MockNavigationManagerDelegate : public NavigationManagerDelegate {
  public:
@@ -2888,6 +2896,26 @@ TEST_F(NavigationManagerDetachedModeTest, NotSerializable) {
       /*is_post_navigation=*/false, web::HttpsUpgradeType::kNone);
   EXPECT_FALSE(manager_->GetPendingItemInCurrentOrRestoredSession()
                    ->ShouldSkipSerialization());
+}
+
+// Tests that GetVisibleWebViewURL() returns a cached GURL.
+TEST_F(NavigationManagerTest, TestGetVisibleWebViewOriginURLCache) {
+  NavigationManagerImplWithVisibleURL manager;
+  manager.SetDelegate(&delegate_);
+  manager.SetBrowserState(&browser_state_);
+
+  GURL gurl("http://www.existing.com");
+  __block NSURL* nsurl = [NSURL URLWithString:@"http://www.existing.com"];
+  OCMStub([mock_web_view_ URL]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:&nsurl];
+  });
+  EXPECT_EQ(gurl, manager.GetVisibleWebViewOriginURL());
+
+  // Change mock_web_view_'s URL.
+  nsurl = [NSURL URLWithString:@"http://www.anotherexisting.com"];
+  EXPECT_NE(gurl, manager.GetVisibleWebViewOriginURL());
+  EXPECT_EQ(GURL("http://www.anotherexisting.com"),
+            manager.GetVisibleWebViewOriginURL());
 }
 
 }  // namespace web

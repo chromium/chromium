@@ -1236,15 +1236,6 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
   if (!web_view_cache_.IsAttachedToWebView())
     return true;
 
-  // Only compare origins, as any mismatch between `web_view_url` and
-  // `last_committed_url` with the same origin are safe to return as
-  // visible.
-  GURL web_view_url = web_view_cache_.GetVisibleWebViewURL();
-  GURL last_committed_url = last_committed_item->GetURL();
-  if (web_view_url.DeprecatedGetOriginAsURL() ==
-      last_committed_url.DeprecatedGetOriginAsURL())
-    return true;
-
   // Fast back-forward navigations can be performed synchronously, with the
   // WKWebView.URL updated before enough callbacks occur to update the
   // last committed item.  As a result, any calls to
@@ -1256,13 +1247,22 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
   if (going_to_back_forward_list_item_)
     return true;
 
+  // Only compare origins, as any mismatch between `web_view_url` and
+  // `last_committed_url` with the same origin are safe to return as
+  // visible.
+  const GURL& web_view_origin_url =
+      web_view_cache_.GetVisibleWebViewOriginURL();
+  const GURL& last_committed_url = last_committed_item->GetURL();
+  if (web_view_origin_url == last_committed_url.DeprecatedGetOriginAsURL())
+    return true;
+
   // WKWebView.URL will update immediately when navigating to and from
   // about, file or chrome scheme URLs.
-  if (web_view_url.SchemeIs(url::kAboutScheme) ||
+  if (web_view_origin_url.SchemeIs(url::kAboutScheme) ||
       last_committed_url.SchemeIs(url::kAboutScheme) ||
-      web_view_url.SchemeIs(url::kFileScheme) ||
+      web_view_origin_url.SchemeIs(url::kFileScheme) ||
       last_committed_url.SchemeIs(url::kFileScheme) ||
-      web::GetWebClient()->IsAppSpecificURL(web_view_url) ||
+      web::GetWebClient()->IsAppSpecificURL(web_view_origin_url) ||
       web::GetWebClient()->IsAppSpecificURL(last_committed_url)) {
     return true;
   }
@@ -1344,15 +1344,24 @@ size_t NavigationManagerImpl::WKWebViewCache::GetBackForwardListItemCount()
   return 0;
 }
 
-GURL NavigationManagerImpl::WKWebViewCache::GetVisibleWebViewURL() const {
+const GURL& NavigationManagerImpl::WKWebViewCache::GetVisibleWebViewOriginURL()
+    const {
   if (!IsAttachedToWebView())
-    return GURL();
+    return GURL::EmptyGURL();
 
   id<CRWWebViewNavigationProxy> proxy =
       navigation_manager_->delegate_->GetWebViewNavigationProxy();
-  if (proxy)
-    return net::GURLWithNSURL(proxy.URL);
-  return GURL();
+  if (proxy) {
+    if (![cached_visible_host_nsstring_ isEqualToString:proxy.URL.host] ||
+        ![cached_visible_scheme_nsstring_ isEqualToString:proxy.URL.scheme]) {
+      cached_visible_origin_url_ =
+          net::GURLWithNSURL(proxy.URL).DeprecatedGetOriginAsURL();
+      cached_visible_host_nsstring_ = proxy.URL.host;
+      cached_visible_scheme_nsstring_ = proxy.URL.scheme;
+    }
+    return cached_visible_origin_url_;
+  }
+  return GURL::EmptyGURL();
 }
 
 int NavigationManagerImpl::WKWebViewCache::GetCurrentItemIndex() const {
