@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      let metaTagContent = 'width=device-width,minimum-scale=1';
+      if (params.has('resizes-content'))
+        metaTagContent += ',interactive-widget=resizes-content';
+      else if (params.has('resizes-visual'))
+        metaTagContent += ',interactive-widget=resizes-visual';
+      else if (params.has('overlays-content')) {
+        metaTagContent += ',interactive-widget=overlays-content';
+      }
+
+      let meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = metaTagContent;
+      document.head.appendChild(meta);
+    </script>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      input {
+        /* Invisible so that blinking cursor doesn't affect pixel tests */
+        position: absolute;
+        top: 50px;
+        opacity: 0;
+      }
+
+      #bottomfixed {
+        position: fixed;
+        left: 20px;
+        bottom: 10px;
+        width: 100px;
+        height: 30px;
+        background-color: coral;
+        view-transition-name: bottom;
+        contain: paint;
+      }
+
+      #topfixed {
+        position: fixed;
+        left: 20px;
+        top: 10px;
+        width: 100px;
+        height: 30px;
+        background-color: dodgerblue;
+        view-transition-name: top;
+        contain: paint;
+      }
+
+      #inflow {
+        position: absolute;
+        left: 100px;
+        top: 200px;
+        width: 100px;
+        height: 300px;
+        background-color: rebeccapurple;
+      }
+
+      /* This element will cover and show the position:fixed viewport to make it
+       * easier to see in screenshot what's being rendered below the keyboard. */
+      #background {
+        width: 100dvw;
+        height: 100dvh;
+        background-color: whitesmoke;
+      }
+
+      /* Step function means we'll keep the old snapshots in their initial state
+       * for half the duration, then the new snapshots in their final state for
+       * the last half of the duration. Note that tests pause the animation
+       * and control the progress programmatically so the duration is used only
+       * for live testing. */
+      ::view-transition-group(*),
+      ::view-transition-new(*),
+      ::view-transition-old(*) {
+        animation-duration: 5s;
+        animation-timing-function: steps(2, jump-none);
+      }
+    </style>
+    <script>
+      let transition = null;
+
+      // Allow tests to control when the transition starts.
+      let startTransitionAnimation = null;
+      let startPromise = new Promise(resolve => {startTransitionAnimation = resolve;});
+
+      // Allow tests to wait until the snapshot has been taken and is ready to
+      // start transitioning.
+      let readyToStartResolve = null;
+      let readyToStartPromise = new Promise(resolve => {readyToStartResolve = resolve;});
+
+      function updateDOM() {
+        document.getElementById("inflow").style.transform = "translateX(100px)";
+        document.getElementById("bottomfixed").style.transform = "translateX(100px)";
+        document.getElementById("topfixed").style.transform = "translateX(100px)";
+      }
+
+      // Sets the animation time to just before the end (not the end itself) to
+      // prevent finishing the animation. Since the animations have steps timing
+      // function the state is equivalent to the end state itself.
+      function animateToEndState() {
+        if (transition == null)
+          throw new Error('Transition was already finished or never started.');
+
+        for (const anim of document.getAnimations())
+          anim.currentTime = anim.effect.getTiming().duration - 1;
+      }
+
+      // Finishes animations, and thus the view transition.
+      function finishAnimations() {
+        if (transition == null)
+          throw new Error('Transition was already finished or never started.');
+
+        for (const anim of document.getAnimations())
+          anim.finish();
+      }
+
+      function createTransition() {
+        if (transition != null)
+          throw new Error('In-progress transition already exists.');
+
+        transition = document.startViewTransition(() => {
+          updateDOM();
+
+          readyToStartResolve();
+
+          return startPromise;
+        });
+
+        // Initially pause the animation at the old state so the test can take a
+        // screenshot. Tests can then use moveAnimationToNewState() to play the
+        // animation forward to the new state.
+        transition.ready.then(() => {
+          for (const anim of document.getAnimations()) {
+            anim.pause();
+          }
+        });
+
+        transition.finished.then( () => {
+          transition = null;
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="background">
+      <input id="inputElement" type="text">
+      <div id="inflow"></div>
+      <div id="bottomfixed"></div>
+      <div id="topfixed"></div>
+    </div>
+  </body>
+</html>

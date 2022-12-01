@@ -142,6 +142,7 @@ public class RenderTestRule extends TestWatcher {
         String BLINK_CONTACTS = "Blink>Contacts";
         String BLINK_FORMS_COLOR = "Blink>Forms>Color";
         String BLINK_PAYMENTS = "Blink>Payments";
+        String BLINK_VIEW_TRANSITIONS = "Blink>ViewTransitions";
         String FREEZE_DRIED_TABS = "Internals>FreezeDriedTabs";
         String PRIVACY = "Privacy";
         String PRIVACY_INCOGNITO = "Privacy>Incognito";
