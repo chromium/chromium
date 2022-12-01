@@ -9,6 +9,14 @@
 
 namespace ash {
 
+// Used to denote the category of a given input device.
+enum class InputDeviceCategory {
+  kMouse,
+  kTouchpad,
+  kPointingStick,
+  kKeyboard,
+};
+
 // Controller to manage input device settings.
 class ASH_EXPORT InputDeviceSettingsController {
  public:
