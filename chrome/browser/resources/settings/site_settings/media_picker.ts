@@ -61,7 +61,7 @@ class MediaPickerElement extends MediaPickerElementBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'updateDevicesMenu',
         (type: string, devices: MediaPickerEntry[], defaultDevice: string) =>
             this.updateDevicesMenu_(type, devices, defaultDevice));

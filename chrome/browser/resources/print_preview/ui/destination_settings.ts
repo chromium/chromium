@@ -196,7 +196,7 @@ export class PrintPreviewDestinationSettingsElement extends
     super.connectedCallback();
 
     this.destinationStore_ =
-        new DestinationStore(this.addWebUIListener.bind(this));
+        new DestinationStore(this.addWebUiListener.bind(this));
     this.tracker_.add(
         this.destinationStore_, DestinationStoreEventType.DESTINATION_SELECT,
         this.onDestinationSelect_.bind(this));

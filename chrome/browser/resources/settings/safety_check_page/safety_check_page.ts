@@ -111,7 +111,7 @@ export class SettingsSafetyCheckPageElement extends
     super.connectedCallback();
 
     // Register for safety check status updates.
-    this.addWebUIListener(
+    this.addWebUiListener(
         SafetyCheckCallbackConstants.PARENT_CHANGED,
         this.onSafetyCheckParentChanged_.bind(this));
 
@@ -125,7 +125,7 @@ export class SettingsSafetyCheckPageElement extends
     }
 
     // Register for notification permission review list updates.
-    this.addWebUIListener(
+    this.addWebUiListener(
         'notification-permission-review-list-maybe-changed',
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));

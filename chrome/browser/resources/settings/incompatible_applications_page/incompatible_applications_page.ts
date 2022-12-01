@@ -99,7 +99,7 @@ export class SettingsIncompatibleApplicationsPageElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'incompatible-application-removed',
         (applicationName: string) =>
             this.onIncompatibleApplicationRemoved_(applicationName));

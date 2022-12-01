@@ -135,7 +135,7 @@ export class PrintPreviewPreviewAreaElement extends
     super.connectedCallback();
 
     this.nativeLayer_ = NativeLayerImpl.getInstance();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'page-preview-ready', this.onPagePreviewReady_.bind(this));
   }
 

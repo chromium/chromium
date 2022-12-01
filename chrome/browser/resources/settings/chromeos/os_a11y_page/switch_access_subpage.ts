@@ -227,7 +227,7 @@ class SettingsSwitchAccessSubpageElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'switch-access-assignments-changed',
         (value: SwitchAccessAssignmentsChangedValue) =>
             this.onAssignmentsChanged_(value));

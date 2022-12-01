@@ -68,7 +68,7 @@ class OsSettingsSearchSelectionDialogElement extends
 
     this.browserProxy_.getSearchEnginesList().then(
         this.updateSearchEngines_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'search-engines-changed', this.updateSearchEngines_.bind(this));
   }
 

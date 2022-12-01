@@ -80,7 +80,7 @@ export class SettingsSafetyCheckPasswordsChildElement extends
     super.connectedCallback();
 
     // Register for safety check status updates.
-    this.addWebUIListener(
+    this.addWebUiListener(
         SafetyCheckCallbackConstants.PASSWORDS_CHANGED,
         this.onSafetyCheckPasswordsChanged_.bind(this));
   }

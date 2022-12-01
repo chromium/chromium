@@ -165,12 +165,12 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'sync-status-changed',
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
     this.syncBrowserProxy_.getSyncStatus().then(
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'is-managed-changed', this.onIsManagedChanged_.bind(this));
   }
 

@@ -216,7 +216,7 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     this.updateChannelInfo_();
 
     if (this.isHostnameSettingEnabled_) {
-      this.addWebUIListener(
+      this.addWebUiListener(
           'settings.updateDeviceNameMetadata',
           (data: DeviceNameMetadata) => this.updateDeviceNameMetadata_(data));
       this.deviceNameBrowserProxy_.notifyReadyForDeviceName();

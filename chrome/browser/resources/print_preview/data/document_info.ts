@@ -107,11 +107,11 @@ export class PrintPreviewDocumentInfoElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'page-count-ready',
         (pageCount: number, previewResponseId: number, scaling: number) =>
             this.onPageCountReady_(pageCount, previewResponseId, scaling));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'page-layout-ready',
         (pageLayout: PageLayoutInfo, hasCustomPageSizeStyle: boolean) =>
             this.onPageLayoutReady_(pageLayout, hasCustomPageSizeStyle));

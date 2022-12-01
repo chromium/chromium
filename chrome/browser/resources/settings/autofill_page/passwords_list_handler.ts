@@ -201,7 +201,7 @@ export class PasswordsListHandlerElement extends
     };
     SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(
         extractFirstAccountEmail);
-    this.addWebUIListener('stored-accounts-updated', extractFirstAccountEmail);
+    this.addWebUiListener('stored-accounts-updated', extractFirstAccountEmail);
   }
 
   override currentRouteChanged(route: Route): void {

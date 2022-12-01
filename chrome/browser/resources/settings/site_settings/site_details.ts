@@ -157,14 +157,14 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'usage-total-changed',
         (host: string, data: string, cookies: string, fps: string,
          fpsPolicy: boolean) => {
           this.onUsageTotalChanged_(host, data, cookies, fps, fpsPolicy);
         });
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'contentSettingSitePermissionChanged',
         (category: ContentSettingsTypes, origin: string) =>
             this.onPermissionChanged_(category, origin));

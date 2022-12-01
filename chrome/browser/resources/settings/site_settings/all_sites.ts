@@ -210,7 +210,7 @@ export class AllSitesElement extends AllSitesElementBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'onStorageListFetched', this.onStorageListFetched.bind(this));
     this.addEventListener(
         'site-entry-selected', (e: CustomEvent<SelectedItem>) => {

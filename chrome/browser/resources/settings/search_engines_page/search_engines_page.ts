@@ -170,7 +170,7 @@ export class SettingsSearchEnginesPageElement extends
 
     this.browserProxy_.getSearchEnginesList().then(
         this.enginesChanged_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'search-engines-changed', this.enginesChanged_.bind(this));
 
     this.addEventListener(

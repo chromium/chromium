@@ -114,7 +114,7 @@ class SettingsAudioAndCaptionsPageElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'initial-data-ready',
         (startupSoundEnabled: boolean) =>
             this.onAudioAndCaptionsPageReady_(startupSoundEnabled));

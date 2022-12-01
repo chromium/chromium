@@ -76,7 +76,7 @@ export class SettingsStartupUrlsPageElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'update-startup-pages', (startupPages: StartupPageInfo[]) => {
           // If an "edit" URL dialog was open, close it, because the underlying
           // page might have just been removed (and model indices have changed

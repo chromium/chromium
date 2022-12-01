@@ -154,10 +154,10 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   // <if expr="not chromeos_ash">
   private startListening_() {
-    this.addWebUIListener(
+    this.addWebUiListener(
         'update-status-changed', this.onUpdateStatusChanged_.bind(this));
     // <if expr="_google_chrome and is_macosx">
-    this.addWebUIListener(
+    this.addWebUiListener(
         'promotion-state-changed',
         this.onPromoteUpdaterStatusChanged_.bind(this));
     // </if>

@@ -82,7 +82,7 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
     super.connectedCallback();
 
     // Register for safety check status updates.
-    this.addWebUIListener(
+    this.addWebUiListener(
         SafetyCheckCallbackConstants.CHROME_CLEANER_CHANGED,
         this.onSafetyCheckChromeCleanerChanged_.bind(this));
   }

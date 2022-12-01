@@ -149,23 +149,23 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'setHandlersEnabled',
         (enabled: boolean) => this.setHandlersEnabled_(enabled));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'setProtocolHandlers',
         (protocols: ProtocolEntry[]) => this.setProtocolHandlers_(protocols));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'setIgnoredProtocolHandlers',
         (ignoredProtocols: HandlerEntry[]) =>
             this.setIgnoredProtocolHandlers_(ignoredProtocols));
     this.browserProxy.observeProtocolHandlers();
 
     // Web App Observer
-    this.addWebUIListener(
+    this.addWebUiListener(
         'setAppAllowedProtocolHandlers',
         this.setAppAllowedProtocolHandlers_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'setAppDisallowedProtocolHandlers',
         this.setAppDisallowedProtocolHandlers_.bind(this));
     this.browserProxy.observeAppProtocolHandlers();

@@ -51,7 +51,7 @@ class CrostiniSharedUsbDevicesElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-container-info',
         (infos: ContainerInfo[]) => this.onContainerInfo_(infos));
     CrostiniBrowserProxyImpl.getInstance().requestContainerInfo();

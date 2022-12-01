@@ -86,12 +86,12 @@ export class ChooserExceptionListElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'contentSettingChooserPermissionChanged',
         (category: ContentSettingsTypes, chooserType: ChooserType) => {
           this.objectWithinChooserTypeChanged_(category, chooserType);
         });
-    this.addWebUIListener(
+    this.addWebUiListener(
         'onIncognitoStatusChanged',
         (hasIncognito: boolean) =>
             this.onIncognitoStatusChanged_(hasIncognito));

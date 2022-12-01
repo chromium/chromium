@@ -100,7 +100,7 @@ export class PrivacyGuideHistorySyncFragmentElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'sync-prefs-changed',
         (syncPrefs: SyncPrefs) => this.onSyncPrefsChange_(syncPrefs));
     this.syncBrowserProxy_.sendSyncPrefsChanged();

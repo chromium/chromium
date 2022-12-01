@@ -188,10 +188,10 @@ export class SettingsSwitchAccessActionAssignmentPaneElement extends
           });
     }
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'switch-access-got-key-press-for-assignment',
         (event: OnKeyWebUiEvent) => this.onKeyDown_(event));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'switch-access-assignments-changed',
         (value: SwitchAccessAssignmentsChangedValue) =>
             this.onAssignmentsChanged_(value));

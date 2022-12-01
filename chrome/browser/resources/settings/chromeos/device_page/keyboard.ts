@@ -157,7 +157,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'show-keys-changed', this.onShowKeysChange_.bind(this));
     this.browserProxy_.initializeKeyboard();
     this.setUpKeyMapTargets_();

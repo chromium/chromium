@@ -116,10 +116,10 @@ export class ProfileCustomizationAppElement extends
     if (!this.isLocalProfileCreation_) {
       this.profileName_ = loadTimeData.getString('profileName');
     }
-    this.addWebUIListener(
+    this.addWebUiListener(
         'on-profile-info-changed',
         (info: ProfileInfo) => this.setProfileInfo_(info));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'on-available-icons-changed',
         (icons: AvatarIcon[]) => this.setAvailableIcons_(icons));
     this.profileCustomizationBrowserProxy_.initialized().then(

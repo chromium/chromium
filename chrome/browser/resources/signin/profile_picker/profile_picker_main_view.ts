@@ -103,9 +103,9 @@ export class ProfilePickerMainViewElement extends
   override connectedCallback() {
     super.connectedCallback();
     this.addResizeObserver_();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'profiles-list-changed', this.handleProfilesListChanged_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'profile-removed', this.handleProfileRemoved_.bind(this));
     this.manageProfilesBrowserProxy_.initializeMainView();
   }

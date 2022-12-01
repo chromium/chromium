@@ -214,13 +214,13 @@ class SettingsPowerElement extends SettingsPowerElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'battery-status-changed', this.set.bind(this, 'batteryStatus_'));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'power-sources-changed', this.powerSourcesChanged_.bind(this));
     this.browserProxy_.updatePowerStatus();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'power-management-settings-changed',
         this.powerManagementSettingsChanged_.bind(this));
     this.browserProxy_.requestPowerManagementSettings();

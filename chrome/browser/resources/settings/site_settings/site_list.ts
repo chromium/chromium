@@ -201,20 +201,20 @@ export class SiteListElement extends SiteListElementBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'contentSettingSitePermissionChanged',
         (category: ContentSettingsTypes) =>
             this.siteWithinCategoryChanged_(category));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'contentSettingCategoryChanged',
         (category: ContentSettingsTypes) =>
             this.siteWithinCategoryChanged_(category));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'onIncognitoStatusChanged',
         (hasIncognito: boolean) =>
             this.onIncognitoStatusChanged_(hasIncognito));
     // <if expr="chromeos_ash">
-    this.addWebUIListener(
+    this.addWebUiListener(
         'settings.onAndroidSmsInfoChange', (info: AndroidSmsInfo) => {
           this.androidSmsInfo_ = info;
           this.populateList_();

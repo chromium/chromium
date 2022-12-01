@@ -70,7 +70,7 @@ export class DiceWebSigninInterceptAppElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'interception-parameters-changed',
         this.handleParametersChanged_.bind(this));
     this.diceWebSigninInterceptBrowserProxy_.pageLoaded().then(

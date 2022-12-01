@@ -147,16 +147,16 @@ class SettingsCrostiniExportImportElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-export-import-operation-status-changed',
         (inProgress: boolean) => {
           this.exportImportInProgress_ = inProgress;
         });
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-installer-status-changed', (installerShowing: boolean) => {
           this.installerShowing_ = installerShowing;
         });
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-container-info',
         (infos: ContainerInfo[]) => this.onContainerInfo_(infos));
 

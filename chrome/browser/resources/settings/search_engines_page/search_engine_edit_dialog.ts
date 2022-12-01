@@ -99,7 +99,7 @@ export class SettingsSearchEngineEditDialogElement extends
       this.browserProxy_.searchEngineEditCancelled();
     });
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'search-engines-changed', this.enginesChanged_.bind(this));
   }
 

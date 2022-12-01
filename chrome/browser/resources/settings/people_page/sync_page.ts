@@ -287,9 +287,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'page-status-changed', this.handlePageStatusChanged_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
     const router = Router.getInstance();

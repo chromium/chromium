@@ -126,7 +126,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'guest-os-shared-usb-devices-changed',
         this.onGuestOsSharedUsbDevicesChanged_.bind(this));
     this.browserProxy_.notifyGuestOsSharedUsbDevicesPageReady();

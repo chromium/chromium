@@ -134,7 +134,7 @@ class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'can-set-date-time-changed', this.onCanSetDateTimeChanged_.bind(this));
     this.browserProxy_.dateTimePageReady();
   }

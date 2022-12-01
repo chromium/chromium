@@ -93,7 +93,7 @@ export class SiteDetailsPermissionElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'contentSettingCategoryChanged',
         (category: ContentSettingsTypes) =>
             this.onDefaultSettingChanged_(category));

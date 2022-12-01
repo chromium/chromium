@@ -67,7 +67,7 @@ export class AccountSelectionLacrosElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'available-accounts-changed',
         (accounts: AvailableAccount[]) =>
             this.handleAvailableAccountsChanged_(accounts));

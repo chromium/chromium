@@ -129,7 +129,7 @@ export class HistoryListElement extends HistoryListElementBase {
     this.$['scroll-threshold'].scrollTarget = this;
     this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
 
-    this.addWebUIListener('history-deleted', () => this.onHistoryDeleted_());
+    this.addWebUiListener('history-deleted', () => this.onHistoryDeleted_());
   }
 
   override ready() {

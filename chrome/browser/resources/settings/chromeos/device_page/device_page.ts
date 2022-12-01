@@ -189,22 +189,22 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-mouse-changed', this.set.bind(this, 'hasMouse_'));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-pointing-stick-changed', this.set.bind(this, 'hasPointingStick_'));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-haptic-touchpad-changed',
         this.set.bind(this, 'hasHapticTouchpad_'));
     this.browserProxy_.initializePointers();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-stylus-changed', this.set.bind(this, 'hasStylus_'));
     this.browserProxy_.initializeStylus();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'storage-android-enabled-changed',
         this.set.bind(this, 'androidEnabled_'));
     this.browserProxy_.updateAndroidEnabled();

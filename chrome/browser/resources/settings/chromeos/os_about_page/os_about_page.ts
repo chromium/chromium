@@ -358,10 +358,10 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   }
 
   private startListening_() {
-    this.addWebUIListener(
+    this.addWebUiListener(
         'update-status-changed', this.onUpdateStatusChanged_.bind(this));
     this.aboutBrowserProxy_.refreshUpdateStatus();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'tpm-firmware-update-status-changed',
         this.onTPMFirmwareUpdateStatusChanged_.bind(this));
     this.aboutBrowserProxy_.refreshTPMFirmwareUpdateStatus();

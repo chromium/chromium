@@ -67,7 +67,7 @@ export class SettingsOnStartupPageElement extends
     };
     OnStartupBrowserProxyImpl.getInstance().getNtpExtension().then(
         updateNtpExtension);
-    this.addWebUIListener('update-ntp-extension', updateNtpExtension);
+    this.addWebUiListener('update-ntp-extension', updateNtpExtension);
   }
 
   private getName_(value: number): string {

@@ -305,27 +305,27 @@ export class SettingsChromeCleanupPageElement extends
 
     this.cardStateToComponentsMap_ = this.buildCardStateToComponentsMap_();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'chrome-cleanup-on-idle',
         (idleReason: string) => this.onIdle_(idleReason));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'chrome-cleanup-on-scanning', () => this.onScanning_());
     // Note: both reporter running and scanning share the same UI.
-    this.addWebUIListener(
+    this.addWebUiListener(
         'chrome-cleanup-on-reporter-running', () => this.onScanning_());
-    this.addWebUIListener(
+    this.addWebUiListener(
         'chrome-cleanup-on-infected',
         (isPoweredByPartner: boolean,
          scannerResults: ChromeCleanerScannerResults) =>
             this.onInfected_(isPoweredByPartner, scannerResults));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'chrome-cleanup-on-cleaning',
         (isPoweredByPartner: boolean,
          scannerResults: ChromeCleanerScannerResults) =>
             this.onCleaning_(isPoweredByPartner, scannerResults));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'chrome-cleanup-on-reboot-required', () => this.onRebootRequired_());
-    this.addWebUIListener(
+    this.addWebUiListener(
         'chrome-cleanup-enabled-change',
         (enabled: boolean) => this.onCleanupEnabledChange_(enabled));
     this.browserProxy_.registerChromeCleanerObserver();

@@ -97,7 +97,7 @@ export class CertificateProvisioningListElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'certificate-provisioning-processes-changed',
         this.onCertificateProvisioningProcessesChanged_.bind(this));
     CertificateProvisioningBrowserProxyImpl.getInstance()

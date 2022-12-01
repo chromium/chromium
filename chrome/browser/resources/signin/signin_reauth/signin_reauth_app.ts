@@ -59,7 +59,7 @@ export class SigninReauthAppElement extends SigninReauthAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'reauth-type-determined', this.onReauthTypeDetermined_.bind(this));
     this.signinReauthBrowserProxy_.initialize();
   }

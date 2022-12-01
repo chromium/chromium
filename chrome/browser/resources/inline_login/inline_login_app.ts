@@ -235,15 +235,15 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'load-auth-extension',
         (data: AuthParams) => this.loadAuthExtension_(data));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'send-lst-fetch-results',
         (arg: string) => this.sendLSTFetchResults_(arg));
-    this.addWebUIListener('close-dialog', () => this.closeDialog_());
+    this.addWebUiListener('close-dialog', () => this.closeDialog_());
     // <if expr="chromeos_ash">
-    this.addWebUIListener(
+    this.addWebUiListener(
         'show-signin-error-page',
         (data: SigninErrorPageData) => this.signinErrorShowView_(data));
     // </if>

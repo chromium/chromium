@@ -27,13 +27,13 @@ export const WebUiListenerMixin = dedupingMixin(
         /**
          * Adds a WebUI listener and registers it for automatic removal when
          * this element is detached. Note: Do not use this method if you intend
-         * to remove this listener manually (use addWebUIListener directly
+         * to remove this listener manually (use addWebUiListener directly
          * instead).
          *
          * @param eventName The event to listen to.
          * @param callback The callback run when the event is fired.
          */
-        addWebUIListener(eventName: string, callback: Function) {
+        addWebUiListener(eventName: string, callback: Function) {
           this.webUiListeners_.push(addWebUiListener(eventName, callback));
         }
 
@@ -48,5 +48,5 @@ export const WebUiListenerMixin = dedupingMixin(
     });
 
 export interface WebUiListenerMixinInterface {
-  addWebUIListener(eventName: string, callback: Function): void;
+  addWebUiListener(eventName: string, callback: Function): void;
 }

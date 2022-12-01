@@ -127,22 +127,22 @@ class ManagementUiElement extends ManagementUiElementBase {
     this.initBrowserReportingInfo_();
     this.getThreatProtectionInfo_();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'browser-reporting-info-updated',
         (reportingInfo: BrowserReportingResponse[]) =>
             this.onBrowserReportingInfoReceived_(reportingInfo));
 
     // <if expr="is_chromeos">
-    this.addWebUIListener(
+    this.addWebUiListener(
         'plugin-vm-data-collection-updated',
         (enabled: boolean) => this.pluginVmDataCollectionEnabled_ = enabled);
     // </if>
 
-    this.addWebUIListener('managed_data_changed', () => {
+    this.addWebUiListener('managed_data_changed', () => {
       this.updateManagedFields_();
     });
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'threat-protection-info-updated',
         (info: ThreatProtectionInfo) => this.threatProtectionInfo_ = info);
 

@@ -191,15 +191,15 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
     // Populate the preview text with textToSpeechPreviewInput. Users can change
     // this to their own value later.
     this.previewText_ = this.i18n('textToSpeechPreviewInput');
-    this.addWebUIListener(
+    this.addWebUiListener(
         'all-voice-data-updated',
         (voices: TtsHandlerVoice[]) => this.populateVoiceList_(voices));
     this.ttsBrowserProxy_.getAllTtsVoiceData();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'tts-extensions-updated',
         (extensions: TtsHandlerExtension[]) =>
             this.populateExtensionList_(extensions));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'tts-preview-state-changed',
         (isSpeaking: boolean) => this.onTtsPreviewStateChanged_(isSpeaking));
     this.ttsBrowserProxy_.getTtsExtensions();

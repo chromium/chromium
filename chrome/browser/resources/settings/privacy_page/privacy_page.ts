@@ -314,7 +314,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       enabled: false,
     });
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'onBlockAutoplayStatusChanged',
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
@@ -322,11 +322,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.siteSettingsBrowserProxy_.getCookieSettingDescription().then(
         (description: string) => this.cookieSettingDescription_ = description);
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'cookieSettingDescriptionChanged',
         (description: string) => this.cookieSettingDescription_ = description);
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'notification-permission-review-list-maybe-changed',
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
@@ -335,9 +335,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'is-managed-changed', this.onIsManagedChanged_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'sync-status-changed', this.onSyncStatusChanged_.bind(this));
   }
 

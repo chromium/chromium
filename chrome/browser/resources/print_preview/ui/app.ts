@@ -157,10 +157,10 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
     document.documentElement.classList.remove('loading');
     this.nativeLayer_ = NativeLayerImpl.getInstance();
-    this.addWebUIListener('cr-dialog-open', this.onCrDialogOpen_.bind(this));
-    this.addWebUIListener('close', this.onCrDialogClose_.bind(this));
-    this.addWebUIListener('print-failed', this.onPrintFailed_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener('cr-dialog-open', this.onCrDialogOpen_.bind(this));
+    this.addWebUiListener('close', this.onCrDialogClose_.bind(this));
+    this.addWebUiListener('print-failed', this.onPrintFailed_.bind(this));
+    this.addWebUiListener(
         'print-preset-options', this.onPrintPresetOptions_.bind(this));
     this.tracker_.add(window, 'keydown', this.onKeyDown_.bind(this));
     this.$.previewArea.setPluginKeyEventCallback(this.onKeyDown_.bind(this));

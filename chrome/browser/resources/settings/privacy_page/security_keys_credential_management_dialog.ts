@@ -142,7 +142,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
     super.connectedCallback();
 
     this.$.dialog.showModal();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'security-keys-credential-management-finished',
         (error: string, requiresPINChange = false) =>
             this.onPinError_(error, requiresPINChange));

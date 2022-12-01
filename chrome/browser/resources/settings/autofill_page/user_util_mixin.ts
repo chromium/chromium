@@ -110,19 +110,19 @@ export const UserUtilMixin = dedupingMixin(
                 this.syncStatus = syncStatus;
               };
               syncBrowserProxy.getSyncStatus().then(syncStatusChanged);
-              this.addWebUIListener('sync-status-changed', syncStatusChanged);
+              this.addWebUiListener('sync-status-changed', syncStatusChanged);
 
               const syncPrefsChanged = (syncPrefs: SyncPrefs) => {
                 this.syncPrefs = syncPrefs;
               };
-              this.addWebUIListener('sync-prefs-changed', syncPrefsChanged);
+              this.addWebUiListener('sync-prefs-changed', syncPrefsChanged);
               syncBrowserProxy.sendSyncPrefsChanged();
 
               const storedAccountsChanged = (accounts: StoredAccount[]) => {
                 this.storedAccounts_ = accounts;
               };
               syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
-              this.addWebUIListener(
+              this.addWebUiListener(
                   'stored-accounts-updated', storedAccountsChanged);
             }
 

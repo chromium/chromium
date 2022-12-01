@@ -92,7 +92,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'available-accounts-changed',
         (accounts: AvailableAccount[]) =>
             this.handleAvailableAccountsChanged_(accounts));
@@ -102,7 +102,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
 
   override ready() {
     super.ready();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'load-signin-finished',
         (success: boolean) => this.handleLoadSigninFinished_(success));
     this.manageProfilesBrowserProxy_.recordSignInPromoImpression();

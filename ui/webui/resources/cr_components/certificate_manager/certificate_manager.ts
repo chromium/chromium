@@ -167,11 +167,11 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addWebUIListener('certificates-changed', this.set.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener('certificates-changed', this.set.bind(this));
+    this.addWebUiListener(
         'client-import-allowed-changed',
         this.setClientImportAllowed.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'ca-import-allowed-changed', this.setCAImportAllowed.bind(this));
     CertificatesBrowserProxyImpl.getInstance().refreshCertificates();
   }

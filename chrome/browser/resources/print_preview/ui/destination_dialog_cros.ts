@@ -143,7 +143,7 @@ export class PrintPreviewDestinationDialogCrosElement extends
     this.addEventListener('keydown', e => this.onKeydown_(e as KeyboardEvent));
     this.printServerStore_ = new PrintServerStore(
         (eventName: string, callback: (p: any) => void) =>
-            this.addWebUIListener(eventName, callback));
+            this.addWebUiListener(eventName, callback));
     this.tracker_.add(
         this.printServerStore_, PrintServerStoreEventType.PRINT_SERVERS_CHANGED,
         this.onPrintServersChanged_.bind(this));

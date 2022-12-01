@@ -64,7 +64,7 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
 
     this.browserProxy_.getSearchEnginesList().then(
         this.updateCurrentSearchEngine_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'search-engines-changed', this.updateCurrentSearchEngine_.bind(this));
   }
 

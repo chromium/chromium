@@ -100,7 +100,7 @@ class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     // Check if should ask for parent access code.
     if (loadTimeData.getBoolean('isChild')) {
       this.disableTimeZoneSetting_();
-      this.addWebUIListener(
+      this.addWebUiListener(
           'access-code-validation-complete',
           this.enableTimeZoneSetting_.bind(this));
       this.browserProxy_.showParentAccessForTimeZone();

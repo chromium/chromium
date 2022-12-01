@@ -66,7 +66,7 @@ export class SettingsSafetyCheckUnusedSitePermissionsElement extends
     super.connectedCallback();
 
     // Register for review notification permission list updates.
-    this.addWebUIListener(
+    this.addWebUiListener(
         'unused-permission-review-list-maybe-changed',
         (sites: UnusedSitePermissions[]) => {
           this.onSitesChanged_(sites);

@@ -216,7 +216,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       // If this is SplitSettings and we have the Google Account manager,
       // prefer the GAIA name and icon.
       useProfileNameAndIcon = false;
-      this.addWebUIListener(
+      this.addWebUiListener(
           'accounts-changed', this.updateAccounts_.bind(this));
       this.updateAccounts_();
     }
@@ -224,13 +224,13 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     if (useProfileNameAndIcon) {
       ProfileInfoBrowserProxyImpl.getInstance().getProfileInfo().then(
           this.handleProfileInfo_.bind(this));
-      this.addWebUIListener(
+      this.addWebUiListener(
           'profile-info-changed', this.handleProfileInfo_.bind(this));
     }
 
     this.syncBrowserProxy_.getSyncStatus().then(
         this.handleSyncStatus_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'sync-status-changed', this.handleSyncStatus_.bind(this));
 
     // <if expr="not chromeos_ash">
@@ -238,9 +238,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       this.storedAccounts = accounts;
     };
     this.syncBrowserProxy_.getStoredAccounts().then(handleStoredAccounts);
-    this.addWebUIListener('stored-accounts-updated', handleStoredAccounts);
+    this.addWebUiListener('stored-accounts-updated', handleStoredAccounts);
 
-    this.addWebUIListener('sync-settings-saved', () => {
+    this.addWebUiListener('sync-settings-saved', () => {
       this.$.toast.show();
     });
     // </if>

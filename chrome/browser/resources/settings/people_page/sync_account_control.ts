@@ -163,7 +163,7 @@ export class SettingsSyncAccountControlElement extends
 
     this.syncBrowserProxy_.getStoredAccounts().then(
         this.handleStoredAccounts_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
   }
 

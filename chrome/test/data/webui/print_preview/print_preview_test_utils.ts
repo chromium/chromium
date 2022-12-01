@@ -361,7 +361,7 @@ export function createDestinationStore(): DestinationStore {
   const testListenerElement = document.createElement('test-listener-element');
   document.body.appendChild(testListenerElement);
   return new DestinationStore(
-      testListenerElement.addWebUIListener.bind(testListenerElement));
+      testListenerElement.addWebUiListener.bind(testListenerElement));
 }
 
 // <if expr="is_chromeos">

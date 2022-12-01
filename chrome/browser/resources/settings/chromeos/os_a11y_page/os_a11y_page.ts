@@ -179,7 +179,7 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
           routes.A11Y_SELECT_TO_SPEAK, '#select-to-speak-subpage-trigger');
     }
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'screen-reader-state-changed',
         (hasScreenReader: boolean) =>
             this.onScreenReaderStateChanged_(hasScreenReader));

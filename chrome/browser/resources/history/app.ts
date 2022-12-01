@@ -265,14 +265,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
         document, 'keydown', (e: Event) => this.onKeyDown_(e as KeyboardEvent));
     this.eventTracker_.add(
         document, 'visibilitychange', this.onVisibilityChange_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'sign-in-state-changed',
         (signedIn: boolean) => this.onSignInStateChanged_(signedIn));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-other-forms-changed',
         (hasOtherForms: boolean) =>
             this.onHasOtherFormsChanged_(hasOtherForms));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'foreign-sessions-changed',
         (sessionList: ForeignSession[]) =>
             this.setForeignSessions_(sessionList));

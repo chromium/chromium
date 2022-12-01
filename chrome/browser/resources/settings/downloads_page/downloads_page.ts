@@ -81,7 +81,7 @@ export class SettingsDownloadsPageElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'auto-open-downloads-changed', (autoOpen: boolean) => {
           this.autoOpenDownloads_ = autoOpen;
         });

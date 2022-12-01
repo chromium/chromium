@@ -236,15 +236,15 @@ class SettingsCrostiniSubpageElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-installer-status-changed', (status: boolean) => {
           this.installerShowing_ = status;
         });
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-upgrader-status-changed', (status: boolean) => {
           this.upgraderDialogShowing_ = status;
         });
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-container-upgrade-available-changed',
         (canUpgrade: boolean) => {
           this.showCrostiniContainerUpgrade_ = canUpgrade;

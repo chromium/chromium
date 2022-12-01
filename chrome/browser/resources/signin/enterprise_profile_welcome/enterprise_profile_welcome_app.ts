@@ -129,7 +129,7 @@ export class EnterpriseProfileWelcomeAppElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'on-profile-info-changed',
         (info: EnterpriseProfileInfo) => this.setProfileInfo_(info));
     this.enterpriseProfileWelcomeBrowserProxy_.initialized().then(

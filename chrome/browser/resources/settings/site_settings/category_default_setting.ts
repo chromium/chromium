@@ -153,7 +153,7 @@ export class CategoryDefaultSettingElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'contentSettingCategoryChanged', () => this.onCategoryChanged_());
   }
 

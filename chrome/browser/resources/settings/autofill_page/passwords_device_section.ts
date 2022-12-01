@@ -242,7 +242,7 @@ export class PasswordsDeviceSectionElement extends
     };
     SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(
         extractFirstStoredAccountEmail);
-    this.addWebUIListener(
+    this.addWebUiListener(
         'stored-accounts-updated', extractFirstStoredAccountEmail);
   }
 
@@ -338,13 +338,13 @@ export class PasswordsDeviceSectionElement extends
       this.syncDisabled_ = !syncStatus.signedIn;
     };
     SyncBrowserProxyImpl.getInstance().getSyncStatus().then(setSyncDisabled);
-    this.addWebUIListener('sync-status-changed', setSyncDisabled);
+    this.addWebUiListener('sync-status-changed', setSyncDisabled);
 
     const setSignedIn = (storedAccounts: StoredAccount[]) => {
       this.signedIn_ = storedAccounts.length > 0;
     };
     SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(setSignedIn);
-    this.addWebUIListener('stored-accounts-updated', setSignedIn);
+    this.addWebUiListener('stored-accounts-updated', setSignedIn);
 
     const setOptedIn = (optedInForAccountStorage: boolean) => {
       this.optedInForAccountStorage_ = optedInForAccountStorage;

@@ -102,7 +102,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'account-info-changed', this.handleAccountInfoChanged_.bind(this));
     this.syncConfirmationBrowserProxy_.requestAccountInfo();
     this.syncConfirmationBrowserProxy_.getSyncBenefitsList().then(

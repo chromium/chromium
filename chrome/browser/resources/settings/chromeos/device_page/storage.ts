@@ -115,27 +115,27 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'storage-size-stat-changed',
         (sizeStat: StorageSizeStat) => this.handleSizeStatChanged_(sizeStat));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'storage-my-files-size-changed',
         (size: string) => this.handleMyFilesSizeChanged_(size));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'storage-browsing-data-size-changed',
         (size: string) => this.handleBrowsingDataSizeChanged_(size));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'storage-apps-size-changed',
         (size: string) => this.handleAppsSizeChanged_(size));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'storage-crostini-size-changed',
         (size: string) => this.handleCrostiniSizeChanged_(size));
     if (this.showOtherUsers_) {
-      this.addWebUIListener(
+      this.addWebUiListener(
           'storage-other-users-size-changed',
           (size: string, noOtherUsers: boolean) =>
               this.handleOtherUsersSizeChanged_(size, noOtherUsers));
-      this.addWebUIListener(
+      this.addWebUiListener(
           'storage-system-size-changed',
           (size: string) => this.handleSystemSizeChanged_(size));
     }

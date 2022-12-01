@@ -123,14 +123,14 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-arc-adb-sideload-status-changed',
         (enabled: boolean, needPowerwash: boolean) => {
           this.arcAdbEnabled_ = enabled;
           this.arcAdbNeedPowerwash_ = needPowerwash;
         });
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-can-change-arc-adb-sideload-changed',
         (canChangeArcAdbSideloading: boolean) => {
           this.canChangeAdbSideloading_ = canChangeArcAdbSideloading;

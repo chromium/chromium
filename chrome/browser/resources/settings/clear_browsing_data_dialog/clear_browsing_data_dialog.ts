@@ -295,12 +295,12 @@ export class SettingsClearBrowsingDataDialogElement extends
 
     this.syncBrowserProxy_.getSyncStatus().then(
         this.handleSyncStatus_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'sync-status-changed', this.handleSyncStatus_.bind(this));
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'update-sync-state', this.updateSyncState_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'update-counter-text', this.updateCounterText_.bind(this));
 
     this.addEventListener(

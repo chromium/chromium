@@ -51,7 +51,7 @@ export class SettingsDefaultBrowserPageElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'browser-default-state-changed',
         this.updateDefaultBrowserState_.bind(this));
 

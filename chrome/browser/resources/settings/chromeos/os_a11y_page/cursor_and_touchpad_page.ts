@@ -284,13 +284,13 @@ class SettingsCursorAndTouchpadPageElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-mouse-changed',
         (exists: boolean) => this.set('hasMouse_', exists));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-pointing-stick-changed',
         (exists: boolean) => this.set('hasPointingStick_', exists));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-touchpad-changed',
         (exists: boolean) => this.set('hasTouchpad_', exists));
     this.deviceBrowserProxy_.initializePointers();

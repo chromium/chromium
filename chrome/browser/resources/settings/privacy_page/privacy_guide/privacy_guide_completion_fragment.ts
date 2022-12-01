@@ -75,7 +75,7 @@ export class PrivacyGuideCompletionFragmentElement extends
 
   override ready() {
     super.ready();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'update-sync-state',
         (event: UpdateSyncStateEvent) => this.updateWaaLink_(event.signedIn));
     ClearBrowsingDataBrowserProxyImpl.getInstance().getSyncState().then(

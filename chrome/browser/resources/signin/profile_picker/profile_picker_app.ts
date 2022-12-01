@@ -86,7 +86,7 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
 
   override ready() {
     super.ready();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'create-profile-finished',
         () => this.handleCreateLocalProfileFinished_());
   }

@@ -63,7 +63,7 @@ export class SettingsSafetyCheckNotificationPermissionsElement extends
     super.connectedCallback();
 
     // Register for review notification permission list updates.
-    this.addWebUIListener(
+    this.addWebUiListener(
         'notification-permission-review-list-maybe-changed',
         (sites: NotificationPermission[]) => this.onSitesChanged_(sites));
 

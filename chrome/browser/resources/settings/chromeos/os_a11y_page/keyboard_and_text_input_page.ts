@@ -161,10 +161,10 @@ class SettingsKeyboardAndTextInputPageElement extends
 
   override ready() {
     super.ready();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'dictation-locale-menu-subtitle-changed',
         (result: string) => this.onDictationLocaleMenuSubtitleChanged_(result));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'dictation-locales-set',
         (locales: LocaleInfo[]) => this.onDictationLocalesSet_(locales));
     this.keyboardAndTextInputBrowserProxy_.keyboardAndTextInputPageReady();

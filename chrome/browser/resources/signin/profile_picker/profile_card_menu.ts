@@ -153,11 +153,11 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'profiles-list-changed', () => this.handleProfilesUpdated_());
-    this.addWebUIListener(
+    this.addWebUiListener(
         'profile-removed', this.handleProfileRemoved_.bind(this));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'profile-statistics-received',
         this.handleProfileStatsReceived_.bind(this));
   }

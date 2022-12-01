@@ -128,7 +128,7 @@ class SettingsKerberosAccountsElement extends
   override connectedCallback(): void {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'kerberos-accounts-changed', this.refreshAccounts_.bind(this));
   }
 

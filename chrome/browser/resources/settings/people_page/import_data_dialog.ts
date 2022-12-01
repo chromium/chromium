@@ -111,7 +111,7 @@ export class SettingsImportDataDialogElement extends
       this.$.dialog.showModal();
     });
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'import-data-status-changed', (importStatus: ImportDataStatus) => {
           this.importStatus_ = importStatus;
           if (this.hasImportStatus_(ImportDataStatus.FAILED)) {

@@ -176,7 +176,7 @@ export class SettingsPersonalizationOptionsElement extends
     // <if expr="_google_chrome and not chromeos_ash">
     const setMetricsReportingPref = (metricsReporting: MetricsReporting) =>
         this.setMetricsReportingPref_(metricsReporting);
-    this.addWebUIListener('metrics-reporting-change', setMetricsReportingPref);
+    this.addWebUiListener('metrics-reporting-change', setMetricsReportingPref);
     this.browserProxy_.getMetricsReporting().then(setMetricsReportingPref);
     // </if>
   }

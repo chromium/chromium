@@ -360,7 +360,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     const syncBrowserProxy = SyncBrowserProxyImpl.getInstance();
 
     syncBrowserProxy.sendTrustedVaultBannerStateChanged();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'trusted-vault-banner-state-changed',
         (state: TrustedVaultBannerState) => {
           this.trustedVaultBannerState_ = state;

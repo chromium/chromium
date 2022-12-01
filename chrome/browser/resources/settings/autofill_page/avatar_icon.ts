@@ -48,7 +48,7 @@ class SettingsAvatarIconElement extends SettingsAvatarIconElementBase {
           'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
     };
     SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(setAvatarUrl);
-    this.addWebUIListener('stored-accounts-updated', setAvatarUrl);
+    this.addWebUiListener('stored-accounts-updated', setAvatarUrl);
   }
 }
 

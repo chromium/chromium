@@ -138,7 +138,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'screen-reader-state-changed',
         (hasScreenReader: boolean) =>
             this.onScreenReaderStateChanged_(hasScreenReader));

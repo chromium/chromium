@@ -76,7 +76,7 @@ class SigninErrorAppElement extends SigninErrorAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener('switch-button-unavailable', () => {
+    this.addWebUiListener('switch-button-unavailable', () => {
       this.switchButtonUnavailable_ = true;
       // Move focus to the only displayed button in this case.
       (this.shadowRoot!.querySelector('#confirmButton') as HTMLElement).focus();

@@ -106,7 +106,7 @@ export class CategorySettingExceptionsElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'contentSettingCategoryChanged', () => this.updateDefaultManaged_());
   }
 

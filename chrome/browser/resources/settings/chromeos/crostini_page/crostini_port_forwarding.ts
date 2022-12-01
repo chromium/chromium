@@ -120,11 +120,11 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-port-forwarder-active-ports-changed',
         (ports: CrostiniPortActiveSetting[]) =>
             this.onCrostiniPortsActiveStateChanged_(ports));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-container-info',
         (infos: ContainerInfo[]) => this.onContainerInfo_(infos));
     this.browserProxy_.getCrostiniActivePorts().then(

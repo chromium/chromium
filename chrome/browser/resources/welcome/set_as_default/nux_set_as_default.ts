@@ -73,7 +73,7 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'browser-default-state-changed',
         this.onDefaultBrowserChange_.bind(this));
   }

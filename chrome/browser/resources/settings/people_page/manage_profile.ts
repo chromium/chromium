@@ -123,7 +123,7 @@ export class SettingsManageProfileElement extends
       this.availableIcons = icons;
     };
 
-    this.addWebUIListener('available-icons-changed', setIcons);
+    this.addWebUiListener('available-icons-changed', setIcons);
     this.browserProxy_.getAvailableIcons().then(setIcons);
   }
 

@@ -131,11 +131,11 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
   override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'security-keys-bio-enroll-error',
         (error: string, requiresPINChange = false) =>
             this.onError_(error, requiresPINChange));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'security-keys-bio-enroll-status',
         (response: SampleResponse) => this.onEnrollmentSample_(response));
     this.browserProxy_.startBioEnroll().then(([minPinLength]) => {

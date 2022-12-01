@@ -38,7 +38,7 @@ export class ProfileInternalsAppElement extends ProfileInternalsAppElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addWebUIListener(
+    this.addWebUiListener(
         'profiles-list-changed',
         (profilesList: ProfileState[]) =>
             this.handleProfilesListChanged_(profilesList));

@@ -160,7 +160,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       // Listen to changes in the host resolver configuration and update the
       // UI representation to match. (Changes to the host resolver configuration
       // may be generated in ways other than direct UI manipulation).
-      this.addWebUIListener(
+      this.addWebUiListener(
           'secure-dns-setting-changed',
           (setting: SecureDnsSetting) =>
               this.onSecureDnsPrefsChanged_(setting));

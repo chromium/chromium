@@ -25,7 +25,7 @@ suite('WebUiListenerMixinTest', function() {
     const eventName = 'dummyEvent';
     let counter = 0;
 
-    testElement.addWebUIListener(eventName, () => counter++);
+    testElement.addWebUiListener(eventName, () => counter++);
     webUIListenerCallback(eventName);
     assertEquals(1, counter);
 

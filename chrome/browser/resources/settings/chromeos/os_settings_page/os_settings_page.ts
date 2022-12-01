@@ -172,7 +172,7 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
     this.allowCrostini_ = loadTimeData.valueExists('allowCrostini') &&
         loadTimeData.getBoolean('allowCrostini');
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'android-apps-info-update', this.androidAppsInfoUpdate_.bind(this));
     AndroidAppsBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
   }

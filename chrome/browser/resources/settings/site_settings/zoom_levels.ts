@@ -67,7 +67,7 @@ export class ZoomLevelsElement extends ZoomLevelsElementBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'onZoomLevelsChanged',
         (sites: ZoomLevelEntry[]) => this.onZoomLevelsChanged_(sites));
     this.browserProxy.fetchZoomLevels();

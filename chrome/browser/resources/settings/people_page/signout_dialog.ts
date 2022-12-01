@@ -83,7 +83,7 @@ export class SettingsSignoutDialogElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'profile-stats-count-ready', this.handleProfileStatsCount_.bind(this));
     // <if expr="not chromeos_ash">
     ProfileInfoBrowserProxyImpl.getInstance().getProfileStatsCount();

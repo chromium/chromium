@@ -78,7 +78,7 @@ export class SettingsSafetyCheckExtensionsChildElement extends
     super.connectedCallback();
 
     // Register for safety check status updates.
-    this.addWebUIListener(
+    this.addWebUiListener(
         SafetyCheckCallbackConstants.EXTENSIONS_CHANGED,
         this.onSafetyCheckExtensionsChanged_.bind(this));
   }

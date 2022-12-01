@@ -133,7 +133,7 @@ export class SettingsReviewNotificationPermissionsElement extends
   override async connectedCallback() {
     super.connectedCallback();
     // Register for review notification permission list updates.
-    this.addWebUIListener(
+    this.addWebUiListener(
         'notification-permission-review-list-maybe-changed',
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));

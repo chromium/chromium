@@ -177,7 +177,7 @@ class SettingsGoogleAssistantPageElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener('hotwordDeviceUpdated', (hasHotword: boolean) => {
+    this.addWebUiListener('hotwordDeviceUpdated', (hasHotword: boolean) => {
       this.hotwordDspAvailable_ = hasHotword;
     });
 

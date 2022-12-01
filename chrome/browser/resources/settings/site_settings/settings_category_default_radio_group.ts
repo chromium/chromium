@@ -116,7 +116,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'contentSettingCategoryChanged',
         (category: ContentSettingsTypes) => this.onCategoryChanged_(category));
   }

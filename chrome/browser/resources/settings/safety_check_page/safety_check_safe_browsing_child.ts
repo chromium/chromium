@@ -80,7 +80,7 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
     super.connectedCallback();
 
     // Register for safety check status updates.
-    this.addWebUIListener(
+    this.addWebUiListener(
         SafetyCheckCallbackConstants.SAFE_BROWSING_CHANGED,
         this.onSafetyCheckSafeBrowsingChanged_.bind(this));
   }

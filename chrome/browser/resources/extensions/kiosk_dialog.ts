@@ -78,10 +78,10 @@ export class ExtensionsKioskDialogElement extends
         })
         .then(this.setSettings_.bind(this));
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'kiosk-app-settings-changed', this.setSettings_.bind(this));
-    this.addWebUIListener('kiosk-app-updated', this.updateApp_.bind(this));
-    this.addWebUIListener('kiosk-app-error', this.showError_.bind(this));
+    this.addWebUiListener('kiosk-app-updated', this.updateApp_.bind(this));
+    this.addWebUiListener('kiosk-app-error', this.showError_.bind(this));
 
     this.$.dialog.showModal();
   }

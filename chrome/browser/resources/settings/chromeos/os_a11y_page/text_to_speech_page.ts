@@ -107,7 +107,7 @@ class SettingsTextToSpeechPageElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'has-hardware-keyboard',
         (hasKeyboard: boolean) => this.set('hasKeyboard_', hasKeyboard));
     this.deviceBrowserProxy_.initializeKeyboardWatcher();

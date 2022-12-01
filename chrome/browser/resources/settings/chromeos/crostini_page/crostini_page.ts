@@ -153,7 +153,7 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
       this.disableCrostiniInstall_ = true;
       return;
     }
-    this.addWebUIListener(
+    this.addWebUiListener(
         'crostini-installer-status-changed', (installerShowing: boolean) => {
           this.disableCrostiniInstall_ = installerShowing;
         });

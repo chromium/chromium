@@ -130,7 +130,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   override ready() {
     super.ready();
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'soda-download-progress-changed',
         (sodaDownloadProgress: string, languageCode: string) =>
             this.onSodaDownloadProgressChanged_(
