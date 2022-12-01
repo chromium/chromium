@@ -551,9 +551,6 @@ extern const char kEnablePreinstalledWebAppDuplicationFixerDescription[];
 extern const char kEnableTLS13EarlyDataName[];
 extern const char kEnableTLS13EarlyDataDescription[];
 
-extern const char kEnhancedNetworkVoicesName[];
-extern const char kEnhancedNetworkVoicesDescription[];
-
 extern const char kAccessibilityServiceName[];
 extern const char kAccessibilityServiceDescription[];
 

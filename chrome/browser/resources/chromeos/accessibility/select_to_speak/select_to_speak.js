@@ -115,12 +115,6 @@ export class SelectToSpeak {
      */
     this.enableLanguageDetectionIntegration_ = false;
 
-    /**
-     * Feature flag controlling availability of enhanced network voices
-     * @private {boolean}
-     */
-    this.enhancedVoicesFlag_ = false;
-
     /** @private {InputHandler} */
     this.inputHandler_ = null;
 
@@ -210,11 +204,6 @@ export class SelectToSpeak {
     chrome.accessibilityPrivate.isFeatureEnabled(
         voiceSwitchingFeature, (enabled) => {
           this.isVoiceSwitchingEnabled_ = enabled;
-        });
-
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        AccessibilityFeature.ENHANCED_NETWORK_VOICES, result => {
-          this.enhancedVoicesFlag_ = result;
         });
 
     const contextMenuOptionFeature =
@@ -322,8 +311,7 @@ export class SelectToSpeak {
       }
       this.startSpeechQueue_(nodes, {clearFocusRing: true});
       MetricsUtils.recordStartEvent(
-          MetricsUtils.StartSpeechMethod.MOUSE, this.prefsManager_,
-          this.enhancedVoicesFlag_);
+          MetricsUtils.StartSpeechMethod.MOUSE, this.prefsManager_);
     });
   }
 
@@ -506,8 +494,7 @@ export class SelectToSpeak {
         this.initializeScrollingToOffscreenNodes_(focusedNode.root);
       }
       if (userRequested) {
-        MetricsUtils.recordStartEvent(
-            methodNumber, this.prefsManager_, this.enhancedVoicesFlag_);
+        MetricsUtils.recordStartEvent(methodNumber, this.prefsManager_);
       }
     } else {
       // Gsuite apps include webapps beyond Docs, see getGSuiteAppRoot and
@@ -532,8 +519,7 @@ export class SelectToSpeak {
           code: 'document.execCommand("copy");',
         });
         if (userRequested) {
-          MetricsUtils.recordStartEvent(
-              methodNumber, this.prefsManager_, this.enhancedVoicesFlag_);
+          MetricsUtils.recordStartEvent(methodNumber, this.prefsManager_);
         }
       });
     }
@@ -978,8 +964,7 @@ export class SelectToSpeak {
   startSpeech_(text) {
     this.prepareForSpeech_(true /* clearFocusRing */);
     this.maybeShowEnhancedVoicesDialog_(() => {
-      const options =
-          this.prefsManager_.getSpeechOptions(this.enhancedVoicesFlag_, null);
+      const options = this.prefsManager_.getSpeechOptions(null);
       const fallbackVoiceName = this.prefsManager_.getLocalVoice();
 
       // Without nodes to anchor on, navigate is not supported.
@@ -1188,8 +1173,7 @@ export class SelectToSpeak {
 
     Object.assign(
         options,
-        this.prefsManager_.getSpeechOptions(
-            this.enhancedVoicesFlag_, {language, useVoiceSwitching}));
+        this.prefsManager_.getSpeechOptions({language, useVoiceSwitching}));
 
     if (this.shouldShowNavigationControls_()) {
       options.rate = this.getSpeechRate_();
@@ -1645,8 +1629,7 @@ export class SelectToSpeak {
    *     canceled in the dialog.
    */
   maybeShowEnhancedVoicesDialog_(callback) {
-    if (this.enhancedVoicesFlag_ &&
-        !this.prefsManager_.enhancedVoicesDialogShown() &&
+    if (!this.prefsManager_.enhancedVoicesDialogShown() &&
         this.prefsManager_.enhancedNetworkVoicesAllowed()) {
       // TODO(crbug.com/1230227): Style this dialog to match UX mocks.
       const title =

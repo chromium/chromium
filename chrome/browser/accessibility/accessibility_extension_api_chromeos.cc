@@ -253,10 +253,6 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
   bool enabled;
   switch (params_feature) {
     case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_ENHANCEDNETWORKVOICES:
-      enabled = ::features::IsEnhancedNetworkVoicesEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_GOOGLETTSLANGUAGEPACKS:
       enabled = ::features::
           IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();

@@ -461,14 +461,13 @@ export class PrefsManager {
   /**
    * Generates the basic speech options for Select-to-Speak based on user
    * preferences. Call for each chrome.tts.speak.
-   * @param {boolean} enhancedVoicesFlag whether enhanced voices are enabled.
    * @param {?SelectToSpeakConstants.VoiceSwitchingData} voiceSwitchingData
    * @return {!chrome.tts.TtsOptions} options The TTS options.
    */
-  getSpeechOptions(enhancedVoicesFlag, voiceSwitchingData) {
+  getSpeechOptions(voiceSwitchingData) {
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
     const data = voiceSwitchingData || {};
-    const useEnhancedVoices = enhancedVoicesFlag &&
+    const useEnhancedVoices =
         this.enhancedNetworkVoicesEnabled_ && navigator.onLine;
 
     if (useEnhancedVoices) {

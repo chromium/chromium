@@ -950,11 +950,6 @@ const char kEnableTLS13EarlyDataDescription[] =
     "during the handshake when resuming a connection to a compatible TLS 1.3 "
     "server.";
 
-const char kEnhancedNetworkVoicesName[] = "Enhanced network voices";
-const char kEnhancedNetworkVoicesDescription[] =
-    "This option enables high-quality, network-based voices in "
-    "Select-to-speak.";
-
 const char kAccessibilityServiceName[] = "Experimental Accessibility Service";
 const char kAccessibilityServiceDescription[] =
     "This option enables the experimental Accessibility Service and runs some "

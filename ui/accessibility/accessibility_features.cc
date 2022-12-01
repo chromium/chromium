@@ -174,14 +174,6 @@ bool IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled() {
       ::features::kExperimentalAccessibilitySelectToSpeakVoiceSwitching);
 }
 
-BASE_FEATURE(kEnhancedNetworkVoices,
-             "EnhancedNetworkVoices",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsEnhancedNetworkVoicesEnabled() {
-  return base::FeatureList::IsEnabled(::features::kEnhancedNetworkVoices);
-}
-
 BASE_FEATURE(kExperimentalAccessibilityColorEnhancementSettings,
              "ExperimentalAccessibilityColorEnhancementSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -262,7 +262,6 @@ chrome.accessibilityPrivate.AcceleratorAction = {
  * @enum {string}
  */
 chrome.accessibilityPrivate.AccessibilityFeature = {
-  ENHANCED_NETWORK_VOICES: 'enhancedNetworkVoices',
   GOOGLE_TTS_LANGUAGE_PACKS: 'googleTtsLanguagePacks',
   DICTATION_PUMPKIN_PARSING: 'dictationPumpkinParsing',
   SELECT_TO_SPEAK_VOICE_SWITCHING: 'selectToSpeakVoiceSwitching',

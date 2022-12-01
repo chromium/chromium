@@ -130,10 +130,10 @@ class AccessibilityPrivateApiFeatureTest : public AccessibilityPrivateApiTest {
     AccessibilityPrivateApiTest::SetUpCommandLine(command_line);
     if (enabled) {
       scoped_feature_list_.InitAndEnableFeature(
-          ::features::kEnhancedNetworkVoices);
+          ::features::kExperimentalAccessibilityDictationMoreCommands);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          ::features::kEnhancedNetworkVoices);
+          ::features::kExperimentalAccessibilityDictationMoreCommands);
     }
   }
 

@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -46,10 +47,10 @@ class AccessibilityLiveSiteTest : public InProcessBrowserTest {
     host_resolver()->AllowDirectLookup("*.google.com");
     host_resolver()->AllowDirectLookup("*.gstatic.com");
 
-    // TODO (accessibility): Provide a way to disable the pop up dialog.
-    // Disable kEnhancedNetworkVoices to avoid its pop up dialog.
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kEnhancedNetworkVoices);
+    // Pretend that enhanced network voices dialog has been accepted so that the
+    // dialog does not block.
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown, true);
 
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }

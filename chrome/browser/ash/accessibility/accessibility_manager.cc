@@ -1888,8 +1888,7 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
           ->extension_service()
           ->component_loader();
 
-  if (!::features::IsEnhancedNetworkVoicesEnabled() ||
-      component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId))
+  if (component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId))
     return;
 
   base::FilePath resources_path;

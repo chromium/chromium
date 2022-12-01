@@ -6850,10 +6850,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRgbKeyboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kRgbKeyboard)},
 
-    {"enhanced-network-voices", flag_descriptions::kEnhancedNetworkVoicesName,
-     flag_descriptions::kEnhancedNetworkVoicesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kEnhancedNetworkVoices)},
-
     {"enable-accessibility-service",
      flag_descriptions::kAccessibilityServiceName,
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,

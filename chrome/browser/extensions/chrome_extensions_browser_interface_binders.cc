@@ -229,8 +229,7 @@ void PopulateChromeFrameBindersForExtension(
   }
 
   // Limit the binding to EnhancedNetworkTts Extension.
-  if (features::IsEnhancedNetworkVoicesEnabled() &&
-      extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId) {
+  if (extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId) {
     binder_map->Add<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>(
         base::BindRepeating(&BindEnhancedNetworkTts));
   }

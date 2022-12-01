@@ -3468,11 +3468,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enhanced-network-voices",
-    "owners": ["joelriley@google.com", "ajitnarayanan@google.com"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "ev-details-in-page-info",
     "owners": [ "cthomp" ],
     "expiry_milestone": 83
