@@ -313,7 +313,9 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   EXPECT_FALSE(state_b.has_value());
 }
 
-IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
+// TODO(crbug.com/1395177): Reenable when flakiness is fixed.
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
+                       DISABLED_MultipleSiteStoragesRecorded) {
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
 
