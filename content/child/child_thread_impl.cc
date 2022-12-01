@@ -469,13 +469,6 @@ ChildThreadImpl::Options::Builder::ConnectToBrowser(
 }
 
 ChildThreadImpl::Options::Builder&
-ChildThreadImpl::Options::Builder::AddStartupFilter(
-    IPC::MessageFilter* filter) {
-  options_.startup_filters.push_back(filter);
-  return *this;
-}
-
-ChildThreadImpl::Options::Builder&
 ChildThreadImpl::Options::Builder::IPCTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_parms) {
   options_.ipc_task_runner = ipc_task_runner_parms;
@@ -688,10 +681,6 @@ void ChildThreadImpl::Init(const Options& options) {
 
   // Add filters passed here via options.
   if (options.with_legacy_ipc_channel) {
-    for (auto* startup_filter : options.startup_filters) {
-      channel_->AddFilter(startup_filter);
-    }
-
     DCHECK(legacy_ipc_bootstrap_pipe.is_valid());
     channel_->Init(IPC::ChannelMojo::CreateClientFactory(
                        std::move(legacy_ipc_bootstrap_pipe),
@@ -700,8 +689,6 @@ void ChildThreadImpl::Init(const Options& options) {
                            ? ipc_task_runner_
                            : base::SingleThreadTaskRunner::GetCurrentDefault()),
                    /*create_pipe_now=*/true);
-  } else {
-    DCHECK(options.startup_filters.empty());
   }
 
   DCHECK(child_process_pipe_for_receiver.is_valid());

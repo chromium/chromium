@@ -42,7 +42,6 @@
 #endif
 
 namespace IPC {
-class MessageFilter;
 class SyncChannel;
 class SyncMessageFilter;
 }  // namespace IPC
@@ -252,7 +251,6 @@ struct ChildThreadImpl::Options {
   bool with_legacy_ipc_channel = true;
   bool connect_to_browser = false;
   scoped_refptr<base::SingleThreadTaskRunner> browser_process_io_runner;
-  std::vector<IPC::MessageFilter*> startup_filters;
   raw_ptr<mojo::OutgoingInvitation> mojo_invitation = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner;
 
@@ -280,7 +278,6 @@ class ChildThreadImpl::Options::Builder {
   Builder& InBrowserProcess(const InProcessChildThreadParams& params);
   Builder& ConnectToBrowser(bool connect_to_browser);
   Builder& WithLegacyIPCChannel(bool with_legacy_ipc_channel);
-  Builder& AddStartupFilter(IPC::MessageFilter* filter);
   Builder& IPCTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
   Builder& ServiceBinder(ServiceBinder binder);
