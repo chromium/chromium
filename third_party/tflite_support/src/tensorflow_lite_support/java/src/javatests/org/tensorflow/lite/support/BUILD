@@ -2,6 +2,7 @@ load("@build_bazel_rules_android//android:rules.bzl", "android_library", "androi
 load("//tensorflow_lite_support/tools/build_rules/android_test:android_library_instrumentation_tests.bzl", "android_library_instrumentation_tests")
 
 package(
+    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_testonly = 1,
 )
 

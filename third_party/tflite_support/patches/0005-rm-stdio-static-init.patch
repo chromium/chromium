@@ -1,6 +1,6 @@
-From 98b4665a7fcd012ede2fcc562c1595f44c4ad5d0 Mon Sep 17 00:00:00 2001
+From 2128f5cac7b3d345608b4dca865cc8f73b757af9 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Mon, 24 Oct 2022 14:06:59 -0700
+Date: Wed, 30 Nov 2022 10:24:12 -0800
 Subject: [PATCH 05/14] rm stdio static init
 
 ---
@@ -34,5 +34,5 @@ index dfdbddaf4b92f..0ec88d5bd1846 100644
  using ::tflite::proto::ComputeSettings;
  using ::tflite::support::CreateStatusWithPayload;
 -- 
-2.38.0.135.g90850a2211-goog
+2.38.1.584.g0f3c55d4c2-goog
 

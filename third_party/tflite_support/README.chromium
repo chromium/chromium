@@ -1,8 +1,8 @@
 Name: TensorFlow Lite Support
 Short Name: tflite-support
 URL: https://github.com/tensorflow/tflite-support
-Version: 1407175b715d29c6901bfcf5c81fa119711911aa
-Date: 2022/10/24
+Version: 15cf9c5fb28fdd4d83302b5118119f578cd7b9d4
+Date: 2022/11/30
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes

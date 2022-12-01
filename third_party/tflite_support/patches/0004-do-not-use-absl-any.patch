@@ -1,6 +1,6 @@
-From 0c24aa845f9d1d51c954aba54d483d71a4e0bd63 Mon Sep 17 00:00:00 2001
+From 6ce4a4268a42bc615683aa3178386093255c0a32 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Mon, 24 Oct 2022 14:06:42 -0700
+Date: Wed, 30 Nov 2022 10:24:10 -0800
 Subject: [PATCH 04/14] do not use absl any
 
 ---
@@ -60,5 +60,5 @@ index 344879341479f..77a41e081b72b 100644
    Format format_;
    Orientation orientation_;
 -- 
-2.38.0.135.g90850a2211-goog
+2.38.1.584.g0f3c55d4c2-goog
 

@@ -31,14 +31,18 @@ NS_ASSUME_NONNULL_BEGIN
  * tflite::task::vision::FrameBuffer is used by the TFLite Task Vision C++
  * library to hold the backing buffer of any image.
  *
+ * @param buffer Pointer to the memory location where underlying pixel buffer
+ * of the image should be saved.
+ *
  * @param error Pointer to the memory location where errors if any should be
  * saved. If @c NULL, no error will be saved.
  *
  * @return The FrameBuffer created from the gmlImage which can be used with the
  * TF Lite Task Vision C++ library. @c NULL in case of an error.
  */
-- (std::unique_ptr<tflite::task::vision::FrameBuffer>)cppFrameBufferWithError:
-    (NSError* _Nullable*)error;
+- (std::unique_ptr<tflite::task::vision::FrameBuffer>)
+    cppFrameBufferWithUnderlyingBuffer:(uint8_t**)buffer
+                                 error:(NSError* _Nullable*)error;
 
 @end
 

@@ -1,6 +1,6 @@
-From e0b50118070fab8004ddf5a29e4c18787aae448c Mon Sep 17 00:00:00 2001
+From 56f09c46b453801bc80ba8fc95992bc7e1093703 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Mon, 24 Oct 2022 14:19:23 -0700
+Date: Wed, 30 Nov 2022 10:25:02 -0800
 Subject: [PATCH 12/14] remove whitespace tokenizer
 
 ---
@@ -42,5 +42,5 @@ diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/k
 deleted file mode 100644
 index 70de237a22dad..0000000000000
 -- 
-2.38.0.135.g90850a2211-goog
+2.38.1.584.g0f3c55d4c2-goog
 

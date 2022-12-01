@@ -1,9 +1,17 @@
 # TFLite Support is a toolkit that helps users to develop ML and deploy TFLite
 # models onto mobile devices.
 
+load("//tools/build_defs/license:license.bzl", "license")
+
 package(
+    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = ["//visibility:private"],
     licenses = ["notice"],  # Apache 2.0
+)
+
+license(
+    name = "license",
+    package_name = "tensorflow_lite_support",
 )
 
 exports_files(["LICENSE"])

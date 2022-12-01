@@ -1,6 +1,6 @@
-From 0ad1dc1dc8793745d9da9bb4a85d82da70305c4e Mon Sep 17 00:00:00 2001
+From d72941f909db19928e22675859351ac146eab97f Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Mon, 24 Oct 2022 14:20:17 -0700
+Date: Wed, 30 Nov 2022 10:25:37 -0800
 Subject: [PATCH 14/14] run clang-format
 
 ---
@@ -68,7 +68,7 @@ Subject: [PATCH 14/14] run clang-format
  .../cc/task/processor/processor.h             |    5 +-
  .../cc/task/processor/regex_preprocessor.cc   |    3 +-
  .../cc/task/processor/regex_preprocessor.h    |    3 +-
- .../cc/task/processor/search_postprocessor.cc |    7 +-
+ .../cc/task/processor/search_postprocessor.cc |    5 +-
  .../cc/task/processor/search_postprocessor.h  |    3 +-
  .../cc/task/text/bert_clu_annotator.cc        |    4 +-
  .../cc/task/text/bert_nl_classifier.cc        |    3 +-
@@ -261,12 +261,12 @@ Subject: [PATCH 14/14] run clang-format
  .../task/vision/sources/TFLImageClassifier.h  |   90 +-
  .../task/vision/sources/TFLImageClassifier.m  |   58 +-
  .../task/vision/sources/TFLImageSearcher.h    |  105 +-
- .../task/vision/sources/TFLImageSearcher.mm   |   52 +-
+ .../task/vision/sources/TFLImageSearcher.mm   |   58 +-
  .../task/vision/sources/TFLImageSegmenter.h   |   62 +-
  .../task/vision/sources/TFLImageSegmenter.m   |   49 +-
  .../task/vision/sources/TFLObjectDetector.h   |   64 +-
  .../task/vision/sources/TFLObjectDetector.m   |   54 +-
- .../vision/utils/sources/GMLImage+CppUtils.h  |    2 +-
+ .../vision/utils/sources/GMLImage+CppUtils.h  |    4 +-
  .../vision/utils/sources/GMLImage+CppUtils.mm |   10 +-
  .../vision/utils/sources/GMLImage+Utils.h     |   10 +-
  .../vision/utils/sources/GMLImage+Utils.m     |  190 +-
@@ -472,7 +472,7 @@ Subject: [PATCH 14/14] run clang-format
  .../leveldb_testing_utils_py_wrapper.cc       |   14 +-
  .../src/third_party/fft2d/fft.h               |   12 +-
  .../src/third_party/fft2d/fft2d.h             |   12 +-
- 468 files changed, 20717 insertions(+), 19711 deletions(-)
+ 468 files changed, 20719 insertions(+), 19715 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc
 index 9f27f3baae82f..6a16d12856258 100644
@@ -2831,20 +2831,18 @@ index 1f92bcc18e524..bdd4e5e207a12 100644
    absl::Status Preprocess(const std::string& text);
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.cc
-index fb34eea170ad8..919165a1d525a 100644
+index fb34eea170ad8..ec20e8964854e 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/search_postprocessor.cc
-@@ -23,8 +23,8 @@ limitations under the License.
+@@ -23,7 +23,7 @@ limitations under the License.
  #include <optional>
  #include <vector>
  
 -#include "absl/status/status.h"  // from @com_google_absl
--#include "absl/strings/str_format.h"  // from @com_google_absl
-+#include "absl/status/status.h"        // from @com_google_absl
-+#include "absl/strings/str_format.h"   // from @com_google_absl
++#include "absl/status/status.h"       // from @com_google_absl
+ #include "absl/strings/str_format.h"  // from @com_google_absl
  #include "absl/strings/string_view.h"  // from @com_google_absl
  #include "tensorflow_lite_support/cc/common.h"
- #include "tensorflow_lite_support/cc/port/status_macros.h"
 @@ -88,7 +88,8 @@ StatusOr<absl::string_view> GetIndexFileContentFromMetadata(
  
  /* static */
@@ -13323,7 +13321,7 @@ index 772c870427975..cc04977cf4a80 100644
  
  - (instancetype)init NS_UNAVAILABLE;
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.mm b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.mm
-index f367fb32efdbe..d0a9e88d8a6f2 100644
+index 9eb82c7e38fbf..e4e58bbd8fca4 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.mm
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/sources/TFLImageSearcher.mm
 @@ -50,7 +50,7 @@ using ::tflite::support::StatusOr;
@@ -13397,21 +13395,28 @@ index f367fb32efdbe..d0a9e88d8a6f2 100644
    if (!image) {
      [TFLCommonUtils createCustomError:error
                               withCode:TFLSupportErrorCodeInvalidArgumentError
-@@ -108,20 +115,23 @@ using ::tflite::support::StatusOr;
+@@ -108,26 +115,28 @@ using ::tflite::support::StatusOr;
      return nil;
    }
  
--  std::unique_ptr<FrameBufferCpp> cppFrameBuffer = [image cppFrameBufferWithError:error];
+-  uint8_t *buffer = nil;
+-  std::unique_ptr<FrameBufferCpp> cppFrameBuffer = [image cppFrameBufferWithUnderlyingBuffer:&buffer
+-                                                                                       error:error];
++  uint8_t* buffer = nil;
 +  std::unique_ptr<FrameBufferCpp> cppFrameBuffer =
-+      [image cppFrameBufferWithError:error];
++      [image cppFrameBufferWithUnderlyingBuffer:&buffer error:error];
  
    if (!cppFrameBuffer) {
+     free(buffer);
      return nil;
    }
  
 -  StatusOr<SearchResultCpp> cppSearchResultStatus = _cppImageSearcher->Search(*cppFrameBuffer);
 +  StatusOr<SearchResultCpp> cppSearchResultStatus =
 +      _cppImageSearcher->Search(*cppFrameBuffer);
+ 
+   // Free the underlying buffer
+   free(buffer);
  
 -  return [TFLSearchResult searchResultWithCppResult:cppSearchResultStatus error:error];
 +  return [TFLSearchResult searchResultWithCppResult:cppSearchResultStatus
@@ -13427,19 +13432,22 @@ index f367fb32efdbe..d0a9e88d8a6f2 100644
    if (!image) {
      [TFLCommonUtils createCustomError:error
                               withCode:TFLSupportErrorCodeInvalidArgumentError
-@@ -129,7 +139,8 @@ using ::tflite::support::StatusOr;
+@@ -135,9 +144,9 @@ using ::tflite::support::StatusOr;
      return nil;
    }
  
--  std::unique_ptr<FrameBufferCpp> cppFrameBuffer = [image cppFrameBufferWithError:error];
+-  uint8_t *buffer = nil;
+-  std::unique_ptr<FrameBufferCpp> cppFrameBuffer = [image cppFrameBufferWithUnderlyingBuffer:&buffer
+-                                                                                       error:error];
++  uint8_t* buffer = nil;
 +  std::unique_ptr<FrameBufferCpp> cppFrameBuffer =
-+      [image cppFrameBufferWithError:error];
++      [image cppFrameBufferWithUnderlyingBuffer:&buffer error:error];
  
    if (!cppFrameBuffer) {
-     return nil;
-@@ -144,6 +155,7 @@ using ::tflite::support::StatusOr;
-   StatusOr<SearchResultCpp> cppSearchResultStatus =
-       _cppImageSearcher->Search(*cppFrameBuffer, regionOfInterest);
+     free(buffer);
+@@ -156,6 +165,7 @@ using ::tflite::support::StatusOr;
+   // Free the underlying buffer
+   free(buffer);
  
 -  return [TFLSearchResult searchResultWithCppResult:cppSearchResultStatus error:error];
 +  return [TFLSearchResult searchResultWithCppResult:cppSearchResultStatus
@@ -13925,42 +13933,44 @@ index 31cb241a2a448..def2e5b0b4877 100644
      return nil;
    }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.h b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.h
-index f5b38903a88ee..77db225f7f34a 100644
+index b33f814bc7873..72821024414d3 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.h
-@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
+@@ -41,8 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
   * TF Lite Task Vision C++ library. @c NULL in case of an error.
   */
- - (std::unique_ptr<tflite::task::vision::FrameBuffer>)cppFrameBufferWithError:
--    (NSError *_Nullable *)error;
-+    (NSError* _Nullable*)error;
+ - (std::unique_ptr<tflite::task::vision::FrameBuffer>)
+-    cppFrameBufferWithUnderlyingBuffer:(uint8_t **)buffer
+-                                 error:(NSError *_Nullable *)error;
++    cppFrameBufferWithUnderlyingBuffer:(uint8_t**)buffer
++                                 error:(NSError* _Nullable*)error;
  
  @end
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.mm b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.mm
-index 123e8d3893e0b..72a82922e5878 100644
+index b25ab5aa7db57..fe8bca8c86198 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.mm
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/ios/task/vision/utils/sources/GMLImage+CppUtils.mm
-@@ -26,8 +26,8 @@ using ::tflite::support::StatusOr;
- 
+@@ -27,8 +27,8 @@ using ::tflite::support::StatusOr;
  @implementation GMLImage (CppUtils)
  
--- (std::unique_ptr<FrameBufferCpp>)cppFrameBufferWithError:(NSError **)error {
--  uint8_t *buffer = [self bufferWithError:error];
-+- (std::unique_ptr<FrameBufferCpp>)cppFrameBufferWithError:(NSError**)error {
-+  uint8_t* buffer = [self bufferWithError:error];
+ - (std::unique_ptr<tflite::task::vision::FrameBuffer>)
+-    cppFrameBufferWithUnderlyingBuffer:(uint8_t **)buffer
+-                                 error:(NSError *_Nullable *)error {
++    cppFrameBufferWithUnderlyingBuffer:(uint8_t**)buffer
++                                 error:(NSError* _Nullable*)error {
+   *buffer = [self bufferWithError:error];
  
    if (!buffer) {
-     return NULL;
-@@ -36,9 +36,9 @@ using ::tflite::support::StatusOr;
+@@ -38,9 +38,9 @@ using ::tflite::support::StatusOr;
    CGSize bitmapSize = self.bitmapSize;
    FrameBufferCpp::Format frame_buffer_format = FrameBufferCpp::Format::kRGB;
  
 -  StatusOr<std::unique_ptr<FrameBufferCpp>> frameBuffer =
--      CreateFromRawBuffer(buffer, {(int)bitmapSize.width, (int)bitmapSize.height},
+-      CreateFromRawBuffer(*buffer, {(int)bitmapSize.width, (int)bitmapSize.height},
 -                          frame_buffer_format, FrameBufferCpp::Orientation::kTopLeft);
 +  StatusOr<std::unique_ptr<FrameBufferCpp>> frameBuffer = CreateFromRawBuffer(
-+      buffer, {(int)bitmapSize.width, (int)bitmapSize.height},
++      *buffer, {(int)bitmapSize.width, (int)bitmapSize.height},
 +      frame_buffer_format, FrameBufferCpp::Orientation::kTopLeft);
  
    if (![TFLCommonCppUtils checkCppError:frameBuffer.status() toError:error]) {
@@ -44371,7 +44381,7 @@ index 94ae06f30e6a6..ff8ebc52ce88a 100644
      // Should never happen, because VerifyModelMetadataBuffer has verified it.
      TFLITE_LOG(FATAL) << "The ModelMetadata object is null.";
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc
-index 3dac8c24af942..392b6b411fe03 100644
+index 65a4638a868ad..525ae4a2b45bd 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc
 @@ -41,14 +41,17 @@ zlib_filefunc64_def& ZipReadOnlyMemFile::GetFileFunc64Def() {
@@ -54879,5 +54889,5 @@ index d587b3b441ce2..d79441827d54c 100644
  #ifdef __cplusplus
  }
 -- 
-2.38.0.135.g90850a2211-goog
+2.38.1.584.g0f3c55d4c2-goog
 

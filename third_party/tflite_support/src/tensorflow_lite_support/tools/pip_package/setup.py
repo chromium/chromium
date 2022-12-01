@@ -50,7 +50,7 @@ from setuptools.dist import Distribution
 # This version string is semver compatible, but incompatible with pip.
 # For pip, we will remove all '-' characters from this string, and use the
 # result for pip.
-_VERSION = '0.4.2'
+_VERSION = '0.4.4'
 
 SETUP_PACKAGES = [
     'pybind11 >= 2.6.0',

@@ -6,6 +6,7 @@ load("@org_tensorflow//tensorflow:tensorflow.bzl", "tf_gen_op_wrapper_py")
 load(":native.bzl", "micore_tf_copts", "micore_tf_deps")
 
 package(
+    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//tensorflow_lite_support:users",
     ],

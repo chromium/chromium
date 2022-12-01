@@ -1,6 +1,7 @@
 load("//tensorflow_lite_support/python/task:build_defs.bzl", "pybind_extension_may_pack_coral")
 
 package(
+    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//tensorflow_lite_support:internal",
     ],

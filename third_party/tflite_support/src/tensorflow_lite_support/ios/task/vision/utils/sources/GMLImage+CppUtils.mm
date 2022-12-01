@@ -26,8 +26,10 @@ using ::tflite::support::StatusOr;
 
 @implementation GMLImage (CppUtils)
 
-- (std::unique_ptr<FrameBufferCpp>)cppFrameBufferWithError:(NSError**)error {
-  uint8_t* buffer = [self bufferWithError:error];
+- (std::unique_ptr<tflite::task::vision::FrameBuffer>)
+    cppFrameBufferWithUnderlyingBuffer:(uint8_t**)buffer
+                                 error:(NSError* _Nullable*)error {
+  *buffer = [self bufferWithError:error];
 
   if (!buffer) {
     return NULL;
@@ -37,7 +39,7 @@ using ::tflite::support::StatusOr;
   FrameBufferCpp::Format frame_buffer_format = FrameBufferCpp::Format::kRGB;
 
   StatusOr<std::unique_ptr<FrameBufferCpp>> frameBuffer = CreateFromRawBuffer(
-      buffer, {(int)bitmapSize.width, (int)bitmapSize.height},
+      *buffer, {(int)bitmapSize.width, (int)bitmapSize.height},
       frame_buffer_format, FrameBufferCpp::Orientation::kTopLeft);
 
   if (![TFLCommonCppUtils checkCppError:frameBuffer.status() toError:error]) {
