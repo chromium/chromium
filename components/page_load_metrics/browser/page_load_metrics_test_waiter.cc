@@ -132,8 +132,8 @@ std::string PageLoadMetricsTestWaiter::TimingFieldBitSet::ToDebugString()
   if (ContainsTimingField(TimingField::kTotalInputDelay))
     debug_string += "TotalInputDelay|";
 
-  if (ContainsTimingField(TimingField::kFirstContentfulPaint))
-    debug_string += "FirstContentfulPaint|";
+  if (ContainsTimingField(TimingField::kFirstScrollDelay))
+    debug_string += "FirstScrollDelay|";
 
   if (ContainsTimingField(TimingField::kLoadEvent))
     debug_string += "LoadEvent|";
