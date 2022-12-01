@@ -37,6 +37,7 @@
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
+#include "headless/lib/browser/directory_enumerator.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
@@ -187,6 +188,12 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     return headless_web_contents_->browser_context()
         ->options()
         ->block_new_web_contents();
+  }
+
+  void EnumerateDirectory(content::WebContents* web_contents,
+                          scoped_refptr<content::FileSelectListener> listener,
+                          const base::FilePath& path) override {
+    DirectoryEnumerator::Start(path, std::move(listener));
   }
 
   void RequestToLockMouse(content::WebContents* web_contents,

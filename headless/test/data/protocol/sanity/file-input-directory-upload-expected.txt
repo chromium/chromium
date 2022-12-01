@@ -1,0 +1,5 @@
+Tests DOM.setFileInfo method.
+file1.txt: test1
+------------------
+file2.txt: test2
+------------------

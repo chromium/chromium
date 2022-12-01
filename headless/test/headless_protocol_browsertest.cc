@@ -130,8 +130,7 @@ void HeadlessProtocolBrowserTest::OnLoadEventFired(
 
   std::string json_test_params;
   base::JSONWriter::Write(test_params, &json_test_params);
-  std::string evaluate_script =
-      "runTest(JSON.parse('" + json_test_params + "'))";
+  std::string evaluate_script = "runTest(" + json_test_params + ")";
 
   base::Value::Dict evaluate_params;
   evaluate_params.Set("expression", evaluate_script);
@@ -375,22 +374,20 @@ HEADLESS_PROTOCOL_TEST_WITH_PROXY(BrowserSetProxyConfig,
 
 // TODO(crbug.com/1086872): The whole test suite is flaky on Mac ASAN.
 #if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
-#define HEADLESS_PROTOCOL_TEST_WITHOUT_SITE_ISOLATION(TEST_NAME, SCRIPT_NAME) \
-  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithoutSiteIsolation,     \
-                         DISABLED_##TEST_NAME) {                              \
-    test_folder_ = "/protocol/";                                              \
-    script_name_ = SCRIPT_NAME;                                               \
-    RunTest();                                                                \
-  }
+#define MAYBE_IN_PROC_BROWSER_TEST_F(CLASS, TEST_NAME) \
+  IN_PROC_BROWSER_TEST_F(CLASS, DISABLED_##TEST_NAME)
 #else
+#define MAYBE_IN_PROC_BROWSER_TEST_F(CLASS, TEST_NAME) \
+  IN_PROC_BROWSER_TEST_F(CLASS, TEST_NAME)
+#endif
+
 #define HEADLESS_PROTOCOL_TEST_WITHOUT_SITE_ISOLATION(TEST_NAME, SCRIPT_NAME) \
-  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithoutSiteIsolation,     \
-                         TEST_NAME) {                                         \
+  MAYBE_IN_PROC_BROWSER_TEST_F(                                               \
+      HeadlessProtocolBrowserTestWithoutSiteIsolation, TEST_NAME) {           \
     test_folder_ = "/protocol/";                                              \
     script_name_ = SCRIPT_NAME;                                               \
     RunTest();                                                                \
   }
-#endif
 
 class HeadlessProtocolBrowserTestWithoutSiteIsolation
     : public HeadlessProtocolBrowserTest {
@@ -404,5 +401,35 @@ class HeadlessProtocolBrowserTestWithoutSiteIsolation
 HEADLESS_PROTOCOL_TEST_WITHOUT_SITE_ISOLATION(
     VirtualTimeLocalStorageDetachedFrame,
     "emulation/virtual-time-local-storage-detached-frame.js")
+
+class HeadlessProtocolBrowserTestWithDataPath
+    : public HeadlessProtocolBrowserTest {
+ protected:
+  base::Value::Dict GetPageUrlExtraParams() override {
+    base::FilePath src_dir;
+    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
+    base::FilePath path =
+        src_dir.Append(kTestsDirectory).AppendASCII(data_path_);
+    base::Value::Dict dict;
+    dict.Set("data_path", path.AsUTF8Unsafe());
+    return dict;
+  }
+
+  std::string data_path_;
+};
+
+#define HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(TEST_NAME, SCRIPT_NAME, PATH) \
+  MAYBE_IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithDataPath,     \
+                               TEST_NAME) {                                 \
+    test_folder_ = "/protocol/";                                            \
+    script_name_ = SCRIPT_NAME;                                             \
+    data_path_ = PATH;                                                      \
+    RunTest();                                                              \
+  }
+
+HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(
+    FileInputDirectoryUpload,
+    "sanity/file-input-directory-upload.js",
+    "sanity/resources/file-input-directory-upload")
 
 }  // namespace headless

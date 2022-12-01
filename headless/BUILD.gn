@@ -372,6 +372,8 @@ source_set("headless_shared_sources") {
 # Code that is not needed in a renderer process.
 component("headless_non_renderer") {
   sources = [
+    "lib/browser/directory_enumerator.cc",
+    "lib/browser/directory_enumerator.h",
     "lib/browser/headless_browser_context_impl.cc",
     "lib/browser/headless_browser_context_impl.h",
     "lib/browser/headless_browser_context_options.cc",
