@@ -141,9 +141,10 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, DontOverrideManifest) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetCustomAppIconAndNameItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   // Policy is for kInstallUrl, but we pretend to get a manifest
   // from kStartUrl.
@@ -161,9 +162,10 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetCustomAppNameItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kInstallUrl)));
   blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
@@ -178,9 +180,10 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetCustomAppIconItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kInstallUrl)));
   blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
@@ -200,9 +203,10 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
       WebAppProvider::GetForTest(profile())->policy_manager();
 
   // Set policy:
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetCustomAppIconAndNameItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   // Create manifest:
   blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();

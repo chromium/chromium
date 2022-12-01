@@ -530,8 +530,8 @@ TEST_P(WebAppPolicyManagerTest, NoPrefValues) {
 TEST_P(WebAppPolicyManagerTest, NoForceInstalledApps) {
   if (ShouldSkipPWASpecificTest())
     return;
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
-                             base::Value(base::Value::Type::LIST));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 base::Value::List());
 
   base::RunLoop().RunUntilIdle();
 
@@ -547,8 +547,7 @@ TEST_P(WebAppPolicyManagerTest, NoWebAppSettings) {
   base::RunLoop loop;
   policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
       loop.QuitClosure());
-  profile()->GetPrefs()->Set(prefs::kWebAppSettings,
-                             base::Value(base::Value::Type::LIST));
+  profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
   loop.Run();
 
   ValidateEmptyWebAppSettingsPolicy();
@@ -663,10 +662,11 @@ TEST_P(WebAppPolicyManagerTest, TwoForceInstalledApps) {
   if (ShouldSkipPWASpecificTest())
     return;
   // Add two sites, one that opens in a window and one that opens in a tab.
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetWindowedItem());
   list.Append(GetTabbedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -683,9 +683,10 @@ TEST_P(WebAppPolicyManagerTest, TwoForceInstalledApps) {
 TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithNoDefaultLaunchContainer) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetNoContainerItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -702,9 +703,10 @@ TEST_P(WebAppPolicyManagerTest,
        ForceInstallAppWithDefaultCreateDesktopShortcut) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetCreateDesktopShortcutDefaultItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -721,10 +723,11 @@ TEST_P(WebAppPolicyManagerTest,
 TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCreateDesktopShortcut) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetCreateDesktopShortcutFalseItem());
   list.Append(GetCreateDesktopShortcutTrueItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -743,9 +746,10 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCreateDesktopShortcut) {
 TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetFallbackAppNameItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -762,9 +766,10 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {
 TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppIcon) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetCustomAppIconItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -781,9 +786,10 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppIcon) {
 TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithUnsecureCustomAppIcon) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetCustomAppIconItem(/*secure=*/false));
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -800,9 +806,10 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithUnsecureCustomAppIcon) {
 TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppName) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetCustomAppNameItem(kDefaultCustomAppName));
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -824,16 +831,18 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppNameRefresh) {
 
   // Add app
   {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(GetCustomAppNameItem(kDefaultCustomAppName));
-    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+    profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                   std::move(list));
   }
   base::RunLoop().RunUntilIdle();
   // Change custom name
   {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(GetCustomAppNameItem(kPrefix + kDefaultCustomAppName));
-    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+    profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                   std::move(list));
   }
   base::RunLoop().RunUntilIdle();
 
@@ -863,10 +872,10 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppNameRefresh) {
 TEST_P(WebAppPolicyManagerTest, DynamicRefresh) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value first_list(base::Value::Type::LIST);
+  base::Value::List first_list;
   first_list.Append(GetWindowedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
-                             std::move(first_list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(first_list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -878,10 +887,10 @@ TEST_P(WebAppPolicyManagerTest, DynamicRefresh) {
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 
-  base::Value second_list(base::Value::Type::LIST);
+  base::Value::List second_list;
   second_list.Append(GetTabbedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
-                             std::move(second_list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(second_list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -903,10 +912,10 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
                                  ExternalInstallSource::kInternalDefault);
 
   // Push a policy with only one of the apps.
-  base::Value first_list(base::Value::Type::LIST);
+  base::Value::List first_list;
   first_list.Append(GetWindowedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
-                             std::move(first_list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(first_list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -929,11 +938,11 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
   base::RunLoop().RunUntilIdle();
 
   // Add two sites, one that opens in a window and one that opens in a tab.
-  base::Value first_list(base::Value::Type::LIST);
+  base::Value::List first_list;
   first_list.Append(GetWindowedItem());
   first_list.Append(GetTabbedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
-                             std::move(first_list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(first_list));
   base::RunLoop().RunUntilIdle();
 
   const auto& install_requests =
@@ -946,10 +955,10 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
   EXPECT_EQ(install_requests, expected_install_options_list);
 
   // Push a new policy without the tabbed site.
-  base::Value second_list(base::Value::Type::LIST);
+  base::Value::List second_list;
   second_list.Append(GetWindowedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
-                             std::move(second_list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(second_list));
   base::RunLoop().RunUntilIdle();
 
   // We'll try to install the app again but ExternallyManagedAppManager will
@@ -966,9 +975,10 @@ TEST_P(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
 TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppSuccess) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetWindowedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -995,9 +1005,10 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppSuccess) {
 TEST_P(WebAppPolicyManagerTest, DoNotReinstallIfNotPlaceholder) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetWindowedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -1022,9 +1033,10 @@ TEST_P(WebAppPolicyManagerTest, DoNotReinstallIfNotPlaceholder) {
 TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetFallbackAppNameItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -1051,9 +1063,10 @@ TEST_P(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
 TEST_P(WebAppPolicyManagerTest, TryToInexistentPlaceholderApp) {
   if (ShouldSkipPWASpecificTest())
     return;
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetWindowedItem());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
 
   base::RunLoop().RunUntilIdle();
 
@@ -1077,15 +1090,17 @@ TEST_P(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
   base::RunLoop().RunUntilIdle();
   // Add an app.
   {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(GetWindowedItem());
-    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+    profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                   std::move(list));
   }
   // Before it gets installed, set a policy that uninstalls it.
   {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(GetTabbedItem());
-    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+    profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                   std::move(list));
   }
   base::RunLoop().RunUntilIdle();
 
@@ -1115,9 +1130,10 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
     return;
   base::HistogramTester histograms;
   {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(GetWindowedItem());
-    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+    profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                   std::move(list));
 
     histograms.ExpectTotalCount(
         WebAppPolicyManager::kInstallResultHistogramName, 0);
@@ -1131,13 +1147,14 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
         webapps::InstallResultCode::kSuccessNewInstall, 1);
   }
   {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(GetTabbedItem());
     list.Append(GetNoContainerItem());
     SetInstallResultCode(
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 
-    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+    profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                   std::move(list));
 
     base::RunLoop().RunUntilIdle();
     histograms.ExpectTotalCount(
@@ -1156,9 +1173,8 @@ TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
   EXPECT_TRUE(disabled_apps.empty());
 
   // Add camera to system features disable list policy.
-  auto disabled_apps_list =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
-  disabled_apps_list->Append(static_cast<int>(policy::SystemFeature::kCamera));
+  base::Value::List disabled_apps_list;
+  disabled_apps_list.Append(static_cast<int>(policy::SystemFeature::kCamera));
   testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
       std::move(disabled_apps_list));
@@ -1175,7 +1191,7 @@ TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
   // Set disable mode to hidden.
   testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableMode,
-      std::make_unique<base::Value>(policy::kHiddenDisableMode));
+      base::Value(policy::kHiddenDisableMode));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden());
 }
@@ -1224,14 +1240,15 @@ TEST_P(WebAppPolicyManagerTest,
   if (ShouldSkipPWASpecificTest())
     return;
   // Add two sites, one that opens in a window and one that opens in a tab.
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetWindowedItem());
   list.Append(GetTabbedItem());
 
   base::RunLoop loop;
   policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
       loop.QuitClosure());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
   loop.Run();
 
   const auto& install_requests =
@@ -1283,14 +1300,15 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
             RunOnOsLoginPolicy::kBlocked);
 
   // Now add two sites, one that opens in a window and one that opens in a tab.
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(GetWindowedItem());
   list.Append(GetTabbedItem());
 
   base::RunLoop force_install_loop;
   policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
       force_install_loop.QuitClosure());
-  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
   force_install_loop.Run();
 
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();

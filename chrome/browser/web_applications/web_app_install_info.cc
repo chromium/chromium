@@ -139,10 +139,10 @@ WebAppShortcutsMenuItemInfo::Icon& WebAppShortcutsMenuItemInfo::Icon::operator=(
     WebAppShortcutsMenuItemInfo::Icon&&) = default;
 
 base::Value WebAppShortcutsMenuItemInfo::Icon::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
-  root.SetStringKey("url", url.spec());
-  root.SetIntKey("square_size_px", square_size_px);
-  return root;
+  base::Value::Dict root;
+  root.Set("url", url.spec());
+  root.Set("square_size_px", square_size_px);
+  return base::Value(std::move(root));
 }
 
 // WebAppShortcutsMenuItemInfo
@@ -192,24 +192,24 @@ void WebAppShortcutsMenuItemInfo::SetShortcutIconInfosForPurpose(
 }
 
 base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value::Dict root;
 
-  root.SetStringKey("name", name);
+  root.Set("name", name);
 
-  root.SetStringKey("url", url.spec());
+  root.Set("url", url.spec());
 
-  base::Value& icons =
-      *root.SetKey("icons", base::Value(base::Value::Type::DICTIONARY));
+  base::Value::Dict icons;
   for (IconPurpose purpose : kIconPurposes) {
-    base::Value& purpose_list = *icons.SetKey(
-        ConvertToString(purpose), base::Value(base::Value::Type::LIST));
+    base::Value::List purpose_list;
     for (const WebAppShortcutsMenuItemInfo::Icon& icon :
          GetShortcutIconInfosForPurpose(purpose)) {
       purpose_list.Append(icon.AsDebugValue());
     }
+    icons.Set(ConvertToString(purpose), std::move(purpose_list));
   }
+  root.Set("icons", std::move(icons));
 
-  return root;
+  return base::Value(std::move(root));
 }
 
 // WebAppInstallInfo
