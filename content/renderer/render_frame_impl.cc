@@ -5176,86 +5176,10 @@ void RenderFrameImpl::BeginNavigation(
     frame_->WillPotentiallyStartOutermostMainFrameNavigation(url);
   }
 
-  if (info->navigation_policy == blink::kWebNavigationPolicyCurrentTab) {
-    // Execute the BeforeUnload event. If asked not to proceed or the frame is
-    // destroyed, ignore the navigation.
-    // Keep a WeakPtr to this RenderFrameHost to detect if executing the
-    // BeforeUnload event destroyed this frame.
-    base::WeakPtr<RenderFrameImpl> weak_self = weak_factory_.GetWeakPtr();
-
-    base::TimeTicks renderer_before_unload_start = base::TimeTicks::Now();
-    if (!frame_->DispatchBeforeUnloadEvent(info->navigation_type ==
-                                           blink::kWebNavigationTypeReload) ||
-        !weak_self) {
-      return;
-    }
-    base::TimeTicks renderer_before_unload_end = base::TimeTicks::Now();
-
-    if (!info->form.IsNull()) {
-      for (auto& observer : observers_)
-        observer.WillSubmitForm(info->form);
-    }
-
-    if (mhtml_body_loader_client_) {
-      mhtml_body_loader_client_->Detach();
-      mhtml_body_loader_client_.reset();
-    }
-
-    // In certain cases, Blink re-navigates to about:blank when creating a new
-    // browsing context (when opening a new window or creating an iframe) and
-    // expects the navigation to complete synchronously.
-    // TODO(https://crbug.com/1215096): Remove the synchronous about:blank
-    // navigation.
-    bool should_do_synchronous_about_blank_navigation =
-        // Mainly a proxy for checking about:blank, even though it can match
-        // other things like about:srcdoc (or any empty document schemes that
-        // are registered).
-        // TODO(https://crbug.com/1215096): Tighten the condition to only accept
-        // about:blank or an empty URL which defaults to about:blank, per the
-        // spec:
-        // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank
-        WebDocumentLoader::WillLoadUrlAsEmpty(url) &&
-        // The navigation method must be "GET". This is to avoid issues like
-        // https://crbug.com/1210653, where a form submits to about:blank
-        // targeting a new window using a POST. The browser never expects this
-        // to happen synchronously because it only expects the synchronous
-        // about:blank navigation to originate from browsing context creation,
-        // which will always be GET requests.
-        info->url_request.HttpMethod().Equals("GET") &&
-        // If the frame has committed or even started a navigation before, this
-        // navigation can't possibly be triggered by browsing context creation,
-        // which would have triggered the navigation synchronously as the first
-        // navigation in this frame. Note that we check both
-        // IsOnInitialEmptyDocument() and `first_navigation_in_render_frame`
-        // here because `first_navigation_in_render_frame` only tracks the state
-        // in this *RenderFrame*, so it will be true even if this navigation
-        // happens on a frame that has existed before in another process (e.g.
-        // an <iframe> pointing to a.com being navigated to a cross-origin
-        // about:blank document that happens in a new frame). Meanwhile,
-        // IsOnInitialEmptyDocument() tracks the state of the frame, so it will
-        // be true in the aforementioned case and we would not do a synchronous
-        // commit here.
-        frame_->IsOnInitialEmptyDocument() &&
-        first_navigation_in_render_frame &&
-        // If this is a subframe history navigation that should be sent to the
-        // browser, don't commit it synchronously.
-        !is_history_navigation_in_new_child_frame;
-
-    if (should_do_synchronous_about_blank_navigation) {
-      for (auto& observer : observers_)
-        observer.DidStartNavigation(url, info->navigation_type);
-      SynchronouslyCommitAboutBlankForBug778318(std::move(info));
-      return;
-    }
-
-    // Everything else is handled asynchronously by the browser process through
-    // BeginNavigation.
-    BeginNavigationInternal(
-        std::move(info), is_history_navigation_in_new_child_frame,
-        renderer_before_unload_start, renderer_before_unload_end);
-    return;
-  }
-
+  // Depending on navigation policy, send one of three IPCs to the browser
+  // process: DownloadURL handles downloads, OpenURL handles all navigations
+  // that will end up in a different tab/window, and BeginNavigation handles
+  // everything else.
   if (info->navigation_policy == blink::kWebNavigationPolicyDownload) {
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token =
         CloneBlobURLToken(info->blob_url_token);
@@ -5263,9 +5187,88 @@ void RenderFrameImpl::BeginNavigation(
     frame_->DownloadURL(info->url_request,
                         network::mojom::RedirectMode::kFollow,
                         std::move(blob_url_token));
-  } else {
-    OpenURL(std::move(info));
+    return;
   }
+  if (info->navigation_policy != blink::kWebNavigationPolicyCurrentTab) {
+    OpenURL(std::move(info));
+    return;
+  }
+
+  // Execute the BeforeUnload event. If asked not to proceed or the frame is
+  // destroyed, ignore the navigation.
+  // Keep a WeakPtr to this RenderFrameHost to detect if executing the
+  // BeforeUnload event destroyed this frame.
+  base::WeakPtr<RenderFrameImpl> weak_self = weak_factory_.GetWeakPtr();
+
+  base::TimeTicks renderer_before_unload_start = base::TimeTicks::Now();
+  if (!frame_->DispatchBeforeUnloadEvent(info->navigation_type ==
+                                         blink::kWebNavigationTypeReload) ||
+      !weak_self) {
+    return;
+  }
+  base::TimeTicks renderer_before_unload_end = base::TimeTicks::Now();
+
+  if (!info->form.IsNull()) {
+    for (auto& observer : observers_)
+      observer.WillSubmitForm(info->form);
+  }
+
+  if (mhtml_body_loader_client_) {
+    mhtml_body_loader_client_->Detach();
+    mhtml_body_loader_client_.reset();
+  }
+
+  // In certain cases, Blink re-navigates to about:blank when creating a new
+  // browsing context (when opening a new window or creating an iframe) and
+  // expects the navigation to complete synchronously.
+  // TODO(https://crbug.com/1215096): Remove the synchronous about:blank
+  // navigation.
+  bool should_do_synchronous_about_blank_navigation =
+      // Mainly a proxy for checking about:blank, even though it can match
+      // other things like about:srcdoc (or any empty document schemes that
+      // are registered).
+      // TODO(https://crbug.com/1215096): Tighten the condition to only accept
+      // about:blank or an empty URL which defaults to about:blank, per the
+      // spec:
+      // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank
+      WebDocumentLoader::WillLoadUrlAsEmpty(url) &&
+      // The navigation method must be "GET". This is to avoid issues like
+      // https://crbug.com/1210653, where a form submits to about:blank
+      // targeting a new window using a POST. The browser never expects this
+      // to happen synchronously because it only expects the synchronous
+      // about:blank navigation to originate from browsing context creation,
+      // which will always be GET requests.
+      info->url_request.HttpMethod().Equals("GET") &&
+      // If the frame has committed or even started a navigation before, this
+      // navigation can't possibly be triggered by browsing context creation,
+      // which would have triggered the navigation synchronously as the first
+      // navigation in this frame. Note that we check both
+      // IsOnInitialEmptyDocument() and `first_navigation_in_render_frame`
+      // here because `first_navigation_in_render_frame` only tracks the state
+      // in this *RenderFrame*, so it will be true even if this navigation
+      // happens on a frame that has existed before in another process (e.g.
+      // an <iframe> pointing to a.com being navigated to a cross-origin
+      // about:blank document that happens in a new frame). Meanwhile,
+      // IsOnInitialEmptyDocument() tracks the state of the frame, so it will
+      // be true in the aforementioned case and we would not do a synchronous
+      // commit here.
+      frame_->IsOnInitialEmptyDocument() && first_navigation_in_render_frame &&
+      // If this is a subframe history navigation that should be sent to the
+      // browser, don't commit it synchronously.
+      !is_history_navigation_in_new_child_frame;
+
+  if (should_do_synchronous_about_blank_navigation) {
+    for (auto& observer : observers_)
+      observer.DidStartNavigation(url, info->navigation_type);
+    SynchronouslyCommitAboutBlankForBug778318(std::move(info));
+    return;
+  }
+
+  // Everything else is handled asynchronously by the browser process through
+  // BeginNavigation.
+  BeginNavigationInternal(
+      std::move(info), is_history_navigation_in_new_child_frame,
+      renderer_before_unload_start, renderer_before_unload_end);
 }
 
 void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
