@@ -1,0 +1,18 @@
+Check that WebAuthn events work
+Registering a credential: OK
+Authenticator ID matches: true
+Credential ID matches: true
+Private key matches: true
+Resident credential: true
+RP ID: devtools.test
+Sign count: 1
+User handle: AQ==
+Getting an assertion: OK
+Authenticator ID matches: true
+Credential ID matches: true
+Private key matches: true
+Resident credential: true
+RP ID: devtools.test
+Sign count: 2
+User handle: AQ==
+

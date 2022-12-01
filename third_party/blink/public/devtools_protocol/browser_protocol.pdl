@@ -10630,6 +10630,18 @@ experimental domain WebAuthn
       AuthenticatorId authenticatorId
       boolean enabled
 
+  # Triggered when a credential is added to an authenticator.
+  event credentialAdded
+    parameters
+      AuthenticatorId authenticatorId
+      Credential credential
+
+  # Triggered when a credential is used in a webauthn assertion.
+  event credentialAsserted
+    parameters
+      AuthenticatorId authenticatorId
+      Credential credential
+
 # This domain allows detailed inspection of media elements
 experimental domain Media
 

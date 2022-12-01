@@ -10,10 +10,9 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
-#include "base/json/string_escape.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -37,7 +36,6 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/opaque_attestation_statement.h"
-#include "device/fido/p256_public_key.h"
 #include "device/fido/pin.h"
 #include "device/fido/pin_internal.h"
 #include "device/fido/public_key.h"
@@ -49,7 +47,6 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
-#include "third_party/boringssl/src/include/openssl/obj.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
@@ -1374,7 +1371,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
       std::move(attestation_cert), sig, std::move(authenticator_data),
       enterprise_attestation_requested, large_blob_key, dpk_sig);
   RegistrationData registration(std::move(private_key), rp_id_hash,
-                                1 /* signature counter */);
+                                /*counter=*/1);
 
   if (request.resident_key_required) {
     // If there's already a registration for this RP and user ID, delete it.
@@ -1780,6 +1777,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       request_state_.pending_assertions.emplace_back(EncodeGetAssertionResponse(
           assertion, config_.allow_invalid_utf8_in_credential_entities));
     }
+    mutable_state()->NotifyAssertion(registration);
   }
 
   return CtapDeviceResponseCode::kSuccess;

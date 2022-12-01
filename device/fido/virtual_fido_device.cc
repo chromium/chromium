@@ -7,8 +7,7 @@
 #include <tuple>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/containers/cxx20_erase.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -21,6 +20,7 @@
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
+#include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -370,6 +370,27 @@ VirtualFidoDevice::State::State()
 }
 VirtualFidoDevice::State::~State() = default;
 
+void VirtualFidoDevice::State::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void VirtualFidoDevice::State::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void VirtualFidoDevice::State::NotifyCredentialCreated(
+    const Credential& credential) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialCreated(credential);
+  }
+}
+
+void VirtualFidoDevice::State::NotifyAssertion(const Credential& credential) {
+  for (Observer& observer : observers_) {
+    observer.OnAssertion(credential);
+  }
+}
+
 bool VirtualFidoDevice::State::InjectRegistration(
     base::span<const uint8_t> credential_id,
     RegistrationData registration) {
@@ -564,8 +585,8 @@ VirtualFidoDevice::GenerateAttestationCertificate(
       {kBasicContraintsOID, /*critical=*/true, kBasicContraintsContents},
   };
   if (include_transports) {
-    extensions.push_back(
-        {kTransportTypesOID, /*critical=*/false, kTransportTypesContents});
+    extensions.emplace_back(kTransportTypesOID, /*critical=*/false,
+                            kTransportTypesContents);
   }
 
   // https://w3c.github.io/webauthn/#sctn-packed-attestation-cert-requirements
@@ -601,11 +622,12 @@ void VirtualFidoDevice::StoreNewKey(
 
   // Store the registration. Because the key handle is the hashed public key we
   // just generated, no way this should already be registered.
-  bool did_insert = false;
-  std::tie(std::ignore, did_insert) = mutable_state()->registrations.emplace(
+  auto result = mutable_state()->registrations.emplace(
       fido_parsing_utils::Materialize(key_handle),
       std::move(registration_data));
-  DCHECK(did_insert);
+  DCHECK(result.second);
+  mutable_state()->NotifyCredentialCreated(
+      std::make_pair(key_handle, &result.first->second));
 }
 
 VirtualFidoDevice::RegistrationData* VirtualFidoDevice::FindRegistrationData(

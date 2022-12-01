@@ -6,9 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
-#include "crypto/ec_private_key.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -35,10 +34,15 @@ VirtualAuthenticator::VirtualAuthenticator(
   // If the authenticator has user verification, simulate having set it up
   // already.
   state_->fingerprints_enrolled = has_user_verification_;
+  observation_.Observe(state_.get());
   SetUserPresence(true);
 }
 
-VirtualAuthenticator::~VirtualAuthenticator() = default;
+VirtualAuthenticator::~VirtualAuthenticator() {
+  for (Observer& observer : observers_) {
+    observer.OnAuthenticatorWillBeDestroyed(this);
+  }
+}
 
 void VirtualAuthenticator::AddReceiver(
     mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticator> receiver) {
@@ -140,6 +144,18 @@ VirtualAuthenticator::ConstructDevice() {
   }
 }
 
+void VirtualAuthenticator::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void VirtualAuthenticator::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool VirtualAuthenticator::HasObserversForTest() {
+  return !observers_.empty();
+}
+
 void VirtualAuthenticator::GetLargeBlob(const std::vector<uint8_t>& key_handle,
                                         GetLargeBlobCallback callback) {
   auto registration = state_->registrations.find(key_handle);
@@ -211,6 +227,19 @@ void VirtualAuthenticator::SetUserVerified(bool verified,
                                            SetUserVerifiedCallback callback) {
   is_user_verified_ = verified;
   std::move(callback).Run();
+}
+
+void VirtualAuthenticator::OnCredentialCreated(
+    const device::VirtualFidoDevice::Credential& credential) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialCreated(this, credential);
+  }
+}
+void VirtualAuthenticator::OnAssertion(
+    const device::VirtualFidoDevice::Credential& credential) {
+  for (Observer& observer : observers_) {
+    observer.OnAssertion(this, credential);
+  }
 }
 
 void VirtualAuthenticator::OnLargeBlobUncompressed(

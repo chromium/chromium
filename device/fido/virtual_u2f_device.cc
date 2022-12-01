@@ -9,20 +9,16 @@
 #include <tuple>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/apdu/apdu_command.h"
 #include "components/apdu/apdu_response.h"
-#include "components/cbor/reader.h"
-#include "components/cbor/values.h"
 #include "crypto/ec_private_key.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/public_key.h"
 
 namespace device {
 
@@ -54,7 +50,7 @@ bool VirtualU2fDevice::IsTransportSupported(FidoTransportProtocol transport) {
                         transport);
 }
 
-VirtualU2fDevice::VirtualU2fDevice() : VirtualFidoDevice() {}
+VirtualU2fDevice::VirtualU2fDevice() = default;
 
 VirtualU2fDevice::VirtualU2fDevice(scoped_refptr<State> state)
     : VirtualFidoDevice(std::move(state)) {
@@ -259,6 +255,7 @@ absl::optional<std::vector<uint8_t>> VirtualU2fDevice::DoSign(
   // Add signature for full response.
   Append(&response, sig);
 
+  mutable_state()->NotifyAssertion(std::make_pair(key_handle, registration));
   return apdu::ApduResponse(std::move(response),
                             apdu::ApduResponse::Status::SW_NO_ERROR)
       .GetEncodedResponse();
