@@ -12,6 +12,7 @@
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/callback_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -116,8 +117,10 @@ class ASH_PUBLIC_EXPORT KeyboardController {
   virtual void AddObserver(KeyboardControllerObserver* observer) = 0;
   virtual void RemoveObserver(KeyboardControllerObserver* observer) = 0;
 
-  // Returns current key repeat settings, derived from the active user's prefs.
-  virtual KeyRepeatSettings GetKeyRepeatSettings() = 0;
+  // Returns current key repeat settings, derived from the active Profile's
+  // prefs. The active profile may be signin Profile on login screen.
+  // If the Profile is not fully initialized yet, this returns nullopt.
+  virtual absl::optional<KeyRepeatSettings> GetKeyRepeatSettings() = 0;
 
   // Return true if pressing the top row of the keyboard sends F<number> keys,
   // rather than media keys (back/forward/refresh/etc.)

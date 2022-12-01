@@ -92,7 +92,7 @@ class ASH_EXPORT KeyboardControllerImpl
   bool ShouldOverscroll() override;
   void AddObserver(KeyboardControllerObserver* observer) override;
   void RemoveObserver(KeyboardControllerObserver* observer) override;
-  KeyRepeatSettings GetKeyRepeatSettings() override;
+  absl::optional<KeyRepeatSettings> GetKeyRepeatSettings() override;
   bool AreTopRowKeysFunctionKeys() override;
 
   // keyboard::KeyboardLayoutDelegate:
@@ -130,6 +130,8 @@ class ASH_EXPORT KeyboardControllerImpl
   void OnKeyboardEnabledChanged(bool is_enabled) override;
 
   void ObservePrefs(PrefService* prefs);
+  // Sends an update event of key repeat settings to observers.
+  // On calling this, |pref_change_registrar_| must have been initialized.
   void SendKeyRepeatUpdate();
   void SendKeyboardConfigUpdate();
 

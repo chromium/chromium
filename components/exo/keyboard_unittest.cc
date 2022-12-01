@@ -8,6 +8,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
@@ -800,6 +801,37 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
 constexpr base::TimeDelta kDelta50Ms = base::Milliseconds(50);
 constexpr base::TimeDelta kDelta500Ms = base::Milliseconds(500);
 constexpr base::TimeDelta kDelta1000Ms = base::Milliseconds(1000);
+
+TEST_F(KeyboardTest, KeyRepeatSettingsUninitialized) {
+  Seat seat;
+
+  // Simulate unsigned login state.
+  auto* keyboard_controller = ash::Shell::Get()->keyboard_controller();
+  keyboard_controller->OnSigninScreenPrefServiceInitialized(nullptr);
+
+  // If KeyboardController is not initialized with prefs,
+  // no key-repeat setting event should be triggered.
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyRepeatSettingsChanged(testing::_, testing::_, testing::_))
+      .Times(0);
+  Keyboard keyboard(std::move(delegate), &seat);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  // Then, when the pref is initialized, key repeat setting event should be
+  // triggered.
+  TestingPrefServiceSimple pref_service;
+  ash::KeyboardControllerImpl::RegisterProfilePrefs(pref_service.registry());
+
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyRepeatSettingsChanged(testing::_, testing::_, testing::_));
+  keyboard_controller->OnSigninScreenPrefServiceInitialized(&pref_service);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  // Unset the pref_service before its destruction just for tearing down.
+  keyboard_controller->OnSigninScreenPrefServiceInitialized(nullptr);
+}
 
 TEST_F(KeyboardTest, KeyRepeatSettingsLoadDefaults) {
   auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
