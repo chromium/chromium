@@ -251,7 +251,7 @@ TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
 
 TEST_F(CrosHotspotConfigTest, SetHotspotConfig) {
   SetupObserver();
-  // Vrerifies that return failed when the user is not login.
+  // Verifies that set hotspot config return failed when the user is not login.
   EXPECT_EQ(mojom::SetHotspotConfigResult::kFailedNotLogin,
             SetHotspotConfig(GenerateTestConfig()));
   EXPECT_FALSE(GetHotspotInfo()->config);

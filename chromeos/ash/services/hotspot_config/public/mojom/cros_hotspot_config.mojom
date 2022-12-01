@@ -105,8 +105,10 @@ struct HotspotInfo {
   HotspotAllowStatus allow_status;
   // Supported WiFi security modes for WiFi downstream.
   array<WiFiSecurityMode> allowed_wifi_security_modes;
-  // Hotspot configuration properties.
-  HotspotConfig config;
+  // Hotspot configuration properties. Null if the user is not logged in or
+  // initialization has not completed. Observers listen for this value to be set
+  // later by implementing the OnHotspotInfoChanged() method.
+  HotspotConfig? config;
 };
 
 // CrosHotspotConfig interface provides methods to get current hotspot status,
