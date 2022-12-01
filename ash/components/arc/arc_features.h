@@ -41,8 +41,6 @@ extern const base::FeatureParam<int> kGuestZramSize;
 extern const base::FeatureParam<int> kGuestZramSwappiness;
 BASE_DECLARE_FEATURE(kInstantResponseWindowOpen);
 BASE_DECLARE_FEATURE(kLockGuestMemory);
-BASE_DECLARE_FEATURE(kLogdConfig);
-extern const base::FeatureParam<int> kLogdConfigSize;
 BASE_DECLARE_FEATURE(kLvmApplicationContainers);
 BASE_DECLARE_FEATURE(kKeyboardShortcutHelperIntegrationFeature);
 BASE_DECLARE_FEATURE(kMglruReclaim);
