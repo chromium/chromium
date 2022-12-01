@@ -108,6 +108,20 @@ found in the LICENSE file.
   }
 </style>
 
+<template is="dom-if"
+    if="[[isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_]]">
+  <h2>$i18n{selectToSpeakOptionsSpeech}</h2>
+  <div class="sub-item">
+    <settings-toggle-button
+        id="voiceSwitchingToggle"
+        class="settings-box continuation"
+        pref="{{prefs.settings.a11y.select_to_speak_voice_switching}}"
+        label="$i18n{selectToSpeakOptionsVoiceSwitchingDescription}"
+        deep-link-focus-id$="[[Setting.kSelectToSpeakVoiceSwitching]]">
+    </settings-toggle-button>
+  </div>
+</template>
+
 <h2>$i18n{selectToSpeakOptionsHighlight}</h2>
 <div class="highlight-example-container sub-item">
   <div class="example light">

@@ -424,6 +424,11 @@ bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
   return ::features::IsAccessibilitySelectToSpeakPageMigrationEnabled();
 }
 
+bool IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled() {
+  return ::features::
+      IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled();
+}
+
 bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
   return ::features::
       AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
@@ -716,6 +721,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DISABLED_DESCRIPTION},
       {"selectToSpeakLinkTitle",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE},
+      {"selectToSpeakOptionsVoiceSwitchingDescription",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_SWITCHING_DESCRIPTION},
       {"selectToSpeakOptionsHighlightDescription",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_DESCRIPTION},
       {"selectToSpeakOptionsHighlightColorDescription",
@@ -744,6 +751,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NAVIGATION_CONTROLS_SUBTITLE},
       {"selectToSpeakOptionsHighlight",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT},
+      {"selectToSpeakOptionsSpeech",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SPEECH},
       {"selectToSpeakOptionsLabel",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_OPTIONS_LABEL},
       {"selectToSpeakTitle", IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TITLE},
@@ -926,6 +935,10 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilitySelectToSpeakPageMigrationEnabled",
                           IsAccessibilitySelectToSpeakPageMigrationEnabled());
+
+  html_source->AddBoolean(
+      "isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled",
+      IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled());
 
   html_source->AddBoolean(
       "areExperimentalAccessibilityColorEnhancementSettingsEnabled",

@@ -1230,11 +1230,17 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DISABLED_DESCRIPTION" desc="In the settings tab, the description of a feature that will read on-screen text out loud. This text is shown when that feature is disabled.">
     Hear specific text read aloud. First, select the Select-to-speak icon on the bottom of your screen, then highlight text.
   </message>
-  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT" desc="In the Select-to-speak settings subpage, the label for the group of options controlling highlighting." >
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SPEECH" desc="In the Select-to-speak settings subpage, the label for the group of options where the user can adjust synthesized speech properties.">
+    Speech
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT" desc="In the Select-to-speak settings subpage, the label for the group of options controlling highlighting.">
     Highlighting
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to highlight spoken words rather than spoken nodes.">
     Highlight each word as it is spoken
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_SWITCHING_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to toggle automatic voice switching.">
+    Automatically change language to match selected content
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_COLOR_DESCRIPTION" desc="In the Select-to-speak settings subpage, the label for option to pick word highlight color.">
     Highlight color

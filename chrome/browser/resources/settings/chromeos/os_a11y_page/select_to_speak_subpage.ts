@@ -50,7 +50,6 @@ class SettingsSelectToSpeakSubpageElement extends
 
   static get properties() {
     return {
-
       /**
        * List of options for the text size drop-down menu.
        */
@@ -85,6 +84,14 @@ class SettingsSelectToSpeakSubpageElement extends
                   'selectToSpeakOptionsHighlightColorPink'),
             },
           ];
+        },
+      },
+
+      isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled');
         },
       },
 

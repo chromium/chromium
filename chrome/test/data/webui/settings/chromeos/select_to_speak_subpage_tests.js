@@ -13,6 +13,9 @@ suite('SelectToSpeakSubpageTests', function() {
   let page = null;
 
   setup(async function() {
+    loadTimeData.overrideValues(
+        {isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled: true});
+
     PolymerTest.clearBody();
 
     const prefElement = document.createElement('settings-prefs');
@@ -26,6 +29,19 @@ suite('SelectToSpeakSubpageTests', function() {
 
   teardown(function() {
     page.remove();
+  });
+
+  test('voice switching pref and toggle synced', function() {
+    // Make sure voice switching toggle is off, matching default pref state.
+    const voiceSwitchingToggle =
+        page.shadowRoot.querySelector('#voiceSwitchingToggle');
+    assertFalse(voiceSwitchingToggle.checked);
+
+    // Toggle voice switching on, and verify voice_switching pref is enabled.
+    voiceSwitchingToggle.click();
+    const voiceSwitchingPref =
+        page.getPref('settings.a11y.select_to_speak_voice_switching');
+    assertTrue(voiceSwitchingPref.value);
   });
 
   test('word highlight pref and toggle synced', function() {
