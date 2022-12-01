@@ -53,13 +53,17 @@ class TestSystemWebAppManager : public SystemWebAppManager {
     current_locale_ = locale;
   }
 
+  void set_icons_are_broken(bool broken) { icons_are_broken_ = broken; }
+
   // SystemWebAppManager:
   const base::Version& CurrentVersion() const override;
   const std::string& CurrentLocale() const override;
+  bool PreviousSessionHadBrokenIcons() const override;
 
  private:
   base::Version current_version_{"0.0.0.0"};
   std::string current_locale_;
+  bool icons_are_broken_ = false;
 };
 
 // Used in tests to ensure that the SystemWebAppManager that is created on

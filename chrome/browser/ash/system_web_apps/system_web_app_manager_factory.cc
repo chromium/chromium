@@ -86,6 +86,8 @@ void SystemWebAppManagerFactory::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kSystemWebAppLastAttemptedVersion, "");
   registry->RegisterStringPref(prefs::kSystemWebAppLastAttemptedLocale, "");
   registry->RegisterIntegerPref(prefs::kSystemWebAppInstallFailureCount, 0);
+  registry->RegisterBooleanPref(
+      SystemWebAppManager::kSystemWebAppSessionHasBrokenIconsPrefName, false);
 }
 
 }  //  namespace ash

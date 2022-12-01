@@ -58,10 +58,15 @@ class SystemWebAppManager : public KeyedService,
     kOnVersionChange,
   };
 
+  static constexpr char kSystemWebAppSessionHasBrokenIconsPrefName[] =
+      "web_apps.system_web_app_has_broken_icons_in_session";
+
   static constexpr char kInstallResultHistogramName[] =
       "Webapp.InstallResult.System";
   static constexpr char kInstallDurationHistogramName[] =
       "Webapp.SystemApps.FreshInstallDuration";
+  static constexpr char kIconsFixedOnReinstallHistogramName[] =
+      "Webapp.SystemApps.IconsFixedOnReinstall";
 
   // Returns whether the given app type is enabled.
   bool IsAppEnabled(SystemWebAppType type) const;
@@ -166,6 +171,7 @@ class SystemWebAppManager : public KeyedService,
  protected:
   virtual const base::Version& CurrentVersion() const;
   virtual const std::string& CurrentLocale() const;
+  virtual bool PreviousSessionHadBrokenIcons() const;
   void StopBackgroundTasks();
 
  private:
@@ -218,6 +224,8 @@ class SystemWebAppManager : public KeyedService,
   std::unique_ptr<base::OneShotEvent> on_icon_check_completed_;
 
   bool shutting_down_ = false;
+
+  bool previous_session_had_broken_icons_ = false;
 
   std::string install_result_per_profile_histogram_name_;
 

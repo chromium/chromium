@@ -1160,6 +1160,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.SystemApps.IconsFixedOnReinstall" enum="BooleanSuccess"
+    expires_after="2023-06-30">
+  <owner>qjw@chromium.org</owner>
+  <owner>clamclamyan@google.com</owner>
+  <owner>dominicschulz@chromium.org</owner>
+  <summary>
+    Records whether a reinstall fixes previously broken system web app icons.
+    This is recorded during icon check after a reinstall (when icons were broken
+    in the last session).
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Uninstall.IconDataSuccess" enum="BooleanSuccess"
     expires_after="2022-09-01">
   <owner>dmurph@chromium.org</owner>

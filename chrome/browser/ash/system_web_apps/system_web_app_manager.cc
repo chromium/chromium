@@ -94,6 +94,9 @@ namespace ash {
 
 const constexpr char kIconHealthMetricName[] =
     "Webapp.SystemApps.IconsAreHealthyInSession";
+const constexpr char kIconsFixedOnReinstallMetricName[] =
+    "Webapp.SystemApps.IconsFixedOnReinstall";
+
 namespace {
 
 // Number of attempts to install a given version & locale of the SWAs before
@@ -335,6 +338,9 @@ void SystemWebAppManager::Start() {
   }
 #endif  // DCHECK_IS_ON()
 
+  previous_session_had_broken_icons_ =
+      pref_service_->GetBoolean(kSystemWebAppSessionHasBrokenIconsPrefName);
+
   std::vector<web_app::ExternalInstallOptions> install_options_list;
   const bool should_force_install_apps = ShouldForceInstallApps();
   if (should_force_install_apps) {
@@ -547,6 +553,9 @@ const std::string& SystemWebAppManager::CurrentLocale() const {
   return g_browser_process->GetApplicationLocale();
 }
 
+bool SystemWebAppManager::PreviousSessionHadBrokenIcons() const {
+  return previous_session_had_broken_icons_;
+}
 void SystemWebAppManager::RecordSystemWebAppInstallDuration(
     const base::TimeDelta& install_duration) const {
   // Install duration should be non-negative. A low resolution clock could
@@ -624,7 +633,6 @@ void SystemWebAppManager::OnAppsSynchronized(
                            CurrentVersion().GetString());
   pref_service_->SetString(prefs::kSystemWebAppLastInstalledLocale,
                            CurrentLocale());
-  pref_service_->SetInteger(prefs::kSystemWebAppInstallFailureCount, 0);
 
   // Report install duration only if the install pipeline actually installs
   // all the apps (e.g. on version upgrade).
@@ -683,10 +691,19 @@ void SystemWebAppManager::OnIconCheckResult(
       break;
     case SystemWebAppIconChecker::IconState::kBroken:
       base::UmaHistogramBoolean(kIconHealthMetricName, false);
-      // TODO(crbug.com/1356059): Schedule app reinstallation.
+      if (PreviousSessionHadBrokenIcons()) {
+        base::UmaHistogramBoolean(kIconsFixedOnReinstallMetricName, false);
+      }
+      pref_service_->SetBoolean(kSystemWebAppSessionHasBrokenIconsPrefName,
+                                true);
       break;
     case SystemWebAppIconChecker::IconState::kOk:
       base::UmaHistogramBoolean(kIconHealthMetricName, true);
+      if (PreviousSessionHadBrokenIcons()) {
+        base::UmaHistogramBoolean(kIconsFixedOnReinstallMetricName, true);
+      }
+      pref_service_->ClearPref(kSystemWebAppSessionHasBrokenIconsPrefName);
+      pref_service_->ClearPref(prefs::kSystemWebAppInstallFailureCount);
       break;
   }
 
@@ -701,6 +718,9 @@ bool SystemWebAppManager::ShouldForceInstallApps() const {
     return true;
 
   if (update_policy_ == UpdatePolicy::kAlwaysUpdate)
+    return true;
+
+  if (PreviousSessionHadBrokenIcons())
     return true;
 
   base::Version current_installed_version(
@@ -728,9 +748,11 @@ void SystemWebAppManager::UpdateLastAttemptedInfo() {
   const std::string& last_attempted_locale(
       pref_service_->GetString(prefs::kSystemWebAppLastAttemptedLocale));
 
-  const bool is_retry = last_attempted_version.IsValid() &&
-                        last_attempted_version == CurrentVersion() &&
-                        last_attempted_locale == CurrentLocale();
+  const bool is_retry = (last_attempted_version.IsValid() &&
+                         last_attempted_version == CurrentVersion() &&
+                         last_attempted_locale == CurrentLocale()) ||
+                        PreviousSessionHadBrokenIcons();
+
   if (!is_retry) {
     pref_service_->SetInteger(prefs::kSystemWebAppInstallFailureCount, 0);
   }

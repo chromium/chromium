@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -1868,26 +1869,39 @@ class SystemWebAppIconHealthMetricsTest
   ~SystemWebAppIconHealthMetricsTest() override = default;
 
  protected:
-  static constexpr char kHistogramName[] =
+  static constexpr char kIconsAreHealthyHistogramName[] =
       "Webapp.SystemApps.IconsAreHealthyInSession";
   base::HistogramTester tester_;
+
+  void WaitForInstallAndIconCheck() {
+    WaitForTestSystemAppInstall();
+
+    base::RunLoop run_loop;
+    SystemWebAppManager::Get(browser()->profile())
+        ->on_icon_check_completed()
+        .Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest, ReportsMetrics) {
-  WaitForTestSystemAppInstall();
+  WaitForInstallAndIconCheck();
 
-  // Icons should be healthy after installation.
-  base::RunLoop run_loop;
-  SystemWebAppManager::Get(browser()->profile())
-      ->on_icon_check_completed()
-      .Post(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-
-  tester_.ExpectBucketCount(kHistogramName, true, 1);
+  tester_.ExpectBucketCount(kIconsAreHealthyHistogramName, true, 1);
+  // Given SWA install with no broken icon, pref should report no broken icons.
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      SystemWebAppManager::kSystemWebAppSessionHasBrokenIconsPrefName));
 }
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest, PRE_BrokenIcon) {
-  WaitForTestSystemAppInstall();
+IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest,
+                       PRE_PRE_ReinstallFixesBrokenIcon) {
+  WaitForInstallAndIconCheck();
+
+  // Given SWA install with no broken icon, pref should report no broken icons.
+  CHECK_EQ(
+      false,
+      browser()->profile()->GetPrefs()->GetBoolean(
+          SystemWebAppManager::kSystemWebAppSessionHasBrokenIconsPrefName));
 
   // Intentionally break icons by corrupting the on-disk icon file.
   auto app_id = maybe_installation_->GetAppId();
@@ -1904,15 +1918,29 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest, PRE_BrokenIcon) {
   // Restart to let SystemWebAppManager perform the check.
 }
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest, BrokenIcon) {
-  WaitForTestSystemAppInstall();
+IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest,
+                       PRE_ReinstallFixesBrokenIcon) {
+  WaitForInstallAndIconCheck();
 
-  base::RunLoop run_loop;
-  SystemWebAppManager::Get(browser()->profile())
-      ->on_icon_check_completed()
-      .Post(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-  tester_.ExpectBucketCount(kHistogramName, false, 1);
+  tester_.ExpectBucketCount(kIconsAreHealthyHistogramName, false, 1);
+
+  // TODO(https://crbug.com/1162992): Change CHECK_EQ to EXPECT_TRUE when
+  // assertions report correctly as test failure in PRE_TESTs.
+
+  // Icon check should update pref to report broken icons.
+  CHECK_EQ(
+      true,
+      browser()->profile()->GetPrefs()->GetBoolean(
+          SystemWebAppManager::kSystemWebAppSessionHasBrokenIconsPrefName));
+}
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest,
+                       ReinstallFixesBrokenIcon) {
+  WaitForInstallAndIconCheck();
+
+  tester_.ExpectBucketCount(kIconsAreHealthyHistogramName, true, 1);
+  tester_.ExpectBucketCount(
+      SystemWebAppManager::kIconsFixedOnReinstallHistogramName, true, 1);
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_TEST_SUITE_REGULAR_PREF_MIGRATION_P(

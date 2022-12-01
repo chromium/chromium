@@ -64,6 +64,10 @@ const std::string& TestSystemWebAppManager::CurrentLocale() const {
   return current_locale_;
 }
 
+bool TestSystemWebAppManager::PreviousSessionHadBrokenIcons() const {
+  return icons_are_broken_;
+}
+
 TestSystemWebAppManagerCreator::TestSystemWebAppManagerCreator(
     CreateSystemWebAppManagerCallback callback)
     : callback_(std::move(callback)) {

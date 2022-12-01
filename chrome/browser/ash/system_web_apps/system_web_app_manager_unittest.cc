@@ -210,6 +210,15 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
     system_web_app_manager().Start();
     waiter.Wait();
   }
+
+  void StartAndWaitForIconCheck() {
+    StartAndWaitForAppsToSynchronize();
+
+    base::RunLoop run_loop;
+    system_web_app_manager().on_icon_check_completed().Post(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 };
 
 class SystemWebAppManagerTest_PrefMigrationEnabled
@@ -440,6 +449,126 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
   EXPECT_FALSE(IsInstalled(AppUrl1()));
   EXPECT_TRUE(IsInstalled(AppUrl2()));
   EXPECT_TRUE(IsInstalled(kAppUrl3));
+}
+
+TEST_F(SystemWebAppManagerTest, RetryBrokenIcons) {
+  const std::vector<web_app::ExternalInstallOptions>& install_requests =
+      externally_managed_app_manager().install_requests();
+
+  // We don't want to force reinstall by default, we want to check that we
+  // correctly set to force reinstall when icons are broken.
+  system_web_app_manager().SetUpdatePolicy(
+      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+
+  {
+    SystemWebAppDelegateMap system_apps;
+    system_apps.emplace(
+        SystemWebAppType::SETTINGS,
+        std::make_unique<UnittestingSystemAppDelegate>(
+            SystemWebAppType::SETTINGS, kSettingsAppInternalName, AppUrl1(),
+            GetApp1WebAppInfoFactory()));
+    system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
+  }
+
+  {
+    // Initial install.
+    StartAndWaitForAppsToSynchronize();
+
+    EXPECT_EQ(1u, install_requests.size());
+    EXPECT_TRUE(install_requests[0].force_reinstall);
+    EXPECT_TRUE(IsInstalled(AppUrl1()));
+  }
+
+  {
+    // Icons not broken.
+    system_web_app_manager().set_icons_are_broken(false);
+    StartAndWaitForAppsToSynchronize();
+
+    EXPECT_EQ(2u, install_requests.size());
+    EXPECT_FALSE(install_requests[1].force_reinstall);
+  }
+
+  {
+    // Broken icons should force reinstall.
+    system_web_app_manager().set_icons_are_broken(true);
+    StartAndWaitForAppsToSynchronize();
+
+    EXPECT_EQ(3u, install_requests.size());
+    EXPECT_TRUE(install_requests[2].force_reinstall);
+  }
+}
+
+TEST_F(SystemWebAppManagerTest, AbortOnExceedRetryLimit) {
+  const std::vector<web_app::ExternalInstallOptions>& install_requests =
+      externally_managed_app_manager().install_requests();
+
+  base::HistogramTester histograms;
+
+  // We don't want to force reinstall by default, we want to check that we
+  // correctly set to force reinstall when icons are broken.
+  system_web_app_manager().SetUpdatePolicy(
+      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+
+  {
+    SystemWebAppDelegateMap system_apps;
+    system_apps.emplace(
+        SystemWebAppType::SETTINGS,
+        std::make_unique<UnittestingSystemAppDelegate>(
+            SystemWebAppType::SETTINGS, kSettingsAppInternalName, AppUrl1(),
+            GetApp1WebAppInfoFactory()));
+    system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
+    system_web_app_manager().set_icons_are_broken(true);
+  }
+
+  {
+    // Initial install
+    StartAndWaitForAppsToSynchronize();
+
+    EXPECT_EQ(1u, install_requests.size());
+    EXPECT_TRUE(install_requests[0].force_reinstall);
+    EXPECT_TRUE(IsInstalled(AppUrl1()));
+  }
+
+  {
+    // 1st retry
+    StartAndWaitForIconCheck();
+
+    histograms.ExpectBucketCount(
+        SystemWebAppManager::kIconsFixedOnReinstallHistogramName, false, 1);
+
+    EXPECT_EQ(2u, install_requests.size());
+    EXPECT_TRUE(install_requests[1].force_reinstall);
+  }
+
+  {
+    // 2nd retry
+    StartAndWaitForIconCheck();
+
+    histograms.ExpectBucketCount(
+        SystemWebAppManager::kIconsFixedOnReinstallHistogramName, false, 2);
+    EXPECT_EQ(3u, install_requests.size());
+    EXPECT_TRUE(install_requests[2].force_reinstall);
+  }
+
+  {
+    // 3rd retry
+    StartAndWaitForIconCheck();
+
+    histograms.ExpectBucketCount(
+        SystemWebAppManager::kIconsFixedOnReinstallHistogramName, false, 3);
+
+    EXPECT_EQ(4u, install_requests.size());
+    EXPECT_TRUE(install_requests[3].force_reinstall);
+  }
+
+  {
+    // 4th retry should be aborted - no new install request
+    system_web_app_manager().ResetForTesting();
+    system_web_app_manager().Start();
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_EQ(4u, install_requests.size());
+  }
 }
 
 TEST_F(SystemWebAppManagerTest, UpdateOnLocaleChange) {
