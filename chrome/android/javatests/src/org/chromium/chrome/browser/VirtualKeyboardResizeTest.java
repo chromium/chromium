@@ -407,7 +407,6 @@ public class VirtualKeyboardResizeTest {
                 lessThanOrEqualTo(initialVVHeight - keyboardHeight + 1.0));
 
         // Hide the OSK and ensure the state is correctly restored to the initial height.
-        // InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
         hideKeyboard();
         assertWaitForKeyboardStatus(false);
 
