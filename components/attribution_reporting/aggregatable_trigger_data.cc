@@ -60,10 +60,8 @@ base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
 base::expected<AggregatableTriggerData::Keys, TriggerRegistrationError>
 ParseSourceKeys(base::Value::Dict& registration) {
   base::Value* v = registration.Find("source_keys");
-  if (!v) {
-    return base::unexpected(
-        TriggerRegistrationError::kAggregatableTriggerDataSourceKeysMissing);
-  }
+  if (!v)
+    return AggregatableTriggerData::Keys();
 
   base::Value::List* l = v->GetIfList();
   if (!l) {

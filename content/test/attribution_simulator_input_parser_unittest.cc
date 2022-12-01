@@ -999,19 +999,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataSourceKeysMissing)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "aggregatable_trigger_data": [{
-              "key_piece": "0x123"
-            }]
-          }
-        }]})json",
-    },
-    {
         R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataSourceKeysWrongType)",
         R"json({"triggers": [{
           "timestamp": "1643235576000",

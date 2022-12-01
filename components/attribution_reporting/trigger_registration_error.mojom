@@ -26,7 +26,6 @@ enum TriggerRegistrationError {
   kAggregatableTriggerDataKeyPieceMissing,
   kAggregatableTriggerDataKeyPieceWrongType,
   kAggregatableTriggerDataKeyPieceWrongFormat,
-  kAggregatableTriggerDataSourceKeysMissing,
   kAggregatableTriggerDataSourceKeysWrongType,
   kAggregatableTriggerDataSourceKeysTooManyKeys,
   kAggregatableTriggerDataSourceKeysKeyWrongType,
