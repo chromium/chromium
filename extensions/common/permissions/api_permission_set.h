@@ -11,13 +11,10 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/base_set_operators.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace extensions {
 
@@ -54,7 +51,7 @@ class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
   // next permission if invalid data is detected. If |error| is not NULL, it
   // will be set to an error message and false is returned when an invalid
   // permission is found.
-  static bool ParseFromJSON(const base::Value* permissions,
+  static bool ParseFromJSON(const base::Value::List& permissions,
                             ParseSource source,
                             APIPermissionSet* api_permissions,
                             std::u16string* error,

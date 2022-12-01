@@ -812,7 +812,7 @@ std::unique_ptr<PermissionSet> ExtensionPrefs::ReadPrefAsPermissionSet(
   const base::ListValue* api_values = nullptr;
   std::string api_pref = JoinPrefs({pref_key, kPrefAPIs});
   if (ReadPrefAsList(extension_id, api_pref, &api_values)) {
-    APIPermissionSet::ParseFromJSON(api_values,
+    APIPermissionSet::ParseFromJSON(api_values->GetList(),
                                     APIPermissionSet::kAllowInternalPermissions,
                                     &apis, nullptr, nullptr);
   }
@@ -825,8 +825,9 @@ std::unique_ptr<PermissionSet> ExtensionPrefs::ReadPrefAsPermissionSet(
       JoinPrefs({pref_key, kPrefManifestPermissions});
   if (ReadPrefAsList(extension_id, manifest_permission_pref,
                      &manifest_permissions_values)) {
-    ManifestPermissionSet::ParseFromJSON(
-        manifest_permissions_values, &manifest_permissions, nullptr, nullptr);
+    ManifestPermissionSet::ParseFromJSON(manifest_permissions_values->GetList(),
+                                         &manifest_permissions, nullptr,
+                                         nullptr);
   }
 
   // Retrieve the explicit host permissions.

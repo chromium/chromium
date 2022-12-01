@@ -58,13 +58,12 @@ namespace extensions {
 
 // static
 bool ManifestPermissionSet::ParseFromJSON(
-    const base::ListValue* permissions,
+    const base::Value::List& permissions,
     ManifestPermissionSet* manifest_permissions,
     std::u16string* error,
     std::vector<std::string>* unhandled_permissions) {
-  const base::Value::List& permissions_list = permissions->GetList();
-  for (size_t i = 0; i < permissions_list.size(); ++i) {
-    const base::Value& value = permissions_list[i];
+  for (size_t i = 0; i < permissions.size(); ++i) {
+    const base::Value& value = permissions[i];
     std::string permission_name;
     const base::Value* permission_value = nullptr;
     // Permission `value` should be a string or a single key dict.

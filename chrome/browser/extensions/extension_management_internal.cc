@@ -133,7 +133,8 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   list_value = dict->FindListKey(schema_constants::kAllowedPermissions);
   if (list_value) {
     if (!APIPermissionSet::ParseFromJSON(
-            list_value, APIPermissionSet::kDisallowInternalPermissions,
+            list_value->GetList(),
+            APIPermissionSet::kDisallowInternalPermissions,
             &explicitly_allowed_permissions, &error, nullptr)) {
       LOG(WARNING) << error;
     }
@@ -141,7 +142,8 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   list_value = dict->FindListKey(schema_constants::kBlockedPermissions);
   if (list_value) {
     if (!APIPermissionSet::ParseFromJSON(
-            list_value, APIPermissionSet::kDisallowInternalPermissions,
+            list_value->GetList(),
+            APIPermissionSet::kDisallowInternalPermissions,
             &parsed_blocked_permissions, &error, nullptr)) {
       LOG(WARNING) << error;
     }
