@@ -1573,29 +1573,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
-<histogram name="NavigationSuggestion.DigitalAssetLinks.Event"
-    enum="NavigationSuggestionDigitalAssetLinkValidationEvent"
-    expires_after="2021-06-20">
-  <owner>meacer@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
-  <summary>
-    Tracks events when the currently navigated domain name is a lookalike and a
-    Digital Asset Link validation must be made between the lookalike and target
-    sites. If both sites serve valid asset links pointing to each other, the
-    lookalike warning UI is surpressed.
-  </summary>
-</histogram>
-
-<histogram name="NavigationSuggestion.DigitalAssetLinks.ValidationTime"
-    units="ms" expires_after="2021-08-30">
-  <owner>meacer@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
-  <summary>
-    Records the time duration to validate lookalike and target manifests. Only
-    recorded when both manifests are validated.
-  </summary>
-</histogram>
-
 <histogram name="NavigationSuggestion.Event2" enum="NavigationSuggestionEvent"
     expires_after="2023-03-19">
   <owner>meacer@chromium.org</owner>
