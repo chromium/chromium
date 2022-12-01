@@ -67801,6 +67801,13 @@ Called by update_use_counter_css.py.-->
   <int value="11" label="text/vtt"/>
 </enum>
 
+<enum name="MiniDiagResultType">
+  <int value="0" label="Passed"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="Aborted"/>
+</enum>
+
 <enum name="MinimizeAppAndCloseTabType">
   <int value="0" label="App is minimized but current tab is not closed"/>
   <int value="1" label="Current tab is closed but app is not minimized"/>

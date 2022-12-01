@@ -1048,6 +1048,61 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.MiniDiag.OpenDuration" units="seconds"
+    expires_after="2023-03-26">
+  <owner>roccochen@chromium.org</owner>
+  <owner>chromeos-minidiag-eng@google.com</owner>
+  <summary>
+    Records the duration that the MiniDiag (pre-boot diagnostic tool) is open.
+    This metrics is recorded right after booting into ChromeOS. This metrics
+    leverages a coreboot command, elogtool, to retrieve the event log and count
+    launch events.
+  </summary>
+</histogram>
+
+<histogram name="Platform.MiniDiag.{TestType}.OpenDuration" units="seconds"
+    expires_after="2023-03-26">
+  <owner>roccochen@chromium.org</owner>
+  <owner>chromeos-minidiag-eng@google.com</owner>
+  <summary>
+    Test item-specific duration of the MiniDiag (pre-boot diagnostic tool) since
+    the last upload. This metrics is recorded right after booting into ChromeOS.
+    This metrics leverages a coreboot command, elogtool, to retrieve the event
+    log and count launch events. The TestType is the same as
+    cros_diagnostics_diag_types listed in coreboot/util/cbfstool/eventlog.c
+    since all the data are parsed from them.
+  </summary>
+  <token key="TestType">
+    <variant name="MemoryCheckFull"/>
+    <variant name="MemoryCheckQuick"/>
+    <variant name="StorageHealthInfo"/>
+    <variant name="StorageSelfTestExtended"/>
+    <variant name="StorageSelfTestShort"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.MiniDiag.{TestType}.Result" enum="MiniDiagResultType"
+    expires_after="2023-03-26">
+  <owner>roccochen@chromium.org</owner>
+  <owner>chromeos-minidiag-eng@google.com</owner>
+  <summary>
+    Test item-specific results of the MiniDiag (pre-boot diagnostic tool) since
+    the last upload. This metrics is recorded right after booting into ChromeOS.
+    This metrics leverages a coreboot command, elogtool, to retrieve the event
+    log and count launch events. The TestType and MiniDiagResultType are the
+    same as cros_diagnostics_diag_types and cros_diagnostics_diag_results listed
+    in coreboot/util/cbfstool/eventlog.c since all the data are parsed from
+    them.
+  </summary>
+  <token key="TestType">
+    <variant name="MemoryCheckFull"/>
+    <variant name="MemoryCheckQuick"/>
+    <variant name="StorageHealthInfo"/>
+    <variant name="StorageSelfTestExtended"/>
+    <variant name="StorageSelfTestShort"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.Missive.ClientEnqueueResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2023-11-30">
   <owner>lbaraz@chromium.org</owner>
