@@ -139,6 +139,20 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
                                                       base::StringPiece name,
                                                       ViewMatcher matcher);
 
+  // Names the `index` (0-indexed) child view of `parent` that is of type `V`.
+  template <typename V>
+  [[nodiscard]] static StepBuilder NameChildViewByType(ElementSpecifier parent,
+                                                       base::StringPiece name,
+                                                       size_t index = 0);
+
+  // Names the `index` (0-indexed) descendant view of `parent` in depth-first
+  // traversal order that is of type `V`.
+  template <typename V>
+  [[nodiscard]] static StepBuilder NameDescendantViewByType(
+      ElementSpecifier ancestor,
+      base::StringPiece name,
+      size_t index = 0);
+
   // As WithElement, but `view` should resolve to a TrackedElementViews wrapping
   // a view of type `V`.
   template <template <typename...> typename C, typename V>
@@ -379,6 +393,44 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::WithView(
          ui::TrackedElement* el) { std::move(function).Run(AsView<V>(el)); },
       base::OnceCallback<void(V*)>(std::move(function))));
   return builder;
+}
+
+// static
+template <typename V>
+ui::InteractionSequence::StepBuilder
+InteractiveViewsTestApi::NameChildViewByType(ElementSpecifier parent,
+                                             base::StringPiece name,
+                                             size_t index) {
+  return NameChildView(parent, name,
+                       base::BindRepeating(
+                           [](size_t& index, const View* view) {
+                             if (IsViewClass<V>(view)) {
+                               if (index == 0)
+                                 return true;
+                               --index;
+                             }
+                             return false;
+                           },
+                           base::OwnedRef(index)));
+}
+
+// static
+template <typename V>
+ui::InteractionSequence::StepBuilder
+InteractiveViewsTestApi::NameDescendantViewByType(ElementSpecifier ancestor,
+                                                  base::StringPiece name,
+                                                  size_t index) {
+  return NameDescendantView(ancestor, name,
+                            base::BindRepeating(
+                                [](size_t& index, const View* view) {
+                                  if (IsViewClass<V>(view)) {
+                                    if (index == 0)
+                                      return true;
+                                    --index;
+                                  }
+                                  return false;
+                                },
+                                base::OwnedRef(index)));
 }
 
 // static

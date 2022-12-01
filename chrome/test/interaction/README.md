@@ -129,7 +129,9 @@ Verbs fall into a number of different categories:
   include:
     - `NameView()` [Views]
     - `NameChildView()` [Views]
+    - `NameChildViewByType()` [Views]
     - `NameDescendantView()` [Views]
+    - `NameDescendantViewByType()` [Views]
     - `NameViewRelative()` [Views]
 - **WebContents** verbs either dynamically
   [instrument WebContents](#webcontents-instrumentation), navigate them, or wait
