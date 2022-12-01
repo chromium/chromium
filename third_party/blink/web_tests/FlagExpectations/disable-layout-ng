@@ -3310,6 +3310,7 @@ crbug.com/1147859 external/wpt/css/css-pseudo/highlight-currentcolor-painting-pr
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-002.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-soft-hyphens-001.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-paired-cascade-004.html [ Failure ]
+crbug.com/1147859 external/wpt/css/css-pseudo/highlight-styling-003.tentative.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/target-text-001.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/target-text-002.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/target-text-003.html [ Failure ]
