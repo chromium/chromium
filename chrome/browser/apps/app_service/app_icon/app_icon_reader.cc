@@ -132,6 +132,8 @@ void AppIconReader::OnCompleteWithIconValue(int32_t size_in_dip,
                                             IconType icon_type,
                                             LoadIconCallback callback,
                                             IconValuePtr iv) {
+  iv->uncompressed.MakeThreadSafe();
+
   if (icon_type != IconType::kCompressed) {
     std::move(callback).Run(std::move(iv));
     return;
