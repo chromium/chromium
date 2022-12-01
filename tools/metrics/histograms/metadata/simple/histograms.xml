@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="SimpleCache.DidDeleteIndexFilesAfterFailedConsistency" enum="Boolean"
-    expires_after="2022-12-08">
+    expires_after="2023-12-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.SyncOpenPrefetchMode"
-    enum="SimpleCachePrefetchMode" expires_after="2022-12-10">
+    enum="SimpleCachePrefetchMode" expires_after="2023-12-10">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
