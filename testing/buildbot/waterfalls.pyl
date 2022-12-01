@@ -6327,7 +6327,6 @@
           'net_unittests',
           'pdf_unittests',
           'pdfium_test',
-          'postmortem-metadata',
           'ppapi_unittests',
           'printing_unittests',
           'remoting_unittests',
