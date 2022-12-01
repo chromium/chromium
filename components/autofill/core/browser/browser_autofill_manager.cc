@@ -666,15 +666,12 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   AutofillField* autofill_field = GetAutofillField(form, field_data);
   AutofillType type = autofill_field ? autofill_field->Type()
                                      : AutofillType(CREDIT_CARD_NUMBER);
-
   DCHECK_EQ(FieldTypeGroup::kCreditCard, type.group());
 
-  bool should_display_gpay_logo;
-  auto cards = GetCreditCardSuggestions(FormStructure(form), field_data, type,
-                                        should_display_gpay_logo);
-
+  bool should_display_gpay_logo = false;
+  auto cards =
+      GetCreditCardSuggestions(field_data, type, should_display_gpay_logo);
   DCHECK(!cards.empty());
-
   external_delegate_->OnSuggestionsReturned(query_id, cards,
                                             AutoselectFirstSuggestion(false),
                                             should_display_gpay_logo);
@@ -2473,7 +2470,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
-    const FormStructure& form_structure,
     const FormFieldData& field,
     const AutofillType& type,
     bool& should_display_gpay_logo) const {
@@ -2961,9 +2957,9 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   context->is_autofill_available = true;
 
   if (context->is_filling_credit_card) {
-    *suggestions = GetCreditCardSuggestions(*context->form_structure, field,
-                                            context->focused_field->Type(),
-                                            context->should_display_gpay_logo);
+    *suggestions =
+        GetCreditCardSuggestions(field, context->focused_field->Type(),
+                                 context->should_display_gpay_logo);
   } else {
     *suggestions = GetProfileSuggestions(*context->form_structure, field,
                                          *context->focused_field);
