@@ -182,6 +182,9 @@ class Surface final : public ui::PropertyHandler {
   // Sets the surface's clip rectangle.
   void SetClipRect(const absl::optional<gfx::RectF>& clip_rect);
 
+  // Sets the surface's transformation matrix.
+  void SetSurfaceTransform(const gfx::Transform& transform);
+
   // Sets the background color that shall be associated with the next buffer
   // commit.
   void SetBackgroundColor(absl::optional<SkColor4f> background_color);
@@ -543,6 +546,10 @@ class Surface final : public ui::PropertyHandler {
     // should only be set for subsurfaces.
     // Persisted between commits.
     absl::optional<gfx::RectF> clip_rect;
+    // The transform to apply when drawing this surface. This should only be set
+    // for subsurfaces, and doesn't apply to children of this surface.
+    // Persisted between commits.
+    gfx::Transform surface_transform;
   };
 
   friend class subtle::PropertyHelper;

@@ -189,6 +189,10 @@ class AugmentedSubSurface : public SubSurfaceObserver {
     sub_surface_->SetClipRect(clip_rect);
   }
 
+  void SetTransform(const gfx::Transform& transform) {
+    sub_surface_->SetTransform(transform);
+  }
+
   // SurfaceObserver:
   void OnSubSurfaceDestroying(SubSurface* sub_surface) override {
     sub_surface->RemoveSubSurfaceObserver(this);
@@ -222,10 +226,39 @@ void augmented_sub_surface_set_clip_rect(wl_client* client,
       wl_fixed_to_double(height));
 }
 
+void augmented_sub_surface_set_transform(wl_client* client,
+                                         wl_resource* resource,
+                                         wl_array* matrix_data) {
+  gfx::Transform transform;
+  // Empty data represents the identity matrix.
+  if (matrix_data->size == 6 * sizeof(float)) {
+    // | a c x |
+    // | b d y | -> float[6] { a b c d x y }
+    float* data = reinterpret_cast<float*>(matrix_data->data);
+    // If b and c are 0, make a simplified transform using AxisTransform2d.
+    if (data[1] == 0 && data[2] == 0) {
+      transform = gfx::Transform(gfx::AxisTransform2d::FromScaleAndTranslation(
+          gfx::Vector2dF(data[0], data[3]), gfx::Vector2dF(data[4], data[5])));
+    } else {
+      transform = gfx::Transform::Affine(data[0], data[1], data[2], data[3],
+                                         data[4], data[5]);
+    }
+  } else if (matrix_data->size != 0) {
+    wl_resource_post_error(resource, AUGMENTED_SUB_SURFACE_ERROR_INVALID_SIZE,
+                           "The matrix must contain 0 or 6 %zu-byte floats "
+                           "(%zu bytes given)",
+                           sizeof(float), matrix_data->size);
+    return;
+  }
+
+  GetUserDataAs<AugmentedSubSurface>(resource)->SetTransform(transform);
+}
+
 const struct augmented_sub_surface_interface
     augmented_sub_surface_implementation = {
         augmented_sub_surface_destroy, augmented_sub_surface_set_position,
-        augmented_sub_surface_set_clip_rect};
+        augmented_sub_surface_set_clip_rect,
+        augmented_sub_surface_set_transform};
 
 ////////////////////////////////////////////////////////////////////////////////
 // wl_buffer_interface:

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="4">
+  <interface name="surface_augmenter" version="5">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -172,7 +172,7 @@
     </request>
   </interface>
 
-  <interface name="augmented_sub_surface" version="4">
+  <interface name="augmented_sub_surface" version="5">
     <description summary="delegate composition of a wl_subsurface">
       An additional interface to a wl_subsurface object, which allows the
       client to specify the delegated composition of the surface
@@ -224,6 +224,25 @@
       <arg name="width" type="fixed" summary="width of the clip rect"/>
       <arg name="height" type="fixed" summary="height of the clip rect"/>
     </request>
+    <request name="set_transform" since="5">
+      <description summary="sets a subsurface transform as an affine matrix">
+        This schedules a transform to be applied when drawing this sub-surface.
+        This transform does not apply to any child surfaces of this sub-surface.
+
+        The matrix should be passed as an array of 6 floats in column major
+        order. An empty array can be sent to set the transform to the identity
+        matrix.
+
+        The initial transform is identity.
+        This state is double-buffered, and is applied on the next wl_surface.commit.
+      </description>
+      <arg name="matrix" type="array" summary="size 6 affine matrix, or size 0 for identity matrix"/>
+    </request>
+
+    <enum name="error">
+      <entry name="invalid_size" value="0"
+	     summary="array sent with invalid dimensions"/>
+    </enum>
   </interface>
 
 </protocol>

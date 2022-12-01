@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace base {
 namespace trace_event {
@@ -47,6 +48,10 @@ class SubSurface : public SurfaceDelegate,
 
   // This schedules a clip rect to be applied when drawing this sub-surface.
   void SetClipRect(const absl::optional<gfx::RectF>& clip_rect);
+
+  // This schedules a matrix transform to be applied when drawing this
+  // sub-surface.
+  void SetTransform(const gfx::Transform& transform);
 
   // This removes sub-surface from the stack, and puts it back just above the
   // reference surface, changing the z-order of the sub-surfaces. The reference

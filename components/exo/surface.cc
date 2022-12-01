@@ -593,6 +593,15 @@ void Surface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
   pending_state_.clip_rect = clip_rect;
 }
 
+void Surface::SetSurfaceTransform(const gfx::Transform& transform) {
+  TRACE_EVENT1("exo", "Surface::SetSurfaceTransform", "transform",
+               transform.ToString());
+  if (pending_state_.surface_transform != transform) {
+    has_pending_contents_ = true;
+    pending_state_.surface_transform = transform;
+  }
+}
+
 void Surface::SetBackgroundColor(absl::optional<SkColor4f> background_color) {
   TRACE_EVENT0("exo", "Surface::SetBackgroundColor");
   pending_state_.basic_state.background_color = background_color;
@@ -849,6 +858,7 @@ void Surface::Commit() {
   cached_state_.rounded_corners_bounds = pending_state_.rounded_corners_bounds;
   cached_state_.overlay_priority_hint = pending_state_.overlay_priority_hint;
   cached_state_.clip_rect = pending_state_.clip_rect;
+  cached_state_.surface_transform = pending_state_.surface_transform;
   cached_state_.acquire_fence = std::move(pending_state_.acquire_fence);
   cached_state_.per_commit_explicit_release_callback_ =
       std::move(pending_state_.per_commit_explicit_release_callback_);
@@ -986,6 +996,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       state_.rounded_corners_bounds = cached_state_.rounded_corners_bounds;
       state_.overlay_priority_hint = cached_state_.overlay_priority_hint;
       state_.clip_rect = cached_state_.clip_rect;
+      state_.surface_transform = cached_state_.surface_transform;
       state_.acquire_fence = std::move(cached_state_.acquire_fence);
       state_.per_commit_explicit_release_callback_ =
           std::move(cached_state_.per_commit_explicit_release_callback_);
@@ -1438,12 +1449,12 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
   // Compute the total transformation from post-transform buffer coordinates to
   // target coordinates.
   // Scale and offset the normalized space to fit the content size rectangle.
-  gfx::AxisTransform2d viewport_to_target_transform =
+  gfx::Transform viewport_to_target_transform(
       gfx::AxisTransform2d::FromScaleAndTranslation(
-          scale, origin.OffsetFromOrigin() + translate);
+          scale, origin.OffsetFromOrigin() + translate));
+  viewport_to_target_transform.PostConcat(state_.surface_transform);
   // Convert from DPs to pixels.
-  viewport_to_target_transform.PostScale(
-      gfx::Vector2dF(device_scale_factor, device_scale_factor));
+  viewport_to_target_transform.PostScale(device_scale_factor);
 
   gfx::Transform quad_to_target_transform(buffer_transform_);
   quad_to_target_transform.PostConcat(viewport_to_target_transform);
@@ -1471,17 +1482,18 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
   // work with 0,0 1x1 quads. This also means that quads that do not fall on
   // pixel boundaries (rotated or subpixel rects) cannot be removed by the
   // algorithm.
-  gfx::RectF target_space_rect =
-      quad_to_target_transform.MapRect(gfx::RectF(quad_rect));
-  CHECK(quad_to_target_transform.Preserves2dAxisAlignment());
-  // This simple rect representation cannot mathematically express a rotation
-  // (and currently does not express flip/mirror) hence the
-  // 'IsPositiveScaleOrTranslation' check.
-  if (gfx::IsNearestRectWithinDistance(target_space_rect, 0.001f) &&
-      quad_to_target_transform.IsPositiveScaleOrTranslation()) {
-    quad_rect = gfx::ToNearestRect(target_space_rect);
-    // Later in 'SurfaceAggregator' this transform will have 2d translation.
-    quad_to_target_transform = gfx::Transform();
+  if (quad_to_target_transform.Preserves2dAxisAlignment()) {
+    gfx::RectF target_space_rect =
+        quad_to_target_transform.MapRect(gfx::RectF(quad_rect));
+    // This simple rect representation cannot mathematically express a rotation
+    // (and currently does not express flip/mirror) hence the
+    // 'IsPositiveScaleOrTranslation' check.
+    if (gfx::IsNearestRectWithinDistance(target_space_rect, 0.001f) &&
+        quad_to_target_transform.IsPositiveScaleOrTranslation()) {
+      quad_rect = gfx::ToNearestRect(target_space_rect);
+      // Later in 'SurfaceAggregator' this transform will have 2d translation.
+      quad_to_target_transform = gfx::Transform();
+    }
   }
 
   if (current_resource_.id) {
