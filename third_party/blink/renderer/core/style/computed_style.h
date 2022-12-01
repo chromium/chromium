@@ -2226,8 +2226,11 @@ class ComputedStyle : public ComputedStyleBase,
       bool* is_current_color = nullptr) const;
 
   // -webkit-appearance utility functions.
+  static bool HasEffectiveAppearance(ControlPart effective_appearance) {
+    return effective_appearance != kNoControlPart;
+  }
   bool HasEffectiveAppearance() const {
-    return EffectiveAppearance() != kNoControlPart;
+    return HasEffectiveAppearance(EffectiveAppearance());
   }
   bool IsCheckboxOrRadioPart() const {
     return HasEffectiveAppearance() &&
@@ -2651,6 +2654,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     return *animations;
   }
 
+  // appearance
+  bool HasEffectiveAppearance() const {
+    return ComputedStyle::HasEffectiveAppearance(EffectiveAppearance());
+  }
+
   // backdrop-filter
   FilterOperations& MutableBackdropFilter() {
     DCHECK(BackdropFilterInternal().Get());
@@ -2796,6 +2804,9 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     if (FilterInternal()->operations_ != v)
       MutableFilterInternal()->operations_ = v;
   }
+
+  // float
+  bool IsFloating() const { return Floating() != EFloat::kNone; }
 
   // font
   void SetFontDescription(const FontDescription& v) {

@@ -326,12 +326,12 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
 }
 
 static void AdjustStyleForFirstLetter(ComputedStyleBuilder& builder) {
-  const ComputedStyle& style = *builder.InternalStyle();
-  if (style.StyleType() != kPseudoIdFirstLetter)
+  if (builder.StyleType() != kPseudoIdFirstLetter)
     return;
 
   // Force inline display (except for floating first-letters).
-  builder.SetDisplay(style.IsFloating() ? EDisplay::kBlock : EDisplay::kInline);
+  builder.SetDisplay(builder.IsFloating() ? EDisplay::kBlock
+                                          : EDisplay::kInline);
 }
 
 static void AdjustStyleForMarker(ComputedStyle& style,
@@ -822,7 +822,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // Absolute/fixed positioned elements, floating elements and the document
     // element need block-like outside display.
     if (style.Display() != EDisplay::kContents &&
-        (style.HasOutOfFlowPosition() || style.IsFloating()))
+        (style.HasOutOfFlowPosition() || builder.IsFloating()))
       builder.SetDisplay(EquivalentBlockDisplay(style.Display()));
 
     if (is_document_element)
@@ -996,7 +996,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   bool is_media_control =
       element && element->ShadowPseudoId().StartsWith("-webkit-media-controls");
-  if (is_media_control && !style.HasEffectiveAppearance()) {
+  if (is_media_control && !builder.HasEffectiveAppearance()) {
     // For compatibility reasons if the element is a media control and the
     // -webkit-appearance is none then we should clear the background image.
     builder.MutableBackgroundInternal().ClearImage();

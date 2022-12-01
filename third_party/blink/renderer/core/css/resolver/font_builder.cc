@@ -475,16 +475,16 @@ FontSelector* FontBuilder::FontSelectorFromTreeScope(
   return document_->GetStyleEngine().GetFontSelector();
 }
 
-FontSelector* FontBuilder::ComputeFontSelector(const ComputedStyle& style) {
+FontSelector* FontBuilder::ComputeFontSelector(
+    const ComputedStyleBuilder& builder) {
   if (IsSet(PropertySetFlag::kFamily))
     return FontSelectorFromTreeScope(family_tree_scope_);
   else
-    return style.GetFont().GetFontSelector();
+    return builder.GetFont().GetFontSelector();
 }
 
 void FontBuilder::CreateFont(ComputedStyleBuilder& builder,
                              const ComputedStyle* parent_style) {
-  const ComputedStyle& style = *builder.InternalStyle();
   DCHECK(document_);
 
   if (!flags_)
@@ -500,7 +500,7 @@ void FontBuilder::CreateFont(ComputedStyleBuilder& builder,
   UpdateSpecifiedSize(description, parent_description);
   UpdateComputedSize(description, builder);
 
-  FontSelector* font_selector = ComputeFontSelector(style);
+  FontSelector* font_selector = ComputeFontSelector(builder);
   UpdateAdjustedSize(description, font_selector);
 
   builder.SetFont(Font(description, font_selector));

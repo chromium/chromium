@@ -202,8 +202,7 @@ void LayoutThemeDefault::AdjustButtonStyle(
 void LayoutThemeDefault::AdjustSearchFieldCancelButtonStyle(
     ComputedStyleBuilder& builder) const {
   // Scale the button size based on the font size
-  float font_scale =
-      builder.InternalStyle()->FontSize() / kDefaultControlFontPixelSize;
+  float font_scale = builder.FontSize() / kDefaultControlFontPixelSize;
   int cancel_button_size = static_cast<int>(lroundf(std::min(
       std::max(kMinCancelButtonSize, kDefaultCancelButtonSize * font_scale),
       kMaxCancelButtonSize)));

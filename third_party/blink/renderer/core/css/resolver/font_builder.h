@@ -166,7 +166,7 @@ class CORE_EXPORT FontBuilder {
                                          float specified_size);
 
   FontSelector* FontSelectorFromTreeScope(const TreeScope* tree_scope);
-  FontSelector* ComputeFontSelector(const ComputedStyle& style);
+  FontSelector* ComputeFontSelector(const ComputedStyleBuilder&);
 
   Document* document_{nullptr};
   const TreeScope* family_tree_scope_{nullptr};

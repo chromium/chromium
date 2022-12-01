@@ -301,7 +301,7 @@ scoped_refptr<ComputedStyle> SliderThumbElement::CustomStyleForLayoutObject(
     builder.SetEffectiveAppearance(kMediaSliderThumbPart);
   else if (host_style.EffectiveAppearance() == kMediaVolumeSliderPart)
     builder.SetEffectiveAppearance(kMediaVolumeSliderThumbPart);
-  if (builder.InternalStyle()->HasEffectiveAppearance())
+  if (builder.HasEffectiveAppearance())
     LayoutTheme::GetTheme().AdjustSliderThumbSize(builder);
 
   return builder.TakeStyle();
