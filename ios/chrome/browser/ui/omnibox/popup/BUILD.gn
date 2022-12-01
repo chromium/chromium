@@ -58,6 +58,7 @@ source_set("popup") {
     "omnibox_popup_container_view.mm",
     "omnibox_popup_coordinator.h",
     "omnibox_popup_coordinator.mm",
+    "omnibox_popup_mediator+private.h",
     "omnibox_popup_mediator.h",
     "omnibox_popup_mediator.mm",
     "omnibox_popup_presenter.h",
