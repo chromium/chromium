@@ -339,14 +339,27 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedSyncDisabledByPolicy) {
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Sync-consent", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SyncConsentTest, PRE_AbortedSetup) {
+// Flaky. http://b/260014328
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PRE_AbortedSetup DISABLED_PRE_AbortedSetup
+#else
+#define MAYBE_PRE_AbortedSetup PRE_AbortedSetup
+#endif
+IN_PROC_BROWSER_TEST_F(SyncConsentTest, MAYBE_PRE_AbortedSetup) {
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
 }
+#undef MAYBE_PRE_AbortedSetup
 
-IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
+// Flaky. http://b/260014328
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AbortedSetup DISABLED_AbortedSetup
+#else
+#define MAYBE_AbortedSetup AbortedSetup
+#endif
+IN_PROC_BROWSER_TEST_F(SyncConsentTest, MAYBE_AbortedSetup) {
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -359,6 +372,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
   EXPECT_TRUE(settings->IsSyncEverythingEnabled());
   EXPECT_TRUE(settings->IsSyncAllOsTypesEnabled());
 }
+#undef MAYBE_AbortedSetup
 
 // TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
 #if !defined(NDEBUG)
