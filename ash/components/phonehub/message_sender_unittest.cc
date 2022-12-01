@@ -185,5 +185,13 @@ TEST_F(MessageSenderImplTest, SendFeatureSetupRequest) {
                 fake_connection_manager_->sent_messages().back());
 }
 
+TEST_F(MessageSenderImplTest, SendPingRequest) {
+  proto::PingRequest request;
+  message_sender_->SendPingRequest(request);
+
+  VerifyMessage(proto::MessageType::PING_REQUEST, &request,
+                fake_connection_manager_->sent_messages().back());
+}
+
 }  // namespace phonehub
 }  // namespace ash

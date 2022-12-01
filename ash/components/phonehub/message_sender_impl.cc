@@ -146,6 +146,10 @@ void MessageSenderImpl::SendInitiateCameraRollItemTransferRequest(
               &request);
 }
 
+void MessageSenderImpl::SendPingRequest(const proto::PingRequest& request) {
+  SendMessage(proto::MessageType::PING_REQUEST, &request);
+}
+
 void MessageSenderImpl::SendMessage(
     proto::MessageType message_type,
     const google::protobuf::MessageLite* request) {

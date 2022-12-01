@@ -23,6 +23,7 @@ class FakeMessageReceiver : public MessageReceiver {
   using MessageReceiver::NotifyFetchCameraRollItemsResponseReceived;
   using MessageReceiver::NotifyPhoneStatusSnapshotReceived;
   using MessageReceiver::NotifyPhoneStatusUpdateReceived;
+  using MessageReceiver::NotifyPingResponseReceived;
 };
 
 }  // namespace phonehub

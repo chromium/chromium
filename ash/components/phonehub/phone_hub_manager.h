@@ -25,6 +25,7 @@ class NotificationInteractionHandler;
 class NotificationManager;
 class OnboardingUiTracker;
 class PhoneModel;
+class PingManager;
 class RecentAppsInteractionHandler;
 class ScreenLockManager;
 class TetherController;
@@ -56,6 +57,7 @@ class PhoneHubManager {
   virtual OnboardingUiTracker* GetOnboardingUiTracker() = 0;
   virtual AppStreamLauncherDataModel* GetAppStreamLauncherDataModel() = 0;
   virtual PhoneModel* GetPhoneModel() = 0;
+  virtual PingManager* GetPingManager() = 0;
   virtual RecentAppsInteractionHandler* GetRecentAppsInteractionHandler() = 0;
   virtual ScreenLockManager* GetScreenLockManager() = 0;
   virtual TetherController* GetTetherController() = 0;

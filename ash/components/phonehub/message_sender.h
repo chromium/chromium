@@ -68,6 +68,8 @@ class MessageSender {
   virtual void SendInitiateCameraRollItemTransferRequest(
       const proto::InitiateCameraRollItemTransferRequest& request) = 0;
 
+  virtual void SendPingRequest(const proto::PingRequest& request) = 0;
+
  protected:
   MessageSender() = default;
 };

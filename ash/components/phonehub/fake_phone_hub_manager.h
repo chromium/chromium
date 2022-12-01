@@ -18,6 +18,7 @@
 #include "ash/components/phonehub/fake_notification_interaction_handler.h"
 #include "ash/components/phonehub/fake_notification_manager.h"
 #include "ash/components/phonehub/fake_onboarding_ui_tracker.h"
+#include "ash/components/phonehub/fake_ping_manager.h"
 #include "ash/components/phonehub/fake_recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/fake_screen_lock_manager.h"
 #include "ash/components/phonehub/fake_tether_controller.h"
@@ -98,6 +99,8 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_camera_roll_manager_;
   }
 
+  FakePingManager* fake_ping_manager() { return &fake_ping_manager_; }
+
   void set_host_last_seen_timestamp(absl::optional<base::Time> timestamp) {
     host_last_seen_timestamp_ = timestamp;
   }
@@ -116,6 +119,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   OnboardingUiTracker* GetOnboardingUiTracker() override;
   AppStreamLauncherDataModel* GetAppStreamLauncherDataModel() override;
   PhoneModel* GetPhoneModel() override;
+  FakePingManager* GetPingManager() override;
   RecentAppsInteractionHandler* GetRecentAppsInteractionHandler() override;
   ScreenLockManager* GetScreenLockManager() override;
   TetherController* GetTetherController() override;
@@ -142,6 +146,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeUserActionRecorder fake_user_action_recorder_;
   FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
   FakeCameraRollManager fake_camera_roll_manager_;
+  FakePingManager fake_ping_manager_;
   FakeIconDecoder fake_icon_decoder_;
   AppStreamManager app_stream_manager_;
   absl::optional<base::Time> host_last_seen_timestamp_ = absl::nullopt;

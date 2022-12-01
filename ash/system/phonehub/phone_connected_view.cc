@@ -8,6 +8,7 @@
 
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/ping_manager.h"
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
@@ -87,6 +88,11 @@ PhoneConnectedView::PhoneConnectedView(
   if (features::IsEcheSWAEnabled() && recent_apps_handler) {
     setup_layered_view(AddChildView(std::make_unique<PhoneHubRecentAppsView>(
         recent_apps_handler, phone_hub_manager)));
+  }
+
+  auto* ping_manager = phone_hub_manager->GetPingManager();
+  if (features::IsPhoneHubPingOnBubbleOpenEnabled() && ping_manager) {
+    ping_manager->SendPingRequest();
   }
 
   phone_hub_manager->GetUserActionRecorder()->RecordUiOpened();

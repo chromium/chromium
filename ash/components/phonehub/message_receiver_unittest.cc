@@ -44,6 +44,8 @@ class FakeObserver : public MessageReceiver::Observer {
     return fetch_camera_roll_item_data_response_calls_;
   }
 
+  size_t ping_response_num_calls() const { return ping_response_num_calls_; }
+
   size_t app_stream_update_calls() const { return app_stream_update_calls_; }
 
   size_t app_list_update_calls() const { return app_list_update_calls_; }
@@ -113,6 +115,8 @@ class FakeObserver : public MessageReceiver::Observer {
     ++app_stream_update_calls_;
   }
 
+  void OnPingResponseReceived() override { ++ping_response_num_calls_; }
+
   void OnAppListUpdateReceived(proto::AppListUpdate app_list_update) override {
     last_app_list_update_ = app_list_update;
     ++app_list_update_calls_;
@@ -124,6 +128,7 @@ class FakeObserver : public MessageReceiver::Observer {
   size_t feature_setup_response_num_calls_ = 0;
   size_t fetch_camera_roll_items_response_calls_ = 0;
   size_t fetch_camera_roll_item_data_response_calls_ = 0;
+  size_t ping_response_num_calls_ = 0;
   size_t app_stream_update_calls_ = 0;
   size_t app_list_update_calls_ = 0;
   proto::PhoneStatusSnapshot last_snapshot_;
@@ -187,6 +192,10 @@ class MessageReceiverImplTest : public testing::Test {
 
   size_t GetNumFetchCameraRollItemDataResponseCalls() const {
     return fake_observer_.fetch_camera_roll_item_data_response_calls();
+  }
+
+  size_t GetNumPingResponseCalls() const {
+    return fake_observer_.ping_response_num_calls();
   }
 
   size_t GetNumAppStreamUpdateCalls() const {
@@ -442,6 +451,34 @@ TEST_F(MessageReceiverImplTest,
   EXPECT_EQ(0u, GetNumFeatureSetupResponseCalls());
   EXPECT_EQ(0u, GetNumFetchCameraRollItemsResponseCalls());
   EXPECT_EQ(0u, GetNumFetchCameraRollItemDataResponseCalls());
+}
+
+TEST_F(MessageReceiverImplTest, OnPingResponseReceivedFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPhoneHubPingOnBubbleOpen);
+
+  proto::PingResponse expected_response;
+
+  // Simulate receiving a message
+  const std::string expected_message =
+      SerializeMessage(proto::PING_RESPONSE, &expected_response);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(1u, GetNumPingResponseCalls());
+}
+
+TEST_F(MessageReceiverImplTest, OnPingResponseReceivedFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPhoneHubPingOnBubbleOpen);
+
+  proto::PingResponse expected_response;
+
+  // Simulate receiving a message
+  const std::string expected_message =
+      SerializeMessage(proto::PING_RESPONSE, &expected_response);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumPingResponseCalls());
 }
 
 TEST_F(MessageReceiverImplTest, OnAppStreamUpdateReceived) {

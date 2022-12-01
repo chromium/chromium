@@ -38,6 +38,7 @@ class FakeMessageSender : public MessageSender {
       const proto::FetchCameraRollItemDataRequest& request) override;
   void SendInitiateCameraRollItemTransferRequest(
       const proto::InitiateCameraRollItemTransferRequest& request) override;
+  void SendPingRequest(const proto::PingRequest& request) override;
   void SendFeatureSetupRequest(bool camera_roll, bool notifications) override;
 
   std::pair<bool, bool> GetRecentCrosState() const;
@@ -53,6 +54,7 @@ class FakeMessageSender : public MessageSender {
   GetRecentFetchCameraRollItemDataRequest() const;
   const proto::InitiateCameraRollItemTransferRequest&
   GetRecentInitiateCameraRollItemTransferRequest() const;
+  const proto::PingRequest& GetRecentPingRequest() const;
   std::pair<bool, bool> GetRecentFeatureSetupRequest() const;
 
   size_t GetCrosStateCallCount() const;
@@ -79,6 +81,8 @@ class FakeMessageSender : public MessageSender {
 
   size_t GetFeatureSetupRequestCallCount() const;
 
+  size_t GetPingRequestCallCount() const;
+
  private:
   std::vector<std::pair</*is_notifications_setting_enabled*/ bool,
                         /*is_camera_roll_setting_enabled*/ bool>>
@@ -95,6 +99,7 @@ class FakeMessageSender : public MessageSender {
       fetch_camera_roll_item_data_requests_;
   std::vector<proto::InitiateCameraRollItemTransferRequest>
       initiate_camera_roll_item_transfer_requests_;
+  std::vector<proto::PingRequest> send_ping_requests_;
   size_t show_notification_access_setup_count_ = 0;
   std::vector<std::pair<bool, bool>> feature_setup_requests_;
 };

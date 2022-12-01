@@ -45,6 +45,7 @@ class MultideviceSetupStateUpdater;
 class MutablePhoneModel;
 class NotificationProcessor;
 class PhoneStatusProcessor;
+class PingManager;
 class UserActionRecorder;
 
 // Implemented as a KeyedService which is keyed by the primary Profile.
@@ -75,6 +76,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   OnboardingUiTracker* GetOnboardingUiTracker() override;
   AppStreamLauncherDataModel* GetAppStreamLauncherDataModel() override;
   PhoneModel* GetPhoneModel() override;
+  PingManager* GetPingManager() override;
   RecentAppsInteractionHandler* GetRecentAppsInteractionHandler() override;
   ScreenLockManager* GetScreenLockManager() override;
   TetherController* GetTetherController() override;
@@ -123,6 +125,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<CameraRollManager> camera_roll_manager_;
   std::unique_ptr<FeatureSetupResponseProcessor>
       feature_setup_response_processor_;
+  std::unique_ptr<PingManager> ping_manager_;
 };
 
 }  // namespace phonehub

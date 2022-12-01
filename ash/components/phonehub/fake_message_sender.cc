@@ -61,6 +61,10 @@ void FakeMessageSender::SendInitiateCameraRollItemTransferRequest(
   initiate_camera_roll_item_transfer_requests_.push_back(request);
 }
 
+void FakeMessageSender::SendPingRequest(const proto::PingRequest& request) {
+  send_ping_requests_.push_back(request);
+}
+
 void FakeMessageSender::SendFeatureSetupRequest(bool camera_roll,
                                                 bool notifications) {
   feature_setup_requests_.push_back(std::make_pair(camera_roll, notifications));
@@ -107,6 +111,10 @@ size_t FakeMessageSender::GetFeatureSetupRequestCallCount() const {
   return feature_setup_requests_.size();
 }
 
+size_t FakeMessageSender::GetPingRequestCallCount() const {
+  return send_ping_requests_.size();
+}
+
 std::pair<bool, bool> FakeMessageSender::GetRecentCrosState() const {
   return cros_states_.back();
 }
@@ -145,6 +153,10 @@ FakeMessageSender::GetRecentFetchCameraRollItemDataRequest() const {
 const proto::InitiateCameraRollItemTransferRequest&
 FakeMessageSender::GetRecentInitiateCameraRollItemTransferRequest() const {
   return initiate_camera_roll_item_transfer_requests_.back();
+}
+
+const proto::PingRequest& FakeMessageSender::GetRecentPingRequest() const {
+  return send_ping_requests_.back();
 }
 
 std::pair<bool, bool> FakeMessageSender::GetRecentFeatureSetupRequest() const {

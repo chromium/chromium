@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/phone_hub_manager_impl.h"
+
 #include <memory>
 
 #include "ash/components/phonehub/app_stream_launcher_data_model.h"
@@ -32,6 +33,7 @@
 #include "ash/components/phonehub/phone_hub_metrics_recorder.h"
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/components/phonehub/phone_status_processor.h"
+#include "ash/components/phonehub/ping_manager_impl.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 #include "ash/components/phonehub/screen_lock_manager_impl.h"
 #include "ash/components/phonehub/tether_controller_impl.h"
@@ -173,6 +175,12 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               ? std::make_unique<FeatureSetupResponseProcessor>(
                     message_receiver_.get(),
                     multidevice_feature_access_manager_.get())
+              : nullptr),
+      ping_manager_(
+          features::IsPhoneHubPingOnBubbleOpenEnabled()
+              ? std::make_unique<PingManagerImpl>(connection_manager_.get(),
+                                                  message_receiver_.get(),
+                                                  message_sender_.get())
               : nullptr) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
@@ -228,6 +236,10 @@ PhoneModel* PhoneHubManagerImpl::GetPhoneModel() {
   return phone_model_.get();
 }
 
+PingManager* PhoneHubManagerImpl::GetPingManager() {
+  return ping_manager_.get();
+}
+
 RecentAppsInteractionHandler*
 PhoneHubManagerImpl::GetRecentAppsInteractionHandler() {
   return recent_apps_interaction_handler_.get();
@@ -261,6 +273,7 @@ void PhoneHubManagerImpl::GetHostLastSeenTimestamp(
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {
+  ping_manager_.reset();
   feature_setup_response_processor_.reset();
   camera_roll_manager_.reset();
   invalid_connection_disconnector_.reset();

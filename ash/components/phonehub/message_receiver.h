@@ -44,6 +44,10 @@ class MessageReceiver {
     virtual void OnFetchCameraRollItemDataResponseReceived(
         const proto::FetchCameraRollItemDataResponse& response) {}
 
+    // Called when the remote phone responds to the ping request from the
+    // Chromebook.
+    virtual void OnPingResponseReceived() {}
+
     // Called when there is an update in the streamed app.
     virtual void OnAppStreamUpdateReceived(
         const proto::AppStreamUpdate app_stream_update) {}
@@ -72,6 +76,7 @@ class MessageReceiver {
       const proto::FetchCameraRollItemsResponse& response);
   void NotifyFetchCameraRollItemDataResponseReceived(
       const proto::FetchCameraRollItemDataResponse& response);
+  void NotifyPingResponseReceived();
   void NotifyAppStreamUpdateReceived(
       const proto::AppStreamUpdate app_stream_update);
   void NotifyAppListUpdateReceived(const proto::AppListUpdate app_list_update);

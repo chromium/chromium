@@ -49,6 +49,11 @@ void MessageReceiver::NotifyFetchCameraRollItemDataResponseReceived(
     observer.OnFetchCameraRollItemDataResponseReceived(response);
 }
 
+void MessageReceiver::NotifyPingResponseReceived() {
+  for (auto& observer : observer_list_)
+    observer.OnPingResponseReceived();
+}
+
 void MessageReceiver::NotifyAppStreamUpdateReceived(
     const proto::AppStreamUpdate app_stream_update) {
   for (auto& observer : observer_list_)

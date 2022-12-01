@@ -41,6 +41,7 @@ class MessageSenderImpl : public MessageSender {
       const proto::FetchCameraRollItemDataRequest& request) override;
   void SendInitiateCameraRollItemTransferRequest(
       const proto::InitiateCameraRollItemTransferRequest& request) override;
+  void SendPingRequest(const proto::PingRequest& request) override;
 
  private:
   void SendMessage(proto::MessageType message_type,
