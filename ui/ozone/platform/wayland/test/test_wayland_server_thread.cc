@@ -121,6 +121,9 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
     return false;
 
   if (config.enable_aura_shell == EnableAuraShellProtocol::kEnabled) {
+    if (!zxdg_output_manager_.Initialize(display_.get()))
+      return false;
+
     output_.set_aura_shell_enabled();
     if (!zaura_shell_.Initialize(display_.get()))
       return false;

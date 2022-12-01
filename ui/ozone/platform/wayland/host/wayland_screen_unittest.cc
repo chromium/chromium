@@ -1119,30 +1119,37 @@ TEST_P(LazilyConfiguredScreenTest, DualOutput) {
   EXPECT_EQ(2u, screen_->GetAllDisplays().size());
 }
 
-using WaylandAuraShellScreenTest = WaylandScreenTest;
+class WaylandAuraShellScreenTest : public WaylandScreenTest {
+ public:
+  void SetUp() override {
+    WaylandScreenTest::SetUp();
+    // Submit surfaces in pixel coordinates when aura_shell is used.
+    // TODO(oshima): Do this in all tests with ash_shell.
+    connection_->set_surface_submission_in_pixel_coordinates(true);
+  }
+};
 
 TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    const gfx::Rect physical_bounds{800, 600};
-    server->output()->SetRect(physical_bounds);
+  constexpr gfx::Rect kPhysicalBounds{800, 600};
+  PostToServerAndWait([kPhysicalBounds](wl::TestWaylandServerThread* server) {
+    server->output()->SetRect(kPhysicalBounds);
     server->output()->Flush();
   });
 
   uint32_t changed_values = display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
                             display::DisplayObserver::DISPLAY_METRIC_WORK_AREA;
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
-  const gfx::Rect expected_bounds{800, 600};
-  EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
-  const gfx::Size expected_size_in_pixels{800, 600};
+  constexpr gfx::Rect kExpectedBounds{800, 600};
+  EXPECT_EQ(observer.GetDisplay().bounds(), kExpectedBounds);
+  constexpr gfx::Size expected_size_in_pixels{800, 600};
   EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
-  EXPECT_EQ(observer.GetDisplay().work_area(), expected_bounds);
+  EXPECT_EQ(observer.GetDisplay().work_area(), kExpectedBounds);
 
   // Test work area.
-  const gfx::Rect new_work_area{10, 20, 700, 500};
-  const gfx::Insets expected_inset = expected_bounds.InsetsFrom(new_work_area);
+  constexpr gfx::Rect kNewWorkArea{10, 20, 700, 500};
+  const gfx::Insets expected_inset = kExpectedBounds.InsetsFrom(kNewWorkArea);
   PostToServerAndWait([expected_inset](wl::TestWaylandServerThread* server) {
     auto* output = server->output();
     ASSERT_TRUE(output->GetAuraOutput());
@@ -1153,18 +1160,21 @@ TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   changed_values = display::DisplayObserver::DISPLAY_METRIC_WORK_AREA;
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
   // Bounds should be unchanged.
-  EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+  EXPECT_EQ(observer.GetDisplay().bounds(), kExpectedBounds);
   EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
   // Work area should have new value.
-  EXPECT_EQ(observer.GetDisplay().work_area(), new_work_area);
+  EXPECT_EQ(observer.GetDisplay().work_area(), kNewWorkArea);
 
   // Test scaling.
   constexpr int32_t kNewScaleValue = 2;
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* output = server->output();
-    output->SetScale(kNewScaleValue);
-    output->Flush();
-  });
+  const gfx::Size scaled_logical_size =
+      gfx::ScaleToRoundedSize(kPhysicalBounds.size(), 1.f / kNewScaleValue);
+  PostToServerAndWait(
+      [scaled_logical_size](wl::TestWaylandServerThread* server) {
+        auto* output = server->output();
+        output->xdg_output()->SetLogicalSize(scaled_logical_size);
+        output->Flush();
+      });
 
   changed_values =
       display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR |
@@ -1182,11 +1192,15 @@ TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   EXPECT_EQ(observer.GetDisplay().work_area(), scaled_work_area);
 
   // Test rotation.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* output = server->output();
-    output->SetTransform(WL_OUTPUT_TRANSFORM_90);
-    output->Flush();
-  });
+  PostToServerAndWait(
+      [scaled_logical_size](wl::TestWaylandServerThread* server) {
+        gfx::Size transposed = scaled_logical_size;
+        transposed.Transpose();
+        auto* output = server->output();
+        output->SetTransform(WL_OUTPUT_TRANSFORM_90);
+        output->xdg_output()->SetLogicalSize(transposed);
+        output->Flush();
+      });
 
   changed_values = display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
                    display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
@@ -1220,28 +1234,32 @@ TEST_P(WaylandAuraShellScreenTest,
   platform_screen_->AddObserver(&observer);
 
   // wl_output.geometry origin is set in DIP screen coordinates.
-  const gfx::Point origin(50, 70);
-  PostToServerAndWait([origin](wl::TestWaylandServerThread* server) {
-    // wl_output.mode size is sent in physical coordinates, so it has portrait
-    // dimensions for a display panel with portrait natural orientation.
-    const gfx::Size physical_size(1200, 1600);
-    server->output()->SetRect({origin, physical_size});
-  });
+  constexpr gfx::Point kOrigin(50, 70);
+  constexpr gfx::Size kPhysicalSize(1200, 1600);
+  PostToServerAndWait(
+      [kOrigin, kPhysicalSize](wl::TestWaylandServerThread* server) {
+        // wl_output.mode size is sent in physical coordinates, so it has
+        // portrait dimensions for a display panel with portrait natural
+        // orientation.
+        server->output()->SetRect({kOrigin, kPhysicalSize});
+      });
 
   // Inset is sent in logical coordinates.
-  const gfx::Insets insets = gfx::Insets::TLBR(10, 20, 30, 40);
-  PostToServerAndWait([insets](wl::TestWaylandServerThread* server) {
+  constexpr gfx::Insets kInsets = gfx::Insets::TLBR(10, 20, 30, 40);
+  gfx::Size scaled_logical_size = gfx::ScaleToRoundedSize(kPhysicalSize, 0.5);
+  scaled_logical_size.Transpose();
+  PostToServerAndWait([kInsets, scaled_logical_size](
+                          wl::TestWaylandServerThread* server) {
     auto* output = server->output();
     ASSERT_TRUE(output->GetAuraOutput());
-    output->GetAuraOutput()->SetInsets(insets);
+    output->GetAuraOutput()->SetInsets(kInsets);
 
     // Display panel's natural orientation is in portrait, so it needs a
     // transform of 90 degrees to be in landscape.
     output->SetTransform(WL_OUTPUT_TRANSFORM_90);
     // Begin with the logical transform at 0 degrees.
     output->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_NORMAL);
-
-    output->SetScale(2);
+    output->xdg_output()->SetLogicalSize(scaled_logical_size);
     output->Flush();
   });
 
@@ -1253,13 +1271,13 @@ TEST_P(WaylandAuraShellScreenTest,
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
 
   // Logical bounds should be in landscape.
-  const gfx::Rect expected_bounds(origin, gfx::Size(800, 600));
-  EXPECT_EQ(observer.GetDisplay().bounds(), expected_bounds);
+  const gfx::Rect kExpectedBounds(kOrigin, gfx::Size(800, 600));
+  EXPECT_EQ(observer.GetDisplay().bounds(), kExpectedBounds);
   const gfx::Size expected_size_in_pixels(1600, 1200);
   EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), expected_size_in_pixels);
 
-  gfx::Rect expected_work_area(expected_bounds);
-  expected_work_area.Inset(insets);
+  gfx::Rect expected_work_area(kExpectedBounds);
+  expected_work_area.Inset(kInsets);
   EXPECT_EQ(observer.GetDisplay().work_area(), expected_work_area);
 
   // Panel rotation and display rotation should have an offset.
@@ -1270,12 +1288,15 @@ TEST_P(WaylandAuraShellScreenTest,
 
   // Further rotate the display to logical portrait orientation, which is 180
   // with the natural orientation offset.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* output = server->output();
-    output->SetTransform(WL_OUTPUT_TRANSFORM_180);
-    output->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_90);
-    output->Flush();
-  });
+  scaled_logical_size.Transpose();
+  PostToServerAndWait(
+      [scaled_logical_size](wl::TestWaylandServerThread* server) {
+        auto* output = server->output();
+        output->SetTransform(WL_OUTPUT_TRANSFORM_180);
+        output->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_90);
+        output->xdg_output()->SetLogicalSize(scaled_logical_size);
+        output->Flush();
+      });
 
   changed_values = display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
                    display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
@@ -1283,13 +1304,13 @@ TEST_P(WaylandAuraShellScreenTest,
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
 
   // Logical bounds should now be portrait.
-  const gfx::Rect portrait_bounds(origin, gfx::Size(600, 800));
+  const gfx::Rect portrait_bounds(kOrigin, gfx::Size(600, 800));
   EXPECT_EQ(observer.GetDisplay().bounds(), portrait_bounds);
   const gfx::Size portrait_size_in_pixels(1200, 1600);
   EXPECT_EQ(observer.GetDisplay().GetSizeInPixel(), portrait_size_in_pixels);
 
   gfx::Rect portrait_work_area(portrait_bounds);
-  portrait_work_area.Inset(insets);
+  portrait_work_area.Inset(kInsets);
   EXPECT_EQ(observer.GetDisplay().work_area(), portrait_work_area);
 
   // Panel rotation and display rotation should still have an offset.

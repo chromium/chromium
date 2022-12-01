@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
 
-#include <aura-shell-server-protocol.h>
-
 #include "ui/base/wayland/wayland_display_util.h"
 
 namespace wl {
@@ -41,5 +39,9 @@ void TestZAuraOutput::Flush() {
     zaura_output_send_logical_transform(resource(), logical_transform_);
   }
 }
+
+const struct zaura_output_interface kTestZAuraOutputImpl {
+  &DestroyResource,
+};
 
 }  // namespace wl

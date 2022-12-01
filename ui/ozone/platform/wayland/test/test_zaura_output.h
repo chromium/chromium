@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZAURA_OUTPUT_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZAURA_OUTPUT_H_
 
+#include <aura-shell-server-protocol.h>
 #include <wayland-client-protocol.h>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -12,6 +13,8 @@
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 namespace wl {
+
+extern const struct zaura_output_interface kTestZAuraOutputImpl;
 
 // Manages zaura_output object.
 class TestZAuraOutput : public ServerObject {

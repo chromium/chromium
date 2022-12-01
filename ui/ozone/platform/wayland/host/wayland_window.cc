@@ -128,7 +128,7 @@ void WaylandWindow::UpdateWindowScale(bool update_bounds) {
   auto* output = output_manager->GetOutput(preferred_outputs_id.value());
   // There can be a race between sending leave output event and destroying
   // wl_outputs. Thus, explicitly check if the output exist.
-  if (!output)
+  if (!output || !output->IsReady())
     return;
 
   float new_scale = output->scale_factor();

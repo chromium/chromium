@@ -34,7 +34,7 @@ void GetAuraOutput(wl_client* client,
                    wl_resource* output_resource) {
   wl_resource* zaura_output_resource = CreateResourceWithImpl<TestZAuraOutput>(
       client, &zaura_output_interface, kZAuraOutputVersion,
-      &kTestZAuraToplevelImpl, id);
+      &kTestZAuraOutputImpl, id);
   auto* output = GetUserDataAs<TestOutput>(output_resource);
   output->SetAuraOutput(GetUserDataAs<TestZAuraOutput>(zaura_output_resource));
 }

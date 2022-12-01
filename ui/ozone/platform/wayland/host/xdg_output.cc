@@ -50,6 +50,10 @@ void XDGOutput::OutputHandleDone(void* data,
   // deprecated since version 3
 }
 
+bool XDGOutput::IsReady() const {
+  return !logical_size_.IsEmpty();
+}
+
 // static
 void XDGOutput::OutputHandleName(void* data,
                                  struct zxdg_output_v1* zxdg_output_v1,

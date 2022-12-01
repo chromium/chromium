@@ -29,6 +29,10 @@ class XDGOutput {
   const std::string& description() const { return description_; }
   const std::string& name() const { return name_; }
 
+  // Tells if the output has already received necessary screen information to
+  // generate Display.
+  bool IsReady() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
 

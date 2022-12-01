@@ -35,6 +35,7 @@
 #include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_explicit_synchronization.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_text_input_manager.h"
+#include "ui/ozone/platform/wayland/test/test_zxdg_output_manager.h"
 
 struct wl_client;
 struct wl_display;
@@ -212,6 +213,7 @@ class TestWaylandServerThread : public base::Thread,
   TestOverlayPrioritizer overlay_prioritizer_;
   TestSurfaceAugmenter surface_augmenter_;
   TestSeat seat_;
+  TestZXdgOutputManager zxdg_output_manager_;
   MockXdgShell xdg_shell_;
   MockZAuraShell zaura_shell_;
   TestZcrStylus zcr_stylus_;

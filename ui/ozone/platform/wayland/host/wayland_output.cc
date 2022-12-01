@@ -173,8 +173,12 @@ const std::string& WaylandOutput::name() const {
 }
 
 bool WaylandOutput::IsReady() const {
+  // The aura output requires both the logical size and the display ID
+  // to become ready. If a client that uses xdg_output but not aura_output
+  // needs different condition for readiness, this needs to be updated.
   return !physical_size_.IsEmpty() &&
-         (!aura_output_ || aura_output_->IsReady());
+         (!aura_output_ ||
+          (xdg_output_ && xdg_output_->IsReady() && aura_output_->IsReady()));
 }
 
 zaura_output* WaylandOutput::get_zaura_output() {
@@ -199,8 +203,10 @@ void WaylandOutput::TriggerDelegateNotifications() {
       scale_factor_ = max_physical_side / max_logical_side;
     }
   }
-  // Wait until the aura output receives the display id.
-  if (aura_output_ && !aura_output_->IsReady())
+
+  // Wait until the all outputs receives enough information to generate display
+  // information.
+  if (!IsReady())
     return;
 
   delegate_->OnOutputHandleMetrics(GetMetrics());

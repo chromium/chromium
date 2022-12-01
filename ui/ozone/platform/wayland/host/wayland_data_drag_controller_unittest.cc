@@ -158,7 +158,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
 
     // Set output dimensions at some offset.
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-      server->output()->SetRect({20, 30, 800, 600});
+      server->output()->SetRect({20, 30, 1200, 900});
       server->output()->Flush();
     });
 
@@ -435,7 +435,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
   connection_->set_surface_submission_in_pixel_coordinates(true);
 
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
-  gfx::Point entered_point{800, 600};
+  gfx::Point entered_point{900, 600};
   {
     gfx::PointF expected_position(entered_point);
     expected_position.InvScale(kTripleScale);
@@ -455,7 +455,13 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
       // Change the scale of the output.  Windows looking into that output must
       // get the new scale and update scale of their buffers.  The default UI
       // scale equals the output scale.
-      output->SetScale(kTripleScale);
+      if (output->xdg_output()) {
+        // Use logical size to control the scale when the pixel coordinates
+        // is enabled.
+        output->xdg_output()->SetLogicalSize({400, 300});
+      } else {
+        output->SetScale(kTripleScale);
+      }
       output->Flush();
 
       auto* data_offer = server->data_device_manager()

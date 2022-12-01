@@ -65,6 +65,14 @@ void TestOutput::Flush() {
     wl_output_send_scale(resource(), scale_);
   }
 
+  if (xdg_output_) {
+    // If the logical size hasn't been set, fallback to the physical size.
+    if (!xdg_output_->HasLogicalSize())
+      xdg_output_->SendLogicalSize(rect_.size());
+    else
+      xdg_output_->Flush();
+  }
+
   if (aura_output_)
     aura_output_->Flush();
 
@@ -86,8 +94,17 @@ void TestOutput::OnBind() {
 void TestOutput::SetAuraOutput(TestZAuraOutput* aura_output) {
   aura_output_ = aura_output;
   // Make sure to send the necessary information for a client that
-  // relies on the aura output information.
-  Flush();
+  // relies on the xdg and aura output information.
+  if (xdg_output_)
+    Flush();
+}
+
+void TestOutput::SetXdgOutput(TestZXdgOutput* xdg_output) {
+  xdg_output_ = xdg_output;
+  // Make sure to send the necessary information for a client that
+  // relies on the xdg and aura output information.
+  if (aura_output_)
+    Flush();
 }
 
 TestZAuraOutput* TestOutput::GetAuraOutput() {

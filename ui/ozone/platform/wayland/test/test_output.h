@@ -13,6 +13,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
+#include "ui/ozone/platform/wayland/test/test_zxdg_output.h"
 
 namespace wl {
 
@@ -43,6 +44,9 @@ class TestOutput : public GlobalObject {
   void SetAuraOutput(TestZAuraOutput* aura_output);
   TestZAuraOutput* GetAuraOutput();
 
+  void SetXdgOutput(TestZXdgOutput* aura_output);
+  TestZXdgOutput* xdg_output() { return xdg_output_; }
+
  protected:
   void OnBind() override;
 
@@ -57,6 +61,7 @@ class TestOutput : public GlobalObject {
   absl::optional<wl_output_transform> pending_transform_ = absl::nullopt;
 
   raw_ptr<TestZAuraOutput> aura_output_ = nullptr;
+  raw_ptr<TestZXdgOutput> xdg_output_ = nullptr;
 };
 
 }  // namespace wl
