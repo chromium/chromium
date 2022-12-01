@@ -30,8 +30,9 @@ owners:
 schema:
   type: boolean
 supported_on:
-- android:109-
-- chrome.*:107-
-- chrome_os:107-
+- android:109-109
+- chrome.*:107-109
+- chrome_os:107-109
 tags: []
 type: main
+deprecated: true

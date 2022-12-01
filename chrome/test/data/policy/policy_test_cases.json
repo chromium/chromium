@@ -15126,49 +15126,7 @@
   },
 
   "AssistantWebEnabled": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "fuchsia",
-      "android"
-    ],
-    "can_be_recommended": true,
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Checking default value (no policies set).",
-        "policies": {},
-        "prefs": {
-          "autofill_assistant.enabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "note": "Enabling by policy",
-        "policies": {
-          "AssistantWebEnabled": true
-        },
-        "prefs": {
-          "autofill_assistant.enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "note": "Disabling by policy",
-        "policies": {
-          "AssistantWebEnabled": false
-        },
-        "prefs": {
-          "autofill_assistant.enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "VoiceInteractionContextEnabled": {
