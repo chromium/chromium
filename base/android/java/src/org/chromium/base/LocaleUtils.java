@@ -177,11 +177,11 @@ public class LocaleUtils {
     }
 
     /**
-     * Extracts language from a BCP 47 language tag.
+     * Extracts the base language from a BCP 47 language tag.
      * @param languageTag language tag of the form xx-XX or xx.
      * @return the xx part of the language tag.
      */
-    public static String toLanguage(String languageTag) {
+    public static String toBaseLanguage(String languageTag) {
         int pos = languageTag.indexOf('-');
         if (pos < 0) {
             return languageTag;
@@ -195,7 +195,7 @@ public class LocaleUtils {
      * @return True if the base language (e.g. "en" for "en-AU") is the same for each tag.
      */
     public static boolean isBaseLanguageEqual(String first, String second) {
-        return TextUtils.equals(toLanguage(first), toLanguage(second));
+        return TextUtils.equals(toBaseLanguage(first), toBaseLanguage(second));
     }
 
     /**

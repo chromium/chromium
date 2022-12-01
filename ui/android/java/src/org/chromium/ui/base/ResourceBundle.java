@@ -89,7 +89,7 @@ public final class ResourceBundle {
                 pathPrefix = "assets/fallback-locales/";
             } else {
                 String lang = LocalizationUtils.getSplitLanguageForAndroid(
-                        LocaleUtils.toLanguage(locale));
+                        LocaleUtils.toBaseLanguage(locale));
                 pathPrefix = "assets/locales#lang_" + lang + "/";
             }
         }

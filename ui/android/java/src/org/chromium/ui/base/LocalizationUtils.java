@@ -121,7 +121,7 @@ public class LocalizationUtils {
      *         but true for ("en-US", "en") (USA locale + English language).
      */
     public static boolean chromiumLocaleMatchesLanguage(String locale, String lang) {
-        return LocaleUtils.toLanguage(locale).equals(lang);
+        return LocaleUtils.toBaseLanguage(locale).equals(lang);
     }
 
     @NativeMethods

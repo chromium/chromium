@@ -491,7 +491,7 @@ public class AppLanguagePromoDialog {
                 continue;
             }
             // Check for base match
-            item = uiLanguagesMap.get(LocaleUtils.toLanguage(code));
+            item = uiLanguagesMap.get(LocaleUtils.toBaseLanguage(code));
             if (item != null
                     && !LocaleUtils.isBaseLanguageEqual(code, originalSystemLocalAsUILanguage)) {
                 topLanguages.add(item);
@@ -512,7 +512,7 @@ public class AppLanguagePromoDialog {
         if (uiLanguages.contains(language)) {
             return language;
         }
-        return LocaleUtils.toLanguage(language);
+        return LocaleUtils.toBaseLanguage(language);
     }
 
     /**

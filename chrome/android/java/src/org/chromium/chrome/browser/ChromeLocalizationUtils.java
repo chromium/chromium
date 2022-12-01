@@ -102,12 +102,12 @@ public class ChromeLocalizationUtils {
      * an override language is set and Play Store hygiene has not run.
      */
     public static void recordUiLanguageStatus() {
-        String defaultLanguage = LocaleUtils.toLanguage(Locale.getDefault().toLanguageTag());
+        String defaultLanguage = LocaleUtils.toBaseLanguage(Locale.getDefault().toLanguageTag());
 
         // The default locale is the first Android locale with translated Chromium resources. On N+
         // the top system language can be retrieved, even if it is not an option for Chromium's UI.
         String topAndroidLanguage =
-                LocaleUtils.toLanguage(LocaleList.getDefault().get(0).toLanguageTag());
+                LocaleUtils.toBaseLanguage(LocaleList.getDefault().get(0).toLanguageTag());
 
         boolean isDefaultLanguageAvailable = AppLocaleUtils.isSupportedUiLanguage(defaultLanguage);
         boolean isTopAndroidLanguageAvailable =
@@ -115,8 +115,8 @@ public class ChromeLocalizationUtils {
 
         // The java and native UI languages can be different if the native language pack is not
         // correctly installed through the Play Store.
-        String javaUiLanguage = LocaleUtils.toLanguage(getJavaUiLocale());
-        String nativeUiLanguage = LocaleUtils.toLanguage(LocalizationUtils.getNativeUiLocale());
+        String javaUiLanguage = LocaleUtils.toBaseLanguage(getJavaUiLocale());
+        String nativeUiLanguage = LocaleUtils.toBaseLanguage(LocalizationUtils.getNativeUiLocale());
         boolean isJavaUiCorrect = TextUtils.equals(defaultLanguage, javaUiLanguage);
         boolean isNativeUiCorrect = TextUtils.equals(defaultLanguage, nativeUiLanguage);
 

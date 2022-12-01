@@ -264,8 +264,8 @@ public class AppLocaleUtils {
     private static final Comparator<String> BASE_LANGUAGE_COMPARATOR = new Comparator<String>() {
         @Override
         public int compare(String a, String b) {
-            String langA = LocaleUtils.toLanguage(a);
-            String langB = LocaleUtils.toLanguage(b);
+            String langA = LocaleUtils.toBaseLanguage(a);
+            String langB = LocaleUtils.toBaseLanguage(b);
             return langA.compareTo(langB);
         }
     };
