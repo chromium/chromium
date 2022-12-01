@@ -85,6 +85,7 @@ class WindowModalityController;
 namespace ash {
 
 class AcceleratorControllerImpl;
+class AcceleratorTracker;
 class AccessibilityControllerImpl;
 class AccessibilityDelegate;
 class AccessibilityEventHandlerManager;
@@ -360,6 +361,12 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   AcceleratorControllerImpl* accelerator_controller() {
     return accelerator_controller_.get();
+  }
+  wm::AcceleratorFilter* accelerator_filter() {
+    return accelerator_filter_.get();
+  }
+  AcceleratorTracker* accelerator_tracker() {
+    return accelerator_tracker_.get();
   }
   AccessibilityControllerImpl* accessibility_controller() {
     return accessibility_controller_.get();
@@ -926,6 +933,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ShellDelegate> shell_delegate_;
   std::unique_ptr<CaptureModeController> capture_mode_controller_;
   std::unique_ptr<ControlVHistogramRecorder> control_v_histogram_recorder_;
+  std::unique_ptr<AcceleratorTracker> accelerator_tracker_;
   std::unique_ptr<ShutdownControllerImpl> shutdown_controller_;
   std::unique_ptr<SystemNotificationController> system_notification_controller_;
   std::unique_ptr<SystemTrayModel> system_tray_model_;

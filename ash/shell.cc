@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accelerators/accelerator_tracker.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accelerators/ash_focus_manager_factory.h"
 #include "ash/accelerators/magnifier_key_scroller.h"
@@ -687,6 +688,7 @@ Shell::~Shell() {
   overlay_filter_.reset();
 
   RemovePreTargetHandler(control_v_histogram_recorder_.get());
+  RemovePreTargetHandler(accelerator_tracker_.get());
   RemovePreTargetHandler(accelerator_filter_.get());
   RemovePreTargetHandler(event_transformation_handler_.get());
   if (back_gesture_event_handler_)
@@ -1265,6 +1267,12 @@ void Shell::Init(
 
   control_v_histogram_recorder_ = std::make_unique<ControlVHistogramRecorder>();
   AddPreTargetHandler(control_v_histogram_recorder_.get());
+
+  // AcceleratorTracker should be placed before AcceleratorFilter to make sure
+  // the accelerators won't be filtered out before getting AcceleratorTracker.
+  accelerator_tracker_ = std::make_unique<AcceleratorTracker>(
+      base::make_span(kAcceleratorTrackerList, kAcceleratorTrackerListLength));
+  AddPreTargetHandler(accelerator_tracker_.get());
 
   accelerator_filter_ = std::make_unique<::wm::AcceleratorFilter>(
       std::make_unique<PreTargetAcceleratorHandler>());

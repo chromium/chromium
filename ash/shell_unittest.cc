@@ -8,6 +8,7 @@
 #include <queue>
 #include <vector>
 
+#include "ash/accelerators//accelerator_tracker.h"
 #include "ash/accessibility/chromevox/key_accessibility_enabler.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/display/mouse_cursor_event_filter.h"
@@ -55,6 +56,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/wm/core/accelerator_filter.h"
 
 using aura::RootWindow;
 
@@ -444,6 +446,23 @@ TEST_F(ShellTest, TestPreTargetHandlerOrder) {
   EXPECT_NE(handlers.end(), cursor_filter);
   EXPECT_NE(handlers.end(), drag_drop);
   EXPECT_GT(drag_drop, cursor_filter);
+}
+
+// Tests that the accelerator_tracker is ahead of the accelerator_filter in the
+// pre-target list to make sure the accelerators won't be filtered out before
+// getting AcceleratorTracker.
+TEST_F(ShellTest, AcceleratorPreTargetHandlerOrder) {
+  Shell* shell = Shell::Get();
+  ui::EventTargetTestApi test_api(shell);
+
+  ui::EventHandlerList handlers = test_api.GetPreTargetHandlers();
+  ui::EventHandlerList::const_iterator accelerator_tracker =
+      base::ranges::find(handlers, shell->accelerator_tracker());
+  ui::EventHandlerList::const_iterator accelerator_filter =
+      base::ranges::find(handlers, shell->accelerator_filter());
+  EXPECT_NE(handlers.end(), accelerator_tracker);
+  EXPECT_NE(handlers.end(), accelerator_filter);
+  EXPECT_GT(accelerator_filter, accelerator_tracker);
 }
 
 TEST_F(ShellTest, TestAccessibilityHandlerOrder) {

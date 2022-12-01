@@ -46,10 +46,30 @@ using TrackerDataActionPair = std::pair<TrackerData, base::StringPiece>;
 // to differentiate with the real accelerators.
 // Also document the user action in tools/metrics/actions/actions.xml.
 constexpr TrackerDataActionPair kAcceleratorTrackerList[] = {
-    // Example entry.
-    // {{KeyState::PRESSED, ui::VKEY_C, ui::EF_ALT_DOWN},
-    // "AccelTracker_Alt_Copy"},
+    {{KeyState::PRESSED, ui::VKEY_3, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screenshot_Full_Mac_Launcher"},
+    {{KeyState::PRESSED, ui::VKEY_3, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screenshot_Full_Mac_Ctrl"},
+    {{KeyState::PRESSED, ui::VKEY_3, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screenshot_Full_Mac_Alt"},
+    {{KeyState::PRESSED, ui::VKEY_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screenshot_Partial_Mac_Launcher"},
+    {{KeyState::PRESSED, ui::VKEY_4, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screenshot_Partial_Mac_Ctrl"},
+    {{KeyState::PRESSED, ui::VKEY_4, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screenshot_Partial_Mac_Alt"},
+    {{KeyState::PRESSED, ui::VKEY_5, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screen_Capture_Bar_Mac_Launcher"},
+    {{KeyState::PRESSED, ui::VKEY_5, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screen_Capture_Bar_Mac_Ctrl"},
+    {{KeyState::PRESSED, ui::VKEY_5, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screen_Capture_Bar_Mac_Alt"},
+    {{KeyState::PRESSED, ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
+     "AccelTracker_Screen_Capture_Bar_Windows"},
 };
+
+constexpr size_t kAcceleratorTrackerListLength =
+    std::size(kAcceleratorTrackerList);
 
 // AcceleratorTracker is a Shell pretarget EventHandler that only records user
 // action metrics for any key combinations and does not consume the inputted

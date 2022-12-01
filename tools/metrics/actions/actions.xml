@@ -1377,6 +1377,96 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="AccelTracker_Screen_Capture_Bar_Mac_Alt">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Alt+Shift+5. Records how often users try To open
+    screen capture bar using MacOS key combos.
+  </description>
+</action>
+
+<action name="AccelTracker_Screen_Capture_Bar_Mac_Ctrl">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Ctrl+Shift+5. Records how often users try To open
+    screen capture bar using MacOS key combos.
+  </description>
+</action>
+
+<action name="AccelTracker_Screen_Capture_Bar_Mac_Launcher">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Launcher+Shift+5. Records how often users try To
+    open screen capture bar using MacOS key combos.
+  </description>
+</action>
+
+<action name="AccelTracker_Screen_Capture_Bar_Windows">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Launcher+Shift+S. Records how often users try To
+    open screen capture bar using Windows key combos.
+  </description>
+</action>
+
+<action name="AccelTracker_Screenshot_Full_Mac_Alt">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Alt+Shift+3. Records how often users try To take
+    fullscreen screenshot using MacOS key combos.
+  </description>
+</action>
+
+<action name="AccelTracker_Screenshot_Full_Mac_Ctrl">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Ctrl+Shift+3. Records how often users try To take
+    fullscreen screenshot using MacOS key combos.
+  </description>
+</action>
+
+<action name="AccelTracker_Screenshot_Full_Mac_Launcher">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Launcher+Shift+3. Records how often users try To
+    take fullscreen screenshot using MacOS key combos.
+  </description>
+</action>
+
+<action name="AccelTracker_Screenshot_Partial_Mac_Alt">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Alt+Shift+4. Records how often users try To take
+    partial screenshot using MacOS key combos.
+  </description>
+</action>
+
+<action name="AccelTracker_Screenshot_Partial_Mac_Ctrl">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Ctrl+Shift+4. Records how often users try To take
+    partial screenshot using MacOS key combos.
+  </description>
+</action>
+
+<action name="AccelTracker_Screenshot_Partial_Mac_Launcher">
+  <owner>afakhry@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    Triggered when users press Launcher+Shift+4. Records how often users try To
+    take partial screenshot using MacOS key combos.
+  </description>
+</action>
+
 <action name="AcceptedGeneratedKeyword">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
