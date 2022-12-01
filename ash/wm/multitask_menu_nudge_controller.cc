@@ -55,6 +55,8 @@ constexpr float kPulseSizeMultiplier = 3.0f;
 constexpr base::TimeDelta kPulseDuration = base::Seconds(2);
 constexpr int kPulses = 3;
 
+bool g_suppress_nudge_for_testing = false;
+
 // Clock that can be overridden for testing.
 base::Clock* g_clock_override = nullptr;
 
@@ -96,6 +98,9 @@ void MultitaskMenuNudgeController::RegisterProfilePrefs(
 
 void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   if (!chromeos::wm::features::IsFloatWindowEnabled())
+    return;
+
+  if (g_suppress_nudge_for_testing)
     return;
 
   // Nudge is already being shown, possibly on a different window.
@@ -238,6 +243,10 @@ void MultitaskMenuNudgeController::OnWindowStackingChanged(
 void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window_, window);
   DismissNudgeInternal();
+}
+
+void MultitaskMenuNudgeController::SetSuppressNudgeForTesting(bool val) {
+  g_suppress_nudge_for_testing = val;
 }
 
 // static

@@ -427,8 +427,9 @@ IN_PROC_BROWSER_TEST_F(
   ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
                                      ash::SplitViewTestApi::SnapPosition::LEFT);
 
-  // A point above the window.
-  gfx::Point edge_point(widget->GetWindowBoundsInScreen().width() / 2, -1);
+  // A point above the window, but not in the center horizontally, as a swipe
+  // down from the top center will show the chromeos tablet mode multitask menu.
+  gfx::Point edge_point(100, -1);
 
   ASSERT_FALSE(browser_view->webui_tab_strip()->GetVisible());
   aura::Window* window = widget->GetNativeWindow();

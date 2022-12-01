@@ -53,6 +53,8 @@ class MultitaskMenuNudgeController : public aura::WindowObserver {
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  ASH_EXPORT static void SetSuppressNudgeForTesting(bool val);
+
  private:
   friend class MultitaskMenuNudgeControllerTest;
 

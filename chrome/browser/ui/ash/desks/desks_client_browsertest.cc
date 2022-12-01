@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
@@ -25,6 +26,7 @@
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
+#include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
@@ -1708,6 +1710,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 // Tests that launching a template that contains a system web app will move the
 // existing instance of the system web app to the current desk.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
+  // Suppress the multitask menu nudge as we'll be checking the stacking order
+  // of the active desk children in this test.
+  ash::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
+
   Profile* profile = browser()->profile();
 
   // Create the settings and help apps, which are system web apps.
@@ -1771,13 +1777,19 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
       BrowserList::GetInstance()->get(3)->window()->GetNativeWindow();
 
   // Tests that the stacking is correct while in overview. The parent has other
-  // children for overview mode windows, but the first three elements should
+  // children for overview mode windows, but the first three app windows should
   // be [`new_browser_window`, `settings_window`, `help_window`].
   parent = settings_window->parent();
-  ASSERT_GE(parent->children().size(), 3u);
-  EXPECT_EQ(new_browser_window, parent->children()[0]);
-  EXPECT_EQ(settings_window, parent->children()[1]);
-  EXPECT_EQ(help_window, parent->children()[2]);
+  aura::Window::Windows app_windows = parent->children();
+  app_windows.erase(
+      base::ranges::remove_if(app_windows,
+                              [](aura::Window* w) {
+                                return w->GetProperty(aura::client::kAppType) ==
+                                       static_cast<int>(ash::AppType::NON_APP);
+                              }),
+      app_windows.end());
+  ASSERT_THAT(app_windows,
+              ElementsAre(new_browser_window, settings_window, help_window));
 
   // Exit overview.
   ash::ToggleOverview();

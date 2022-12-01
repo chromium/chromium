@@ -34,6 +34,7 @@
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/templates/saved_desk_test_helper.h"
+#include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
@@ -301,6 +302,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // shown as well, we need one more click outside of the launcher to dismiss
   // the nudge first before dismissing the launcher.
   shell->dark_light_mode_controller()->SetShowNudgeForTesting(false);
+
+  MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
 
   // Set up a test wallpaper controller client before signing in any users. At
   // the time a user logs in, Wallpaper controller relies on

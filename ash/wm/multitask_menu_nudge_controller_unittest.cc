@@ -39,6 +39,7 @@ class MultitaskMenuNudgeControllerTest : public AshTestBase {
 
     AshTestBase::SetUp();
 
+    MultitaskMenuNudgeController::SetSuppressNudgeForTesting(false);
     controller_ = Shell::Get()->multitask_menu_nudge_controller();
     controller_->SetOverrideClockForTesting(&test_clock_);
 

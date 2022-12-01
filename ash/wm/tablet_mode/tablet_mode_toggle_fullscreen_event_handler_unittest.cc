@@ -6,9 +6,12 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -52,9 +55,21 @@ class TabletModeToggleFullscreenEventHandlerTest : public AshTestBase {
   }
 
   void GenerateSwipe(int start_y, int end_y) {
-    GetEventGenerator()->GestureScrollSequence(gfx::Point(400, start_y),
-                                               gfx::Point(400, end_y),
+    GetEventGenerator()->GestureScrollSequence(gfx::Point(100, start_y),
+                                               gfx::Point(100, end_y),
                                                base::Milliseconds(100), 3);
+
+    if (!chromeos::wm::features::IsFloatWindowEnabled())
+      return;
+
+    // Swiping down on the center reveals the tablet mode multitask menu. Ensure
+    // our swipes do not reveal it, as it may eat following gestures.
+    auto* multitask_menu =
+        TabletModeControllerTestApi()
+            .tablet_mode_window_manager()
+            ->tablet_mode_multitask_menu_event_handler_for_testing()
+            ->multitask_menu_for_testing();
+    ASSERT_FALSE(multitask_menu);
   }
 
   aura::Window* foreground_window() { return foreground_window_.get(); }
