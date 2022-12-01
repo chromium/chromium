@@ -24,6 +24,7 @@ class TestAccessibilityInfoDataWrapper : public AccessibilityInfoDataWrapper {
  public:
   explicit TestAccessibilityInfoDataWrapper(AXTreeSourceArc* tree_source_)
       : AccessibilityInfoDataWrapper(tree_source_) {}
+  ~TestAccessibilityInfoDataWrapper() override = default;
 
   // AccessibilityInfoDataWrapper overrides:
   bool IsNode() const override { return false; }
@@ -45,6 +46,21 @@ class TestAccessibilityInfoDataWrapper : public AccessibilityInfoDataWrapper {
   void GetChildren(
       std::vector<AccessibilityInfoDataWrapper*>* children) const override {}
   int32_t GetWindowId() const override { return 1; }
+
+  AccessibilityInfoDataWrapper* GetTraversalBefore() const override {
+    return nullptr;
+  }
+  AccessibilityInfoDataWrapper* GetTraversalAfter() const override {
+    return nullptr;
+  }
+
+  void PopulateChildrenOverride() override {
+    children_override_ = std::vector<int>();
+  }
+
+  void ResetChildrenOverride() { children_override_.reset(); }
+
+  bool HasChildrenOverride() { return children_override_.has_value(); }
 
   int32_t id_ = 1;
   gfx::Rect bounds_;
@@ -163,6 +179,43 @@ TEST_F(AccessibilityInfoDataWrapperTest, BoundsScalingFromRvcArcAndLater) {
   data.Serialize(&out_data);
 
   EXPECT_EQ(gfx::RectF(0, 0, 200, 200), out_data.relative_bounds.bounds);
+}
+
+TEST_F(AccessibilityInfoDataWrapperTest, AppendToSelf) {
+  TestAccessibilityInfoDataWrapper data(nullptr);
+
+  // Append data to itself.
+  data.AppendChild(data.GetId());
+  std::vector<AccessibilityInfoDataWrapper*> children;
+  data.GetChildren(&children);
+  // Children should not be increased
+  EXPECT_EQ(0U, children.size());
+  EXPECT_TRUE(!data.HasChildrenOverride());
+
+  // Same but with replace.
+  data.ReplaceChild(0, data.GetId());
+  data.GetChildren(&children);
+  // Children should not be increased
+  EXPECT_EQ(0U, children.size());
+  EXPECT_TRUE(!data.HasChildrenOverride());
+}
+
+TEST_F(AccessibilityInfoDataWrapperTest, PopulateChildrenOverride) {
+  TestAccessibilityInfoDataWrapper data(nullptr);
+
+  // Append a random Id.
+  data.AppendChild(2);
+  EXPECT_TRUE(data.HasChildrenOverride());
+  data.ResetChildrenOverride();
+  EXPECT_TRUE(!data.HasChildrenOverride());
+  // Same but with replace.
+  data.ReplaceChild(2, 3);
+  EXPECT_TRUE(data.HasChildrenOverride());
+  data.ResetChildrenOverride();
+  EXPECT_TRUE(!data.HasChildrenOverride());
+  // Again with remove.
+  data.RemoveChild(2);
+  EXPECT_TRUE(data.HasChildrenOverride());
 }
 
 }  // namespace arc

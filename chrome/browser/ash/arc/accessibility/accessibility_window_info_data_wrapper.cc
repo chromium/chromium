@@ -158,7 +158,16 @@ void AccessibilityWindowInfoDataWrapper::GetChildren(
     std::vector<AccessibilityInfoDataWrapper*>* children) const {
   // Populate the children vector by combining the child window IDs with the
   // root node ID.
-  if (window_ptr_->int_list_properties) {
+  if (children_override_.has_value()) {
+    for (const int32_t id : children_override_.value()) {
+      auto* child = tree_source_->GetFromId(id);
+      if (child != nullptr) {
+        children->push_back(child);
+      } else {
+        LOG(WARNING) << "Unexpected nullptr found while GetChildren";
+      }
+    }
+  } else if (window_ptr_->int_list_properties) {
     const auto& it = window_ptr_->int_list_properties->find(
         mojom::AccessibilityWindowIntListProperty::CHILD_WINDOW_IDS);
     if (it != window_ptr_->int_list_properties->end()) {
@@ -186,6 +195,39 @@ void AccessibilityWindowInfoDataWrapper::GetChildren(
 
 int32_t AccessibilityWindowInfoDataWrapper::GetWindowId() const {
   return window_ptr_->window_id;
+}
+
+AccessibilityInfoDataWrapper*
+AccessibilityWindowInfoDataWrapper::GetTraversalBefore() const {
+  return nullptr;
+}
+
+AccessibilityInfoDataWrapper*
+AccessibilityWindowInfoDataWrapper::GetTraversalAfter() const {
+  return nullptr;
+}
+
+void AccessibilityWindowInfoDataWrapper::PopulateChildrenOverride() {
+  // Don't repopulate if the override already exists.
+  if (children_override_.has_value())
+    return;
+
+  // If there are no int list properties, there aren't any children.
+  if (!window_ptr_->int_list_properties.has_value()) {
+    children_override_ = std::vector<int>();
+    return;
+  }
+
+  auto& int_properties = window_ptr_->int_list_properties.value();
+  // If the map doesn't contain child nodes, do the same as above.
+  if (auto it = int_properties.find(
+          mojom::AccessibilityWindowIntListProperty::CHILD_WINDOW_IDS);
+      it != int_properties.end()) {
+    // If it did have children, copy them into the override
+    children_override_ = it->second;
+    return;
+  }
+  children_override_ = std::vector<int>();
 }
 
 bool AccessibilityWindowInfoDataWrapper::GetProperty(

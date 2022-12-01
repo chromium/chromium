@@ -14,6 +14,14 @@
 
 namespace arc {
 
+void AddStandardAction(mojom::AccessibilityNodeInfoData* node,
+                       mojom::AccessibilityActionType action_type,
+                       absl::optional<std::string> label = absl::nullopt);
+
+void AddCustomAction(mojom::AccessibilityNodeInfoData* node,
+                     int id,
+                     std::string label);
+
 template <class PropType, class ValueType>
 void SetProperty(
     absl::optional<base::flat_map<PropType, ValueType>>& properties,
@@ -24,14 +32,6 @@ void SetProperty(
 
   properties->insert_or_assign(prop, value);
 }
-
-void AddStandardAction(mojom::AccessibilityNodeInfoData* node,
-                       mojom::AccessibilityActionType action_type,
-                       absl::optional<std::string> label = absl::nullopt);
-
-void AddCustomAction(mojom::AccessibilityNodeInfoData* node,
-                     int id,
-                     std::string label);
 
 #define DEF_SET_PROP(data_type, prop_type, data_member_name, value_type) \
   inline void SetProperty(data_type* data, prop_type prop,               \
