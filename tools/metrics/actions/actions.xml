@@ -11616,6 +11616,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSHandoffSettingsCloseWithSwipe">
+  <owner>lpromero@google.com</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Handoff Settings UI was dismissed using swipe down gesture.
+    iOS only.
+  </description>
+</action>
+
 <action name="IOSHistoryCloseWithSwipe">
   <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
@@ -18451,6 +18460,23 @@ should be able to be added at any place in this file.
     each applicable Activity goes to the background (per above). Since session
     tracking uses onPause and onResume, this metric is also tied to that to
     ensure we capture the event.
+  </description>
+</action>
+
+<action name="MobileHandoffSettingsBack">
+  <owner>lpromero@google.com</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when user goes back from Handoff Settings UI to root Settings
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileHandoffSettingsClose">
+  <owner>lpromero@google.com</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Handoff Settings UI was dismissed. iOS only.
   </description>
 </action>
 

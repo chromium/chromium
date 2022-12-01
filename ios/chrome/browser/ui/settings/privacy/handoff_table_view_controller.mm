@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/ui/settings/privacy/handoff_table_view_controller.h"
 
 #import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/handoff/pref_names_ios.h"
 #import "components/prefs/pref_member.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
@@ -34,12 +37,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface HandoffTableViewController () <BooleanObserver> {
+@interface HandoffTableViewController () <BooleanObserver,
+                                          SettingsControllerProtocol> {
   // Pref for whether Handoff is enabled.
   PrefBackedBoolean* _handoffEnabled;
 
   // Item for displaying handoff switch.
   TableViewSwitchItem* _handoffSwitchItem;
+
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 @end
@@ -57,7 +64,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _handoffEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:browserState->GetPrefs()
                    prefName:prefs::kIosHandoffToOtherDevices];
-    [_handoffEnabled setObserver:self];
+    _handoffEnabled.observer = self;
   }
   return self;
 }
@@ -113,10 +120,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
-#pragma mark - Private
+#pragma mark - SettingsControllerProtocol
 
-- (void)switchChanged:(UISwitch*)switchView {
-  _handoffEnabled.value = switchView.isOn;
+- (void)reportDismissalUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileHandoffSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileHandoffSettingsBack"));
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  // Stop observable prefs.
+  [_handoffEnabled stop];
+  _handoffEnabled.observer = nil;
+  _handoffEnabled = nil;
+
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark - BooleanObserver
@@ -125,6 +147,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Update the cell.
   _handoffSwitchItem.on = _handoffEnabled.value;
   [self reconfigureCellsForItems:@[ _handoffSwitchItem ]];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  base::RecordAction(
+      base::UserMetricsAction("IOSHandoffSettingsCloseWithSwipe"));
+}
+
+#pragma mark - Private
+
+- (void)switchChanged:(UISwitch*)switchView {
+  _handoffEnabled.value = switchView.isOn;
 }
 
 @end
