@@ -41,6 +41,7 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_database_info.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -261,6 +262,9 @@ ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  DCHECK(context->IsContextThread());
+
   if (!IsContextValid(ExecutionContext::From(script_state))) {
     resolver->Reject();
     return resolver->Promise();
@@ -275,37 +279,71 @@ ScriptPromise IDBFactory::GetDatabaseInfo(ScriptState* script_state,
     return resolver->Promise();
   }
 
-  if (!AllowIndexedDB(script_state)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
-                                      kPermissionDeniedErrorMessage);
+  AllowIndexedDB(
+      context,
+      WTF::BindOnce(&IDBFactory::GetDatabaseInfoImpl, WrapWeakPersistent(this),
+                    WrapPersistent(context), WrapPersistent(resolver)));
+  return resolver->Promise();
+}
+
+void IDBFactory::GetDatabaseInfoImpl(ExecutionContext* context,
+                                     ScriptPromiseResolver* resolver) {
+  ScriptState* script_state = resolver->GetScriptState();
+
+  if (context->IsContextDestroyed()) {
     resolver->Reject();
-    return resolver->Promise();
+    return;
+  }
+
+  if (!allowed_.value()) {
+    ScriptState::Scope scope(script_state);
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+        kPermissionDeniedErrorMessage));
+    return;
   }
 
   auto callbacks = std::make_unique<WebIDBGetDBNamesCallbacksImpl>(resolver);
   callbacks->SetState(nullptr, WebIDBCallbacksImpl::kNoTransaction);
-  GetFactory(ExecutionContext::From(script_state))
-      ->GetDatabaseInfo(GetCallbacksProxy(std::move(callbacks)));
-  return resolver->Promise();
+
+  auto& factory = GetFactory(context);
+  factory->GetDatabaseInfo(GetCallbacksProxy(std::move(callbacks)));
 }
 
 void IDBFactory::GetDatabaseInfo(
     ScriptState* script_state,
     std::unique_ptr<mojom::blink::IDBCallbacks> callbacks) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  DCHECK(context->IsContextThread());
+
   // TODO(jsbell): Used only by inspector; remove unneeded checks/exceptions?
-  if (!IsContextValid(ExecutionContext::From(script_state))) {
+  if (!IsContextValid(context)) {
     return;
   }
 
-  if (!ExecutionContext::From(script_state)
-           ->GetSecurityOrigin()
-           ->CanAccessDatabase()) {
+  if (!context->GetSecurityOrigin()->CanAccessDatabase()) {
     callbacks->Error(mojom::blink::IDBException::kAbortError,
                      "Access to the IndexedDB API is denied in this context.");
     return;
   }
 
-  if (!AllowIndexedDB(script_state)) {
+  AllowIndexedDB(
+      context, WTF::BindOnce(&IDBFactory::GetDatabaseInfoImplHelper,
+                             WrapWeakPersistent(this), WrapPersistent(context),
+                             std::move(callbacks)));
+  return;
+}
+
+void IDBFactory::GetDatabaseInfoImplHelper(
+    ExecutionContext* context,
+    std::unique_ptr<mojom::blink::IDBCallbacks> callbacks) {
+  if (context->IsContextDestroyed()) {
+    callbacks->Error(mojom::blink::IDBException::kAbortError,
+                     "Access to the IndexedDB API is denied in this context.");
+    return;
+  }
+
+  if (!allowed_.value()) {
     callbacks->Error(mojom::blink::IDBException::kUnknownError,
                      kPermissionDeniedErrorMessage);
     return;
@@ -316,8 +354,7 @@ void IDBFactory::GetDatabaseInfo(
       std::move(callbacks),
       pending_callbacks.InitWithNewEndpointAndPassReceiver());
 
-  GetFactory(ExecutionContext::From(script_state))
-      ->GetDatabaseInfo(std::move(pending_callbacks));
+  GetFactory(context)->GetDatabaseInfo(std::move(pending_callbacks));
 }
 
 IDBOpenDBRequest* IDBFactory::open(ScriptState* script_state,
@@ -338,29 +375,28 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
   TRACE_EVENT1("IndexedDB", "IDBFactory::open", "name", name.Utf8());
   IDBRequest::AsyncTraceState metrics("IDBFactory::open");
   DCHECK(version >= 1 || version == IDBDatabaseMetadata::kNoVersion);
-  if (!IsContextValid(ExecutionContext::From(script_state)))
+
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  DCHECK(context->IsContextThread());
+
+  if (!IsContextValid(context))
     return nullptr;
-  if (!ExecutionContext::From(script_state)
-           ->GetSecurityOrigin()
-           ->CanAccessDatabase()) {
+  if (!context->GetSecurityOrigin()->CanAccessDatabase()) {
     exception_state.ThrowSecurityError(
         "access to the Indexed Database API is denied in this context.");
     return nullptr;
   }
 
-  if (ExecutionContext::From(script_state)->GetSecurityOrigin()->IsLocal()) {
-    UseCounter::Count(ExecutionContext::From(script_state),
-                      WebFeature::kFileAccessedDatabase);
+  if (context->GetSecurityOrigin()->IsLocal()) {
+    UseCounter::Count(context, WebFeature::kFileAccessedDatabase);
   }
 
   int64_t transaction_id = IDBDatabase::NextTransactionId();
 
-  auto& factory = GetFactory(ExecutionContext::From(script_state));
+  auto& factory = GetFactory(context);
 
   auto transaction_backend = std::make_unique<WebIDBTransaction>(
-      ExecutionContext::From(script_state)
-          ->GetTaskRunner(TaskType::kDatabaseAccess),
-      transaction_id);
+      context->GetTaskRunner(TaskType::kDatabaseAccess), transaction_id);
   mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
       transaction_receiver = transaction_backend->CreateReceiver();
   mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
@@ -370,19 +406,36 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
       std::move(transaction_backend), transaction_id, version,
       std::move(metrics), GetObservedFeature());
 
-  if (!AllowIndexedDB(script_state)) {
+  AllowIndexedDB(
+      context,
+      WTF::BindOnce(&IDBFactory::OpenInternalImpl, WrapWeakPersistent(this),
+                    WrapPersistent(request), std::move(callbacks_remote),
+                    std::move(transaction_receiver), std::ref(factory), name,
+                    version, transaction_id));
+  return request;
+}
+
+void IDBFactory::OpenInternalImpl(
+    IDBOpenDBRequest* request,
+    mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
+        callbacks_remote,
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+        transaction_receiver,
+    mojo::Remote<mojom::blink::IDBFactory>& factory,
+    const String& name,
+    int64_t version,
+    int64_t transaction_id) {
+  if (!request->GetExecutionContext() || !allowed_.value()) {
     request->HandleResponse(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, kPermissionDeniedErrorMessage));
-    return request;
+    return;
   }
 
   auto callbacks = request->CreateWebCallbacks();
   callbacks->SetState(nullptr, WebIDBCallbacksImpl::kNoTransaction);
-
   factory->Open(GetCallbacksProxy(std::move(callbacks)),
                 std::move(callbacks_remote), name, version,
                 std::move(transaction_receiver), transaction_id);
-  return request;
 }
 
 IDBOpenDBRequest* IDBFactory::open(ScriptState* script_state,
@@ -415,22 +468,21 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
     bool force_close) {
   TRACE_EVENT1("IndexedDB", "IDBFactory::deleteDatabase", "name", name.Utf8());
   IDBRequest::AsyncTraceState metrics("IDBFactory::deleteDatabase");
-  if (!IsContextValid(ExecutionContext::From(script_state)))
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  DCHECK(context->IsContextThread());
+  if (!IsContextValid(context))
     return nullptr;
-  if (!ExecutionContext::From(script_state)
-           ->GetSecurityOrigin()
-           ->CanAccessDatabase()) {
+  if (!context->GetSecurityOrigin()->CanAccessDatabase()) {
     exception_state.ThrowSecurityError(
         "access to the Indexed Database API is denied in this context.");
     return nullptr;
   }
-
-  if (ExecutionContext::From(script_state)->GetSecurityOrigin()->IsLocal()) {
-    UseCounter::Count(ExecutionContext::From(script_state),
-                      WebFeature::kFileAccessedDatabase);
+  if (context->GetSecurityOrigin()->IsLocal()) {
+    UseCounter::Count(context, WebFeature::kFileAccessedDatabase);
   }
 
-  auto& factory = GetFactory(ExecutionContext::From(script_state));
+  auto& factory = GetFactory(context);
 
   auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
       script_state,
@@ -439,17 +491,32 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
       IDBDatabaseMetadata::kDefaultVersion, std::move(metrics),
       GetObservedFeature());
 
-  if (!AllowIndexedDB(script_state)) {
+  AllowIndexedDB(
+      context, WTF::BindOnce(&IDBFactory::DeleteDatabaseInternalImpl,
+                             WrapWeakPersistent(this), WrapPersistent(request),
+                             std::ref(factory), name, force_close));
+  return request;
+}
+
+void IDBFactory::DeleteDatabaseInternalImpl(
+    IDBOpenDBRequest* request,
+    mojo::Remote<mojom::blink::IDBFactory>& factory,
+    const String& name,
+    bool force_close) {
+  if (!request->GetExecutionContext()) {
+    return;
+  }
+
+  if (!allowed_.value()) {
     request->HandleResponse(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, kPermissionDeniedErrorMessage));
-    return request;
+    return;
   }
 
   auto callbacks = request->CreateWebCallbacks();
   callbacks->SetState(nullptr, WebIDBCallbacksImpl::kNoTransaction);
   factory->DeleteDatabase(GetCallbacksProxy(std::move(callbacks)), name,
                           force_close);
-  return request;
 }
 
 int16_t IDBFactory::cmp(ScriptState* script_state,
@@ -483,30 +550,51 @@ int16_t IDBFactory::cmp(ScriptState* script_state,
   return static_cast<int16_t>(first->Compare(second.get()));
 }
 
-bool IDBFactory::AllowIndexedDB(ScriptState* script_state) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  DCHECK(execution_context->IsContextThread());
-  SECURITY_DCHECK(execution_context->IsWindow() ||
-                  execution_context->IsWorkerGlobalScope());
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    LocalFrame* frame = window->GetFrame();
-    if (!frame)
-      return false;
-    if (auto* settings_client = frame->GetContentSettingsClient()) {
-      // This triggers a sync IPC.
-      return settings_client->AllowStorageAccessSync(
-          WebContentSettingsClient::StorageType::kIndexedDB);
-    }
-    return true;
+void IDBFactory::AllowIndexedDB(ExecutionContext* context,
+                                base::OnceCallback<void()> callback) {
+  DCHECK(context->IsContextThread());
+  SECURITY_DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
+  auto wrapped_callback =
+      WTF::BindOnce(&IDBFactory::DidAllowIndexedDB, WrapWeakPersistent(this),
+                    std::move(callback));
+
+  if (allowed_.has_value()) {
+    std::move(wrapped_callback).Run(allowed_.value());
+    return;
   }
 
-  WebContentSettingsClient* content_settings_client =
-      To<WorkerGlobalScope>(execution_context)->ContentSettingsClient();
-  if (!content_settings_client)
-    return true;
-  // This triggers a sync IPC.
-  return content_settings_client->AllowStorageAccessSync(
-      WebContentSettingsClient::StorageType::kIndexedDB);
+  WebContentSettingsClient* settings_client = nullptr;
+
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    LocalFrame* frame = window->GetFrame();
+    if (!frame) {
+      std::move(wrapped_callback).Run(false);
+      return;
+    }
+    settings_client = window->GetFrame()->GetContentSettingsClient();
+  } else {
+    settings_client = To<WorkerGlobalScope>(context)->ContentSettingsClient();
+  }
+
+  if (!settings_client) {
+    std::move(wrapped_callback).Run(true);
+    return;
+  }
+  settings_client->AllowStorageAccess(
+      WebContentSettingsClient::StorageType::kIndexedDB,
+      std::move(wrapped_callback));
+}
+
+void IDBFactory::DidAllowIndexedDB(base::OnceCallback<void()> callback,
+                                   bool allow_access) {
+  if (allowed_.has_value()) {
+    DCHECK_EQ(allowed_.value(), allow_access);
+  } else {
+    allowed_ = allow_access;
+  }
+
+  std::move(callback).Run();
+  return;
 }
 
 mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
