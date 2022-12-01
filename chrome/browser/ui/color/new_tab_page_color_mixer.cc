@@ -111,6 +111,8 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
       {gfx::kGoogleGrey300}, element_background_color);
   mixer[kColorNewTabPageChipBackground] = element_background_color;
   mixer[kColorNewTabPageButtonBackground] = element_background_color;
+  mixer[kColorNewTabPageButtonBackgroundHovered] = {
+      kColorNewTabPageControlBackgroundHovered};
   mixer[kColorNewTabPageButtonForeground] = themed_foreground_color;
   mixer[kColorNewTabPageCartModuleDiscountChipBackground] =
       SelectBasedOnDarkInput(element_background_color, gfx::kGoogleGrey800,
@@ -120,7 +122,7 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
                              gfx::kGoogleGreen700);
   mixer[kColorNewTabPageControlBackgroundHovered] = SelectBasedOnDarkInput(
       element_background_color,
-      ui::SetAlpha({gfx::kGoogleGrey200},
+      ui::SetAlpha({SK_ColorWHITE},
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE),
       ui::SetAlpha({gfx::kGoogleGrey900},
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE));
@@ -385,6 +387,13 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
                                                          : SK_ColorWHITE};
   mixer[kColorNewTabPageButtonBackground] = {
       kColorNewTabPageBackgroundOverride};
+  // Matches the button hover background colors defined in
+  // cr_elements/cr_button/cr_button.html
+  mixer[kColorNewTabPageButtonBackgroundHovered] =
+      dark_mode ? ui::SetAlpha(gfx::kGoogleBlue300,
+                               /* 8% opacity */ .08 * SK_AlphaOPAQUE)
+                : ui::SetAlpha(gfx::kGoogleBlue500,
+                               /* 4% opacity */ .04 * SK_AlphaOPAQUE);
   mixer[kColorNewTabPageButtonForeground] = {accent_color};
   mixer[kColorNewTabPageCartModuleDiscountChipBackground] = {
       dark_mode ? gfx::kGoogleGrey800 : gfx::kGoogleGreen050};
