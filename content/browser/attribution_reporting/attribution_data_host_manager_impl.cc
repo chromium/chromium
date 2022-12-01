@@ -152,12 +152,6 @@ struct AttributionDataHostManagerImpl::FrozenContext {
   // Logically const.
   SuitableOrigin context_origin;
 
-  // Source type of this context. Note that data hosts which result in
-  // triggers still have a source type of` kEvent` as they share the same web
-  // API surface.
-  // Logically const.
-  AttributionSourceType source_type;
-
   RegistrationType registration_type = RegistrationType::kNone;
 
   int num_data_registered = 0;
@@ -239,7 +233,6 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
   receivers_.Add(
       this, std::move(data_host),
       FrozenContext{.context_origin = std::move(context_origin),
-                    .source_type = AttributionSourceType::kEvent,
                     .register_time = base::TimeTicks::Now(),
                     .is_within_fenced_frame = is_within_fenced_frame});
   data_hosts_in_source_mode_++;
@@ -313,14 +306,12 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
 
   if (it != navigation_data_host_map_.end()) {
     // Source navigations need to navigate the primary main frame to be valid.
-    receivers_.Add(
-        this, std::move(it->second.data_host),
-        FrozenContext{.context_origin = source_origin,
-                      .source_type = AttributionSourceType::kNavigation,
-                      .register_time = it->second.register_time,
-                      .is_within_fenced_frame = false,
-                      .input_event = it->second.input_event,
-                      .nav_type = nav_type});
+    receivers_.Add(this, std::move(it->second.data_host),
+                   FrozenContext{.context_origin = source_origin,
+                                 .register_time = it->second.register_time,
+                                 .is_within_fenced_frame = false,
+                                 .input_event = it->second.input_event,
+                                 .nav_type = nav_type});
 
     navigation_data_host_map_.erase(it);
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
@@ -393,7 +384,10 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   context.num_data_registered++;
 
+  auto source_type = AttributionSourceType::kEvent;
   if (context.nav_type.has_value()) {
+    source_type = AttributionSourceType::kNavigation;
+
     base::UmaHistogramEnumeration(
         "Conversions.SourceRegistration.NavigationType.Background",
         *context.nav_type);
@@ -402,8 +396,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   attribution_manager_->HandleSource(
       StorableSource(std::move(data),
                      /*source_time=*/base::Time::Now(),
-                     /*source_origin=*/context.context_origin,
-                     context.source_type, context.is_within_fenced_frame));
+                     /*source_origin=*/context.context_origin, source_type,
+                     context.is_within_fenced_frame));
 }
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
@@ -413,7 +407,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   FrozenContext& context = receivers_.current_context();
 
-  if (context.source_type == AttributionSourceType::kNavigation) {
+  if (context.nav_type.has_value()) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);
     mojo::ReportBadMessage(
         "AttributionDataHost: Navigation-bound data hosts cannot register "
