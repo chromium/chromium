@@ -25,6 +25,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -53,12 +54,12 @@ class RevokeButton : public views::ImageButton {
                         const std::u16string& permission_message)
       : views::ImageButton(std::move(callback)) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    SetImage(views::Button::STATE_NORMAL,
-             rb.GetImageNamed(IDR_DISABLE).ToImageSkia());
-    SetImage(views::Button::STATE_HOVERED,
-             rb.GetImageNamed(IDR_DISABLE_H).ToImageSkia());
-    SetImage(views::Button::STATE_PRESSED,
-             rb.GetImageNamed(IDR_DISABLE_P).ToImageSkia());
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromImage(rb.GetImageNamed(IDR_DISABLE)));
+    SetImageModel(views::Button::STATE_HOVERED,
+                  ui::ImageModel::FromImage(rb.GetImageNamed(IDR_DISABLE_H)));
+    SetImageModel(views::Button::STATE_PRESSED,
+                  ui::ImageModel::FromImage(rb.GetImageNamed(IDR_DISABLE_P)));
     SetBorder(std::unique_ptr<views::Border>());
     SetSize(GetPreferredSize());
 
