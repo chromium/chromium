@@ -9,6 +9,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
@@ -20,12 +21,16 @@ class ShelfLayoutManagerPixelRTLTest
   void SetUp() override {
     ShelfLayoutManagerTestBase::SetUp();
     PopulateAppShortcut(5);
+    scoped_feature_list_.InitAndDisableFeature(features::kContextualNudges);
   }
 
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(TabletMode,
