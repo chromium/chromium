@@ -13,6 +13,7 @@ This is a list of the security policies Chromium has published.
 * [Use origin not URL for security decisions](origin-vs-url.md)
 * [Controlling access to powerful web platform
   features](permissions-for-powerful-web-platform-features.md)
+* [Security considerations for browser UI](security-considerations-for-browser-ui.md)
 
 You can also find our position on various matters in the [security FAQ](faq.md):
 for example, on local attackers or on the privilege accorded to enterprise
