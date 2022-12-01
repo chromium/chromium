@@ -107486,6 +107486,20 @@ Called by update_scheduler_enums.py.-->
   <int value="83" label="WebViewDatabase.hasHttpAuthUsernamePassword"/>
   <int value="84" label="WebViewDatabase.hasUsernamePassword"/>
   <int value="85" label="WebViewDatabase.setHttpAuthUsernamePassword"/>
+  <int value="86" label="CookieManager.acceptCookie"/>
+  <int value="87" label="CookieManager.acceptThirdPartyCookies"/>
+  <int value="88" label="CookieManager.flush"/>
+  <int value="89" label="CookieManager.getCookie"/>
+  <int value="90" label="CookieManager.hasCookies"/>
+  <int value="91" label="CookieManager.removeAllCookie"/>
+  <int value="92" label="CookieManager.removeAllCookies"/>
+  <int value="93" label="CookieManager.removeExpiredCookie"/>
+  <int value="94" label="CookieManager.removeSessionCookie"/>
+  <int value="95" label="CookieManager.removeSessionCookies"/>
+  <int value="96" label="CookieManager.setAcceptCookie"/>
+  <int value="97" label="CookieManager.setAcceptFileSchemeCookies"/>
+  <int value="98" label="CookieManager.setAcceptThirdPartyCookies"/>
+  <int value="99" label="CookieManager.setCookie"/>
 </enum>
 
 <enum name="WebViewAppProvidedMimeType">
