@@ -15,8 +15,9 @@ ReadAnythingController::ReadAnythingController(ReadAnythingModel* model,
                                                Browser* browser)
     : model_(model), browser_(browser) {
   DCHECK(browser_);
-  if (browser_->tab_strip_model())
-    browser_->tab_strip_model()->AddObserver(this);
+  browser_->tab_strip_model()->AddObserver(this);
+  WebContentsObserver::Observe(
+      browser_->tab_strip_model()->GetActiveWebContents());
 }
 
 ReadAnythingController::~ReadAnythingController() {
@@ -124,17 +125,15 @@ void ReadAnythingController::OnUIDestroyed() {
 
 void ReadAnythingController::OnLinkClicked(const GURL& url,
                                            bool open_in_new_tab) {
+  if (!web_contents())
+    return;
   WindowOpenDisposition disposition =
       open_in_new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                       : WindowOpenDisposition::CURRENT_TAB;
   content::OpenURLParams params(url, content::Referrer(), disposition,
                                 ui::PAGE_TRANSITION_LINK,
                                 /* is_renderer_initiated= */ true);
-  content::WebContents* web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
-    return;
-  params.initiator_origin = url::Origin::Create(web_contents->GetURL());
+  params.initiator_origin = url::Origin::Create(web_contents()->GetURL());
   browser_->OpenURL(params);
 }
 
@@ -148,6 +147,7 @@ void ReadAnythingController::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (!selection.active_tab_changed())
     return;
+  WebContentsObserver::Observe(selection.new_contents);
   DistillAXTree();
 }
 
@@ -172,18 +172,13 @@ void ReadAnythingController::DidStopLoading() {
 
 void ReadAnythingController::DistillAXTree() {
   DCHECK(browser_);
-  if (!active_ || !ui_ready_)
+  if (!active_ || !ui_ready_ || !web_contents())
     return;
-  content::WebContents* web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
-    return;
-  WebContentsObserver::Observe(web_contents);
 
   // Read Anything just runs on the main frame and does not run on embedded
   // content.
   content::RenderFrameHost* render_frame_host =
-      web_contents->GetPrimaryMainFrame();
+      web_contents()->GetPrimaryMainFrame();
   if (!render_frame_host)
     return;
 
