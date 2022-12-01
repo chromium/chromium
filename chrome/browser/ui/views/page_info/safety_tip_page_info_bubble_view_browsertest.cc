@@ -863,37 +863,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_TRUE(IsUIShowing());
 }
 
-// Tests that Character Swap for engaged sites is disabled by default.
-IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       TriggersOnCharacterSwap_SiteEngagement_NotLaunched) {
-  const GURL kNavigatedUrl = GetURL("character-wsap.com");
-  const GURL kTargetUrl = GetURL("character-swap.com");
-  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
-  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
-  EXPECT_FALSE(IsUIShowing());
-}
-
-// Tests that Character Swap for top domains is disabled by default.
-IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
-                       TriggersOnCharacterSwap_TopSite_NotLaunched) {
-  const GURL kNavigatedUrl = GetURL("goolge.com");
-  const GURL kTargetUrl = GetURL("google.com");
-  // Both the lookalike and the target have low engagement.
-  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  SetEngagementScore(browser(), kTargetUrl, kLowEngagement);
-  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
-  EXPECT_FALSE(IsUIShowing());
-}
-
-// Set a launch config with 100% rollout for Character Swap. This should show a
-// Character Swap warning for lookalikes matching engaged sites.
+// Tests that Character Swap is enabled for lookalikes matching engaged sites.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggersOnCharacterSwap_SiteEngagement) {
-  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
-      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
-      100);
-
   const GURL kNavigatedUrl = GetURL("character-wsap.com");
   const GURL kTargetUrl = GetURL("character-swap.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
@@ -902,14 +874,23 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_TRUE(IsUIShowing());
 }
 
-// Set a launch config with 100% rollout for Character Swap. This should show a
-// Character Swap warning for lookalikes matching top sites.
+// Same as TriggersOnCharacterSwap_SiteEngagement, but this time
+// the match is on the actual hostnames and not skeletons. Note that
+// the skeletons of example.com and éxaplme.com don't have exactly
+// one character swap (exarnple.com and exaprnle.com)
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       TriggersOnCharacterSwap_SiteEngagement_HostnameMatch) {
+  const GURL kNavigatedUrl = GetURL("éxapmle.com");
+  const GURL kTargetUrl = GetURL("example.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(IsUIShowing());
+}
+
+// Tests that Character Swap is enabled for lookalikes matching top sites.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggersOnCharacterSwap_TopSite) {
-  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
-      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_TOP_SITES,
-      100);
-
   const GURL kNavigatedUrl = GetURL("goolge.com");
   const GURL kTargetUrl = GetURL("google.com");
   // Both the lookalike and the target have low engagement.
@@ -917,6 +898,26 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), kTargetUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowing());
+}
+
+// Navigate to a domain within a character swap of 1 to a top domain,
+// but the character swap is at the registry. This should not be flagged
+// as a character swap match.
+IN_PROC_BROWSER_TEST_F(
+    SafetyTipPageInfoBubbleViewBrowserTest,
+    DoesntTriggerOnCharacterSwap_TopSiteWithDifferentRegistry) {
+  base::HistogramTester histograms;
+  // google.sr is within one character swap of google.rs which is a top domain.
+  const GURL kNavigatedUrl = GetURL("google.sr");
+  // Even if the navigated site has a low engagement score, it should be
+  // considered for lookalike suggestions.
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+
+  // TestInterstitialNotShown(browser(), kNavigatedUrl);
+  // histograms.ExpectTotalCount(lookalikes::kHistogramName, 0);
+  // CheckNoUkm();
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
 }
 
 // Tests that Safety Tips trigger on lookalike domains with tail embedding when

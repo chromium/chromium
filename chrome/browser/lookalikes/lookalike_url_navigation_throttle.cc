@@ -367,6 +367,15 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
 
   LookalikeUrlMatchType match_type =
       first_is_lookalike ? first_match_type : last_match_type;
+  if (match_type == LookalikeUrlMatchType::kCharacterSwapTop500 ||
+      match_type == LookalikeUrlMatchType::kCharacterSwapSiteEngagement) {
+    // Character Swap is enabled as a safety tip by default. Don't record
+    // metrics here.
+    // TODO(crbug.com/1394808): Replace this with a more generalized check
+    // to decide which UI to show (Safety Tip or interstitial), and reuse it
+    // from the throttle and the safety tips code.
+    return NavigationThrottle::PROCEED;
+  }
 
   // IMPORTANT: Every time that a new lookalike heuristic is added, before
   // adding a warning UI, a console message should be printed here. To do that,

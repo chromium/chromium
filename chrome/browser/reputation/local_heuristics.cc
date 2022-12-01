@@ -80,16 +80,8 @@ bool ShouldTriggerSafetyTipFromLookalike(
       NOTREACHED();
       return false;
     case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
-      return IsHeuristicEnabledForHostname(
-          config,
-          reputation::HeuristicLaunchConfig::
-              HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
-          navigated_domain.domain_and_registry, chrome::GetChannel());
     case LookalikeUrlMatchType::kCharacterSwapTop500:
-      return IsHeuristicEnabledForHostname(
-          config,
-          reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_TOP_SITES,
-          navigated_domain.domain_and_registry, chrome::GetChannel());
+      return true;
     case LookalikeUrlMatchType::kComboSquatting:
       return IsHeuristicEnabledForHostname(
           config,
