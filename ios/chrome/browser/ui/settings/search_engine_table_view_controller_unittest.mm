@@ -72,6 +72,8 @@ class SearchEngineTableViewControllerTest
 
   void TearDown() override {
     DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(false);
+    [base::mac::ObjCCastStrict<SearchEngineTableViewController>(controller())
+        settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
   }
 

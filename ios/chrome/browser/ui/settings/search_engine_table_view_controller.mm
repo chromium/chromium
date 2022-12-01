@@ -54,7 +54,10 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 }  // namespace
 
-@interface SearchEngineTableViewController () <SearchEngineObserving>
+@interface SearchEngineTableViewController () <SearchEngineObserving> {
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
+}
 
 // Prevent unnecessary notifications when we write to the setting.
 @property(nonatomic, assign) BOOL updatingBackend;
@@ -200,6 +203,9 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 - (void)loadModel {
   [super loadModel];
+  if (_settingsAreDismissed)
+    return;
+
   TableViewModel* model = self.tableViewModel;
   [self loadSearchEngines];
 
@@ -243,6 +249,19 @@ const char kUmaSelectDefaultSearchEngine[] =
   base::RecordAction(base::UserMetricsAction("MobileSearchEngineSettingsBack"));
 }
 
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  // Remove observer bridges.
+  _observer.reset();
+
+  // Clear C++ ivars.
+  _templateURLService = nullptr;
+  _faviconLoader = nullptr;
+
+  _settingsAreDismissed = YES;
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
@@ -277,6 +296,8 @@ const char kUmaSelectDefaultSearchEngine[] =
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+  if (_settingsAreDismissed)
+    return;
 
   // Keep selection in editing mode.
   if (self.editing) {
@@ -368,6 +389,9 @@ const char kUmaSelectDefaultSearchEngine[] =
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  if (_settingsAreDismissed)
+    return cell;
+
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   DCHECK(item.type == ItemTypePrepopulatedEngine ||
          item.type == ItemTypeCustomEngine);
@@ -429,6 +453,9 @@ const char kUmaSelectDefaultSearchEngine[] =
 // prepopulated, created by policy or the default search engine, it will get
 // into the first list, otherwise the second list.
 - (void)loadSearchEngines {
+  if (_settingsAreDismissed)
+    return;
+
   std::vector<TemplateURL*> urls = _templateURLService->GetTemplateURLs();
   _firstList.clear();
   _firstList.reserve(urls.size());
@@ -466,6 +493,9 @@ const char kUmaSelectDefaultSearchEngine[] =
 // Creates a SearchEngineItem for `templateURL`.
 - (SearchEngineItem*)createSearchEngineItemFromTemplateURL:
     (const TemplateURL*)templateURL {
+  if (_settingsAreDismissed)
+    return nil;
+
   SearchEngineItem* item = nil;
   if (templateURL->prepopulate_id() > 0) {
     item = [[SearchEngineItem alloc] initWithType:ItemTypePrepopulatedEngine];
@@ -502,6 +532,9 @@ const char kUmaSelectDefaultSearchEngine[] =
 // as the default engine, resets default engine to the first prepopulated
 // engine.
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
+  if (_settingsAreDismissed)
+    return;
+
   // Update `_templateURLService`, `_firstList` and `_secondList`.
   _updatingBackend = YES;
   size_t removedItemsInSecondList = 0;
@@ -613,6 +646,9 @@ const char kUmaSelectDefaultSearchEngine[] =
 // Disables prepopulated engines and removes the checkmark in editing mode.
 // Enables engines and recovers the checkmark in normal mode.
 - (void)updatePrepopulatedEnginesForEditing:(BOOL)editing {
+  if (_settingsAreDismissed)
+    return;
+
   NSArray<NSIndexPath*>* indexPaths =
       [self.tableViewModel indexPathsForItemType:ItemTypePrepopulatedEngine
                                sectionIdentifier:SectionIdentifierFirstList];
