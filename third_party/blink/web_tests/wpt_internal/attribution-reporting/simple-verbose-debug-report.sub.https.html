@@ -6,12 +6,11 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
   await registerAttributionSrc(t, {
     trigger: {
       debug_reporting: true,
     },
-    cookie,
+    cookie: attributionDebugCookie,
   });
 
   const payload = await pollVerboseDebugReports();

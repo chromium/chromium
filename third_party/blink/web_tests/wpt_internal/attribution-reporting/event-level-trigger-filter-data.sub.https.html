@@ -45,8 +45,6 @@ const filter_data_promise_test = (testCase) =>
     assert_equals(debugReport[0].type, 'trigger-event-no-matching-configurations');
   }, testCase.testName);
 
-const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
-
 const testCases = new Map();
 testCases.set('filters', [
   {
@@ -143,7 +141,7 @@ testCases.set('filters', [
       }
     ],
     debug_reporting: true,
-    cookie,
+    cookie: attributionDebugCookie,
   },
 ]);
 
@@ -235,7 +233,7 @@ testCases.set('not_filters', [
       },
     ],
     debug_reporting: true,
-    cookie,
+    cookie: attributionDebugCookie,
   }
 ]);
 

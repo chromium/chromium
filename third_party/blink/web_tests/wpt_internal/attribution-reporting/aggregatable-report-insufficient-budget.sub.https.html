@@ -18,10 +18,8 @@ attribution_reporting_promise_test(async t => {
       aggregation_keys: {
         campaignCounts: '0x159',
       },
-      debug_key: '456',
     },
     method: 'open',
-    cookie: attributionDebugCookie,
   });
 
   const trigger = {
@@ -33,9 +31,8 @@ attribution_reporting_promise_test(async t => {
       source_keys: ['campaignCounts'],
     }],
     aggregatable_values: {
-      campaignCounts: 32768,
+      campaignCounts: 65536,
     },
-    aggregatable_deduplication_key: '666',
     debug_reporting: true,
   };
 
@@ -50,6 +47,8 @@ attribution_reporting_promise_test(async t => {
   const shared_info = JSON.parse(report.shared_info);
   assert_equals(shared_info.attribution_destination, host);
 
+  trigger.aggregatable_values.campaignCounts = 1;
+
   await registerAttributionSrc(t, {
     trigger,
     cookie: attributionDebugCookie,
@@ -59,13 +58,13 @@ attribution_reporting_promise_test(async t => {
   assert_equals(debugPayload.reports.length, 1);
   const debugReport = JSON.parse(debugPayload.reports[0].body);
   assert_equals(debugReport.length, 1);
-  assert_equals(debugReport[0].type, 'trigger-aggregate-deduplicated');
+  assert_equals(debugReport[0].type, 'trigger-aggregate-insufficient-budget');
   assert_own_property(debugReport[0], 'body');
   const debugReportBody = debugReport[0].body;
   assert_equals(debugReportBody.attribution_destination, host);
   assert_equals(debugReportBody.source_event_id, '123');
   assert_equals(debugReportBody.source_site, host);
-  assert_equals(debugReportBody.source_debug_key, '456');
+  assert_not_own_property(debugReportBody, 'source_debug_key');
   assert_not_own_property(debugReportBody, 'trigger_debug_key');
-}, 'Aggregatable report is deduplicated.');
+}, 'Aggregatable report is not created due to insufficient budget.');
 </script>

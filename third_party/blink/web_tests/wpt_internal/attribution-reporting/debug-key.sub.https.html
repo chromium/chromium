@@ -46,7 +46,7 @@ const debug_key_promise_test = (testCase, forSource) =>
   {
     testName: 'Valid cookie propagates debug key.',
     debugKey: '246',
-    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
+    cookie: attributionDebugCookie,
     keyExpected: true,
   },
   {
@@ -82,13 +82,13 @@ const debug_key_promise_test = (testCase, forSource) =>
   {
     testName: 'Field with wrong type is ignored.',
     debugKey: 246,
-    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
+    cookie: attributionDebugCookie,
     keyExpected: false,
   },
   {
     testName: 'Field with invalid format is ignored.',
     debugKey: '-246',
-    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
+    cookie: attributionDebugCookie,
     keyExpected: false,
   },
 ].forEach(testCase => {

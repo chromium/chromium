@@ -6,7 +6,6 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
   const source_debug_key = '246';
   const trigger_debug_key = '357';
   await registerAttributionSrc(t, {
@@ -18,7 +17,7 @@ attribution_reporting_promise_test(async t => {
       },
       debug_key: source_debug_key,
     },
-    cookie,
+    cookie: attributionDebugCookie,
   });
   await registerAttributionSrc(t, {
     trigger: {
@@ -38,7 +37,7 @@ attribution_reporting_promise_test(async t => {
         geoValue: 1664,
       },
     },
-    cookie,
+    cookie: attributionDebugCookie,
   });
 
   const payload = await pollAggregatableReports();

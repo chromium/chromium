@@ -26,6 +26,8 @@ const aggregatableDebugReportsUrl =
 const verboseDebugReportsUrl =
     '/.well-known/attribution-reporting/debug/verbose';
 
+const attributionDebugCookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
+
 /**
  * Method to clear the stash. Takes the URL as parameter. This could be for
  * event-level or aggregatable reports.

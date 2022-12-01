@@ -35,7 +35,6 @@ attribution_reporting_promise_test(async t => {
   assert_equals(report.trigger_data, '5');
   assert_equals(report.attribution_destination, host);
 
-  const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
   await registerAttributionSrc(t, {
     trigger: {
       event_trigger_data: [{
@@ -44,7 +43,7 @@ attribution_reporting_promise_test(async t => {
       debug_key: '789',
       debug_reporting: true,
     },
-    cookie,
+    cookie: attributionDebugCookie,
   });
 
   const debugPayload = await pollVerboseDebugReports();

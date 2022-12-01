@@ -8,7 +8,6 @@
 
 attribution_reporting_promise_test(async t => {
   const host = `https://{{host}}`;
-  const cookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
 
   await registerAttributionSrc(t, {
     source: {
@@ -19,7 +18,7 @@ attribution_reporting_promise_test(async t => {
       },
       debug_key: '456',
     },
-    cookie,
+    cookie: attributionDebugCookie,
   });
 
   await registerAttributionSrc(t, {
@@ -33,7 +32,7 @@ attribution_reporting_promise_test(async t => {
       debug_key: '654',
       debug_reporting: true,
     },
-    cookie,
+    cookie: attributionDebugCookie,
   });
 
   const debugPayload = await pollVerboseDebugReports();
