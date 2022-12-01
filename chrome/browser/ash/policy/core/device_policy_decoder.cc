@@ -1591,7 +1591,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (off_hours_policy)
       policies->Set(key::kDeviceOffHours, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    std::move(*off_hours_policy), nullptr);
+                    base::Value(std::move(*off_hours_policy)), nullptr);
   }
 
   if (policy.has_cast_receiver_name()) {

@@ -124,20 +124,20 @@ TEST_F(OffHoursParserTest, ConvertOffHoursProtoToValue) {
   SetOffHoursPolicyToProto(
       &proto, OffHoursPolicy(kGmtTimezone, intervals, kDefaultIgnoredPolicies));
 
-  std::unique_ptr<base::DictionaryValue> off_hours_value =
+  absl::optional<base::Value::Dict> off_hours_value =
       ConvertOffHoursProtoToValue(proto.device_off_hours());
 
-  base::DictionaryValue off_hours_expected;
-  off_hours_expected.SetStringKey("timezone", kGmtTimezone);
-  base::Value* intervals_value = off_hours_expected.SetKey(
-      "intervals", base::Value(base::Value::Type::LIST));
+  base::Value::Dict off_hours_expected;
+  off_hours_expected.Set("timezone", kGmtTimezone);
+  base::Value::List intervals_value;
   for (const auto& interval : intervals)
-    intervals_value->Append(interval.ToValue());
-  auto ignored_policies_value = std::make_unique<base::ListValue>();
+    intervals_value.Append(interval.ToValue());
+  off_hours_expected.Set("intervals", std::move(intervals_value));
+  base::Value::List ignored_policies_value;
   for (const auto& policy : kDefaultIgnoredPolicies)
-    ignored_policies_value->Append(policy);
-  off_hours_expected.SetList("ignored_policy_proto_tags",
-                             std::move(ignored_policies_value));
+    ignored_policies_value.Append(policy);
+  off_hours_expected.Set("ignored_policy_proto_tags",
+                         std::move(ignored_policies_value));
 
   EXPECT_EQ(*off_hours_value, off_hours_expected);
 }

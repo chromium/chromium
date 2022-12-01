@@ -6,6 +6,7 @@
 
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/ash/components/policy/weekly_time/time_utils.h"
 
 namespace em = enterprise_management;
@@ -45,27 +46,26 @@ absl::optional<std::string> ExtractTimezoneFromProto(
   return absl::make_optional(container.timezone());
 }
 
-std::unique_ptr<base::DictionaryValue> ConvertOffHoursProtoToValue(
+absl::optional<base::Value::Dict> ConvertOffHoursProtoToValue(
     const em::DeviceOffHoursProto& container) {
   absl::optional<std::string> timezone = ExtractTimezoneFromProto(container);
   if (!timezone)
-    return nullptr;
-  auto off_hours = std::make_unique<base::DictionaryValue>();
-  off_hours->SetStringKey("timezone", *timezone);
+    return absl::nullopt;
+  base::Value::Dict off_hours;
+  off_hours.Set("timezone", *timezone);
   std::vector<WeeklyTimeInterval> intervals =
       ExtractWeeklyTimeIntervalsFromProto(container, *timezone,
                                           base::DefaultClock::GetInstance());
-  base::Value* intervals_value =
-      off_hours->SetKey("intervals", base::Value(base::Value::Type::LIST));
+  base::Value::List intervals_value;
   for (const auto& interval : intervals)
-    intervals_value->Append(interval.ToValue());
+    intervals_value.Append(interval.ToValue());
+  off_hours.Set("intervals", std::move(intervals_value));
   std::vector<int> ignored_policy_proto_tags =
       ExtractIgnoredPolicyProtoTagsFromProto(container);
-  auto ignored_policies_value = std::make_unique<base::ListValue>();
+  base::Value::List ignored_policies_value;
   for (const auto& policy : ignored_policy_proto_tags)
-    ignored_policies_value->Append(policy);
-  off_hours->SetList("ignored_policy_proto_tags",
-                     std::move(ignored_policies_value));
+    ignored_policies_value.Append(policy);
+  off_hours.Set("ignored_policy_proto_tags", std::move(ignored_policies_value));
   return off_hours;
 }
 

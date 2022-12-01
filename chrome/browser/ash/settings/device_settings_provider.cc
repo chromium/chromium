@@ -388,60 +388,56 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   const RepeatedPtrField<em::DeviceLocalAccountInfoProto>& accounts =
       device_local_accounts_proto.account();
   for (const em::DeviceLocalAccountInfoProto& entry : accounts) {
-    base::Value entry_dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict entry_dict;
     if (entry.has_type()) {
       if (entry.has_account_id()) {
-        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                          base::Value(entry.account_id()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,
+                       entry.account_id());
       }
-      entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyType,
-                        base::Value(entry.type()));
+      entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyType, entry.type());
       if (entry.kiosk_app().has_app_id()) {
-        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                          base::Value(entry.kiosk_app().app_id()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
+                       entry.kiosk_app().app_id());
       }
       if (entry.kiosk_app().has_update_url()) {
-        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
-                          base::Value(entry.kiosk_app().update_url()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
+                       entry.kiosk_app().update_url());
       }
       if (entry.android_kiosk_app().has_package_name()) {
-        entry_dict.SetKey(
-            kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-            base::Value(entry.android_kiosk_app().package_name()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+                       entry.android_kiosk_app().package_name());
       }
       if (entry.android_kiosk_app().has_class_name()) {
-        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                          base::Value(entry.android_kiosk_app().class_name()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                       entry.android_kiosk_app().class_name());
       }
       if (entry.android_kiosk_app().has_action()) {
-        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                          base::Value(entry.android_kiosk_app().action()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                       entry.android_kiosk_app().action());
       }
       if (entry.android_kiosk_app().has_display_name()) {
-        entry_dict.SetKey(
-            kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-            base::Value(entry.android_kiosk_app().display_name()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+                       entry.android_kiosk_app().display_name());
       }
       if (entry.web_kiosk_app().has_url()) {
-        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
-                          base::Value(entry.web_kiosk_app().url()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
+                       entry.web_kiosk_app().url());
       }
       if (entry.web_kiosk_app().has_title()) {
-        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
-                          base::Value(entry.web_kiosk_app().title()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
+                       entry.web_kiosk_app().title());
       }
       if (entry.web_kiosk_app().has_icon_url()) {
-        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
-                          base::Value(entry.web_kiosk_app().icon_url()));
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
+                       entry.web_kiosk_app().icon_url());
       }
     } else if (entry.has_deprecated_public_session_id()) {
       // Deprecated public session specification.
-      entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                        base::Value(entry.deprecated_public_session_id()));
-      entry_dict.SetKey(
+      entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,
+                     entry.deprecated_public_session_id());
+      entry_dict.Set(
           kAccountsPrefDeviceLocalAccountsKeyType,
-          base::Value(
-              em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION));
+          em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION);
     }
     account_list.Append(std::move(entry_dict));
   }
@@ -965,10 +961,10 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   if (policy.has_device_off_hours()) {
     auto off_hours_policy = policy::off_hours::ConvertOffHoursProtoToValue(
         policy.device_off_hours());
-    if (off_hours_policy)
-      new_values_cache->SetValue(
-          kDeviceOffHours,
-          base::Value::FromUniquePtrValue(std::move(off_hours_policy)));
+    if (off_hours_policy) {
+      new_values_cache->SetValue(kDeviceOffHours,
+                                 base::Value(std::move(*off_hours_policy)));
+    }
   }
 
   if (policy.has_tpm_firmware_update_settings()) {
@@ -1177,16 +1173,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       policy.usb_detachable_allowlist().id_size() > 0) {
     const em::UsbDetachableAllowlistProto& container =
         policy.usb_detachable_allowlist();
-    base::Value allowlist(base::Value::Type::LIST);
+    base::Value::List allowlist;
     for (const auto& entry : container.id()) {
-      base::Value ids(base::Value::Type::DICTIONARY);
+      base::Value::Dict ids;
       if (entry.has_vendor_id() && entry.has_product_id()) {
-        ids.SetIntKey(kUsbDetachableAllowlistKeyVid, entry.vendor_id());
-        ids.SetIntKey(kUsbDetachableAllowlistKeyPid, entry.product_id());
+        ids.Set(kUsbDetachableAllowlistKeyVid, entry.vendor_id());
+        ids.Set(kUsbDetachableAllowlistKeyPid, entry.product_id());
       }
       allowlist.Append(std::move(ids));
     }
-    new_values_cache->SetValue(kUsbDetachableAllowlist, std::move(allowlist));
+    new_values_cache->SetValue(kUsbDetachableAllowlist,
+                               base::Value(std::move(allowlist)));
   }
 
   if (policy.has_device_borealis_allowed()) {
