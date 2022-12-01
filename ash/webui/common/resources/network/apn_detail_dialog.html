@@ -40,12 +40,13 @@
   </div>
   <div slot="body">
     <!-- TODO(b/162365553): Add validation for the input box settings. -->
-    <cr-input id="apnInput" label="[[i18n('apn')]]" type="text">
+    <cr-input id="apnInput" value="{{apn_}}" label="[[i18n('apn')]]"
+        type="text">
     </cr-input>
-    <cr-input id="usernameInput"
+    <cr-input id="usernameInput" value="{{username_}}"
         label="[[i18n('OncCellular-APN-Username')]]" type="text">
     </cr-input>
-    <cr-input id="passwordInput"
+    <cr-input id="passwordInput" value="{{password_}}"
         label="[[i18n('OncCellular-APN-Password')]]" type="password">
     </cr-input>
     <cr-expand-button id="advancedSettingsBtn"
@@ -65,7 +66,7 @@
           <template is="dom-repeat"
               items="[[AuthenticationTypes]]">
               <option value="[[item]]"
-                  selected="[[isEqual_(item, selectedAuthType_)]]">
+                  selected="[[isSelectedAuthType_(item)]]">
                 [[getAuthTypeLocalizedLabel_(item)]]
               </option>
           </template>
@@ -76,7 +77,7 @@
       </div>
       <div id="checkboxContainer" class="checkbox-section">
         <cr-checkbox id="apnDefaultTypeCheckbox"
-            aria-labelledby="apnDefaultTypelabel">
+            aria-labelledby="apnDefaultTypelabel" checked>
           <div id="apnDefaultTypelabel" class="checkbox-text-area">
             [[i18n('apnDetailApnTypeDefault')]]
           </div>
@@ -98,7 +99,7 @@
             <template is="dom-repeat"
                 items="[[IpTypes]]">
               <option value="[[item]]"
-                  selected="[[isEqual_(item, selectedIpType_)]]">
+                  selected="[[isSelectedIpType_(item)]]">
                 [[getIpTypeLocalizedLabel_(item)]]
               </option>
             </template>
@@ -114,7 +115,7 @@
     </cr-button>
     <!-- TODO(b/162365553): Disable Add button unless validated -->
     <cr-button id="apnDetailAddBtn" class="action-button"
-        disabled>
+        on-click="onAddClicked_">
       [[i18n('add')]]
     </cr-button>
   </div>

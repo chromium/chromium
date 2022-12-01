@@ -8,6 +8,7 @@
  */
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
@@ -16,42 +17,24 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/md_select.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {assert} from '//resources/js/assert.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnType, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './apn_detail_dialog.html.js';
-
-/**
- * Possible authentication types shown in the APN detail dialog.
- * @enum {string}
- */
-const AuthenticationType = {
-  AUTOMATIC: 'auth_type_automatic',
-  PAP: 'auth_type_pap',
-  CHAP: 'auth_type_chap',
-};
+import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 
 const AuthenticationTypes = [
-  AuthenticationType.AUTOMATIC,
-  AuthenticationType.PAP,
-  AuthenticationType.CHAP,
+  ApnAuthenticationType.kAutomatic,
+  ApnAuthenticationType.kPap,
+  ApnAuthenticationType.kChap,
 ];
 
-/**
- * Possible IP types shown in the APN detail dialog.
- * @enum {string}
- */
-const IpType = {
-  AUTOMATIC: 'ip_type_automatic',
-  IPv4: 'ip_type_ipv4',
-  IPv6: 'ip_type_ipv6',
-  IPv4_IPv6: 'ip_type_ipv4_ipv6',
-};
-
 const IpTypes = [
-  IpType.AUTOMATIC,
-  IpType.IPv4,
-  IpType.IPv6,
-  IpType.IPv4_IPv6,
+  ApnIpType.kAutomatic,
+  ApnIpType.kIpv4,
+  ApnIpType.kIpv6,
+  ApnIpType.kIpv4Ipv6,
 ];
 
 /**
@@ -63,7 +46,7 @@ const ApnDetailDialogElementBase =
     mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
-class ApnDetailDialog extends ApnDetailDialogElementBase {
+export class ApnDetailDialog extends ApnDetailDialogElementBase {
   static get is() {
     return 'apn-detail-dialog';
   }
@@ -74,6 +57,8 @@ class ApnDetailDialog extends ApnDetailDialogElementBase {
 
   static get properties() {
     return {
+      guid: {type: String},
+
       /** @private */
       advancedSettingsExpanded_: {
         type: Boolean,
@@ -99,17 +84,42 @@ class ApnDetailDialog extends ApnDetailDialogElementBase {
        */
       selectedAuthType_: {
         type: String,
-        value: AuthenticationTypes[0],
+        value: AuthenticationTypes[0].toString(),
       },
 
-      /**
-       * @private
-       */
+      /** @private */
       selectedIpType_: {
         type: String,
-        value: IpTypes[0],
+        value: IpTypes[0].toString(),
+      },
+
+      /** @private */
+      apn_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      username_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      password_: {
+        type: String,
+        value: '',
       },
     };
+  }
+
+  /** @override */
+  constructor() {
+    super();
+
+    /** @private {!CrosNetworkConfigRemote} */
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
   /**
@@ -124,46 +134,89 @@ class ApnDetailDialog extends ApnDetailDialogElementBase {
   }
 
   /**
+   * @param {!Event} event
+   * @private
+   */
+  onAddClicked_(event) {
+    assert(this.guid);
+
+    const apnProperties = /** @type {!ApnProperties} */ ({
+      accessPointName: this.apn_,
+      username: this.username_,
+      password: this.password_,
+      authenticationType: Number(this.selectedAuthType_),
+      ipType: Number(this.selectedIpType_),
+      // TODO(b/162365553): Check that ApnTypes is non-empty
+      apnTypes: this.getSelectedApnTypes_(),
+    });
+    this.networkConfig_.createCustomApn(this.guid, apnProperties);
+
+    this.$.apnDetailDialog.close();
+  }
+
+  /**
+   * Maps the checkboxes to an array of {@link ApnType}.
+   * @returns {Array<ApnType>}
+   * @private
+   */
+  getSelectedApnTypes_() {
+    const apnTypes = [];
+    if (this.$.apnDefaultTypeCheckbox.checked) {
+      apnTypes.push(ApnType.kDefault);
+    }
+
+    if (this.$.apnAttachTypeCheckbox.checked) {
+      apnTypes.push(ApnType.kAttach);
+    }
+    return apnTypes;
+  }
+
+  /**
    * Returns the localized label for the auth type.
-   * @param {AuthenticationType} type
+   * @param {ApnAuthenticationType} type
    * @private
    */
   getAuthTypeLocalizedLabel_(type) {
     switch (type) {
-      case AuthenticationType.AUTOMATIC:
+      case ApnAuthenticationType.kAutomatic:
         return this.i18n('apnDetailTypeAuto');
-      case AuthenticationType.CHAP:
+      case ApnAuthenticationType.kChap:
         return this.i18n('apnDetailAuthTypeCHAP');
-      case AuthenticationType.PAP:
+      case ApnAuthenticationType.kPap:
         return this.i18n('apnDetailAuthTypePAP');
     }
   }
 
   /**
    * Returns the localized label for the ip type.
-   * @param {IpType} type
+   * @param {ApnIpType} type
    * @private
    */
   getIpTypeLocalizedLabel_(type) {
     switch (type) {
-      case IpType.AUTOMATIC:
+      case ApnIpType.kAutomatic:
         return this.i18n('apnDetailTypeAuto');
-      case IpType.IPv4:
+      case ApnIpType.kIpv4:
         return this.i18n('apnDetailIpTypeIpv4');
-      case IpType.IPv6:
+      case ApnIpType.kIpv6:
         return this.i18n('apnDetailIpTypeIpv6');
-      case IpType.IPv4_IPv6:
+      case ApnIpType.kIpv4Ipv6:
         return this.i18n('apnDetailIpTypeIpv4_Ipv6');
     }
   }
 
   /**
-   * @param {string} lhs
-   * @param {string} rhs
-   * @private
+   * @param {number} item
    */
-  isEqual_(lhs, rhs) {
-    return lhs === rhs;
+  isSelectedIpType_(item) {
+    return Number(this.selectedIpType_) === item;
+  }
+
+  /**
+   * @param {number} item
+   */
+  isSelectedAuthType_(item) {
+    return Number(this.selectedAuthType_) === item;
   }
 }
 

@@ -7,9 +7,9 @@
  */
 
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {AlwaysOnVpnMode, AlwaysOnVpnProperties, CellularSimState, ConfigProperties, CrosNetworkConfigObserverRemote, DeviceStateProperties, FilterType, GlobalPolicy, InhibitReason, ManagedProperties, NetworkCertificate, NetworkFilter, NetworkStateProperties, NO_LIMIT, StartConnectResult, UInt32Value, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {AlwaysOnVpnMode, AlwaysOnVpnProperties, ApnProperties, CellularSimState, ConfigProperties, CrosNetworkConfigObserverRemote, DeviceStateProperties, FilterType, GlobalPolicy, InhibitReason, ManagedProperties, NetworkCertificate, NetworkFilter, NetworkStateProperties, NO_LIMIT, StartConnectResult, UInt32Value, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
@@ -89,6 +89,9 @@ export class FakeNetworkConfig {
     /** @private {!Map<string, !Array<!Object>>} */
     this.autoResetValuesMap_ = new Map();
 
+    /** @private {!number} */
+    this.apnIdCounter_ = 0;
+
     this.resetForTest();
   }
 
@@ -145,7 +148,7 @@ export class FakeNetworkConfig {
      'setProperties', 'setCellularSimState', 'startConnect', 'startDisconnect',
      'configureNetwork', 'getAlwaysOnVpn', 'getSupportedVpnTypes',
      'requestTrafficCounters', 'resetTrafficCounters',
-     'setTrafficCountersAutoReset', 'removeCustomApn']
+     'setTrafficCountersAutoReset', 'removeCustomApn', 'createCustomApn']
         .forEach((methodName) => {
           this.resolverMap_.set(methodName, new PromiseResolver());
         });
@@ -762,6 +765,20 @@ export class FakeNetworkConfig {
       this.setAutoResetValues_(guid, autoReset, resetDay);
       resolve(true);
     });
+  }
+
+  /**
+   * @param {!string} guid
+   * @param {!ApnProperties} apn
+   */
+  createCustomApn(guid, apn) {
+    const managedProp = this.managedProperties_.get(guid);
+    apn.id = `${this.apnIdCounter_++}`;
+    if (!managedProp.typeProperties.cellular.customApnList) {
+      managedProp.typeProperties.cellular.customApnList = [];
+    }
+    managedProp.typeProperties.cellular.customApnList.push(apn);
+    this.methodCalled('createCustomApn');
   }
 
   /**

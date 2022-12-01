@@ -35,6 +35,7 @@ import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setu
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_dialog.js';
 import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
@@ -719,15 +720,25 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * TODO(b/162365553): We should pass a network's GUID in here, and what mode
-   * the dialog should be in (create/edit/view)
+   * TODO(b/162365553): We should pass what mode the dialog should be in
+   * (create/edit/view)
+   *
+   * @param {!string} guid
    * @private
    */
-  showApnDetailDialog_() {
+  showApnDetailDialog_(guid) {
     if (!this.isApnRevampEnabled_) {
       return;
     }
     this.shouldShowApnDetailDialog_ = true;
+    // Added to ensure dom-if stamping.
+    afterNextRender(this, () => {
+      const apnDetailDialog = /** @type {ApnDetailDialog} */ (
+          this.shadowRoot.querySelector('#apnDetailDialog'));
+      assert(!!apnDetailDialog);
+
+      apnDetailDialog.guid = guid;
+    });
   }
 
   /** @private */
@@ -1076,7 +1087,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     if (this.shouldShowApnDetailDialog_) {
       return;
     }
-    this.showApnDetailDialog_();
+    const guid = Router.getInstance().getQueryParameters().get('guid');
+    assert(!!guid);
+    this.showApnDetailDialog_(/** @type {!string} */ (guid));
   }
 
   /**
