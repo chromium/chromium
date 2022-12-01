@@ -887,6 +887,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.EventPath.CalculateTime" units="microseconds"
+    expires_after="2023-04-01">
+  <owner>dizhangg@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    Time spent creating the event path in the Blink document lifecycle. Records
+    each time an EventPath gets calculated.
+
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Experimental.Cookies.CacheLookupResult2"
     enum="CookieCacheLookupResult" expires_after="2023-05-07">
   <owner>carlscab@google.com</owner>

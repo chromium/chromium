@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/input/touch.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 
@@ -120,6 +121,10 @@ static bool EventNodePathCachingEnabled() {
 }
 
 void EventPath::CalculatePath() {
+  // TODO(crbug.com/1394555): This histogram should be removed once the UMA
+  // study DocumentEventNodePathCaching is complete.
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.EventPath.CalculateTime");
+
   DCHECK(node_);
   DCHECK(node_event_contexts_.empty());
 
