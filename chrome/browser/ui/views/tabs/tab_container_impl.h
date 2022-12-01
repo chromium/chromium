@@ -152,7 +152,7 @@ class TabContainerImpl : public TabContainer,
   void MouseMovedOutOfHost() override;
 
   // views::BoundsAnimatorObserver:
-  void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override {}
+  void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
 
  private:

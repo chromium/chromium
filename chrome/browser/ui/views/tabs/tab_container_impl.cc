@@ -588,9 +588,6 @@ bool TabContainerImpl::IsRectInContentArea(const gfx::Rect& rect) {
 }
 
 void TabContainerImpl::OnTabSlotAnimationProgressed(TabSlotView* view) {
-  // The rightmost tab moving might have changed the tab container's preferred
-  // width.
-  PreferredSizeChanged();
   if (view && view->group())
     UpdateTabGroupVisuals(view->group().value());
 }
@@ -959,6 +956,13 @@ void TabContainerImpl::MouseMovedOutOfHost() {
   ResizeLayoutTabs();
 }
 
+void TabContainerImpl::OnBoundsAnimatorProgressed(
+    views::BoundsAnimator* animator) {
+  // The rightmost tab (or the `overall_bounds_view_`) moving might have changed
+  // our preferred width.
+  PreferredSizeChanged();
+}
+
 void TabContainerImpl::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   // Send the Container a message to simulate a mouse moved event at the current
   // mouse position. This tickles the Tab the mouse is currently over to show
@@ -970,6 +974,8 @@ void TabContainerImpl::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
     if (widget)
       widget->SynthesizeMouseMoveEvent();
   }
+
+  PreferredSizeChanged();
 }
 
 // TabContainerImpl::DropArrow:
