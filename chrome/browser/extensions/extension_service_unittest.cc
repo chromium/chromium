@@ -5689,7 +5689,7 @@ void ExtensionServiceTest::TestExternalProvider(MockExternalProvider* provider,
     EXPECT_FALSE(prefs->GetInstalledExtensionInfo(good_crx));
 
     // Now clear the preference and reinstall.
-    prefs->ClearExternalUninstallForTesting(good_crx);
+    prefs->ClearExternalExtensionUninstalled(good_crx);
 
     WaitForExternalExtensionInstalled(good_crx);
     ASSERT_EQ(1u, loaded_extensions().size());

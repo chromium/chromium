@@ -1376,6 +1376,14 @@ bool ExtensionPrefs::IsExternalExtensionUninstalled(
   return base::Contains(uninstalled_ids, id);
 }
 
+bool ExtensionPrefs::ClearExternalExtensionUninstalled(const std::string& id) {
+  ScopedListPrefUpdate update(prefs_, kExternalUninstalls);
+  size_t num_removed = update->EraseIf([&id](const base::Value& value) {
+    return value.is_string() && value.GetString() == id;
+  });
+  return num_removed > 0;
+}
+
 bool ExtensionPrefs::IsExtensionDisabled(const std::string& id) const {
   return DoesExtensionHaveState(id, Extension::DISABLED);
 }
@@ -1409,7 +1417,7 @@ void ExtensionPrefs::OnExtensionInstalled(
   // However, it's not clear if existing subsystems may also be relying on this
   // bit being set/unset. For now, maintain existing behavior.
   if (IsExternalExtensionUninstalled(extension->id()))
-    ClearExternalUninstallBit(extension->id());
+    ClearExternalExtensionUninstalled(extension->id());
 
   ScopedExtensionPrefUpdate update(prefs_, extension->id());
   auto extension_dict = update.Get();
@@ -2212,10 +2220,6 @@ void ExtensionPrefs::SetRunAlertsInFirstRunForTest() {
   g_run_alerts_in_first_run_for_testing = true;
 }
 
-void ExtensionPrefs::ClearExternalUninstallForTesting(const ExtensionId& id) {
-  ClearExternalUninstallBit(id);
-}
-
 const char ExtensionPrefs::kFakeObsoletePrefForTesting[] =
     "__fake_obsolete_pref_for_testing";
 
@@ -2728,13 +2732,6 @@ void ExtensionPrefs::MarkObsoleteComponentExtensionAsRemoved(
   DCHECK(existing_entry == current_ids.end());
   current_ids.Append(extension_id);
   OnExtensionUninstalled(extension_id, location, false);
-}
-
-void ExtensionPrefs::ClearExternalUninstallBit(const ExtensionId& id) {
-  ScopedListPrefUpdate update(prefs_, kExternalUninstalls);
-  update->EraseIf([&id](const base::Value& value) {
-    return value.is_string() && value.GetString() == id;
-  });
 }
 
 }  // namespace extensions

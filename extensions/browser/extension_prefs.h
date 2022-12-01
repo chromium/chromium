@@ -196,6 +196,11 @@ class ExtensionPrefs : public KeyedService {
   // user.
   bool IsExternalExtensionUninstalled(const std::string& id) const;
 
+  // Clears any recording of extension with |id| as being an externally
+  // installed extension uninstalled by the user. Returns whether any change was
+  // made.
+  bool ClearExternalExtensionUninstalled(const std::string& id);
+
   // Checks whether |extension_id| is disabled. If there's no state pref for
   // the extension, this will return false. Generally you should use
   // ExtensionService::IsExtensionEnabled instead.
@@ -794,8 +799,6 @@ class ExtensionPrefs : public KeyedService {
   // normally suppressed in first run will still trigger.
   static void SetRunAlertsInFirstRunForTest();
 
-  void ClearExternalUninstallForTesting(const ExtensionId& id);
-
   static const char kFakeObsoletePrefForTesting[];
 
  private:
@@ -940,9 +943,6 @@ class ExtensionPrefs : public KeyedService {
   // Returns true if the prefs have any permission withholding setting stored
   // for a given extension.
   bool HasWithholdingPermissionsSetting(const ExtensionId& extension_id) const;
-
-  // Clears the bit indicating that an external extension was uninstalled.
-  void ClearExternalUninstallBit(const ExtensionId& extension_id);
 
   // Helper function to retrieve various time prefs like first install time,
   // last updated time, last launch time for a given extension.

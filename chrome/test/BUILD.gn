@@ -127,6 +127,8 @@ static_library("test_support") {
     "../browser/search_engines/template_url_service_test_util.h",
     "../browser/signin/identity_test_environment_profile_adaptor.cc",
     "../browser/signin/identity_test_environment_profile_adaptor.h",
+    "../browser/signin/test_signin_client_builder.cc",
+    "../browser/signin/test_signin_client_builder.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",
     "base/chrome_render_view_test.cc",
@@ -179,6 +181,8 @@ static_library("test_support") {
     sources += [
       "../browser/apps/platform_apps/app_browsertest_util.cc",
       "../browser/apps/platform_apps/app_browsertest_util.h",
+      "../browser/extensions/extension_service_test_base.cc",
+      "../browser/extensions/extension_service_test_base.h",
     ]
 
     deps += [
@@ -5617,8 +5621,6 @@ test("unit_tests") {
     "../browser/signin/primary_account_policy_manager_unittest.cc",
     "../browser/signin/reauth_tab_helper_unittest.cc",
     "../browser/signin/signin_profile_attributes_updater_unittest.cc",
-    "../browser/signin/test_signin_client_builder.cc",
-    "../browser/signin/test_signin_client_builder.h",
     "../browser/site_isolation/chrome_site_isolation_policy_unittest.cc",
     "../browser/ssl/certificate_error_reporter_unittest.cc",
     "../browser/ssl/certificate_reporting_test_utils.cc",
@@ -8002,8 +8004,6 @@ test("unit_tests") {
       "../browser/extensions/extension_prefs_unittest.h",
       "../browser/extensions/extension_protocols_unittest.cc",
       "../browser/extensions/extension_service_sync_unittest.cc",
-      "../browser/extensions/extension_service_test_base.cc",
-      "../browser/extensions/extension_service_test_base.h",
       "../browser/extensions/extension_service_test_with_install.cc",
       "../browser/extensions/extension_service_test_with_install.h",
       "../browser/extensions/extension_service_unittest.cc",
