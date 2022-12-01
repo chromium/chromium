@@ -65,6 +65,7 @@ class ConvertableToTraceFormatWrapper final
   std::unique_ptr<v8::ConvertableToTraceFormat> inner_;
 };
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 class EnabledStateObserverImpl final
     : public base::trace_event::TraceLog::EnabledStateObserver {
  public:
@@ -120,6 +121,7 @@ class EnabledStateObserverImpl final
 
 base::LazyInstance<EnabledStateObserverImpl>::Leaky g_trace_state_dispatcher =
     LAZY_INSTANCE_INITIALIZER;
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // TODO(skyostil): Deduplicate this with the clamper in Blink.
 class TimeClamper {
@@ -347,13 +349,13 @@ class V8Platform::TracingControllerImpl : public v8::TracingController {
     TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(category_enabled_flag, name,
                                                 traceEventHandle);
   }
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   void AddTraceStateObserver(TraceStateObserver* observer) override {
     g_trace_state_dispatcher.Get().AddObserver(observer);
   }
   void RemoveTraceStateObserver(TraceStateObserver* observer) override {
     g_trace_state_dispatcher.Get().RemoveObserver(observer);
   }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 };
 
 // static

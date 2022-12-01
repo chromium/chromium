@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 class TestTraceStateObserver
     : public v8::TracingController::TraceStateObserver {
  public:
@@ -26,9 +27,12 @@ class TestTraceStateObserver
   int enabled_ = 0;
   int disabled_ = 0;
 };
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace gin {
 
+// No TraceStateObservers in Perfetto build.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST(V8PlatformTest, TraceStateObserverAPI) {
   TestTraceStateObserver test_observer;
   ASSERT_EQ(0, test_observer.Enabled());
@@ -70,6 +74,7 @@ TEST(V8PlatformTest, TraceStateObserverFired) {
   V8Platform::Get()->GetTracingController()->RemoveTraceStateObserver(
       &test_observer);
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // Tests that PostJob runs a task and is done after Join.
 TEST(V8PlatformTest, PostJobSimple) {
