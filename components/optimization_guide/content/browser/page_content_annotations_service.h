@@ -192,7 +192,7 @@ class PageContentAnnotationsService : public KeyedService,
   // The annotator to use for requests to |BatchAnnotate| and |Annotate|. In
   // prod, this is simply |model_manager_.get()| but is set as a separate
   // pointer here in order to be override-able for testing.
-  raw_ptr<PageContentAnnotator> annotator_;
+  raw_ptr<PageContentAnnotator> annotator_ = nullptr;
 
   // Requests to annotate |text|, which is associated with |web_contents|.
   //
