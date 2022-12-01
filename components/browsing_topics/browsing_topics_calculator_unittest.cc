@@ -65,12 +65,14 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
         host_content_settings_map_.get(), &prefs_, false, "chrome-extension");
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
-    privacy_sandbox_delegate->SetUpDefaultResponse(/*restricted=*/false);
+    privacy_sandbox_delegate->SetUpIsPrivacySandboxRestrictedResponse(
+        /*restricted=*/false);
+    privacy_sandbox_delegate->SetUpIsIncognitoProfileResponse(
+        /*incognito=*/false);
     privacy_sandbox_settings_ =
         std::make_unique<privacy_sandbox::PrivacySandboxSettings>(
             std::move(privacy_sandbox_delegate),
-            host_content_settings_map_.get(), cookie_settings_, &prefs_,
-            /*incognito_profile=*/false);
+            host_content_settings_map_.get(), cookie_settings_, &prefs_);
     privacy_sandbox_settings_->SetPrivacySandboxEnabled(true);
 
     topics_site_data_manager_ =

@@ -55,7 +55,7 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
         std::move(mock_delegate), host_content_settings_map(), cookie_settings_,
-        prefs(), IsIncognitoProfile());
+        prefs());
   }
 
   virtual void InitializePrefsBeforeStart() {}
@@ -63,10 +63,10 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
   virtual void InitializeFeaturesBeforeStart() {}
 
   virtual void InitializeDelegateBeforeStart() {
-    mock_delegate()->SetUpDefaultResponse(/*restricted=*/false);
+    mock_delegate()->SetUpIsPrivacySandboxRestrictedResponse(
+        /*restricted=*/false);
+    mock_delegate()->SetUpIsIncognitoProfileResponse(/*incognito=*/false);
   }
-
-  virtual bool IsIncognitoProfile() { return false; }
 
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
   mock_delegate() {
@@ -858,11 +858,8 @@ TEST_F(PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn,
             privacy_sandbox_settings()->TopicsDataAccessibleSince());
 }
 
-class PrivacySandboxSettingsIncognitoTest : public PrivacySandboxSettingsTest {
-  bool IsIncognitoProfile() override { return true; }
-};
-
-TEST_F(PrivacySandboxSettingsIncognitoTest, DisabledInIncognito) {
+TEST_F(PrivacySandboxSettingsTest, DisabledInIncognito) {
+  mock_delegate()->SetUpIsIncognitoProfileResponse(/*incognito=*/true);
   privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
 }
@@ -922,7 +919,8 @@ class PrivacySandboxSettingsTopicsM1Test : public PrivacySandboxSettingsTest {
   void InitializeFeaturesBeforeStart() override {
     feature_list_.InitWithFeatureState(
         privacy_sandbox::kPrivacySandboxSettings4, GetParam());
-    mock_delegate()->SetUpDefaultResponse(/*restricted= */ false);
+    mock_delegate()->SetUpIsPrivacySandboxRestrictedResponse(
+        /*restricted= */ false);
   }
 
   void InitializePrefsBeforeStart() override {

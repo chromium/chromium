@@ -34,12 +34,20 @@ class MockPrivacySandboxSettingsDelegate
  public:
   MockPrivacySandboxSettingsDelegate();
   ~MockPrivacySandboxSettingsDelegate() override;
-  void SetUpDefaultResponse(bool restricted) {
+  void SetUpIsPrivacySandboxRestrictedResponse(bool restricted) {
     ON_CALL(*this, IsPrivacySandboxRestricted).WillByDefault([=]() {
       return restricted;
     });
   }
+
+  void SetUpIsIncognitoProfileResponse(bool incognito) {
+    ON_CALL(*this, IsIncognitoProfile).WillByDefault([=]() {
+      return incognito;
+    });
+  }
+
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
+  MOCK_METHOD(bool, IsIncognitoProfile, (), (const, override));
 };
 
 // Define an additional content setting value to simulate an unmanaged default

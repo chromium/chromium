@@ -63,13 +63,11 @@ PrivacySandboxSettings::PrivacySandboxSettings(
     std::unique_ptr<Delegate> delegate,
     HostContentSettingsMap* host_content_settings_map,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
-    PrefService* pref_service,
-    bool incognito_profile)
+    PrefService* pref_service)
     : delegate_(std::move(delegate)),
       host_content_settings_map_(host_content_settings_map),
       cookie_settings_(cookie_settings),
-      pref_service_(pref_service),
-      incognito_profile_(incognito_profile) {
+      pref_service_(pref_service) {
   DCHECK(pref_service_);
   DCHECK(host_content_settings_map_);
   DCHECK(cookie_settings_);
@@ -338,7 +336,7 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
   if (delegate_->IsPrivacySandboxRestricted())
     return false;
 
-  if (incognito_profile_)
+  if (delegate_->IsIncognitoProfile())
     return false;
 
   // For Measurement and Relevance APIs, we explicitly do not require the
@@ -436,7 +434,7 @@ bool PrivacySandboxSettings::IsM1PrivacySandboxApiEnabled(
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
 
-  if (incognito_profile_)
+  if (delegate_->IsIncognitoProfile())
     return false;
 
   if (IsPrivacySandboxRestricted())

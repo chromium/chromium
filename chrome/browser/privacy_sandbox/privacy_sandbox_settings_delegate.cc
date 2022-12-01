@@ -45,3 +45,7 @@ PrivacySandboxSettingsDelegate::~PrivacySandboxSettingsDelegate() = default;
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
   return PrivacySandboxRestrictedByAcccountCapability(profile_);
 }
+
+bool PrivacySandboxSettingsDelegate::IsIncognitoProfile() const {
+  return profile_->IsIncognitoProfile();
+}
