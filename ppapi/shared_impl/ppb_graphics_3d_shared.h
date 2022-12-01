@@ -77,10 +77,13 @@ class PPAPI_SHARED_EXPORT PPB_Graphics3D_Shared
   virtual gpu::GpuControl* GetGpuControl() = 0;
   virtual int32_t DoSwapBuffers(const gpu::SyncToken& sync_token,
                                 const gfx::Size& size) = 0;
+  virtual void DoResize(gfx::Size size) = 0;
 
   bool HasPendingSwap() const;
   bool CreateGLES2Impl(gpu::gles2::GLES2Implementation* share_gles2);
   void DestroyGLES2Impl();
+
+  const bool use_shared_images_swapchain_;
 
  private:
   std::unique_ptr<gpu::gles2::GLES2CmdHelper> gles2_helper_;

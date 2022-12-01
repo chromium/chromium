@@ -147,7 +147,12 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void ReturnFrontBuffer(const gpu::Mailbox& mailbox,
                          const gpu::SyncToken& sync_token,
                          bool is_lost);
-
+  void SetDefaultFramebufferSharedImage(const gpu::Mailbox& mailbox,
+                                        const gpu::SyncToken& sync_token,
+                                        int samples_count,
+                                        bool preserve,
+                                        bool needs_depth,
+                                        bool needs_stencil);
   void AddDeletionObserver(DeletionObserver* observer);
   void RemoveDeletionObserver(DeletionObserver* observer);
 

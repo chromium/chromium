@@ -446,6 +446,10 @@ union DeferredCommandBufferRequestParams {
 
   // See ReturnFrontBufferParams.
   ReturnFrontBufferParams return_front_buffer;
+
+  // Allows to attach SharedImage to default framebuffer of this context.
+  // NOTE: Used only for PNaCL.
+  SetDefaultFramebufferSharedImageParams set_default_framebuffer_shared_image;
 };
 
 // Details of a batched request pertaining to shared image management.
@@ -507,6 +511,26 @@ struct ReturnFrontBufferParams {
 
   // Indicates that the resource was lost and should be destroyed.
   bool is_lost;
+};
+
+// Sets SharedImage mailbox and other framebuffer params to the default
+// framebuffer. NOTE: This exists only to support PNaCl.
+struct SetDefaultFramebufferSharedImageParams {
+  // The mailbox of the shared image. Can be empty if client wants to detach
+  // SharedImage from the color buffer.
+  Mailbox mailbox;
+
+  // Number of samples for the multisampling.
+  uint32 samples_count;
+
+  // If default framebuffer needs to presevre contents across the frames.
+  bool preserve;
+
+  // If this framebuffer needs depth buffer.
+  bool needs_depth;
+
+  // If this framebuffer needs stencil buffer.
+  bool needs_stencil;
 };
 
 // Creates a new shared image.

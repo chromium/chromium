@@ -231,6 +231,7 @@ component("shared_impl") {
     "//gpu/command_buffer/common",
     "//ipc",
     "//media:shared_memory_support",
+    "//ui/gfx:gfx_switches",
   ]
 
   if (!is_nacl && !is_minimal_toolchain) {

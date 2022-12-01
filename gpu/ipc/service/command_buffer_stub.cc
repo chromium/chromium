@@ -168,6 +168,17 @@ void CommandBufferStub::ExecuteDeferredRequest(
                           params.get_return_front_buffer()->is_lost);
       break;
     }
+
+    case mojom::DeferredCommandBufferRequestParams::Tag::
+        kSetDefaultFramebufferSharedImage: {
+      OnSetDefaultFramebufferSharedImage(
+          params.get_set_default_framebuffer_shared_image()->mailbox,
+          params.get_set_default_framebuffer_shared_image()->samples_count,
+          params.get_set_default_framebuffer_shared_image()->preserve,
+          params.get_set_default_framebuffer_shared_image()->needs_depth,
+          params.get_set_default_framebuffer_shared_image()->needs_stencil);
+      break;
+    }
   }
 }
 

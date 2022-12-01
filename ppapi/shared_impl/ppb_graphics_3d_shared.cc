@@ -12,15 +12,21 @@
 #include "gpu/command_buffer/client/transfer_buffer.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ppapi/c/pp_errors.h"
+#include "ui/gfx/switches.h"
 
 namespace ppapi {
 
 PPB_Graphics3D_Shared::PPB_Graphics3D_Shared(PP_Instance instance)
-    : Resource(OBJECT_IS_IMPL, instance) {}
+    : Resource(OBJECT_IS_IMPL, instance),
+      use_shared_images_swapchain_(
+          features::UseSharedImagesSwapChainForPPAPI()) {}
 
 PPB_Graphics3D_Shared::PPB_Graphics3D_Shared(const HostResource& host_resource,
                                              const gfx::Size& size)
-    : Resource(OBJECT_IS_PROXY, host_resource), size_(size) {}
+    : Resource(OBJECT_IS_PROXY, host_resource),
+      use_shared_images_swapchain_(
+          features::UseSharedImagesSwapChainForPPAPI()),
+      size_(size) {}
 
 PPB_Graphics3D_Shared::~PPB_Graphics3D_Shared() {
   // Make sure that GLES2 implementation has already been destroyed.
@@ -52,8 +58,13 @@ int32_t PPB_Graphics3D_Shared::ResizeBuffers(int32_t width, int32_t height) {
   if ((width < 0) || (height < 0))
     return PP_ERROR_BADARGUMENT;
 
-  gles2_impl()->ResizeCHROMIUM(width, height, 1.f, nullptr, true);
   size_ = gfx::Size(width, height);
+
+  if (use_shared_images_swapchain_) {
+    DoResize(size_);
+  } else {
+    gles2_impl()->ResizeCHROMIUM(width, height, 1.f, nullptr, true);
+  }
   // TODO(alokp): Check if resize succeeded and return appropriate error code.
   return PP_OK;
 }

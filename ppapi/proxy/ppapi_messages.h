@@ -769,6 +769,11 @@ IPC_MESSAGE_ROUTED3(PpapiHostMsg_PPBGraphics3D_SwapBuffers,
                     gfx::Size /* size */)
 IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBGraphics3D_EnsureWorkVisible,
                     ppapi::HostResource /* context */)
+IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBGraphics3D_ResolveAndDetachFramebuffer,
+                    ppapi::HostResource /* graphics_3d */)
+IPC_MESSAGE_ROUTED2(PpapiHostMsg_PPBGraphics3D_Resize,
+                    ppapi::HostResource /* graphics_3d */,
+                    gfx::Size /* size */)
 
 // PPB_ImageData.
 IPC_SYNC_MESSAGE_ROUTED4_3(PpapiHostMsg_PPBImageData_CreatePlatform,
