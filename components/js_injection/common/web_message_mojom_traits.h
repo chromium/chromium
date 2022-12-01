@@ -7,12 +7,8 @@
 
 #include <string>
 
-#include "base/functional/overloaded.h"
-#include "base/notreached.h"
-#include "base/test/scoped_path_override.h"
 #include "components/js_injection/common/interfaces.mojom-shared.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 namespace mojo {
@@ -25,21 +21,7 @@ struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
   }
 
   static js_injection::mojom::JsWebMessageDataView::Tag GetTag(
-      const blink::WebMessagePayload& payload) {
-    return absl::visit(
-        base::Overloaded{
-            [](const std::u16string&) {
-              return js_injection::mojom::JsWebMessageDataView::Tag::
-                  kStringValue;
-            },
-            [](const std::unique_ptr<blink::WebMessageArrayBufferPayload>&) {
-              // TODO(crrev.com/1374142): Add support for ArrayBuffer.
-              NOTREACHED() << "ArrayBufferPayload is not supported";
-              return js_injection::mojom::JsWebMessageDataView::Tag::
-                  kStringValue;
-            }},
-        payload);
-  }
+      const blink::WebMessagePayload& payload);
 
   static bool Read(js_injection::mojom::JsWebMessageDataView r,
                    blink::WebMessagePayload* out);
