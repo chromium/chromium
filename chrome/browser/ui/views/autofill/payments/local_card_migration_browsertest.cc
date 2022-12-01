@@ -638,9 +638,10 @@ IN_PROC_BROWSER_TEST_F(
       ElementsAre(
           Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_REQUESTED, 1),
           Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_SHOWN, 1)));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationOrigin.UseOfServerCard",
-      autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.LocalCardMigrationOrigin.UseOfServerCard"),
+      ElementsAre(Bucket(autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1)));
 }
 
 // Ensures that the intermediate migration bubble is not shown after reusing
@@ -682,9 +683,10 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
       ElementsAre(
           Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_REQUESTED, 1),
           Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_SHOWN, 1)));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationOrigin.UseOfLocalCard",
-      autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.LocalCardMigrationOrigin.UseOfLocalCard"),
+      ElementsAre(Bucket(autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1)));
 }
 
 // Ensures that clicking [X] on the offer bubble makes the bubble disappear.
@@ -701,9 +703,10 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   // No bubble should be showing.
   EXPECT_EQ(nullptr, GetLocalCardMigrationOfferBubbleViews());
   // Metrics
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationOrigin.UseOfLocalCard",
-      autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.LocalCardMigrationOrigin.UseOfLocalCard"),
+      ElementsAre(Bucket(autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1)));
 }
 
 // Ensures that the credit card icon will show in location bar.
@@ -773,12 +776,14 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
       ElementsAre(Bucket(autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1),
                   Bucket(autofill_metrics::INTERMEDIATE_BUBBLE_ACCEPTED, 1),
                   Bucket(autofill_metrics::MAIN_DIALOG_SHOWN, 1)));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationDialogOffer",
-      autofill_metrics::LOCAL_CARD_MIGRATION_DIALOG_SHOWN, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.LocalCardMigrationBubbleResult.FirstShow"),
+              ElementsAre(Bucket(
+                  autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.LocalCardMigrationDialogOffer"),
+      ElementsAre(
+          Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_DIALOG_SHOWN, 1)));
 }
 
 // Ensures that the migration dialog contains all the valid card stored in
@@ -829,11 +834,12 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
       ElementsAre(Bucket(autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN, 1),
                   Bucket(autofill_metrics::INTERMEDIATE_BUBBLE_ACCEPTED, 1),
                   Bucket(autofill_metrics::MAIN_DIALOG_SHOWN, 1)));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationDialogUserInteraction",
-      autofill_metrics::
-          LOCAL_CARD_MIGRATION_DIALOG_CLOSED_CANCEL_BUTTON_CLICKED,
-      1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.LocalCardMigrationDialogUserInteraction"),
+              ElementsAre(Bucket(
+                  autofill_metrics::
+                      LOCAL_CARD_MIGRATION_DIALOG_CLOSED_CANCEL_BUTTON_CLICKED,
+                  1)));
 }
 
 // Ensures that accepting the main migration dialog closes the dialog.
@@ -859,10 +865,12 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                   Bucket(autofill_metrics::INTERMEDIATE_BUBBLE_ACCEPTED, 1),
                   Bucket(autofill_metrics::MAIN_DIALOG_SHOWN, 1),
                   Bucket(autofill_metrics::MAIN_DIALOG_ACCEPTED, 1)));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationDialogUserInteraction",
-      autofill_metrics::LOCAL_CARD_MIGRATION_DIALOG_CLOSED_SAVE_BUTTON_CLICKED,
-      1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.LocalCardMigrationDialogUserInteraction"),
+              ElementsAre(Bucket(
+                  autofill_metrics::
+                      LOCAL_CARD_MIGRATION_DIALOG_CLOSED_SAVE_BUTTON_CLICKED,
+                  1)));
 }
 
 // Ensures local cards will be deleted from browser local storage after being
@@ -1013,9 +1021,10 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
   ClickOnOkButton(GetLocalCardMigrationOfferBubbleViews());
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.LocalCardMigrationBubbleResult.FirstShow"),
+              ElementsAre(Bucket(
+                  autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
@@ -1028,9 +1037,10 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   ClickOnDialogViewAndWait(GetCloseButton(),
                            GetLocalCardMigrationOfferBubbleViews());
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.LocalCardMigrationBubbleResult.FirstShow"),
+              ElementsAre(Bucket(
+                  autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED, 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
@@ -1045,9 +1055,11 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   GetBrowser(0)->tab_strip_model()->CloseAllTabs();
   destroyed_waiter.Wait();
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.LocalCardMigrationBubbleResult.FirstShow"),
+      ElementsAre(Bucket(
+          autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
@@ -1063,9 +1075,11 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
       views::Widget::ClosedReason::kLostFocus);
   destroyed_waiter.Wait();
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.LocalCardMigrationBubbleResult.FirstShow"),
+      ElementsAre(
+          Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS, 1)));
 }
 
 // Tests to ensure the card nickname is shown correctly in the local card
