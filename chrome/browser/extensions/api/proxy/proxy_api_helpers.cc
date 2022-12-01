@@ -337,7 +337,7 @@ bool GetBypassListFromExtensionPref(const base::Value::Dict& proxy_config,
   return JoinUrlList(bypass_list->GetList(), ",", out, error, bad_message);
 }
 
-std::unique_ptr<base::Value> CreateProxyConfigDict(
+absl::optional<base::Value::Dict> CreateProxyConfigDict(
     ProxyPrefs::ProxyMode mode_enum,
     bool pac_mandatory,
     const std::string& pac_url,
@@ -347,11 +347,9 @@ std::unique_ptr<base::Value> CreateProxyConfigDict(
     std::string* error) {
   switch (mode_enum) {
     case ProxyPrefs::MODE_DIRECT:
-      return std::make_unique<base::Value>(
-          ProxyConfigDictionary::CreateDirect());
+      return ProxyConfigDictionary::CreateDirect();
     case ProxyPrefs::MODE_AUTO_DETECT:
-      return std::make_unique<base::Value>(
-          ProxyConfigDictionary::CreateAutoDetect());
+      return ProxyConfigDictionary::CreateAutoDetect();
     case ProxyPrefs::MODE_PAC_SCRIPT: {
       std::string url;
       if (!pac_url.empty()) {
@@ -359,33 +357,30 @@ std::unique_ptr<base::Value> CreateProxyConfigDict(
       } else if (!pac_data.empty()) {
         if (!CreateDataURLFromPACScript(pac_data, &url)) {
           *error = "Internal error, at base64 encoding of 'pacScript.data'.";
-          return nullptr;
+          return absl::nullopt;
         }
       } else {
         *error =
             "Proxy mode 'pac_script' requires a 'pacScript' field with "
             "either a 'url' field or a 'data' field.";
-        return nullptr;
+        return absl::nullopt;
       }
-      return std::make_unique<base::Value>(
-          ProxyConfigDictionary::CreatePacScript(url, pac_mandatory));
+      return ProxyConfigDictionary::CreatePacScript(url, pac_mandatory);
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
       if (proxy_rules_string.empty()) {
         *error = "Proxy mode 'fixed_servers' requires a 'rules' field.";
-        return nullptr;
+        return absl::nullopt;
       }
-      return std::make_unique<base::Value>(
-          ProxyConfigDictionary::CreateFixedServers(proxy_rules_string,
-                                                    bypass_list));
+      return ProxyConfigDictionary::CreateFixedServers(proxy_rules_string,
+                                                       bypass_list);
     }
     case ProxyPrefs::MODE_SYSTEM:
-      return std::make_unique<base::Value>(
-          ProxyConfigDictionary::CreateSystem());
+      return ProxyConfigDictionary::CreateSystem();
     case ProxyPrefs::kModeCount:
       NOTREACHED();
   }
-  return nullptr;
+  return absl::nullopt;
 }
 
 absl::optional<base::Value::Dict> CreateProxyRulesDict(

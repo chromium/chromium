@@ -131,7 +131,7 @@ absl::optional<base::Value> ProxyPrefTransformer::ExtensionToBrowserPref(
     return absl::nullopt;
   }
 
-  std::unique_ptr<base::Value> result =
+  absl::optional<base::Value::Dict> result =
       proxy_api_helpers::CreateProxyConfigDict(
           mode_enum, pac_mandatory, pac_url, pac_data, proxy_rules_string,
           bypass_list, &error);
@@ -139,7 +139,7 @@ absl::optional<base::Value> ProxyPrefTransformer::ExtensionToBrowserPref(
   if (!result)
     return absl::nullopt;
 
-  return base::Value::FromUniquePtrValue(std::move(result));
+  return base::Value(std::move(*result));
 }
 
 absl::optional<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
