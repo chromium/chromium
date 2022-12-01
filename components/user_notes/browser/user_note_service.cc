@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/user_notes/browser/frame_user_note_changes.h"
 #include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/browser/user_note_utils.h"
@@ -66,6 +67,9 @@ void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
   if (rfh->GetPage().GetMainDocument().IsErrorDocument()) {
     return;
   }
+
+  TRACE_EVENT("browser", "UserNoteService::OnFrameNavigated", "URL",
+              rfh->GetLastCommittedURL());
 
   DCHECK(UserNoteManager::GetForPage(rfh->GetPage()));
 
@@ -398,6 +402,7 @@ void UserNoteService::InitializeNewNoteForCreation(
 void UserNoteService::OnNoteMetadataFetchedForNavigation(
     const std::vector<content::WeakDocumentPtr>& all_frames,
     UserNoteMetadataSnapshot metadata_snapshot) {
+  TRACE_EVENT("browser", "UserNoteService::OnNoteMetadataFetchedForNavigation");
   DCHECK(all_frames.size() == 1u);
 
   content::RenderFrameHost* rfh = all_frames[0].AsRenderFrameHostIfValid();
@@ -406,6 +411,11 @@ void UserNoteService::OnNoteMetadataFetchedForNavigation(
     // The navigated frame is no longer valid.
     return;
   }
+
+  TRACE_EVENT_INSTANT("browser", "Valid Frame", "URL",
+                      rfh->GetLastCommittedURL(), "Active",
+                      delegate_->IsFrameInActiveTab(rfh), "HasNoteMetadata",
+                      !metadata_snapshot.IsEmpty());
 
   if (delegate_->IsFrameInActiveTab(rfh)) {
     UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(rfh);
@@ -422,6 +432,7 @@ void UserNoteService::OnNoteMetadataFetchedForNavigation(
     // but there's no way to know whether the notes changed until further down
     // the callback stack. Since InvalidateIfVisible() is cheap enough, always
     // calling it here is considered an acceptable fix for now.
+    TRACE_EVENT_INSTANT("browser", "Invalidate UI");
     ui->InvalidateIfVisible();
 
     if (!metadata_snapshot.IsEmpty()) {
@@ -471,6 +482,8 @@ void UserNoteService::OnNoteModelsFetched(
     const IdSet& new_notes,
     std::vector<std::unique_ptr<FrameUserNoteChanges>> note_changes,
     std::vector<std::unique_ptr<UserNote>> notes) {
+  TRACE_EVENT("browser", "UserNoteService::OnNoteModelsFetched", "num_notes",
+              notes.size());
   // Update the model map with the new models.
   for (std::unique_ptr<UserNote>& note : notes) {
     base::UnguessableToken id = note->id();
@@ -516,6 +529,7 @@ void UserNoteService::OnNoteModelsFetched(
 }
 
 void UserNoteService::OnFrameChangesApplied(base::UnguessableToken change_id) {
+  TRACE_EVENT("browser", "UserNoteService::OnFrameChangesApplied");
   const auto& changes_it = note_changes_in_progress_.find(change_id);
   DCHECK(changes_it != note_changes_in_progress_.end());
 
@@ -528,6 +542,7 @@ void UserNoteService::OnFrameChangesApplied(base::UnguessableToken change_id) {
     // the UI to reload the notes it's displaying.
     UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(rfh);
     DCHECK(ui);
+    TRACE_EVENT_INSTANT("browser", "Invalidate UI");
     ui->InvalidateIfVisible();
   } else if (!rfh) {
     // The frame for these changes was deleted or navigated away; the frame was

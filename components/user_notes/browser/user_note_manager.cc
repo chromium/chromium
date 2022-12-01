@@ -5,6 +5,7 @@
 #include "components/user_notes/browser/user_note_manager.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/user_notes/browser/user_note_instance.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
@@ -53,6 +54,7 @@ const std::vector<UserNoteInstance*> UserNoteManager::GetAllNoteInstances() {
 }
 
 void UserNoteManager::RemoveNote(const base::UnguessableToken& id) {
+  TRACE_EVENT("browser", "UserNoteManager::RemoveNote", "id", id);
   const auto& entry_it = instance_map_.find(id);
   DCHECK(entry_it != instance_map_.end())
       << "Attempted to remove a note instance from a page where it didn't "
@@ -73,6 +75,8 @@ void UserNoteManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
 void UserNoteManager::AddNoteInstance(
     std::unique_ptr<UserNoteInstance> note_instance,
     UserNoteInstance::AttachmentFinishedCallback initialize_callback) {
+  TRACE_EVENT("browser", "UserNoteManager::AddNoteInstance", "id",
+              note_instance->model().id());
   // TODO(crbug.com/1313967): This DCHECK is only applicable if notes are only
   // supported in the top-level frame. If notes are ever supported in subframes,
   // it is possible for the same note ID to be added to the same page more than

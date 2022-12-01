@@ -4,6 +4,7 @@
 
 #include "components/user_notes/browser/user_note_instance.h"
 
+#include "base/trace_event/typed_macros.h"
 #include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/model/user_note_target.h"
 
@@ -58,12 +59,15 @@ void UserNoteInstance::BindToHighlight(
 
 void UserNoteInstance::InitializeHighlightIfNeeded(
     AttachmentFinishedCallback callback) {
+  TRACE_EVENT("browser", "UserNoteInstance::InitializeHighlightIfNeeded", "id",
+              model_->id());
   // If the UserNoteInstance was instantiated to create a new note, the
   // highlight will already be initialized in the renderer. In this case,
   // BindToHighlight must already have been called and so a `callback` must not
   // be passed to this method since a callback was already passed in
   // BindToHighlight.
   if (agent_.is_bound()) {
+    TRACE_EVENT_INSTANT("browser", "Already bound");
     DCHECK(receiver_.is_bound());
     DCHECK(!callback);
     DCHECK_EQ(model_->target().type(), UserNoteTarget::TargetType::kPageText);
@@ -79,6 +83,7 @@ void UserNoteInstance::InitializeHighlightIfNeeded(
       // no highlight to create on the renderer side. Also, this instance may
       // already have been initialized as part of generating a new note. In
       // these cases, do nothing.
+      TRACE_EVENT_INSTANT("browser", "Page Note");
       std::move(callback).Run();
     } break;
     case UserNoteTarget::TargetType::kPageText: {
@@ -96,6 +101,8 @@ void UserNoteInstance::OnNoteSelected() {
 }
 
 void UserNoteInstance::DidFinishAttachment(const gfx::Rect& rect) {
+  TRACE_EVENT("browser", "UserNoteInstance::DidFinishAttachment", "id",
+              model_->id(), "rect", rect.ToString());
   finished_attachment_ = true;
   rect_ = rect;
 
@@ -115,6 +122,7 @@ void UserNoteInstance::OnNoteDetached() {
 }
 
 void UserNoteInstance::InitializeHighlightInternal() {
+  TRACE_EVENT("browser", "UserNoteInstance::InitializeHighlightInternal");
   DCHECK_EQ(model_->target().type(), UserNoteTarget::TargetType::kPageText);
 
   parent_manager_->note_agent_container()->CreateAgent(

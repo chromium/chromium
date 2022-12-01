@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
@@ -67,6 +68,7 @@ void AnnotationAgentImpl::Bind(
 }
 
 void AnnotationAgentImpl::Attach() {
+  TRACE_EVENT("blink", "AnnotationAgentImpl::Attach");
   DCHECK(!IsRemoved());
   did_try_attach_ = true;
   Document& document = *owning_container_->GetSupplementable();
@@ -143,12 +145,17 @@ void AnnotationAgentImpl::ScrollIntoView() const {
 }
 
 void AnnotationAgentImpl::DidFinishAttach(const RangeInFlatTree* range) {
-  if (IsRemoved())
+  TRACE_EVENT("blink", "AnnotationAgentImpl::DidFinishAttach", "bound_to_host",
+              agent_host_.is_bound());
+  if (IsRemoved()) {
+    TRACE_EVENT_INSTANT("blink", "Removed");
     return;
+  }
 
   attached_range_ = range;
 
   if (IsAttached()) {
+    TRACE_EVENT_INSTANT("blink", "IsAttached");
     EphemeralRange dom_range =
         EphemeralRange(ToPositionInDOMTree(attached_range_->StartPosition()),
                        ToPositionInDOMTree(attached_range_->EndPosition()));
@@ -166,9 +173,11 @@ void AnnotationAgentImpl::DidFinishAttach(const RangeInFlatTree* range) {
             .empty()) {
       // TODO(bokan): Add new marker types based on `type_`.
       document->Markers().AddTextFragmentMarker(dom_range);
+    } else {
+      TRACE_EVENT_INSTANT("blink", "Markers Intersect!");
     }
-
   } else {
+    TRACE_EVENT_INSTANT("blink", "NotAttached");
     attached_range_.Clear();
   }
 
