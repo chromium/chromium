@@ -27,6 +27,8 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -41,6 +43,37 @@ namespace {
 const int64_t kMaxSessionState = 1024 * 5;  // 5MB
 
 }  // anonymous namespace
+
+// Observes scroll and zoom events and executes LoggingBlock.
+@interface WebSessionStateScrollingObserver
+    : NSObject <CRWWebViewScrollViewProxyObserver>
+- (instancetype)initWithClosure:(base::RepeatingClosure)loggingClosure;
+
+@end
+@implementation WebSessionStateScrollingObserver {
+  base::RepeatingClosure callback_;
+}
+
+- (instancetype)initWithClosure:(base::RepeatingClosure)closure {
+  if (self = [super init]) {
+    callback_ = std::move(closure);
+  }
+  return self;
+}
+
+- (void)webViewScrollViewDidEndDragging:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                         willDecelerate:(BOOL)decelerate {
+  callback_.Run();
+}
+
+- (void)webViewScrollViewDidEndZooming:
+            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
+                               atScale:(CGFloat)scale {
+  callback_.Run();
+}
+
+@end
 
 // static
 bool WebSessionStateTabHelper::IsEnabled() {
@@ -58,6 +91,9 @@ bool WebSessionStateTabHelper::IsEnabled() {
 WebSessionStateTabHelper::WebSessionStateTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
+  if (web_state_->IsRealized()) {
+    CreateScrollingObserver();
+  }
 }
 
 WebSessionStateTabHelper::~WebSessionStateTabHelper() = default;
@@ -123,6 +159,12 @@ void WebSessionStateTabHelper::SaveSessionState() {
 
 void WebSessionStateTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
+  if (scroll_observer_) {
+    [web_state->GetWebViewProxy().scrollViewProxy
+        removeObserver:scroll_observer_];
+    scroll_observer_ = nil;
+  }
+
   if (stale_) {
     SaveSessionState();
   }
@@ -158,7 +200,25 @@ void WebSessionStateTabHelper::WebFrameDidBecomeAvailable(
   MarkStale();
 }
 
+void WebSessionStateTabHelper::WebStateRealized(web::WebState* web_state) {
+  CreateScrollingObserver();
+}
+
 #pragma mark - Private
+
+void WebSessionStateTabHelper::CreateScrollingObserver() {
+  base::RepeatingClosure closure = base::BindRepeating(
+      &WebSessionStateTabHelper::OnScrollEvent, weak_ptr_factory_.GetWeakPtr());
+  DCHECK(!scroll_observer_);
+  scroll_observer_ =
+      [[WebSessionStateScrollingObserver alloc] initWithClosure:closure];
+  [web_state_->GetWebViewProxy().scrollViewProxy addObserver:scroll_observer_];
+}
+
+void WebSessionStateTabHelper::OnScrollEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  stale_ = true;
+}
 
 void WebSessionStateTabHelper::MarkStale() {
   if (!IsEnabled())
