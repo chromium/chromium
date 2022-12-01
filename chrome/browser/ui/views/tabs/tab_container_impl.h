@@ -83,10 +83,12 @@ class TabContainerImpl : public TabContainer,
   void NotifyTabGroupEditorBubbleOpened() override;
   void NotifyTabGroupEditorBubbleClosed() override;
 
-  int GetModelIndexOf(const TabSlotView* slot_view) const override;
+  absl::optional<int> GetModelIndexOf(
+      const TabSlotView* slot_view) const override;
   Tab* GetTabAtModelIndex(int index) const override;
   int GetTabCount() const override;
-  int GetModelIndexOfFirstNonClosingTab(Tab* tab) const override;
+  absl::optional<int> GetModelIndexOfFirstNonClosingTab(
+      Tab* tab) const override;
 
   void UpdateHoverCard(
       Tab* tab,

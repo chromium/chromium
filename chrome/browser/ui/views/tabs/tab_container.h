@@ -87,13 +87,15 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void NotifyTabGroupEditorBubbleOpened() = 0;
   virtual void NotifyTabGroupEditorBubbleClosed() = 0;
 
-  virtual int GetModelIndexOf(const TabSlotView* slot_view) const = 0;
+  virtual absl::optional<int> GetModelIndexOf(
+      const TabSlotView* slot_view) const = 0;
   virtual Tab* GetTabAtModelIndex(int index) const = 0;
   virtual int GetTabCount() const = 0;
 
   // Returns the model index of the first tab after (or including) `tab` which
   // is not closing.
-  virtual int GetModelIndexOfFirstNonClosingTab(Tab* tab) const = 0;
+  virtual absl::optional<int> GetModelIndexOfFirstNonClosingTab(
+      Tab* tab) const = 0;
 
   virtual void UpdateHoverCard(
       Tab* tab,

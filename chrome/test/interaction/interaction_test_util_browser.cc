@@ -108,7 +108,7 @@ class InteractionTestUtilSimulatorBrowser
     Tab* const tab = tab_strip->tab_at(index);
     views::test::InteractionTestUtilSimulatorViews::DoDefaultAction(tab,
                                                                     input_type);
-    CHECK_EQ(static_cast<int>(index), tab_strip->GetActiveIndex());
+    CHECK_EQ(static_cast<int>(index), tab_strip->GetActiveIndex().value());
     return true;
   }
 

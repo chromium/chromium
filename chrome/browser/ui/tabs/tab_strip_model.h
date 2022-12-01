@@ -134,6 +134,8 @@ class TabStripModel : public TabGroupController {
     absl::optional<SessionID> id;
   };
 
+  // TODO(1394210): Remove this, and use absl::optional<size_t> (or at least
+  // absl::optional<int>) in its place.
   static constexpr int kNoTab = -1;
 
   TabStripModel() = delete;

@@ -38,11 +38,11 @@ class PinnedTabContainerController final : public TabContainerController {
            index < NumPinnedTabsInModel();
   }
 
-  int GetActiveIndex() const override {
-    const int active_index = base_controller_->GetActiveIndex();
-    if (!IsValidModelIndex(active_index))
-      return TabStripModel::kNoTab;
-    return active_index;
+  absl::optional<int> GetActiveIndex() const override {
+    const absl::optional<int> active_index = base_controller_->GetActiveIndex();
+    if (active_index.has_value() && !IsValidModelIndex(active_index.value()))
+      return absl::nullopt;
+    return base_controller_->GetActiveIndex();
   }
 
   int NumPinnedTabsInModel() const override {
@@ -104,21 +104,21 @@ class UnpinnedTabContainerController final : public TabContainerController {
   ~UnpinnedTabContainerController() override = default;
 
   bool IsValidModelIndex(int index) const override {
-    return index >= 0 &&
-           base_controller_->IsValidModelIndex(ContainerToModelIndex(index));
+    return ContainerToModelIndex(index).has_value();
   }
 
-  int GetActiveIndex() const override {
-    const absl::optional<int> active_index =
-        ModelToContainerIndex(base_controller_->GetActiveIndex());
-    // TODO(crbug.com/1346023): Maybe optional instead.
-    return active_index.value_or(TabStripModel::kNoTab);
+  absl::optional<int> GetActiveIndex() const override {
+    const absl::optional<int> base_model_active_index =
+        base_controller_->GetActiveIndex();
+    if (base_model_active_index.has_value())
+      return ModelToContainerIndex(base_model_active_index.value());
+    return absl::nullopt;
   }
 
   int NumPinnedTabsInModel() const override { return 0; }
 
   void OnDropIndexUpdate(int index, bool drop_before) override {
-    base_controller_->OnDropIndexUpdate(ContainerToModelIndex(index),
+    base_controller_->OnDropIndexUpdate(ContainerToModelIndex(index).value(),
                                         drop_before);
   }
 
@@ -168,13 +168,13 @@ class UnpinnedTabContainerController final : public TabContainerController {
     return model_index - base_controller_->NumPinnedTabsInModel();
   }
 
-  int ContainerToModelIndex(int container_index) const {
+  absl::optional<int> ContainerToModelIndex(int container_index) const {
     if (container_index < 0)
-      return TabStripModel::kNoTab;
+      return absl::nullopt;
     const int model_index =
         container_index + base_controller_->NumPinnedTabsInModel();
     if (!base_controller_->IsValidModelIndex(model_index))
-      return TabStripModel::kNoTab;
+      return absl::nullopt;
     return model_index;
   }
 
@@ -418,12 +418,14 @@ void CompoundTabContainer::NotifyTabGroupEditorBubbleClosed() {
   unpinned_tab_container_->NotifyTabGroupEditorBubbleClosed();
 }
 
-int CompoundTabContainer::GetModelIndexOf(const TabSlotView* slot_view) const {
-  const int pinned_index = pinned_tab_container_->GetModelIndexOf(slot_view);
-  if (pinned_index != TabStripModel::kNoTab)  // TODO(crbug.com/1346023): Maybe
-                                              // optional instead.
-    return pinned_index;
-  return unpinned_tab_container_->GetModelIndexOf(slot_view) + NumPinnedTabs();
+absl::optional<int> CompoundTabContainer::GetModelIndexOf(
+    const TabSlotView* slot_view) const {
+  const absl::optional<int> unpinned_index =
+      unpinned_tab_container_->GetModelIndexOf(slot_view);
+  if (unpinned_index.has_value()) {
+    return unpinned_index.value() + NumPinnedTabs();
+  }
+  return pinned_tab_container_->GetModelIndexOf(slot_view);
 }
 
 Tab* CompoundTabContainer::GetTabAtModelIndex(int index) const {
@@ -439,25 +441,26 @@ int CompoundTabContainer::GetTabCount() const {
          unpinned_tab_container_->GetTabCount();
 }
 
-int CompoundTabContainer::GetModelIndexOfFirstNonClosingTab(Tab* tab) const {
+absl::optional<int> CompoundTabContainer::GetModelIndexOfFirstNonClosingTab(
+    Tab* tab) const {
   if (tab->data().pinned) {
-    const int pinned_index =
+    const absl::optional<int> pinned_index =
         pinned_tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
 
     // If there are no non-closing pinned tabs after `tab`, return the first
     // non-closing unpinned tab, if there is one (if the unpinned container is
     // empty or only has closing tabs, GetTabCount will be 0).
-    if (pinned_index == TabStripModel::kNoTab &&
+    if (!pinned_index.has_value() &&
         unpinned_tab_container_->GetTabCount() > 0) {
       return NumPinnedTabs();
     }
     return pinned_index;
   } else {
-    const int unpinned_index =
+    const absl::optional<int> unpinned_index =
         unpinned_tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
-    if (unpinned_index != TabStripModel::kNoTab)
-      return unpinned_index + NumPinnedTabs();
-    return TabStripModel::kNoTab;
+    if (unpinned_index.has_value())
+      return unpinned_index.value() + NumPinnedTabs();
+    return absl::nullopt;
   }
 }
 
@@ -509,7 +512,7 @@ void CompoundTabContainer::AnimateToIdealBounds() {
     if (!tab)
       continue;
 
-    AnimateTabTo(tab, GetIdealBounds(GetModelIndexOf(tab)));
+    AnimateTabTo(tab, GetIdealBounds(GetModelIndexOf(tab).value()));
   }
 }
 

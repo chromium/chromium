@@ -35,8 +35,8 @@ void FakeBaseTabStripController::AddTab(int index,
     tab_strip_->AddTabAt(index, std::move(data));
   if (is_active == TabActive::kActive) {
     SetActiveIndex(index);
-  } else if (index <= active_index_) {
-    SetActiveIndex(active_index_ + 1);
+  } else if (active_index_.has_value() && index <= active_index_) {
+    SetActiveIndex(active_index_.value() + 1);
   }
 }
 
@@ -60,23 +60,31 @@ void FakeBaseTabStripController::ToggleTabGroupCollapsedState(
 }
 
 void FakeBaseTabStripController::RemoveTab(int index) {
+  DCHECK(IsValidIndex(index));
   num_tabs_--;
   if (index < num_pinned_tabs_)
     num_pinned_tabs_--;
   tab_groups_.erase(tab_groups_.begin() + index);
 
-  // RemoveTabAt() expects the controller state to have been updated already.
   const bool was_active = index == active_index_;
-  if (was_active) {
-    active_index_ = std::min(active_index_, num_tabs_ - 1);
-  } else if (active_index_ > index) {
-    --active_index_;
+
+  // RemoveTabAt() expects the controller state to have been updated already.
+  if (active_index_.has_value()) {
+    if (was_active) {
+      if (num_tabs_ > 0) {
+        active_index_ = std::min(active_index_.value(), num_tabs_ - 1);
+      } else {
+        active_index_ = absl::nullopt;
+      }
+    } else if (active_index_ > index) {
+      active_index_ = active_index_.value() - 1;
+    }
+    selection_model_.SetSelectedIndex(active_index_);
   }
-  selection_model_.SetSelectedIndex(active_index_);
 
   if (tab_strip_) {
     tab_strip_->RemoveTabAt(nullptr, index, was_active);
-    if (IsValidIndex(active_index_))
+    if (active_index_.has_value() && IsValidIndex(active_index_.value()))
       tab_strip_->SetSelection(selection_model_);
   }
 }
@@ -190,7 +198,7 @@ bool FakeBaseTabStripController::IsActiveTab(int index) const {
   return active_index_ == index;
 }
 
-int FakeBaseTabStripController::GetActiveIndex() const {
+absl::optional<int> FakeBaseTabStripController::GetActiveIndex() const {
   return active_index_;
 }
 
@@ -301,8 +309,9 @@ const Browser* FakeBaseTabStripController::GetBrowser() const {
 }
 
 void FakeBaseTabStripController::SetActiveIndex(int new_index) {
+  DCHECK(IsValidIndex(new_index));
   active_index_ = new_index;
   selection_model_.SetSelectedIndex(active_index_);
-  if (tab_strip_ && IsValidIndex(active_index_))
+  if (tab_strip_)
     tab_strip_->SetSelection(selection_model_);
 }

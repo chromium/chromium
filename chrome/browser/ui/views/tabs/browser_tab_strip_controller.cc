@@ -107,7 +107,8 @@ class BrowserTabStripController::TabContextMenuContents
       : tab_(tab), controller_(controller) {
     model_ = controller_->menu_model_factory_->Create(
         this, controller->browser()->tab_menu_model_delegate(),
-        controller->model_, controller->tabstrip_->GetModelIndexOf(tab));
+        controller->model_,
+        controller->tabstrip_->GetModelIndexOf(tab).value());
 
     // Because we use "new" badging for feature promos, we cannot use system-
     // native context menus. (See crbug.com/1109256.)
@@ -224,21 +225,22 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
 bool BrowserTabStripController::IsCommandEnabledForTab(
     TabStripModel::ContextMenuCommand command_id,
     Tab* tab) const {
-  int model_index = tabstrip_->GetModelIndexOf(tab);
-  return model_->ContainsIndex(model_index) ?
-      model_->IsContextMenuCommandEnabled(model_index, command_id) : false;
+  const absl::optional<int> model_index = tabstrip_->GetModelIndexOf(tab);
+  return model_index.has_value() ? model_->IsContextMenuCommandEnabled(
+                                       model_index.value(), command_id)
+                                 : false;
 }
 
 void BrowserTabStripController::ExecuteCommandForTab(
     TabStripModel::ContextMenuCommand command_id,
     Tab* tab) {
-  int model_index = tabstrip_->GetModelIndexOf(tab);
-  if (model_->ContainsIndex(model_index))
-    model_->ExecuteContextMenuCommand(model_index, command_id);
+  const absl::optional<int> model_index = tabstrip_->GetModelIndexOf(tab);
+  if (model_index.has_value())
+    model_->ExecuteContextMenuCommand(model_index.value(), command_id);
 }
 
 bool BrowserTabStripController::IsTabPinned(Tab* tab) const {
-  return IsTabPinned(tabstrip_->GetModelIndexOf(tab));
+  return IsTabPinned(tabstrip_->GetModelIndexOf(tab).value());
 }
 
 const ui::ListSelectionModel&
@@ -255,11 +257,14 @@ bool BrowserTabStripController::IsValidIndex(int index) const {
 }
 
 bool BrowserTabStripController::IsActiveTab(int model_index) const {
-  return model_->active_index() == model_index;
+  return GetActiveIndex() == model_index;
 }
 
-int BrowserTabStripController::GetActiveIndex() const {
-  return model_->active_index();
+absl::optional<int> BrowserTabStripController::GetActiveIndex() const {
+  const int active_index = model_->active_index();
+  if (IsValidIndex(active_index))
+    return active_index;
+  return absl::nullopt;
 }
 
 bool BrowserTabStripController::IsTabSelected(int model_index) const {
@@ -387,30 +392,32 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
           base::UserMetricsAction("TabGroups_TabGroupHeader_Expanded"));
     }
   } else {
-    if (model_->GetTabGroupForTab(GetActiveIndex()) == group) {
-      // If the active tab is in the group that is toggling to collapse, the
-      // active tab should switch to the next available tab. If there are no
-      // available tabs for the active tab to switch to, a new tab will
-      // be created.
-      const absl::optional<int> next_active =
-          model_->GetNextExpandedActiveTab(GetActiveIndex(), group);
-      if (next_active.has_value()) {
-        model_->ActivateTabAt(
-            next_active.value(),
-            TabStripUserGestureDetails(
-                TabStripUserGestureDetails::GestureType::kOther));
+    if (GetActiveIndex().has_value()) {
+      const int active_index = GetActiveIndex().value();
+      if (model_->GetTabGroupForTab(active_index) == group) {
+        // If the active tab is in the group that is toggling to collapse, the
+        // active tab should switch to the next available tab. If there are no
+        // available tabs for the active tab to switch to, a new tab will
+        // be created.
+        const absl::optional<int> next_active =
+            model_->GetNextExpandedActiveTab(active_index, group);
+        if (next_active.has_value()) {
+          model_->ActivateTabAt(
+              next_active.value(),
+              TabStripUserGestureDetails(
+                  TabStripUserGestureDetails::GestureType::kOther));
+        } else {
+          // Create a new tab that will automatically be activated
+          CreateNewTab();
+        }
       } else {
-        // Create a new tab that will automatically be activated
-        CreateNewTab();
+        // If the active tab is not in the group that is toggling to collapse,
+        // reactive the active tab to deselect any other potentially selected
+        // tabs.
+        model_->ActivateTabAt(
+            active_index, TabStripUserGestureDetails(
+                              TabStripUserGestureDetails::GestureType::kOther));
       }
-    } else {
-      // If the active tab is not in the group that is toggling to collapse,
-      // reactive the active tab to deselect any other potentially selected
-      // tabs.
-      model_->ActivateTabAt(
-          GetActiveIndex(),
-          TabStripUserGestureDetails(
-              TabStripUserGestureDetails::GestureType::kOther));
     }
     if (origin != ToggleTabGroupCollapsedStateOrigin::kImplicitAction) {
       base::RecordAction(
@@ -589,8 +596,8 @@ absl::optional<int> BrowserTabStripController::GetCustomBackgroundId(
 
 std::u16string BrowserTabStripController::GetAccessibleTabName(
     const Tab* tab) const {
-  return browser_view_->GetAccessibleTabLabel(false /* include_app_name */,
-                                              tabstrip_->GetModelIndexOf(tab));
+  return browser_view_->GetAccessibleTabLabel(
+      false /* include_app_name */, tabstrip_->GetModelIndexOf(tab).value());
 }
 
 Profile* BrowserTabStripController::GetProfile() const {

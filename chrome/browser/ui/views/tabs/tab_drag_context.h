@@ -56,7 +56,7 @@ class TabDragContext : public TabDragContextBase {
   ~TabDragContext() override = default;
 
   virtual Tab* GetTabAt(int index) const = 0;
-  virtual int GetIndexOf(const TabSlotView* view) const = 0;
+  virtual absl::optional<int> GetIndexOf(const TabSlotView* view) const = 0;
   virtual int GetTabCount() const = 0;
   virtual bool IsTabPinned(const Tab* tab) const = 0;
   virtual int GetPinnedTabCount() const = 0;

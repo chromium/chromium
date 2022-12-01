@@ -192,8 +192,9 @@ class TabStrip : public views::View,
   }
 
   // Returns the index of the specified view in the model coordinate system, or
-  // -1 if view is closing or not a tab.
-  int GetModelIndexOf(const TabSlotView* view) const;
+  // absl::nullopt if view is closing not a tab, or is not in this tabstrip.
+  // TODO(tbergquist): This should return an optional<size_t>.
+  absl::optional<int> GetModelIndexOf(const TabSlotView* view) const;
 
   // Gets the number of Tabs in the tab strip.
   int GetTabCount() const;
@@ -229,7 +230,7 @@ class TabStrip : public views::View,
 
   // TabContainerController:
   bool IsValidModelIndex(int index) const override;
-  int GetActiveIndex() const override;
+  absl::optional<int> GetActiveIndex() const override;
   int NumPinnedTabsInModel() const override;
   void OnDropIndexUpdate(int index, bool drop_before) override;
   absl::optional<int> GetFirstTabInGroup(

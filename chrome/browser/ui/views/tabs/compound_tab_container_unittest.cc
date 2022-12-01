@@ -42,7 +42,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->IsValidIndex(index);
   }
 
-  int GetActiveIndex() const override {
+  absl::optional<int> GetActiveIndex() const override {
     return tab_strip_controller_->GetActiveIndex();
   }
 
@@ -377,11 +377,11 @@ TEST_F(CompoundTabContainerTest, GetIndexOfFirstNonClosingTab) {
   // There is no next tab, and this one is unpinned.
   RemoveTab(0);
   EXPECT_EQ(tab_container_->GetModelIndexOfFirstNonClosingTab(first_unpinned),
-            -1);
+            absl::nullopt);
 
   // There is no next tab, and this one is pinned.
   EXPECT_EQ(tab_container_->GetModelIndexOfFirstNonClosingTab(first_pinned),
-            -1);
+            absl::nullopt);
 }
 
 TEST_F(CompoundTabContainerTest, ExitsClosingModeAtStandardWidth) {

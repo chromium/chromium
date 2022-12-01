@@ -42,7 +42,7 @@ class FakeBaseTabStripController : public TabStripController {
   int GetCount() const override;
   bool IsValidIndex(int index) const override;
   bool IsActiveTab(int index) const override;
-  int GetActiveIndex() const override;
+  absl::optional<int> GetActiveIndex() const override;
   bool IsTabSelected(int index) const override;
   bool IsTabPinned(int index) const override;
   void SelectTab(int index, const ui::Event& event) override;
@@ -104,7 +104,7 @@ class FakeBaseTabStripController : public TabStripController {
 
   int num_tabs_ = 0;
   int num_pinned_tabs_ = 0;
-  int active_index_ = -1;
+  absl::optional<int> active_index_ = absl::nullopt;
 
   tab_groups::TabGroupVisualData fake_group_data_;
   std::vector<absl::optional<tab_groups::TabGroupId>> tab_groups_;

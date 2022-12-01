@@ -215,11 +215,13 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
   DCHECK_EQ(slots_.size(), bounds.size());
 
   views::ViewModelT<Tab>* tabs = get_tabs_callback_.Run();
-  const int active_tab_model_index = controller_->GetActiveIndex();
-  const int active_tab_slot_index =
-      controller_->IsValidModelIndex(active_tab_model_index)
-          ? GetSlotIndexForExistingTab(active_tab_model_index)
-          : TabStripModel::kNoTab;
+  const absl::optional<int> active_tab_model_index =
+      controller_->GetActiveIndex();
+  const absl::optional<int> active_tab_slot_index =
+      active_tab_model_index.has_value()
+          ? absl::optional<int>(
+                GetSlotIndexForExistingTab(active_tab_model_index.value()))
+          : absl::nullopt;
 
   int current_tab_model_index = 0;
   for (int i = 0; i < static_cast<int>(bounds.size()); ++i) {
@@ -246,24 +248,28 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
     absl::optional<int> available_width) {
   absl::optional<int> tabstrip_width = available_width;
 
-  const int active_tab_model_index = controller_->GetActiveIndex();
-  const int active_tab_slot_index =
-      controller_->IsValidModelIndex(active_tab_model_index)
-          ? GetSlotIndexForExistingTab(active_tab_model_index)
-          : TabStripModel::kNoTab;
+  const absl::optional<int> active_tab_model_index =
+      controller_->GetActiveIndex();
+  const absl::optional<int> active_tab_slot_index =
+      active_tab_model_index.has_value()
+          ? absl::optional<int>(
+                GetSlotIndexForExistingTab(active_tab_model_index.value()))
+          : absl::nullopt;
   const int pinned_tab_count = GetPinnedTabCount();
-  const int last_pinned_tab_index = pinned_tab_count - 1;
-  const int last_pinned_tab_slot_index =
-      pinned_tab_count > 0 ? GetSlotIndexForExistingTab(last_pinned_tab_index)
-                           : TabStripModel::kNoTab;
+  const absl::optional<int> last_pinned_tab_slot_index =
+      pinned_tab_count > 0 ? absl::optional<int>(GetSlotIndexForExistingTab(
+                                 pinned_tab_count - 1))
+                           : absl::nullopt;
 
   TabLayoutConstants layout_constants = GetTabLayoutConstants();
   std::vector<TabWidthConstraints> tab_widths;
   for (int i = 0; i < static_cast<int>(slots_.size()); i++) {
     auto active =
         i == active_tab_slot_index ? TabActive::kActive : TabActive::kInactive;
-    auto pinned = i <= last_pinned_tab_slot_index ? TabPinned::kPinned
-                                                  : TabPinned::kUnpinned;
+    auto pinned = last_pinned_tab_slot_index.has_value() &&
+                          i <= last_pinned_tab_slot_index
+                      ? TabPinned::kPinned
+                      : TabPinned::kUnpinned;
 
     // A collapsed tab animates closed like a closed tab.
     auto open = (slots_[i].state.IsClosed() || SlotIsCollapsedTab(i))

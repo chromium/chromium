@@ -30,7 +30,7 @@ class TabContainerController {
   virtual bool IsValidModelIndex(int index) const = 0;
 
   // Returns the index of the active tab.
-  virtual int GetActiveIndex() const = 0;
+  virtual absl::optional<int> GetActiveIndex() const = 0;
 
   // Returns the number of pinned tabs in the model. Note that this can be
   // different from the number of pinned tabs in the TabStrip view (and its

@@ -341,9 +341,9 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     const int width = std::round(toolbar_bounds.width() * scale);
 
     gfx::ScopedCanvas scoped_canvas(canvas);
-    int active_tab_index = tabstrip()->GetActiveIndex();
-    if (active_tab_index != TabStripModel::kNoTab) {
-      Tab* active_tab = tabstrip()->tab_at(active_tab_index);
+    const absl::optional<int> active_tab_index = tabstrip()->GetActiveIndex();
+    if (active_tab_index.has_value()) {
+      Tab* active_tab = tabstrip()->tab_at(active_tab_index.value());
       if (active_tab && active_tab->GetVisible()) {
         gfx::RectF bounds(active_tab->GetMirroredBounds());
         views::View* tabstrip_root = this;

@@ -433,7 +433,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
 
   EXPECT_GT(tab_strip_->GetTabCount(), 1);
 
-  int active_index = tab_strip_->GetActiveIndex();
+  int active_index = tab_strip_->GetActiveIndex().value();
   EXPECT_EQ(tab_strip_->GetTabCount() - 1, active_index);
   EXPECT_LT(tab_strip_->tab_at(0)->bounds().width(),
             tab_strip_->tab_at(active_index)->bounds().width());
@@ -442,7 +442,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
   // wide as it's minimum width.
   controller_->SelectTab(0, dummy_event_);
   while (tab_strip_->GetTabCount() > 0) {
-    active_index = tab_strip_->GetActiveIndex();
+    active_index = tab_strip_->GetActiveIndex().value();
     EXPECT_GE(tab_strip_->tab_at(active_index)->bounds().width(),
               TabStyleViews::GetMinimumActiveWidth());
     tab_strip_->CloseTab(tab_strip_->tab_at(active_index),
@@ -473,8 +473,9 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
   // so we stop at 2.
   while (tab_strip_->GetTabCount() > 2) {
     const int last_inactive_width = GetInactiveTabWidth();
-    tab_strip_->CloseTab(tab_strip_->tab_at(tab_strip_->GetActiveIndex()),
-                         CLOSE_TAB_FROM_MOUSE);
+    tab_strip_->CloseTab(
+        tab_strip_->tab_at(tab_strip_->GetActiveIndex().value()),
+        CLOSE_TAB_FROM_MOUSE);
     CompleteAnimationAndLayout();
     EXPECT_GE(GetInactiveTabWidth(), last_inactive_width);
   }
@@ -494,7 +495,7 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
 
   const int min_active_width = TabStyleViews::GetMinimumActiveWidth();
 
-  int dragged_tab_index = tab_strip_->GetActiveIndex();
+  int dragged_tab_index = tab_strip_->GetActiveIndex().value();
   ASSERT_GE(tab_strip_->tab_at(dragged_tab_index)->bounds().width(),
             min_active_width);
 
@@ -675,7 +676,7 @@ TEST_P(TabStripTest, RelayoutAfterDraggedTabBoundsUpdate) {
   controller_->CreateNewTab();
   CompleteAnimationAndLayout();
 
-  int dragged_tab_index = tab_strip_->GetActiveIndex();
+  int dragged_tab_index = tab_strip_->GetActiveIndex().value();
   Tab* dragged_tab = tab_strip_->tab_at(dragged_tab_index);
   ASSERT_TRUE(dragged_tab);
 

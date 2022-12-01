@@ -63,7 +63,7 @@ class BrowserTabStripController : public TabStripController,
   int GetCount() const override;
   bool IsValidIndex(int model_index) const override;
   bool IsActiveTab(int model_index) const override;
-  int GetActiveIndex() const override;
+  absl::optional<int> GetActiveIndex() const override;
   bool IsTabSelected(int model_index) const override;
   bool IsTabPinned(int model_index) const override;
   void SelectTab(int model_index, const ui::Event& event) override;

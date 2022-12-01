@@ -281,7 +281,8 @@ class TabDragController : public views::WidgetObserver,
 
     // This is the index of the tab in |source_context_| when the drag
     // began. This is used to restore the previous state if the drag is aborted.
-    int source_model_index;
+    // Nullopt if this is a group header.
+    absl::optional<int> source_model_index;
 
     // If attached this is the view in |attached_context_|.
     raw_ptr<TabSlotView, DanglingUntriaged> attached_view;

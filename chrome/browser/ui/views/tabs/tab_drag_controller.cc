@@ -351,7 +351,7 @@ class TabDragController::DraggedTabsClosedTracker
 
 TabDragController::TabDragData::TabDragData()
     : contents(nullptr),
-      source_model_index(TabStripModel::kNoTab),
+      source_model_index(absl::nullopt),
       attached_view(nullptr),
       pinned(false) {}
 
@@ -825,11 +825,12 @@ void TabDragController::SetDragLoopDoneCallbackForTesting(
 void TabDragController::InitDragData(TabSlotView* view,
                                      TabDragData* drag_data) {
   TRACE_EVENT0("views", "TabDragController::InitDragData");
-  const int source_model_index = source_context_->GetIndexOf(view);
+  const absl::optional<int> source_model_index =
+      source_context_->GetIndexOf(view);
   drag_data->source_model_index = source_model_index;
-  if (source_model_index != TabStripModel::kNoTab) {
+  if (source_model_index.has_value()) {
     drag_data->contents = source_context_->GetTabStripModel()->GetWebContentsAt(
-        drag_data->source_model_index);
+        drag_data->source_model_index.value());
     drag_data->pinned = source_context_->IsTabPinned(static_cast<Tab*>(view));
   }
   absl::optional<tab_groups::TabGroupId> tab_group_id = view->group();
@@ -1535,7 +1536,7 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
 
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
     int index = attached_model->GetIndexOfWebContents(drag_data_[i].contents);
-    DCHECK_NE(-1, index);
+    DCHECK_NE(TabStripModel::kNoTab, index);
     // Move the tab out of `attached_model`. Marking the view as detached tells
     // the TabStrip to not animate its closure, as it's actually being moved.
     drag_data_[i].attached_view->set_detached();
@@ -1991,8 +1992,8 @@ void TabDragController::RestoreInitialSelection() {
   // still there.
   ui::ListSelectionModel selection_model = initial_selection_model_;
   for (const TabDragData& data : base::Reversed(drag_data_)) {
-    if (data.source_model_index != TabStripModel::kNoTab)
-      selection_model.DecrementFrom(data.source_model_index);
+    if (data.source_model_index.has_value())
+      selection_model.DecrementFrom(data.source_model_index.value());
   }
   // We may have cleared out the selection model. Only reset it if it
   // contains something.
@@ -2018,12 +2019,15 @@ void TabDragController::RestoreInitialSelection() {
 void TabDragController::RevertDragAt(size_t drag_index) {
   DCHECK_NE(current_state_, DragState::kNotStarted);
   DCHECK(source_context_);
+  // We can't revert if `contents` was destroyed during the drag, or if this is
+  // a group header.
+  DCHECK(drag_data_[drag_index].contents);
 
   base::AutoReset<bool> setter(&is_mutating_, true);
   TabDragData* data = &(drag_data_[drag_index]);
   // The index we will try to insert the tab at. It may or may not end up at
   // this index, if the source tabstrip has changed since the drag began.
-  int target_index = data->source_model_index;
+  int target_index = data->source_model_index.value();
   if (attached_context_) {
     int index = attached_context_->GetTabStripModel()->GetIndexOfWebContents(
         data->contents);
@@ -2253,8 +2257,11 @@ views::Widget* TabDragController::GetAttachedBrowserWidget() {
 
 bool TabDragController::AreTabsConsecutive() {
   for (size_t i = 1; i < drag_data_.size(); ++i) {
-    if (drag_data_[i - 1].source_model_index + 1 !=
-        drag_data_[i].source_model_index) {
+    const absl::optional<int> previous_source_index =
+        drag_data_[i - 1].source_model_index;
+    const absl::optional<int> source_index = drag_data_[i].source_model_index;
+    if (previous_source_index.has_value() && source_index.has_value() &&
+        previous_source_index.value() + 1 != source_index.value()) {
       return false;
     }
   }

@@ -3490,7 +3490,6 @@ if (!is_android) {
         "../browser/ui/views/status_bubble_views_browsertest.cc",
         "../browser/ui/views/tab_sharing/tab_sharing_ui_views_browsertest.cc",
         "../browser/ui/views/tabs/tab_group_editor_bubble_view_browsertest.cc",
-        "../browser/ui/views/tabs/tab_hover_card_bubble_view_dialog_browsertest.cc",
         "../browser/ui/views/toolbar/browser_app_menu_browsertest.cc",
         "../browser/ui/views/translate/translate_bubble_test_utils_views.cc",
         "../browser/ui/views/translate/translate_bubble_view_browsertest.cc",

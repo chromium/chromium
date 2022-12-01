@@ -39,6 +39,7 @@ TabHoverCardBubbleView* TabHoverCardTestUtil::GetHoverCard(
 TabHoverCardBubbleView* TabHoverCardTestUtil::WaitForHoverCardVisible(
     TabStrip* tab_strip) {
   auto* const hover_card = GetHoverCard(tab_strip);
+  DCHECK(hover_card);
   views::test::WidgetVisibleWaiter(hover_card->GetWidget()).Wait();
   return hover_card;
 }
@@ -62,6 +63,9 @@ int TabHoverCardTestUtil::GetHoverCardsSeenCount(Browser* browser) {
 TabHoverCardBubbleView* TabHoverCardTestUtil::SimulateHoverTab(Browser* browser,
                                                                int tab_index) {
   auto* const tab_strip = GetTabStrip(browser);
+
+  LOG(ERROR) << "SimulateHoverTab, index: " << tab_index;
+  LOG(ERROR) << "TabStrip tab count: " << tab_strip->GetTabCount();
 
   // We don't use Tab::OnMouseEntered here to invoke the hover card because
   // that path is disabled in browser tests. If we enabled it, the real mouse

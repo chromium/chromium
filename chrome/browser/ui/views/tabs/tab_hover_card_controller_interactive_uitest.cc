@@ -41,6 +41,13 @@ namespace {
 constexpr char16_t kTabTitle[] = u"Test Tab 2";
 constexpr char16_t kTabDomain[] = u"example.com";
 constexpr char kTabUrl[] = "http://example.com/path/to/document.html";
+
+TabRendererData MakeTabRendererData() {
+  TabRendererData new_tab_data = TabRendererData();
+  new_tab_data.title = kTabTitle;
+  new_tab_data.last_committed_url = GURL(kTabUrl);
+  return new_tab_data;
+}
 }  // namespace
 
 class TabHoverCardInteractiveUiTest : public InProcessBrowserTest,
@@ -167,10 +174,9 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        HoverCardVisibleOnTabFocusFromKeyboardAccelerator) {
   TabStrip* const tab_strip = GetTabStrip(browser());
-  TabRendererData new_tab_data = TabRendererData();
-  new_tab_data.title = kTabTitle;
-  new_tab_data.last_committed_url = GURL(kTabUrl);
-  tab_strip->AddTabAt(1, new_tab_data);
+
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
   // Cycle focus until it reaches a tab.
   while (!tab_strip->IsFocusInTabs())
@@ -219,10 +225,9 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        UpdatesHoverCardOnHoverDifferentTab) {
   TabStrip* const tab_strip = GetTabStrip(browser());
-  TabRendererData new_tab_data = TabRendererData();
-  new_tab_data.title = kTabTitle;
-  new_tab_data.last_committed_url = GURL(kTabUrl);
-  tab_strip->AddTabAt(1, new_tab_data);
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  tab_strip->SetTabData(1, MakeTabRendererData());
 
   SimulateHoverTab(browser(), 0);
 
@@ -237,8 +242,10 @@ using TabHoverCardBubbleViewMetricsTest = TabHoverCardInteractiveUiTest;
 IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewMetricsTest,
                        HoverCardsSeenRatioMetric) {
   TabStrip* const tab_strip = GetTabStrip(browser());
-  tab_strip->AddTabAt(1, TabRendererData());
-  tab_strip->AddTabAt(2, TabRendererData());
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(2, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
   SimulateHoverTab(browser(), 0);
 

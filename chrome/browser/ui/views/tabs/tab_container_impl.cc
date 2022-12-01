@@ -426,9 +426,9 @@ void TabContainerImpl::OnGroupVisualsChanged(
   AnimateToIdealBounds();
 
   // The active tab may need to repaint its group stroke if it's in `group`.
-  const int active_index = controller_->GetActiveIndex();
-  if (IsValidModelIndex(active_index))
-    GetTabAtModelIndex(active_index)->SchedulePaint();
+  const absl::optional<int> active_index = controller_->GetActiveIndex();
+  if (active_index.has_value())
+    GetTabAtModelIndex(active_index.value())->SchedulePaint();
 }
 
 void TabContainerImpl::OnGroupMoved(const tab_groups::TabGroupId& group) {
@@ -493,11 +493,10 @@ void TabContainerImpl::NotifyTabGroupEditorBubbleClosed() {
     AddMessageLoopObserver();
 }
 
-// TODO(pkasting): This should really return an optional<size_t>
-int TabContainerImpl::GetModelIndexOf(const TabSlotView* slot_view) const {
-  const absl::optional<size_t> index =
-      tabs_view_model_.GetIndexOfView(slot_view);
-  return index.has_value() ? static_cast<int>(index.value()) : -1;
+// TODO(tbergquist): This should really return an optional<size_t>.
+absl::optional<int> TabContainerImpl::GetModelIndexOf(
+    const TabSlotView* slot_view) const {
+  return tabs_view_model_.GetIndexOfView(slot_view);
 }
 
 Tab* TabContainerImpl::GetTabAtModelIndex(int index) const {
@@ -508,7 +507,9 @@ int TabContainerImpl::GetTabCount() const {
   return tabs_view_model_.view_size();
 }
 
-int TabContainerImpl::GetModelIndexOfFirstNonClosingTab(Tab* tab) const {
+// TODO(tbergquist): This should really return an optional<size_t>.
+absl::optional<int> TabContainerImpl::GetModelIndexOfFirstNonClosingTab(
+    Tab* tab) const {
   if (tab->closing()) {
     // If the tab is already closing, close the next tab. We do this so that the
     // user can rapidly close tabs by clicking the close button and not have
@@ -520,7 +521,7 @@ int TabContainerImpl::GetModelIndexOfFirstNonClosingTab(Tab* tab) const {
     }
 
     if (it == all_tabs.end())
-      return TabStripModel::kNoTab;
+      return absl::nullopt;
     tab = *it;
   }
 
@@ -872,7 +873,7 @@ BrowserRootView::DropIndex TabContainerImpl::GetDropIndex(
       // return from the loop at this point, it is only called once.
       // Hence the loop is still O(n). Calling this every loop iteration
       // must be avoided since it will become O(n^2).
-      const int model_index = GetModelIndexOf(tab);
+      const int model_index = GetModelIndexOf(tab).value();
       const bool first_in_group =
           tab->group().has_value() &&
           model_index == controller_->GetFirstTabInGroup(tab->group().value());
@@ -1261,16 +1262,18 @@ void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
   if (was_active && !tab_being_removed->data().pinned &&
       layout_helper_->active_tab_width() >
           layout_helper_->inactive_tab_width()) {
-    int next_active_index = controller_->GetActiveIndex();
+    const absl::optional<int> next_active_viewmodel_index =
+        controller_->GetActiveIndex();
     // The next active tab may not be in this TabContainer.
-    if (IsValidModelIndex(next_active_index)) {
-      if (model_index <= next_active_index) {
-        // At this point, model's internal state has already been updated.
-        // |contents| has been detached from model and the active index has
-        // been updated. But the tab for |contents| isn't removed yet. Thus,
-        // we need to fix up next_active_index based on it.
-        next_active_index++;
-      }
+    if (next_active_viewmodel_index.has_value()) {
+      // At this point, model's internal state has already been updated.
+      // `contents` has been detached from model and the active index has
+      // been updated. But the tab for `contents` isn't removed yet. Thus,
+      // we need to fix up `next_active_viewmodel_index` based on it.
+      const bool adjust_for_removed_tab =
+          model_index <= next_active_viewmodel_index;
+      const int next_active_index = next_active_viewmodel_index.value() +
+                                    (adjust_for_removed_tab ? 1 : 0);
       const Tab* const next_active_tab = GetTabAtModelIndex(next_active_index);
       if (!next_active_tab->data().pinned)
         size_delta = next_active_tab->width();
