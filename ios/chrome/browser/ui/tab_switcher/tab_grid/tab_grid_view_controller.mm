@@ -406,6 +406,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // another.
     self.pageChangeInteraction = PageChangeInteractionItemDrag;
     [self recordActionSwitchingToPage:currentPage];
+    [self.topToolbar.pageControl setSelectedPage:currentPage animated:YES];
   }
   self.currentPage = currentPage;
   self.scrollViewAnimatingContentOffset = NO;
