@@ -41,8 +41,13 @@ namespace content {
 // };
 //
 // --- in foo_page_helper.cc ---
-// PAGE_USER_DATA_KEY_IMPL(FooPageHelper)
-
+// PAGE_USER_DATA_KEY_IMPL(FooPageHelper);
+//
+// FooPageHelper::FooPageHelper(content::Page& page)
+//     : PageUserData(page) {}
+//
+// FooPageHelper::~FooPageHelper() {}
+//
 template <typename T>
 class PageUserData : public base::SupportsUserData::Data {
  public:

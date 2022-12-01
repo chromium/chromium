@@ -85,7 +85,10 @@ CONTENT_EXPORT void RemoveDocumentUserData(RenderFrameHost* rfh,
 // DOCUMENT_USER_DATA_KEY_IMPL(FooDocumentHelper);
 //
 // FooDocumentHelper::FooDocumentHelper(content::RenderFrameHost* rfh)
-//     : DocumentUserData(rfh) { ... }
+//     : DocumentUserData(rfh) {}
+//
+// FooDocumentHelper::~FooDocumentHelper() {}
+//
 template <typename T>
 class DocumentUserData : public base::SupportsUserData::Data {
  public:
