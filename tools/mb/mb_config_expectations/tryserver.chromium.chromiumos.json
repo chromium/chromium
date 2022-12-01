@@ -8,7 +8,7 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_cfi_cast": true,
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -70,7 +70,7 @@
       "dcheck_always_on": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-jacuzzi-rel": {
@@ -102,7 +102,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-chromeos-jacuzzi-exp": {
@@ -116,7 +116,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-chromeos-kevin": {
@@ -130,7 +130,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-chromeos-octopus-exp": {
@@ -144,7 +144,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-chromeos-zork-exp": {
@@ -158,7 +158,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lacros-amd64-generic-rel": {

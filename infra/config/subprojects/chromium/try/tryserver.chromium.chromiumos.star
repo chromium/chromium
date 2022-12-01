@@ -36,6 +36,7 @@ try_.builder(
     mirrors = [
         "ci/chromeos-amd64-generic-cfi-thin-lto-rel",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -96,6 +97,7 @@ try_.builder(
     name = "chromeos-arm64-generic-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     mirrors = ["ci/chromeos-arm64-generic-rel"],
+    goma_backend = None,
 )
 
 try_.builder(

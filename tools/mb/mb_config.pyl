@@ -1051,20 +1051,20 @@
     'tryserver.chromium.chromiumos': {
       # TODO(crbug.com/913750): Enable DCHECKS on the two amd64-generic bots
       # and two kevin bots when the PFQ has it enabled.
-      'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
+      'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto_reclient',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg_reclient',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
       'chromeos-amd64-generic-rel-rts': 'chromeos_amd64-generic_use_fake_dbus_clients',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on_reclient',
-      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
+      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks_reclient',
       'chromeos-jacuzzi-rel': 'chromeos_jacuzzi_dchecks',
       'chromeos-octopus-rel': 'chromeos_octopus_dchecks',
-      'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
-      'gpu-fyi-try-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
-      'gpu-fyi-try-chromeos-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
-      'gpu-fyi-try-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot',
-      'gpu-fyi-try-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
+      'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
+      'gpu-fyi-try-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot_reclient',
+      'gpu-fyi-try-chromeos-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient',
+      'gpu-fyi-try-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot_reclient',
+      'gpu-fyi-try-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot_reclient',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_reclient',
       # TODO (crbug.com/1287228): Remove when orchestrator is verified
       'lacros-amd64-generic-rel-orchestrator': 'chromeos_amd64-generic_lacros_rel_dchecks',
@@ -1131,8 +1131,8 @@
     'tryserver.chromium.linux': {
       'cast-binary-size': 'cast_binary_size',
       'chromium_presubmit': 'presubmit',
-      'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
-      'gpu-fyi-try-lacros-intel-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
+      'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
+      'gpu-fyi-try-lacros-intel-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
       'gpu-fyi-try-linux-amd-rel': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-linux-intel-exp': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-linux-intel-rel': 'gpu_fyi_tests_release_trybot_reclient',
@@ -1964,11 +1964,6 @@
       'chromeos_amd64-generic_reclient', 'asan',
     ],
 
-    'chromeos_amd64-generic_cfi_thin_lto': [
-      'chromeos_amd64-generic', 'cfi_full', 'thin_lto',
-      'also_build_lacros_chrome_for_architecture_amd64',
-    ],
-
     'chromeos_amd64-generic_cfi_thin_lto_reclient': [
       'chromeos_amd64-generic_reclient', 'cfi_full', 'thin_lto',
       'also_build_lacros_chrome_for_architecture_amd64',
@@ -2096,10 +2091,6 @@
     ],
     'chromeos_arm64-generic_cfi_thin_lto_official_reclient': [
       'chromeos_device_reclient', 'arm64-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
-    ],
-
-    'chromeos_arm64-generic_dchecks': [
-      'chromeos_device', 'arm64-generic', 'dcheck_always_on',
     ],
 
     'chromeos_arm64-generic_dchecks_reclient': [
@@ -2641,26 +2632,13 @@
       'gpu_tests', 'android', 'release_trybot_minimal_symbols_reclient', 'static_angle',
     ],
 
-    'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols': [
-      'gpu_tests', 'chromeos_amd64-generic-vm', 'release_trybot_dcheck_off',
-      'no_symbols',
-    ],
-
     'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient': [
       'gpu_tests', 'chromeos_amd64-generic-vm_reclient',
       'release_trybot_dcheck_off_reclient', 'no_symbols',
     ],
 
-    'gpu_tests_chromeos_jacuzzi_release_trybot': [
-      'gpu_tests', 'chromeos_device', 'jacuzzi', 'release_trybot',
-    ],
-
     'gpu_tests_chromeos_jacuzzi_release_trybot_reclient': [
       'gpu_tests', 'chromeos_device_reclient', 'jacuzzi', 'release_trybot_reclient',
-    ],
-
-    'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols': [
-      'gpu_tests', 'chromeos_kevin', 'release_trybot_dcheck_off', 'no_symbols',
     ],
 
     'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient': [
@@ -2671,16 +2649,8 @@
       'gpu_tests', 'chromeos_kevin_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols', 'is_skylab',
     ],
 
-    'gpu_tests_chromeos_octopus_release_trybot': [
-      'gpu_tests', 'chromeos_device', 'octopus', 'release_trybot',
-    ],
-
     'gpu_tests_chromeos_octopus_release_trybot_reclient': [
       'gpu_tests', 'chromeos_device_reclient', 'octopus', 'release_trybot_reclient',
-    ],
-
-    'gpu_tests_chromeos_zork_release_trybot': [
-      'gpu_tests', 'chromeos_device', 'zork', 'release_trybot',
     ],
 
     'gpu_tests_chromeos_zork_release_trybot_reclient': [
@@ -2709,10 +2679,6 @@
 
     'gpu_tests_debug_trybot': [
       'gpu_tests', 'debug', 'no_symbols', 'dcheck_always_on', 'static', 'goma'
-    ],
-
-    'gpu_tests_ozone_linux_non_x11_release_trybot': [
-      'gpu_tests', 'ozone_linux', 'ozone_linux_non_x11', 'release_trybot_minimal_symbols',
     ],
 
     'gpu_tests_ozone_linux_non_x11_release_trybot_reclient': [

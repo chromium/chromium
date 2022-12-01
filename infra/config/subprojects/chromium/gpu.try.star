@@ -127,6 +127,7 @@ gpu_chromeos_builder(
     mirrors = [
         "ci/ChromeOS FYI Release (amd64-generic)",
     ],
+    goma_backend = None,
 )
 
 gpu_chromeos_builder(
@@ -135,6 +136,7 @@ gpu_chromeos_builder(
     mirrors = [
         "ci/gpu-fyi-chromeos-jacuzzi-exp",
     ],
+    goma_backend = None,
 )
 
 gpu_chromeos_builder(
@@ -143,6 +145,7 @@ gpu_chromeos_builder(
     mirrors = [
         "ci/ChromeOS FYI Release (kevin)",
     ],
+    goma_backend = None,
 )
 
 gpu_chromeos_builder(
@@ -151,12 +154,14 @@ gpu_chromeos_builder(
     mirrors = [
         "ci/gpu-fyi-chromeos-octopus-exp",
     ],
+    goma_backend = None,
 )
 
 gpu_chromeos_builder(
     name = "gpu-fyi-try-chromeos-zork-exp",
     mirrors = ["ci/gpu-fyi-chromeos-zork-exp"],
     pool = "luci.chromium.gpu.chromeos.zork.try",
+    goma_backend = None,
 )
 
 def gpu_linux_builder(*, name, **kwargs):
@@ -176,6 +181,7 @@ gpu_linux_builder(
         "ci/GPU FYI Lacros x64 Builder",
         "ci/Lacros FYI x64 Release (AMD)",
     ],
+    goma_backend = None,
 )
 
 gpu_linux_builder(
@@ -185,6 +191,7 @@ gpu_linux_builder(
         "ci/GPU FYI Lacros x64 Builder",
         "ci/Lacros FYI x64 Release (Intel)",
     ],
+    goma_backend = None,
 )
 
 gpu_linux_builder(
