@@ -238,7 +238,7 @@ class ASH_EXPORT TabletModeController
 
  private:
   class DestroyObserver;
-  class ScopedShelfHider;
+  class ScopedContainerHider;
   friend class TabletModeControllerTestApi;
 
   // Used for recording metrics for intervals of time spent in
@@ -495,10 +495,11 @@ class ASH_EXPORT TabletModeController
   // transition. It's observed to take an action after its animation ends.
   ui::Layer* animating_layer_ = nullptr;
 
-  // When in scope, hides the shelf container. Used to temporarily hide shelf
-  // while taking a screenshot during tablet mode transition (so the screenshot
-  // does not show the old version of shelf in the background).
-  std::unique_ptr<ScopedShelfHider> shelf_hider_;
+  // When in scope, hides the shelf and float containers. Used to temporarily
+  // hide shelf while taking a screenshot during tablet mode transition (so the
+  // screenshot does not show the old version of the shelf and floated window in
+  // the background).
+  std::unique_ptr<ScopedContainerHider> shelf_hider_;
 
   // Tracks and record transition smoothness.
   absl::optional<ui::ThroughputTracker> transition_tracker_;

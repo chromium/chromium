@@ -42,8 +42,10 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/hit_test.h"
@@ -196,13 +198,6 @@ class TabletModeControllerTest : public AshTestBase {
 
   bool IsScreenshotShown() const { return test_api_->IsScreenshotShown(); }
   float GetLidAngle() const { return test_api_->GetLidAngle(); }
-
-  bool IsShelfOpaque() const {
-    const aura::Window* shelf_container =
-        Shell::GetPrimaryRootWindow()->GetChildById(
-            kShellWindowId_ShelfContainer);
-    return shelf_container->layer()->opacity() == 1.0;
-  }
 
   // Creates a test window snapped on the left in desktop mode.
   std::unique_ptr<aura::Window> CreateDesktopWindowSnappedLeft(
@@ -1825,14 +1820,27 @@ TEST_F(TabletModeControllerOnDeviceTest, DoNotEnterClamshellWithNoInputDevice) {
 class TabletModeControllerScreenshotTest : public TabletModeControllerTest {
  public:
   TabletModeControllerScreenshotTest() = default;
-
   TabletModeControllerScreenshotTest(
       const TabletModeControllerScreenshotTest&) = delete;
   TabletModeControllerScreenshotTest& operator=(
       const TabletModeControllerScreenshotTest&) = delete;
-
   ~TabletModeControllerScreenshotTest() override = default;
 
+  // While taking the screenshot, we temporarily hide the shelf and float
+  // containers. This helper helps us check if it gets hidden and reshown
+  // correctly.
+  bool IsShelfAndFloatContainerOpaque() const {
+    aura::Window* root = Shell::GetPrimaryRootWindow();
+    for (int id :
+         {kShellWindowId_FloatContainer, kShellWindowId_ShelfContainer}) {
+      const aura::Window* container = root->GetChildById(id);
+      if (container->layer()->opacity() != 1.0f)
+        return false;
+    }
+    return true;
+  }
+
+  // TabletModeControllerTest:
   void SetUp() override {
     TabletModeControllerTest::SetUp();
     TabletModeController::SetUseScreenshotForTest(true);
@@ -1870,7 +1878,7 @@ TEST_F(TabletModeControllerScreenshotTest, NoAnimationNoScreenshot) {
   // Tests that no windows means no screenshot.
   SetTabletMode(true);
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 
   SetTabletMode(false);
 
@@ -1886,7 +1894,7 @@ TEST_F(TabletModeControllerScreenshotTest, NoAnimationNoScreenshot) {
 
   waiter.Wait();
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 }
 
 // Regression test for screenshot staying visible when entering tablet mode when
@@ -1910,18 +1918,18 @@ TEST_F(TabletModeControllerScreenshotTest, FromOverviewNoScreenshot) {
   TabletMode::Waiter waiter(/*enable=*/true);
   SetTabletMode(true);
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 
   waiter.Wait();
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 
   // Tests that after ending the window animation, the screenshot is still not
   // shown.
   window->layer()->GetAnimator()->StopAnimating();
   window2->layer()->GetAnimator()->StopAnimating();
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 }
 
 // Regression test for screenshot staying visible when entering tablet mode when
@@ -1934,11 +1942,11 @@ TEST_F(TabletModeControllerScreenshotTest, EnterTabletModeWhileAnimating) {
   TabletMode::Waiter waiter(/*enable=*/true);
   SetTabletMode(true);
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 
   waiter.Wait();
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 }
 
 namespace {
@@ -1980,11 +1988,11 @@ TEST_F(TabletModeControllerScreenshotTest, ScreenshotVisibility) {
   window->layer()->GetAnimator()->StopAnimating();
   window2->layer()->GetAnimator()->StopAnimating();
   ASSERT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 
   SetTabletMode(true);
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_FALSE(IsShelfOpaque());
+  EXPECT_FALSE(IsShelfAndFloatContainerOpaque());
 
   // The layer we observe is actually the windows layer before starting the
   // animation. The animation performed is a cross-fade animation which
@@ -1995,13 +2003,13 @@ TEST_F(TabletModeControllerScreenshotTest, ScreenshotVisibility) {
   ASSERT_FALSE(old_animator->is_animating());
   { LayerStartAnimationWaiter waiter(old_animator); }
   EXPECT_TRUE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 
   // Tests that the screenshot is destroyed after the window is done animating.
   old_animator->StopAnimating();
   window2->layer()->GetAnimator()->StopAnimating();
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 }
 
 // Tests that if we exit tablet mode before the screenshot is taken, there is no
@@ -2012,16 +2020,16 @@ TEST_F(TabletModeControllerScreenshotTest, NoCrashWhenExitingWithoutWaiting) {
   window->layer()->GetAnimator()->StopAnimating();
 
   SetTabletMode(true);
-  EXPECT_FALSE(IsShelfOpaque());
+  EXPECT_FALSE(IsShelfAndFloatContainerOpaque());
 
   SetTabletMode(false);
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 
   // Tests that reentering tablet mode without waiting causes no crash either.
   SetTabletMode(true);
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_FALSE(IsShelfOpaque());
+  EXPECT_FALSE(IsShelfAndFloatContainerOpaque());
 }
 
 // Tests that the screenshot gets deleted after transition with a transient
@@ -2042,7 +2050,47 @@ TEST_F(TabletModeControllerScreenshotTest, TransientChildTypeWindow) {
   SetTabletMode(true);
   ShellTestApi().WaitForWindowFinishAnimating(child.get());
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
+}
+
+class TabletModeControllerFloatScreenshotTest
+    : public TabletModeControllerScreenshotTest {
+ public:
+  TabletModeControllerFloatScreenshotTest()
+      : scoped_feature_list_(chromeos::wm::features::kFloatWindow) {}
+  TabletModeControllerFloatScreenshotTest(
+      const TabletModeControllerFloatScreenshotTest&) = delete;
+  TabletModeControllerFloatScreenshotTest& operator=(
+      const TabletModeControllerFloatScreenshotTest&) = delete;
+  ~TabletModeControllerFloatScreenshotTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Floated window in tablet mode only covers a portion of the work area, so we
+// don't take a screenshot.
+TEST_F(TabletModeControllerFloatScreenshotTest, NoScreenshotFloatedWindow) {
+  auto window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  window->layer()->GetAnimator()->StopAnimating();
+
+  // Enter tablet mode. Test that there is no screenshot.
+  TabletMode::Waiter waiter(/*enable=*/true);
+  SetTabletMode(true);
+  EXPECT_FALSE(IsScreenshotShown());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
+
+  waiter.Wait();
+  EXPECT_FALSE(IsScreenshotShown());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
+
+  // Tests that after ending `window`'s animation, the screenshot is still not
+  // shown.
+  window->layer()->GetAnimator()->StopAnimating();
+  EXPECT_FALSE(IsScreenshotShown());
+  EXPECT_TRUE(IsShelfAndFloatContainerOpaque());
 }
 
 }  // namespace ash

@@ -3450,19 +3450,14 @@ INSTANTIATE_TEST_SUITE_P(All, OverviewSessionTest, testing::Bool());
 
 class FloatOverviewSessionTest : public OverviewTestBase {
  public:
-  FloatOverviewSessionTest() = default;
+  FloatOverviewSessionTest()
+      : scoped_feature_list_(chromeos::wm::features::kFloatWindow) {}
   FloatOverviewSessionTest(const FloatOverviewSessionTest&) = delete;
   FloatOverviewSessionTest& operator=(const FloatOverviewSessionTest&) = delete;
   ~FloatOverviewSessionTest() override = default;
 
-  // OverviewTestBase:
-  void SetUp() override {
-    feature_list.InitAndEnableFeature(chromeos::wm::features::kFloatWindow);
-    OverviewTestBase::SetUp();
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that when we drag in overview, and there is a floated window, the
