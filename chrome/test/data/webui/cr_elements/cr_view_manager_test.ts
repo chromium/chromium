@@ -6,10 +6,11 @@
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
+
 
 /** @fileoverview Suite of tests for cr-view-manager. */
 /** @enum {string} */
@@ -27,7 +28,7 @@ suite(suiteName, function() {
   // Initialize an cr-view-manager inside a parent div before
   // each test.
   setup(function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
         <div id="parent">
           <cr-view-manager id="viewManager">
             <div slot="view" id="viewOne">view 1</div>

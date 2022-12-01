@@ -15,8 +15,9 @@ suite('cr-link-row', function() {
   let linkRow: CrLinkRowElement;
 
   setup(() => {
-    document.body.innerHTML = '<cr-link-row></cr-link-row>';
-    linkRow = document.body.querySelector('cr-link-row')!;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    linkRow = document.createElement('cr-link-row');
+    document.body.appendChild(linkRow);
   });
 
   test('check label visibility', () => {

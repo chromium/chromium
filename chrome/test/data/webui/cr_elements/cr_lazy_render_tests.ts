@@ -6,6 +6,7 @@
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -22,7 +23,7 @@ suite('cr-lazy-render', function() {
   let bind: HTMLElement&BindData;
 
   setup(function() {
-    const template = `
+    document.body.innerHTML = getTrustedHTML`
         <dom-bind>
           <template>
             <cr-lazy-render id="lazy">
@@ -35,7 +36,6 @@ suite('cr-lazy-render', function() {
             </cr-lazy-render>
           </template>
         </dom-bind>`;
-    document.body.innerHTML = template;
     lazy = document.body.querySelector('cr-lazy-render')!;
     bind = document.body.querySelector<HTMLElement&BindData>('dom-bind')!;
   });

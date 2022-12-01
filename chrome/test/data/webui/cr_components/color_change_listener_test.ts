@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 import {COLORS_CSS_SELECTOR, refreshColorCss} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('ColorChangeListenerTest', () => {
   setup(() => {
     document.body.innerHTML =
-        '<link rel="stylesheet" href="chrome://theme/colors.css?sets=ui"/>';
+        getTrustedHTML`<link rel="stylesheet" href="chrome://theme/colors.css?sets=ui"/>`;
   });
 
   test('CorrectlyUpdatesColorsStylesheetURL', async () => {
@@ -56,7 +57,7 @@ suite('ColorChangeListenerTest', () => {
     // Handles the case where the link element exists but the attribute is
     // malformed.
     document.body.innerHTML =
-        '<link rel="stylesheet" bad_href="chrome://theme/colors.css?sets=ui"/>';
+        getTrustedHTML`<link rel="stylesheet" bad_href="chrome://theme/colors.css?sets=ui"/>`;
     assertFalse(refreshColorCss());
 
     // Handles the case where the link element does not exist.

@@ -5,6 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {keyDownOn, keyUpOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -17,7 +18,7 @@ suite('cr-checkbox', function() {
   let innerCheckbox: HTMLElement;
 
   setup(function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-checkbox>
         <div>label
           <a>link</a>
@@ -174,7 +175,7 @@ suite('cr-checkbox', function() {
   });
 
   test('InitializingWithTabindex', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-checkbox id="checkbox" tab-index="-1"></cr-checkbox>
     `;
 
@@ -189,7 +190,7 @@ suite('cr-checkbox', function() {
   });
 
   test('InitializingWithDisabled', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-checkbox id="checkbox" disabled></cr-checkbox>
     `;
 
@@ -204,7 +205,7 @@ suite('cr-checkbox', function() {
   });
 
   test('tabindex attribute is controlled by tabIndex', () => {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-checkbox id="checkbox" tabindex="-1"></cr-checkbox>
     `;
     checkbox = document.querySelector('cr-checkbox')!;

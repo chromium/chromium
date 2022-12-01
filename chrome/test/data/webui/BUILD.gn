@@ -402,11 +402,12 @@ ts_library("build_ts") {
     "mock_timer.ts",
     "mock_timer_test.ts",
     "polymer_test_util.ts",
-    "text_defaults_test.ts",
     "test_browser_proxy.ts",
     "test_plural_string_proxy.ts",
     "test_store_ts.ts",
     "test_util.ts",
+    "text_defaults_test.ts",
+    "trusted_html.ts",
   ]
 
   if (is_chromeos_ash) {

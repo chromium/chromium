@@ -6,6 +6,7 @@
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {keyDownOn, keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -26,7 +27,7 @@ suite('cr-dialog', function() {
    *     is the outer dialog, and the second is the inner dialog.
    */
   function createAndShowNestedDialogs(): [CrDialogElement, CrDialogElement] {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog id="outer">
         <div slot="title">outer dialog title</div>
         <div slot="body">
@@ -57,7 +58,7 @@ suite('cr-dialog', function() {
   });
 
   test('cr-dialog-open event fires when opened', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body">body</div>
@@ -70,7 +71,7 @@ suite('cr-dialog', function() {
   });
 
   test('close event bubbles', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body">body</div>
@@ -111,7 +112,7 @@ suite('cr-dialog', function() {
   });
 
   test('cancel and close events bubbles when cancelled', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body">body</div>
@@ -153,7 +154,7 @@ suite('cr-dialog', function() {
   });
 
   test('focuses title on show', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body"><button>button</button></div>
@@ -172,7 +173,7 @@ suite('cr-dialog', function() {
   });
 
   test('enter keys should trigger action buttons once', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body">
@@ -217,7 +218,7 @@ suite('cr-dialog', function() {
   });
 
   test('enter keys find the first non-hidden non-disabled button', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body">
@@ -247,7 +248,7 @@ suite('cr-dialog', function() {
   });
 
   test('enter keys from certain inputs only are processed', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body">
@@ -310,7 +311,7 @@ suite('cr-dialog', function() {
   });
 
   test('focuses [autofocus] instead of title when present', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body"><button autofocus>button</button></div>
@@ -331,7 +332,7 @@ suite('cr-dialog', function() {
   // Ensuring that intersectionObserver does not fire any callbacks before the
   // dialog has been opened.
   test('body scrollable border not added before modal shown', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body">body</div>
@@ -355,7 +356,7 @@ suite('cr-dialog', function() {
   });
 
   test('dialog body scrollable border when appropriate', function(done) {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body">
@@ -415,7 +416,7 @@ suite('cr-dialog', function() {
   });
 
   test('dialog `open` attribute updated when Escape is pressed', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
       </cr-dialog>`;
@@ -434,7 +435,7 @@ suite('cr-dialog', function() {
   });
 
   test('dialog cannot be cancelled when `no-cancel` is set', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog no-cancel>
         <div slot="title">title</div>
       </cr-dialog>`;
@@ -458,7 +459,7 @@ suite('cr-dialog', function() {
   });
 
   test('dialog close button shown when showCloseButton is true', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog show-close-button>
         <div slot="title">title</div>
       </cr-dialog>`;
@@ -474,7 +475,7 @@ suite('cr-dialog', function() {
   });
 
   test('dialog close button hidden when showCloseButton is false', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
       </cr-dialog>`;
@@ -487,7 +488,7 @@ suite('cr-dialog', function() {
   });
 
   test('keydown should be consumed when the property is true', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog consume-keydown-event>
         <div slot="title">title</div>
       </cr-dialog>`;
@@ -510,7 +511,7 @@ suite('cr-dialog', function() {
   });
 
   test('keydown should be propagated when the property is false', function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog>
         <div slot="title">title</div>
       </cr-dialog>`;
@@ -534,7 +535,7 @@ suite('cr-dialog', function() {
   });
 
   test('show on attach', () => {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <cr-dialog show-on-attach>
         <div slot="title">title</div>
       </cr-dialog>`;

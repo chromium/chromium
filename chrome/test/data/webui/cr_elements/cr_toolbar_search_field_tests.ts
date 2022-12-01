@@ -44,8 +44,9 @@ suite('cr-toolbar-search-field', function() {
     // Need to attach listener event before the element is created, to catch
     // the unnecessary initial event.
     document.body.addEventListener('search-changed', onSearchChanged);
-    document.body.innerHTML =
-        '<cr-toolbar-search-field></cr-toolbar-search-field>';
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(
+        document.createElement('cr-toolbar-search-field'));
     // Remove event listener on |body| so that other tests are not affected.
     document.body.removeEventListener('search-changed', onSearchChanged);
 

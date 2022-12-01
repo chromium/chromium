@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {downAndUp, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -125,7 +126,7 @@ suite('cr-icon-button', function() {
 
   test('when tabindex is -1, it stays -1', async () => {
     document.body.innerHTML =
-        '<cr-icon-button custom-tab-index="-1"></cr-icon-button>';
+        getTrustedHTML`<cr-icon-button custom-tab-index="-1"></cr-icon-button>`;
     await flushTasks();
     button = document.body.querySelector('cr-icon-button')!;
     assertEquals('-1', button.getAttribute('tabindex'));
@@ -135,9 +136,10 @@ suite('cr-icon-button', function() {
     assertEquals('-1', button.getAttribute('tabindex'));
   });
 
-  test('tabindex update', async () => {
-    document.body.innerHTML = '<cr-icon-button></cr-icon-button>';
-    button = document.body.querySelector('cr-icon-button')!;
+  test('tabindex update', () => {
+    button = document.createElement('cr-icon-button')!;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(button);
     assertEquals('0', button.getAttribute('tabindex'));
     button.customTabIndex = 1;
     assertEquals('1', button.getAttribute('tabindex'));

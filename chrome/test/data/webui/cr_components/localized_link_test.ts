@@ -8,14 +8,16 @@ import {LocalizedLinkElement} from '//resources/cr_components/localized_link/loc
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 
 suite('localized_link', function() {
   let localizedStringWithLink: LocalizedLinkElement|null;
 
   function getLocalizedStringWithLinkElementHtml(
-      localizedString: string, linkUrl: string): string {
-    return `<localized-link localized-string="${localizedString}"` +
-        ` link-url="${linkUrl}"></localized-link>`;
+      localizedString: string, linkUrl: string): TrustedHTML {
+    return getTrustedHtml(
+        `<localized-link localized-string="${localizedString}"` +
+        ` link-url="${linkUrl}"></localized-link>`);
   }
 
   test('LinkFirst', function() {

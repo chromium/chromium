@@ -6,6 +6,7 @@
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -19,7 +20,7 @@ suite('cr-radio-group', () => {
   let radioGroup: CrRadioGroupElement;
 
   setup(() => {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
         <cr-radio-group>
           <cr-radio-button name="1"></cr-radio-button>
           <cr-radio-button name="2"><input></input></cr-radio-button>
