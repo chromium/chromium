@@ -75,7 +75,7 @@ class ProtocolHandler {
   // ignored.
   bool IsEquivalent(const ProtocolHandler& other) const;
 
-  // Encodes this protocol handler as a DictionaryValue.
+  // Encodes this protocol handler as a `base::Value::Dict`.
   base::Value::Dict Encode() const;
 
   // Returns a friendly name for |protocol| if one is available, otherwise
