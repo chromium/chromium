@@ -1965,6 +1965,9 @@ chromium-metrics-reviews@google.com.
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
   <token key="NonPinchEventType">
+    <variant name="FirstGestureScrollUpdate"
+        summary="gesture-scroll-update events that are the first one in a
+                 scroll sequence"/>
     <variant name="GestureDoubleTap" summary="gesture-double-tap events"/>
     <variant name="GestureLongPress" summary="gesture-long-press events"/>
     <variant name="GestureLongTap" summary="gesture-long-tap events"/>
