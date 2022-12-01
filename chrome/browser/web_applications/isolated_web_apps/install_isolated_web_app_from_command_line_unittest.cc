@@ -377,17 +377,8 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
 
 class InstallIsolatedWebAppFromCommandLineIsolationInfoTest
     : public ::testing::Test {
- protected:
-  void TearDown() override {
-    task_environment_
-        .RunUntilIdle();  // because SequencedTaskRunner::DeleteSoon() is used
-                          // in SignedWebBundleReader
-    ::testing::Test::TearDown();
-  }
-
-  base::test::TaskEnvironment task_environment_;
-
  private:
+  base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
@@ -413,12 +404,12 @@ TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
   base::FilePath path =
       temp_dir.GetPath().Append(base::FilePath::FromASCII("test-0.swbn"));
   TestSignedWebBundle bundle = BuildDefaultTestSignedWebBundle();
-  DCHECK(base::WriteFile(path, bundle.data));
+  ASSERT_TRUE(base::WriteFile(path, bundle.data));
+
   IsolationData isolation_data =
       IsolationData{IsolationData::DevModeBundle{.path = path}};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
-
   GetIsolationInfo(isolation_data, test_future.GetCallback());
   base::expected<IsolatedWebAppUrlInfo, std::string> result = test_future.Get();
 
@@ -431,7 +422,7 @@ TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path = temp_dir.GetPath().Append(
-      base::FilePath::FromASCII("file_not_exist.webn"));
+      base::FilePath::FromASCII("file_not_exist.swbn"));
   IsolationData isolation_data =
       IsolationData{IsolationData::DevModeBundle{.path = path}};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
@@ -452,10 +443,9 @@ TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path =
-      temp_dir.GetPath().Append(base::FilePath::FromASCII("invalid_file.webn"));
-  DCHECK(
+      temp_dir.GetPath().Append(base::FilePath::FromASCII("invalid_file.swbn"));
+  ASSERT_TRUE(
       base::WriteFile(path, "clearly, this is not a valid signed web bundle"));
-  ASSERT_TRUE(base::PathExists(path));
   IsolationData isolation_data =
       IsolationData{IsolationData::DevModeBundle{.path = path}};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
