@@ -13504,6 +13504,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Open now
     </message>
 
+    <!-- In product help bubble dialog for users referred from ESB promotions -->
+    <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_IPH_BUBBLE_TEXT" desc="The text on an In-Product-Help bubble that is shown when a user navigates to the security settings page from an ESB promotion">
+      Get more protection against dangerous websites and downloads
+    </message>
+
     <!-- Tailored security dialog for consented primary accounts -->
     <message name="IDS_TAILORED_SECURITY_ENABLED_DIALOG_TITLE" desc="Title shown in the tab dialog when the account tailored security setting changes for a consented primary account">
       Enhanced Safe Browsing is on
