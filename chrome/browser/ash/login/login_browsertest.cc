@@ -146,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
   EXPECT_TRUE(LoginScreenTestApi::FocusUser(account_id));
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
-  FakeUserDataAuthClient::Get()->set_cryptohome_error(
+  FakeUserDataAuthClient::Get()->SetNextOperationError(
+      FakeUserDataAuthClient::Operation::kStartAuthSession,
       user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL);
 
   LoginDisplayHost::default_host()
@@ -163,7 +164,9 @@ IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
 
 IN_PROC_BROWSER_TEST_P(LoginOfflineTest, FatalScreenShown) {
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  FakeUserDataAuthClient::Get()->set_cryptohome_error(
+  FakeUserDataAuthClient::Get()->SetNextOperationError(
+      GetParam() ? FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor
+                 : FakeUserDataAuthClient::Operation::kAuthenticateAuthSession,
       user_data_auth::CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED);
   LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
                                      /*check_if_submittable=*/false);
@@ -173,7 +176,9 @@ IN_PROC_BROWSER_TEST_P(LoginOfflineTest, FatalScreenShown) {
 
 IN_PROC_BROWSER_TEST_P(LoginOfflineTest, FatalScreenNotShown) {
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  FakeUserDataAuthClient::Get()->set_cryptohome_error(
+  FakeUserDataAuthClient::Get()->SetNextOperationError(
+      GetParam() ? FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor
+                 : FakeUserDataAuthClient::Operation::kAuthenticateAuthSession,
       user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
   LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
                                      /*check_if_submittable=*/false);

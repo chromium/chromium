@@ -27,6 +27,19 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   struct UserCryptohomeState;
 
  public:
+  enum class Operation {
+    kStartAuthSession,
+    kAuthenticateAuthFactor,
+    kAuthenticateAuthSession,
+    kPrepareGuestVault,
+    kPrepareEphemeralVault,
+    kCreatePersistentUser,
+    kPreparePersistentVault,
+    kPrepareVaultForMigration,
+    kAddAuthFactor,
+    kListAuthFactors,
+  };
+
   // The method by which a user's home directory can be encrypted.
   enum class HomeEncryptionMethod {
     kDirCrypto,
@@ -265,10 +278,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       const ::user_data_auth::TerminateAuthFactorRequest& request,
       TerminateAuthFactorCallback callback) override;
 
-  // Sets the CryptohomeError value to return.
-  void set_cryptohome_error(::user_data_auth::CryptohomeErrorCode error) {
-    cryptohome_error_ = error;
-  }
+  // Sets the CryptohomeError value to return during next operation.
+  void SetNextOperationError(Operation operation,
+                             ::user_data_auth::CryptohomeErrorCode error);
 
   // Returns the `unlock_webauthn_secret` parameter passed in the last
   // CheckKeyEx call (either successful or not).
@@ -367,12 +379,17 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       bool wildcard_allowed,
       std::string* matched_factor_label = nullptr) const;
 
-  ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  // Checks if there is a per-operation error defined, and uses it.
+  ::user_data_auth::CryptohomeErrorCode TakeOperationError(Operation operation);
+
   int prepare_guest_request_count_ = 0;
 
   // The `unlock_webauthn_secret` parameter passed in the last CheckKeyEx call.
   bool last_unlock_webauthn_secret_;
+
+  // The error that would be triggered once operation is called.
+  base::flat_map<Operation, ::user_data_auth::CryptohomeErrorCode>
+      operation_errors_;
 
   // The collection of users we know about.
   base::flat_map<cryptohome::AccountIdentifier, UserCryptohomeState> users_;

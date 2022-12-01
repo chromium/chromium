@@ -26,6 +26,8 @@
 
 namespace ash {
 
+using ::user_data_auth::CryptohomeErrorCode;
+
 namespace {
 
 // Specialized structs for each auth factor with factor-specific metadata.
@@ -613,15 +615,16 @@ void FakeUserDataAuthClient::IsMounted(
     const ::user_data_auth::IsMountedRequest& request,
     IsMountedCallback callback) {
   ::user_data_auth::IsMountedReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
   reply.set_is_mounted(true);
-  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
 void FakeUserDataAuthClient::Unmount(
     const ::user_data_auth::UnmountRequest& request,
     UnmountCallback callback) {
-  ReturnProtobufMethodCallback(::user_data_auth::UnmountReply(),
-                               std::move(callback));
+  ::user_data_auth::UnmountReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 }
 
 void FakeUserDataAuthClient::Remove(
@@ -672,8 +675,7 @@ void FakeUserDataAuthClient::GetKeyData(
   const auto user_it = users_.find(request.account_id());
   if (user_it == std::end(users_)) {
     LOG(ERROR) << "User does not exist: " << request.account_id().account_id();
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
     return;
   }
   const UserCryptohomeState& user_state = user_it->second;
@@ -713,8 +715,7 @@ void FakeUserDataAuthClient::GetKeyData(
   if (reply.key_data().empty()) {
     // This happens if no or only unsupported factors matched the request.
     LOG(ERROR) << "No legacy key exists for label " << requested_label;
-    reply.set_error(
-        ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
   }
 }
 
@@ -800,22 +801,21 @@ void FakeUserDataAuthClient::RemoveKey(
 void FakeUserDataAuthClient::StartFingerprintAuthSession(
     const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
     StartFingerprintAuthSessionCallback callback) {
-  ReturnProtobufMethodCallback(
-      ::user_data_auth::StartFingerprintAuthSessionReply(),
-      std::move(callback));
+  ::user_data_auth::StartFingerprintAuthSessionReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 }
 void FakeUserDataAuthClient::EndFingerprintAuthSession(
     const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
     EndFingerprintAuthSessionCallback callback) {
-  ReturnProtobufMethodCallback(
-      ::user_data_auth::EndFingerprintAuthSessionReply(), std::move(callback));
+  ::user_data_auth::EndFingerprintAuthSessionReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 }
 void FakeUserDataAuthClient::StartMigrateToDircrypto(
     const ::user_data_auth::StartMigrateToDircryptoRequest& request,
     StartMigrateToDircryptoCallback callback) {
   last_migrate_to_dircrypto_request_ = request;
-  ReturnProtobufMethodCallback(::user_data_auth::StartMigrateToDircryptoReply(),
-                               std::move(callback));
+  ::user_data_auth::StartMigrateToDircryptoReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
   dircrypto_migration_progress_ = 0;
 
@@ -852,17 +852,17 @@ void FakeUserDataAuthClient::GetSupportedKeyPolicies(
     const ::user_data_auth::GetSupportedKeyPoliciesRequest& request,
     GetSupportedKeyPoliciesCallback callback) {
   ::user_data_auth::GetSupportedKeyPoliciesReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
   reply.set_low_entropy_credentials_supported(
       supports_low_entropy_credentials_);
-  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 void FakeUserDataAuthClient::GetAccountDiskUsage(
     const ::user_data_auth::GetAccountDiskUsageRequest& request,
     GetAccountDiskUsageCallback callback) {
   ::user_data_auth::GetAccountDiskUsageReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
   // Sets 100 MB as a fake usage.
   reply.set_size(100 * 1024 * 1024);
-  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
 void FakeUserDataAuthClient::StartAuthSession(
@@ -870,6 +870,12 @@ void FakeUserDataAuthClient::StartAuthSession(
     StartAuthSessionCallback callback) {
   ::user_data_auth::StartAuthSessionReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+
+  if (auto error = TakeOperationError(Operation::kStartAuthSession);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
 
   std::string auth_session_id =
       base::StringPrintf(kAuthSessionIdTemplate, next_auth_session_id_++);
@@ -882,12 +888,6 @@ void FakeUserDataAuthClient::StartAuthSession(
       0;
   session.account = request.account_id();
   session.requested_auth_session_intent = request.intent();
-
-  if (cryptohome_error_ !=
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
-    reply.set_error(cryptohome_error_);
-    return;
-  }
 
   reply.set_auth_session_id(auth_session_id);
 
@@ -977,17 +977,16 @@ void FakeUserDataAuthClient::ListAuthFactors(
   ::user_data_auth::ListAuthFactorsReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  if (cryptohome_error_ !=
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
-    reply.set_error(cryptohome_error_);
+  if (auto error = TakeOperationError(Operation::kListAuthFactors);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
     return;
   }
 
   const auto user_it = users_.find(request.account_id());
   const bool user_exists = user_it != std::end(users_);
   if (!user_exists) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
     return;
   }
 
@@ -1042,21 +1041,20 @@ void FakeUserDataAuthClient::AuthenticateAuthSession(
   ::user_data_auth::AuthenticateAuthSessionReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 
+  if (auto error = TakeOperationError(Operation::kAuthenticateAuthSession);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
+
   const std::string auth_session_id = request.auth_session_id();
 
   const auto it = auth_sessions_.find(auth_session_id);
   if (it == auth_sessions_.end()) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
     return;
   }
   AuthSessionData& auth_session = it->second;
-
-  if (cryptohome_error_ !=
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
-    reply.set_error(cryptohome_error_);
-    return;
-  }
 
   const cryptohome::Key& key = request.authorization().key();
   switch (AuthenticateViaAuthFactors(auth_session.account,
@@ -1067,16 +1065,14 @@ void FakeUserDataAuthClient::AuthenticateAuthSession(
       // Proceed to marking the auth session authenticated.
       break;
     case AuthResult::kUserNotFound:
-      reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                          CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+      reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
       return;
     case AuthResult::kFactorNotFound:
-      reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                          CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+      reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
       return;
     case AuthResult::kAuthFailed:
-      reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                          CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+      reply.set_error(
+          CryptohomeErrorCode::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
       return;
   }
 
@@ -1089,48 +1085,53 @@ void FakeUserDataAuthClient::AddCredentials(
     AddCredentialsCallback callback) {
   last_add_credentials_request_ = request;
   ::user_data_auth::AddCredentialsReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
   const std::string auth_session_id = request.auth_session_id();
 
   const auto it = auth_sessions_.find(auth_session_id);
   if (it == auth_sessions_.end()) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
   }
-  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
 void FakeUserDataAuthClient::UpdateCredential(
     const ::user_data_auth::UpdateCredentialRequest& request,
     UpdateCredentialCallback callback) {
   ::user_data_auth::UpdateCredentialReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
   const std::string auth_session_id = request.auth_session_id();
 
   const auto it = auth_sessions_.find(auth_session_id);
   if (it == auth_sessions_.end()) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
-  } else if (!it->second.authenticated) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_UNAUTHENTICATED_AUTH_SESSION);
-  } else {
-    reply.set_error(cryptohome_error_);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    return;
   }
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+  if (!it->second.authenticated) {
+    reply.set_error(
+        CryptohomeErrorCode::CRYPTOHOME_ERROR_UNAUTHENTICATED_AUTH_SESSION);
+    return;
+  }
 }
 
 void FakeUserDataAuthClient::PrepareGuestVault(
     const ::user_data_auth::PrepareGuestVaultRequest& request,
     PrepareGuestVaultCallback callback) {
   ::user_data_auth::PrepareGuestVaultReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
+  if (auto error = TakeOperationError(Operation::kPrepareGuestVault);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
+
   prepare_guest_request_count_++;
 
   cryptohome::AccountIdentifier account;
   account.set_account_id(kGuestUserName);
   reply.set_sanitized_username(GetStubSanitizedUsername(account));
-
-  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
 void FakeUserDataAuthClient::PrepareEphemeralVault(
@@ -1139,19 +1140,23 @@ void FakeUserDataAuthClient::PrepareEphemeralVault(
   ::user_data_auth::PrepareEphemeralVaultReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 
+  if (auto error = TakeOperationError(Operation::kPrepareEphemeralVault);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
+
   const auto session_it = auth_sessions_.find(request.auth_session_id());
   if (session_it == auth_sessions_.end()) {
     LOG(ERROR) << "AuthSession not found";
     reply.set_sanitized_username(std::string());
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
     return;
   }
   AuthSessionData& auth_session = session_it->second;
   if (!auth_session.ephemeral) {
     LOG(ERROR) << "Non-ephemeral AuthSession used with PrepareEphemeralVault";
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_INVALID_ARGUMENT);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_INVALID_ARGUMENT);
     return;
   }
   cryptohome::AccountIdentifier account = auth_session.account;
@@ -1159,8 +1164,7 @@ void FakeUserDataAuthClient::PrepareEphemeralVault(
   // It authenticates session instead.
   if (auth_session.authenticated) {
     LOG(ERROR) << "AuthSession is authenticated";
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_INVALID_ARGUMENT);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_INVALID_ARGUMENT);
     return;
   }
   auth_session.authenticated = true;
@@ -1170,8 +1174,8 @@ void FakeUserDataAuthClient::PrepareEphemeralVault(
 
   if (!was_inserted) {
     LOG(ERROR) << "User already exists: " << auth_session.account.account_id();
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY);
+    reply.set_error(
+        CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY);
     return;
   }
 
@@ -1184,20 +1188,24 @@ void FakeUserDataAuthClient::CreatePersistentUser(
   ::user_data_auth::CreatePersistentUserReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 
+  if (auto error = TakeOperationError(Operation::kCreatePersistentUser);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
+
   const auto session_it = auth_sessions_.find(request.auth_session_id());
   if (session_it == auth_sessions_.end()) {
     LOG(ERROR) << "AuthSession not found";
     reply.set_sanitized_username(std::string());
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
     return;
   }
   AuthSessionData& auth_session = session_it->second;
 
   if (auth_session.ephemeral) {
     LOG(ERROR) << "Ephemeral AuthSession used with CreatePersistentUser";
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_INVALID_ARGUMENT);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_INVALID_ARGUMENT);
     return;
   }
 
@@ -1206,8 +1214,8 @@ void FakeUserDataAuthClient::CreatePersistentUser(
 
   if (!was_inserted) {
     LOG(ERROR) << "User already exists: " << auth_session.account.account_id();
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY);
+    reply.set_error(
+        CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY);
     return;
   }
 
@@ -1220,7 +1228,13 @@ void FakeUserDataAuthClient::PreparePersistentVault(
   ::user_data_auth::PreparePersistentVaultReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  if (auto error = TakeOperationError(Operation::kPreparePersistentVault);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
+
+  auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   auto* authenticated_auth_session =
       GetAuthenticatedAuthSession(request.auth_session_id(), &error);
 
@@ -1231,15 +1245,13 @@ void FakeUserDataAuthClient::PreparePersistentVault(
 
   if (authenticated_auth_session->ephemeral) {
     LOG(ERROR) << "Ephemeral AuthSession used with PreparePersistentVault";
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_INVALID_ARGUMENT);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_INVALID_ARGUMENT);
     return;
   }
 
   const auto user_it = users_.find(authenticated_auth_session->account);
   if (user_it == std::end(users_)) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
     return;
   }
 
@@ -1247,12 +1259,12 @@ void FakeUserDataAuthClient::PreparePersistentVault(
                                       HomeEncryptionMethod::kEcryptfs) {
     if (user_it->second.incomplete_migration) {
       LOG(ERROR) << "Encryption migration required, incomplete migration";
-      reply.set_error(::user_data_auth::CryptohomeErrorCode::
+      reply.set_error(CryptohomeErrorCode::
                           CRYPTOHOME_ERROR_MOUNT_PREVIOUS_MIGRATION_INCOMPLETE);
     } else {
       LOG(ERROR) << "Encryption migration required, full migration";
-      reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                          CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION);
+      reply.set_error(
+          CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION);
     }
     return;
   }
@@ -1267,7 +1279,13 @@ void FakeUserDataAuthClient::PrepareVaultForMigration(
   ::user_data_auth::PrepareVaultForMigrationReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  if (auto error = TakeOperationError(Operation::kPrepareVaultForMigration);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
+
+  auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   auto* authenticated_auth_session =
       GetAuthenticatedAuthSession(request.auth_session_id(), &error);
 
@@ -1277,8 +1295,7 @@ void FakeUserDataAuthClient::PrepareVaultForMigration(
   }
 
   if (!users_.contains(authenticated_auth_session->account)) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
     return;
   }
 }
@@ -1287,41 +1304,47 @@ void FakeUserDataAuthClient::InvalidateAuthSession(
     const ::user_data_auth::InvalidateAuthSessionRequest& request,
     InvalidateAuthSessionCallback callback) {
   ::user_data_auth::InvalidateAuthSessionReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
   auto auth_session = auth_sessions_.find(request.auth_session_id());
   if (auth_session == auth_sessions_.end()) {
     LOG(ERROR) << "AuthSession not found";
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
-  } else {
-    auth_sessions_.erase(auth_session);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    return;
   }
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+
+  auth_sessions_.erase(auth_session);
 }
 
 void FakeUserDataAuthClient::ExtendAuthSession(
     const ::user_data_auth::ExtendAuthSessionRequest& request,
     ExtendAuthSessionCallback callback) {
   ::user_data_auth::ExtendAuthSessionReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   GetAuthenticatedAuthSession(request.auth_session_id(), &error);
   reply.set_error(error);
-
-  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
 void FakeUserDataAuthClient::AddAuthFactor(
     const ::user_data_auth::AddAuthFactorRequest& request,
     AddAuthFactorCallback callback) {
   ::user_data_auth::AddAuthFactorReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
   last_add_auth_factor_request_ = request;
 
-  auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  if (auto error = TakeOperationError(Operation::kAddAuthFactor);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
+
+  auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   auto* session =
       GetAuthenticatedAuthSession(request.auth_session_id(), &error);
-  reply.set_error(error);
   if (session == nullptr) {
-    ReturnProtobufMethodCallback(reply, std::move(callback));
+    reply.set_error(error);
     return;
   }
 
@@ -1335,8 +1358,6 @@ void FakeUserDataAuthClient::AddAuthFactor(
   CHECK(!user_state.auth_factors.contains(new_label))
       << "Key exists, will not clobber: " << new_label;
   user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
-
-  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
 void FakeUserDataAuthClient::AuthenticateAuthFactor(
@@ -1345,13 +1366,18 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
   ::user_data_auth::AuthenticateAuthFactorReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 
+  if (auto error = TakeOperationError(Operation::kAuthenticateAuthFactor);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
+
   last_unlock_webauthn_secret_ = false;
 
   const auto session_it = auth_sessions_.find(request.auth_session_id());
   if (session_it == auth_sessions_.end()) {
     LOG(ERROR) << "AuthSession not found";
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
     return;
   }
   auto& session = session_it->second;
@@ -1430,8 +1456,7 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
           }),
       factor);
 
-  if (reply.error() !=
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+  if (reply.error() != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
     return;
   }
 
@@ -1449,13 +1474,13 @@ void FakeUserDataAuthClient::UpdateAuthFactor(
     const ::user_data_auth::UpdateAuthFactorRequest& request,
     UpdateAuthFactorCallback callback) {
   ::user_data_auth::UpdateAuthFactorReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   auto* session =
       GetAuthenticatedAuthSession(request.auth_session_id(), &error);
   reply.set_error(error);
   if (session == nullptr) {
-    ReturnProtobufMethodCallback(reply, std::move(callback));
     return;
   }
 
@@ -1470,21 +1495,19 @@ void FakeUserDataAuthClient::UpdateAuthFactor(
   CHECK(user_state.auth_factors.contains(new_label))
       << "Key does not exist: " << new_label;
   user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
-
-  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
 void FakeUserDataAuthClient::RemoveAuthFactor(
     const ::user_data_auth::RemoveAuthFactorRequest& request,
     RemoveAuthFactorCallback callback) {
   ::user_data_auth::RemoveAuthFactorReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   auto* session =
       GetAuthenticatedAuthSession(request.auth_session_id(), &error);
   reply.set_error(error);
   if (session == nullptr) {
-    ReturnProtobufMethodCallback(reply, std::move(callback));
     return;
   }
   auto user_it = users_.find(session->account);
@@ -1496,10 +1519,7 @@ void FakeUserDataAuthClient::RemoveAuthFactor(
   bool erased = user_state.auth_factors.erase(label) > 0;
 
   if (!erased)
-    reply.set_error(
-        ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
-
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
 }
 
 void FakeUserDataAuthClient::GetAuthFactorExtendedInfo(
@@ -1520,24 +1540,24 @@ void FakeUserDataAuthClient::GetAuthSessionStatus(
     const ::user_data_auth::GetAuthSessionStatusRequest& request,
     GetAuthSessionStatusCallback callback) {
   ::user_data_auth::GetAuthSessionStatusReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
   const std::string auth_session_id = request.auth_session_id();
   auto auth_session = auth_sessions_.find(auth_session_id);
 
   // Check if the token refers to a valid AuthSession.
   if (auth_session == auth_sessions_.end()) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
-  } else if (auth_session->second.authenticated) {
-    reply.set_status(::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED);
-    // Use 5 minutes timeout - as if auth session has just started.
-    reply.set_time_left(5 * 60);
-  } else {
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    return;
+  }
+  if (!auth_session->second.authenticated) {
     reply.set_status(
         ::user_data_auth::AUTH_SESSION_STATUS_FURTHER_FACTOR_REQUIRED);
+    return;
   }
-
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+  reply.set_status(::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED);
+  // Use 5 minutes timeout - as if auth session has just started.
+  reply.set_time_left(5 * 60);
 }
 
 void FakeUserDataAuthClient::PrepareAuthFactor(
@@ -1550,8 +1570,7 @@ void FakeUserDataAuthClient::PrepareAuthFactor(
   auto auth_session = auth_sessions_.find(auth_session_id);
   // Check if the token refers to a valid AuthSession.
   if (auth_session == auth_sessions_.end()) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
     return;
   }
 
@@ -1576,8 +1595,7 @@ void FakeUserDataAuthClient::TerminateAuthFactor(
   auto auth_session = auth_sessions_.find(auth_session_id);
   // Check if the token refers to a valid AuthSession.
   if (auth_session == auth_sessions_.end()) {
-    reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
     return;
   }
 
@@ -1651,12 +1669,20 @@ FakeUserDataAuthClient::AuthenticateViaAuthFactors(
   return AuthResult::kAuthSuccess;
 }
 
-template <typename ReplyType>
-void FakeUserDataAuthClient::ReturnProtobufMethodCallback(
-    const ReplyType& reply,
-    chromeos::DBusMethodCallback<ReplyType> callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), reply));
+void FakeUserDataAuthClient::SetNextOperationError(
+    FakeUserDataAuthClient::Operation operation,
+    CryptohomeErrorCode error) {
+  operation_errors_[operation] = error;
+}
+
+CryptohomeErrorCode FakeUserDataAuthClient::TakeOperationError(
+    Operation operation) {
+  const auto op_error = operation_errors_.find(operation);
+  if (op_error == std::end(operation_errors_))
+    return CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  CryptohomeErrorCode result = op_error->second;
+  operation_errors_.erase(op_error);
+  return result;
 }
 
 void FakeUserDataAuthClient::OnDircryptoMigrationProgressUpdated() {
@@ -1716,22 +1742,20 @@ absl::optional<base::FilePath> FakeUserDataAuthClient::GetUserProfileDir(
 const FakeUserDataAuthClient::AuthSessionData*
 FakeUserDataAuthClient::GetAuthenticatedAuthSession(
     const std::string& auth_session_id,
-    ::user_data_auth::CryptohomeErrorCode* error) const {
+    CryptohomeErrorCode* error) const {
   auto auth_session = auth_sessions_.find(auth_session_id);
 
   // Check if the token refers to a valid AuthSession.
   if (auth_session == auth_sessions_.end()) {
     LOG(ERROR) << "AuthSession not found";
-    *error = ::user_data_auth::CryptohomeErrorCode::
-        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN;
+    *error = CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN;
     return nullptr;
   }
 
   // Check if the AuthSession is properly authenticated.
   if (!auth_session->second.authenticated) {
     LOG(ERROR) << "AuthSession is not authenticated";
-    *error = ::user_data_auth::CryptohomeErrorCode::
-        CRYPTOHOME_ERROR_INVALID_ARGUMENT;
+    *error = CryptohomeErrorCode::CRYPTOHOME_ERROR_INVALID_ARGUMENT;
     return nullptr;
   }
 
