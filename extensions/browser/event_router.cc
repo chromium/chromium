@@ -784,17 +784,18 @@ std::set<std::string> EventRouter::GetRegisteredEvents(
     const std::string& extension_id,
     RegisteredEventType type) const {
   std::set<std::string> events;
-  const ListValue* events_value = nullptr;
+  if (!extension_prefs_)
+    return events;
 
   const char* pref_key = type == RegisteredEventType::kLazy
                              ? kRegisteredLazyEvents
                              : kRegisteredServiceWorkerEvents;
-  if (!extension_prefs_ || !extension_prefs_->ReadPrefAsList(
-                               extension_id, pref_key, &events_value)) {
+  const base::Value::List* events_value =
+      extension_prefs_->ReadPrefAsList(extension_id, pref_key);
+  if (!events_value)
     return events;
-  }
 
-  for (const base::Value& event_val : events_value->GetList()) {
+  for (const base::Value& event_val : *events_value) {
     const std::string* event = event_val.GetIfString();
     if (event)
       events.insert(*event);

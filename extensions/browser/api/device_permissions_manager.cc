@@ -234,12 +234,13 @@ std::set<scoped_refptr<DevicePermissionEntry>> GetDevicePermissionEntries(
     ExtensionPrefs* prefs,
     const std::string& extension_id) {
   std::set<scoped_refptr<DevicePermissionEntry>> result;
-  const base::ListValue* devices = nullptr;
-  if (!prefs->ReadPrefAsList(extension_id, kDevices, &devices)) {
+  const base::Value::List* devices =
+      prefs->ReadPrefAsList(extension_id, kDevices);
+  if (!devices) {
     return result;
   }
 
-  for (const auto& entry : devices->GetList()) {
+  for (const auto& entry : *devices) {
     if (entry.is_dict()) {
       scoped_refptr<DevicePermissionEntry> device_entry =
           ReadDevicePermissionEntry(entry.GetDict());

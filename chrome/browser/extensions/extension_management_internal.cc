@@ -113,9 +113,6 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   }
 
   // Parses the blocked permission settings.
-  const base::Value* list_value = nullptr;
-  std::u16string error;
-
   // Parse the blocked and allowed permissions.
   // Note that we currently don't use default permission settings for
   // per-update-url or per-id settings at all even though they are not set.
@@ -130,20 +127,20 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   // for the same reason, we keep the code for now.
   APIPermissionSet parsed_blocked_permissions;
   APIPermissionSet explicitly_allowed_permissions;
-  list_value = dict->FindListKey(schema_constants::kAllowedPermissions);
+  std::u16string error;
+  const base::Value::List* list_value =
+      dict->GetDict().FindList(schema_constants::kAllowedPermissions);
   if (list_value) {
     if (!APIPermissionSet::ParseFromJSON(
-            list_value->GetList(),
-            APIPermissionSet::kDisallowInternalPermissions,
+            *list_value, APIPermissionSet::kDisallowInternalPermissions,
             &explicitly_allowed_permissions, &error, nullptr)) {
       LOG(WARNING) << error;
     }
   }
-  list_value = dict->FindListKey(schema_constants::kBlockedPermissions);
+  list_value = dict->GetDict().FindList(schema_constants::kBlockedPermissions);
   if (list_value) {
     if (!APIPermissionSet::ParseFromJSON(
-            list_value->GetList(),
-            APIPermissionSet::kDisallowInternalPermissions,
+            *list_value, APIPermissionSet::kDisallowInternalPermissions,
             &parsed_blocked_permissions, &error, nullptr)) {
       LOG(WARNING) << error;
     }

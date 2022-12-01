@@ -153,20 +153,20 @@ std::unique_ptr<std::vector<extensions::TtsVoice>> GetVoicesInternal(
     const extensions::Extension* extension) {
   // First try to get the saved set of voices from extension prefs.
   auto* extension_prefs = extensions::ExtensionPrefs::Get(context);
-  const base::ListValue* voices_data = nullptr;
-  if (extension_prefs->ReadPrefAsList(extension->id(), kPrefTtsVoices,
-                                      &voices_data)) {
+  const base::Value::List* voices_data =
+      extension_prefs->ReadPrefAsList(extension->id(), kPrefTtsVoices);
+  if (voices_data) {
     const char* error = nullptr;
     return ValidateAndConvertToTtsVoiceVector(
-        extension, voices_data->GetList(),
-        /* return_after_first_error = */ false, &error);
+        extension, *voices_data, /*return_after_first_error=*/false, &error);
   }
 
   // Fall back on the extension manifest.
   auto* manifest_voices = extensions::TtsVoices::GetTtsVoices(extension);
-  if (manifest_voices)
+  if (manifest_voices) {
     return std::make_unique<std::vector<extensions::TtsVoice>>(
         *manifest_voices);
+  }
   return std::make_unique<std::vector<extensions::TtsVoice>>();
 }
 

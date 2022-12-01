@@ -346,9 +346,8 @@ class ExtensionPrefs : public KeyedService {
                         base::StringPiece pref_key,
                         std::string* out_value) const;
 
-  bool ReadPrefAsList(const std::string& extension_id,
-                      base::StringPiece pref_key,
-                      const base::ListValue** out_value) const;
+  const base::Value::List* ReadPrefAsList(const std::string& extension_id,
+                                          base::StringPiece pref_key) const;
 
   // DEPRECATED: prefer ReadPrefAsDict() instead.
   bool ReadPrefAsDictionary(const std::string& extension_id,

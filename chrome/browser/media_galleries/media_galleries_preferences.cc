@@ -1221,14 +1221,12 @@ MediaGalleriesPreferences::GetGalleryPermissionsFromPrefs(
     const std::string& extension_id) const {
   DCHECK(IsInitialized());
   std::vector<MediaGalleryPermission> result;
-  const base::ListValue* permissions;
-  if (!GetExtensionPrefs()->ReadPrefAsList(extension_id,
-                                           kMediaGalleriesPermissions,
-                                           &permissions)) {
+  const base::Value::List* permissions = GetExtensionPrefs()->ReadPrefAsList(
+      extension_id, kMediaGalleriesPermissions);
+  if (!permissions)
     return result;
-  }
 
-  for (const auto& permission : permissions->GetList()) {
+  for (const auto& permission : *permissions) {
     if (!permission.is_dict())
       continue;
     MediaGalleryPermission perm;
