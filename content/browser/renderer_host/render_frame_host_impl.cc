@@ -6918,7 +6918,12 @@ void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
 
 void RenderFrameHostImpl::DidChangeOpener(
     const absl::optional<blink::LocalFrameToken>& opener_frame_token) {
-  frame_tree_node_->render_manager()->DidChangeOpener(
+  // `owner_` could be null when we get this message asynchronously from the
+  // renderer in pending deletion state.
+  if (!owner_)
+    return;
+
+  owner_->GetRenderFrameHostManager().DidChangeOpener(
       opener_frame_token, GetSiteInstance()->group());
 }
 
