@@ -1480,16 +1480,6 @@ absl::optional<struct v4l2_format> V4L2Queue::SetModifierFormat(
     constexpr uint32_t kNV12UBWCFourcc = v4l2_fourcc('Q', '0', '8', 'C');
     auto format = SetFormat(kNV12UBWCFourcc, size, 0);
 
-    // TODO(b/170469464) The fourcc is changing from the downstream (Q128) to
-    // the upstream (Q08C).  Attempt with Q08C, then fall back to Q128.
-    // Remove once the ChromeOS kernel can handle Q08C.
-    // ------------------------ cut --------------------------------
-    if (format)
-      return format;
-
-    const uint32_t v4l2_pix_fmt_nv12_ubwc = v4l2_fourcc('Q', '1', '2', '8');
-    format = SetFormat(v4l2_pix_fmt_nv12_ubwc, size, 0);
-    // ------------------------ cut --------------------------------
     if (!format)
       VPLOGF(1) << "Failed to set magic modifier format.";
     return format;
