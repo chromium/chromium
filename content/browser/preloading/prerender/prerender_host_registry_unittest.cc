@@ -272,12 +272,6 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
         result, count);
   }
 
-  void ExpectUniqueSampleOfMismatchHeaders(int32_t hashed_type) {
-    histogram_tester_.ExpectUniqueSample(
-        "Prerender.Experimental.ActivationHeadersMismatch.SpeculationRule",
-        hashed_type, 1);
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   PrerenderWebContentsDelegate web_contents_delegate_;
@@ -802,7 +796,6 @@ TEST_F(PrerenderHostRegistryTest,
       })));
   ExpectUniqueSampleOfActivationNavigationParamsMatch(
       PrerenderHost::ActivationNavigationParamsMatch::kHttpRequestHeader);
-  ExpectUniqueSampleOfMismatchHeaders(-511888193);  // User-Agent mismatch.
 }
 
 // Tests that the Purpose header is ignored when comparing request headers.
@@ -927,8 +920,6 @@ TEST_F(PrerenderHostRegistryTest,
   // The method parameter change is detected as a HTTP request header change.
   ExpectUniqueSampleOfActivationNavigationParamsMatch(
       PrerenderHost::ActivationNavigationParamsMatch::kHttpRequestHeader);
-  // Origin missing in prerendering request.
-  ExpectUniqueSampleOfMismatchHeaders(-249117363);
 }
 
 TEST_F(PrerenderHostRegistryTest,
