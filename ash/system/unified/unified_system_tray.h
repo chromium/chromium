@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
@@ -26,6 +27,14 @@ namespace message_center {
 class MessagePopupView;
 }  // namespace message_center
 
+namespace ui {
+class Event;
+}  // namespace ui
+
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 class AutozoomToastController;
@@ -41,10 +50,10 @@ class NotificationIconsController;
 class PrivacyIndicatorsTrayItemView;
 class PrivacyScreenToastController;
 class QuietModeView;
-class ScreenCaptureTrayItemView;
-class SnoopingProtectionView;
-class TimeTrayItemView;
+class Shelf;
+class TrayBubbleView;
 class TrayItemView;
+class TimeTrayItemView;
 class UnifiedSliderBubbleController;
 class UnifiedSystemTrayBubble;
 class UnifiedMessageCenterBubble;
@@ -246,22 +255,23 @@ class ASH_EXPORT UnifiedSystemTray
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayTest;
 
-  // Private class implements MessageCenterUiDelegate.
+  // Private class implements `MessageCenterUiDelegate`.
   class UiDelegate;
 
-  // Forwarded from UiDelegate.
+  // Forwarded from `UiDelegate`.
   void ShowBubbleInternal();
   void HideBubbleInternal();
   void UpdateNotificationInternal();
   void UpdateNotificationAfterDelay();
 
-  // Forwarded to UiDelegate.
+  // Forwarded to `UiDelegate`.
   message_center::MessagePopupView* GetPopupViewForNotificationID(
       const std::string& notification_id);
 
-  // Adds the tray item to the the unified system tray container.
-  // The container takes the ownership of |tray_item|.
-  void AddTrayItemToContainer(TrayItemView* tray_item);
+  // Adds the tray item to the the unified system tray container. An unowned
+  // pointer is stored in `tray_items_`.
+  template <typename T>
+  T* AddTrayItemToContainer(std::unique_ptr<T> tray_item_view);
 
   // Destroys the `bubble_` and the `message_center_bubble_`, also handles
   // removing bubble related observers.
@@ -273,7 +283,7 @@ class ASH_EXPORT UnifiedSystemTray
 
   std::unique_ptr<UnifiedMessageCenterBubble> message_center_bubble_;
 
-  // Model class that stores UnifiedSystemTray's UI specific variables.
+  // Model class that stores `UnifiedSystemTray`'s UI specific variables.
   scoped_refptr<UnifiedSystemTrayModel> model_;
 
   const std::unique_ptr<UnifiedSliderBubbleController>
@@ -288,15 +298,14 @@ class ASH_EXPORT UnifiedSystemTray
   const std::unique_ptr<NotificationIconsController>
       notification_icons_controller_;
 
-  SnoopingProtectionView* const snooping_protection_view_;
-  CurrentLocaleView* const current_locale_view_;
-  ImeModeView* const ime_mode_view_;
-  ManagedDeviceTrayItemView* const managed_device_view_;
-  CameraMicTrayItemView* const camera_view_;
-  CameraMicTrayItemView* const mic_view_;
-  TimeTrayItemView* const time_view_;
-  PrivacyIndicatorsTrayItemView* const privacy_indicators_view_;
-  ScreenCaptureTrayItemView* const screen_capture_view_;
+  // Owned by the views hierarchy.
+  CurrentLocaleView* current_locale_view_ = nullptr;
+  ImeModeView* ime_mode_view_ = nullptr;
+  ManagedDeviceTrayItemView* managed_device_view_ = nullptr;
+  CameraMicTrayItemView* camera_view_ = nullptr;
+  CameraMicTrayItemView* mic_view_ = nullptr;
+  TimeTrayItemView* time_view_ = nullptr;
+  PrivacyIndicatorsTrayItemView* privacy_indicators_view_ = nullptr;
 
   NetworkTrayView* network_tray_view_ = nullptr;
   ChannelIndicatorView* channel_indicator_view_ = nullptr;
