@@ -20,6 +20,8 @@ source_set("connectivity") {
   sources = [
     "authenticated_connection.cc",
     "authenticated_connection.h",
+    "clients/target_forced_update_client.cc",
+    "clients/target_forced_update_client.h",
     "connection.cc",
     "connection.h",
     "fast_pair_advertiser.cc",
@@ -85,6 +87,7 @@ source_set("unit_tests") {
     "//url",
   ]
   sources = [
+    "clients/target_forced_update_client_unittest.cc",
     "fast_pair_advertiser_unittest.cc",
     "incoming_connection_unittest.cc",
     "quick_start_decoder_unittest.cc",
