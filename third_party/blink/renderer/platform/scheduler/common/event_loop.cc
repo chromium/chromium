@@ -42,29 +42,33 @@ void EventLoop::EnqueueMicrotask(base::OnceClosure task) {
     AddRef();
     isolate_->EnqueueMicrotask(&EventLoop::RunPendingMicrotask, this);
   }
+  AddCompletedCallbackIfNecessary();
 }
 
 void EventLoop::EnqueueEndOfMicrotaskCheckpointTask(base::OnceClosure task) {
   end_of_checkpoint_tasks_.push_back(std::move(task));
+  AddCompletedCallbackIfNecessary();
+}
 
-  if (end_of_checkpoint_tasks_.size() == 1) {
-    if (microtask_queue_) {
-      microtask_queue_->AddMicrotasksCompletedCallback(
-          &EventLoop::RunEndOfCheckpointTasks, this);
-    } else {
-      // Since we are handing out a ptr to this object to an object that can
-      // outlive this object increment the ref count. It will be decremented
-      // after the task runs. See `RunEndOfCheckpointTasks` for the decrement.
-      AddRef();
-      isolate_->AddMicrotasksCompletedCallback(
-          &EventLoop::RunEndOfCheckpointTasks, this);
-    }
+void EventLoop::AddCompletedCallbackIfNecessary() {
+  if (register_complete_callback_)
+    return;
+  register_complete_callback_ = true;
+  if (microtask_queue_) {
+    microtask_queue_->AddMicrotasksCompletedCallback(
+        &EventLoop::RunEndOfCheckpointTasks, this);
+  } else {
+    // Since we are handing out a ptr to this object to an object that can
+    // outlive this object increment the ref count. It will be decremented
+    // after the task runs. See `RunEndOfCheckpointTasks` for the decrement.
+    AddRef();
+    isolate_->AddMicrotasksCompletedCallback(
+        &EventLoop::RunEndOfCheckpointTasks, this);
   }
 }
 
 void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
-  if (end_of_checkpoint_tasks_.empty())
-    return;
+  register_complete_callback_ = false;
   if (microtask_queue_) {
     microtask_queue_->RemoveMicrotasksCompletedCallback(
         &EventLoop::RunEndOfCheckpointTasks, this);
@@ -72,10 +76,17 @@ void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
     isolate_->RemoveMicrotasksCompletedCallback(
         &EventLoop::RunEndOfCheckpointTasks, this);
   }
-
-  Vector<base::OnceClosure> tasks = std::move(end_of_checkpoint_tasks_);
-  for (auto& task : tasks)
-    std::move(task).Run();
+  if (!pending_microtasks_.empty()) {
+    // We are discarding microtasks here. This implies that the microtask
+    // execution was interrupted by the debugger. V8 expects that any pending
+    // microtasks are discarded here. See https://crbug.com/1394714.
+    pending_microtasks_.clear();
+  }
+  if (!end_of_checkpoint_tasks_.empty()) {
+    Vector<base::OnceClosure> tasks = std::move(end_of_checkpoint_tasks_);
+    for (auto& task : tasks)
+      std::move(task).Run();
+  }
 }
 
 void EventLoop::PerformMicrotaskCheckpoint() {

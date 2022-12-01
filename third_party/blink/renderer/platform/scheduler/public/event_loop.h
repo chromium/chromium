@@ -102,12 +102,14 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   EventLoop(v8::Isolate* isolate,
             std::unique_ptr<v8::MicrotaskQueue> microtask_queue = nullptr);
   ~EventLoop();
+  void AddCompletedCallbackIfNecessary();
 
   static void RunPendingMicrotask(void* data);
   static void RunEndOfCheckpointTasks(v8::Isolate* isolat, void* data);
 
   v8::Isolate* isolate_;
   bool loop_enabled_ = true;
+  bool register_complete_callback_ = false;
   Deque<base::OnceClosure> pending_microtasks_;
   Vector<base::OnceClosure> end_of_checkpoint_tasks_;
   std::unique_ptr<v8::MicrotaskQueue> microtask_queue_;
