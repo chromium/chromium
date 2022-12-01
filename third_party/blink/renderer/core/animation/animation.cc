@@ -1936,20 +1936,35 @@ void Animation::setPlaybackRate(double playback_rate,
   // 2. Let previous time be the value of the current time of animation before
   //    changing the playback rate.
   // 3. Set the playback rate to new playback rate.
-  // 4. If previous time is resolved, set the current time of animation to
-  //    previous time
+  // 4. If the timeline is monotonically increasing and the previous time is
+  //    resolved, set the current time of animation to previous time.
+  // 5. If the timeline is not monotonically increasing, the start time is
+  //    resolved and either:
+  //      * the previous playback rate < 0 and the new playback rate >= 0, or
+  //      * the previous playback rate >= 0 and the new playback rate < 0,
+  //    Set animation's start time to the result of evaluating:
+  //        associated effect end - start time
+  bool preserve_current_time =
+      timeline() && timeline()->IsMonotonicallyIncreasing();
+
+  bool reversal = (EffectivePlaybackRate() < 0) != (playback_rate < 0);
   pending_playback_rate_ = absl::nullopt;
   V8CSSNumberish* previous_current_time = currentTime();
   playback_rate_ = playback_rate;
-  if (previous_current_time) {
+  if (previous_current_time && preserve_current_time) {
     setCurrentTime(previous_current_time, exception_state);
+  }
+
+  if (timeline() && !timeline()->IsMonotonicallyIncreasing() && reversal &&
+      start_time_) {
+    start_time_ = EffectEnd() - start_time_.value();
   }
 
   // Adds a UseCounter to check if setting playbackRate causes a compensatory
   // seek forcing a change in start_time_
   // We use an epsilon (1 microsecond) to handle precision issue.
   double epsilon = 1e-6;
-  if (start_time_before && start_time_ &&
+  if (preserve_current_time && start_time_before && start_time_ &&
       fabs(start_time_.value().InMillisecondsF() -
            start_time_before.value().InMillisecondsF()) > epsilon &&
       CalculateAnimationPlayState() != kFinished) {
