@@ -7,13 +7,16 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 component("peripheral_notification") {
-  defines = [ "IS_ASH_PERIPHERAL_NOTIFICATION_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_IMPL" ]
 
-  deps = [
-    "//ash/constants/",
+  public_deps = [
     "//base",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/typecd",
+  ]
+
+  deps = [
+    "//ash/constants/",
     "//services/device/public/mojom:usb",
   ]
 
@@ -30,12 +33,12 @@ source_set("unit_tests") {
 
   deps = [
     ":peripheral_notification",
-    "//ash:test_support",
+    "//ash/constants",
+    "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/typecd",
     "//services/device/public/cpp:test_support",
-    "//skia",
     "//testing/gtest",
   ]
 }

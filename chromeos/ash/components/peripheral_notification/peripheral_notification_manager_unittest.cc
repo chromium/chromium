@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
+#include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/test/ash_test_base.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/pciguard/fake_pciguard_client.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/typecd/fake_typecd_client.h"
@@ -20,16 +20,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 
+namespace ash {
+
 namespace {
+
 const int kUsbConfigWithInterfaces = 1;
 const int kBillboardDeviceClassCode = 17;
 const int kNonBillboardDeviceClassCode = 16;
 constexpr char thunderbolt_path_for_testing[] =
     "/tmp/tbt/sys/bus/thunderbolt/devices/0-0";
 constexpr char root_prefix_for_testing[] = "/tmp/tbt";
-}  // namespace
 
-namespace ash {
+}  // namespace
 
 class FakeObserver : public PeripheralNotificationManager::Observer {
  public:
@@ -127,7 +129,7 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
   bool is_current_guest_device_tbt_only_ = false;
 };
 
-class PeripheralNotificationManagerTest : public AshTestBase {
+class PeripheralNotificationManagerTest : public testing::Test {
  protected:
   PeripheralNotificationManagerTest() = default;
   PeripheralNotificationManagerTest(const PeripheralNotificationManagerTest&) =
@@ -138,8 +140,6 @@ class PeripheralNotificationManagerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    AshTestBase::SetUp();
-
     TypecdClient::InitializeFake();
     fake_typecd_client_ = static_cast<FakeTypecdClient*>(TypecdClient::Get());
 
@@ -161,8 +161,6 @@ class PeripheralNotificationManagerTest : public AshTestBase {
   }
 
   void TearDown() override {
-    AshTestBase::TearDown();
-
     manager_->RemoveObserver(&fake_observer_);
     PeripheralNotificationManager::Shutdown();
     TypecdClient::Shutdown();
@@ -216,7 +214,10 @@ class PeripheralNotificationManagerTest : public AshTestBase {
 
   base::HistogramTester histogram_tester_;
 
+  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
+
  private:
+  base::test::TaskEnvironment task_environment_;
   FakeTypecdClient* fake_typecd_client_;
   FakePciguardClient* fake_pciguard_client_;
   PeripheralNotificationManager* manager_ = nullptr;

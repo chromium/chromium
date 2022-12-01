@@ -79364,7 +79364,8 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="PeripheralConnectivityResult">
 <!-- This must be kept current with PeripheralConnectivityResults located in
-    ash/components/peripheral_notification/peripheral_notification_manager.h -->
+chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h
+-->
 
   <int value="0" label="TBT-supported peripheral connected and allowed"/>
   <int value="1" label="TBT-only peripheral connected and blocked by Pciguard"/>

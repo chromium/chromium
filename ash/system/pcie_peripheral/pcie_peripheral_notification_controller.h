@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_PCIE_PERIPHERAL_PCIE_PERIPHERAL_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
+#include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 
 class PrefRegistrySimple;
 

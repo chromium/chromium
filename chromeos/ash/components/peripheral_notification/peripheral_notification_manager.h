@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_PERIPHERAL_NOTIFICATION_MANAGER_H_
-#define ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_PERIPHERAL_NOTIFICATION_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_PERIPHERAL_NOTIFICATION_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_PERIPHERAL_NOTIFICATION_MANAGER_H_
 
 #include <memory>
 
@@ -27,7 +27,7 @@ namespace ash {
 // and translating those signals to notification observer events. It handles
 // additional logic such determining if notifications are required or whether a
 // guest-session notification is needed.
-class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION)
     PeripheralNotificationManager : public TypecdClient::Observer,
                                     public PciguardClient::Observer {
  public:
@@ -169,4 +169,4 @@ class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_PERIPHERAL_NOTIFICATION_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_PERIPHERAL_NOTIFICATION_PERIPHERAL_NOTIFICATION_MANAGER_H_

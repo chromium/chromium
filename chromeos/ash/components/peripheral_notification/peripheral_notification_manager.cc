@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
+#include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
@@ -17,6 +17,7 @@
 namespace ash {
 
 namespace {
+
 PeripheralNotificationManager* g_instance = nullptr;
 
 const int kBillboardDeviceClassCode = 17;
@@ -31,6 +32,7 @@ void RecordConnectivityMetric(
 bool CheckIfThunderboltFilepathExists(std::string root_prefix) {
   return base::PathExists(base::FilePath(root_prefix + thunderbolt_file_path));
 }
+
 }  // namespace
 
 PeripheralNotificationManager::PeripheralNotificationManager(
