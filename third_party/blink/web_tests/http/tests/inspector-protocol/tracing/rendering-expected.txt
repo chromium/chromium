@@ -1,0 +1,287 @@
+Tests the data of rendering trace events
+Recording started
+Tracing complete
+Got a HitTest event:
+Object: {
+	args: {
+		endData: {
+			nodeId: number
+			nodeName: string
+			rectilinear: boolean
+			x: number
+			y: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got an Animation event
+Object: {
+	args: {
+		data: {
+			id: string
+			name: string
+			nodeId: number
+			nodeName: string
+			state: string
+		}
+	}
+	cat: string
+	id2: {
+		local: string
+	}
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a ScheduleStyleRecalculation Event
+Object: {
+	args: {
+		data: {
+			frame: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got an UpdateLayoutTree
+Object: {
+	args: {
+		beginData: {
+			frame: string
+		}
+		elementCount: number
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got an InvalidateLayout
+Object: {
+	args: {
+		data: {
+			frame: string
+			nodeId: number
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got an UpdateLayer
+Object: {
+	args: {
+		layerId: number
+		layerTreeId: number
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got an PrePaint
+Object: {
+	args: {
+		data: {
+			frame: string
+			isMainFrame: boolean
+			isOutermostMainFrame: boolean
+			page: string
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a PaintImage
+Object: {
+	args: {
+		data: {
+			height: number
+			nodeId: number
+			srcHeight: number
+			srcWidth: number
+			url: string
+			width: number
+			x: number
+			y: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a RasterTask
+Object: {
+	args: {
+		tileData: {
+			layerId: number
+			sourceFrameNumber: number
+			tileId: {
+				id_ref: string
+			}
+			tileResolution: string
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a ScrollLayer
+Object: {
+	args: {
+		data: {
+			frame: string
+			nodeId: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a ComputeIntersections
+Object: {
+	args: {
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a ParseHTML
+Object: {
+	args: {
+		beginData: {
+			frame: string
+			startLine: number
+			url: string
+		}
+		endData: {
+			endLine: number
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a ParseAuthorStyleSheet
+Object: {
+	args: {
+		data: {
+			styleSheetUrl: string
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a Layout
+Object: {
+	args: {
+		beginData: {
+			dirtyObjects: number
+			frame: string
+			partialLayout: boolean
+			totalObjects: number
+		}
+		endData: {
+			layoutRoots: [
+				{
+					depth: number
+					nodeId: number
+				}
+			]
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a RunMicrotasks
+Object: {
+	args: {
+		microtask_count: number
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a FunctionCall
+Object: {
+	args: {
+		data: {
+			columnNumber: number
+			frame: string
+			functionName: string
+			lineNumber: number
+			scriptId: string
+			url: string
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+

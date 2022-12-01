@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href='rendering-exercise.css'>
+    <script>
+      let intersectionCallback = () => ({});
+      let blockingHandlerCallback = () => ({});
+      window.__intersectionPromise = new Promise(res => intersectionCallback = res);
+      window.__blockingHandlerPromise = new Promise(res => blockingHandlerCallback = res);
+
+      function something() {
+        const startTime = performance.now();
+        while (performance.now() - startTime < 200);
+        blockingHandlerCallback()
+      }
+      function executeSomething() {
+        addIntersectionObserver();
+        something();
+      }
+      function addIntersectionObserver() {
+        const target = document.querySelector('img');
+        const observer = new IntersectionObserver(intersectionCallback);
+        observer.observe(target);
+      }
+      </script>
+  </head>
+  <body onscroll="executeSomething()">
+    <img src="./big-image.png">
+    <p>
+    This is a text that will be animated when the page loads.
+    </p>
+  </body>
+</html>
