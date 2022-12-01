@@ -34,19 +34,13 @@ def NaclRevision():
 
 def CipdEnsure(pkg_name, ref, directory):
     print('ensure %s %s in %s' % (pkg_name, ref, directory))
+    ensure_file = """
+$ParanoidMode CheckPresence
+{pkg} {ref}
+""".format(pkg=pkg_name, ref=ref).encode('utf-8')
     output = subprocess.check_output(
         ' '.join(['cipd', 'ensure', '-log-level=debug', '-root', directory,
-                  '-ensure-file', '-']),
-        shell=True,
-        input=('%s %s' % (pkg_name, ref)).encode('utf-8'))
-    print(output)
-
-def CipdForceInstall(pkg_name, ref, directory):
-    print('install %s %s in %s' % (pkg_name, ref, directory))
-    output = subprocess.check_output(
-        ' '.join(['cipd', 'install', '-log-level=debug', '-force', '-root', directory,
-                  pkg_name, ref]),
-        shell=True)
+                  '-ensure-file', '-']), shell=True, input=ensure_file)
     print(output)
 
 def RbeProjectFromEnv():
@@ -89,17 +83,10 @@ def main():
 
       toolchain_root = os.path.join(THIS_DIR, toolchain)
       cipd_ref = 'revision/' + revision
-      if os.path.exists(toolchain_root):
-        # 'cipd install -force' checks all package files, and reinstalls
-        # if anything is imssing.
-        CipdForceInstall(posixpath.join(cipd_prefix, toolchain),
-                    ref=cipd_ref,
-                    directory=toolchain_root)
-      else:
-        # 'cipd ensure' initializes the directory.
-        CipdEnsure(posixpath.join(cipd_prefix, toolchain),
-                    ref=cipd_ref,
-                    directory=toolchain_root)
+      # 'cipd ensure' initializes the directory.
+      CipdEnsure(posixpath.join(cipd_prefix, toolchain),
+                  ref=cipd_ref,
+                  directory=toolchain_root)
       if os.path.exists(os.path.join(toolchain_root, 'win-cross-experiments')):
         # copy in win-cross-experiments/toolchain
         # as windows may not use symlinks.
