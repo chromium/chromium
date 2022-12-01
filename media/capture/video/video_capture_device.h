@@ -190,18 +190,21 @@ class CAPTURE_EXPORT VideoCaptureDevice
         base::TimeDelta timestamp,
         int frame_feedback_id = 0) = 0;
 
-    // Captured a new video frame. The data for this frame is in |handle|,
-    // which is owned by the platform-specific capture device. It is the
-    // responsibilty of the implementation to prevent the buffer in |handle|
-    // from being reused by the external capturer. In practice, this is used
-    // only on macOS, the external capturer maintains a CVPixelBufferPool, and
-    // gfx::ScopedInUseIOSurface is used to prevent reuse of buffers until all
-    // consumers have consumed them.
+    // Captured a new video frame. The data for this frame is in
+    // |buffer.handle|, which is owned by the platform-specific capture device.
+    // It is the responsibility of the implementation to prevent the buffer in
+    // |buffer.handle| from being reused by the external capturer. In practice,
+    // this is used only on macOS, the external capturer maintains a
+    // CVPixelBufferPool, and gfx::ScopedInUseIOSurface is used to prevent reuse
+    // of buffers until all consumers have consumed them. |visible_rect|
+    // specifies the region in the memory pointed to by |buffer.handle| that
+    // contains the captured content.
     virtual void OnIncomingCapturedExternalBuffer(
         CapturedExternalVideoBuffer buffer,
         std::vector<CapturedExternalVideoBuffer> scaled_buffers,
         base::TimeTicks reference_time,
-        base::TimeDelta timestamp) = 0;
+        base::TimeDelta timestamp,
+        gfx::Rect visible_rect) = 0;
 
     // Reserve an output buffer into which contents can be captured directly.
     // The returned |buffer| will always be allocated with a memory size

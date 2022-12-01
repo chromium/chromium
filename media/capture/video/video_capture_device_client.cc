@@ -484,14 +484,21 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     CapturedExternalVideoBuffer buffer,
     std::vector<CapturedExternalVideoBuffer> scaled_buffers,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    gfx::Rect visible_rect) {
   auto ready_frame = CreateReadyFrameFromExternalBuffer(
-      std::move(buffer), reference_time, timestamp);
+      std::move(buffer), reference_time, timestamp, visible_rect);
   std::vector<ReadyFrameInBuffer> scaled_ready_frames;
   scaled_ready_frames.reserve(scaled_buffers.size());
   for (auto& scaled_buffer : scaled_buffers) {
+    // TODO(https://crbug.com/1191986): |visible_rect| is not set correctly for
+    // |scaled_buffers|, but scaled buffers is deprecated and not used. It will
+    // be removed in another CL.
+    gfx::Rect scaled_buffer_visible_rect =
+        gfx::Rect{scaled_buffer.format.frame_size};
     scaled_ready_frames.push_back(CreateReadyFrameFromExternalBuffer(
-        std::move(scaled_buffer), reference_time, timestamp));
+        std::move(scaled_buffer), reference_time, timestamp,
+        scaled_buffer_visible_rect));
   }
   receiver_->OnFrameReadyInBuffer(std::move(ready_frame),
                                   std::move(scaled_ready_frames));
@@ -500,7 +507,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
 ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
     CapturedExternalVideoBuffer buffer,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    gfx::Rect visible_rect) {
   // Reserve an ID for this buffer that will not conflict with any of the IDs
   // used by |buffer_pool_|.
   int buffer_id_to_drop = VideoCaptureBufferPool::kInvalidId;
@@ -533,7 +541,7 @@ ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   info->pixel_format = buffer.format.pixel_format;
   info->color_space = buffer.color_space;
   info->coded_size = buffer.format.frame_size;
-  info->visible_rect = gfx::Rect(buffer.format.frame_size);
+  info->visible_rect = visible_rect;
   info->metadata.frame_rate = buffer.format.frame_rate;
   info->metadata.reference_time = reference_time;
 

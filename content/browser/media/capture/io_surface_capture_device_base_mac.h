@@ -10,6 +10,7 @@
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "media/capture/video/video_capture_device.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mac/io_surface.h"
 
 namespace content {
@@ -35,7 +36,8 @@ class CONTENT_EXPORT IOSurfaceCaptureDeviceBase
  protected:
   void OnReceivedIOSurfaceFromStream(
       gfx::ScopedInUseIOSurface io_surface,
-      const media::VideoCaptureFormat& capture_format);
+      const media::VideoCaptureFormat& capture_format,
+      const gfx::Rect& visible_rect);
   void SendLastReceivedIOSurfaceToClient();
 
   // Given a source frame size `source_size`, and `capture_params_`, compute the
@@ -71,6 +73,7 @@ class CONTENT_EXPORT IOSurfaceCaptureDeviceBase
   // frames come in, then this will be repeatedly sent at `min_frame_rate_`.
   gfx::ScopedInUseIOSurface last_received_io_surface_;
   media::VideoCaptureFormat last_received_capture_format_;
+  gfx::Rect last_visible_rect_;
 
   base::WeakPtrFactory<IOSurfaceCaptureDeviceBase> weak_factory_base_{this};
 };

@@ -127,7 +127,8 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
 
  private:
   void OnFrame(gfx::ScopedInUseIOSurface io_surface) {
-    OnReceivedIOSurfaceFromStream(io_surface, requested_format_);
+    OnReceivedIOSurfaceFromStream(io_surface, requested_format_,
+                                  gfx::Rect(requested_format_.frame_size));
   }
 
   const CGDirectDisplayID display_id_;

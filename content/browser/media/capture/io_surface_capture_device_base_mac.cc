@@ -39,10 +39,12 @@ void IOSurfaceCaptureDeviceBase::RequestRefreshFrame() {
 
 void IOSurfaceCaptureDeviceBase::OnReceivedIOSurfaceFromStream(
     gfx::ScopedInUseIOSurface io_surface,
-    const media::VideoCaptureFormat& capture_format) {
+    const media::VideoCaptureFormat& capture_format,
+    const gfx::Rect& visible_rect) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   last_received_io_surface_ = std::move(io_surface);
   last_received_capture_format_ = capture_format;
+  last_visible_rect_ = visible_rect;
 
   // Immediately send the new frame to the client.
   SendLastReceivedIOSurfaceToClient();
@@ -66,7 +68,7 @@ void IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient() {
       media::CapturedExternalVideoBuffer(std::move(handle),
                                          last_received_capture_format_,
                                          gfx::ColorSpace::CreateREC709()),
-      {}, now, now - first_frame_time_);
+      {}, now, now - first_frame_time_, last_visible_rect_);
 }
 
 void IOSurfaceCaptureDeviceBase::ComputeFrameSizeAndDestRect(

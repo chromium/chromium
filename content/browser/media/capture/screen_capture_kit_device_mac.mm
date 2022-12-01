@@ -17,7 +17,8 @@
 #include "ui/gfx/native_widget_types.h"
 
 using SampleCallback = base::RepeatingCallback<void(gfx::ScopedInUseIOSurface,
-                                                    absl::optional<gfx::Size>)>;
+                                                    absl::optional<gfx::Size>,
+                                                    absl::optional<gfx::Rect>)>;
 using ErrorCallback = base::RepeatingClosure;
 
 API_AVAILABLE(macos(12.3))
@@ -49,9 +50,14 @@ API_AVAILABLE(macos(12.3))
   if (!pixelBuffer)
     return;
 
-  // Read out width, height and scaling from metadata to determine the captured
-  // content size.
+  // Read out width, height and scaling from metadata to determine
+  // |contentSize|, which is the size of the content on screen, and
+  // |visibleRect|, which is the region of the IOSurface that contains the
+  // captured content. |contentSize| is used to detect when a captured window is
+  // resized so that the stream configuration can be updated and |visibleRect|
+  // is needed because the IOSurface may be larger than the captured content.
   absl::optional<gfx::Size> contentSize;
+  absl::optional<gfx::Rect> visibleRect;
   CFArrayRef attachmentsArray =
       CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, false);
   if (attachmentsArray && CFArrayGetCount(attachmentsArray) > 0) {
@@ -70,6 +76,7 @@ API_AVAILABLE(macos(12.3))
         succeed &= CFNumberGetValue(contentScaleValue, kCFNumberFloatType,
                                     &contentScale);
         if (succeed) {
+          visibleRect.emplace(contentRect);
           contentSize.emplace(round(contentRect.size.width / contentScale),
                               round(contentRect.size.height / contentScale));
         }
@@ -81,7 +88,7 @@ API_AVAILABLE(macos(12.3))
     return;
   _sampleCallback.Run(
       gfx::ScopedInUseIOSurface(ioSurface, base::scoped_policy::RETAIN),
-      contentSize);
+      contentSize, visibleRect);
 }
 
 - (void)stream:(SCStream*)stream didStopWithError:(NSError*)error {
@@ -240,7 +247,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     }
   }
   void OnStreamSample(gfx::ScopedInUseIOSurface io_surface,
-                      absl::optional<gfx::Size> content_size) {
+                      absl::optional<gfx::Size> content_size,
+                      absl::optional<gfx::Rect> visible_rect) {
     if (requested_capture_format_) {
       // Does the size of io_surface match the requested format?
       size_t io_surface_width = IOSurfaceGetWidth(io_surface);
@@ -302,9 +310,11 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
         }
       }
     }
-    // TODO(https://crbug.com/1352405): Set visible rect to make it possible to
-    // crop the frame when it's rendered/encoded.
-    OnReceivedIOSurfaceFromStream(io_surface, actual_capture_format_);
+    // The IO surface may be larger than the actual content size. Pass on
+    // visible rect to be able to render/encode the frame correctly.
+    OnReceivedIOSurfaceFromStream(
+        io_surface, actual_capture_format_,
+        visible_rect.value_or(gfx::Rect(actual_capture_format_.frame_size)));
   }
   void OnStreamError() {
     client()->OnError(media::VideoCaptureError::kScreenCaptureKitStreamError,

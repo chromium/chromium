@@ -700,7 +700,8 @@ TEST_P(VideoCaptureControllerTest, CaptureWithScaledFrames) {
 
   device_client_->OnIncomingCapturedExternalBuffer(
       std::move(external_buffer), std::move(scaled_external_buffers),
-      arbitrary_reference_time_, arbitrary_timestamp_);
+      arbitrary_reference_time_, arbitrary_timestamp_,
+      gfx::Rect(capture_format.frame_size));
 }
 
 #endif
