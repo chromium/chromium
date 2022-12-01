@@ -166,7 +166,13 @@ function renderTemplate(experimentalFeaturesData: ExperimentalFeaturesData) {
     }
   }
 
-  getRequiredElement('experiment-reset-all').onclick = resetAllFlags;
+  const resetAllButton = getRequiredElement('experiment-reset-all');
+  resetAllButton.onclick = () => {
+    resetAllFlags();
+    lastChanged = resetAllButton;
+  };
+  registerFocusEvents(resetAllButton);
+
   const crosUrlFlagsRedirectButton = $('os-link-href');
   if (crosUrlFlagsRedirectButton) {
     crosUrlFlagsRedirectButton.onclick = crosUrlFlagsRedirect;
