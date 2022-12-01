@@ -34,19 +34,15 @@ class PasswordAccessAuthenticator {
 
   PasswordAccessAuthenticator();
 
-  // |os_reauth_call| is passed to |os_reauth_call_|, see the latter for
-  // explanation. |timeout_call| is passed to |timeout_call_| and will be called
-  // when |auth_timer_| runs out.
-  PasswordAccessAuthenticator(ReauthCallback os_reauth_call,
-                              TimeoutCallback timeout_call);
-
   PasswordAccessAuthenticator(const PasswordAccessAuthenticator&) = delete;
   PasswordAccessAuthenticator& operator=(const PasswordAccessAuthenticator&) =
       delete;
 
   ~PasswordAccessAuthenticator();
 
-  // Initializes the authenticator with |os_reauth_call_| and |timeout_call_|.
+  // |os_reauth_call| is passed to |os_reauth_call_|, see the latter for
+  // explanation. |timeout_call| is passed to |timeout_call_| and will be called
+  // when |auth_timer_| runs out.
   void Init(ReauthCallback os_reauth_call, TimeoutCallback timeout_call);
 
   // Determines whether the user is able to pass the authentication challenge,

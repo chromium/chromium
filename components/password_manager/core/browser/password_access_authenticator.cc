@@ -22,12 +22,6 @@ using metrics_util::ReauthResult;
 
 PasswordAccessAuthenticator::PasswordAccessAuthenticator() = default;
 
-PasswordAccessAuthenticator::PasswordAccessAuthenticator(
-    ReauthCallback os_reauth_call,
-    TimeoutCallback timeout_call)
-    : os_reauth_call_(std::move(os_reauth_call)),
-      timeout_call_(std::move(timeout_call)) {}
-
 PasswordAccessAuthenticator::~PasswordAccessAuthenticator() = default;
 
 void PasswordAccessAuthenticator::Init(ReauthCallback os_reauth_call,
@@ -52,6 +46,8 @@ void PasswordAccessAuthenticator::EnsureUserIsAuthenticated(
 void PasswordAccessAuthenticator::ForceUserReauthentication(
     ReauthPurpose purpose,
     AuthResultCallback callback) {
+  DCHECK(!os_reauth_call_.is_null());
+  DCHECK(!timeout_call_.is_null());
   os_reauth_call_.Run(
       purpose,
       base::BindOnce(&PasswordAccessAuthenticator::OnUserReauthenticationResult,
@@ -71,6 +67,7 @@ void PasswordAccessAuthenticator::OnUserReauthenticationResult(
     AuthResultCallback callback,
     bool authenticated) {
   if (authenticated) {
+    DCHECK(!timeout_call_.is_null());
     auth_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
                       base::BindRepeating(timeout_call_));
   }

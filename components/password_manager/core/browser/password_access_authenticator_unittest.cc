@@ -64,6 +64,7 @@ class PasswordAccessAuthenticatorTest
   void SetUp() override {
     if (std::get<1>(GetParam()))
       feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+    authenticator_.Init(os_reauth_callback_.Get(), timeout_callback_.Get());
   }
 
   void TearDown() override { feature_list.Reset(); }
@@ -75,8 +76,7 @@ class PasswordAccessAuthenticatorTest
   MockAuthResultCallback result_callback_;
   MockReauthCallback os_reauth_callback_;
   MockTimeoutCallback timeout_callback_;
-  PasswordAccessAuthenticator authenticator_{os_reauth_callback_.Get(),
-                                             timeout_callback_.Get()};
+  PasswordAccessAuthenticator authenticator_;
   base::test::ScopedFeatureList feature_list;
 };
 
