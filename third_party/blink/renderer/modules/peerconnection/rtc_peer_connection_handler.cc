@@ -527,16 +527,6 @@ MediaStreamTrackMetrics::Kind MediaStreamTrackMetricsKind(
              : MediaStreamTrackMetrics::Kind::kVideo;
 }
 
-bool IsHostnameCandidate(const RTCIceCandidatePlatform& candidate) {
-  // Currently the legitimate hostname candidates have only the .local
-  // top-level domain, which are gathered when the mDNS concealment of local
-  // IPs is enabled.
-  const char kLocalTld[] = ".local";
-  if (!candidate.Address().ContainsOnlyASCIIOrEmpty())
-    return false;
-  return candidate.Address().EndsWithIgnoringASCIICase(kLocalTld);
-}
-
 }  // namespace
 
 // Implementation of ParsedSessionDescription
@@ -1042,8 +1032,6 @@ void RTCPeerConnectionHandler::CloseAndUnregister() {
   if (peer_connection_tracker_)
     peer_connection_tracker_->UnregisterPeerConnection(this);
 
-  UMA_HISTOGRAM_COUNTS_10000("WebRTC.NumDataChannelsPerPeerConnection",
-                             num_data_channels_created_);
   // Clear the pointer to client_ so that it does not interfere with
   // garbage collection.
   client_ = nullptr;
@@ -1998,8 +1986,6 @@ scoped_refptr<DataChannelInterface> RTCPeerConnectionHandler::CreateDataChannel(
         PeerConnectionTracker::kSourceLocal);
   }
 
-  ++num_data_channels_created_;
-
   return base::WrapRefCounted<DataChannelInterface>(
       webrtc_channel.value().get());
 }
@@ -2122,27 +2108,6 @@ void RTCPeerConnectionHandler::OnIceConnectionChange(
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnIceConnectionChange");
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   ReportICEState(new_state);
-  if (new_state == webrtc::PeerConnectionInterface::kIceConnectionChecking) {
-    ice_connection_checking_start_ = base::TimeTicks::Now();
-  } else if (new_state ==
-             webrtc::PeerConnectionInterface::kIceConnectionConnected) {
-    // If the state becomes connected, send the time needed for PC to become
-    // connected from checking to UMA. UMA data will help to know how much
-    // time needed for PC to connect with remote peer.
-    if (ice_connection_checking_start_.is_null()) {
-      // From UMA, we have observed a large number of calls falling into the
-      // overflow buckets. One possibility is that the Checking is not signaled
-      // before Connected. This is to guard against that situation to make the
-      // metric more robust.
-      UMA_HISTOGRAM_MEDIUM_TIMES("WebRTC.PeerConnection.TimeToConnect",
-                                 base::TimeDelta());
-    } else {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "WebRTC.PeerConnection.TimeToConnect",
-          base::TimeTicks::Now() - ice_connection_checking_start_);
-    }
-  }
-
   track_metrics_.IceConnectionChange(new_state);
 }
 
@@ -2169,20 +2134,6 @@ void RTCPeerConnectionHandler::OnIceGatheringChange(
     webrtc::PeerConnectionInterface::IceGatheringState new_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnIceGatheringChange");
-
-  if (new_state == webrtc::PeerConnectionInterface::kIceGatheringComplete) {
-    UMA_HISTOGRAM_COUNTS_100("WebRTC.PeerConnection.IPv4LocalCandidates",
-                             num_local_candidates_ipv4_);
-
-    UMA_HISTOGRAM_COUNTS_100("WebRTC.PeerConnection.IPv6LocalCandidates",
-                             num_local_candidates_ipv6_);
-  } else if (new_state ==
-             webrtc::PeerConnectionInterface::kIceGatheringGathering) {
-    // ICE restarts will change gathering state back to "gathering",
-    // reset the counter.
-    ResetUMAStats();
-  }
-
   if (peer_connection_tracker_)
     peer_connection_tracker_->TrackIceGatheringStateChange(this, new_state);
   if (!is_closed_)
@@ -2312,17 +2263,6 @@ void RTCPeerConnectionHandler::OnIceCandidate(const String& sdp,
         this, platform_candidate, PeerConnectionTracker::kSourceLocal, true);
   }
 
-  // Only the first m line's first component is tracked to avoid
-  // miscounting when doing BUNDLE or rtcp mux.
-  if (sdp_mline_index == 0 && component == 1) {
-    if (address_family == AF_INET) {
-      ++num_local_candidates_ipv4_;
-    } else if (address_family == AF_INET6) {
-      ++num_local_candidates_ipv6_;
-    } else if (!IsHostnameCandidate(*platform_candidate)) {
-      NOTREACHED();
-    }
-  }
   if (!is_closed_)
     client_->DidGenerateICECandidate(platform_candidate);
 }
@@ -2480,9 +2420,6 @@ void RTCPeerConnectionHandler::ReportICEState(
 
 void RTCPeerConnectionHandler::ResetUMAStats() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  num_local_candidates_ipv6_ = 0;
-  num_local_candidates_ipv4_ = 0;
-  ice_connection_checking_start_ = base::TimeTicks();
   memset(ice_state_seen_, 0, sizeof(ice_state_seen_));
 }
 

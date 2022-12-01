@@ -465,13 +465,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
 
   MediaStreamTrackMetrics track_metrics_;
 
-  // Counter for a UMA stat reported at destruction time.
-  int num_data_channels_created_ = 0;
-
-  // Counter for number of IPv4 and IPv6 local candidates.
-  int num_local_candidates_ipv4_ = 0;
-  int num_local_candidates_ipv6_ = 0;
-
   // To make sure the observers are released after native_peer_connection_,
   // they have to come first.
   CrossThreadPersistent<Observer> peer_connection_observer_;
@@ -505,8 +498,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // unit tests) are ignored.
   std::unique_ptr<FirstSessionDescription> first_local_description_;
   std::unique_ptr<FirstSessionDescription> first_remote_description_;
-
-  base::TimeTicks ice_connection_checking_start_;
 
   // Track which ICE Connection state that this PeerConnection has gone through.
   bool ice_state_seen_[webrtc::PeerConnectionInterface::kIceConnectionMax] = {};

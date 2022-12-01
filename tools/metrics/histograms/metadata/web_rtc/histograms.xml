@@ -1173,18 +1173,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.NumDataChannelsPerPeerConnection" units="units"
-    expires_after="2020-02-16">
-  <owner>perkj@chromium.org</owner>
-  <summary>
-    Number of data channels created per PeerConnection. Sample added to the
-    histogram when the PeerConnection is destroyed. Note that this is done
-    purely on the renderer side, so no sample will be generated when the
-    renderer process is destroyed (as in the fast shutdown path for the
-    renderer) before the PeerConnection is destroyed.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.AddIceCandidate"
     enum="AddIceCandidateResult" expires_after="2023-03-05">
   <owner>hta@chromium.org</owner>
@@ -1394,17 +1382,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.IPv4LocalCandidates" units="units"
-    expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    Number of IPv4 local Candidates gathered in a PeerConnection Session once
-    the ICE address gathering process reaches the Completed status. To avoid
-    miscounting, this only includes the first m line's first component.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.IPv6Interfaces" units="units"
     expires_after="2023-11-01">
   <owner>hta@chromium.org</owner>
@@ -1414,17 +1391,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: This histogram was expired from M81 to M110 Canary (2022-10-29).
     Data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.IPv6LocalCandidates" units="units"
-    expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    Number of IPv6 local Candidates gathered in a PeerConnection Session once
-    the ICE address gathering process reaches the Completed status. To avoid
-    miscounting, this only includes the first m line's first component.
   </summary>
 </histogram>
 
@@ -1798,13 +1764,6 @@ chromium-metrics-reviews@google.com.
     Reported when the peer connection is torn down if the peer connection had at
     least one track.
   </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.TimeToConnect" units="ms"
-    expires_after="2020-09-06">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>Time to setup a peer to peer call with PeerConnection.</summary>
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.TimeToNetworkUpdated" units="ms"
