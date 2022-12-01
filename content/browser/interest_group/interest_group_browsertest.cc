@@ -423,7 +423,7 @@ class InterestGroupTestObserver
       expected_ = expected;
       run_loop_.Run();
     }
-    EXPECT_EQ(accesses, expected);
+    EXPECT_EQ(expected, accesses);
   }
   std::vector<Entry> accesses;
 
@@ -1526,8 +1526,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
   ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
 
-  AttachInterestGroupObserver();
-
   // This join should succeed.
   EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(test_origin_a, "cars"));
 
@@ -1684,12 +1682,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   received_groups = GetAllInterestGroups();
   EXPECT_THAT(received_groups,
               testing::UnorderedElementsAreArray(expected_groups));
-  WaitForAccessObserved(
-      {{InterestGroupTestObserver::kJoin, test_origin_a.Serialize(), "cars"},
-       {InterestGroupTestObserver::kJoin, test_origin_b.Serialize(), "trucks"},
-       {InterestGroupTestObserver::kJoin, test_origin_d.Serialize(), "candy"},
-       {InterestGroupTestObserver::kLeave, test_origin_b.Serialize(), "cars"},
-       {InterestGroupTestObserver::kLeave, test_origin_a.Serialize(), "cars"}});
 }
 
 // Test the case of a cross-origin iframe joining and leaving same-origin
@@ -3638,6 +3630,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({
       {InterestGroupTestObserver::kJoin, disabled_origin.Serialize(), "candy"},
       {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
   });
@@ -3882,6 +3875,7 @@ IN_PROC_BROWSER_TEST_F(
       ad_url);
   WaitForAccessObserved(
       {{InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
+       {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"}});
 }
@@ -4665,10 +4659,13 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   WaitForAccessObserved(
       {{InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "trucks"},
+       {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "trucks"},
+       {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kBid, test_origin.Serialize(), "trucks"},
        {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kLeave, test_origin.Serialize(), "cars"},
+       {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "trucks"},
        {InterestGroupTestObserver::kBid, test_origin.Serialize(), "trucks"},
        {InterestGroupTestObserver::kWin, test_origin.Serialize(), "trucks"}});
 
@@ -4743,6 +4740,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   // leave.
   WaitForAccessObserved(
       {{InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
+       {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kLeave, test_origin.Serialize(), "cars"}});
@@ -4891,6 +4889,7 @@ function reportResult(
 
   WaitForAccessObserved({
       {InterestGroupTestObserver::kJoin, bidder_origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kLoaded, bidder_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, bidder_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kWin, bidder_origin.Serialize(), "cars"},
   });
@@ -4955,6 +4954,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   WaitForAccessObserved({
       {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
   });
@@ -5313,6 +5313,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionAllGroupsLimited) {
       {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "bikes"},
       {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "bikes"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
   });
@@ -5476,6 +5479,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionOneGroupLimited) {
       {InterestGroupTestObserver::kJoin, test_origin2.Serialize(), "cars"},
       {InterestGroupTestObserver::kJoin, test_origin2.Serialize(), "bikes"},
       {InterestGroupTestObserver::kJoin, test_origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "bikes"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kLoaded, test_origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, test_origin2.Serialize(), "bikes"},
+      {InterestGroupTestObserver::kLoaded, test_origin2.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, test_origin2.Serialize(), "bikes"},
       {InterestGroupTestObserver::kBid, test_origin2.Serialize(), "cars"},
@@ -5642,6 +5651,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       {InterestGroupTestObserver::kJoin, test_origin2.Serialize(), "cars"},
       {InterestGroupTestObserver::kJoin, test_origin2.Serialize(), "bikes"},
       {InterestGroupTestObserver::kJoin, test_origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "bikes"},
+      {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kLoaded, test_origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, test_origin2.Serialize(), "bikes"},
+      {InterestGroupTestObserver::kLoaded, test_origin2.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, test_origin2.Serialize(), "bikes"},
       {InterestGroupTestObserver::kBid, test_origin2.Serialize(), "cars"},
@@ -5890,10 +5905,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
             3);
   // Observer was not active for joins and first auction.
   WaitForAccessObserved({
+      {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
       {InterestGroupTestObserver::kWin, origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
       {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
       {InterestGroupTestObserver::kWin, origin2.Serialize(), "shoes"},
+      {InterestGroupTestObserver::kLoaded, origin.Serialize(), "cars"},
+      {InterestGroupTestObserver::kLoaded, origin2.Serialize(), "shoes"},
   });
 }
 
@@ -6381,6 +6403,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, AdComponentsLeave) {
   // implicit leave since it was blocked.
   WaitForAccessObserved(
       {{InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
+       {InterestGroupTestObserver::kLoaded, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
        {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"}});
 

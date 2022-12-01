@@ -279,7 +279,9 @@ void InterestGroupManagerImpl::GetInterestGroupsForOwner(
     base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
       .WithArgs(owner)
-      .Then(std::move(callback));
+      .Then(
+          base::BindOnce(&InterestGroupManagerImpl::OnGetInterestGroupsComplete,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void InterestGroupManagerImpl::DeleteInterestGroupData(
@@ -438,6 +440,17 @@ void InterestGroupManagerImpl::ReportUpdateFailed(
     bool parse_failure) {
   impl_.AsyncCall(&InterestGroupStorage::ReportUpdateFailed)
       .WithArgs(group_key, parse_failure);
+}
+
+void InterestGroupManagerImpl::OnGetInterestGroupsComplete(
+    base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback,
+    std::vector<StorageInterestGroup> groups) {
+  for (const auto& group : groups) {
+    NotifyInterestGroupAccessed(InterestGroupObserverInterface::kLoaded,
+                                group.interest_group.owner.Serialize(),
+                                group.interest_group.name);
+  }
+  std::move(callback).Run(std::move(groups));
 }
 
 void InterestGroupManagerImpl::NotifyInterestGroupAccessed(

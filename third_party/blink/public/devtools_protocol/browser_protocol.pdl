@@ -9077,6 +9077,7 @@ experimental domain Storage
       join
       leave
       update
+      loaded
       bid
       win
 

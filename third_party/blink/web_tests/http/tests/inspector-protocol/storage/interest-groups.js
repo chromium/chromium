@@ -1,40 +1,51 @@
 (async function(testRunner) {
-  const {dp, page} = await testRunner.startBlank(
+  const {dp, session, page} = await testRunner.startBlank(
       `Tests that interest groups are read and cleared.`);
   const baseOrigin = 'https://a.test:8443/';
   const base = baseOrigin + 'inspector-protocol/resources/';
 
-  async function runAdAuction (page) {
+  async function joinInterestGroups(id) {
+    const joinJs = `
+    navigator.joinAdInterestGroup({
+        name: ${id},
+        owner: "${baseOrigin}",
+        biddingLogicUrl: "${base}fledge_bidding_logic.js.php",
+        ads: [{
+          renderUrl: 'https://example.com/render' + ${id},
+          metadata: {ad: 'metadata', here: [1, 2, 3]}
+        }]
+      }, 3000)`;
+    return session.evaluateAsync(joinJs);
+  }
+
+  async function runAdAuction() {
     const auctionJs = `
     navigator.runAdAuction({
       decisionLogicUrl: "${base}fledge_decision_logic.js.php",
       seller: "${baseOrigin}",
       interestGroupBuyers: ["${baseOrigin}"]})`;
-
-    const pageSession = await page.createSession();
-    return pageSession.evaluateAsync(auctionJs);
+    return session.evaluateAsync(auctionJs);
   }
-
-  await dp.Page.enable();
 
   const events = [];
   dp.Storage.onInterestGroupAccessed((messageObject)=>{events.push(messageObject.params)});
   await dp.Storage.setInterestGroupTracking({enable: false});
 
-  // These navigations should not trigger any events, since tracking is
-  // disabled.
-  await dp.Page.navigate({url: base + 'fledge_join.html'});
+  await page.navigate(base + 'empty.html');
 
-  await runAdAuction(page);
+  // These calls should not trigger any events, since tracking is disabled.
+  await joinInterestGroups(0);
+  await joinInterestGroups(1);
+  await runAdAuction();
 
   testRunner.log(`Events logged: ${events.length}`);
 
   await dp.Storage.setInterestGroupTracking({enable: true});
   testRunner.log("Start Tracking");
 
-  await dp.Page.navigate({url: base + 'fledge_join.html'});
-
-  await runAdAuction(page);
+  await joinInterestGroups(0);
+  await joinInterestGroups(1);
+  await runAdAuction();
 
   for (event of events) {
     testRunner.log(

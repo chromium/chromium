@@ -77,7 +77,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   class CONTENT_EXPORT InterestGroupObserverInterface
       : public base::CheckedObserver {
    public:
-    enum AccessType { kJoin, kLeave, kUpdate, kBid, kWin };
+    enum AccessType { kJoin, kLeave, kUpdate, kLoaded, kBid, kWin };
     virtual void OnInterestGroupAccessed(const base::Time& access_time,
                                          AccessType type,
                                          const std::string& owner_origin,
@@ -383,6 +383,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       InterestGroupObserverInterface::AccessType type,
       const std::string& owner_origin,
       const std::string& name);
+
+  void OnGetInterestGroupsComplete(
+      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback,
+      std::vector<StorageInterestGroup> groups);
 
   // Enqueues each of `report_urls` to the `report_requests_` queue.
   void EnqueueReportsInternal(

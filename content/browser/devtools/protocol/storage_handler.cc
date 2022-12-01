@@ -841,6 +841,9 @@ void StorageHandler::OnInterestGroupAccessed(
     case AccessType::kUpdate:
       type_enum = Storage::InterestGroupAccessTypeEnum::Update;
       break;
+    case AccessType::kLoaded:
+      type_enum = Storage::InterestGroupAccessTypeEnum::Loaded;
+      break;
     case AccessType::kBid:
       type_enum = Storage::InterestGroupAccessTypeEnum::Bid;
       break;
