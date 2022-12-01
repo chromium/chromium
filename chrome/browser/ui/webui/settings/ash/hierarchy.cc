@@ -6,9 +6,9 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/constants_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -200,7 +200,7 @@ Hierarchy::SettingMetadata::SettingMetadata(mojom::Section primary_section)
 Hierarchy::SettingMetadata::~SettingMetadata() = default;
 
 Hierarchy::Hierarchy(const OsSettingsSections* sections) : sections_(sections) {
-  for (const auto& section : constants::AllSections()) {
+  for (const auto& section : AllSections()) {
     auto pair = section_map_.insert({section, SectionMetadata(section, this)});
     CHECK(pair.second);
 

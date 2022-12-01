@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/chromeos/constants/constants_util.h"
+#include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
 
 #include "base/no_destructor.h"
 
-namespace chromeos {
-namespace settings {
-namespace constants {
+namespace ash::settings {
 namespace {
+
+namespace mojom {
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
+}  // namespace mojom
 
 template <typename T>
 std::vector<T> All() {
@@ -24,7 +28,7 @@ std::vector<T> All() {
     // (1) We use a numbering scheme which purposely skips some values for the
     //     Subpage and Setting enums.
     // (2) Some values are deprecated and removed.
-    if (mojom::IsKnownEnumValue(current))
+    if (chromeos::settings::mojom::IsKnownEnumValue(current))
       all.push_back(current);
   }
 
@@ -51,6 +55,4 @@ const std::vector<mojom::Setting>& AllSettings() {
   return *all_settings;
 }
 
-}  // namespace constants
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

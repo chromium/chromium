@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
 
+#include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_section.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/constants_util.h"
 
 namespace ash::settings {
 
 FakeOsSettingsSections::FakeOsSettingsSections() : OsSettingsSections() {
-  for (const auto& section : constants::AllSections()) {
+  for (const auto& section : AllSections()) {
     auto fake_section = std::make_unique<FakeOsSettingsSection>(section);
     sections_map_[section] = fake_section.get();
     sections_.push_back(std::move(fake_section));
