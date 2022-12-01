@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">Нэрийн шинэчлэлтийг шалгах</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> нь <ph name="DESK_TITLE" />-н дэлгэцэд харьяалагдана</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> дотор нээж байна ...</translation>
+<translation id="116896278675803795">Хэлийг сонгосон контентод тааруулж автоматаар өөрчлөх</translation>
 <translation id="1169266963600477608">Тоглоомын тохиргоо</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> эмзэг эсвэл аюултай өгөгдөлтэй байна. Таны администратор "<ph name="CUSTOM_MESSAGE" />" гэж хэлж байна</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> HID төхөөрөмжид холбогдох хүсэлтэй байна</translation>
@@ -2574,7 +2575,6 @@
 <translation id="3341703758641437857">Файлын холбоосууд руу нэвтрэхийг зөвшөөрөх</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" энэ өргөтгөлийг устгах хүсэлтэй байна.</translation>
 <translation id="3343977377045378693">Тохируулга хийж байна</translation>
-<translation id="3345135638360864351">Таны энэхүү сайтад нэвтрэх хүсэлтийг <ph name="NAME" />-д илгээх боломжгүй байна. Та дараа дахин хандана уу.</translation>
 <translation id="3345634917232014253">Аюулгүй байдлын шалгалтыг хэдэн хормын өмнө хийсэн</translation>
 <translation id="3345886924813989455">Ямар ч дэмжигдэх веб хөтөч олдсонгүй</translation>
 <translation id="3347086966102161372">Зургийн хаягийг хуулах</translation>
@@ -2584,6 +2584,7 @@
 <translation id="3353786022389205125">"Нойрноос сэрэх үед түгжигдсэн дэлгэцийг харуулах"-ыг асаагаад дахин оролдоно уу</translation>
 <translation id="3354768182971982851">Chrome аппын хуучин хувилбарууд 2022 оны 12-р сараас хойш Mac төхөөрөмжүүд дээр нээгдэхгүй. Та шинэ хувилбар боломжтой эсэхийг шалгаж болно.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> төхөөрөмжтэй хослуулж чадсангүй. Дахин оролдохын тулд төхөөрөмж сонгоно уу</translation>
+<translation id="335581015389089642">Хэлсэн үг</translation>
 <translation id="3355936511340229503">Холболтын алдаа</translation>
 <translation id="3356036636691722598">Chromebook дээрээ тоглоомоо таатай тоглоорой</translation>
 <translation id="3356469410714175391">(Виртуал картыг идэвхжүүлсэн)</translation>
@@ -3162,7 +3163,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> болон <ph name="MERCHANT_NAME_2" />-н хөнгөлөлтийг авах</translation>
 <translation id="3884152383786131369">Олон хэл дээр ашиглах боломжтой веб контент энэ жагсаалтын эхний дэмжигдсэн хэлийг ашиглана. Эдгээр сонголтыг таны хөтчийн тохиргоотой синк хийдэг. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Шинэчлэлтүүдийг танай администратор удирддаг</translation>
-<translation id="3886446263141354045">Таны энэ сайтад нэвтрэх хүсэлтийг <ph name="NAME" />-д илгээсэн</translation>
 <translation id="3887022758415973389">Төхөөрөмжийн жагсаалтыг харуулах</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-н холболт</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />-р тэмдэглэл бичиж байна</translation>
@@ -8095,7 +8095,6 @@
 <translation id="8540942859441851323">Үйлчилгээ үзүүлэгчээс шаардсан роуминг</translation>
 <translation id="8541462173655894684">Хэвлэх серверээс ямар ч хэвлэгч олдсонгүй</translation>
 <translation id="8541838361296720865">Сэлгүүр эсвэл гарын товчийг “<ph name="ACTION" />”-д оноохын тулд дээр нь дарна уу</translation>
-<translation id="8543556556237226809">Асуух зүйл байвал профайлынхаа хянагчтай холбогдоно уу.</translation>
 <translation id="8546186510985480118">Төхөөрөмжийн багтаамж бага байна</translation>
 <translation id="8546306075665861288">Зургийн кэш</translation>
 <translation id="8546930481464505581">Хүрэх мөрийг өөрчлөх</translation>
@@ -8436,6 +8435,7 @@
 <translation id="8859174528519900719">Дэд хүрээ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Үйлчилгээний нөхцөлийг ачаалж чадсангүй</translation>
 <translation id="8859662783913000679">Эцэг эхийн бүртгэл</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} бүртгэл}other{{COUNT} бүртгэл}}</translation>
 <translation id="8861568709166518036">Нүүр лүү шилжих, буцах болон апп хооронд сэлгэхийн тулд дэлгэц дээрх товчлуурыг ашиглана уу. ChromeVox эсвэл автомат товшилтыг асаасан тохиолдолд автоматаар асна.</translation>
 <translation id="8862003515646449717">Хурдан хөтөч рүү сэлгэх</translation>
 <translation id="8863753581171631212">Холбоосыг шинэ <ph name="APP" />-д нээх</translation>

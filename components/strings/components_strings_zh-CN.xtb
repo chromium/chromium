@@ -337,7 +337,6 @@
 <translation id="1741613555002899862">当 DnsOverHttpsMode 是“<ph name="SECURE_DNS_MODE_SECURE" />”时，必须将此政策指定为有效字符串。</translation>
 <translation id="1745880797583122200">您的浏览器受管理</translation>
 <translation id="1746113442205726301">图片沿 Y 轴位移</translation>
-<translation id="1747819498338037826">Chrome 自动更改</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
 <translation id="1752021286346845558">信箱 8</translation>
 <translation id="1753068535428855445">约会与交友</translation>
@@ -1366,7 +1365,6 @@
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="4451135742916150903">可以询问能否连接到 HID 设备</translation>
 <translation id="4452328064229197696">您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，Google 密码管理器建议您检查已保存的所有密码。</translation>
-<translation id="4455222631300069614">请立即更改密码</translation>
 <translation id="4460315069258617173">可以使用，直到您关闭在此网站上打开的所有标签页</translation>
 <translation id="4464826014807964867">包含来自贵组织的信息的网站</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
@@ -1601,7 +1599,6 @@
 <translation id="5039804452771397117">允许</translation>
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="5043480802608081735">您复制的链接</translation>
-<translation id="5044545992476246592">系统检测到，您刚才使用的密码遭遇了数据泄露。您的 Google 助理可以自动更改您的密码。</translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="5051305769747448211">相声/小品</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{若要使用“附近分享”功能发送这个文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}other{若要使用“附近分享”功能发送这些文件，请先在设备上释放空间 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
@@ -1667,7 +1664,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想下载多个文件</translation>
 <translation id="519422657042045905">注释不可用</translation>
 <translation id="5201306358585911203">此网页上的嵌入式页面显示</translation>
-<translation id="5204468114771111727">Chrome 发现您刚才使用的密码已遭遇数据泄露。您的 Google 助理可以自动更改您的密码。</translation>
 <translation id="5205222826937269299">需要提供名称</translation>
 <translation id="5209518306177824490">SHA-1 指纹</translation>
 <translation id="5209670883520018268">纸匣 20</translation>

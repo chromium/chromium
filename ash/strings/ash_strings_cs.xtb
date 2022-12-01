@@ -554,6 +554,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Vyp., 1 apl.}few{Vyp., # apl.}many{Vyp., # apl.}other{Vyp., # apl.}}</translation>
 <translation id="4066027111132117168">Zapnuto, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Střední signál</translation>
+<translation id="4086921558679520050">Zapnutí fyzického mikrofonu na zařízení</translation>
 <translation id="4112140312785995938">Přetočit dozadu</translation>
 <translation id="4114315158543974537">Zapnutí funkce Phone Hub</translation>
 <translation id="4115378294792113321">Purpurová</translation>
@@ -606,6 +607,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Připojování...</translation>
 <translation id="4379531060876907730">Toto jsou nástroje pro dotykové pero</translation>
+<translation id="4381031910344220229">Umožňuje přístup k mikrofonu aplikaci <ph name="APP_NAME" /> a všem aplikacím a webům s oprávněním k mikrofonu</translation>
 <translation id="4389184120735010762">Stiskli jste klávesovou zkratku pro zabudovanou lupu. Chcete ji zapnout?</translation>
 <translation id="439598569299422042">Pozastaveno, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Záznam obrazovky se nepodařilo uložit.</translation>
@@ -960,6 +962,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je spravovaná relace, kterou spravuje doména <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Zařízení <ph name="DEVICE_NAME" /> je připojeno</translation>
 <translation id="6351032674660237738">NÁVRHY APLIKACÍ</translation>
+<translation id="6352082849089527770">Neznámé sítě</translation>
 <translation id="6359587239691116345">Získejte nejnovější funkce a vylepšení zabezpečení. Pokud tuto aktualizaci odmítnete, vaše zařízení už nemusí pracovat správně a mohou se vyskytnout problémy se zabezpečením a výkonem.</translation>
 <translation id="6376931439017688372">Rozhraní Bluetooth je zapnuté</translation>
 <translation id="6381109794406942707">Chcete-li zařízení odemknout, zadejte PIN.</translation>
@@ -1136,6 +1139,7 @@ Nová instalace</translation>
 <translation id="7360036564632145207">Změnou nastavení ochrany přístupu k datům pro periferní zařízení můžete optimalizovat výkon</translation>
 <translation id="736045644501761622">Nastavit tapetu a styl</translation>
 <translation id="7371404428569700291">Zaznamenat okno</translation>
+<translation id="737315737514430195">Umožňuje přístup k mikrofonu všem aplikacím a webům s oprávněním k mikrofonu</translation>
 <translation id="7377169924702866686">Caps Lock je zapnutý.</translation>
 <translation id="7377481913241237033">Připojit pomocí kódu</translation>
 <translation id="7378203170292176219">Přetažením vyberte oblast, kterou chcete zaznamenat</translation>
@@ -1204,6 +1208,7 @@ Nová instalace</translation>
 <translation id="7671610481353807627">Aplikace jsou seřazeny podle barvy</translation>
 <translation id="7672095158465655885">Jste připojeni k síti <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Vstup z kamery nastaven na <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Umožňuje přístup k mikrofonu aplikacím <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všem aplikacím a webům s oprávněním k mikrofonu</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Přidat novou mobilní síť</translation>
 <translation id="7720400844887872976">Zapnuto do <ph name="TIME" /></translation>

@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1981118202195772574">Mugikorretarakoa</translation>
 <translation id="1989112275319619282">Arakatu</translation>
+<translation id="1990820278544963435">Bilatu</translation>
 <translation id="199425419756152024">Ikusi pasahitza</translation>
 <translation id="2010008505735295285">Kargatu berriro</translation>
 <translation id="2015722694326466240">Pasahitzak ikusteko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
@@ -550,7 +551,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5190835502935405962">Laster-marken barra</translation>
 <translation id="519530786644929958">Ezin izan da deskargatu eta ezin da berriro saiatu.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Itxi fitxa</translation>
 <translation id="5219295696240154694">Hobetu sareko segurtasuna denontzat</translation>
 <translation id="5228579091201413441">Gaitu sinkronizazioa</translation>
 <translation id="5232485538978018676">Hasi saioa kontu kudeatu batekin</translation>
@@ -875,6 +875,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7531345132340165516">Oraingo webgunea</translation>
 <translation id="7537586195939242955">Dokumentua ezin izan da instalatu Passbook-en.</translation>
 <translation id="7553234618121028547">Pasahitzen eremuak automatikoki betetzeko aukera desaktibatzeko, ireki <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (ezarpenak) eta joan Password Options (pasahitzen aukerak) atalera.</translation>
+<translation id="7554645225856321710">Itxi guztiak</translation>
 <translation id="7554791636758816595">Fitxa berria</translation>
 <translation id="7561196759112975576">Beti</translation>
 <translation id="7583004045319035904">Erabili <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ezkutuko moduko fitxak desblokeatzeko.</translation>
@@ -1088,6 +1089,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9188680907066685419">Amaitu saioa kontu kudeatuan</translation>
 <translation id="9200875785104711666">Duela <ph name="TIME" /> egun</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Bilatu fitxetan…</translation>
 <translation id="9223358826628549784">Hutsegite-txostena bidali da</translation>
 <translation id="941747855997058526">Hautatu pasahitz bat…</translation>
 <translation id="952704832371081537">Utzi</translation>

@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Nuk u ruaj asnjëherë</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Faqeshënuesit e desktopit</translation>
+<translation id="1067561478268651872">Politika <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> nuk përdoret, përveçse nëse është caktuar politika <ph name="SECURE_DNS_SALT" />.</translation>
 <translation id="1068672505746868501">Mos përkthe asnjëherë faqet që janë në <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Automjetet hibride dhe alternative</translation>
 <translation id="1070901266639972381">Natë</translation>
@@ -337,7 +338,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1741613555002899862">Duhet të jetë e specifikuar dhe një varg i vlefshëm kur DnsOverHttpsMode është <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Shfletuesi yt është i menaxhuar</translation>
 <translation id="1746113442205726301">Zhvendosja e imazhit në boshtin Y</translation>
-<translation id="1747819498338037826">Ndrysho automatikisht</translation>
 <translation id="17513872634828108">Hap skedat</translation>
 <translation id="1752021286346845558">Kutia postare 8</translation>
 <translation id="1753068535428855445">Takime dashurie dhe personale</translation>
@@ -1370,7 +1370,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
 <translation id="4451135742916150903">Mund të kërkojë të lidhet me pajisjet HID</translation>
 <translation id="4452328064229197696">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve i Google" rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
-<translation id="4455222631300069614">Ndrysho fjalëkalimin tënd tani</translation>
 <translation id="4460315069258617173">Lejohet derisa të mbyllësh skedat për këtë faqe</translation>
 <translation id="4464826014807964867">Sajtet e uebit me informacione nga organizata jote</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1605,7 +1604,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5040262127954254034">Privatësia</translation>
 <translation id="5043480802608081735">Lidhja që kopjove</translation>
-<translation id="5044545992476246592">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Asistenti yt i Google" mund ta ndryshojë fjalëkalimin tënd automatikisht.</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="5051305769747448211">Komedia e drejtpërdrejtë</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Për ta dërguar këtë skedar duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}other{Për ta dërguar këta skedarë duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}}</translation>
@@ -1671,7 +1669,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="51918995459521422"><ph name="ORIGIN" /> dëshiron të shkarkojë disa skedarë</translation>
 <translation id="519422657042045905">Shënimi nuk ofrohet</translation>
 <translation id="5201306358585911203">Një faqe e integruar në këtë faqe thotë</translation>
-<translation id="5204468114771111727">Chrome e gjeti fjalëkalimin që sapo përdore në një nxjerrje të paautorizuar të të dhënave. "Asistenti yt i Google" mund ta ndryshojë fjalëkalimin tënd automatikisht.</translation>
 <translation id="5205222826937269299">Emri është i detyrueshëm</translation>
 <translation id="5209518306177824490">Gjurma e gishtit SHA-1</translation>
 <translation id="5209670883520018268">Tabakaja 20</translation>
@@ -2098,6 +2095,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6328786501058569169">Ky është një sajt mashtrues</translation>
 <translation id="6337133576188860026">Liron më pak se <ph name="SIZE" />. Disa sajte mund të ngarkohen më ngadalë gjatë vizitës tënde të radhës.</translation>
 <translation id="6337534724793800597">Filtro politikat sipas emrit</translation>
+<translation id="633770708279464947">Vlera <ph name="SECURE_DNS_SALT" /> është e pavlefshme dhe nuk do të përdoret.</translation>
 <translation id="6340739886198108203">Politika e administratorit nuk rekomandon nxjerrjen e pamjeve të ekranit apo regjistrimeve kur përmbajtja konfidenciale është e dukshme:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Politika e administratorit nuk rekomandon ngarkimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon ngarkimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Variantet aktive</translation>
@@ -2993,6 +2991,7 @@ Detaje shtesë:
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Përmbledhje e porosisë, <ph name="TOTAL_LABEL" />, detaje të tjera</translation>
 <translation id="8666678546361132282">Anglisht</translation>
+<translation id="8671519637524426245">Vlera <ph name="SECURE_DNS_SALT" /> nuk përmbush kërkesat për madhësinë.</translation>
 <translation id="867224526087042813">Nënshkrimi</translation>
 <translation id="8672264262457010862">Biznesi dhe industrialet</translation>
 <translation id="8676424191133491403">Pa vonesë</translation>
@@ -3092,6 +3091,7 @@ Detaje shtesë:
 <translation id="8913778647360618320">Butoni "Menaxho mënyrat e pagesës", shtyp "Enter" për të menaxhuar informacionet e pagesave dhe të kartës së kreditit te cilësimet e Chrome</translation>
 <translation id="8922013791253848639">Lejo gjithmonë reklamat në këtë sajt</translation>
 <translation id="892588693504540538">Shpim lart djathtas</translation>
+<translation id="8930098617363288380">Vlera <ph name="SECURE_DNS_SALT" /> nuk është e përshtatshme dhe nuk do të përdoret, përveçse nëse është caktuar politika <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />.</translation>
 <translation id="8930330541574156305">Pasuritë e patundshme</translation>
 <translation id="8931333241327730545">Dëshiron që ta ruash këtë kartë te llogaria jote e Google?</translation>
 <translation id="8932102934695377596">Ora ka mbetur prapa</translation>

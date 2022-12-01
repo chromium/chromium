@@ -556,6 +556,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{الإشعارات متوقفة لتطبيق واحد}zero{الإشعارات متوقفة لـ # تطبيق}two{الإشعارات متوقفة لتطبيقَين (#)}few{الإشعارات متوقفة لـ # تطبيقات}many{الإشعارات متوقفة لـ # تطبيقًا}other{الإشعارات متوقفة لـ # تطبيق}}</translation>
 <translation id="4066027111132117168">مُفعَّلة لمدة <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">إشارة متوسطة</translation>
+<translation id="4086921558679520050">تفعيل الميكروفون باستخدام الزر اليدوي على جهازك</translation>
 <translation id="4112140312785995938">الانتقال إلى الخلف</translation>
 <translation id="4114315158543974537">‏تفعيل Phone Hub</translation>
 <translation id="4115378294792113321">أرجواني</translation>
@@ -608,6 +609,7 @@
 <translation id="4378479437904450384">قوة إشارة شبكة <ph name="WIRELESS_PROVIDER" /> هي <ph name="SIGNAL_STRENGTH" /> في المئة.</translation>
 <translation id="4378551569595875038">جارٍ الاتصال...</translation>
 <translation id="4379531060876907730">هذه هي أدوات قلم الشاشة</translation>
+<translation id="4381031910344220229">يتيح هذا الإجراء وصول "<ph name="APP_NAME" />" وجميع التطبيقات والمواقع الإلكترونية إلى الميكروفون من خلال منحها إذن استخدام الميكروفون.</translation>
 <translation id="4389184120735010762">لقد ضغطت على اختصار لوحة المفاتيح للمُكبِّر الذي تم إرساؤه. هل ترغب في تفعيله؟</translation>
 <translation id="439598569299422042">التنزيل متوقّف مؤقتًا، <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">يتعذّر حفظ التسجيل الرقمي للشاشة</translation>
@@ -962,6 +964,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> هي جلسة تتم إدارتها من خلال <ph name="MANAGER" />.</translation>
 <translation id="6344138931392227467">تم توصيل <ph name="DEVICE_NAME" />.</translation>
 <translation id="6351032674660237738">اقتراحات التطبيقات</translation>
+<translation id="6352082849089527770">الشبكات غير المعروفة</translation>
 <translation id="6359587239691116345">يُرجى الحصول على أحدث الميزات وتحسينات الأمان. في حال رفض هذا التحديث، من المحتمل أن يتوقف جهازك عن العمل بشكل صحيح وقد تواجه مشاكل تتعلّق بالأمان والأداء.</translation>
 <translation id="6376931439017688372">تم تفعيل البلوتوث</translation>
 <translation id="6381109794406942707">لفتح قفل الجهاز، أدخِل رقم التعريف الشخصي.</translation>
@@ -1137,6 +1140,7 @@
 <translation id="7360036564632145207">يمكن تحسين أداء الأجهزة الملحقة من خلال تغيير إعدادات الحماية من الوصول إلى البيانات.</translation>
 <translation id="736045644501761622">ضبط الخلفية والأسلوب</translation>
 <translation id="7371404428569700291">تسجيل فيديو للنافذة</translation>
+<translation id="737315737514430195">يتيح هذا الإجراء وصول كل التطبيقات والمواقع الإلكترونية إلى الميكروفون من خلال منحها إذن استخدام الميكروفون.</translation>
 <translation id="7377169924702866686">‏مفتاح Caps Lock في وضع التفعيل.</translation>
 <translation id="7377481913241237033">الربط باستخدام رمز</translation>
 <translation id="7378203170292176219">يُرجى السحب لتحديد منطقة لتسجيل فيديو لها.</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7671610481353807627">تم ترتيب التطبيقات حسب اللون.</translation>
 <translation id="7672095158465655885">تم الاتصال بـ "<ph name="NAME" />"، <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">تم ضبط إعدادات الكاميرا على <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">يتيح هذا الإجراء وصول "<ph name="APP1_NAME" />" و"<ph name="APP2_NAME" />" وجميع التطبيقات والمواقع الإلكترونية إلى الميكروفون من خلال منحها إذن استخدام الميكروفون.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">إضافة شبكة جوّال جديدة</translation>
 <translation id="7720400844887872976">تفعيل الميزة حتى <ph name="TIME" /></translation>

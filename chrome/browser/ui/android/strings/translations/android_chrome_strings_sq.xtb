@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Theksimi është shkurtuar</translation>
 <translation id="1111673857033749125">Faqeshënuesit e ruajtur në pajisjet e tua të tjera do të shfaqen këtu.</translation>
 <translation id="1113597929977215864">Shfaq pamjen e thjeshtuar</translation>
-<translation id="1118561384561215815">Merr ndihmë me detyrat në ueb</translation>
 <translation id="1123070903960493543">Mënyra se si bashkëvepron me Chrome, cilësimet që ke zgjedhur, të dhënat e ndërprerjeve aksidentale të Chrome</translation>
 <translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
 <translation id="1129510026454351943">Detajet: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2286841657746966508">Adresa e faturimit</translation>
 <translation id="228704530595896923">Listë e opsioneve të shpërndarjes.</translation>
 <translation id="230115972905494466">Nuk u gjetën pajisje të përputhshme</translation>
-<translation id="230155349749732438">Për të përdorur këtë cilësim duhet të aktivizohet <ph name="BEGIN_LINK" />Përmirëso kërkimet dhe shfletimin<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Trokit për të bërë një telefonatë</translation>
 <translation id="2321086116217818302">Po përgatit fjalëkalimet…</translation>
 <translation id="2323763861024343754">Hapësira ruajtëse e sajtit</translation>
@@ -428,7 +426,6 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3269093882174072735">Ngarko imazhin</translation>
 <translation id="3280562213547448728">Kërkimi me zë</translation>
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
-<translation id="3284510035090979597">Ndihmë proaktive</translation>
 <translation id="3285080554353377245">Video rreth mënyrës se si të përdorësh Chrome</translation>
 <translation id="3288003805934695103">Të ringarkosh faqen</translation>
 <translation id="3290249595466894471">Dërgon gjithashtu një shembull të vogël të faqeve, shkarkimeve, aktivitetit të shtesave dhe informacioneve të sistemit për të ndihmuar në zbulimin e kërcënimeve të reja</translation>
@@ -590,7 +587,6 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="4209895695669353772">Për të marrë përmbajtje të personalizuar të sugjeruar nga Google, aktivizo sinkronizimin</translation>
 <translation id="4214315110991671325">Nëse lejon kukit, Chrome mund t'i përdorë ato për ngarkimin paraprak.</translation>
 <translation id="4225895483398857530">Shkurtorja e shiritit të veglave</translation>
-<translation id="4227318652298512614">Ndiq çdo sajt që dëshiron</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4248098802131000011">Mbaji fjalëkalimet e tua të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe problemeve të tjera të sigurisë</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
@@ -881,7 +877,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5795872532621730126">Kërko dhe shfleto</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# orë më parë}other{# orë më parë}}</translation>
 <translation id="5810288467834065221">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
-<translation id="5810864297166300463">Asistenca në ueb</translation>
 <translation id="5813552293717797987">Ky shfletues menaxhohet nga <ph name="PARENT_NAME_1" /> dhe <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Shkruaj këtu ose trokit tek ikona e mikrofonit për të filluar</translation>
 <translation id="5814749351757353073">Ndiq sajtet e tua të preferuara</translation>
@@ -904,7 +899,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5869789175361934029">Vazhdo nga një pajisje tjetër</translation>
 <translation id="587735546353481577">Për të ndjekur një sajt, shko te sajti, hap menynë e Chrome dhe trokit te Ndiq.</translation>
 <translation id="5879072387416556377">Merr sugjerime më të mira</translation>
-<translation id="5884076754568147479">Për të të ndihmuar të përfundosh detyrat, Google do të marrë URL-të dhe përmbajtjet e sajteve ku ti përdor "Asistentin", si dhe informacionet që dërgon nëpërmjet "Asistentit"</translation>
 <translation id="5906513782029855931">Njohja e URL-ve të sajteve lejon që "Asistenti i Google" të të ndihmojë të përfundosh detyrat. "Asistentin" mund ta çaktivizosh te cilësimet e Chrome.</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5919204609460789179">Përditëso <ph name="PRODUCT_NAME" /> për të nisur sinkronizimin</translation>
@@ -1346,7 +1340,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8127542551745560481">Modifiko faqen bazë</translation>
 <translation id="8130309322784422030">Informacionet e tua të ruajtura të identifikimit mund të jenë të papërditësuara</translation>
 <translation id="813082847718468539">Shiko informacionin rreth faqes</translation>
-<translation id="8153351135626613369">"Asistenti" do të shfaqet kur zbulon se mund të të ndihmojë në faqet e mbështetura të internetit</translation>
 <translation id="8156139159503939589">Në çfarë gjuhësh lexon?</translation>
 <translation id="8168435359814927499">Përmbajtja</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> skedarë të mbetur</translation>

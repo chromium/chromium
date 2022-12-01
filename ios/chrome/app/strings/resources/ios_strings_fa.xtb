@@ -551,7 +551,6 @@
 <translation id="5190835502935405962">نوار نشانک‌ها</translation>
 <translation id="519530786644929958">بارگیری موفق نبود و نمی‌توان آن را دوباره انجام داد.</translation>
 <translation id="5197255632782567636">اینترنت</translation>
-<translation id="5210365745912300556">بستن برگه</translation>
 <translation id="5219295696240154694">به بهبود امنیت برای همه کاربران وب کمک کنید</translation>
 <translation id="5228579091201413441">فعال کردن همگام‌سازی</translation>
 <translation id="5232485538978018676">ورود به سیستم با «حساب مدیریت‌شده»</translation>
@@ -876,6 +875,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7531345132340165516">سایت فعلی</translation>
 <translation id="7537586195939242955">‏متأسفانه نصب «جواز» در Passbook فعلاً امکان‌پذیر نیست.</translation>
 <translation id="7553234618121028547">برای خاموش کردن، <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> را باز کنید و به «گزینه‌های گذرواژه» بروید.</translation>
+<translation id="7554645225856321710">بستن همه</translation>
 <translation id="7554791636758816595">برگهٔ جدید</translation>
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="7583004045319035904">برای باز کردن قفل «برگه‌های ناشناس» از <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> استفاده کنید.</translation>

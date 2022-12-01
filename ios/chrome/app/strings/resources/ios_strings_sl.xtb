@@ -551,7 +551,6 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5190835502935405962">Vrstica z zaznamki</translation>
 <translation id="519530786644929958">Prenos ni uspel in ga ni mogoče poskusiti znova.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Zapri zavihek</translation>
 <translation id="5219295696240154694">Pomagajte izboljšati varnost v spletu za vse</translation>
 <translation id="5228579091201413441">Omogoči sinhronizacijo</translation>
 <translation id="5232485538978018676">Prijava z upravljanim računom</translation>
@@ -876,6 +875,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7531345132340165516">Trenutna stran</translation>
 <translation id="7537586195939242955">Elementa trenutno ni mogoče namesiti v Passbook.</translation>
 <translation id="7553234618121028547">Če želite izklopiti, odprite <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Nastavitve) in nato »Password Options« (Možnosti gesla).</translation>
+<translation id="7554645225856321710">Zapri vse</translation>
 <translation id="7554791636758816595">Nov zavihek</translation>
 <translation id="7561196759112975576">Vedno</translation>
 <translation id="7583004045319035904">Za odklepanje anonimnih zavihkov uporabite to: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>

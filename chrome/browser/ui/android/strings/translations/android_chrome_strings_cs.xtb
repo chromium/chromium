@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Zvýraznění bylo zkráceno</translation>
 <translation id="1111673857033749125">Zde se objeví záložky, které jste si uložili v ostatních zařízeních.</translation>
 <translation id="1113597929977215864">Zapnout zjednodušené zobrazení</translation>
-<translation id="1118561384561215815">Nechte si pomoci s úkony na webu</translation>
 <translation id="1123070903960493543">Jak pracujete s Chromem, vybraná nastavení, podrobnosti o pádech Chromu</translation>
 <translation id="1126809382673880764">Nebudete chráněni před nebezpečnými weby, soubory ke stažení a rozšířeními. V jiných službách Google, v nichž je ochrana pomocí Bezpečného prohlížení k dispozici (např. Gmail a Vyhledávání), ji budete mít i nadále.</translation>
 <translation id="1129510026454351943">Podrobnosti: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2286841657746966508">Fakturační adresa</translation>
 <translation id="228704530595896923">Seznam možností sdílení.</translation>
 <translation id="230115972905494466">Nebyla nalezena žádná kompatibilní zařízení</translation>
-<translation id="230155349749732438">Pokud chcete použít toto nastavení, musí být zapnutá možnost <ph name="BEGIN_LINK" />Vylepšit vyhledávání a procházení<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Klepnutím zahájíte hovor</translation>
 <translation id="2321086116217818302">Příprava hesel…</translation>
 <translation id="2323763861024343754">Úložiště webů</translation>
@@ -428,7 +426,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3269093882174072735">Načíst obrázek</translation>
 <translation id="3280562213547448728">Hlasové vyhledávání</translation>
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
-<translation id="3284510035090979597">Proaktivní nápověda</translation>
 <translation id="3285080554353377245">Výuková videa o používání Chromu</translation>
 <translation id="3288003805934695103">Načíst stránku znovu</translation>
 <translation id="3290249595466894471">Odesílá také malý vzorek stránek, stažených souborů, rozšíření, aktivity a informací o systému a pomáhá tak odhalovat nové hrozby</translation>
@@ -590,7 +587,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4209895695669353772">Chcete-li od Googlu získat personalizované návrhy obsahu, zapněte synchronizaci</translation>
 <translation id="4214315110991671325">Pokud máte povolené soubory cookie, může je Chrome používat k předběžnému načítání.</translation>
 <translation id="4225895483398857530">Zkratka lišty</translation>
-<translation id="4227318652298512614">Sledujte jakékoli weby</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4248098802131000011">Ochraňte svá hesla před porušeními zabezpečení údajů a jinými bezpečnostními problémy</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
@@ -881,7 +877,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5795872532621730126">Vyhledávání a procházení internetu</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{před # hodinou}few{před # hodinami}many{před # hodiny}other{před # hodinami}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
-<translation id="5810864297166300463">Asistence na webu</translation>
 <translation id="5813552293717797987">Tento prohlížeč spravuje <ph name="PARENT_NAME_1" /> a <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Začněte psát nebo klepněte na ikonu hlasového zadávání</translation>
 <translation id="5814749351757353073">Sledujte své oblíbené weby</translation>
@@ -904,7 +899,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5869789175361934029">Pokračujte z jiného zařízení</translation>
 <translation id="587735546353481577">Pokud nějaký web chcete sledovat, přejděte na něj, otevřené nabídku Chrome a klepněte na Sledovat.</translation>
 <translation id="5879072387416556377">Získejte lepší návrhy</translation>
-<translation id="5884076754568147479">Abyste mohli provádět akce, Google bude dostávat adresy URL a obsah webů, ve kterých používáte Asistenta, a informace, které prostřednictvím Asistenta odesíláte</translation>
 <translation id="5906513782029855931">Když bude Asistent Google znát adresy URL webů, bude vám moci pomáhat s plněním úkolů. Asistenta můžete vypnout v nastavení Chromu.</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5919204609460789179">Chcete-li zahájit synchronizaci, aktualizujte aplikaci <ph name="PRODUCT_NAME" /></translation>
@@ -1346,7 +1340,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8127542551745560481">Upravit domovskou stránku</translation>
 <translation id="8130309322784422030">Uložené přihlašovací údaje mohou být zastaralé</translation>
 <translation id="813082847718468539">Zobrazit informace o stránkách</translation>
-<translation id="8153351135626613369">Asistent se zobrazí, až zjistí, že vám na podporovaných webech může pomoci</translation>
 <translation id="8156139159503939589">Jaké jazyky ovládáte?</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="8186512483418048923">Zbývající soubory: <ph name="FILES" /></translation>

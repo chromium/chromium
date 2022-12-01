@@ -554,6 +554,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Fra for én app}one{Fra for # app}other{Fra for # apps}}</translation>
 <translation id="4066027111132117168">Til, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Middel signal</translation>
+<translation id="4086921558679520050">Aktivér den fysiske mikrofonkontakt på din enhed</translation>
 <translation id="4112140312785995938">Spol tilbage</translation>
 <translation id="4114315158543974537">Aktivér Telefonstyring</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -606,6 +607,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> procent.</translation>
 <translation id="4378551569595875038">Tilslutter...</translation>
 <translation id="4379531060876907730">Dette er dine styluspenværktøjer</translation>
+<translation id="4381031910344220229">Dette giver <ph name="APP_NAME" /> og alle andre apps samt websites med mikrofontilladelse adgang til mikrofonen</translation>
 <translation id="4389184120735010762">Du trykkede på tastaturgenvejen for det fastgjorte lupvindue. Vil du aktivere indstillingen?</translation>
 <translation id="439598569299422042">Sat på pause, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Dit screencast kan ikke gemmes</translation>
@@ -960,6 +962,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er en session, der administreres af <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> er forbundet</translation>
 <translation id="6351032674660237738">APPFORSLAG</translation>
+<translation id="6352082849089527770">Ukendte netværk</translation>
 <translation id="6359587239691116345">Få de nyeste funktioner og sikkerhedsforbedringer. Hvis du afviser denne opdatering, fungerer din enhed muligvis ikke længere korrekt, og du kan opleve problemer med sikkerheden og ydeevnen.</translation>
 <translation id="6376931439017688372">Bluetooth er slået til</translation>
 <translation id="6381109794406942707">Angiv din pinkode for at låse enheden op.</translation>
@@ -1136,6 +1139,7 @@ Installeret for nylig</translation>
 <translation id="7360036564632145207">Du kan forbedre ydeevnen ved at ændre indstillingen Beskyttelse af dataadgang for eksterne enheder</translation>
 <translation id="736045644501761622">Konfigurer Baggrund og stil</translation>
 <translation id="7371404428569700291">Optag vindue</translation>
+<translation id="737315737514430195">Dette giver alle apps og websites med mikrofontilladelse adgang til mikrofonen</translation>
 <translation id="7377169924702866686">Caps Lock er slået til.</translation>
 <translation id="7377481913241237033">Opret forbindelse med en kode</translation>
 <translation id="7378203170292176219">Træk for at vælge et område, der skal optages</translation>
@@ -1204,6 +1208,7 @@ Installeret for nylig</translation>
 <translation id="7671610481353807627">Apps er sorteret efter farve</translation>
 <translation id="7672095158465655885">Der er forbindelse til <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kamerainput er indstillet til <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Dette giver <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle andre apps samt websites med mikrofontilladelse adgang til mikrofonen</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Tilføj et mobilnetværk</translation>
 <translation id="7720400844887872976">Aktiveret indtil <ph name="TIME" /></translation>

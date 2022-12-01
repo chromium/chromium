@@ -38,6 +38,7 @@
 <translation id="10614374240317010">常に保存しない</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">パソコンのブックマーク</translation>
+<translation id="1067561478268651872"><ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ポリシーは、<ph name="SECURE_DNS_SALT" /> ポリシーが設定されていない限り使用されません。</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" />のページを翻訳しない</translation>
 <translation id="1070853536588271387">ハイブリッド車、代替燃料車</translation>
 <translation id="1070901266639972381">夜間</translation>
@@ -337,7 +338,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
 <translation id="1745880797583122200">ご使用のブラウザは管理されています</translation>
 <translation id="1746113442205726301">画像の Y 軸移動</translation>
-<translation id="1747819498338037826">自動的に変更</translation>
 <translation id="17513872634828108">開いているタブ</translation>
 <translation id="1752021286346845558">用紙受け 8</translation>
 <translation id="1753068535428855445">出会い</translation>
@@ -1370,7 +1370,6 @@
 <translation id="4450893287417543264">次回から表示しない</translation>
 <translation id="4451135742916150903">HID デバイスへの接続を要求できる</translation>
 <translation id="4452328064229197696">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために保存したパスワードを確認することをおすすめします。</translation>
-<translation id="4455222631300069614">パスワードを今すぐ変更してください</translation>
 <translation id="4460315069258617173">このサイトのタブを開いている間のみ許可</translation>
 <translation id="4464826014807964867">組織の情報を使用しているウェブサイト</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
@@ -1605,7 +1604,6 @@
 <translation id="5039804452771397117">許可する</translation>
 <translation id="5040262127954254034">プライバシー</translation>
 <translation id="5043480802608081735">コピーしたリンク</translation>
-<translation id="5044545992476246592">たった今使用したパスワードがデータ侵害で検出されました。Google アシスタントを使用して、パスワードを自動で変更できます。</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5051305769747448211">お笑いライブ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
@@ -1671,7 +1669,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> で複数のファイルがダウンロードされようとしています</translation>
 <translation id="519422657042045905">注釈は使用できません</translation>
 <translation id="5201306358585911203">このページに埋め込まれているページの内容</translation>
-<translation id="5204468114771111727">最近使用したパスワードがデータ侵害で検出されました。Google アシスタントを使用して、パスワードを自動で変更できます。</translation>
 <translation id="5205222826937269299">名前は必須です</translation>
 <translation id="5209518306177824490">SHA-1 指紋</translation>
 <translation id="5209670883520018268">トレイ 20</translation>
@@ -2099,6 +2096,7 @@
 <translation id="6328786501058569169">これは偽のサイトです</translation>
 <translation id="6337133576188860026">最大で <ph name="SIZE" /> を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="6337534724793800597">ポリシーを名前でフィルタ</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> の値は無効なため、使用されません。</translation>
 <translation id="6340739886198108203">管理者のポリシー設定では、機密コンテンツが表示されている画面の撮影や録画は推奨されていません。</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}}</translation>
 <translation id="6348220984832452017">バリエーションを有効にする</translation>
@@ -2995,6 +2993,7 @@
 <translation id="8654126188050905496">55x91 mm</translation>
 <translation id="8663226718884576429">ご注文の概要、<ph name="TOTAL_LABEL" />、その他の詳細</translation>
 <translation id="8666678546361132282">英語</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> の値がサイズ要件を満たしていません。</translation>
 <translation id="867224526087042813">署名</translation>
 <translation id="8672264262457010862">ビジネス、産業</translation>
 <translation id="8676424191133491403">今すぐ</translation>
@@ -3094,6 +3093,7 @@
 <translation id="8913778647360618320">お支払い方法を管理するボタンです。Enter キーを押すと、Chrome の設定でお支払いとクレジット カードの情報を管理します</translation>
 <translation id="8922013791253848639">このサイトで常に広告を許可します</translation>
 <translation id="892588693504540538">パンチ（右上）</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> の値は関連するものでないため、<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ポリシーが設定されていない限り使用されません。</translation>
 <translation id="8930330541574156305">不動産</translation>
 <translation id="8931333241327730545">このカードを Google アカウントに保存しますか？</translation>
 <translation id="8932102934695377596">時計が遅れています</translation>

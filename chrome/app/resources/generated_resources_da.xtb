@@ -189,6 +189,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1166583374608765787">Gennemgå navneopdateringen</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilhører skrivebordet <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Åbner om <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Skift automatisk sprog, så det passer med det valgte indhold</translation>
 <translation id="1169266963600477608">Spilstyring</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> indeholder følsomme eller farlige data. Din administrator siger: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> anmoder om at oprette forbindelse til en HID-enhed</translation>
@@ -1298,6 +1299,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2157875535253991059">Denne side er nu i fuld skærm.</translation>
 <translation id="2158475082070321257">Kopiér link til fremhævning</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">Omfang af <ph name="SHORTCUT" /> for <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">Tilføj Wi-Fi...</translation>
 <translation id="2162155940152307086">Synkroniseringen starter, når du forlader indstillingerne for synkronisering</translation>
 <translation id="2162705204091149050">Læs oplysninger om browseren, operativsystemet, enheden, installeret software og filer</translation>
@@ -2578,7 +2580,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3341703758641437857">Tillad adgang til webadresser på filer</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" vil gerne fjerne denne udvidelse.</translation>
 <translation id="3343977377045378693">Gennemfører konfiguration</translation>
-<translation id="3345135638360864351">Din anmodning om at få adgang til dette website kunne ikke sendes til <ph name="NAME" />. Prøv igen.</translation>
 <translation id="3345634917232014253">Sikkerhedstjekket blev udført for et øjeblik siden</translation>
 <translation id="3345886924813989455">Der blev ikke fundet en understøttet browser</translation>
 <translation id="3347086966102161372">K&amp;opiér billedets webadresse</translation>
@@ -2588,6 +2589,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3353786022389205125">Aktivér "Vis låseskærmen, når enheden vågner fra dvale", og prøv igen</translation>
 <translation id="3354768182971982851">Gamle versioner af Chrome-apps kan ikke åbnes på Mac-enheder efter december 2022. Du kan tjekke, om en ny version er tilgængelig.</translation>
 <translation id="3354972872297836698">Parringen med enheden <ph name="DEVICE_NAME" /> mislykkedes. Vælg en enhed for at prøve igen</translation>
+<translation id="335581015389089642">Tale</translation>
 <translation id="3355936511340229503">Forbindelsesfejl</translation>
 <translation id="3356036636691722598">Spil på din Chromebook</translation>
 <translation id="3356469410714175391">(Virtuelt kort er aktiveret)</translation>
@@ -2686,6 +2688,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3445047461171030979">Hurtige svar i Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="344537926140058498">Din organisation har blokeret denne fil, fordi den har følsomt eller skadeligt indhold. Bed ejeren af filen om at løse problemet.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{Der blev fjernet tilladelser fra <ph name="BEGIN_BOLD" />1 website<ph name="END_BOLD" />, som du ikke har besøgt for nylig}one{Der blev fjernet tilladelser fra <ph name="BEGIN_BOLD" />{NUM_SITES} website<ph name="END_BOLD" />, som du ikke har besøgt for nylig}other{Der blev fjernet tilladelser fra <ph name="BEGIN_BOLD" />{NUM_SITES} websites<ph name="END_BOLD" />, som du ikke har besøgt for nylig}}</translation>
 <translation id="3445925074670675829">USB-C-enhed</translation>
 <translation id="3446274660183028131">Start Parallels Desktop for at installere Windows.</translation>
 <translation id="344630545793878684">Læs dine data på en række websites</translation>
@@ -2896,6 +2899,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3642699533549879077">Når en anden person kigger på din skærm, modtager du en underretning, og notifikationsindholdet skjules.</translation>
 <translation id="3643962751030964445">Denne enhed administreres af <ph name="DEVICE_MANAGER" />. En ny profil for kontoen <ph name="USER_EMAIL_ADDRESS" /> er påkrævet af <ph name="DEVICE_MANAGER" /></translation>
 <translation id="3645372836428131288">Flyt fingeren en smule for at registrere en anden del af fingeraftrykket.</translation>
+<translation id="3647051300407077858">Gennemgå notifikationstilladelser</translation>
 <translation id="3647654707956482440">Dette link kan ikke bruges. Tjek, om der er fejl i linkadressen, eller prøv med et andet link.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> blev modtaget fra <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> blev modtaget fra <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> blev registreret</translation>
@@ -3075,6 +3079,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="380408572480438692">Aktiverer registrering af ydelsesdata, der hjælper Google med at forbedre systemet med tiden. Der sendes ingen data, før du indgiver en feedbackrapport (Alt-Shift-I) og medtager ydelsesdata. Du kan altid vende tilbage til dette skærmbillede for at deaktivere registreringen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (udvidelses-id "<ph name="EXTENSION_ID" />") er ikke tilladt på en loginskærm.</translation>
 <translation id="3807747707162121253">&amp;Annuller</translation>
+<translation id="3808202562160426447">Nedton baggrundsindhold</translation>
 <translation id="3808443763115411087">Udvikling af Android-apps i Crostini</translation>
 <translation id="38089336910894858">Vis advarsel, inden der afsluttes med ⌘Q</translation>
 <translation id="3809272675881623365">Kanin</translation>
@@ -3163,7 +3168,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3883482240657453056">Få rabatter til <ph name="MERCHANT_NAME_1" /> og <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Webindhold, som er tilgængeligt på flere sprog, vises på det første understøttede sprog på denne liste. Disse præferencer synkroniseres med dine browserindstillinger. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Opdateringer administreres af din administrator.</translation>
-<translation id="3886446263141354045">Din anmodning om adgang til dette website er blevet sendt til <ph name="NAME" />.</translation>
 <translation id="3887022758415973389">Vis liste over enheder</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-forbindelse</translation>
 <translation id="3888550877729210209">Notetagning med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -3666,6 +3670,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deler et vindue.</translation>
 <translation id="4364830672918311045">Vis notifikationer</translation>
 <translation id="4366138410738374926">Udskriver</translation>
+<translation id="4367513928820380646">Gennemgå fjernede tilladelser</translation>
 <translation id="4369121877634339065">Træk over ethvert billede for at søge</translation>
 <translation id="4369215744064167350">Websiteanmodningen blev godkendt</translation>
 <translation id="4370975561335139969">Den mail og adgangskode, du indtastede, stemmer ikke overens</translation>
@@ -4385,6 +4390,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
 <translation id="504561833207953641">Åbner i eksisterende browsersession.</translation>
 <translation id="5049614114599109018">Brug indtastningshistorik</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{Dette website har sendt en masse notifikationer for nylig. Du kan forhindre det i at sende notifikationer i fremtiden.}one{Dette website har sendt mange notifikationer for nylig. Du kan forhindre det i at sende notifikationer i fremtiden.}other{Disse websites har sendt mange notifikationer for nylig. Du kan forhindre dem i at sende notifikationer i fremtiden.}}</translation>
 <translation id="5051836348807686060">Stavekontrol understøttes ikke for de sprog, du har valgt</translation>
 <translation id="5052499409147950210">Rediger website</translation>
 <translation id="505347685865235222">Unavngiven gruppe – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -7281,6 +7287,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7775694664330414886">Fanen blev flyttet til en unavngiven gruppe – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> vil kunne se filer i <ph name="FOLDERNAME" />, indtil du har lukket alle faner for dette website</translation>
 <translation id="7776701556330691704">Der blev ikke fundet nogen stemmer</translation>
+<translation id="7777624210360383048">Genvejen <ph name="SHORTCUT" /> til <ph name="EXTENSION_NAME" /></translation>
 <translation id="7781335840981796660">Alle brugerkonti og lokale data fjernes.</translation>
 <translation id="7782102568078991263">Ikke flere forslag fra Google</translation>
 <translation id="7782717250816686129">Gem vedvarende data på loginskærmen, og brug loginoplysninger i sessionen.</translation>
@@ -7312,6 +7319,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7807711621188256451">Tillad altid, at <ph name="HOST" /> har adgang til dit kamera</translation>
 <translation id="7810202088502699111">Pop op-vinduer blev blokeret på denne side.</translation>
 <translation id="7814458197256864873">&amp;Kopier</translation>
+<translation id="7815583197273433531">Rediger genvejen <ph name="SHORTCUT" /> til <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7817361223956157679">Skærmtastaturet fungerer endnu ikke i Linux-apps</translation>
 <translation id="7818135753970109980">Nyt tema er tilføjet (<ph name="EXTENSION_NAME" />)</translation>
@@ -7386,6 +7394,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Vis konto</translation>
 <translation id="7883792253546618164">Du kan afmelde dig når som helst.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{Gennemgå 1 website, der har sendt mange notifikationer}one{Gennemgå {NUM_SITES} website, der har sendt mange notifikationer}other{Gennemgå {NUM_SITES} websites, der har sendt mange notifikationer}}</translation>
 <translation id="788453346724465748">Indlæser kontooplysninger...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{et element}one{# element}other{# elementer}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8096,7 +8105,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8540942859441851323">Roaming er påkrævet af telefonselskabet</translation>
 <translation id="8541462173655894684">Der blev ikke fundet nogen printere på printerserveren</translation>
 <translation id="8541838361296720865">Tryk på en kontakt eller en tastaturtast for at tildele den handlingen "<ph name="ACTION" />"</translation>
-<translation id="8543556556237226809">Har du spørgsmål? Kontakt din profiladministrator.</translation>
 <translation id="8546186510985480118">Der er næsten ikke mere plads på enheden</translation>
 <translation id="8546306075665861288">Billedcache</translation>
 <translation id="8546930481464505581">Tilpas Touch Bar</translation>
@@ -8441,6 +8449,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8859174528519900719">Underramme: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Servicevilkårene kunne ikke indlæses</translation>
 <translation id="8859662783913000679">Forældrekonto</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} konto}one{{COUNT} konto}other{{COUNT} konti}}</translation>
 <translation id="8861568709166518036">Brug knapperne på skærmen til at gå til startskærmen, gå tilbage og skifte app. Indstillingen aktiveres automatisk, hvis ChromeVox eller automatiske klik er aktiveret.</translation>
 <translation id="8862003515646449717">Skift til en hurtig browser</translation>
 <translation id="8863753581171631212">Åbn linket i et nyt <ph name="APP" />-vindue</translation>

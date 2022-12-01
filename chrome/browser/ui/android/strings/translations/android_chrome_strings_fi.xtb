@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Korostusta lyhennettiin</translation>
 <translation id="1111673857033749125">Muilla laitteilla tallentamasi kirjanmerkit näytetään täällä.</translation>
 <translation id="1113597929977215864">Näytä yksinkertaistettu näkymä</translation>
-<translation id="1118561384561215815">Apua verkossa oleviin tehtäviin</translation>
 <translation id="1123070903960493543">Chromen käyttösi, valitsemasi asetukset, tiedot Chromen kaatumisista</translation>
 <translation id="1126809382673880764">Ei suojaa sinua vaarallisilta sivustoilta, latauksilta ja laajennuksilta. Voit silti käyttää Selaussuojaa muissa Googlen palveluissa, joissa se on saatavilla, kuten Gmailissa ja Haussa.</translation>
 <translation id="1129510026454351943">Tiedot: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2286841657746966508">Laskutusosoite</translation>
 <translation id="228704530595896923">Jakamisvaihtoehtojen lista.</translation>
 <translation id="230115972905494466">Yhteensopivia laitteita ei löytynyt.</translation>
-<translation id="230155349749732438">Käyttääksesi tätä asetusta <ph name="BEGIN_LINK" />Paranna hakuja ja selausta<ph name="END_LINK" /> ‑toiminnon on oltava päällä</translation>
 <translation id="2318045970523081853">Soita napauttamalla</translation>
 <translation id="2321086116217818302">Valmistellaan salasanoja…</translation>
 <translation id="2323763861024343754">Sivustotietoja tallennettu</translation>
@@ -428,7 +426,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3269093882174072735">Lataa kuva</translation>
 <translation id="3280562213547448728">Puhehaku</translation>
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
-<translation id="3284510035090979597">Proaktiivinen avustus</translation>
 <translation id="3285080554353377245">Video-ohjeita Chromen käyttöön</translation>
 <translation id="3288003805934695103">Lataa sivu uudelleen.</translation>
 <translation id="3290249595466894471">Lähettää myös pienen näytteen sivuista, latauksista, laajennustoiminnasta ja järjestelmätiedoista auttaakseen löytämään uusia uhkia</translation>
@@ -590,7 +587,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4209895695669353772">Ota synkronointi käyttöön, niin näet Googlen suosittelemaa yksilöllistä sisältöä</translation>
 <translation id="4214315110991671325">Jos sallit evästeet, Chrome voi käyttää niitä esilataamiseen.</translation>
 <translation id="4225895483398857530">Työkalupalkin pikakuvake</translation>
-<translation id="4227318652298512614">Seuraa haluamiasi sivustoja</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
 <translation id="4248098802131000011">Suojaa salasanasi tietosuojaloukkauksilta ja muilta tietoturvaongelmilta</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
@@ -881,7 +877,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5795872532621730126">Hae ja selaa</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# tunti sitten}other{# tuntia sitten}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
-<translation id="5810864297166300463">Verkkoapu</translation>
 <translation id="5813552293717797987"><ph name="PARENT_NAME_1" /> ja <ph name="PARENT_NAME_2" /> ylläpitävät tätä selainta.</translation>
 <translation id="5814131985548525293">Kirjoita tähän tai aloita napauttamalla puhekuvaketta</translation>
 <translation id="5814749351757353073">Pysy ajan tasalla lempisivustojesi tapahtumista</translation>
@@ -904,7 +899,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5869789175361934029">Jatka toisella laitteella</translation>
 <translation id="587735546353481577">Jos haluat seurata sivustoa, siirry sille, avaa Chrome-valikko ja valitse Seuraa.</translation>
 <translation id="5879072387416556377">Parempia ehdotuksia</translation>
-<translation id="5884076754568147479">Jotta tehtävien hoitaminen sujuisi helpommin, Google saa tiedot niiden sivustojen URL-osoitteista ja sisällöstä, joilla käytät Assistantia, sekä Assistantin kautta lähettämäsi tiedot</translation>
 <translation id="5906513782029855931">Sivustojen URL-osoitteiden avulla Google Assistantia voi auttaa sinua tekemään asioita. Voit poistaa Assistantin käytöstä Chromen asetuksissa.</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5919204609460789179">Aloita synkronointi päivittämällä <ph name="PRODUCT_NAME" /></translation>
@@ -1346,7 +1340,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8127542551745560481">Muokkaa etusivua</translation>
 <translation id="8130309322784422030">Tallennetut sisäänkirjautumistietosi voivat olla vanhentuneita</translation>
 <translation id="813082847718468539">Näytä sivuston tiedot</translation>
-<translation id="8153351135626613369">Assistant tulee näkyviin, kun se havaitsee mahdollisuuden auttaa sinua tuetulla verkkosivulla</translation>
 <translation id="8156139159503939589">Mitä kieliä ymmärrät?</translation>
 <translation id="8168435359814927499">Sisältö</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> tiedostoa jäljellä</translation>

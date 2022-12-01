@@ -553,7 +553,6 @@
 <translation id="5190835502935405962">شريط الإشارات</translation>
 <translation id="519530786644929958">تعذّر تنزيل الملف ولا يمكن إعادة المحاولة.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
-<translation id="5210365745912300556">إغلاق علامة التبويب</translation>
 <translation id="5219295696240154694">المساعدة على تحسين الأمان على الإنترنت لخدمة الجميع</translation>
 <translation id="5228579091201413441">تفعيل المزامنة</translation>
 <translation id="5232485538978018676">تسجيل الدخول باستخدام حساب مُدار</translation>
@@ -878,6 +877,7 @@
 <translation id="7531345132340165516">الموقع الإلكتروني الحالي</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="7553234618121028547">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (الإعدادات) ثم انتقِل إلى Password Options (خيارات كلمة المرور).</translation>
+<translation id="7554645225856321710">إغلاق الكل</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
 <translation id="7561196759112975576">دومًا</translation>
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>

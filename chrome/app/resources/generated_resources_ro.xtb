@@ -187,6 +187,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1166583374608765787">Examinează actualizarea numelui</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> aparține desktopului <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Se deschide în <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Setează schimbarea automată a limbii, astfel încât să corespundă conținutului selectat</translation>
 <translation id="1169266963600477608">Comenzile jocului</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> conține date sensibile sau periculoase. Administratorul rostește <ph name="CUSTOM_MESSAGE" />.</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> vrea să se conecteze la un dispozitiv HID</translation>
@@ -2564,7 +2565,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3341703758641437857">Permite accesul la adresele URL de fișiere</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />” dorește să elimine această extensie.</translation>
 <translation id="3343977377045378693">Se realizează configurarea</translation>
-<translation id="3345135638360864351">Solicitarea de a accesa acest site nu a putut fi trimisă la <ph name="NAME" />. Încearcă din nou.</translation>
 <translation id="3345634917232014253">Verificarea de siguranță a rulat recent</translation>
 <translation id="3345886924813989455">Nu a fost găsit niciun browser acceptat</translation>
 <translation id="3347086966102161372">C&amp;opiază adresa imaginii</translation>
@@ -2574,6 +2574,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3353786022389205125">Activează opțiunea Afișează blocarea ecranului când dispozitivul este activat și încearcă din nou</translation>
 <translation id="3354768182971982851">Începând cu luna decembrie 2022, versiunile vechi ale aplicațiilor Chrome nu se vor mai deschide pe dispozitivele Mac. Poți verifica dacă există o nouă versiune disponibilă.</translation>
 <translation id="3354972872297836698">Nu s-a putut asocia cu dispozitivul <ph name="DEVICE_NAME" />. Selectează dispozitivul pentru a încerca din nou.</translation>
+<translation id="335581015389089642">Voce</translation>
 <translation id="3355936511340229503">Eroare de conexiune</translation>
 <translation id="3356036636691722598">Bucură-te de jocuri pe Chromebook</translation>
 <translation id="3356469410714175391">(Card virtual activat)</translation>
@@ -3152,7 +3153,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3883482240657453056">Primește reduceri pentru <ph name="MERCHANT_NAME_1" /> și <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Conținutul web care este disponibil în mai multe limbi va folosi prima limbă acceptată din această listă. Aceste preferințe se sincronizează cu setările browserului. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Actualizările sunt gestionate de administrator</translation>
-<translation id="3886446263141354045">Solicitarea de a accesa acest site a fost trimisă către <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Afișează lista de dispozitive</translation>
 <translation id="3888053818972567950">Conexiune <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Scriere de notițe cu <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8090,7 +8090,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8540942859441851323">Roaming solicitat de furnizor</translation>
 <translation id="8541462173655894684">Nu s-au găsit imprimante de la serverul de imprimare</translation>
 <translation id="8541838361296720865">Apasă un comutator sau o tastă de pe tastatură ca să o atribui acțiunii „<ph name="ACTION" />”</translation>
-<translation id="8543556556237226809">Întrebări? Contactează persoana care îți monitorizează profilul.</translation>
 <translation id="8546186510985480118">Spațiul de pe dispozitiv este redus</translation>
 <translation id="8546306075665861288">Memorie cache de imagini</translation>
 <translation id="8546930481464505581">Personalizează bara de atingere</translation>

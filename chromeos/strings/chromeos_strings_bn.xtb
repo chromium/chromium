@@ -492,6 +492,7 @@
 <translation id="5669267381087807207">সক্রিয় করা হচ্ছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">পরিবারিক</translation>
+<translation id="5695599963893094957">আপনার কীবোর্ডের যেকোনও কী টাইপ করুন। আপনি একেবারে সর্বাধিক ৪টি কী প্রেস করবেন।</translation>
 <translation id="5701381305118179107">কেন্দ্র</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />টির মধ্যে <ph name="CURRENT_PAGE" />নম্বর</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> আপডেট করুন</translation>
@@ -618,7 +619,6 @@
 <translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
 <translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
 <translation id="6791471867139427246">কীবোর্ড লাইট কালার</translation>
-<translation id="6793680441750437230">আপনার কীবোর্ডের যেকোনও 'কী' প্রেস করুন। আপনি একেবারে সর্বাধিক ৪টি 'কী' প্রেস করতে পারবেন। ডায়ালগ বন্ধ করতে, Alt ও Esc 'কী' একসাথে প্রেস করুন।</translation>
 <translation id="680983167891198932">কী</translation>
 <translation id="6816797338148849397">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য উপলভ্য আছে। এটি অ্যাক্সেস করতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="6853312040151791195">ডিসচার্জ হওয়ার রেট</translation>

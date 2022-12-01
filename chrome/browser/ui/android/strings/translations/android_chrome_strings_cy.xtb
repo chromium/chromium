@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Byrhawyd yr amlygu</translation>
 <translation id="1111673857033749125">Bydd nodau tudalen sydd wedi'u cadw ar eich dyfeisiau eraill yn ymddangos yma.</translation>
 <translation id="1113597929977215864">Dangos y wedd syml</translation>
-<translation id="1118561384561215815">Cael help gyda thasgau ar y we</translation>
 <translation id="1123070903960493543">Sut rydych yn rhyngweithio â Chrome, y gosodiadau rydych wedi'u dewis, manylion toriadau Chrome</translation>
 <translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
 <translation id="1129510026454351943">Manylion: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2286841657746966508">Cyfeiriad bilio</translation>
 <translation id="228704530595896923">Rhestr o ddewisiadau rhannu.</translation>
 <translation id="230115972905494466">Heb ganfod unrhyw ddyfeisiau cydnaws</translation>
-<translation id="230155349749732438">Er mwyn defnyddio'r gosodiad hwn, rhaid bod <ph name="BEGIN_LINK" />Gwneud chwiliadau a phori'n well<ph name="END_LINK" /> wedi'i droi ymlaen</translation>
 <translation id="2318045970523081853">Tapiwch i wneud galwad</translation>
 <translation id="2321086116217818302">Wrthi'n paratoi cyfrineiriau…</translation>
 <translation id="2323763861024343754">Storfa gwefan</translation>
@@ -428,7 +426,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3269093882174072735">Llwytho llun</translation>
 <translation id="3280562213547448728">Chwilio â llais</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
-<translation id="3284510035090979597">Cymorth Rhagweithiol</translation>
 <translation id="3285080554353377245">Fideos am sut i ddefnyddio Chrome</translation>
 <translation id="3288003805934695103">Wrthi'n ail-lwytho'r dudalen</translation>
 <translation id="3290249595466894471">Hefyd yn anfon sampl fach o dudalennau, lawrlwythiadau, gweithgarwch estyniadau, a gwybodaeth system i helpu i ddarganfod bygythiadau newydd</translation>
@@ -590,7 +587,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="4209895695669353772">I gael cynnwys sydd wedi'i bersonoleiddio a awgrymir gan Google, trowch gysoni ymlaen</translation>
 <translation id="4214315110991671325">Os ydych yn caniatáu cwcis, gall Chrome eu defnyddio ar gyfer rhaglwytho.</translation>
 <translation id="4225895483398857530">Llwybr byr bar offer</translation>
-<translation id="4227318652298512614">Dilyn unrhyw wefannau y dymunwch</translation>
 <translation id="4242533952199664413">Agor y gosodiadau</translation>
 <translation id="4248098802131000011">Cadwch eich cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill</translation>
 <translation id="424864128008805179">Allgofnodi o Chrome?</translation>
@@ -881,7 +877,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5795872532621730126">Chwilio a phori</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# awr yn ôl}zero{# awr yn ôl}two{# awr yn ôl}few{# awr yn ôl}many{# awr yn ôl}other{# awr yn ôl}}</translation>
 <translation id="5810288467834065221">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir Pob Hawl.</translation>
-<translation id="5810864297166300463">Cymorth Gwe</translation>
 <translation id="5813552293717797987">Rheolir y porwr hwn gan <ph name="PARENT_NAME_1" /> a <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Teipiwch yma neu tapiwch yr eicon llais i ddechrau</translation>
 <translation id="5814749351757353073">Cadwch i fyny â'ch hoff wefannau</translation>
@@ -904,7 +899,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5869789175361934029">Parhau o ddyfais arall</translation>
 <translation id="587735546353481577">I ddilyn gwefan, ewch i'r wefan, agorwch ddewislen Chrome, a thapiwch Dilyn.</translation>
 <translation id="5879072387416556377">Cael awgrymiadau gwell</translation>
-<translation id="5884076754568147479">Er mwyn eich helpu i gwblhau tasgau, bydd Google yn cael URL a chynnwys gwefannau rydych yn defnyddio Assistant arnynt, yn ogystal â gwybodaeth rydych yn ei chyflwyno drwy Assistant</translation>
 <translation id="5906513782029855931">Mae gwybod cyfeiriadau URL gwefannau yn caniatáu i Google Assistant eich helpu i gwblhau tasgau. Gallwch ddiffodd Assistant yn y gosodiadau Chrome.</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5919204609460789179">Diweddarwch <ph name="PRODUCT_NAME" /> i ddechrau cysoni</translation>
@@ -1346,7 +1340,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8127542551745560481">Golygu'r dudalen hafan</translation>
 <translation id="8130309322784422030">Mae'n bosib bod eich gwybodaeth mewngofnodi sydd wedi'i storio yn hen</translation>
 <translation id="813082847718468539">Gweld gwybodaeth am y wefan</translation>
-<translation id="8153351135626613369">Bydd Assistant yn ymddangos pan fydd yn canfod y gall eich helpu ar wefannau â chymorth</translation>
 <translation id="8156139159503939589">Pa ieithoedd ydych chi'n eu darllen?</translation>
 <translation id="8168435359814927499">Cynnwys</translation>
 <translation id="8186512483418048923">Mae <ph name="FILES" /> ffeil ar ôl</translation>

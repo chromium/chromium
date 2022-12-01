@@ -338,7 +338,6 @@
 <translation id="1741613555002899862">Мора да се наведе као важећи низ када је DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Прегледачем се управља</translation>
 <translation id="1746113442205726301">Померање слике по Y оси</translation>
-<translation id="1747819498338037826">Промени аутоматски</translation>
 <translation id="17513872634828108">Отворене картице</translation>
 <translation id="1752021286346845558">8. поштанско сандуче</translation>
 <translation id="1753068535428855445">Познанства</translation>
@@ -1371,7 +1370,6 @@
 <translation id="4450893287417543264">Не приказуј поново</translation>
 <translation id="4451135742916150903">Може да тражи да се повезује са HID уређајима</translation>
 <translation id="4452328064229197696">Лозинка коју сте управо користили је пронађена при повреди података. Да бисте заштитили налоге, Google менаџер лозинки препоручује да проверите сачуване лозинке.</translation>
-<translation id="4455222631300069614">Одмах промените лозинку</translation>
 <translation id="4460315069258617173">Дозвољено док не затворите картице овог сајта</translation>
 <translation id="4464826014807964867">Веб-сајтови са подацима из ваше организације</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1606,7 +1604,6 @@
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5040262127954254034">Приватност</translation>
 <translation id="5043480802608081735">Линк који сте копирали</translation>
-<translation id="5044545992476246592">Лозинка коју сте управо користили је пронађена при повреди података. Google помоћник може аутоматски да вам промени лозинку.</translation>
 <translation id="5045550434625856497">Неисправна лозинка</translation>
 <translation id="5051305769747448211">Комедија уживо</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Да бисте послали овај фајл помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}one{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}few{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}other{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}}</translation>
@@ -1672,7 +1669,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> жели да преузме више датотека</translation>
 <translation id="519422657042045905">Напомена није доступна</translation>
 <translation id="5201306358585911203">Уграђена страница на овој веб-страници наводи:</translation>
-<translation id="5204468114771111727">Chrome је пронашао лозинку коју сте управо користили при повреди података. Google помоћник може аутоматски да вам промени лозинку.</translation>
 <translation id="5205222826937269299">Име је обавезно</translation>
 <translation id="5209518306177824490">SHA-1 Fingerprint</translation>
 <translation id="5209670883520018268">20. фиока</translation>

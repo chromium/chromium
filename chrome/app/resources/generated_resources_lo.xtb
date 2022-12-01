@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">ກວດສອບການອັບເດດຊື່</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> ເປັນຂອງໂຕະ <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">ກໍາລັງເປີດຢູ່ໃນ <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">ປ່ຽນພາສາໂດຍອັດຕະໂນມັດເພື່ອໃຫ້ກົງກັບເນື້ອຫາທີ່ເລືອກໄວ້</translation>
 <translation id="1169266963600477608">ການຄວບຄຸມເກມ</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> ມີຂໍ້ມູນທີ່ລະອຽດອ່ອນ ຫຼື ເປັນອັນຕະລາຍ. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເວົ້າວ່າ: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ຕ້ອງການເຊື່ອມຕໍ່ອຸປະກອນ HID</translation>
@@ -2577,7 +2578,6 @@
 <translation id="3341703758641437857">ອະນຸຍາດການເຂົ້າຫາ URLs ໄຟລ໌</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ຕ້ອງການລຶບສ່ວນຂະຫຍາຍນີ້ອອກ.</translation>
 <translation id="3343977377045378693">ກຳລັງດຳເນີນການຕິດຕັ້ງ</translation>
-<translation id="3345135638360864351">ການຮ້ອງຂໍ​ຂອງ​ທ່ານ ເພື່ອ​ເຂົ້າ​ຫາ​ເວັບ​ໄຊ​ທ໌​ນີ້​ບໍ່​ສາ​ມາດ​ສົ່ງ​ຫາ <ph name="NAME" /> ໄດ້. ກະ​ລຸ​ນາ​ລອງ​ໃໝ່​ອີກ.</translation>
 <translation id="3345634917232014253">ມີການດຳເນີນການກວດສອບຄວາມປອດໄພເມື່ອກີ້ນີ້</translation>
 <translation id="3345886924813989455">ບໍ່ພົບບຣາວ​ເຊີທີ່ຮອງຮັບ</translation>
 <translation id="3347086966102161372">ອັດ​ສຳ​ເນົາ​ທີ່​ຢູ່​ຮູບ</translation>
@@ -2587,6 +2587,7 @@
 <translation id="3353786022389205125">ກະລຸນາເປີດໃຊ້ "ສະແດງໜ້າຈໍລັອກໃນເວລາຕື່ນຈາກການນອນຫຼັບ" ແລ້ວລອງໃໝ່</translation>
 <translation id="3354768182971982851">ແອັບ Chrome ເວີຊັນເກົ່າຈະບໍ່ເປີດຢູ່ອຸປະກອນ Mac ຫຼັງຈາກເດືອນທັນວາ 2022. ທ່ານສາມາດກວດເບິ່ງວ່າມີເວີຊັນໃໝ່ຫຼືບໍ່ໄດ້.</translation>
 <translation id="3354972872297836698">ບໍ່ສາມາດຈັບຄູ່ອຸປະກອນ <ph name="DEVICE_NAME" /> ໄດ້; ກະລຸນາເລືອກອຸປະກອນເພື່ອລອງໃໝ່</translation>
+<translation id="335581015389089642">ການເວົ້າ</translation>
 <translation id="3355936511340229503">ການເຊື່ອມຕໍ່ຜິດພາດ</translation>
 <translation id="3356036636691722598">ເພີດເພີນກັບການຫຼິ້ນເກມຢູ່ Chromebook ຂອງທ່ານ</translation>
 <translation id="3356469410714175391">(ເປີດການນຳໃຊ້ບັດສະເໝືອນແລ້ວ)</translation>
@@ -3165,7 +3166,6 @@
 <translation id="3883482240657453056">ຮັບສ່ວນຫຼຸດສຳລັບ <ph name="MERCHANT_NAME_1" /> ແລະ <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">ເນື້ອຫາເວັບທີ່ມີໃຫ້ເປັນຫຼາຍພາສາຈະໃຊ້ພາສາທີ່ຮອງຮັບທຳອິດຈາກລາຍຊື່ນີ້. ການຕັ້ງຄ່າເຫຼົ່ານີ້ຊິ້ງຂໍ້ມູນກັບການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">ການອັບເດດແມ່ນຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
-<translation id="3886446263141354045">ຄຳຂໍເຂົ້າຫາເວັບໄຊນີ້ຂອງທ່ານໄດ້ຖືກສົ່ງຫາ <ph name="NAME" /> ແລ້ວ</translation>
 <translation id="3887022758415973389">ສະແດງລາຍຊື່ອຸປະກອນ</translation>
 <translation id="3888053818972567950">ການເຊື່ອມຕໍ່ <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">ກຳລັງຈົດບັນທຶກດ້ວຍ <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8099,7 +8099,6 @@
 <translation id="8540942859441851323">ຜູ້ໃຫ້ບໍລິການບັງຄັບໃຫ້ໃຊ້ໂຣມມິງ</translation>
 <translation id="8541462173655894684">ຊອກບໍ່ເຫັນເຄື່ອງພິມໃດໆຈາກເຊີບເວີການພິມ</translation>
 <translation id="8541838361296720865">ກົດສະວິດ ຫຼື ປຸ່ມແປ້ນພິມໃດໜຶ່ງເພື່ອມອບໝາຍມັນເປັນ “<ph name="ACTION" />”</translation>
-<translation id="8543556556237226809">ມີຄຳຖາມບໍ? ກະລຸນາຕິດຕໍ່ຫາບຸກຄົນທີ່ຄວບຄຸມເບິ່ງແຍງໂປຣໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="8546186510985480118">ອຸປະກອນມີພື້ນທີ່ຫວ່າງເຫຼືອໜ້ອຍ</translation>
 <translation id="8546306075665861288">ແຄຊ໌ຮູບ</translation>
 <translation id="8546930481464505581">ປັບແຕ່ງແຖບການແຕະ</translation>
@@ -8442,6 +8441,7 @@
 <translation id="8859174528519900719">ຂອບຍ່ອຍ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">ບໍ່ສາມາດດາວໂຫຼດຂໍ້ກຳນົດການບໍລິການໄດ້</translation>
 <translation id="8859662783913000679">ບັນຊີພໍ່ແມ່</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} ບັນຊີ}other{{COUNT} ບັນຊີ}}</translation>
 <translation id="8861568709166518036">ໃຊ້ປຸ່ມໃນໜ້າຈໍເພື່ອນໍາທາງໄປຫາໜ້າຫຼັກ, ກັບຄືນ ແລະ ສະຫຼັບແອັບ. ເປີດໂດຍອັດຕະໂນມັດຖ້າ ChromeVox ຫຼື ການຄລິກອັດຕະໂນມັດເປີດຢູ່.</translation>
 <translation id="8862003515646449717">ປ່ຽນເປັນໂປຣແກຣມທ່ອງເວັບທີ່ໄວ</translation>
 <translation id="8863753581171631212">ເປີດລິ້ງໃນ <ph name="APP" /> ໃໝ່</translation>

@@ -551,7 +551,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5190835502935405962">북마크바</translation>
 <translation id="519530786644929958">다운로드가 실패했으며 다시 시도할 수 없습니다.</translation>
 <translation id="5197255632782567636">인터넷</translation>
-<translation id="5210365745912300556">탭 닫기</translation>
 <translation id="5219295696240154694">모든 웹 사용자를 위한 보안 개선에 참여</translation>
 <translation id="5228579091201413441">동기화 사용</translation>
 <translation id="5232485538978018676">관리 계정으로 로그인</translation>
@@ -876,6 +875,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7531345132340165516">현재 사이트</translation>
 <translation id="7537586195939242955">현재 패스를 패스북에 설치할 수 없습니다.</translation>
 <translation id="7553234618121028547">사용 중지하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 열고 비밀번호 옵션으로 이동합니다.</translation>
+<translation id="7554645225856321710">모두 닫기</translation>
 <translation id="7554791636758816595">새 탭</translation>
 <translation id="7561196759112975576">항상</translation>
 <translation id="7583004045319035904">시크릿 탭을 잠금 해제하려면 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증을 사용하세요.</translation>

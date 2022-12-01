@@ -187,6 +187,7 @@
 <translation id="1166583374608765787">અપડેટ કરેલા નામનો રિવ્યૂ કરો</translation>
 <translation id="1166596238782048887"><ph name="DESK_TITLE" /> ડેસ્ક <ph name="TAB_TITLE" />ની માલિકી ધરાવે છે</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> માં ખુલી રહ્યું છે...</translation>
+<translation id="116896278675803795">પસંદ કરેલા કન્ટેન્ટ સાથે મેળ કરવા માટે ઑટોમૅટિક રીતે ભાષા બદલો</translation>
 <translation id="1169266963600477608">ગેમના નિયંત્રણો</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" />માં સંવેદનશીલ અથવા જોખમી ડેટા છે. તમારા વ્યવસ્થાપકના કહેવા પ્રમાણે: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> HID ડિવાઇસ સાથે કનેક્ટ કરવા માગે છે</translation>
@@ -590,6 +591,7 @@
 <translation id="1546280085599573572">જ્યારે તમે હોમ બટન ક્લિક કરો છો ત્યારે જે પેજ દર્શાવવામાં આવે છે તે આ એક્સ્ટેન્શને બદલ્યું છે.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> <ph name="EXTENSION_TYPE" /> ઇન્સ્ટૉલ કરવા માગે છે, જે આ કરી શકે:</translation>
 <translation id="1547808936554660006">હું સમજું છું કે ઇન્સ્ટૉલ કરેલી ઇ-સિમની બધી પ્રોફાઇલ, પાવરવોશ કરવાથી કાઢી નાખવામાં આવશે નહીં.</translation>
+<translation id="1547936895218027488">બાજુની પૅનલને ખોલવા માટે, તેના આઇકન પર ક્લિક કરો</translation>
 <translation id="1549275686094429035">ARC ચાલુ છે</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" />ને ઍક્સેસ કરવા માંગે છે. તે તમારી ફાઇલોમાં ફેરફાર કરી અથવા ડિલીટ કરી શકે છે.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શન દ્વારા શોધને <ph name="SEARCH_PROVIDER_DOMAIN" />નો ઉપયોગ કરવા પર બદલવામાં આવ્યું</translation>
@@ -1414,6 +1416,7 @@
 <translation id="2287944065963043964">લૉગ ઇન સ્ક્રીન</translation>
 <translation id="2289270750774289114">જ્યારે કોઈ સાઇટ નજીકના બ્લૂટૂથ ડિવાઇસને શોધવા માગે ત્યારે પૂછો (સુઝાવ આપેલ)</translation>
 <translation id="2290615375132886363">ટૅબ્લેટ નૅવિગેશનનાં બટન</translation>
+<translation id="2291452790265535215">બુકમાર્ક અને પ્રવાસ જેવી બીજી ઘણી બાબતો માટે, બાજુની પૅનલનો ઉપયોગ અજમાવી જુઓ</translation>
 <translation id="229182044471402145">કોઈ મેળ ખાતો ફૉન્ટ મળ્યો નથી.</translation>
 <translation id="2292848386125228270">કૃપા કરીને એક સામાન્ય વપરાશકર્તા તરીકે <ph name="PRODUCT_NAME" /> શરૂ કરો. જો તમને ડેવલપમેન્ટ માટે રૂટ તરીકે ચલાવવાની જરૂર હોય, તો --no-sandbox ચિહ્ન સાથે ફરીથી ચલાવો.</translation>
 <translation id="2294081976975808113">સ્ક્રીનની પ્રાઇવસી</translation>
@@ -2561,7 +2564,6 @@
 <translation id="3341703758641437857">URL ફાઇલ કરવા ઍક્સેસની મંજૂરી આપો</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" આ એક્સ્ટેંશનને કાઢી નાખવા માગે છે.</translation>
 <translation id="3343977377045378693">સેટઅપ કરી રહ્યાં છીએ</translation>
-<translation id="3345135638360864351">આ સાઇટને ઍક્સેસ કરવાની તમારી વિનંતી <ph name="NAME" /> ને મોકલી શકાઈ નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="3345634917232014253">એક પળ પહેલાં સલામતી માટે તપાસ થઈ</translation>
 <translation id="3345886924813989455">સપોર્ટેડ બ્રાઉઝર મળ્યું નથી</translation>
 <translation id="3347086966102161372">છબી સરનામું કૉ&amp;પિ કરો</translation>
@@ -2571,6 +2573,7 @@
 <translation id="3353786022389205125">"સ્લીપ મોડમાંથી સક્રિય થાઓ, ત્યારે લૉક સ્ક્રીન બતાવો" ચાલુ કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="3354768182971982851">ડિસેમ્બર 2022 પછી Mac ડિવાઇસ પર Chrome ઍપના જૂના વર્ઝન ખૂલશે નહીં. નવું વર્ઝન ઉપલબ્ધ છે કે નહીં તે તમે ચેક કરી શકો છો.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ડિવાઇસ સાથે જોડાણ કરી શક્યા નથી; ફરી પ્રયાસ કરવા માટે ડિવાઇસ પસંદ કરો</translation>
+<translation id="335581015389089642">ભાષા</translation>
 <translation id="3355936511340229503">કનેક્શન ભૂલ</translation>
 <translation id="3356036636691722598">તમારી Chromebook પર ગેમ રમવાનો આનંદ માણો</translation>
 <translation id="3356469410714175391">(વર્ચ્યુઅલ કાર્ડ સક્રિય કર્યું)</translation>
@@ -3149,7 +3152,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> અને <ph name="MERCHANT_NAME_2" /> માટે ડિસ્કાઉન્ટ મેળવો</translation>
 <translation id="3884152383786131369">એકથી વધારે ભાષાઓમાં ઉપલબ્ધ વેબ કન્ટેન્ટ આ સૂચિમાંની પહેલી સપોર્ટેડ ભાષાનો ઉપયોગ કરશે. આ પસંદગીઓને તમારા બ્રાઉઝર સેટિંગ સાથે સિંક કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">અપડેટ તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
-<translation id="3886446263141354045">આ સાઇટને ઍક્સેસ કરવાની તમારી વિનંતી <ph name="NAME" /> ને મોકલવામાં આવી છે</translation>
 <translation id="3887022758415973389">ડિવાઇસની સૂચિ બતાવો</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> કનેક્શન</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> વડે નોંધ લેવી</translation>
@@ -3901,6 +3903,7 @@
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />માં કોઈ ડિવાઇસ સાચવેલું નથી</translation>
 <translation id="4592891116925567110">સ્ટાઇલસ વડે ડ્રોઇંગ ઍપના સેટિંગ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> &amp;ના પર જાઓ</translation>
+<translation id="4594218792629569101">પેજને તમારી સૂચિમાં છેલ્લા ક્રમે ખસેડવા માટે, “વાંચેલાં તરીકે માર્ક કરો”ને પસંદ કરો</translation>
 <translation id="4594577641390224176">શું સિસ્ટમની માહિતી ધરાવતું પેજ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="4595560905247879544">ઍપ્લિકેશન્સ અને એક્સટેન્શન્સને માત્ર સંચાલક (<ph name="CUSTODIAN_NAME" />) દ્વારા જ સંશોધિત કરી શકાય છે.</translation>
 <translation id="4596295440756783523">તમારી પાસે ફાઇલ પર પ્રમાણપત્રો છે જે આ સર્વર્સને ઓળખે છે</translation>
@@ -4408,6 +4411,7 @@
 <translation id="5084328598860513926">સેટઅપનો ફ્લૉ અવરોધિત થયો હતો. કૃપા કરીને ફરીથી પ્રયાસ કરો અથવા તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">અપડેટ્સ માટે તપાસી રહ્યું છે</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">નોંધમાં 1,000થી વધુ અક્ષર છે</translation>
 <translation id="5086874064903147617">ડિફૉલ્ટ હોમપેજ પુનઃસ્થાપિત કરીએ?</translation>
 <translation id="5087249366037322692">તૃતીય પક્ષ દ્વારા ઉમેરાયેલ</translation>
 <translation id="5087580092889165836">કાર્ડ ઉમેરો</translation>
@@ -6574,6 +6578,7 @@ USB ડિવાઇસ</translation>
 <translation id="7111822978084196600">આ વિન્ડોને નામ આપો</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> આઇટમ</translation>
 <translation id="7113502843173351041">તમારું ઇમેઇલ ઍડ્રેસ જાણો</translation>
+<translation id="7113974454301513811">હવે તમારા હાલના ટૅબને તમારી સૂચિમાં ઉમેરો</translation>
 <translation id="7114054701490058191">પાસવર્ડ્સ મેળ ખાતા નથી</translation>
 <translation id="7114648273807173152">તમારા Google એકાઉન્ટમાં સાઇન ઇન કરવા માટે SmartLockનો ઉપયોગ કરવા, સેટિંગ &gt; કનેક્ટ કરેલાં ડિવાઇસ &gt; તમારો ફોન &gt; SmartLock પર જાઓ.</translation>
 <translation id="7115361495406486998">જેના સુધી પહોંચી શકાય તેવો કોઈ સંપર્ક નથી</translation>
@@ -8083,7 +8088,6 @@ USB ડિવાઇસ</translation>
 <translation id="8540942859441851323">પ્રદાતાને રોમિંગની જરૂર છે</translation>
 <translation id="8541462173655894684">પ્રિન્ટ સર્વરમાંથી કોઈ પ્રિન્ટર મળ્યું નથી</translation>
 <translation id="8541838361296720865">“<ph name="ACTION" />”ને સોંપણી કરવા માટે, કોઈ સ્વિચ કે કીબોર્ડની કી દબાવો</translation>
-<translation id="8543556556237226809">પ્રશ્નો છે? તમારી પ્રોફાઇલનું નિરીક્ષણ કરનાર વ્યક્તિનો સંપર્ક કરો.</translation>
 <translation id="8546186510985480118">ઉપકરણ પર સ્થાન ઓછું છે</translation>
 <translation id="8546306075665861288">ફોટો કૅશ મેમરી</translation>
 <translation id="8546930481464505581">ટચ બારને કસ્ટમાઇઝ કરો</translation>
@@ -8427,6 +8431,7 @@ USB ડિવાઇસ</translation>
 <translation id="8859174528519900719">સબફ્રેમ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">સેવાની શરતો લોડ કરી શકાઈ નથી</translation>
 <translation id="8859662783913000679">માતાપિતાનું એકાઉન્ટ</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} એકાઉન્ટ}one{{COUNT} એકાઉન્ટ}other{{COUNT} એકાઉન્ટ}}</translation>
 <translation id="8861568709166518036">હોમ પર નૅવિગેટ કરવા, પાછળ જવા અને ઍપ સ્વિચ કરવા માટે સ્ક્રીન પરના બટનનો ઉપયોગ કરો. જો ChromeVox અથવા ઑટોમૅટિક ક્લિકની સુવિધા ચાલુ કરેલી હોય, તો ઑટોમૅટિક રીતે ચાલુ થાય છે.</translation>
 <translation id="8862003515646449717">એક ઝડપી બ્રાઉઝર પર સ્વિચ કરો</translation>
 <translation id="8863753581171631212">નવી <ph name="APP" />માં લિંક ખોલો</translation>
@@ -8800,6 +8805,7 @@ USB ડિવાઇસ</translation>
 <translation id="9201842707396338580">કંઈક ખોટું થયું. કૃપા કરીને તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;પ્રોફાઇલિંગ સક્ષમ</translation>
 <translation id="9203904171912129171">ઉપકરણ પસંદ કરો</translation>
+<translation id="920410963177453528">કોઈ અન્ય પૅનલની પસંદગી કરવા માટે, ડ્રૉપ-ડાઉન પર ક્લિક કરો</translation>
 <translation id="9206889157914079472">લૉક સ્ક્રીનમાંથી સ્ટાઇલસ વડે નોંધ લેવાના સેટિંગ</translation>
 <translation id="9208192193641542858">સ્થાનિક ડેટા તમારા જૂના પાસવર્ડ વડે સુરક્ષિત છે. જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડને ફરીથી અજમાવી જુઓ.</translation>
 <translation id="9209563766569767417">Linux કન્ટેનરનું સેટઅપ ચેક કરી રહ્યાં છીએ</translation>

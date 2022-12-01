@@ -187,6 +187,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1166583374608765787">Examiner la modification du nom</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> fait partie du bureau <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Ouverture dans <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Changer automatiquement de langue pour correspondre au contenu sélectionné</translation>
 <translation id="1169266963600477608">Commandes de jeu</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> contient des données sensibles ou dangereuses. Message de votre administrateur : "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> tente de se connecter à un appareil HID</translation>
@@ -2564,7 +2565,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3341703758641437857">Autoriser l'accès aux URL de fichier</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" souhaite supprimer cette extension.</translation>
 <translation id="3343977377045378693">Configuration…</translation>
-<translation id="3345135638360864351">Impossible d'envoyer votre demande d'accès au site à <ph name="NAME" />. Veuillez réessayer.</translation>
 <translation id="3345634917232014253">Contrôle de sécurité effectué il y a peu</translation>
 <translation id="3345886924813989455">Impossible de trouver un navigateur pris en charge.</translation>
 <translation id="3347086966102161372">C&amp;opier l'adresse de l'image</translation>
@@ -2574,6 +2574,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3353786022389205125">Activez "Afficher l'écran de verrouillage en sortant du mode veille", puis réessayez.</translation>
 <translation id="3354768182971982851">Les anciennes versions des applis Chrome ne s'ouvriront plus sur les appareils Mac après décembre 2022. Vous pouvez vérifier si une nouvelle version est disponible.</translation>
 <translation id="3354972872297836698">Impossible d'associer à l'appareil <ph name="DEVICE_NAME" /> ; sélectionnez l'appareil pour réessayer</translation>
+<translation id="335581015389089642">Voix</translation>
 <translation id="3355936511340229503">Erreur de connexion</translation>
 <translation id="3356036636691722598">À vous de jouer sur votre Chromebook</translation>
 <translation id="3356469410714175391">(carte virtuelle activée)</translation>
@@ -3152,7 +3153,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3883482240657453056">Obtenir des remises pour <ph name="MERCHANT_NAME_1" /> et <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Le contenu Web disponible dans plusieurs langues vous sera proposé dans la première langue disponible de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Les mises à jour sont gérées par votre administrateur</translation>
-<translation id="3886446263141354045">Votre demande d'accès à ce site a bien été envoyée à <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Afficher la liste des appareils</translation>
 <translation id="3888053818972567950">Connexion <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Prise de notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8091,7 +8091,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8540942859441851323">Itinérance requise par le fournisseur</translation>
 <translation id="8541462173655894684">Aucune imprimante trouvée sur le serveur d'impression</translation>
 <translation id="8541838361296720865">Appuyez sur un contacteur ou une touche du clavier pour l'associer à "<ph name="ACTION" />"</translation>
-<translation id="8543556556237226809">Des questions ? Contactez la personne qui supervise votre profil.</translation>
 <translation id="8546186510985480118">Peu d'espace disque disponible sur l'appareil</translation>
 <translation id="8546306075665861288">Cache des images</translation>
 <translation id="8546930481464505581">Personnaliser la Touch Bar</translation>
@@ -8435,6 +8434,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8859174528519900719">Sous-cadre : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Impossible de charger les conditions d'utilisation</translation>
 <translation id="8859662783913000679">Compte parental</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} compte}one{{COUNT} compte}other{{COUNT} comptes}}</translation>
 <translation id="8861568709166518036">Utilisez les boutons à l'écran pour accéder à l'accueil, revenir en arrière et changer d'appli. S'active automatiquement si ChromeVox ou les clics automatiques sont activés.</translation>
 <translation id="8862003515646449717">Passez à un navigateur rapide</translation>
 <translation id="8863753581171631212">Ouvrir le lien dans une nouvelle fenêtre <ph name="APP" /></translation>

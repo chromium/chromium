@@ -338,7 +338,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Your browser is managed</translation>
 <translation id="1746113442205726301">Image Y shift</translation>
-<translation id="1747819498338037826">Change automatically</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753068535428855445">Dating and personals</translation>
@@ -1371,7 +1370,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4450893287417543264">Don't show again</translation>
 <translation id="4451135742916150903">Can ask to connect to HID devices</translation>
 <translation id="4452328064229197696">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends checking your saved passwords.</translation>
-<translation id="4455222631300069614">Change your password now</translation>
 <translation id="4460315069258617173">Allowed until you close tabs for this site</translation>
 <translation id="4464826014807964867">Websites with info from your organisation</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1606,7 +1604,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5043480802608081735">Link that you copied</translation>
-<translation id="5044545992476246592">The password that you just used was found in a data breach. Your Google Assistant can change your password automatically.</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="5051305769747448211">Live comedy</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
@@ -1672,7 +1669,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
 <translation id="519422657042045905">Annotation not available</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
-<translation id="5204468114771111727">Chrome found the password that you just used in a data breach. Your Google Assistant can change your password automatically.</translation>
 <translation id="5205222826937269299">Name required</translation>
 <translation id="5209518306177824490">SHA-1 Fingerprint</translation>
 <translation id="5209670883520018268">Tray 20</translation>

@@ -338,7 +338,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> হলে অবশ্যই নির্দিষ্ট করে দিতে হবে এবং একটি সঠিক স্ট্রিং হতে হবে।</translation>
 <translation id="1745880797583122200">আপনার ব্রাউজারটি ম্যানেজ করা হচ্ছে</translation>
 <translation id="1746113442205726301">ছবি Y শিফ্ট</translation>
-<translation id="1747819498338037826">অটোমেটিক পরিবর্তন করা যাবে</translation>
 <translation id="17513872634828108">খোলা ট্যাব</translation>
 <translation id="1752021286346845558">মেলবক্স ৮</translation>
 <translation id="1753068535428855445">ডেটিং ও ব্যক্তিগত</translation>
@@ -1372,7 +1371,6 @@
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="4451135742916150903">HID ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>
 <translation id="4452328064229197696">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত করতে, Google পাসওয়ার্ড ম্যানেজার আপনার সেভ করা পাসওয়ার্ড চেক করার সাজেশন দিচ্ছে।</translation>
-<translation id="4455222631300069614">এখনই আপনার পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="4460315069258617173">এই সাইটের ট্যাব বন্ধ না করা পর্যন্ত অনুমতি থাকবে</translation>
 <translation id="4464826014807964867">এমন ওয়েবসাইট যার ব্যাপারে আপনার সংস্থার কাছ থেকে তথ্য পাওয়া গেছে</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1607,7 +1605,6 @@
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="5043480802608081735">আপনার কপি করা লিঙ্ক</translation>
-<translation id="5044545992476246592">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। Google Assistant আপনার পাসওয়ার্ড অটোমেটিক পরিবর্তন করতে পারবে।</translation>
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
 <translation id="5051305769747448211">লাইভ কমেডি</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইল পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}one{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}other{নিয়ারবাই শেয়ার ব্যবহার করে এই ফাইলগুলি পাঠাতে চাইলে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) জায়গা খালি করুন}}</translation>
@@ -1673,7 +1670,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> একাধিক ফাইল ডাউনলোড করতে চায়</translation>
 <translation id="519422657042045905">ব্যাখ্যা নেই</translation>
 <translation id="5201306358585911203">এই পৃষ্ঠার এম্বেডেড করা একটি পৃষ্ঠায় এটি দেখানো হচ্ছে</translation>
-<translation id="5204468114771111727">আপনি এখনই যে পাসওয়ার্ড ব্যবহার করলেন, সেটি Chrome হ্যাক হওয়া ডেটাবেসে পেয়েছে। Google Assistant আপনার পাসওয়ার্ড অটোমেটিক পরিবর্তন করতে পারবে।</translation>
 <translation id="5205222826937269299">নাম প্রয়োজন</translation>
 <translation id="5209518306177824490">SHA-1 আঙুলের ছাপ</translation>
 <translation id="5209670883520018268">ট্রে ২০</translation>

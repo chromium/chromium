@@ -387,6 +387,7 @@
           如果不設定這項政策，使用者將可在 <ph name="PRODUCT_NAME" /> 中安裝任何擴充功能。</translation>
 <translation id="1393485621820363363">已啟用企業裝置印表機</translation>
 <translation id="1395505489889158859">允許將使用者名稱和檔案名稱傳送給原生印表機</translation>
+<translation id="1396119629372155901">已停用 ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes 功能</translation>
 <translation id="1397855852561539316">預設搜尋引擎建議網址</translation>
 <translation id="1402227992519954892">啟用裝置應用程式資訊回報功能</translation>
 <translation id="141279920573530952">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有可用的序列埠。
@@ -591,6 +592,7 @@
 <translation id="1583248206450240930">根據預設使用 <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="1587585749332985896">禁止使用無頭模式</translation>
 <translation id="1588240398285670601">瀏覽器設定</translation>
+<translation id="1590802206069983683">可使用 ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes 功能</translation>
 <translation id="1592334921377856028">停用裝置硬體狀態回報功能</translation>
 <translation id="1595013560176869154">如果啟用這項政策，使用者將可使用低強度 PIN 碼。低強度 PIN 碼的特徵如下：由完全相同的數字組成 (例如 1111)、以 1 為單位遞增或遞減的數字 (例如 1234 或 4321)，以及常見的 PIN 碼。如果停用這項政策，使用者將無法設定容易破解的低強度 PIN 碼。
 
@@ -6916,6 +6918,9 @@
 <translation id="7925224837072026018">設定這項政策會將企業金鑰的存取權授予擴充功能或 Android 應用程式。在受管理的帳戶中使用 chrome.enterprise.platformKeys API 產生的金鑰僅供企業使用。使用者無法將企業金鑰的存取權授予擴充功能或 Android 應用程式，也無法撤銷擴充功能或 Android 應用程式對企業金鑰的存取權。
 
       根據預設，擴充功能或 Android 應用程式無法使用企業專用的金鑰 (等同於將 allowCorporateKeyUsage 設為 False)。擴充功能或 Android 應用程式只有在 allowCorporateKeyUsage 設為 True 時，才能使用企業專用的平台金鑰簽署任意資料。為了確保攻擊者無法獲得金鑰存取權，這項權限只應授予信任的擴充功能或 Android 應用程式。</translation>
+<translation id="7930383470029339167">ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes 是 Chrome 的功能，旨在讓不同程序和相同程序的不同來源 iframe 算繪行為保持一致。如要進一步瞭解不同程序和相同程序的節流功能，請前往 https://chromestatus.com/feature/5175574929080320。
+
+這項企業政策可讓系統管理員控管使用者是否能開啟額外的節流功能。如果將這項政策設為停用，系統將禁止啟用節流功能。如果將這項政策設為啟用或未設定，使用者就可以選擇使用節流功能，也或許可以透過其他 Chrome 版本啟用。</translation>
 <translation id="793188693675675950">不允許在第一次執行時匯入首頁</translation>
 <translation id="7933141401888114454">啟用建立受監管使用者的功能</translation>
 <translation id="793473937901685727">設定 ARC 應用程式的憑證可用性</translation>
@@ -8209,6 +8214,7 @@
 
       如果不設定這項政策或設為 <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />，系統會使用 Google 助理入門使用體驗的預設模式。
       如果將這項政策設為 <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />，系統會使用 Google 助理入門使用體驗的 EDU 模式。</translation>
+<translation id="9191821120522935133">允許啟用不可見的不同來源 iframe 節流功能</translation>
 <translation id="9192220384862917760">啟用遠端存取主機的簾幕模式</translation>
 <translation id="9194447412184412480">控管使用外部 IdP 透過 SAML 進行驗證的使用者設定</translation>
 <translation id="9195766455191826480">不要回報裝置安全性狀態</translation>

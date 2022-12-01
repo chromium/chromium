@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">이름 업데이트 검토</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> 탭이 <ph name="DESK_TITLE" /> 데스크로 이동했습니다</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> 후에 파일이 열립니다...</translation>
+<translation id="116896278675803795">선택한 콘텐츠와 일치하도록 언어를 자동으로 변경합니다.</translation>
 <translation id="1169266963600477608">게임 컨트롤</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> 파일에 민감하거나 위험한 데이터가 포함되어 있습니다. 관리자의 메시지: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" />에서 HID 기기에 연결하려고 합니다.</translation>
@@ -595,6 +596,7 @@
 <translation id="1546280085599573572">홈 버튼을 클릭하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />님이 다음 작업을 실행할 수 있는 <ph name="EXTENSION_TYPE" />을(를) 설치하려고 합니다.</translation>
 <translation id="1547808936554660006">설치된 eSIM 프로필이 파워워시로 삭제되지 않음을 이해합니다</translation>
+<translation id="1547936895218027488">측면 패널 아이콘을 클릭하여 엽니다.</translation>
 <translation id="1549275686094429035">ARC 사용 설정됨</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />에서 <ph name="VOLUME_NAME" />에 액세스하려고 합니다. 내 파일을 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="1552301827267621511">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 검색에 <ph name="SEARCH_PROVIDER_DOMAIN" /> 서비스를 사용하도록 변경했습니다.</translation>
@@ -1431,6 +1433,7 @@
 <translation id="2287944065963043964">로그인 화면</translation>
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
 <translation id="2290615375132886363">태블릿 탐색 버튼</translation>
+<translation id="2291452790265535215">북마크, 탐색 여정 등에 측면 패널을 사용해 보세요.</translation>
 <translation id="229182044471402145">일치하는 글꼴이 없습니다.</translation>
 <translation id="2292848386125228270">일반 사용자로 <ph name="PRODUCT_NAME" />을(를) 시작하세요. 개발용 루트로 실행해야 하는 경우 --no-sandbox 플래그를 사용하여 다시 실행하세요.</translation>
 <translation id="2294081976975808113">화면 개인 정보 보호</translation>
@@ -2579,7 +2582,6 @@
 <translation id="3341703758641437857">파일 URL에 대한 액세스 허용</translation>
 <translation id="3342361181740736773"><ph name="TRIGGERING_EXTENSION_NAME" />에서 이 확장 프로그램을 제거하려 합니다.</translation>
 <translation id="3343977377045378693">설정 수행 중</translation>
-<translation id="3345135638360864351">이 사이트에 대한 액세스 요청을 <ph name="NAME" />님에게 보내지 못했습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="3345634917232014253">안전 확인이 조금 전에 실행됨</translation>
 <translation id="3345886924813989455">지원되는 브라우저를 찾을 수 없습니다.</translation>
 <translation id="3347086966102161372">이미지 주소 복사(&amp;O)</translation>
@@ -2589,6 +2591,7 @@
 <translation id="3353786022389205125">'절전 모드가 해제될 때 잠금 화면 표시'를 사용 설정한 후 다시 시도해 주세요.</translation>
 <translation id="3354768182971982851">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Mac 기기에서 열리지 않습니다. 이용 가능한 새 버전이 있는지 확인해 보세요.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> 기기와 페어링할 수 없음, 기기를 선택하여 다시 시도</translation>
+<translation id="335581015389089642">음성</translation>
 <translation id="3355936511340229503">연결 오류</translation>
 <translation id="3356036636691722598">Chromebook에서 게임 즐기기</translation>
 <translation id="3356469410714175391">(가상 카드 사용 설정됨)</translation>
@@ -3167,7 +3170,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> 및 <ph name="MERCHANT_NAME_2" />에서 할인받기</translation>
 <translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">업데이트는 관리자가 관리합니다</translation>
-<translation id="3886446263141354045">사용자의 사이트 액세스 요청이 <ph name="NAME" />님에게 전송되었습니다.</translation>
 <translation id="3887022758415973389">기기 목록 표시</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> 연결</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />(으)로 메모 작성</translation>
@@ -3918,6 +3920,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />에 저장된 기기 없음</translation>
 <translation id="4592891116925567110">스타일러스 그리기 앱</translation>
 <translation id="4593021220803146968"><ph name="URL" />(으)로 이동(&amp;G)</translation>
+<translation id="4594218792629569101">'읽음으로 표시'를 선택하여 페이지를 목록 맨 아래로 이동합니다.</translation>
 <translation id="4594577641390224176">시스템의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="4595560905247879544">앱 및 확장 프로그램은 관리자(<ph name="CUSTODIAN_NAME" />)만 수정할 수 있습니다.</translation>
 <translation id="4596295440756783523">다음 서버를 식별하는 인증서가 등록되어 있습니다.</translation>
@@ -4425,6 +4428,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5084328598860513926">프로비저닝 흐름이 중단되었습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="5085162214018721575">업데이트를 확인하는 중</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">메모가 1,000자(영문 기준)를 초과합니다.</translation>
 <translation id="5086874064903147617">기본 홈페이지를 복원하시겠습니까?</translation>
 <translation id="5087249366037322692">타사 프로그램에서 추가</translation>
 <translation id="5087580092889165836">카드 추가</translation>
@@ -6587,6 +6591,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7111822978084196600">창 이름 지정</translation>
 <translation id="7113102733263608554">항목 <ph name="ITEM_COUNT_ONE" />개</translation>
 <translation id="7113502843173351041">이메일 주소 조회</translation>
+<translation id="7113974454301513811">이제 목록에 현재 탭을 추가합니다.</translation>
 <translation id="7114054701490058191">비밀번호가 일치하지 않습니다.</translation>
 <translation id="7114648273807173152">Smart Lock을 사용해 Google 계정에 로그인하려면 설정 &gt; 연결된 기기 &gt; 휴대전화 &gt; Smart Lock으로 이동하세요.</translation>
 <translation id="7115361495406486998">연락 가능한 연락처 없음</translation>
@@ -8103,7 +8108,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8540942859441851323">제공업체에서 로밍을 요청합니다.</translation>
 <translation id="8541462173655894684">인쇄 서버에서 프린터를 찾을 수 없습니다.</translation>
 <translation id="8541838361296720865">'<ph name="ACTION" />'에 할당할 스위치 또는 키보드 키를 누르세요.</translation>
-<translation id="8543556556237226809">질문이 있으신가요? 프로필 관리자에게 문의하세요.</translation>
 <translation id="8546186510985480118">기기에 저장 공간 부족</translation>
 <translation id="8546306075665861288">이미지 캐시</translation>
 <translation id="8546930481464505581">Touch Bar 맞춤설정</translation>
@@ -8446,6 +8450,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8859174528519900719">서브프레임: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">서비스 약관을 로드할 수 없습니다.</translation>
 <translation id="8859662783913000679">부모 계정</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{계정 {COUNT}개}other{계정 {COUNT}개}}</translation>
 <translation id="8861568709166518036">화면 버튼을 사용하여 홈이나 뒤로 이동하고 앱 간에 전환할 수 있습니다. ChromeVox 또는 자동 클릭이 사용 설정되어 있으면 자동으로 사용 설정됩니다.</translation>
 <translation id="8862003515646449717">빠른 브라우저로 전환</translation>
 <translation id="8863753581171631212">새 <ph name="APP" />에서 링크 열기</translation>
@@ -8819,6 +8824,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9201842707396338580">문제가 발생했습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="9203398526606335860">프로파일링 사용(&amp;P)</translation>
 <translation id="9203904171912129171">기기를 선택하세요.</translation>
+<translation id="920410963177453528">드롭다운을 클릭하여 다른 패널을 선택합니다.</translation>
 <translation id="9206889157914079472">잠금 화면에서 스타일러스로 메모 작성</translation>
 <translation id="9208192193641542858">로컬 데이터는 기존 비밀번호로 보호됩니다. 최근에 비밀번호를 변경한 경우 이전 비밀번호로 다시 시도해 보세요.</translation>
 <translation id="9209563766569767417">Linux 컨테이너 설정 확인 중</translation>

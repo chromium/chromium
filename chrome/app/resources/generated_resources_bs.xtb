@@ -189,6 +189,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1166583374608765787">Pregledajte ažuriranje naziva</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pripada radnoj površini <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Otvara se za <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Automatski promijeni jezik da se podudara s odabranim sadržajem</translation>
 <translation id="1169266963600477608">Kontrole igre</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> sadržava osjetljive ili opasne podatke. Vaš administrator kaže: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> se želi povezati na HID uređaj</translation>
@@ -2579,7 +2580,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3341703758641437857">Dozvoli pristup URL-ovima fajlova</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" želi ukloniti ovu ekstenziju.</translation>
 <translation id="3343977377045378693">Izvršavanje postavljanja</translation>
-<translation id="3345135638360864351">Vaš zahtjev za pristup ovoj web lokaciji nije uspješno poslan korisniku <ph name="NAME" />. Pokušajte ponovo.</translation>
 <translation id="3345634917232014253">Sigurnosna provjera je izvršena maloprije</translation>
 <translation id="3345886924813989455">Nije pronađen nijedan podržani preglednik</translation>
 <translation id="3347086966102161372">K&amp;opiraj adresu slike</translation>
@@ -2589,6 +2589,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3353786022389205125">Uključite "Show lock screen when waking from sleep" i pokušajte ponovo</translation>
 <translation id="3354768182971982851">Stare verzije Chromeovih aplikacija se neće moći otvarati na Mac uređajima nakon decembra 2022. Možete provjeriti je li dostupna nova verzija.</translation>
 <translation id="3354972872297836698">Uparivanje s uređajem <ph name="DEVICE_NAME" /> nije uspjelo. Odaberite uređaj da pokušate ponovo</translation>
+<translation id="335581015389089642">Govor</translation>
 <translation id="3355936511340229503">Greška prilikom povezivanja</translation>
 <translation id="3356036636691722598">Uživajte u igrama na Chromebooku</translation>
 <translation id="3356469410714175391">(Virtuelna kartica je omogućena)</translation>
@@ -3167,7 +3168,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3883482240657453056">Primajte popuste za trgovine <ph name="MERCHANT_NAME_1" /> i <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Sadržaj weba koji je dostupan na više jezika će koristiti prvi podržani jezik s liste. Ove postavke se sinhroniziraju s postavkama preglednika. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Ažuriranjima upravlja vaš administrator</translation>
-<translation id="3886446263141354045">Vaš zahtjev za pristup ovoj web lokaciji je poslan korisniku <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Prikaži listu uređaja</translation>
 <translation id="3888053818972567950">Veza s uslugom <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Kreiranje bilježaka pomoću aplikacije <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8111,7 +8111,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8540942859441851323">Mobilni operater zahtijeva roming</translation>
 <translation id="8541462173655894684">Nije pronađen nijedan štampač na serveru za štampanje</translation>
 <translation id="8541838361296720865">Pritisnite prekidač ili tipku na tastaturi da dodijelite radnju "<ph name="ACTION" />"</translation>
-<translation id="8543556556237226809">Pitanja? Kontaktirajte osobu koja nadzire vaš profil.</translation>
 <translation id="8546186510985480118">Na uređaju ima malo prostora</translation>
 <translation id="8546306075665861288">Keš memorija slike</translation>
 <translation id="8546930481464505581">Prilagodite traku za dodir</translation>

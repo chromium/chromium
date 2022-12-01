@@ -730,6 +730,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4987738733603015246">16. plocha</translation>
 <translation id="5003993274120026347">Ďalšia veta</translation>
 <translation id="5016558321564993266">Prepnite zvýrazňovač. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Prístup k mikrofónu zariadenia je zapnutý</translation>
 <translation id="5030687792513154421">Čas vypršal</translation>
 <translation id="5033299697334913360">Kliknutím na ľubovoľné miesto nahráte celú obrazovku</translation>
 <translation id="5035236842988137213">Zariadenie <ph name="DEVICE_NAME" /> bolo pripojené k novému telefónu</translation>
@@ -965,6 +966,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6359587239691116345">Dostávajte najnovšie funkcie a zlepšenia zabezpečenia. Ak túto aktualizáciu odmietnete, vaše zariadenie už nemusí fungovať správne a môže dochádzať k problémom so zabezpečením a výkonom.</translation>
 <translation id="6376931439017688372">Rozhranie Bluetooth je zapnuté</translation>
 <translation id="6381109794406942707">Ak chcete odomknúť zariadenie, zadajte PIN.</translation>
+<translation id="638716340450135524">Zapnúť prístup k fotoaparátu</translation>
 <translation id="639644700271529076">CAPS LOCK je vypnutý</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
@@ -972,6 +974,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="642644398083277086">Vymazanie všetkých upozornení</translation>
 <translation id="643147933154517414">Všetko je hotové</translation>
 <translation id="6431865393913628856">Rekordér obrazovky</translation>
+<translation id="6442259747294754014">Prístup k mikrofónu zariadenia je vypnutý</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> udalosť</translation>
 <translation id="6449483711453944360">Aplikácie pre Linux a okná inkognito nie sú momentálne podporované.</translation>
@@ -1369,6 +1372,7 @@ Nová inštalácia</translation>
 <translation id="8598235756057743477">Zoraďte aplikácie podľa názvu alebo farby</translation>
 <translation id="8614517853887502247">Upozornenia z aplikácií <ph name="APP_1_TITLE" /> a <ph name="APP_2_TITLE" /> sú skryté, pretože je zapnutá ochrana pred zobrazením</translation>
 <translation id="8627191004499078455">Pripojené k zariadeniu <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Vypnúť prístup ku kamere</translation>
 <translation id="8631727435199967028">Nastavenia dostupnosti</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="8639760480004882931">Zostávajúca kapacita: <ph name="PERCENTAGE" /></translation>

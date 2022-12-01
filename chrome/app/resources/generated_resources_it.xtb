@@ -187,6 +187,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1166583374608765787">Controlla l'aggiornamento del nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> appartiene alla scrivania <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> all'apertura del file...</translation>
+<translation id="116896278675803795">Cambia automaticamente la lingua in base ai contenuti selezionati</translation>
 <translation id="1169266963600477608">Controlli di gioco</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> presenta dati sensibili o pericolosi. Messaggio dell'amministratore: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> vuole collegarsi a un dispositivo HID</translation>
@@ -2565,7 +2566,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3341703758641437857">Consenti l'accesso agli URL dei file</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" vorrebbe rimuovere questa estensione.</translation>
 <translation id="3343977377045378693">Configurazione in corso…</translation>
-<translation id="3345135638360864351">Impossibile inviare a <ph name="NAME" /> la richiesta di accesso a questo sito. Riprova.</translation>
 <translation id="3345634917232014253">Il controllo di sicurezza è stato eseguito poco fa</translation>
 <translation id="3345886924813989455">Non è stato trovato nessun browser supportato</translation>
 <translation id="3347086966102161372">C&amp;opia l'indirizzo dell'immagine</translation>
@@ -2575,6 +2575,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3353786022389205125">Attiva "Mostra la schermata di blocco quando il dispositivo viene riattivato dopo la sospensione" e riprova</translation>
 <translation id="3354768182971982851">Le versioni precedenti delle app di Chrome non si apriranno più sui dispositivi Mac dopo dicembre 2022. Puoi verificare se è disponibile una nuova versione.</translation>
 <translation id="3354972872297836698">Impossibile eseguire l'accoppiamento con il dispositivo <ph name="DEVICE_NAME" />; seleziona il dispositivo per riprovare</translation>
+<translation id="335581015389089642">Voce</translation>
 <translation id="3355936511340229503">Errore di connessione</translation>
 <translation id="3356036636691722598">Goditi i giochi su Chromebook</translation>
 <translation id="3356469410714175391">(Carta virtuale attivata)</translation>
@@ -3153,7 +3154,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3883482240657453056">Ricevi sconti per <ph name="MERCHANT_NAME_1" /> e <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">I contenuti web che sono disponibili in più lingue utilizzeranno la prima lingua supportata nell'elenco. Queste preferenze sono sincronizzate con le impostazioni del browser. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Gli aggiornamenti sono gestiti dall'amministratore</translation>
-<translation id="3886446263141354045">La tua richiesta di accesso al sito è stata inviata a <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Mostra elenco dispositivi</translation>
 <translation id="3888053818972567950">Connessione <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Creazione di appunti con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8089,7 +8089,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8540942859441851323">Roaming richiesto dall'operatore</translation>
 <translation id="8541462173655894684">Nessuna stampante trovata sul server di stampa</translation>
 <translation id="8541838361296720865">Premi un sensore o un tasto della tastiera per assegnarlo a "<ph name="ACTION" />"</translation>
-<translation id="8543556556237226809">Domande? Contatta il supervisore del tuo profilo.</translation>
 <translation id="8546186510985480118">Spazio insufficiente sul dispositivo</translation>
 <translation id="8546306075665861288">Cache immagini</translation>
 <translation id="8546930481464505581">Personalizza la Touch Bar</translation>

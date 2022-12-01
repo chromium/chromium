@@ -551,7 +551,6 @@
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="519530786644929958">Помилка завантаження.</translation>
 <translation id="5197255632782567636">Інтернет</translation>
-<translation id="5210365745912300556">Закрити вкладку</translation>
 <translation id="5219295696240154694">Допоможіть підвищити безпеку в Інтернеті для кожного</translation>
 <translation id="5228579091201413441">Увімкнути синхронізацію</translation>
 <translation id="5232485538978018676">Увійти в керований обліковий запис</translation>
@@ -876,6 +875,7 @@
 <translation id="7531345132340165516">Поточний сайт</translation>
 <translation id="7537586195939242955">Не вдалося внести дані в Passbook.</translation>
 <translation id="7553234618121028547">Щоб вимкнути, відкрийте <ph name="BEGIN_LINK" />Параметри<ph name="END_LINK" /> та перейдіть у розділ "Параметри паролів".</translation>
+<translation id="7554645225856321710">Закрити всі</translation>
 <translation id="7554791636758816595">Нова вкладка</translation>
 <translation id="7561196759112975576">Завжди</translation>
 <translation id="7583004045319035904">Використовуйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, щоб розблоковувати анонімні вкладки.</translation>

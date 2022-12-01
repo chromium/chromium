@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">নামৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
 <translation id="1166596238782048887">ডেস্ক <ph name="DESK_TITLE" />ত <ph name="TAB_TITLE" /> আছে</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />ত খুলি থকা হৈছে...</translation>
+<translation id="116896278675803795">বাছনি কৰা সমল মিলাবলৈ স্বয়ংক্ৰিয়ভাৱে ভাষা সলনি কৰক</translation>
 <translation id="1169266963600477608">গে’মৰ নিয়ন্ত্ৰণ</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" />ত সংবেদনশীল অথবা বিপজ্জনক ডেটা আছে। আপোনাৰ প্ৰশাসকে কৈছে "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" />এ এটা HID ডিভাইচৰ সৈতে সংযুক্ত হ'ব বিচাৰে</translation>
@@ -2576,7 +2577,6 @@
 <translation id="3341703758641437857">ফাইলৰ URL এক্সেছ কৰাৰ অনুমতি দিয়ক</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />"এ এই এক্সটেনশ্বনটো আঁতৰাব খোজে।</translation>
 <translation id="3343977377045378693">ছেটআপ কৰি থকা হৈছে</translation>
-<translation id="3345135638360864351">আপুনি এই ছাইটৰ এক্সেছ বিচাৰি কৰা অনুৰোধ <ph name="NAME" />লৈ পঠিয়াব পৰা নগ’ল। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="3345634917232014253">এক মুহূৰ্তৰ আগতে সুৰক্ষা পৰীক্ষা চলিছে</translation>
 <translation id="3345886924813989455">সমৰ্থিত কোনো ব্ৰাউজাৰ বিচাৰি পোৱা নগ'ল</translation>
 <translation id="3347086966102161372">প্ৰতিচ্ছবিৰ ঠিকনা প্ৰ&amp;তিলিপি কৰক</translation>
@@ -2586,6 +2586,7 @@
 <translation id="3353786022389205125">"টোপনিৰ পৰা সাৰ পোৱাৰ সময়ত লক স্ক্ৰীন দেখুৱাওক" সুবিধাটো অন কৰক আৰু পুনৰ চেষ্টা কৰক</translation>
 <translation id="3354768182971982851">২০২২ চনৰ ডিচেম্বৰৰ পাছত Mac ডিভাইচসমূহত Chrome এপৰ পুৰণি সংস্কৰণসমূহ খোল নাখাব। নতুন সংস্কৰণ উপলব্ধ আছে নে নাই সেয়া আপুনি চাব পাৰে।</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ডিভাইচৰ সৈতে পেয়াৰ কৰিব পৰা নগ’ল; পুনৰ চেষ্টা কৰিবলৈ ডিভাইচ বাছনি কৰক</translation>
+<translation id="335581015389089642">কথন</translation>
 <translation id="3355936511340229503">সংযোগৰ আসোঁৱাহ</translation>
 <translation id="3356036636691722598">আপোনাৰ Chromebookত গে’মিঙৰ আনন্দ লওক</translation>
 <translation id="3356469410714175391">(ভাৰ্চুৱেল কাৰ্ডখন সক্ষম কৰা হ’ল)</translation>
@@ -3164,7 +3165,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> আৰু <ph name="MERCHANT_NAME_2" />ৰ বাবে ৰেহাই পাওক</translation>
 <translation id="3884152383786131369">একাধিক ভাষাত উপলব্ধ ৱেবৰ সমলে এই সূচীখনৰ পৰা সমৰ্থিত প্ৰথম ভাষাটো ব্যৱহাৰ কৰিব। এই অগ্ৰাধিকাৰসমূহ আপোনাৰ ব্ৰাউজাৰৰ ছেটিঙৰ সৈতে ছিংক কৰা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">আপোনাৰ প্ৰশাসকে আপডে’টসমূহ পৰিচালনা কৰে</translation>
-<translation id="3886446263141354045">এই ছাইটটো এক্সেছ কৰিবলৈ আপুনি কৰা অনুৰোধ <ph name="NAME" />লৈ পঠিওৱা হৈছে</translation>
 <translation id="3887022758415973389">ডিভাইচৰ সূচী দেখুৱাওক</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> সংযোগ</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />ৰ জৰিয়তে টোকা লৈ থকা হৈছে</translation>
@@ -8101,7 +8101,6 @@
 <translation id="8540942859441851323">প্ৰদানকাৰীক ম’বাইল ডেটা ৰ’মিঙৰ প্ৰয়োজন</translation>
 <translation id="8541462173655894684">প্ৰিণ্ট ছার্ভাৰটোৰ পৰা কোনো প্ৰিণ্টাৰ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="8541838361296720865">কোনো এটা ছুইচ অথবা কীব’ৰ্ডৰ কীৰ সৈতে “<ph name="ACTION" />” আবণ্টন কৰিবলৈ সেই ছুইচ অথবা কীটো টিপক</translation>
-<translation id="8543556556237226809">প্ৰশ্ন সুধিব লগা আছে নেকি? আপোনাৰ প্ৰ’ফাইল তদাৰক কৰা লোকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="8546186510985480118">ডিভাইচত খালী ঠাই কম আছে</translation>
 <translation id="8546306075665861288">প্ৰতিচ্ছবিৰ কেশ্ব</translation>
 <translation id="8546930481464505581">স্পর্শ বাৰ কাষ্টমাইজ কৰক</translation>
@@ -8445,6 +8444,7 @@
 <translation id="8859174528519900719">ছাবফ্ৰে’ম: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">সেৱাৰ চৰ্তাৱলী ল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="8859662783913000679">অভিভাৱকৰ একাউণ্ট</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} টা একাউণ্ট}one{{COUNT} টা একাউণ্ট}other{{COUNT} টা একাউণ্ট}}</translation>
 <translation id="8861568709166518036">গৃহলৈ নেভিগে’ট কৰিবলৈ, উভতি যাবলৈ আৰু এপ্‌সমূহ সলনি কৰিবলৈ অন-স্ক্ৰীন বুটামসমূহ ব্যৱহাৰ কৰক। ChromeVox অথবা স্বয়ংক্ৰিয় ক্লিক সুবিধাটো অন কৰিলে স্বয়ংক্ৰিয়ভাৱে অন হয়।</translation>
 <translation id="8862003515646449717">কোনো দ্ৰুত ব্ৰাউজাৰ ব্যৱহাৰ কৰক</translation>
 <translation id="8863753581171631212">লিংক নতুন <ph name="APP" />ত খোলক</translation>

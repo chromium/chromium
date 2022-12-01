@@ -728,6 +728,7 @@
 <translation id="4987738733603015246">ዴስክ 16</translation>
 <translation id="5003993274120026347">ቀጣይ ዓረፍተ ነገር</translation>
 <translation id="5016558321564993266">ምልክት ማድረጊያን ይቀያይሩ። <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">የመሣሪያ ማይክሮፎን መዳረሻ በርቷል</translation>
 <translation id="5030687792513154421">ሰዓት አልቋል</translation>
 <translation id="5033299697334913360">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ ጠቅ ያድርጉ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ከአዲስ ስልክ ጋር ተገናኝቷል</translation>
@@ -962,6 +963,7 @@
 <translation id="6359587239691116345">የቅርብ ጊዜ ባህሪያትን እና የደህንነት ማሻሻያዎችን ያግኙ። ይህን ዝማኔ ካልተቀበሉ የእርስዎ መሣሪያ ከእንግዲህ በትክክል ላይሰራ እና የደህንነት እና የአፈጻጸም ችግሮች ሊያጋጥሙዎት ይችላል።</translation>
 <translation id="6376931439017688372">ብሉቱዝ በርቷል</translation>
 <translation id="6381109794406942707">መሣሪያውን ለመክፈት የእርስዎን ፒን ያስገቡ።</translation>
+<translation id="638716340450135524">የካሜራ መዳረሻን አብራ</translation>
 <translation id="639644700271529076">CAPS LOCK ጠፍቷል</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google ረዳት</translation>
@@ -969,6 +971,7 @@
 <translation id="642644398083277086">ሁሉንም ማሳወቂያዎች አጽዳ</translation>
 <translation id="643147933154517414">ሁሉም ተከናውኗል</translation>
 <translation id="6431865393913628856">የማያ ገጽ ቀረጻ</translation>
+<translation id="6442259747294754014">የመሣሪያ ማይክሮፎን መዳረሻ ጠፍቷል</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> በ<ph name="RECEIVER_NAME" /> ላይ</translation>
 <translation id="6447111710783417522"><ph name="DATE" />፣ <ph name="NUMBER" /> ክስተት</translation>
 <translation id="6449483711453944360">የሊኑክስ መተግበሪያዎች እና ማንነት የማያሳውቁ መስኮቶች በአሁኑ ጊዜ አይደገፉም</translation>
@@ -1206,6 +1209,7 @@
 <translation id="7720410380936703141">እንደገና ይሞክሩ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ማሳወቂያ}one{# ማሳወቂያዎች}other{# ማሳወቂያዎች}}</translation>
 <translation id="7724603315864178912">ቁረጥ</translation>
+<translation id="7742327441377685481">ምንም ማሳወቂያዎች የሉም</translation>
 <translation id="7745560842763881396">መተግበሪያዎችን በመደርደሪያ አሳይ</translation>
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
 <translation id="776344839111254542">የዝማኔ ዝርዝሮችን ለማየት ጠቅ ያድርጉ</translation>
@@ -1362,6 +1366,7 @@
 <translation id="8598235756057743477">መተግበሪያዎችዎን በስም ወይም በቀለም ይደርድሩ</translation>
 <translation id="8614517853887502247">የእይታ ጥበቃ ስለበራ የ<ph name="APP_1_TITLE" /> እና <ph name="APP_2_TITLE" /> ማሳወቂያዎች ተደብቀዋል</translation>
 <translation id="8627191004499078455">ከ<ph name="DEVICE_NAME" /> ጋር ተገናኝቷል</translation>
+<translation id="8630991711272431708">የካሜራ መዳረሻን አጥፋ</translation>
 <translation id="8631727435199967028">የተደራሽነት ቅንብሮች</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በአስተዳዳሪዎ የሚቀናበር</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ይቀራል</translation>

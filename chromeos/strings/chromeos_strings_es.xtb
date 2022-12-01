@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Sigue los pasos para solucionar el problema</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Conéctate a una red y vuelve a cargar la página para ver el salvapantallas.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2085089206770112532">Reducir el brillo de la pantalla</translation>
 <translation id="2105810540595158374">El dispositivo es un mando de juegos.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">Si ejecutas una prueba de CPU, es posible que el rendimiento del sistema se vea afectado</translation>
 <translation id="4800589996161293643">Comunidad de Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Trabajo de impresión <ph name="DOCUMENT_TITLE" /> cancelado</translation>
 <translation id="4809927044794281115">Tema claro</translation>
 <translation id="4813136279048157860">Mis imágenes</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Esfuerzo</translation>
 <translation id="4897058166682006107">Nivel de batería del auricular izquierdo del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Activa la función para seleccionar las opciones del salvapantallas</translation>
+<translation id="4910858703033903787">Tipos de APN</translation>
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4917889632206600977">Detenido: sin papel</translation>
 <translation id="491791267030419270">Consejos sobre cómo escribir comentarios</translation>
@@ -459,6 +462,7 @@
 <translation id="5358174242040570474">Se ha producido un error. Prueba a elegir un fondo de pantalla de nuevo o vuelve a abrir la aplicación.</translation>
 <translation id="5372659122375744710">La red Wi-Fi no es segura</translation>
 <translation id="5376354385557966694">Modo Claro automático</translation>
+<translation id="5378184552853359930">Tipo de IP</translation>
 <translation id="5389159777326897627">Fondo de pantalla y estilo</translation>
 <translation id="5389224261615877010">Arcoíris</translation>
 <translation id="5400907029458559844">El dispositivo se está conectando.</translation>
@@ -488,6 +492,7 @@
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
+<translation id="5695599963893094957">Pulsa cualquier tecla del teclado. Puedes pulsar hasta 4 teclas al mismo tiempo.</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
@@ -614,7 +619,6 @@
 <translation id="6766275201586212568">Errores de resoluciones de DNS</translation>
 <translation id="6768237774506518020">Tasa de errores de resolución de DNS alta</translation>
 <translation id="6791471867139427246">color de la luz del teclado</translation>
-<translation id="6793680441750437230">Pulsa cualquier tecla del teclado. Puedes pulsar hasta 4 teclas al mismo tiempo. Pulsa Alt + Esc para cerrar el cuadro de diálogo.</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hay disponible información relacionada con tu selección. Utiliza la flecha hacia arriba para consultarla.</translation>
 <translation id="6853312040151791195">Velocidad de descarga</translation>
@@ -742,6 +746,7 @@
 <translation id="8138405288920084977">LTE Advanced</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Intro</translation>
+<translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8208861521865154048">Ventajas</translation>
 <translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
@@ -830,6 +835,7 @@
 <translation id="9025198690966128418">Usar como dispositivo personal</translation>
 <translation id="9028832514430399253">Activa el interruptor para seleccionar las opciones del salvapantallas</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">La resolución de DNS tiene una latencia alta</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

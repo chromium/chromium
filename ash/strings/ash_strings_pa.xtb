@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ਇੱਕ ਐਪ ਲਈ ਬੰਦ}one{# ਐਪ ਲਈ ਬੰਦ}other{# ਐਪਾਂ ਲਈ ਬੰਦ}}</translation>
 <translation id="4066027111132117168">ਚਾਲੂ ਹੈ, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">ਮੱਧਮ ਸਿਗਨਲ</translation>
+<translation id="4086921558679520050">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਭੌਤਿਕ ਮਾਈਕ ਸਵਿੱਚ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4112140312785995938">ਪਿੱਛੇ ਕਰੋ</translation>
 <translation id="4114315158543974537">ਫ਼ੋਨ ਹੱਬ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4115378294792113321">ਮਜੈਂਟਾ</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /> ਫ਼ੀਸਦ</translation>
 <translation id="4378551569595875038">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4379531060876907730">ਇਹ ਤੁਹਾਡੇ ਸਟਾਈਲਸ ਟੂਲ ਹਨ</translation>
+<translation id="4381031910344220229">ਇਹ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੇ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="4389184120735010762">ਤੁਸੀਂ ਡੌਕ ਕੀਤੇ ਵੱਡਦਰਸ਼ੀ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="439598569299422042">ਰੋਕਿਆ ਗਿਆ, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ਸਕ੍ਰੀਨਕਾਸਟ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
@@ -961,6 +963,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਇੱਕ ਪ੍ਰਬੰਧਿਤ ਸੈਸ਼ਨ ਹੈ</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ਕਨੈਕਟ ਹੈ</translation>
 <translation id="6351032674660237738">ਐਪ ਸੁਝਾਅ</translation>
+<translation id="6352082849089527770">ਅਗਿਆਤ ਨੈੱਟਵਰਕ</translation>
 <translation id="6359587239691116345">ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸੁਧਾਰ ਪ੍ਰਾਪਤ ਕਰੋ। ਜੇ ਤੁਸੀਂ ਇਸ ਅੱਪਡੇਟ ਨੂੰ ਅਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਸ਼ਾਇਦ ਹੁਣ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਨਾ ਕਰੇ ਅਤੇ ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6376931439017688372">ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ</translation>
 <translation id="6381109794406942707">ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਆਪਣਾ ਪਿੰਨ ਦਾਖਲ ਕਰੋ।</translation>
@@ -1137,6 +1140,7 @@
 <translation id="7360036564632145207">ਪੈਰੀਫੈਰਲ ਸੈਟਿੰਗਾਂ ਲਈ ਆਪਣੀ ਡਾਟਾ ਪਹੁੰਚ ਸੁਰੱਖਿਆ ਨੂੰ ਬਦਲਣ ਨਾਲ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਸੁਯੋਗ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="736045644501761622">ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="7371404428569700291">ਰਿਕਾਰਡ ਵਿੰਡੋ</translation>
+<translation id="737315737514430195">ਇਹ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੇ ਨਾਲ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="7377169924702866686">Caps Lock ਚਾਲੂ ਹੈ।</translation>
 <translation id="7377481913241237033">ਕੋਡ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7378203170292176219">ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਕਿਸੇ ਖੇਤਰ ਨੂੰ ਚੁਣਨ ਵਾਸਤੇ ਘਸੀਟੋ</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7671610481353807627">ਐਪਾਂ ਨੂੰ ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">ਕੈਮਰਾ ਇਨਪੁੱਟ <ph name="CAMERA_NAME" /> 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
+<translation id="7689817529363080918">ਇਹ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੇ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ਅਤੇ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ਨਵਾਂ ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> ਤੱਕ ਚਾਲੂ ਰਹੇਗੀ</translation>

@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">ማድመቂያ እንዲያጥር ተደርጓል</translation>
 <translation id="1111673857033749125">በሌሎች መሣሪያዎችዎ ላይ የተቀመጡ ዕልባቶችዎ እዚህ ብቅ ይላሉ።</translation>
 <translation id="1113597929977215864">የተቃለለ እይታን አሳይ</translation>
-<translation id="1118561384561215815">በድሩ ላይ ባሉ ተግባራት ላይ እገዛ ያግኙ</translation>
 <translation id="1123070903960493543">ከChrome፣ ከመረጧቸው ቅንብሮች፣ የChrome ብልሽቶች ዝርዝሮች ጋር እንዴት እንደሚገናኙ</translation>
 <translation id="1126809382673880764">እርስዎን አደገኛ ከሆኑ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አይጠብቀዎትም። አሁንም የሚገኝ በሆነበት ጊዜ እንደ Gmail እና ፍለጋ ባሉ ሌሎች የGoogle አገልግሎቶች ላይ የጥንቃቄ አሰሳ ጥበቃን ያገኛሉ።</translation>
 <translation id="1129510026454351943">ዝርዝሮች፦ <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@
 <translation id="2286841657746966508">የመላኪያ አድራሻ</translation>
 <translation id="228704530595896923">የማጋሪያ አማራጮች ዝርዝር።</translation>
 <translation id="230115972905494466">ምንም ተኳሃኝ መሣሪያዎች አልተገኙም</translation>
-<translation id="230155349749732438">ይህን ቅንብር ለመጠቀም <ph name="BEGIN_LINK" />ፍለጋዎችን እና አሰሳን የተሻለ አድርግ<ph name="END_LINK" /> መብራት አለበት</translation>
 <translation id="2318045970523081853">ጥሪ ለማድረግ መታ ያድርጉ</translation>
 <translation id="2321086116217818302">የይለፍ ቃላትን በማዘጋጀት ላይ…</translation>
 <translation id="2323763861024343754">የጣቢያ ማከማቻ</translation>
@@ -423,7 +421,6 @@
 <translation id="3269093882174072735">ምስል ጫን</translation>
 <translation id="3280562213547448728">የድምፅ ፍለጋ</translation>
 <translation id="3282568296779691940">Chrome ውስጥ ይግቡ</translation>
-<translation id="3284510035090979597">ንቁ እገዛ</translation>
 <translation id="3285080554353377245">Chromeን እንዴት እንደሚጠቀሙ ቪዲዮዎች</translation>
 <translation id="3288003805934695103">ገጹን እንደገና መጫን</translation>
 <translation id="3290249595466894471">አዲስ ስጋቶችን ፈልጎ ለማግኘት እንዲያግዝ በተጨማሪም የገጾች፣ ውርዶች፣ የቅጥያ እንቅስቃሴ እና የሥርዓት መረጃ ትንሽ ናሙና ይልካል</translation>
@@ -580,7 +577,6 @@
 <translation id="4209895695669353772">በGoogle የተጠቆመ ግላዊነት የተላበሰ ይዘትን ስምረትን ማብራት ለማግኘት</translation>
 <translation id="4214315110991671325">ኩኪዎችን ከፈቀዱ Chrome ለቅድሚያ መጫን ሊጠቀምባቸው ይችላል።</translation>
 <translation id="4225895483398857530">የመሣሪያ አሞሌ አቋራጭ</translation>
-<translation id="4227318652298512614">የሚፈልጉትን ማንኛውም ጣቢያዎች ይከተሉ</translation>
 <translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
 <translation id="4248098802131000011">የይለፍ ቃላትዎን ከውሂብ ጥሰቶች እና ሌሎች የደህንነት ችግሮች ይጠብቁ</translation>
 <translation id="424864128008805179">ከChrome ተዘግቶ ይወጣ?</translation>
@@ -870,7 +866,6 @@
 <translation id="5795872532621730126">ይፈልጉ እና ያስሱ</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{ከ# ሰዓት በፊት}one{ከ# ሰዓቶች በፊት}other{ከ# ሰዓቶች በፊት}}</translation>
 <translation id="5810288467834065221">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
-<translation id="5810864297166300463">የድር እርዳታ</translation>
 <translation id="5813552293717797987">ይህ አሳሽ በ<ph name="PARENT_NAME_1" /> እና <ph name="PARENT_NAME_2" /> የሚተዳደር ነው።</translation>
 <translation id="5814131985548525293">ለመጀመር እዚህ ይተይቡ ወይም የድምጽ አዶውን መታ ያድርጉ</translation>
 <translation id="5814749351757353073">የሚወዷቸው ጣቢያዎችን በቅርበት ይከታተሉ</translation>
@@ -893,7 +888,6 @@
 <translation id="5869789175361934029">ከሌላ መሣሪያ ላይ ይቀጥሉ</translation>
 <translation id="587735546353481577">አንድን ጣቢያ ለመከተል ወደ ጣቢያው ይሂዱ፣ የChrome ምናሌውን ይክፈቱ እና ይከተሉን መታ ያድርጉ።</translation>
 <translation id="5879072387416556377">የተሻሉ ጥቆማዎችን ያግኙ</translation>
-<translation id="5884076754568147479">ተግባራትን እንዲያጠናቅቁ ለማገዝ Google ረዳትን የሚጠቀሙባቸው የጣቢያዎች ዩአርኤሎች እና ይዘቶችና እንዲሁም በረዳት በኩል የሚያስገቡት መረጃን ይቀበላል</translation>
 <translation id="5906513782029855931">የጣቢያዎችን ዩአርኤሎች ማወቅ Google ረዳት ስራዎችን እንዲያጠናቅቁ እንዲያግዘዎት ያስችለዋል። ረዳትን በChrome ቅንብሮች ላይ ማጥፋት ይችላሉ።</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5919204609460789179">ስምረትን ለመጀመር <ph name="PRODUCT_NAME" />ን ያዘምኑ</translation>
@@ -1334,7 +1328,6 @@
 <translation id="8127542551745560481">መነሻ ገጽን ያርትዑ</translation>
 <translation id="8130309322784422030">የተከማቸው የመግቢያ መረጃዎ ጊዜው ያለፈበት ሊሆን ይችላል</translation>
 <translation id="813082847718468539">የጣቢያ መረጃን ይመልከቱ</translation>
-<translation id="8153351135626613369">ረዳት እርስዎን በሚደገፉ ድር ጣቢያዎች ላይ ማገዝ እንደሚችል ሲያውቅ ይመጣል</translation>
 <translation id="8156139159503939589">ምን ቋንቋዎች ነው የሚያነብቡት?</translation>
 <translation id="8168435359814927499">ይዘት</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ፋይሎች ይቀራሉ</translation>

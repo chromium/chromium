@@ -338,7 +338,6 @@
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設定為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1745880797583122200">您的瀏覽器受管理</translation>
 <translation id="1746113442205726301">圖片 Y 軸移動</translation>
-<translation id="1747819498338037826">讓系統自動變更密碼</translation>
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="1752021286346845558">出紙槽 8</translation>
 <translation id="1753068535428855445">約會和交友</translation>
@@ -1370,7 +1369,6 @@
 <translation id="4450893287417543264">不要再顯示</translation>
 <translation id="4451135742916150903">可要求連接 HID 裝置</translation>
 <translation id="4452328064229197696">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，Google 密碼管理工具建議您檢查已儲存的密碼。</translation>
-<translation id="4455222631300069614">立即變更密碼</translation>
 <translation id="4460315069258617173">權限於此網站的分頁關閉時到期</translation>
 <translation id="4464826014807964867">有來自您機構資料的網站</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
@@ -1605,7 +1603,6 @@
 <translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">私隱權</translation>
 <translation id="5043480802608081735">您複製的連結</translation>
-<translation id="5044545992476246592">系統發現您剛才使用的密碼因資料外洩而被洩露。「Google 助理」可自動變更您的密碼。</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5051305769747448211">實況喜劇</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用「咫尺共享」傳送此檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「咫尺共享」傳送這些檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
@@ -1671,7 +1668,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想下載多個檔案</translation>
 <translation id="519422657042045905">無法使用註解模式</translation>
 <translation id="5201306358585911203">此網頁上的嵌入式頁面顯示</translation>
-<translation id="5204468114771111727">Chrome 發現您剛才使用的密碼因資料外洩而被洩露。「Google 助理」可自動變更您的密碼。</translation>
 <translation id="5205222826937269299">需要提供名稱</translation>
 <translation id="5209518306177824490">SHA-1 指紋</translation>
 <translation id="5209670883520018268">紙匣 20</translation>

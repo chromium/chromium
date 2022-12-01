@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{מושבת לאפליקציה אחת}two{מושבת ל-2 אפליקציות}many{מושבת ל-# אפליקציות}other{מושבת ל-# אפליקציות}}</translation>
 <translation id="4066027111132117168">פועל, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">אות בינוני</translation>
+<translation id="4086921558679520050">הפעלת מתג המיקרופון הפיזי במכשיר</translation>
 <translation id="4112140312785995938">הרצה לאחור</translation>
 <translation id="4114315158543974537">‏הפעלת Phone Hub</translation>
 <translation id="4115378294792113321">מג'נטה</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, עוצמת אות <ph name="SIGNAL_STRENGTH" /> אחוז</translation>
 <translation id="4378551569595875038">התחברות...</translation>
 <translation id="4379531060876907730">אלה כלי הסטיילוס שלך</translation>
+<translation id="4381031910344220229">הפעולה הזו מאפשרת גישה למיקרופון לאפליקציה <ph name="APP_NAME" /> ולכל האפליקציות והאתרים עם הרשאת הגישה למיקרופון</translation>
 <translation id="4389184120735010762">הקשת על מקש הקיצור של זכוכית מגדלת במצב עגינה. להפעיל אותה?</translation>
 <translation id="439598569299422042">בהשהיה, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">לא ניתן לשמור את הקלטת המסך</translation>
@@ -960,6 +962,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> הוא סשן מנוהל שמנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> מחובר</translation>
 <translation id="6351032674660237738">הצעות לאפליקציות</translation>
+<translation id="6352082849089527770">רשתות לא ידועות</translation>
 <translation id="6359587239691116345">קבלה של התכונות ושיפורי האבטחה האחרונים. ללא הסכמתך לעדכון הזה, המכשיר שלך עשוי להפסיק לפעול כמו שצריך ויכול להיות שיהיו בעיות באבטחה ובביצועים.</translation>
 <translation id="6376931439017688372">‏Bluetooth פועל</translation>
 <translation id="6381109794406942707">כדי לבטל את הנעילה של המכשיר, יש להזין את קוד האימות.</translation>
@@ -1135,6 +1138,7 @@
 <translation id="7360036564632145207">הביצועים עשויים להשתפר אם ההגדרות של הגנת הגישה לנתונים עבור ציוד היקפי ישונו</translation>
 <translation id="736045644501761622">הגדרה של טפט וסגנון</translation>
 <translation id="7371404428569700291">חלון ההקלטה</translation>
+<translation id="737315737514430195">הפעולה הזו מאפשרת גישה למיקרופון לכל האפליקציות והאתרים עם הרשאת הגישה למיקרופון</translation>
 <translation id="7377169924702866686">‏Caps Lock מופעל.</translation>
 <translation id="7377481913241237033">התחברות באמצעות קוד</translation>
 <translation id="7378203170292176219">יש לגרור כדי לבחור אזור להקלטה</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7671610481353807627">האפליקציות ממוינות לפי צבע</translation>
 <translation id="7672095158465655885">מחובר אל <ph name="NAME" />,‏ <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">הקלט של המצלמה מוגדר בתור <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">הפעולה הזו מאפשרת גישה למיקרופון לאפליקציות <ph name="APP1_NAME" /> וגם <ph name="APP2_NAME" />, ולכל האפליקציות והאתרים שיש להם הרשאת גישה למיקרופון</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">הוספה של רשת סלולרית חדשה</translation>
 <translation id="7720400844887872976">התכונה פעילה עד <ph name="TIME" /></translation>

@@ -187,6 +187,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1166583374608765787">Revoir la mise à jour du nom</translation>
 <translation id="1166596238782048887">Le tableau <ph name="TAB_TITLE" /> appartient au bureau <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Ouverture dans <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Changer automatiquement la langue pour correspondre au contenu sélectionné</translation>
 <translation id="1169266963600477608">Commandes de jeu</translation>
 <translation id="1169435433292653700">Le fichier <ph name="FILE_NAME" /> comporte des données confidentielles ou dangereuses. Message de votre administrateur : « <ph name="CUSTOM_MESSAGE" /> »</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> souhaite se connecter à un appareil HID</translation>
@@ -593,6 +594,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1546280085599573572">Cette extension a modifié la page qui s'affiche lorsque vous cliquez sur le bouton Accueil.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> souhaite installer une extension <ph name="EXTENSION_TYPE" />, qui peut :</translation>
 <translation id="1547808936554660006">Je comprends que les profils eSIM installés ne seront pas retirés par la fonctionnalité Powerwash</translation>
+<translation id="1547936895218027488">Cliquez sur l'icône du panneau latéral pour l'ouvrir</translation>
 <translation id="1549275686094429035">Technologie ARC activée</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> souhaite accéder à <ph name="VOLUME_NAME" />. Cela peut modifier ou supprimer vos fichiers.</translation>
 <translation id="1552301827267621511">L'extension « <ph name="EXTENSION_NAME" /> » a activé un moteur de recherche différent : <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -1417,6 +1419,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2287944065963043964">Écran de connexion</translation>
 <translation id="2289270750774289114">Demander quand un site souhaite rechercher les appareils Bluetooth à proximité (recommandé)</translation>
 <translation id="2290615375132886363">Boutons de navigation de la tablette</translation>
+<translation id="2291452790265535215">Essayez d'utiliser le panneau latéral pour les favoris, les explorations, etc.</translation>
 <translation id="229182044471402145">Aucune police correspondante n'a été trouvée.</translation>
 <translation id="2292848386125228270">Veuillez démarrer <ph name="PRODUCT_NAME" /> en tant qu'utilisateur normal. Si vous devez l'exécuter en tant que racine pour la conception, relancez-le avec l'indicateur --no-sandbox.</translation>
 <translation id="2294081976975808113">Confidentialité de l'écran</translation>
@@ -2565,7 +2568,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3341703758641437857">Autoriser l'accès aux URL de fichier</translation>
 <translation id="3342361181740736773">« <ph name="TRIGGERING_EXTENSION_NAME" /> » souhaite désinstaller cette extension.</translation>
 <translation id="3343977377045378693">Configuration en cours…</translation>
-<translation id="3345135638360864351">Votre demande d’accès à ce site n’a pas pu être envoyée à <ph name="NAME" />. Veuillez réessayer.</translation>
 <translation id="3345634917232014253">La vérification de sécurité s'est exécutée il y a un moment</translation>
 <translation id="3345886924813989455">Aucun navigateur compatible trouvé</translation>
 <translation id="3347086966102161372">C&amp;opier l'adresse de l'image</translation>
@@ -2575,6 +2577,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3353786022389205125">Activez « Afficher l'écran de verrouillage à l'activation » et réessayez</translation>
 <translation id="3354768182971982851">Les anciennes versions des applications Chrome ne s'ouvriront plus sur les appareils Mac après décembre 2022. Vous pouvez vérifier si une nouvelle version est proposée.</translation>
 <translation id="3354972872297836698">Impossible d'effectuer l'association à l'appareil <ph name="DEVICE_NAME" />; sélectionnez l'appareil pour réessayer</translation>
+<translation id="335581015389089642">Parole</translation>
 <translation id="3355936511340229503">Erreur de connexion</translation>
 <translation id="3356036636691722598">Profitez de jeux sur votre Chromebook</translation>
 <translation id="3356469410714175391">(Carte virtuelle activée)</translation>
@@ -3153,7 +3156,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3883482240657453056">Obtenez des rabais pour <ph name="MERCHANT_NAME_1" /> et <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Le contenu Web offert en plusieurs langues utilisera la première langue prise en charge de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">C'est votre administrateur qui gère les mises à jour</translation>
-<translation id="3886446263141354045">Votre demande d'accès à ce site a été envoyée à <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Afficher la liste des appareils</translation>
 <translation id="3888053818972567950">Connexion <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Prendre des notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -3905,6 +3907,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="459204634473266369">Aucun appareil enregistré dans <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Application de dessin avec stylet</translation>
 <translation id="4593021220803146968">&amp;Accéder à <ph name="URL" /></translation>
+<translation id="4594218792629569101">Sélectionnez « Marquer comme lu » pour déplacer la page au bas de votre liste</translation>
 <translation id="4594577641390224176">Vous recherchez la page à propos du système? Consultez</translation>
 <translation id="4595560905247879544">Les applications et les extensions ne peuvent être modifiées que par le gestionnaire (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Vous disposez de certificats qui identifient ces serveurs</translation>
@@ -4412,6 +4415,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5084328598860513926">Le flux d'approvisionnement a été interrompu. Veuillez réessayer ou communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Recherche de mises à jour...</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">La note contient plus de 1 000 caractères</translation>
 <translation id="5086874064903147617">Restaurer la page d'accueil par défaut?</translation>
 <translation id="5087249366037322692">Ajoutée par un tiers</translation>
 <translation id="5087580092889165836">Ajouter une carte</translation>
@@ -6576,6 +6580,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7111822978084196600">Nommer cette fenêtre</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> élément</translation>
 <translation id="7113502843173351041">Afficher l'adresse de courriel</translation>
+<translation id="7113974454301513811">Maintenant, ajoutez l'onglet actuel à votre liste</translation>
 <translation id="7114054701490058191">Les mots de passe ne correspondent pas</translation>
 <translation id="7114648273807173152">Pour utiliser Smart Lock pour vous connecter à votre compte Google, accédez à Paramètres &gt; Appareils connectés &gt; Votre téléphone &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Aucun contact joignable</translation>
@@ -8090,7 +8095,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8540942859441851323">Itinérance requise par le fournisseur</translation>
 <translation id="8541462173655894684">Aucune imprimante n'a été trouvée sur le serveur d'impression</translation>
 <translation id="8541838361296720865">Appuyez sur un commutateur ou une touche du clavier pour lui attribuer l'action suivante : « <ph name="ACTION" /> »</translation>
-<translation id="8543556556237226809">Des questions? Communiquez avec la personne qui supervise votre profil.</translation>
 <translation id="8546186510985480118">L'appareil possède peu d'espace de stockage</translation>
 <translation id="8546306075665861288">Cache d'images</translation>
 <translation id="8546930481464505581">Personnaliser la barre tactile</translation>
@@ -8434,6 +8438,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8859174528519900719">Sous-cadre : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Impossible de charger les conditions d'utilisation</translation>
 <translation id="8859662783913000679">Compte parental</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} compte}one{{COUNT} compte}other{{COUNT} comptes}}</translation>
 <translation id="8861568709166518036">Utilisez les boutons à l'écran pour naviguer vers l'accueil, retourner en arrière et changer d'application. S'active automatiquement si ChromeVox ou les clics automatiques sont activés.</translation>
 <translation id="8862003515646449717">Passer à un navigateur rapide</translation>
 <translation id="8863753581171631212">Ouvrir le lien dans une nouvelle fenêtre <ph name="APP" /></translation>
@@ -8807,6 +8812,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9201842707396338580">Une erreur s'est produite. Veuillez communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilage activé</translation>
 <translation id="9203904171912129171">Sélectionner un appareil</translation>
+<translation id="920410963177453528">Cliquez sur le menu déroulant pour choisir un autre panneau</translation>
 <translation id="9206889157914079472">Prise de notes avec un stylet à l'écran de verrouillage</translation>
 <translation id="9208192193641542858">Les données locales sont protégées par votre ancien mot de passe. Si vous avez récemment changé votre mot de passe, réessayez avec l'ancien.</translation>
 <translation id="9209563766569767417">Vérification de la configuration du conteneur Linux en cours…</translation>

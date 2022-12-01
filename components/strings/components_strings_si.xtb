@@ -38,6 +38,7 @@
 <translation id="10614374240317010">කිසිවිටෙක සුරැක නැත</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">වැඩතල පිටුසලකුණු</translation>
+<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> ප්‍රතිපත්තිය සකසන්නේ නම් මිස, <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ප්‍රතිපත්තිය භාවිතා කරනු නොලැබේ.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> හි පිටු කිසිදාක පරිවර්තනය කරන්න එපා</translation>
 <translation id="1070853536588271387">දෙමුහුන් සහ විකල්ප වාහන</translation>
 <translation id="1070901266639972381">රාත්‍රී</translation>
@@ -337,7 +338,6 @@
 <translation id="1741613555002899862">සඳහන් කර ඇති අතර DnsOverHttpsMode එක <ph name="SECURE_DNS_MODE_SECURE" /> වූ විට වලංගු තන්තුවක් විය යුතුම ය.</translation>
 <translation id="1745880797583122200">ඔබේ බ්‍රවුසරය කළමනා කෙරේ</translation>
 <translation id="1746113442205726301">රූපයේ Y වැඩ මුරය</translation>
-<translation id="1747819498338037826">ස්වයංක්‍රියව වෙනස් කරන්න</translation>
 <translation id="17513872634828108">පටිති විවෘත කරන්න</translation>
 <translation id="1752021286346845558">තැපැල් පෙට්ටිය 8</translation>
 <translation id="1753068535428855445">පෙම්හමු සහ පුද්ගලික</translation>
@@ -1370,7 +1370,6 @@
 <translation id="4450893287417543264">නැවත නොපෙන්වන්න</translation>
 <translation id="4451135742916150903">HID උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="4452328064229197696">ඔබ මේ දැන් භාවිතා කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, Google මුරපද කළමනාකරු ඔබගේ සුරකින ලද මුරපද පරීක්ෂා කිරීම නිර්දේශ කරයි.</translation>
-<translation id="4455222631300069614">දැන් ඔබගේ මුරපදය වෙනස් කරන්න</translation>
 <translation id="4460315069258617173">ඔබ මෙම අඩවිය සඳහා ටැබ වසන තෙක් ඉඩ දේ</translation>
 <translation id="4464826014807964867">ඔබේ සංවිධානය වෙතින් වන තොරතුරු සහිත වෙබ් අඩවි</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1605,7 +1604,6 @@
 <translation id="5039804452771397117">ඉඩදෙන්න</translation>
 <translation id="5040262127954254034">රහස්‍යතාවය</translation>
 <translation id="5043480802608081735">ඔබ පිටපත් කළ සබැඳිය</translation>
-<translation id="5044545992476246592">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. ඔබගේ Google සහායකට ඔබගේ මුරපදය ස්වයංක්‍රියව වෙනස් කළ හැකිය.</translation>
 <translation id="5045550434625856497">රහස්වචනය වැරදියි</translation>
 <translation id="5051305769747448211">සජීවී ප්‍රහසන</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනුව යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}one{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනු යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}other{ළඟ බෙදා ගැනීම භාවිතයෙන් මෙම ගොනු යැවීමට, ඔබගේ උපාංගයෙහි (<ph name="DISK_SPACE_SIZE" />) හිස් කරන්න}}</translation>
@@ -1671,7 +1669,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> හට බහුවිධ ගොනු බාගැනීමට අවශ්‍යයි</translation>
 <translation id="519422657042045905">අනුසටහන නොලැබේ</translation>
 <translation id="5201306358585911203">මෙම පිටුවෙහි කාවැද්දූ පිටුවක් කියයි</translation>
-<translation id="5204468114771111727">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකදී Chrome හට හමු විය. ඔබගේ Google සහායකට ඔබගේ මුරපදය ස්වයංක්‍රියව වෙනස් කළ හැකිය.</translation>
 <translation id="5205222826937269299">නම අවශ්‍යයි</translation>
 <translation id="5209518306177824490">SHA-1 ඇඟිලි සලකුණු</translation>
 <translation id="5209670883520018268">Tray 20</translation>
@@ -2099,6 +2096,7 @@
 <translation id="6328786501058569169">මෙම අඩවිය රැවටිලිකාරය</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />ට වඩා අඩුවෙන් හිස් කරයි. ඔබගේ ඊළඟ පිවිසීමේදී සමහර අඩවි වඩාත් සෙමින් පූරණය විය හැකිය.</translation>
 <translation id="6337534724793800597">නම් වශයෙන් ප්‍රතිපත්ති පෙරන්න</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> අගය වලංගු නොවන අතර භාවිතා නොකරනු ඇත.</translation>
 <translation id="6340739886198108203">පරිපාලක ප්‍රතිපත්තිය රහසිගත අන්තර්ගතය දෘශ්‍යමාන වන විට තිරපිටපත් හෝ පටිගත කිරීම් ගැනීම නිර්දේශ නොකරයි:</translation>
 <translation id="6341434961864773665">{0,plural, =1{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනුව <ph name="DESTINATION_NAME" /> වෙත උඩුගත කිරීම නිර්දේශ නොකරයි}one{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත උඩුගත කිරීම නිර්දේශ නොකරයි}other{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත උඩුගත කිරීම නිර්දේශ නොකරයි}}</translation>
 <translation id="6348220984832452017">සක්‍රිය විචලන</translation>
@@ -2994,6 +2992,7 @@
 <translation id="8654126188050905496">මිමි 55 x 91</translation>
 <translation id="8663226718884576429">ඇණවුමේ සාරාංශය, <ph name="TOTAL_LABEL" />, තව විස්තර</translation>
 <translation id="8666678546361132282">ඉංග්‍රීසි</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> අගය ප්‍රමාණයේ අවශ්‍යතා සපුරාලන්නේ නැත.</translation>
 <translation id="867224526087042813">අත්සන</translation>
 <translation id="8672264262457010862">ව්‍යාපාරික සහ කාර්මික</translation>
 <translation id="8676424191133491403">ප්‍රමාද නැත</translation>
@@ -3093,6 +3092,7 @@
 <translation id="8913778647360618320">ගෙවීම් ක්‍රම කළමනාකරණය කිරීමේ බොත්තම, Chrome සැකසීම් තුළ ඔබගේ ගෙවීම් සහ ණය කාඩ්පත් තතු කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="8922013791253848639">මෙම අඩවිය මත වෙළඳ දැන්වීම්වලට සැම විටම ඉඩ දෙන්න</translation>
 <translation id="892588693504540538">ඉහළ දකුණ අනින්න</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> අගය අදාළ නැති අතර, <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ප්‍රතිපත්තිය සකසන්නේ නම් මිස, එය භාවිතා කරනු නොලැබේ.</translation>
 <translation id="8930330541574156305">දේපළ වෙළදාම්</translation>
 <translation id="8931333241327730545">ඔබට ඔබේ Google ගිණුම වෙත මෙම කාඩ්පත සුරැකීමට අවශ්‍යද?</translation>
 <translation id="8932102934695377596">ඔබගේ ඔරලෝසුව ඇත්තේ පිටුපසින් ය</translation>

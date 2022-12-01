@@ -554,6 +554,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Imezimwa - moja}other{Imezimwa - #}}</translation>
 <translation id="4066027111132117168">Umewashwa, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Mtandao ni thabiti kiasi</translation>
+<translation id="4086921558679520050">Washa swichi ya maikrofoni kwenye kifaa chako</translation>
 <translation id="4112140312785995938">Sogeza Nyuma</translation>
 <translation id="4114315158543974537">Washa Phone Hub</translation>
 <translation id="4115378294792113321">Rangi ya damu ya mzee</translation>
@@ -606,6 +607,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, uthabiti wa mtandao asilimia<ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="4378551569595875038">Inaunganisha...</translation>
 <translation id="4379531060876907730">Hizi ni zana zako za stylus</translation>
+<translation id="4381031910344220229">Hatua hii huruhusu ufikiaji wa maikrofoni kwa <ph name="APP_NAME" /> pamoja na programu na tovuti zote zenye ruhusa ya maikrofoni</translation>
 <translation id="4389184120735010762">Umebofya mikato ya kibodi ya kikuzaji kilichoambatishwa. Ungependa kukiwasha?</translation>
 <translation id="439598569299422042">Umesitishwa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Imeshindwa kuhifadhi kionyesha skrini</translation>
@@ -728,6 +730,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4987738733603015246">Eneokazi la 16</translation>
 <translation id="5003993274120026347">Sentensi inayofuata</translation>
 <translation id="5016558321564993266">Geuza kitia alama. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Ufikiaji wa maikrofoni ya kifaa umewashwa</translation>
 <translation id="5030687792513154421">Muda wa kutumia kifaa umeisha</translation>
 <translation id="5033299697334913360">Bofya popote ili unase skrini nzima</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> imeunganishwa kwenye simu mpya</translation>
@@ -959,9 +962,11 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ni kipindi kinachodhibitiwa ambacho kinadhibitiwa na <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> imeunganishwa</translation>
 <translation id="6351032674660237738">MAPENDEKEZO YA PROGRAMU</translation>
+<translation id="6352082849089527770">Mitandao isiyotambulika</translation>
 <translation id="6359587239691116345">Pata vipengele vipya zaidi na maboresho ya usalama. Iwapo utakataa sasisho hili, huenda kifaa chako kisifanye kazi ipasavyo na unaweza kukumbwa na hitilafu za kiusalama na kiutendaji.</translation>
 <translation id="6376931439017688372">Bluetooth imewashwa</translation>
 <translation id="6381109794406942707">Ili ufungue kifaa, weka PIN yako.</translation>
+<translation id="638716340450135524">Washa ufikiaji wa kamera</translation>
 <translation id="639644700271529076">CAPS LOCK imezimwa</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Mratibu wa Google</translation>
@@ -969,6 +974,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="642644398083277086">Futa arifa zote</translation>
 <translation id="643147933154517414">Hakuna arifa</translation>
 <translation id="6431865393913628856">Rekodi skrini</translation>
+<translation id="6442259747294754014">Ufikiaji wa maikrofoni ya kifaa umezimwa</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, tukio <ph name="NUMBER" /></translation>
 <translation id="6449483711453944360">Programu za Linux pamoja na madirisha fiche hayawezi kutumika kwa sasa</translation>
@@ -1133,6 +1139,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7360036564632145207">Hatua ya kubadilisha mipangilio yako ya kulinda data inayoweza kufikiwa na vifaa vinavyounganishwa kwenye kompyuta inaweza kuboresha utendaji</translation>
 <translation id="736045644501761622">Weka mandhari na mtindo</translation>
 <translation id="7371404428569700291">Rekodi dirisha</translation>
+<translation id="737315737514430195">Hatua hii huruhusu ufikiaji wa maikrofoni kwa programu na tovuti zote zenye ruhusa ya maikrofoni</translation>
 <translation id="7377169924702866686">Caps Lock imewashwa.</translation>
 <translation id="7377481913241237033">Unganisha kwa kutumia msimbo</translation>
 <translation id="7378203170292176219">Buruta ili uchague sehemu ya kurekodi</translation>
@@ -1202,6 +1209,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7671610481353807627">Programu zimepangwa kwa rangi</translation>
 <translation id="7672095158465655885">Imeunganishwa kwenye <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kamera imewekwa kuwa <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Hatua hii huruhusu ufikiaji wa maikrofoni kwa <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> pamoja na programu na tovuti zote zenye ruhusa ya maikrofoni</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Ongeza mtandao mpya wa simu</translation>
 <translation id="7720400844887872976">Itawashwa hadi <ph name="TIME" /></translation>
@@ -1365,6 +1373,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8598235756057743477">Panga programu zako kwa majina au rangi</translation>
 <translation id="8614517853887502247">Arifa za <ph name="APP_1_TITLE" /> na <ph name="APP_2_TITLE" /> zimefichwa kwa sababu ulinzi wa utazamaji umewashwa</translation>
 <translation id="8627191004499078455">Imeunganishwa kwenye <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Zima ufikiaji wa kamera</translation>
 <translation id="8631727435199967028">Mipangilio ya Ufikivu</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="8639760480004882931">Imebaki <ph name="PERCENTAGE" />%</translation>

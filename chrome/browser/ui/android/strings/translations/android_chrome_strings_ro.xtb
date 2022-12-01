@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Evidențierea a fost scurtată</translation>
 <translation id="1111673857033749125">Marcajele salvate pe alte dispozitive vor apărea aici.</translation>
 <translation id="1113597929977215864">Arată afișarea simplificată</translation>
-<translation id="1118561384561215815">Primește ajutor pentru activități de pe web</translation>
 <translation id="1123070903960493543">Modul în care interacționezi cu Chrome, setările selectate, detalii despre blocările browserului Chrome</translation>
 <translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
 <translation id="1129510026454351943">Detalii: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="2286841657746966508">Adresa de facturare</translation>
 <translation id="228704530595896923">Lista cu opțiuni de permitere a accesului.</translation>
 <translation id="230115972905494466">Nu s-au găsit dispozitive compatibile</translation>
-<translation id="230155349749732438">Pentru a folosi această setare, trebuie să activezi opțiunea <ph name="BEGIN_LINK" />Îmbunătățește căutările și navigarea<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Atinge pentru a apela</translation>
 <translation id="2321086116217818302">Se pregătesc parolele…</translation>
 <translation id="2323763861024343754">Stocarea site-urilor</translation>
@@ -428,7 +426,6 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3269093882174072735">Încarcă imaginea</translation>
 <translation id="3280562213547448728">Căutare vocală</translation>
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
-<translation id="3284510035090979597">Ajutor proactiv</translation>
 <translation id="3285080554353377245">Videoclipuri despre folosirea browserului Chrome</translation>
 <translation id="3288003805934695103">să reîncarci pagina;</translation>
 <translation id="3290249595466894471">În plus, trimite un mic eșantion cu pagini, descărcări, activități ale extensiilor și informații despre sistem pentru a descoperi noi amenințări</translation>
@@ -590,7 +587,6 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="4209895695669353772">Pentru a obține sugestii de conținut personalizat de la Google, activează sincronizarea</translation>
 <translation id="4214315110991671325">Dacă permiți cookie-uri, Chrome le va folosi probabil pentru preîncărcare.</translation>
 <translation id="4225895483398857530">Comanda rapidă spre bara de instrumente</translation>
-<translation id="4227318652298512614">Urmărește orice site-uri dorești</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="4248098802131000011">Protejează-ți parolele împotriva încălcării securității datelor și a altor probleme de securitate</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
@@ -881,7 +877,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5795872532621730126">Caută și răsfoiește</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Acum # oră}few{Acum # ore}other{Acum # de ore}}</translation>
 <translation id="5810288467834065221">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
-<translation id="5810864297166300463">Asistență pe web</translation>
 <translation id="5813552293717797987">Browserul este gestionat de <ph name="PARENT_NAME_1" /> și de <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Introdu text aici sau atinge pictograma microfon pentru a începe</translation>
 <translation id="5814749351757353073">Fii la curent cu site-urile preferate</translation>
@@ -904,7 +899,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5869789175361934029">Continuă pe alt dispozitiv</translation>
 <translation id="587735546353481577">Pentru a urmări un site, accesează site-ul, deschide meniul Chrome și atinge Urmărește.</translation>
 <translation id="5879072387416556377">Primește sugestii mai bune</translation>
-<translation id="5884076754568147479">Pentru a te ajuta să finalizezi sarcini, Google va primi adresele URL și conținutul site-urilor în care folosești Asistentul, precum și informațiile pe care le trimiți cu ajutorul Asistentului</translation>
 <translation id="5906513782029855931">Dacă știe adresele URL ale site-urilor, Asistentul Google te poate ajuta să finalizezi activități. Poți să dezactivezi Asistentul din setările Chrome.</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5919204609460789179">Actualizează <ph name="PRODUCT_NAME" /> pentru a începe sincronizarea</translation>
@@ -1346,7 +1340,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8127542551745560481">Editează pagina de pornire</translation>
 <translation id="8130309322784422030">Este posibil ca informațiile de conectare stocate să fie învechite</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
-<translation id="8153351135626613369">Asistentul va apărea când detectează că ai nevoie de ajutor pe site-urile acceptate</translation>
 <translation id="8156139159503939589">În ce limbi poți să citești?</translation>
 <translation id="8168435359814927499">Conținut</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fișiere rămase</translation>

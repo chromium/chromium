@@ -2558,7 +2558,6 @@
 <translation id="3341703758641437857">URL мекенжайларын тіркеу рұқсатын беру</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" бұл кеңейтімді жоймақ.</translation>
 <translation id="3343977377045378693">Реттеліп жатыр</translation>
-<translation id="3345135638360864351">Сіздің бұл сайтқа кіру сұрауыңызды <ph name="NAME" /> пайдаланушысына жіберу мүмкін болмады. Тағы да қайталап көріңіз.</translation>
 <translation id="3345634917232014253">Қауіпсіздік шарасы жаңа ғана қолданылды.</translation>
 <translation id="3345886924813989455">Қолдау көрсетілетін браузер табылмады</translation>
 <translation id="3347086966102161372">Кескін мекенжайын к&amp;өшіру</translation>
@@ -2568,6 +2567,7 @@
 <translation id="3353786022389205125">"Күту режимінен шыққанда құлып экранын көрсету" параметрін қосып, әрекетті қайталап көріңіз.</translation>
 <translation id="3354768182971982851">Chrome қолданбаларының ескі нұсқалары 2022 жылдың желтоқсанынан кейін Mac жүйесіндегі құрылғыларда ашылмайды. Жаңа нұсқаның бар-жоғын тексеруіңізге болады.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> құрылғысымен жұптау мүмкін болмады; әрекетті қайталау үшін құрылғыны таңдаңыз.</translation>
+<translation id="335581015389089642">Сөйлеу</translation>
 <translation id="3355936511340229503">Байланыс қатесі</translation>
 <translation id="3356036636691722598">Chromebook-та ойын қызығына кенеліңіз!</translation>
 <translation id="3356469410714175391">(виртуалдық карта қосулы)</translation>
@@ -3145,7 +3145,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> және <ph name="MERCHANT_NAME_2" /> жеңілдіктерін алыңыз</translation>
 <translation id="3884152383786131369">Бірнеше тілдегі веб-мазмұн осы тізімдегі бірінші тілді пайдаланады. Бұл параметрлер браузер параметрлерімен синхрондалады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Жаңартуларды әкімшіңіз басқарады.</translation>
-<translation id="3886446263141354045">Бұл сайтқа кіру сұрауыңыз <ph name="NAME" /> деген контактіге жіберілді</translation>
 <translation id="3887022758415973389">Құрылғылар тізімін көрсету</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> байланысы</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> қолданбасымен жазбалар жазу</translation>
@@ -8068,7 +8067,6 @@
 <translation id="8540942859441851323">Провайдер роуминг талап етеді.</translation>
 <translation id="8541462173655894684">Басып шығару серверінен ешқандай принтер табылмады.</translation>
 <translation id="8541838361296720865">Ауыстырғышты немесе пернетақта пернесін "<ph name="ACTION" />" әрекетіне тағайындау үшін оны басыңыз.</translation>
-<translation id="8543556556237226809">Егер сұрақтарыңыз болса, профиліңізді басқаратын адаммен хабарласыңыз.</translation>
 <translation id="8546186510985480118">Құрылғыда бос орын аз қалды</translation>
 <translation id="8546306075665861288">Кескін кэші</translation>
 <translation id="8546930481464505581">Touch Bar реттеу</translation>
@@ -8410,6 +8408,7 @@
 <translation id="8859174528519900719">Ішкі жақтау: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Қызмет көрсету шарттары жүктелмеді.</translation>
 <translation id="8859662783913000679">Ата-ананың аккаунты</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} аккаунт}other{{COUNT} аккаунт}}</translation>
 <translation id="8861568709166518036">Экрандағы пернелердің көмегімен басты бетке, артқа өтіңіз және қолданбаларды ауыстырыңыз. ChromeVox не автоматты басу мүмкіндіктері қосулы болса, параметр автоматты түрде белсендіріледі.</translation>
 <translation id="8862003515646449717">Жылдам браузерге ауысыңыз</translation>
 <translation id="8863753581171631212">Сілтемені жаңа <ph name="APP" /> қолданбасында ашу</translation>

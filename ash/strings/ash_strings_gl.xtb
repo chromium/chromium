@@ -555,6 +555,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Non para 1 app}other{Non para # apps}}</translation>
 <translation id="4066027111132117168">Activado, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinal medio</translation>
+<translation id="4086921558679520050">Activa o interruptor físico do micrófono no dispositivo</translation>
 <translation id="4112140312785995938">Retroceder</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4115378294792113321">Maxenta</translation>
@@ -607,6 +608,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensidade do sinal: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4379531060876907730">Estas son as túas ferramentas de lapis óptico</translation>
+<translation id="4381031910344220229">Desta forma, poden acceder ao micrófono <ph name="APP_NAME" /> e todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
 <translation id="4389184120735010762">Premiches o atallo de teclado para a lupa ancorada. Queres activala?</translation>
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Non se puido gardar a gravación da pantalla</translation>
@@ -961,6 +963,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> xestiona esta sesión (<ph name="DISPLAY_NAME" />)</translation>
 <translation id="6344138931392227467">Conectouse o dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="6351032674660237738">SUXESTIÓNS DE APLICACIÓNS</translation>
+<translation id="6352082849089527770">Redes descoñecidas</translation>
 <translation id="6359587239691116345">Goza das últimas funcións e melloras de seguranza. Se rexeitas esta actualización, é posible que o dispositivo deixe de funcionar adecuadamente e que teñas problemas de seguranza e de rendemento.</translation>
 <translation id="6376931439017688372">O Bluetooth está activado</translation>
 <translation id="6381109794406942707">Para desbloquear o dispositivo escribe o PIN.</translation>
@@ -1137,6 +1140,7 @@ Nova instalación</translation>
 <translation id="7360036564632145207">Para optimizar o rendemento, podes cambiar a opción de configuración da protección para periféricos contra o acceso aos datos</translation>
 <translation id="736045644501761622">Definir estilo e fondo de pantalla</translation>
 <translation id="7371404428569700291">Ventá de gravación</translation>
+<translation id="737315737514430195">Desta forma, poden acceder ao micrófono todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
 <translation id="7377169924702866686">O bloqueo de maiúsculas está activado.</translation>
 <translation id="7377481913241237033">Conectar cun código</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar a zona que queiras gravar</translation>
@@ -1205,6 +1209,7 @@ Nova instalación</translation>
 <translation id="7671610481353807627">As aplicacións están ordenadas por cor</translation>
 <translation id="7672095158465655885">Conexión establecida con <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Definiuse a entrada por cámara como <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Desta forma, poden acceder ao micrófono <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Engadir nova rede de telefonía móbil</translation>
 <translation id="7720400844887872976">Función activada ata esta hora: <ph name="TIME" /></translation>

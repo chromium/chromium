@@ -133,6 +133,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1974060860693918893">Të përparuara</translation>
 <translation id="1981118202195772574">Celular</translation>
 <translation id="1989112275319619282">Shfleto</translation>
+<translation id="1990820278544963435">Gjej</translation>
 <translation id="199425419756152024">Shiko fjalëkalimin</translation>
 <translation id="2010008505735295285">Ringarko</translation>
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
@@ -550,7 +551,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5190835502935405962">Shiriti i faqeshënuesve</translation>
 <translation id="519530786644929958">Shkarkimi dështoi dhe nuk mund të riprovohet.</translation>
 <translation id="5197255632782567636">Interneti</translation>
-<translation id="5210365745912300556">Mbyll skedën</translation>
 <translation id="5219295696240154694">Ndihmo në përmirësimin e sigurisë në ueb për të gjithë</translation>
 <translation id="5228579091201413441">Aktivizo sinkronizimin</translation>
 <translation id="5232485538978018676">Identifikohu me llogari të menaxhuar</translation>
@@ -1088,6 +1088,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9188680907066685419">Dil nga llogaria e menaxhuar</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ditë më parë</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Kërko te skedat…</translation>
 <translation id="9223358826628549784">Raporti i ndërprerjes aksidentale u dërgua.</translation>
 <translation id="941747855997058526">Zgjidh fjalëkalimin...</translation>
 <translation id="952704832371081537">Anulo</translation>

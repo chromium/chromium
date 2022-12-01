@@ -189,6 +189,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1166583374608765787">Review name update</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> belongs to desk <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Opening in <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Automatically change language to match selected content</translation>
 <translation id="1169266963600477608">Game controls</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> has sensitive or dangerous data. Your administrator says: '<ph name="CUSTOM_MESSAGE" />'</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> wants to connect to a HID device</translation>
@@ -2580,7 +2581,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3341703758641437857">Allow access to file URLs</translation>
 <translation id="3342361181740736773">'<ph name="TRIGGERING_EXTENSION_NAME" />' would like to remove this extension.</translation>
 <translation id="3343977377045378693">Performing setup</translation>
-<translation id="3345135638360864351">Your request to access this site could not be sent to <ph name="NAME" />. Please try again.</translation>
 <translation id="3345634917232014253">Safety check ran a moment ago</translation>
 <translation id="3345886924813989455">No supported browser found</translation>
 <translation id="3347086966102161372">C&amp;opy image address</translation>
@@ -2590,6 +2590,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3353786022389205125">Turn on 'Show lock screen when waking from sleep' and try again</translation>
 <translation id="3354768182971982851">Old versions of Chrome apps won't open on Mac devices after December 2022. You can check if there's a new version available.</translation>
 <translation id="3354972872297836698">Couldn't pair to device <ph name="DEVICE_NAME" />; select device to try again</translation>
+<translation id="335581015389089642">Speech</translation>
 <translation id="3355936511340229503">Connection error</translation>
 <translation id="3356036636691722598">Enjoy gaming on your Chromebook</translation>
 <translation id="3356469410714175391">(Virtual card enabled)</translation>
@@ -3168,7 +3169,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3883482240657453056">Get discounts for <ph name="MERCHANT_NAME_1" /> and <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Web content available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates are managed by your administrator</translation>
-<translation id="3886446263141354045">Your request to access this site has been sent to <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Show device list</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> connection</translation>
 <translation id="3888550877729210209">Taking notes with <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8108,7 +8108,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8540942859441851323">Roaming required by provider</translation>
 <translation id="8541462173655894684">Did not find any printers from the print server</translation>
 <translation id="8541838361296720865">Press a switch or keyboard key to assign it to '<ph name="ACTION" />'</translation>
-<translation id="8543556556237226809">Questions? Contact the person who supervises your profile.</translation>
 <translation id="8546186510985480118">Device is low on space</translation>
 <translation id="8546306075665861288">Image cache</translation>
 <translation id="8546930481464505581">Customise Touch Bar</translation>

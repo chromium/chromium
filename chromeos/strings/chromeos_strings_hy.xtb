@@ -493,6 +493,7 @@
 <translation id="5669267381087807207">Ակտիվացում</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ընտանիք</translation>
+<translation id="5695599963893094957">Ձեր ստեղնաշարին սեղմեք ցանկացած ստեղն։ Միաժամանակ կարող եք սեղմել 4 ստեղն։</translation>
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
@@ -619,7 +620,6 @@
 <translation id="6766275201586212568">DNS-ի անհաջող լուծումներ</translation>
 <translation id="6768237774506518020">DNS-ի լուծման խափանումների բարձր մակարդակ</translation>
 <translation id="6791471867139427246">ստեղնաշարի լուսավորության գույնը</translation>
-<translation id="6793680441750437230">Ձեր ստեղնաշարին սեղմեք ցանկացած ստեղն։ Միաժամանակ կարող եք սեղմել 4 ստեղն։ Սեղմեք Alt + Esc՝ երկխոսության պատուհանը փակելու համար։</translation>
 <translation id="680983167891198932">Բանալի</translation>
 <translation id="6816797338148849397">Ձեր ընտրության վերաբերյալ հասանելի են տեղեկություններ։ Դրանք բացելու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="6853312040151791195">Լիցքաթափման արագությունը</translation>

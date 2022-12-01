@@ -133,6 +133,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1974060860693918893">Gelişmiş</translation>
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Göz at</translation>
+<translation id="1990820278544963435">Bul</translation>
 <translation id="199425419756152024">Şifreyi Göster</translation>
 <translation id="2010008505735295285">Yeniden yükle</translation>
 <translation id="2015722694326466240">Şifreleri görmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
@@ -550,7 +551,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5190835502935405962">Yer İşareti Çubuğu</translation>
 <translation id="519530786644929958">İndirme başarısız oldu ve tekrar denenemez.</translation>
 <translation id="5197255632782567636">İnternet</translation>
-<translation id="5210365745912300556">Sekmeyi kapat</translation>
 <translation id="5219295696240154694">Web'de Herkes İçin Güvenliğin İyileştirilmesine Yardımcı Olma</translation>
 <translation id="5228579091201413441">Senkronizasyonu etkinleştir</translation>
 <translation id="5232485538978018676">Yönetilen Hesapla Oturum Açın</translation>
@@ -1088,6 +1088,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9188680907066685419">Yönetilen hesabın oturumunu kapat</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> gün önce</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Sekmelerde Ara…</translation>
 <translation id="9223358826628549784">Kilitlenme raporu gönderildi.</translation>
 <translation id="941747855997058526">Şifreyi seçin...</translation>
 <translation id="952704832371081537">İptal</translation>

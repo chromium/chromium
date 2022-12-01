@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Nội dung nổi bật đã được rút gọn</translation>
 <translation id="1111673857033749125">Dấu trang được lưu trên thiết bị khác của bạn sẽ xuất hiện tại đây.</translation>
 <translation id="1113597929977215864">Hiển thị chế độ xem đơn giản</translation>
-<translation id="1118561384561215815">Yêu cầu trợ giúp về các việc cần làm trên web</translation>
 <translation id="1123070903960493543">Cách bạn tương tác với Chrome, các tùy chọn cài đặt bạn đã chọn, thông tin chi tiết về sự cố của Chrome</translation>
 <translation id="1126809382673880764">Không bảo vệ bạn trước các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Bạn sẽ vẫn được bảo vệ bằng tính năng Duyệt web an toàn (nếu có) ở các dịch vụ khác của Google, chẳng hạn như Gmail và Tìm kiếm.</translation>
 <translation id="1129510026454351943">Chi tiết: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="2286841657746966508">Địa chỉ thanh toán</translation>
 <translation id="228704530595896923">Danh sách các lựa chọn chia sẻ.</translation>
 <translation id="230115972905494466">Không tìm thấy thiết bị tương thích</translation>
-<translation id="230155349749732438">Để sử dụng chế độ cài đặt này, bạn phải bật tùy chọn <ph name="BEGIN_LINK" />Cải thiện tính năng tìm kiếm và duyệt web<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Nhấn để gọi điện</translation>
 <translation id="2321086116217818302">Đang chuẩn bị mật khẩu…</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
@@ -428,7 +426,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="3269093882174072735">Tải hình ảnh</translation>
 <translation id="3280562213547448728">Tìm kiếm bằng giọng nói</translation>
 <translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
-<translation id="3284510035090979597">Trợ giúp chủ động</translation>
 <translation id="3285080554353377245">Video về cách sử dụng Chrome</translation>
 <translation id="3288003805934695103">Đang tải lại trang</translation>
 <translation id="3290249595466894471">Đồng thời gửi một mẫu nhỏ dữ liệu hoạt động trên các trang, tệp đã tải xuống, tiện ích và thông tin hệ thống để giúp phát hiện các mối đe dọa mới</translation>
@@ -590,7 +587,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="4209895695669353772">Để nhận nội dung do Google đề xuất riêng cho bạn, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="4214315110991671325">Nếu bạn cho phép cookie thì Chrome có thể dùng các cookie này để tải trước.</translation>
 <translation id="4225895483398857530">Lối tắt trên thanh công cụ</translation>
-<translation id="4227318652298512614">Theo dõi mọi trang web bạn muốn</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4248098802131000011">Bảo vệ mật khẩu của bạn trước việc bị rò rỉ dữ liệu và các vấn đề bảo mật khác</translation>
 <translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
@@ -881,7 +877,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5795872532621730126">Tìm kiếm và duyệt xem</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# giờ trước}other{# giờ trước}}</translation>
 <translation id="5810288467834065221">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
-<translation id="5810864297166300463">Hỗ trợ trên web</translation>
 <translation id="5813552293717797987">Trình duyệt này do <ph name="PARENT_NAME_1" /> và <ph name="PARENT_NAME_2" /> quản lý.</translation>
 <translation id="5814131985548525293">Nhập vào đây hoặc nhấn vào biểu tượng giọng nói để bắt đầu</translation>
 <translation id="5814749351757353073">Cập nhật thông tin với các trang web yêu thích của bạn</translation>
@@ -904,7 +899,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5869789175361934029">Tiếp tục từ thiết bị khác</translation>
 <translation id="587735546353481577">Để theo dõi một trang web, hãy truy cập vào trang web đó, mở trình đơn Chrome rồi nhấn vào Theo dõi.</translation>
 <translation id="5879072387416556377">Nhận đề xuất tốt hơn</translation>
-<translation id="5884076754568147479">Để giúp bạn hoàn thành những việc cần làm, Google sẽ nhận URL và nội dung của các trang web mà bạn sử dụng Trợ lý, cũng như thông tin bạn gửi qua Trợ lý</translation>
 <translation id="5906513782029855931">Bằng việc biết được URL của trang web, Trợ lý Google có thể giúp bạn hoàn tất một số công việc. Bạn có thể tắt Trợ lý trong phần cài đặt của Chrome.</translation>
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5919204609460789179">Cập nhật <ph name="PRODUCT_NAME" /> để bắt đầu đồng bộ hóa</translation>
@@ -1346,7 +1340,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8127542551745560481">Chỉnh sửa trang chủ</translation>
 <translation id="8130309322784422030">Thông tin đăng nhập bạn lưu lần trước có thể đã cũ</translation>
 <translation id="813082847718468539">Xem thông tin trang web</translation>
-<translation id="8153351135626613369">Trợ lý sẽ xuất hiện khi thấy có thể giúp bạn trên những trang web được hỗ trợ</translation>
 <translation id="8156139159503939589">Bạn sử dụng ngôn ngữ nào?</translation>
 <translation id="8168435359814927499">Nội dung</translation>
 <translation id="8186512483418048923">Còn lại <ph name="FILES" /> tệp</translation>

@@ -729,6 +729,7 @@
 <translation id="4987738733603015246">डेस्क 16</translation>
 <translation id="5003993274120026347">अगले वाक्य पर जाएं</translation>
 <translation id="5016558321564993266">मार्कर को टॉगल करें. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">डिवाइस का माइक्रोफ़ोन चालू है</translation>
 <translation id="5030687792513154421">समय पूरा हो गया</translation>
 <translation id="5033299697334913360">फ़ुल स्क्रीन कैप्चर करने के लिए कहीं पर भी क्लिक करें</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> एक नए फ़ोन से कनेक्ट हो गया है</translation>
@@ -963,6 +964,7 @@
 <translation id="6359587239691116345">नई सुविधाएं और बेहतर सुरक्षा पाएं. अगर आपने इस अपडेट को अस्वीकार किया है, तो हो सकता है कि आपका डिवाइस ठीक से काम न करे. इसके अलावा, सुरक्षा और परफ़ॉर्मेंस से जुड़ी समस्याएं आ सकती हैं.</translation>
 <translation id="6376931439017688372">ब्लूटूथ चालू है</translation>
 <translation id="6381109794406942707">यह डिवाइस अनलॉक करने के लिए, अपना पिन डालें.</translation>
+<translation id="638716340450135524">कैमरे को ऐक्सेस करने की सुविधा चालू करें</translation>
 <translation id="639644700271529076">CAPS LOCK बंद है</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -970,6 +972,7 @@
 <translation id="642644398083277086">सभी सूचनाएं हटाएं</translation>
 <translation id="643147933154517414">सभी पूरे हो गए</translation>
 <translation id="6431865393913628856">स्क्रीन रिकॉर्ड</translation>
+<translation id="6442259747294754014">डिवाइस का माइक्रोफ़ोन बंद है</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> इवेंट</translation>
 <translation id="6449483711453944360">फ़िलहाल, Linux ऐप्लिकेशन और गुप्त विंडो के लिए यह सुविधा उपलब्ध नहीं है</translation>
@@ -1364,6 +1367,7 @@
 <translation id="8598235756057743477">अपने ऐप्लिकेशन को नाम या रंग के हिसाब से क्रम में लगाएं</translation>
 <translation id="8614517853887502247">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं को छिपाया गया है</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> से कनेक्ट है</translation>
+<translation id="8630991711272431708">कैमरे को ऐक्सेस करने की सुविधा बंद करें</translation>
 <translation id="8631727435199967028">सुलभता सेटिंग</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> बाकी</translation>

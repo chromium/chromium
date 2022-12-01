@@ -133,6 +133,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1974060860693918893">Mipangilio ya kina</translation>
 <translation id="1981118202195772574">Kifaa cha mkononi</translation>
 <translation id="1989112275319619282">Vinjari</translation>
+<translation id="1990820278544963435">Tafuta</translation>
 <translation id="199425419756152024">Angalia Nenosiri</translation>
 <translation id="2010008505735295285">Pakia upya</translation>
 <translation id="2015722694326466240">Ili uone manenosiri, ni lazima kwanza uweke nambari ya siri kwenye kifaa chako.</translation>
@@ -550,7 +551,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5190835502935405962">Sehemu ya Alamisho</translation>
 <translation id="519530786644929958">Upakuaji haujafaulu na hauwezi kujaribiwa tena.</translation>
 <translation id="5197255632782567636">Wavuti</translation>
-<translation id="5210365745912300556">Funga kichupo</translation>
 <translation id="5219295696240154694">Tusaidie Kuboresha Usalama Kwa Kila Mtu kwenye Wavuti</translation>
 <translation id="5228579091201413441">Washa usawazishaji</translation>
 <translation id="5232485538978018676">Ingia Ukitumia Akaunti Inayosimamiwa</translation>
@@ -1088,6 +1088,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9188680907066685419">Ondoka kwenye akaunti inayodhibitiwa</translation>
 <translation id="9200875785104711666">siku <ph name="TIME" /> zilizopita</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Tafuta Vichupo…</translation>
 <translation id="9223358826628549784">Ripoti ya kuacha kufanya kazi imetumwa.</translation>
 <translation id="941747855997058526">Chagua Nenosiri...</translation>
 <translation id="952704832371081537">Ghairi</translation>

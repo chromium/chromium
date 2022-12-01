@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{1 アプリでオフ}other{# アプリでオフ}}</translation>
 <translation id="4066027111132117168">オン（<ph name="REMAINING_TIME" />）</translation>
 <translation id="4072264167173457037">電波: 中程度</translation>
+<translation id="4086921558679520050">デバイスの物理的なマイクスイッチをオンにする</translation>
 <translation id="4112140312785995938">後方に移動</translation>
 <translation id="4114315158543974537">Phone Hub をオンにする</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />、電波強度 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4379531060876907730">タッチペン ツール</translation>
+<translation id="4381031910344220229">マイクへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>
 <translation id="4389184120735010762">ドッキング拡大鏡のキーボード ショートカットを押しました。この機能をオンにしますか？</translation>
 <translation id="439598569299422042">一時停止中、<ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">スクリーンキャストを保存できません</translation>
@@ -728,6 +730,7 @@
 <translation id="4987738733603015246">デスク 16</translation>
 <translation id="5003993274120026347">次の文</translation>
 <translation id="5016558321564993266">マーカーを切り替えます。<ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">デバイスのマイクへのアクセスはオンになっています</translation>
 <translation id="5030687792513154421">時間切れです</translation>
 <translation id="5033299697334913360">全画面をキャプチャするには任意の場所をクリックしてください</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> が新しいスマートフォンに接続されました</translation>
@@ -959,9 +962,11 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> は <ph name="MANAGER" /> が管理する管理対象セッションです</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> を接続しました</translation>
 <translation id="6351032674660237738">アプリの候補</translation>
+<translation id="6352082849089527770">不明なネットワーク</translation>
 <translation id="6359587239691116345">最新の機能を入手しセキュリティを強化しましょう。このアップデートを承認しない場合、デバイスが正しく動作せず、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
 <translation id="6376931439017688372">Bluetooth はオンです</translation>
 <translation id="6381109794406942707">デバイスのロックを解除するには PIN を入力してください。</translation>
+<translation id="638716340450135524">カメラへのアクセスをオンにする</translation>
 <translation id="639644700271529076">CapsLock 機能はオフになっています</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
@@ -969,6 +974,7 @@
 <translation id="642644398083277086">通知をすべて消去</translation>
 <translation id="643147933154517414">すべて確認済み</translation>
 <translation id="6431865393913628856">画面録画</translation>
+<translation id="6442259747294754014">デバイスのマイクへのアクセスはオフになっています</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> に「<ph name="ROUTE_TITLE" />」をキャスト中</translation>
 <translation id="6447111710783417522"><ph name="DATE" />、<ph name="NUMBER" /> 件の予定</translation>
 <translation id="6449483711453944360">Linux アプリとシークレット ウィンドウは現在サポートされていません</translation>
@@ -1133,6 +1139,7 @@
 <translation id="7360036564632145207">周辺機器の設定でデータアクセスの保護を変更すると、パフォーマンスを最適化できます。</translation>
 <translation id="736045644501761622">壁紙とスタイルを設定</translation>
 <translation id="7371404428569700291">ウィンドウを録画</translation>
+<translation id="737315737514430195">マイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>
 <translation id="7377169924702866686">CapsLock 
 がオンになっています。</translation>
 <translation id="7377481913241237033">コードを使用して接続</translation>
@@ -1202,6 +1209,7 @@
 <translation id="7671610481353807627">アプリは色で並べ替えられています</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> に接続しました。<ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">カメラ入力を <ph name="CAMERA_NAME" /> に設定しました。</translation>
+<translation id="7689817529363080918">マイクへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">新しいモバイル ネットワークを追加</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> までオン</translation>
@@ -1365,6 +1373,7 @@
 <translation id="8598235756057743477">名前または色でアプリを並べ替えられます</translation>
 <translation id="8614517853887502247">表示保護機能が有効になっているため、<ph name="APP_1_TITLE" /> と <ph name="APP_2_TITLE" /> の通知は表示されません</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> と接続しました</translation>
+<translation id="8630991711272431708">カメラへのアクセスをオフにする</translation>
 <translation id="8631727435199967028">ユーザー補助機能の設定</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="8639760480004882931">バッテリー残量: <ph name="PERCENTAGE" /></translation>

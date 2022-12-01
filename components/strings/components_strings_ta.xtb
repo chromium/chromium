@@ -38,6 +38,7 @@
 <translation id="10614374240317010">எப்போதும் சேமிக்காதவை</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">டெஸ்க்டாப் புக்மார்க்குகள்</translation>
+<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> கொள்கை அமைக்கப்படும் வரை <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> கொள்கை பயன்படுத்தப்படாது.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> மொழியில் உள்ள பக்கங்களை ஒருபோதும் மொழிபெயர்க்காதே</translation>
 <translation id="1070853536588271387">ஹைப்ரிட் &amp; மாற்று வாகனங்கள்</translation>
 <translation id="1070901266639972381">இரவு</translation>
@@ -337,7 +338,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> ஆக இருக்கும்போது குறிப்பிடப்பட வேண்டும். அத்துடன் சரியான சரமாகவும் இருக்க வேண்டும்.</translation>
 <translation id="1745880797583122200">உங்கள் உலாவி நிர்வகிக்கப்படுகிறது</translation>
 <translation id="1746113442205726301">இமேஜ் Y ஷிஃப்ட்</translation>
-<translation id="1747819498338037826">தானாகவே மாற்று</translation>
 <translation id="17513872634828108">தாவல்களைத் திற</translation>
 <translation id="1752021286346845558">அஞ்சல் பெட்டி 8</translation>
 <translation id="1753068535428855445">டேட்டிங் &amp; பர்சனல்ஸ்</translation>
@@ -1366,7 +1366,6 @@
 <translation id="4450893287417543264">மீண்டும் காட்டாதே</translation>
 <translation id="4451135742916150903">HID சாதனங்களுடன் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
 <translation id="4452328064229197696">நீங்கள் தற்போது பயன்படுத்திய கடவுச்சொல், தரவு மீறலுக்கு உட்பட்டிருப்பதாகக் கண்டறியப்பட்டுள்ளது. உங்கள் கணக்குகளைப் பாதுகாப்பாக வைத்திருக்க, சேமித்த கடவுச்சொற்களைச் சரிபார்க்குமாறு Googleளின் கடவுச்சொல் நிர்வாகி பரிந்துரைக்கிறது.</translation>
-<translation id="4455222631300069614">உங்கள் கடவுச்சொல்லை இப்போதே மாற்றுங்கள்</translation>
 <translation id="4460315069258617173">இந்தத் தளத்திற்கான பிரிவுகளை மூடும் வரை இருப்பிட அணுகல் கிடைக்கும்</translation>
 <translation id="4464826014807964867">உங்கள் நிறுவனம் வழங்கிய தகவல்களைக் கொண்ட இணையதளங்கள்</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1601,7 +1600,6 @@
 <translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5040262127954254034">தனியுரிமை</translation>
 <translation id="5043480802608081735">நீங்கள் நகலெடுத்த இணைப்பு</translation>
-<translation id="5044545992476246592">நீங்கள் தற்போது பயன்படுத்திய கடவுச்சொல், தரவு மீறலுக்கு உள்ளாகியிருப்பதாகக் கண்டறியப்பட்டுள்ளது. உங்கள் கடவுச்சொல்லை Google Assistantடால் தானாக மாற்ற முடியும்.</translation>
 <translation id="5045550434625856497">தவறான கடவுச்சொல்</translation>
 <translation id="5051305769747448211">நேரலை நகைச்சுவை நிகழ்ச்சி</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{‘அருகிலுள்ளவற்றுடன் பகிர்தல்’ அம்சத்தின் மூலம் இந்த ஃபைலை அனுப்ப, உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}other{‘அருகிலுள்ளவற்றுடன் பகிர்தல்’ அம்சத்தின் மூலம் இந்த ஃபைல்களை அனுப்ப, உங்கள் சாதனத்தில் <ph name="DISK_SPACE_SIZE" /> சேமிப்பிடத்தைக் காலியாக்கவும்}}</translation>
@@ -1667,7 +1665,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> பல ஃபைல்களைப் பதிவிறக்க விரும்புகிறது</translation>
 <translation id="519422657042045905">விரிவுரை இல்லை</translation>
 <translation id="5201306358585911203">இந்தப் பக்கத்திலுள்ள உட்பொதிக்கப்பட்ட பக்கம் தெரிவிப்பது:</translation>
-<translation id="5204468114771111727">நீங்கள் தற்போது பயன்படுத்திய கடவுச்சொல், தரவு மீறலுக்கு உட்பட்டிருப்பதாக Chrome கண்டறிந்துள்ளது. உங்கள் கடவுச்சொல்லை Google Assistantடால் தானாக மாற்ற முடியும்.</translation>
 <translation id="5205222826937269299">பெயர் தேவை</translation>
 <translation id="5209518306177824490">SHA-1 விரல்அச்சு</translation>
 <translation id="5209670883520018268">டிரே 20</translation>
@@ -2094,6 +2091,7 @@
 <translation id="6328786501058569169">இது ஏமாற்றக்கூடிய தளம்</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />க்கும் குறைவான அளவைக் காலியாக்கும். நீங்கள் அடுத்த முறை பார்வையிடும் போது, சில தளங்கள் மிகவும் மெதுவாக ஏற்றப்படலாம்.</translation>
 <translation id="6337534724793800597">பெயரின்படி கொள்கைகளை வடி</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> மதிப்பு தவறாக உள்ளதால் அது பயன்படுத்தப்படாது.</translation>
 <translation id="6340739886198108203">ரகசிய உள்ளடக்கம் காட்டப்படும்போது ஸ்கிரீன்ஷாட் எடுப்பதையும் ரெக்கார்டு செய்வதையும் நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை:</translation>
 <translation id="6341434961864773665">{0,plural, =1{இந்த ஃபைலை <ph name="DESTINATION_NAME" />க்குப் பதிவேற்றுவதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}other{இந்த ஃபைல்களை <ph name="DESTINATION_NAME" />க்குப் பதிவேற்றுவதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}}</translation>
 <translation id="6348220984832452017">செயலில் உள்ள பதிப்புகள்</translation>
@@ -2989,6 +2987,7 @@
 <translation id="8654126188050905496">55 x 91 மிமீ</translation>
 <translation id="8663226718884576429">ஆர்டர் சுருக்கம், <ph name="TOTAL_LABEL" />, மேலும் விவரங்கள்</translation>
 <translation id="8666678546361132282">ஆங்கிலம்</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> மதிப்பு அளவுத் தேவைகளைப் பூர்த்தி செய்யவில்லை.</translation>
 <translation id="867224526087042813">கையொப்பம்</translation>
 <translation id="8672264262457010862">பிசினஸ் &amp; தொழில்துறை</translation>
 <translation id="8676424191133491403">தாமதப்படுத்த வேண்டாம்</translation>
@@ -3088,6 +3087,7 @@
 <translation id="8913778647360618320">’கட்டண முறைகளை நிர்வகி’ பட்டன், Chrome அமைப்புகளில் பேமெண்ட்டுகள், கிரெடிட் கார்டு ஆகியவை குறித்த தகவலை நிர்வகிக்க Enter விசையை அழுத்துங்கள்</translation>
 <translation id="8922013791253848639">இந்தத் தளத்தில் எப்போதும் விளம்பரங்களை அனுமதி</translation>
 <translation id="892588693504540538">பஞ்ச் டாப் ரைட்</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> மதிப்பு தொடர்புடையதாக இல்லை என்பதால் <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> கொள்கையை அமைக்கும் வரை பயன்படுத்தப்படாது.</translation>
 <translation id="8930330541574156305">ரியல் எஸ்டேட்</translation>
 <translation id="8931333241327730545">இந்தக் கார்டை உங்கள் Google கணக்கில் சேமிக்க வேண்டுமா?</translation>
 <translation id="8932102934695377596">உங்கள் கடிகாரம் மிகவும் பின்தங்கி இருக்கிறது</translation>

@@ -338,7 +338,6 @@
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
 <translation id="1745880797583122200">你的瀏覽器受到管理</translation>
 <translation id="1746113442205726301">圖片 Y 批次</translation>
-<translation id="1747819498338037826">自動變更</translation>
 <translation id="17513872634828108">開啟的分頁</translation>
 <translation id="1752021286346845558">出紙槽 8</translation>
 <translation id="1753068535428855445">約會交友</translation>
@@ -1370,7 +1369,6 @@
 <translation id="4450893287417543264">不要再顯示</translation>
 <translation id="4451135742916150903">可以要求連線至 HID 裝置</translation>
 <translation id="4452328064229197696">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，Google 密碼管理員建議你立即檢查已儲存的密碼。</translation>
-<translation id="4455222631300069614">立即變更密碼</translation>
 <translation id="4460315069258617173">權限於此網站的分頁關閉時到期</translation>
 <translation id="4464826014807964867">有貴機構資訊的網站</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
@@ -1605,7 +1603,6 @@
 <translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="5043480802608081735">你複製的連結</translation>
-<translation id="5044545992476246592">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。Google 助理可以自動變更你的密碼。</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5051305769747448211">實況喜劇</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用鄰近分享功能傳送這個檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用鄰近分享功能傳送這些檔案，請釋出裝置的儲存空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
@@ -1671,7 +1668,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想要下載多個檔案</translation>
 <translation id="519422657042045905">無法使用註解模式</translation>
 <translation id="5201306358585911203">這個網頁上的嵌入式網頁顯示</translation>
-<translation id="5204468114771111727">Chrome 發現你剛才使用的密碼因為資料侵害事件而遭到外洩。Google 助理可以自動變更你的密碼。</translation>
 <translation id="5205222826937269299">請輸入名稱</translation>
 <translation id="5209518306177824490">SHA-1 指紋</translation>
 <translation id="5209670883520018268">紙匣 20</translation>

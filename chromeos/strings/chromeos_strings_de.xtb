@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Schritte zur Fehlerbehebung ausprobieren</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Stelle eine Verbindung zu einem Netzwerk her und lade die Seite neu, um den Bildschirmschoner anzusehen.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Weitere Einstellungen</translation>
 <translation id="2085089206770112532">Displayhelligkeit verringern</translation>
 <translation id="2105810540595158374">Das Gerät ist ein Controller.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Komprimierungsalgorithmus</translation>
 <translation id="4794140124556169553">Der CPU-Test kann sich auf die Leistung deines Systems auswirken</translation>
 <translation id="4800589996161293643">Chromebook-Community</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Druckauftrag für "<ph name="DOCUMENT_TITLE" />" wurde abgebrochen</translation>
 <translation id="4809927044794281115">Helles Design</translation>
 <translation id="4813136279048157860">Meine Bilder</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Belastung</translation>
 <translation id="4897058166682006107">Der Akkustand des linken Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Aktiviere die Funktion, um die Bildschirmschoner-Optionen auszuwählen</translation>
+<translation id="4910858703033903787">APN-Typen</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
 <translation id="491791267030419270">Tipps zum Schreiben von Feedback</translation>
@@ -460,6 +463,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5358174242040570474">Es gab ein Problem. Wähle noch einmal einen Hintergrund aus oder öffne die App ein weiteres Mal.</translation>
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
 <translation id="5376354385557966694">Automatischer heller Modus</translation>
+<translation id="5378184552853359930">IP-Typ</translation>
 <translation id="5389159777326897627">Hintergrund &amp; Stil</translation>
 <translation id="5389224261615877010">Regenbogen</translation>
 <translation id="5400907029458559844">Das Gerät wird verbunden.</translation>
@@ -489,6 +493,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
+<translation id="5695599963893094957">Drücke eine beliebige Taste auf der Tastatur. Du kannst maximal 4 Tasten gleichzeitig drücken.</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">„<ph name="DEVICE_NAME" />“ aktualisieren</translation>
@@ -615,7 +620,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6766275201586212568">Fehlgeschlagene DNS-Auflösungen</translation>
 <translation id="6768237774506518020">Hohe Fehlerrate bei der DNS-Auflösung</translation>
 <translation id="6791471867139427246">Farbe der Tastaturbeleuchtung</translation>
-<translation id="6793680441750437230">Drücke eine beliebige Taste auf der Tastatur. Du kannst maximal 4 Tasten gleichzeitig drücken. Drücke gleichzeitig die Alt- und die Esc-Taste, um das Dialogfeld zu schließen.</translation>
 <translation id="680983167891198932">Schlüssel</translation>
 <translation id="6816797338148849397">Informationen in Bezug auf deine Auswahl sind verfügbar. Verwende für Zugriff den Aufwärtspfeil.</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
@@ -743,6 +747,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8138405288920084977">LTE-Advanced</translation>
 <translation id="8143951647992294073">"<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />" auswählen</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
+<translation id="8183974620058026102">Anhängen</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8226628635270268143">Hier kannst du deine bevorzugten Fotos und Alben auswählen</translation>
@@ -831,6 +836,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9025198690966128418">Als persönliches Gerät nutzen</translation>
 <translation id="9028832514430399253">Aktiviere die Ein-/Aus-Schaltfläche, um die Bildschirmschoner-Optionen auszuwählen</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-Auflösung hat eine hohe Latenz</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

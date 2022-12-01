@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Gemerkte teks is verkort</translation>
 <translation id="1111673857033749125">Boekmerke wat op jou ander toestelle gestoor is, sal hier verskyn.</translation>
 <translation id="1113597929977215864">Wys vereenvoudigde aansig</translation>
-<translation id="1118561384561215815">Kry hulp met take op die web</translation>
 <translation id="1123070903960493543">Hoe jy interaksie met Chrome het, instellings wat jy gekies het, besonderhede van Chrome-omvalle</translation>
 <translation id="1126809382673880764">Beskerm jou nie teen gevaarlike webwerwe, aflaaie en uitbreidings nie. Jy sal steeds Veiligblaai-beskerming kry, indien beskikbaar, in ander Google-dienste, soos Gmail en Search.</translation>
 <translation id="1129510026454351943">Besonderhede: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="2286841657746966508">Faktureringadres</translation>
 <translation id="228704530595896923">Lys deelopsies.</translation>
 <translation id="230115972905494466">Geen versoenbare toestelle gekry nie</translation>
-<translation id="230155349749732438">Om hierdie instelling te gebruik, moet <ph name="BEGIN_LINK" />Maak soektogte en blaai beter<ph name="END_LINK" /> aangeskakel wees</translation>
 <translation id="2318045970523081853">Tik om 'n oproep te maak</translation>
 <translation id="2321086116217818302">Maak tans wagwoorde gereed …</translation>
 <translation id="2323763861024343754">Werfberging</translation>
@@ -428,7 +426,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="3269093882174072735">Laai prent</translation>
 <translation id="3280562213547448728">Stemsoektog</translation>
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
-<translation id="3284510035090979597">Proaktiewe hulp</translation>
 <translation id="3285080554353377245">Video's oor hoe om Chrome te gebruik</translation>
 <translation id="3288003805934695103">Die bladsy herlaai</translation>
 <translation id="3290249595466894471">Stuur ook 'n klein voorbeeld van bladsye, aflaaie, uitbreidingaktiwiteit en stelselinligting om te help om nuwe bedreigings te ontdek</translation>
@@ -590,7 +587,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="4209895695669353772">Skakel sinkronisering aan om gepersonaliseerde inhoud wat deur Google voorgestel is, te kry</translation>
 <translation id="4214315110991671325">As jy webkoekies toelaat, kan Chrome hulle vir vooraflaai gebruik.</translation>
 <translation id="4225895483398857530">Nutsbalkkortpad</translation>
-<translation id="4227318652298512614">Volg enige werwe wat jy wil</translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>
 <translation id="4248098802131000011">Beskerm jou wagwoorde teen dataskendings en ander sekuriteitsprobleme</translation>
 <translation id="424864128008805179">Meld af uit Chrome?</translation>
@@ -881,7 +877,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5795872532621730126">Soek en blaai</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# uur gelede}other{# uur gelede}}</translation>
 <translation id="5810288467834065221">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
-<translation id="5810864297166300463">Webbystand</translation>
 <translation id="5813552293717797987">Hierdie blaaier word bestuur deur <ph name="PARENT_NAME_1" /> en <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Tik hier of tik op die stemikoon om te begin</translation>
 <translation id="5814749351757353073">Bly op hoogte van jou gunstelingwerwe</translation>
@@ -904,7 +899,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5869789175361934029">Gaan voort van ’n ander toestel af</translation>
 <translation id="587735546353481577">Om 'n werf te volg, moet jy na die werf gaan, die Chrome-kieslys oopmaak, en op Volg tik.</translation>
 <translation id="5879072387416556377">Kry beter voorstelle</translation>
-<translation id="5884076754568147479">Om jou te help om take te voltooi, sal Google die URL'e en inhoud ontvang van werwe waarop jy Assistent gebruik, asook inligting wat jy deur Assistent indien</translation>
 <translation id="5906513782029855931">As Google Assistent weet wat werwe se URL'e is, kan dit jou help om take te voltooi. Jy kan Assistent in Chrome-instellings afskakel.</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5919204609460789179">Dateer <ph name="PRODUCT_NAME" /> op om sinkronisering te begin</translation>
@@ -1346,7 +1340,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8127542551745560481">Wysig tuisblad</translation>
 <translation id="8130309322784422030">Jou gebergde aanmeldinligting is dalk verouderd</translation>
 <translation id="813082847718468539">Bekyk werfinligting</translation>
-<translation id="8153351135626613369">Assistent sal verskyn wanneer dit bespeur dat dit jou op gesteunde webwerwe kan help</translation>
 <translation id="8156139159503939589">Watter tale lees jy?</translation>
 <translation id="8168435359814927499">Inhoud</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> lêers oor</translation>

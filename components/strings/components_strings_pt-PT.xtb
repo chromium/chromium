@@ -338,7 +338,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1741613555002899862">A política tem de ser especificada, bem como uma string válida quando a DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">O seu navegador é gerido</translation>
 <translation id="1746113442205726301">Turno Y da imagem</translation>
-<translation id="1747819498338037826">Alterar automaticamente</translation>
 <translation id="17513872634828108">Separadores abertos</translation>
 <translation id="1752021286346845558">Caixa de correio 8</translation>
 <translation id="1753068535428855445">Encontros e anúncios pessoais</translation>
@@ -1371,7 +1370,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4450893287417543264">Não mostrar de novo</translation>
 <translation id="4451135742916150903">Pode solicitar a ligação a dispositivos HID</translation>
 <translation id="4452328064229197696">A palavra-passe que acabou de utilizar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de palavras-passe da Google recomenda que verifique as suas palavras-passe guardadas.</translation>
-<translation id="4455222631300069614">Altere a sua palavra-passe agora</translation>
 <translation id="4460315069258617173">Permitida até fechar os separadores deste site</translation>
 <translation id="4464826014807964867">Websites com informações sobre a sua entidade</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1606,7 +1604,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5043480802608081735">Link que copiou</translation>
-<translation id="5044545992476246592">A palavra-passe que acabou de usar foi encontrada numa violação de dados. O Assistente Google pode alterar a sua palavra-passe automaticamente.</translation>
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
 <translation id="5051305769747448211">Comédia ao vivo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes ficheiros através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
@@ -1672,7 +1669,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="51918995459521422"><ph name="ORIGIN" /> quer transferir vários ficheiros.</translation>
 <translation id="519422657042045905">As notas não estão disponíveis.</translation>
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
-<translation id="5204468114771111727">O Chrome encontrou a palavra-passe que acabou de utilizar numa violação de dados. O Assistente Google pode alterar a sua palavra-passe automaticamente.</translation>
 <translation id="5205222826937269299">Nome obrigatório</translation>
 <translation id="5209518306177824490">Impressão digital SHA-1</translation>
 <translation id="5209670883520018268">Tabuleiro 20</translation>

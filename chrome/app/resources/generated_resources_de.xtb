@@ -187,6 +187,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1166583374608765787">Namensaktualisierung prüfen</translation>
 <translation id="1166596238782048887">„<ph name="TAB_TITLE" />“ gehört zum Desktop „<ph name="DESK_TITLE" />“</translation>
 <translation id="1168020859489941584">Wird in <ph name="TIME_REMAINING" /> geöffnet...</translation>
+<translation id="116896278675803795">Sprache automatisch an ausgewählte Inhalte anpassen</translation>
 <translation id="1169266963600477608">Spielsteuerung</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> enthält vertrauliche oder schädliche Daten. Dein Administrator sagt „<ph name="CUSTOM_MESSAGE" />“.</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> möchte eine Verbindung mit einem HID-Gerät herstellen</translation>
@@ -1282,6 +1283,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2157875535253991059">Diese Seite wird nun im Vollbildmodus angezeigt.</translation>
 <translation id="2158475082070321257">Link zum markierten Text kopieren</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">Geltungsbereich von <ph name="SHORTCUT" /> für <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">WLAN hinzufügen...</translation>
 <translation id="2162155940152307086">Die Synchronisierung wird gestartet, sobald du die Synchronisierungseinstellungen verlässt</translation>
 <translation id="2162705204091149050">Informationen zu deinem Browser, Betriebssystem, Gerät, der installierten Software und den Dateien abrufen</translation>
@@ -2559,7 +2561,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3341703758641437857">Zugriff auf Datei-URLs zulassen</translation>
 <translation id="3342361181740736773"><ph name="TRIGGERING_EXTENSION_NAME" /> möchte diese Erweiterung entfernen.</translation>
 <translation id="3343977377045378693">Einrichtung läuft</translation>
-<translation id="3345135638360864351">Deine Zugriffsanfrage für diese Website konnte nicht an <ph name="NAME" /> gesendet werden. Bitte versuche es erneut.</translation>
 <translation id="3345634917232014253">Der Sicherheitscheck wurde vor Kurzem ausgeführt</translation>
 <translation id="3345886924813989455">Keine unterstützten Browser gefunden</translation>
 <translation id="3347086966102161372">Bildadresse k&amp;opieren</translation>
@@ -2569,6 +2570,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3353786022389205125">„Sperrbildschirm anzeigen, wenn der Ruhemodus beendet wird“ aktivieren und noch einmal versuchen</translation>
 <translation id="3354768182971982851">Ältere Versionen von Chrome-Apps können nach Dezember 2022 auf Apple-Geräten nicht mehr geöffnet werden. Du kannst nachsehen, ob eine neue Version verfügbar ist.</translation>
 <translation id="3354972872297836698">Koppeln mit Gerät „<ph name="DEVICE_NAME" />“ fehlgeschlagen; Gerät auswählen und noch einmal versuchen</translation>
+<translation id="335581015389089642">Sprachausgabe</translation>
 <translation id="3355936511340229503">Verbindungsfehler</translation>
 <translation id="3356036636691722598">Erlebe Gaming auf deinem Chromebook</translation>
 <translation id="3356469410714175391">(virtuelle Karte aktiviert)</translation>
@@ -2667,6 +2669,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3445047461171030979">Schnelle Antworten bei Google Assistant</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344537926140058498">Deine Organisation hat diese Datei blockiert, weil sie sensible oder gefährliche Inhalte enthält. Bitte den Inhaber, das Problem zu beheben.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{Berechtigungen für <ph name="BEGIN_BOLD" />1 Website<ph name="END_BOLD" /> entfernt, die du in letzter Zeit nicht besucht hast}other{Berechtigungen für <ph name="BEGIN_BOLD" />{NUM_SITES} Websites<ph name="END_BOLD" /> entfernt, die du in letzter Zeit nicht besucht hast}}</translation>
 <translation id="3445925074670675829">USB-C-Gerät</translation>
 <translation id="3446274660183028131">Bitte Parallels Desktop starten, um Windows zu installieren.</translation>
 <translation id="344630545793878684">Deine Daten auf verschiedenen Websites lesen</translation>
@@ -2877,6 +2880,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3642699533549879077">Wenn andere auf deinen Bildschirm sehen, wirst du benachrichtigt und der Inhalt der Benachrichtigungen wird ausgeblendet.</translation>
 <translation id="3643962751030964445">Dieses Gerät wird von <ph name="DEVICE_MANAGER" /> verwaltet. <ph name="DEVICE_MANAGER" /> hat festgelegt, dass für das Konto <ph name="USER_EMAIL_ADDRESS" /> ein neues Profil erforderlich ist</translation>
 <translation id="3645372836428131288">Bewege deinen Finger etwas, um einen anderen Teil des Fingerabdrucks zu erfassen.</translation>
+<translation id="3647051300407077858">Berechtigungen für Benachrichtigungen überprüfen</translation>
 <translation id="3647654707956482440">Dieser Link kann nicht verwendet werden. Prüfe die Rechtschreibung oder versuche es mit einem anderen Link.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> erhalten von <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> erhalten von <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> erkannt</translation>
@@ -3056,6 +3060,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="380408572480438692">Bei Aktivierung der Erfassung von Leistungsdaten kann Google das System mit der Zeit verbessern. Daten werden erst gesendet, wenn du mittels Alt+Umschalttaste+I einen Feedback-Bericht mit Leistungsdaten einreichst. Du kannst jederzeit zu diesem Bildschirm zurückkehren, um die Datenerfassung zu deaktivieren.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (Erweiterungs-ID "<ph name="EXTENSION_ID" />") ist auf Anmeldeseiten nicht zulässig.</translation>
 <translation id="3807747707162121253">Abbre&amp;chen</translation>
+<translation id="3808202562160426447">Inhalte im Hintergrund dimmen</translation>
 <translation id="3808443763115411087">Android-App-Entwicklung in Crostini</translation>
 <translation id="38089336910894858">Vor dem Beenden mit ⌘ + Q eine Warnung einblenden</translation>
 <translation id="3809272675881623365">Kaninchen</translation>
@@ -3144,7 +3149,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3883482240657453056">Rabatte für <ph name="MERCHANT_NAME_1" /> und <ph name="MERCHANT_NAME_2" /> erhalten</translation>
 <translation id="3884152383786131369">Für Webinhalte in mehreren Sprachen wird die erste unterstützte Sprache aus dieser Liste verwendet. Diese Einstellungen werden mit den Browsereinstellungen synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates werden von deinem Administrator verwaltet</translation>
-<translation id="3886446263141354045">Deine Anfrage zum Zugriff auf diese Website wurde an <ph name="NAME" /> gesendet</translation>
 <translation id="3887022758415973389">Geräteliste anzeigen</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-Verbindung</translation>
 <translation id="3888550877729210209">Notizerstellung mit <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -3647,6 +3651,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> hat ein Fenster freigegeben.</translation>
 <translation id="4364830672918311045">Benachrichtigungen einblenden</translation>
 <translation id="4366138410738374926">Druckvorgang gestartet</translation>
+<translation id="4367513928820380646">Entfernte Berechtigungen überprüfen</translation>
 <translation id="4369121877634339065">Zum Suchen über Bildbereich ziehen</translation>
 <translation id="4369215744064167350">Websiteanfrage genehmigt</translation>
 <translation id="4370975561335139969">Die E-Mail-Adresse und das Passwort, die du eingegeben hast, stimmen nicht überein.</translation>
@@ -4365,6 +4370,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5045550434625856497">Falsches Passwort</translation>
 <translation id="504561833207953641">Wird in einer aktuellen Browsersitzung geöffnet.</translation>
 <translation id="5049614114599109018">Eingabeverlauf verwenden</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{Diese Website hat in letzter Zeit viele Benachrichtigungen gesendet. Du kannst verhindern, dass du zukünftig solche Benachrichtigungen erhältst.}other{Diese Websites haben in letzter Zeit viele Benachrichtigungen gesendet. Du kannst verhindern, dass du zukünftig solche Benachrichtigungen erhältst.}}</translation>
 <translation id="5051836348807686060">Die Rechtschreibprüfung wird für die ausgewählten Sprachen nicht unterstützt</translation>
 <translation id="5052499409147950210">Website bearbeiten</translation>
 <translation id="505347685865235222">Unbenannte Gruppe – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -7256,6 +7262,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7775694664330414886">Tab wurde in unbenannte Gruppe verschoben – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> kann dann Dateien im Ordner <ph name="FOLDERNAME" /> lesen, solange Tabs dieser Website geöffnet sind</translation>
 <translation id="7776701556330691704">Keine Stimmen gefunden</translation>
+<translation id="7777624210360383048">Tastenkombination <ph name="SHORTCUT" /> für <ph name="EXTENSION_NAME" /></translation>
 <translation id="7781335840981796660">Alle Benutzerkonten und lokalen Daten werden entfernt.</translation>
 <translation id="7782102568078991263">Keine weiteren Vorschläge von Google</translation>
 <translation id="7782717250816686129">Vom Nutzer auf dem Anmeldebildschirm angegebene Daten speichern und mit anderen Erweiterungen in der Nutzersitzung teilen.</translation>
@@ -7288,6 +7295,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7807711621188256451"><ph name="HOST" /> immer Zugriff auf deine Kamera gestatten</translation>
 <translation id="7810202088502699111">Pop-ups wurden auf dieser Seite blockiert.</translation>
 <translation id="7814458197256864873">&amp;Kopieren</translation>
+<translation id="7815583197273433531">Tastenkombination <ph name="SHORTCUT" /> für <ph name="EXTENSION_NAME" /> bearbeiten</translation>
 <translation id="7815680994978050279">Gefährlicher Download blockiert</translation>
 <translation id="7817361223956157679">Die Bildschirmtastatur funktioniert noch nicht in Linux-Apps</translation>
 <translation id="7818135753970109980">Neues Design hinzugefügt (<ph name="EXTENSION_NAME" />)</translation>
@@ -7362,6 +7370,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Konto anzeigen</translation>
 <translation id="7883792253546618164">Du kannst dich jederzeit wieder abmelden.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{1 Website ansehen, die in letzter Zeit viele Benachrichtigungen gesendet hat}other{{NUM_SITES} Websites ansehen, die in letzter Zeit viele Benachrichtigungen gesendet haben}}</translation>
 <translation id="788453346724465748">Kontoinformationen werden geladen…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{einen Artikel}other{# Artikel}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8072,7 +8081,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8540942859441851323">Anbieter verlangt Roaming</translation>
 <translation id="8541462173655894684">Auf dem Druckserver wurden keine Drucker gefunden</translation>
 <translation id="8541838361296720865">Drücke auf einen Schalter oder eine Taste, um sie „<ph name="ACTION" />“ zuzuweisen</translation>
-<translation id="8543556556237226809">Fragen? Wende dich an die Person, die dein Profil überwacht.</translation>
 <translation id="8546186510985480118">Dein Gerät hat wenig freien Speicherplatz</translation>
 <translation id="8546306075665861288">Bilder-Cache</translation>
 <translation id="8546930481464505581">Touch Bar anpassen</translation>
@@ -8415,6 +8423,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8859174528519900719">Subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Nutzungsbedingungen konnten nicht geladen werden</translation>
 <translation id="8859662783913000679">Elternkonto</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} Konto}other{{COUNT} Konten}}</translation>
 <translation id="8861568709166518036">Mit Schaltflächen auf dem Bildschirm kannst du zum Startbildschirm, zur vorherigen Seite und zwischen Apps wechseln. Wird automatisch aktiviert, wenn ChromeVox oder automatische Klicks aktiviert sind.</translation>
 <translation id="8862003515646449717">Steige auf einen schnellen Browser um</translation>
 <translation id="8863753581171631212">Link in neuem <ph name="APP" />-Fenster öffnen</translation>

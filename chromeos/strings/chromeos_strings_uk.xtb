@@ -493,6 +493,7 @@
 <translation id="5669267381087807207">Активація</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Сім’я</translation>
+<translation id="5695599963893094957">На клавіатурі натисніть будь-яку клавішу (можна до 4 клавіш одночасно).</translation>
 <translation id="5701381305118179107">По центру</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Оновити пристрій: <ph name="DEVICE_NAME" /></translation>
@@ -619,7 +620,6 @@
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="6791471867139427246">колір підсвічування клавіатури</translation>
-<translation id="6793680441750437230">На клавіатурі натисніть будь-яку клавішу (можна до 4 клавіш одночасно). Щоб закрити вікно, натисніть комбінацію клавіш Alt + Esc.</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна інформація, пов'язана з виділеним текстом. Щоб перейти до неї, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="6853312040151791195">Швидкість розряджання</translation>

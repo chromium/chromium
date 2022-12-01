@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">Uwch</translation>
 <translation id="1981118202195772574">Symudol</translation>
 <translation id="1989112275319619282">Pori</translation>
+<translation id="1990820278544963435">Chwilio</translation>
 <translation id="199425419756152024">Gweld y Cyfrinair</translation>
 <translation id="2010008505735295285">Ail-lwytho</translation>
 <translation id="2015722694326466240">I weld cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
@@ -550,7 +551,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5190835502935405962">Bar Nodau Tudalen</translation>
 <translation id="519530786644929958">Lawrlwytho wedi methu ac ni ellir rhoi cynni arall arni.</translation>
 <translation id="5197255632782567636">Rhyngrwyd</translation>
-<translation id="5210365745912300556">Cau'r tab</translation>
 <translation id="5219295696240154694">Helpwch i Wella Diogelwch ar y We i Bawb</translation>
 <translation id="5228579091201413441">Galluogi cysoni</translation>
 <translation id="5232485538978018676">Mewngofnodwch gyda Chyfrif a Reolir</translation>
@@ -875,6 +875,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7531345132340165516">Gwefan Bresennol</translation>
 <translation id="7537586195939242955">Mae'n ddrwg gennym, ni ellir gosod y Passbook ar yr adeg hon.</translation>
 <translation id="7553234618121028547">I'w ddiffodd, agorwch <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" /> ac ewch i Opsiynau Cyfrinair.</translation>
+<translation id="7554645225856321710">Cau'r Cyfan</translation>
 <translation id="7554791636758816595">Tab Newydd</translation>
 <translation id="7561196759112975576">Bob tro</translation>
 <translation id="7583004045319035904">Defnyddiwch <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> i ddatgloi eich tabiau Anhysbys.</translation>
@@ -1088,6 +1089,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9188680907066685419">Allgofnodi o'r cyfrif a reolir</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d yn ôl</translation>
 <translation id="9203116392574189331">Trosglwyddo</translation>
+<translation id="9219154867334666734">Chwilio Tabiau…</translation>
 <translation id="9223358826628549784">Wedi anfon adroddiad am doriad.</translation>
 <translation id="941747855997058526">Dewiswch Gyfrinair...</translation>
 <translation id="952704832371081537">Canslo</translation>

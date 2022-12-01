@@ -1870,6 +1870,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se inhabilita esta política, el cambio de alimentación en picos queda desactivado.
 
       Si no se establece, el cambio de alimentación en picos está desactivado en un principio. Los usuarios no pueden cambiar esta opción.</translation>
+<translation id="2773036462435523078">Activa una acción cuando el ordenador está inactivo.
+
+      Si se define esta política, especifica el tiempo (en minutos) que debe transcurrir sin ninguna entrada del usuario antes de que <ph name="PRODUCT_NAME" /> ejecute las acciones configuradas a través de la política <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
+
+      Si no se define esta política, no se ejecutará ninguna acción.
+
+      El umbral mínimo son 5 minutos.
+
+      Las APIs del sistema operativo definen qué es una "entrada del usuario" (por ejemplo, mover el ratón o escribir con el teclado).</translation>
 <translation id="2773288106548584039">Compatibilidad con navegadores antiguos</translation>
 <translation id="2780840673734667062">Inhabilitar el inicio de sesión con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borrar datos de navegación al salir</translation>
@@ -1988,6 +1997,7 @@ Si no se establece la política, <ph name="PRODUCT_OS_NAME" /> podrá selecciona
           |created_time_millis| es la marca de tiempo UTC de la creación de la anulación y se envía en forma de cadena porque la marca de tiempo no cabe en un número entero. Se usa para determinar si la anulación se debería seguir aplicando. Si la función de límite de tiempo activa (el límite de tiempo de uso o el periodo límite) se ha iniciado después de crear la anulación, no se debería aplicar. De la misma forma, si la anulación se ha creado antes de que se aplicara el último cambio de los parámetros time_window_limit o time_usage_window activos, no se debería aplicar.
 
           Es posible que se envíen varias anulaciones y se aplicará la entrada válida más reciente.</translation>
+<translation id="290041922664761002">Especifica el valor salt que se usará en <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> al evaluar la información de identificación</translation>
 <translation id="2901725272378498025">Habilita las advertencias de seguridad en las instrucciones de línea de comandos</translation>
 <translation id="2905984450136807296">Duración de la caché de datos de autenticación</translation>
 <translation id="2906874737073861391">Lista de extensiones AppPack</translation>
@@ -2300,6 +2310,7 @@ Esta política es temporal y se eliminará más adelante.</translation>
 <translation id="3171369832001535378">Plantilla de nombre de host de red de dispositivo</translation>
 <translation id="3173844121395372156">Esta política está obsoleta y no se admite. Usa la política <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="3177802893484440532">Requiere comprobaciones de OCSP/CRL online para los anclajes de veracidad locales</translation>
+<translation id="3179533009079100620">Mostrar selector de perfil</translation>
 <translation id="3180671894201217988">Si se habilita la política o no se le asigna ningún valor, se impide que software de terceros pueda insertar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
 
       Si se inhabilita la política, el software podrá insertar este tipo de código en los procesos de <ph name="PRODUCT_NAME" />.</translation>
@@ -2725,6 +2736,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="3540846231645422635">Inhabilitar los informes sobre la interfaz de red del dispositivo</translation>
 <translation id="3540935459049973317">Límites de tiempo por aplicación</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
+<translation id="3548064438634502368">Cerrar navegadores</translation>
 <translation id="3548642468619496972">Bloquear las descargas maliciosas, poco frecuentes o no deseadas, así como los tipos de archivos peligrosos.</translation>
 <translation id="3550122827225052130">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" /> en su lugar.
 
@@ -2782,6 +2794,19 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="3591584750136265240">Configurar el comportamiento de la autenticación de inicio de sesión</translation>
 <translation id="3593905652755912452">Se usará el comportamiento anterior de envío de eventos en controles de formulario inhabilitados.</translation>
 <translation id="3596112486106491038">Habilitar el acceso a la línea de comandos de las máquinas virtuales</translation>
+<translation id="3596335476793146071">Lista de las acciones que se ejecutarán cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Si no se define la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, esta política no tendrá efecto.
+
+      Cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> ejecutará las acciones configuradas en esta política.
+
+      Si esta política se deja vacía o no se define, la política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> no tendrá efecto.
+
+      Estas son las acciones que se pueden realizar:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": cierra todas las ventanas del navegador y PWAs de este perfil.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": muestra la ventana del selector de perfil.</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />. Así, las extensiones continúan siendo compatibles y <ph name="PRODUCT_NAME" /> puede enviar encabezados definidos sin comprobaciones de <ph name="CORS" />.
 
       Si esta lista se deja vacía, <ph name="PRODUCT_NAME" /> intentará ejecutar las extensiones de forma compatible y no introducirá cambios de <ph name="API" /> en <ph name="PRODUCT_NAME" /> 79, tal y como se explica en <ph name="WEB_REQUEST_API_MANUAL" />.
@@ -3130,6 +3155,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="3943930334592166130">Esta política controla si al usuario se le pedirá que seleccione un certificado de cliente cuando haya más de un certificado que coincida con <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Si se habilita esta política, se le pedirá al usuario que seleccione un certificado de cliente cuando la política de selección automática coincida con varios certificados.
       Si se inhabilita esta política o no se establece, solo se le podrá pedir al usuario que realice una acción cuando no haya ningún certificado que coincida con la selección automática.</translation>
+<translation id="3947897854999940598">Especifica la plantilla URI de la resolución de DNS-over-HTTPS deseada con información de identidad</translation>
 <translation id="3950110092991281616">Habilita la autenticación pasiva solo en sesiones normales.</translation>
 <translation id="3950239119790560549">Actualizar restricciones de tiempo</translation>
 <translation id="3953860513079094502">Informar sobre los eventos de detección y respuesta extendidas (XDR)</translation>
@@ -3913,6 +3939,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 
       Si no se establece esta política, la opción predeterminada no estará disponible para usuarios gestionados por empresas y sí estará disponible para los no gestionados.</translation>
 <translation id="4783415902268741066">Permitir que se muestre la página más reciente de resultados del buscador predeterminado en un panel lateral del navegador</translation>
+<translation id="4786784434769279324">Acciones que se ejecutarán cuando el ordenador esté inactivo</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado de la página de impresión.
 
       <ph name="PAGE_SIZE_NAME" /> debe contener uno de los formatos incluidos en la lista, o "personalizado" si el tamaño del papel necesario no está en la lista. Si se proporciona un valor "personalizado", se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Describe el ancho y altura deseados en micrómetros. De lo contrario, no se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Se ignorará la política que infrinja estas reglas.
@@ -5279,6 +5306,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se asigna el valor "false" a esta política o no se le asigna ninguno, no se proporcionará información
       de informes sobre fallos. Si se le asigna el valor "true", se proporcionará información
       de informes sobre fallos.</translation>
+<translation id="624219423122512710">Acciones que se ejecutarán cuando el navegador esté inactivo</translation>
 <translation id="6244061205361004687">Permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6244210204546589761">URL que se deben abrir al inicio</translation>
 <translation id="624595269193747921">Especifica si se limitará la búsqueda de la impresora coincidente a un conjunto de impresoras concreto.</translation>
@@ -5643,6 +5671,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Nota: Actualmente, los reinicios automáticos solo están habilitados mientras se muestra la pantalla de inicio de sesión o mientras haya una sesión de una aplicación de kiosco.</translation>
 <translation id="6556586932263358975">Permitir el bloqueo de la pantalla</translation>
+<translation id="6558013557780651644">Retraso antes de ejecutar acciones por inactividad</translation>
 <translation id="6559057113164934677">No permitir que ningún sitio acceda a la cámara y al micrófono</translation>
 <translation id="65591220958874949">Usar el cliente DNS integrado en Windows, macOS, Android y ChromeOS</translation>
 <translation id="6559221564468029245">Si se habilita la política o no se establece, no se considerará que el usuario está inactivo mientras se reproduzca audio. Esto impide que se alcance el tiempo de espera de inactividad y que se entre en modo de inactividad. Sin embargo, se llevarán a cabo la atenuación de pantalla, la desconexión de pantalla y el bloqueo de pantalla tras los tiempos de espera configurados, a pesar de la actividad del audio.
@@ -7493,6 +7522,17 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="8316940611391250886">No permitir certificados que no tengan una extensión subjectAlternativeName</translation>
 <translation id="8319678975002906774">Establece valores de la configuración administrada aplicados a sitios web para orígenes determinados</translation>
 <translation id="8320149248919453401">Modo de carga de la batería</translation>
+<translation id="8327201984026238850">La plantilla URI de la resolución de DNS-over-HTTPS deseada. Para especificar varias resoluciones de DNS-over-HTTPS, separa las plantillas URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" />, la cual anulará si se establece. Por el contrario, permite especificar información de identificación.
+
+  Si se le asigna el valor <ph name="SECURE_DNS_MODE_SECURE" /> a <ph name="DOH_MODE_POLICY_NAME" />, esta política o <ph name="DOH_TEMPLATES_POLICY_NAME" /> deberá establecerse y no dejarse vacía.
+
+  Si se asigna el valor <ph name="SECURE_DNS_MODE_AUTOMATIC" /> a <ph name="DOH_MODE_POLICY_NAME" /> y esta política se establece, se usarán las plantillas URI especificadas. Si la política no se establece, se usarán las asignaciones codificadas para intentar cambiar la resolución de DNS actual de los usuarios a una resolución de DoH operada por el mismo proveedor.
+
+  Si la plantilla URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, las solicitudes para la resolución usarán <ph name="HTTP_METHOD_GET" />; de lo contrario, las solicitudes usarán <ph name="HTTP_METHOD_POST" />.
+
+  Si esta política se establece, también se deberá establecer <ph name="DOH_SALT_POLICY_NAME" />.
+
+  Las plantillas con formato incorrecto se ignorarán.</translation>
 <translation id="8327651196906278510">Permitir la captura de pestañas de estos orígenes</translation>
 <translation id="8329434144708110">Activar flujos de autenticación para sincronizar contraseñas con proveedores de SSO</translation>
 <translation id="8329984337216493753">Esta política solo se encuentra activa en el modo de venta.
@@ -7652,6 +7692,8 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
       Advertencia: No se recomienda configurar restricciones de versiones porque pueden evitar que los usuarios reciban actualizaciones de software y correcciones de seguridad muy importantes. Restringir las actualizaciones al prefijo de una versión específica podría suponer un riesgo para los usuarios.</translation>
 <translation id="8508489378025029342">Habilitar los informes sobre el tiempo de actividad del dispositivo</translation>
 <translation id="8511192250554640451">Permitir que la lógica de Chrome controle la limitación de los temporizadores de JavaScript en segundo plano y que los usuarios puedan configurar esta limitación</translation>
+<translation id="8511708772548158302">Restaura el dispositivo a la versión de destino si la versión actual del SO es más reciente que la de destino. Se hará un Powerwash en el dispositivo, pero se conservarán las configuraciones de red sin certificados de todo el dispositivo y se volverá a registrar el dispositivo automáticamente.
+No se puede restaurar la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni versiones anteriores.</translation>
 <translation id="8519264904050090490">URLs de excepción manual de usuario administrado</translation>
 <translation id="8519516251436131647">Esta política habilita las combinaciones de teclas para las funciones de accesibilidad.
 
@@ -7964,6 +8006,8 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 
           Esta política no tendrá efecto si no se le asigna ningún valor. En este caso, las conexiones de acceso remoto no tendrán duración máxima en este equipo.</translation>
 <translation id="8800453707696044281">Define un porcentaje personalizado de la parada de carga de la batería</translation>
+<translation id="880110452941793016">Esta salt se usa como valor salt al cifrar con hash la información de identidad incluida en la cadena <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />.
+   Si se usa <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />, la política debe establecerse y ser una cadena de entre 8 y 32 caracteres.</translation>
 <translation id="8801680448782904838">Informar al usuario de que es necesario o recomendable reiniciar el navegador o el dispositivo</translation>
 <translation id="8804685015028424497">Inhabilitar modo Incógnito</translation>
 <translation id="8806478127647484805">Impedir que los usuarios finalicen procesos con el administrador de tareas de Chrome</translation>
@@ -8094,6 +8138,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Si no se establece esta política o se le asigna el valor "False", se habilitarán los elementos de control de formularios tal como se lanzaron en las versiones M81, M82 y M83.
 
       Esta política se eliminará después de la versión 84 de Chrome.</translation>
+<translation id="8940173892071872775">Controla las acciones que se ejecutarán cuando el navegador esté inactivo.</translation>
 <translation id="8942616385591203339">Esta política controla si se muestra Sync Consent al usuario durante el primer inicio de sesión. Se le debería asignar el valor "False" si no es necesario mostrar Sync Consent al usuario en ningún caso.
       Si se le asigna el valor "False", Sync Consent no se mostrará.
       Si se le asigna el valor "True" o no se le asigna ningún valor, Sync Consent no se puede mostrar.</translation>
@@ -8230,6 +8275,15 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
       Si no se asigna ningún valor a esta política, no se aplicará la selección automática en ningún sitio web.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="9066311316566875681">La plantilla URI de la resolución de DNS-over-HTTPS deseada. Para especificar varias resoluciones de DNS-over-HTTPS, separa las plantillas URI correspondientes con espacios.
+
+      Si se asigna el valor <ph name="SECURE_DNS_MODE_SECURE" /> a DnsOverHttpsMode, esta política debe establecerse y no dejarse vacía. Solo en <ph name="PRODUCT_OS_NAME" />, se debe definir esta política o <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />. De lo contrario, la resolución de DNS no se podrá completar.
+
+      Si se asigna el valor <ph name="SECURE_DNS_MODE_AUTOMATIC" /> a DnsOverHttpsMode y esta política se establece, se usarán las plantillas URI especificadas. Si la política no se establece, se usarán las asignaciones codificadas para intentar cambiar la resolución de DNS actual del usuario a una resolución de DoH operada por el mismo proveedor.
+
+      Si la plantilla URI contiene una variable <ph name="HTTP_VARIABLE_DNS" />, las solicitudes para la resolución usarán <ph name="HTTP_METHOD_GET" />; de lo contrario, las solicitudes usarán <ph name="HTTP_METHOD_POST" />.
+
+      Las plantillas con formato incorrecto se ignorarán.</translation>
 <translation id="9068629430243705879">puerto 6566 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="9069588907259547232">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre el volumen de audio del dispositivo.
 

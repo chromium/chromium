@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">تجربة خطوات تحديد المشاكل وحلّها</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">يُرجى الاتصال بشبكة وإعادة تحميل الصفحة لعرض شاشة الاستراحة.</translation>
+<translation id="2056550196601855911">‫IPv4/IPv6</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2085089206770112532">تقليل سطوع الشاشة</translation>
 <translation id="2105810540595158374">الجهاز هو ذراع تحكّم في الألعاب.</translation>
@@ -384,6 +385,7 @@
 <translation id="4793756956024303490">خوارزمية الضغط</translation>
 <translation id="4794140124556169553">‏إنّ إجراء اختبار لوحدة المعالجة المركزية (CPU) قد يؤثر في أداء نظامك.</translation>
 <translation id="4800589996161293643">‏منتدى Chromebook</translation>
+<translation id="4803391892369051319">‫IPv4</translation>
 <translation id="4808449224298348341">تم إلغاء مهمة الطباعة للمستند <ph name="DOCUMENT_TITLE" />.</translation>
 <translation id="4809927044794281115">المظهر الفاتح</translation>
 <translation id="4813136279048157860">صوري</translation>
@@ -404,6 +406,7 @@
 <translation id="4891842000192098784">الإجهاد</translation>
 <translation id="4897058166682006107">مستوى شحن بطارية السماعة اليسرى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="4905998861748258752">فعِّل الميزة لتحديد خيارات شاشة الاستراحة.</translation>
+<translation id="4910858703033903787">‏أنواع اسم نقطة الوصول (APN)</translation>
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
 <translation id="491791267030419270">نصائح حول كتابة الملاحظات والآراء</translation>
@@ -459,6 +462,7 @@
 <translation id="5358174242040570474">حدث خطأ. يُرجى اختيار خلفية مرة أخرى أو إعادة فتح التطبيق.</translation>
 <translation id="5372659122375744710">‏شبكة Wi-Fi غير آمنة.</translation>
 <translation id="5376354385557966694">الوضع الفاتح التلقائي</translation>
+<translation id="5378184552853359930">‏نوع عنوان IP</translation>
 <translation id="5389159777326897627">الخلفية والأسلوب</translation>
 <translation id="5389224261615877010">قوس قزح</translation>
 <translation id="5400907029458559844">جارٍ توصيل الجهاز</translation>
@@ -488,6 +492,7 @@
 <translation id="5669267381087807207">تفعيل</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">العائلة</translation>
+<translation id="5695599963893094957">انقر على أي مفتاح على لوحة المفاتيح، علمًا بأنّه يمكنك النقر على 4 مفاتيح بحدٍّ أقصى في الوقت ذاته.</translation>
 <translation id="5701381305118179107">توسيط</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> من <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">تحديث <ph name="DEVICE_NAME" /></translation>
@@ -614,7 +619,6 @@
 <translation id="6766275201586212568">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="6768237774506518020">‏إن متوسط تعطُّل التحويل باستخدام نظام أسماء النطاقات (DNS) عالٍ.</translation>
 <translation id="6791471867139427246">لون إضاءة لوحة المفاتيح</translation>
-<translation id="6793680441750437230">‏انقر على أي مفتاح على لوحة المفاتيح. يمكنك الضغط على 4 مفاتيح بحدٍ أقصى في الوقت نفسه. اضغط على Alt + مفتاح الخروج (Esc) لإغلاق مربع الحوار.</translation>
 <translation id="680983167891198932">المفتاح</translation>
 <translation id="6816797338148849397">تتوفّر معلومات ذات صلة باختيارك. يمكنك استخدام مفتاح السهم المتجه للأعلى للوصول إلى هذه المعلومات.</translation>
 <translation id="6853312040151791195">معدّل تفريغ الشحن</translation>
@@ -742,6 +746,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">اختيار <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">إرفاق</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
 <translation id="8226628635270268143">اختيار صورك وألبوماتك المفضَّلة</translation>
@@ -830,6 +835,7 @@
 <translation id="9025198690966128418">الاستخدام كجهاز شخصي</translation>
 <translation id="9028832514430399253">فعِّل التبديل لتحديد خيارات شاشة الاستراحة.</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">‫IPv6</translation>
 <translation id="9062831201344759865">‏يستغرق التحويل باستخدام نظام أسماء النطاقات (DNS) وقت استجابة طويلاً.</translation>
 <translation id="9073281213608662541">‏بروتوكول مصادقة كلمات المرور (PAP)</translation>
 <translation id="9074739597929991885">بلوتوث</translation>

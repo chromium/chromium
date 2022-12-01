@@ -189,6 +189,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1166583374608765787">Xem lại bản cập nhật tên</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> thuộc không gian làm việc <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Đang mở trong <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Tự động thay đổi ngôn ngữ để khớp với nội dung đã chọn</translation>
 <translation id="1169266963600477608">Các nút điều khiển trò chơi</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> có chứa dữ liệu nhạy cảm hoặc nguy hiểm. Quản trị viên của bạn cho biết: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> muốn kết nối với một thiết bị HID (thiết bị giao diện tương tác với con người)</translation>
@@ -595,6 +596,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1546280085599573572">Tiện ích này đã thay đổi trang nào sẽ hiển thị khi bạn nhấp vào nút Trang chủ.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> muốn cài đặt một <ph name="EXTENSION_TYPE" /> có thể:</translation>
 <translation id="1547808936554660006">Tôi hiểu rằng các hồ sơ eSIM đã cài đặt sẽ không bị xóa bằng chức năng Powerwash</translation>
+<translation id="1547936895218027488">Nhấp vào biểu tượng bảng điều khiển bên để mở</translation>
 <translation id="1549275686094429035">Đã bật ARC</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> muốn truy cập <ph name="VOLUME_NAME" />. Ứng dụng này có thể sửa đổi hoặc xóa các tệp của bạn.</translation>
 <translation id="1552301827267621511">Tiện ích "<ph name="EXTENSION_NAME" />" đã thay đổi công cụ tìm kiếm thành <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -1431,6 +1433,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2287944065963043964">Màn hình đăng nhập</translation>
 <translation id="2289270750774289114">Hỏi khi một trang web muốn tìm các thiết bị Bluetooth ở gần (khuyên dùng)</translation>
 <translation id="2290615375132886363">Các nút thao tác trên máy tính bảng</translation>
+<translation id="2291452790265535215">Thử sử dụng bảng điều khiển bên cho dấu trang, hành trình và các nội dung khác</translation>
 <translation id="229182044471402145">Không tìm thấy phông chữ phù hợp.</translation>
 <translation id="2292848386125228270">Vui lòng khởi động <ph name="PRODUCT_NAME" /> với tư cách người dùng bình thường. Nếu bạn cần chạy dưới dạng chương trình gốc để phát triển, hãy chạy lại bằng cờ --không có-hộp cát.</translation>
 <translation id="2294081976975808113">Quyền riêng tư đối với nội dung trên màn hình</translation>
@@ -2578,7 +2581,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3341703758641437857">Cho phép truy cập vào các URL của tệp</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" muốn xóa tiện ích này.</translation>
 <translation id="3343977377045378693">Đang thiết lập</translation>
-<translation id="3345135638360864351">Không thể gửi yêu cầu truy cập trang web này của bạn tới <ph name="NAME" />. Vui lòng thử lại.</translation>
 <translation id="3345634917232014253">Tính năng kiểm tra an toàn đã hoạt động vài phút trước</translation>
 <translation id="3345886924813989455">Không tìm thấy trình duyệt được hỗ trợ</translation>
 <translation id="3347086966102161372">S&amp;ao chép địa chỉ hình ảnh</translation>
@@ -2588,6 +2590,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3353786022389205125">Hãy bật tuỳ chọn "Hiển thị màn hình khóa khi đánh thức từ chế độ ngủ" và thử lại</translation>
 <translation id="3354768182971982851">Sau tháng 12 năm 2022, các phiên bản cũ của ứng dụng Chrome sẽ không mở trên các thiết bị Mac. Bạn có thể kiểm tra xem liệu đã có phiên bản mới hay chưa theo các bước sau.</translation>
 <translation id="3354972872297836698">Không ghép nối được với thiết bị <ph name="DEVICE_NAME" />; hãy chọn thiết bị để thử lại</translation>
+<translation id="335581015389089642">Giọng nói</translation>
 <translation id="3355936511340229503">Lỗi kết nối</translation>
 <translation id="3356036636691722598">Chúc bạn chơi trò chơi vui vẻ trên Chromebook</translation>
 <translation id="3356469410714175391">(Đã bật tính năng Thẻ ảo)</translation>
@@ -3166,7 +3169,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3883482240657453056">Nhận chiết khấu của <ph name="MERCHANT_NAME_1" /> và <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Nội dung web có nhiều phiên bản ngôn ngữ sẽ dùng ngôn ngữ đầu tiên được hỗ trợ trong danh sách này. Những tùy chọn này được đồng bộ hóa với tùy chọn cài đặt của trình duyệt. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Quản trị viên của bạn quản lý các bản cập nhật</translation>
-<translation id="3886446263141354045">Yêu cầu truy cập trang web này của bạn đã được gửi tới <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Hiện danh sách thiết bị</translation>
 <translation id="3888053818972567950">Kết nối với <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Ghi chú bằng <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -3919,6 +3921,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="459204634473266369">Chưa lưu thiết bị nào vào <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Ứng dụng vẽ bằng bút cảm ứng</translation>
 <translation id="4593021220803146968">Đ&amp;i đến <ph name="URL" /></translation>
+<translation id="4594218792629569101">Chọn "Đánh dấu là đã đọc" để di chuyển trang xuống cuối danh sách</translation>
 <translation id="4594577641390224176">Bạn đang tìm hệ thống giới thiệu trang? Hãy truy cập</translation>
 <translation id="4595560905247879544">Chỉ người quản lý mới có thể sửa đổi ứng dụng và tiện ích (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Bạn có các chứng chỉ trên tệp có thể nhận dạng các máy chủ này</translation>
@@ -4426,6 +4429,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5084328598860513926">Quy trình cấp phép bị gián đoạn. Vui lòng thử lại hoặc liên hệ với quản trị viên hay chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Đang kiểm tra bản cập nhật</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">Ghi chú dài hơn 1000 ký tự</translation>
 <translation id="5086874064903147617">Khôi phục trang chủ mặc định?</translation>
 <translation id="5087249366037322692">Được thêm bởi bên thứ ba</translation>
 <translation id="5087580092889165836">Thêm thẻ</translation>
@@ -6588,6 +6592,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7111822978084196600">Đặt tên cho cửa sổ này</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> mục</translation>
 <translation id="7113502843173351041">Biết địa chỉ email của bạn</translation>
+<translation id="7113974454301513811">Bây giờ, hãy thêm thẻ hiện tại vào danh sách của bạn</translation>
 <translation id="7114054701490058191">Mật khẩu không khớp</translation>
 <translation id="7114648273807173152">Để đăng nhập vào Tài khoản Google bằng Smart Lock, hãy chuyển đến mục Cài đặt &gt; Thiết bị đã kết nối &gt; Điện thoại của bạn &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Không có người liên hệ nào có thể chia sẻ</translation>
@@ -8103,7 +8108,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8540942859441851323">Nhà cung cấp yêu cầu phải chuyển vùng</translation>
 <translation id="8541462173655894684">Không tìm thấy máy in nào trên máy chủ máy in</translation>
 <translation id="8541838361296720865">Nhấn một công tắc hoặc phím trên bàn phím để gán cho “<ph name="ACTION" />”</translation>
-<translation id="8543556556237226809">Bạn có câu hỏi? Hãy liên hệ với người giám sát hồ sơ của bạn.</translation>
 <translation id="8546186510985480118">Thiết bị sắp hết dung lượng</translation>
 <translation id="8546306075665861288">Bộ nhớ đệm hình ảnh</translation>
 <translation id="8546930481464505581">Tùy chỉnh Thanh cảm ứng</translation>
@@ -8446,6 +8450,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8859174528519900719">Khung phụ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Không thể tải Điều khoản dịch vụ</translation>
 <translation id="8859662783913000679">Tài khoản của cha mẹ</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} tài khoản}other{{COUNT} tài khoản}}</translation>
 <translation id="8861568709166518036">Sử dụng các nút trên màn hình để về trang chủ, quay lại và chuyển đổi giữa các ứng dụng. Chế độ này sẽ tự động bật nếu ChromeVox hoặc tính năng tự động nhấp bật.</translation>
 <translation id="8862003515646449717">Chuyển sang một trình duyệt nhanh</translation>
 <translation id="8863753581171631212">Mở đường liên kết trong <ph name="APP" /> mới</translation>
@@ -8819,6 +8824,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9201842707396338580">Đã xảy ra lỗi. Vui lòng liên hệ với quản trị viên hoặc chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Bật cấu hình</translation>
 <translation id="9203904171912129171">Chọn thiết bị</translation>
+<translation id="920410963177453528">Nhấp vào trình đơn thả xuống để chọn một bảng điều khiển khác</translation>
 <translation id="9206889157914079472">Ghi chú bằng bút cảm ứng trên màn hình khóa</translation>
 <translation id="9208192193641542858">Dữ liệu cục bộ được bảo vệ bằng mật khẩu cũ của bạn. Nếu gần đây bạn mới đổi mật khẩu, hãy thử lại bằng mật khẩu cũ đó.</translation>
 <translation id="9209563766569767417">Đang kiểm tra quá trình thiết lập vùng chứa Linux</translation>

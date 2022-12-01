@@ -731,6 +731,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4987738733603015246">Scrivania 16</translation>
 <translation id="5003993274120026347">Frase successiva</translation>
 <translation id="5016558321564993266">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Accesso al microfono del dispositivo attivo</translation>
 <translation id="5030687792513154421">Tempo scaduto</translation>
 <translation id="5033299697334913360">Fai clic su un punto qualsiasi per acquisire l'intera schermata</translation>
 <translation id="5035236842988137213">Il dispositivo <ph name="DEVICE_NAME" /> si è connesso a un nuovo telefono</translation>
@@ -966,6 +967,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6359587239691116345">Ottieni le funzionalità e i miglioramenti della sicurezza più recenti. Se rifiuti questo aggiornamento, il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza.</translation>
 <translation id="6376931439017688372">Bluetooth attivo.</translation>
 <translation id="6381109794406942707">Per sbloccare il dispositivo, inserisci il PIN.</translation>
+<translation id="638716340450135524">Attiva l'accesso alla fotocamera</translation>
 <translation id="639644700271529076">Funzione BLOC MAIUSC non attiva</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
@@ -973,6 +975,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="642644398083277086">Cancella tutte le notifiche</translation>
 <translation id="643147933154517414">Operazioni completate</translation>
 <translation id="6431865393913628856">Registrazione dello schermo</translation>
+<translation id="6442259747294754014">Accesso al microfono del dispositivo non attivo</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6449483711453944360">Al momento le app Linux e le finestre di navigazione in incognito non sono supportate</translation>
@@ -1370,6 +1373,7 @@ Nuova installazione</translation>
 <translation id="8598235756057743477">Ordina le app per nome o colore</translation>
 <translation id="8614517853887502247">Le notifiche delle app <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> sono nascoste perché è attiva la protezione di visualizzazione</translation>
 <translation id="8627191004499078455">Connesso a <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Disattiva l'accesso alla fotocamera</translation>
 <translation id="8631727435199967028">Impostazioni di accessibilità</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> rimanente</translation>

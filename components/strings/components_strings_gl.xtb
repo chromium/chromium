@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Contrasinais que non se gardan nunca</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Marcadores do escritorio</translation>
+<translation id="1067561478268651872">Non se usará a política <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />, a non ser que se defina a política <ph name="SECURE_DNS_SALT" />.</translation>
 <translation id="1068672505746868501">Non traducir nunca páxinas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Vehículos alternativos e híbridos</translation>
 <translation id="1070901266639972381">Noite</translation>
@@ -337,7 +338,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1741613555002899862">Debe especificarse e ser unha cadea válida cando DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">O teu navegador está xestionado</translation>
 <translation id="1746113442205726301">Desprazamento da imaxe no eixe Y</translation>
-<translation id="1747819498338037826">Cambiar automaticamente</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
 <translation id="1752021286346845558">Caixa de correo 8</translation>
 <translation id="1753068535428855445">Citas e anuncios persoais</translation>
@@ -1370,7 +1370,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
 <translation id="4451135742916150903">Pode pedirche permiso para conectarse a dispositivos de interface humana</translation>
 <translation id="4452328064229197696">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais de Google recomenda que comprobes os contrasinais gardados.</translation>
-<translation id="4455222631300069614">Cambia o contrasinal agora</translation>
 <translation id="4460315069258617173">Permiso concedido ata que peches as pestanas deste sitio</translation>
 <translation id="4464826014807964867">Sitios web con información da túa organización</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1605,7 +1604,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5043480802608081735">Ligazón que copiaches</translation>
-<translation id="5044545992476246592">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O teu Asistente de Google pode cambiarche o contrasinal de forma automática.</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="5051305769747448211">Comedia en directo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}other{Para enviar estes ficheiros usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}}</translation>
@@ -1671,7 +1669,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="51918995459521422"><ph name="ORIGIN" /> quere descargar varios ficheiros</translation>
 <translation id="519422657042045905">O modo de anotación non está dispoñible</translation>
 <translation id="5201306358585911203">Unha páxina inserida nesta páxina di</translation>
-<translation id="5204468114771111727">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. O teu Asistente de Google pode cambiarche o contrasinal de forma automática.</translation>
 <translation id="5205222826937269299">É obrigatorio introducir o nome</translation>
 <translation id="5209518306177824490">Impresión dixital SHA-1</translation>
 <translation id="5209670883520018268">Bandexa 20</translation>
@@ -2099,6 +2096,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6328786501058569169">Este sitio é enganoso</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. É posible que algúns sitios carguen de forma máis lenta a próxima vez que os visites.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nome</translation>
+<translation id="633770708279464947">O valor de <ph name="SECURE_DNS_SALT" /> non é válido e non se utilizará.</translation>
 <translation id="6340739886198108203">Na política do administrador recoméndase que non se fagan capturas nin gravacións se na pantalla se mostra contido confidencial:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A política do administrador non recomenda cargar este ficheiro en <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda cargar estes ficheiros en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Variacións activas</translation>
@@ -2994,6 +2992,7 @@ Detalles adicionais:
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, máis detalles</translation>
 <translation id="8666678546361132282">Inglés</translation>
+<translation id="8671519637524426245">O valor de <ph name="SECURE_DNS_SALT" /> non cumpre os requisitos de tamaño.</translation>
 <translation id="867224526087042813">Sinatura</translation>
 <translation id="8672264262457010862">Empresas e industrias</translation>
 <translation id="8676424191133491403">Sen retardo</translation>
@@ -3093,6 +3092,7 @@ Detalles adicionais:
 <translation id="8913778647360618320">Botón Xestionar métodos de pago. Preme Intro para xestionar os teus métodos de pago e a información das tarxetas de crédito desde a configuración de Chrome</translation>
 <translation id="8922013791253848639">Permitir sempre os anuncios neste sitio</translation>
 <translation id="892588693504540538">Perforación na parte superior dereita</translation>
+<translation id="8930098617363288380">O valor de <ph name="SECURE_DNS_SALT" /> non é relevante e non se utilizará, a non ser que se defina a política <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />.</translation>
 <translation id="8930330541574156305">Propiedades inmobiliarias</translation>
 <translation id="8931333241327730545">Queres gardar esta tarxeta na túa conta de Google?</translation>
 <translation id="8932102934695377596">O reloxo está atrasado</translation>

@@ -550,7 +550,6 @@
 <translation id="5190835502935405962">סרגל הסימניות</translation>
 <translation id="519530786644929958">ההורדה נכשלה ואי אפשר לנסות שוב.</translation>
 <translation id="5197255632782567636">אינטרנט</translation>
-<translation id="5210365745912300556">סגירת כרטיסייה</translation>
 <translation id="5219295696240154694">רוצה לעזור לשפר את האבטחה באינטרנט לכולם?</translation>
 <translation id="5228579091201413441">הפעלת סנכרון</translation>
 <translation id="5232485538978018676">כניסה באמצעות חשבון מנוהל</translation>
@@ -875,6 +874,7 @@
 <translation id="7531345132340165516">האתר הנוכחי</translation>
 <translation id="7537586195939242955">‏מצטערים, לא ניתן להתקין את ה-Pass שלך ב-Passbook בשלב הזה.</translation>
 <translation id="7553234618121028547">כדי להשבית את המילוי האוטומטי, פותחים את ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" /> ועוברים אל 'אפשרויות של סיסמאות'.</translation>
+<translation id="7554645225856321710">סגירת הכול</translation>
 <translation id="7554791636758816595">כרטיסייה חדשה</translation>
 <translation id="7561196759112975576">תמיד</translation>
 <translation id="7583004045319035904">ביטול הנעילה של כרטיסיות מצב אנונימי יתבצע באמצעות <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>

@@ -189,6 +189,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1166583374608765787">Vaadake nime värskendus üle</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> kuulub töölauale <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Avamine asukohas <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Keele automaatselt muutmine, et see ühtiks valitud sisuga</translation>
 <translation id="1169266963600477608">Mängu juhtnupud</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> sisaldab delikaatseid või ohtlikke andmeid. Teie administraator ütleb: „<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> soovib HID-seadmega ühenduse luua</translation>
@@ -2569,7 +2570,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3341703758641437857">Luba juurdepääs failide URL-idele</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />” soovib selle laienduse eemaldada.</translation>
 <translation id="3343977377045378693">Seadistamine</translation>
-<translation id="3345135638360864351">Saidi külastamise taotlust ei õnnestunud saata kontaktile <ph name="NAME" />. Proovige uuesti.</translation>
 <translation id="3345634917232014253">Ohutuskontroll tehti hetk tagasi</translation>
 <translation id="3345886924813989455">Ei leitud ühtegi toetatud brauserit</translation>
 <translation id="3347086966102161372">K&amp;opeeri kujutise aadress</translation>
@@ -2579,6 +2579,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3353786022389205125">Lülitage sisse valik „Kuva unerežiimist ärkamisel lukustuskuva“ ja proovige uuesti</translation>
 <translation id="3354768182971982851">Chrome'i rakenduste vanad versioonid ei avane Maci seadmetes enam pärast 2022. aasta detsembrit. Võite kontrollida, kas saadaval on uus versioon.</translation>
 <translation id="3354972872297836698">Ei saanud seadmega <ph name="DEVICE_NAME" /> siduda; valige seade, et uuesti proovida</translation>
+<translation id="335581015389089642">Kõne</translation>
 <translation id="3355936511340229503">Ühenduse viga</translation>
 <translation id="3356036636691722598">Tundke oma Chromebookis mängimisest rõõmu</translation>
 <translation id="3356469410714175391">(Virtuaalkaart on lubatud)</translation>
@@ -3157,7 +3158,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3883482240657453056">Hankige kaupmeeste <ph name="MERCHANT_NAME_1" /> ja <ph name="MERCHANT_NAME_2" /> juures allahindlusi</translation>
 <translation id="3884152383786131369">Mitmes keeles saadaval olev veebisisu esitatakse loendi esimeses toetatud keeles. Need eelistused sünkroonitakse teie brauseri seadetega. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Värskendusi haldab teie administraator</translation>
-<translation id="3886446263141354045">Teie juurdepääsutaotlus sellele saidile saadeti kasutajale <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Kuva seadmete loend</translation>
 <translation id="3888053818972567950">Ühendus teenusega <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Märkmete tegemine rakendusega <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8093,7 +8093,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8540942859441851323">Teenusepakkuja nõuab andmeside rändlust</translation>
 <translation id="8541462173655894684">Prindiserverist ei leitud ühtegi printerit</translation>
 <translation id="8541838361296720865">Vajutage lülitit või klahvi klaviatuuril, et see toimingule „<ph name="ACTION" />“ määrata</translation>
-<translation id="8543556556237226809">Kas teil on küsimusi? Võtke ühendust profiili operaatoriga.</translation>
 <translation id="8546186510985480118">Seadmes on vähe salvestusruumi</translation>
 <translation id="8546306075665861288">Kujutise vahemälu</translation>
 <translation id="8546930481464505581">Puuteriba kohandamine</translation>
@@ -8436,6 +8435,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8859174528519900719">Alamraam: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Teenusetingimusi ei õnnestunud laadida</translation>
 <translation id="8859662783913000679">Vanema konto</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} konto}other{{COUNT} kontot}}</translation>
 <translation id="8861568709166518036">Kasutage ekraanil kuvatavaid nuppe, et navigeerida avalehele, liikuda tagasi ja vahetada rakendusi. Lülitub sisse automaatselt, kui sisse on lülitatud ChromeVox või automaatsed klikid.</translation>
 <translation id="8862003515646449717">Minge üle kiirele brauserile</translation>
 <translation id="8863753581171631212">Ava link uues rakenduses <ph name="APP" /></translation>

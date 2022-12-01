@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Texte en surbrillance abrégé</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'affichent ici.</translation>
 <translation id="1113597929977215864">Afficher la vue simplifiée</translation>
-<translation id="1118561384561215815">Aide pour les tâches sur le Web</translation>
 <translation id="1123070903960493543">Données concernant votre interaction avec Chrome, les paramètres que vous avez sélectionnés et les informations sur les plantages de Chrome</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
 <translation id="1129510026454351943">Détails°: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2286841657746966508">Adresse de facturation</translation>
 <translation id="228704530595896923">Liste des options de partage.</translation>
 <translation id="230115972905494466">Aucun appareil compatible détecté</translation>
-<translation id="230155349749732438">Pour utiliser ce paramètre, vous devez activer l'option <ph name="BEGIN_LINK" />Améliorer les recherches et la navigation<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Appuyer pour passer un appel</translation>
 <translation id="2321086116217818302">Préparation des mots de passe…</translation>
 <translation id="2323763861024343754">Données de site stockées</translation>
@@ -428,7 +426,6 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
-<translation id="3284510035090979597">Aide proactive</translation>
 <translation id="3285080554353377245">Vidéos sur l'utilisation de Chrome</translation>
 <translation id="3288003805934695103">Recharger la page</translation>
 <translation id="3290249595466894471">Un petit échantillon de pages, de téléchargements, d'informations système et d'activité des extensions est aussi envoyé afin d'identifier de nouvelles menaces</translation>
@@ -590,7 +587,6 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4209895695669353772">Activez la synchronisation pour obtenir des suggestions de contenu personnalisées de la part de Google</translation>
 <translation id="4214315110991671325">Si vous autorisez les cookies, Chrome peut les utiliser pour le préchargement.</translation>
 <translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
-<translation id="4227318652298512614">Suivez les sites de votre choix</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes liés à la sécurité</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
@@ -881,7 +877,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5795872532621730126">Rechercher et parcourir</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Il y a # heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
-<translation id="5810864297166300463">Assistance sur le Web</translation>
 <translation id="5813552293717797987">Ce navigateur est géré par <ph name="PARENT_NAME_1" /> et <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Saisissez votre requête de recherche ou appuyez sur l'icône du micro pour commencer</translation>
 <translation id="5814749351757353073">Tenez-vous informé de l'actualité de vos sites préférés</translation>
@@ -904,7 +899,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5869789175361934029">Continuer depuis un autre appareil</translation>
 <translation id="587735546353481577">Pour suivre un site, accédez-y, ouvrez le menu Chrome et appuyez sur "Suivre".</translation>
 <translation id="5879072387416556377">Obtenez de meilleures suggestions</translation>
-<translation id="5884076754568147479">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites sur lesquels vous utilisez l'Assistant, ainsi que les informations que vous envoyez via celui-ci</translation>
 <translation id="5906513782029855931">Si l'Assistant Google connaît les URL des sites, il peut vous aider à effectuer des tâches. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5919204609460789179">Mettre à jour <ph name="PRODUCT_NAME" /> pour lancer la synchronisation</translation>
@@ -1346,7 +1340,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8127542551745560481">Modifier la page d'accueil</translation>
 <translation id="8130309322784422030">Les infos de connexion enregistrées sont peut-être obsolètes</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
-<translation id="8153351135626613369">L'Assistant s'affiche lorsqu'il détecte qu'il peut vous aider sur des sites Web compatibles</translation>
 <translation id="8156139159503939589">Quelles langues comprenez-vous ?</translation>
 <translation id="8168435359814927499">Contenu</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>

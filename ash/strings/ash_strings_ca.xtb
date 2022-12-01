@@ -554,6 +554,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No en una app}other{No en # apps}}</translation>
 <translation id="4066027111132117168">Activada (<ph name="REMAINING_TIME" />)</translation>
 <translation id="4072264167173457037">Senyal mitjà</translation>
+<translation id="4086921558679520050">Activa l'interruptor del micròfon físic al dispositiu</translation>
 <translation id="4112140312785995938">Retrocedeix</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -606,6 +607,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensitat del senyal: <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="4378551569595875038">Connectant...</translation>
 <translation id="4379531060876907730">Aquestes són les eines del llapis òptic</translation>
+<translation id="4381031910344220229">Permet l'accés al micròfon a <ph name="APP_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir al micròfon</translation>
 <translation id="4389184120735010762">Has premut la tecla de drecera de la lupa acoblada. Vols activar-la?</translation>
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">La captura de pantalla de vídeo no es pot desar</translation>
@@ -728,6 +730,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4987738733603015246">Escriptori 16</translation>
 <translation id="5003993274120026347">Frase següent</translation>
 <translation id="5016558321564993266">Commuta el marcador. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">L'accés al micròfon del dispositiu està activat</translation>
 <translation id="5030687792513154421">S'ha acabat el temps</translation>
 <translation id="5033299697334913360">Fes clic en qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> s'ha connectat a un altre telèfon</translation>
@@ -959,9 +962,11 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> és una sessió gestionada per <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Dispositiu <ph name="DEVICE_NAME" /> connectat</translation>
 <translation id="6351032674660237738">SUGGERIMENTS D'APLICACIONS</translation>
+<translation id="6352082849089527770">Xarxes desconegudes</translation>
 <translation id="6359587239691116345">Obtén les funcions i les millores de seguretat més recents. Si rebutges aquesta actualització, pot ser que el dispositiu ja no funcioni correctament i que tinguis problemes de seguretat i de rendiment.</translation>
 <translation id="6376931439017688372">El Bluetooth està activat</translation>
 <translation id="6381109794406942707">Per desbloquejar el dispositiu, introdueix el PIN.</translation>
+<translation id="638716340450135524">Activa l'accés a la càmera</translation>
 <translation id="639644700271529076">Bloq Maj està desactivat</translation>
 <translation id="6406704438230478924">Alt Gr</translation>
 <translation id="6417265370957905582">Assistent de Google</translation>
@@ -969,6 +974,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="642644398083277086">Esborra totes les notificacions</translation>
 <translation id="643147933154517414">Fet</translation>
 <translation id="6431865393913628856">Gravació de pantalla</translation>
+<translation id="6442259747294754014">L'accés al micròfon del dispositiu està desactivat</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> esdeveniment</translation>
 <translation id="6449483711453944360">Les aplicacions de Linux i les finestres d'incògnit no s'admeten actualment</translation>
@@ -1020,6 +1026,7 @@ Instal·lació nova</translation>
 <translation id="6670153871843998651">Escriptori 3</translation>
 <translation id="6671495933530132209">Copia la imatge</translation>
 <translation id="6671661918848783005">No es pot desbloquejar el Chromebook</translation>
+<translation id="6683022854667115063">Auriculars</translation>
 <translation id="6696025732084565524">El teclat extraïble necessita una actualització molt important</translation>
 <translation id="6700713906295497288">Botó del menú d'IME</translation>
 <translation id="6707693040195709527">El canvi del dispositiu a la versió anterior ha vençut</translation>
@@ -1129,6 +1136,7 @@ Instal·lació nova</translation>
 <translation id="7360036564632145207">Canviar l'opció de configuració de la protecció d'accés a les dades per a perifèrics pot optimitzar el rendiment</translation>
 <translation id="736045644501761622">Estableix l'estil i el fons de pantalla</translation>
 <translation id="7371404428569700291">Grava la finestra</translation>
+<translation id="737315737514430195">Permet l'accés al micròfon a totes les aplicacions i a tots els llocs web amb permís per accedir al micròfon</translation>
 <translation id="7377169924702866686">Bloq Maj està activat.</translation>
 <translation id="7377481913241237033">Connecta't amb un codi</translation>
 <translation id="7378203170292176219">Arrossega per seleccionar l'àrea que vols gravar</translation>
@@ -1197,6 +1205,7 @@ Instal·lació nova</translation>
 <translation id="7671610481353807627">Les aplicacions estan ordenades per color</translation>
 <translation id="7672095158465655885">Connectat a <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">L'entrada per càmera s'ha establert en <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Permet l'accés al micròfon a <ph name="APP1_NAME" />, a <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir al micròfon</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Afegeix una xarxa mòbil nova</translation>
 <translation id="7720400844887872976">Activada fins a les <ph name="TIME" /></translation>
@@ -1360,6 +1369,7 @@ Instal·lació nova</translation>
 <translation id="8598235756057743477">Ordena les aplicacions per nom o per color</translation>
 <translation id="8614517853887502247">Les notificacions de les aplicacions <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> estan amagades perquè la protecció de visualització està activada</translation>
 <translation id="8627191004499078455">Connectat a <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Desactiva l'accés a la càmera</translation>
 <translation id="8631727435199967028">Configuració d'accessibilitat</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="8639760480004882931">Queda un <ph name="PERCENTAGE" /></translation>

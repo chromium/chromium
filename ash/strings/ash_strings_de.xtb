@@ -553,6 +553,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Aus für 1 App}other{Aus für # Apps}}</translation>
 <translation id="4066027111132117168">An, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Durchschnittliches Signal</translation>
+<translation id="4086921558679520050">Physischen Mikrofonschalter auf deinem Gerät aktivieren</translation>
 <translation id="4112140312785995938">Zurück springen</translation>
 <translation id="4114315158543974537">Phone Hub aktivieren</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -605,6 +606,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Verbindung...</translation>
 <translation id="4379531060876907730">Dies sind deine Eingabestift-Tools</translation>
+<translation id="4381031910344220229">Dies erlaubt den Mikrofonzugriff für <ph name="APP_NAME" /> sowie alle Apps und Websites mit der Mikrofonberechtigung</translation>
 <translation id="4389184120735010762">Du hast die Tastenkombination für den Modus "Angedockte Lupe" gedrückt. Möchtest du ihn aktivieren?</translation>
 <translation id="439598569299422042">Pausiert, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Screencast konnte nicht gespeichert werden</translation>
@@ -959,6 +961,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6338485349199627913">„<ph name="DISPLAY_NAME" />“ ist eine verwaltete Sitzung, die von <ph name="MANAGER" /> verwaltet wird</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> verbunden</translation>
 <translation id="6351032674660237738">APP-VORSCHLÄGE</translation>
+<translation id="6352082849089527770">Unbekannte Netzwerke</translation>
 <translation id="6359587239691116345">Hol dir die neuesten Funktionen und Sicherheitsoptimierungen. Wenn du dieses Update ablehnst, funktioniert dein Gerät möglicherweise nicht mehr richtig und es können Sicherheits- und Leistungsprobleme auftreten.</translation>
 <translation id="6376931439017688372">Bluetooth ist aktiviert</translation>
 <translation id="6381109794406942707">Gib deine PIN ein, um das Gerät zu entsperren.</translation>
@@ -1135,6 +1138,7 @@ Neuinstallation</translation>
 <translation id="7360036564632145207">Möglicherweise kannst du die Leistung optimieren, indem du die Einstellungen für den Schutz vor Datenzugriff durch Peripheriegeräte änderst</translation>
 <translation id="736045644501761622">Hintergrund &amp; Stil festlegen</translation>
 <translation id="7371404428569700291">Fenster aufzeichnen</translation>
+<translation id="737315737514430195">Dies erlaubt den Mikrofonzugriff für alle Apps und Websites mit der Mikrofonberechtigung</translation>
 <translation id="7377169924702866686">Feststelltaste An</translation>
 <translation id="7377481913241237033">Verbindung per Code herstellen</translation>
 <translation id="7378203170292176219">Ziehen, um einen Bereich für die Aufnahme auszuwählen</translation>
@@ -1203,6 +1207,7 @@ Neuinstallation</translation>
 <translation id="7671610481353807627">Apps wurden nach Farbe sortiert</translation>
 <translation id="7672095158465655885">Verbunden mit <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kameraeingabe ist auf <ph name="CAMERA_NAME" /> festgelegt.</translation>
+<translation id="7689817529363080918">Dies erlaubt den Mikrofonzugriff für <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> sowie alle Apps und Websites mit der Mikrofonberechtigung</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Neues Mobilfunknetz hinzufügen</translation>
 <translation id="7720400844887872976">Aktiviert bis <ph name="TIME" /></translation>

@@ -551,7 +551,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5190835502935405962">Bogmærkelinje</translation>
 <translation id="519530786644929958">Downloaden mislykkedes og kan ikke gentages.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Luk fanen</translation>
 <translation id="5219295696240154694">Vær med til at forbedre sikkerheden for alle på nettet</translation>
 <translation id="5228579091201413441">Aktivér synkronisering</translation>
 <translation id="5232485538978018676">Log ind med Managerkonto</translation>
@@ -876,6 +875,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7531345132340165516">Aktuelt website</translation>
 <translation id="7537586195939242955">Din adgangssætning kan ikke installeres på Passbook lige nu.</translation>
 <translation id="7553234618121028547">Du kan deaktivere funktionen ved at åbne <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> og gå til Valgmuligheder for adgangskoder.</translation>
+<translation id="7554645225856321710">Luk alle</translation>
 <translation id="7554791636758816595">Ny fane</translation>
 <translation id="7561196759112975576">Altid</translation>
 <translation id="7583004045319035904">Brug <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til at låse dine inkognitofaner op.</translation>

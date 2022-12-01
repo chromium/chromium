@@ -555,6 +555,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{No para 1 app}other{No para # apps}}</translation>
 <translation id="4066027111132117168">Sí (<ph name="REMAINING_TIME" />)</translation>
 <translation id="4072264167173457037">Señal media</translation>
+<translation id="4086921558679520050">Activa el interruptor del micrófono físico del dispositivo</translation>
 <translation id="4112140312785995938">Buscar más atrás</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -607,6 +608,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4378479437904450384">Intensidad de la señal de <ph name="WIRELESS_PROVIDER" />: <ph name="SIGNAL_STRENGTH" /> por ciento</translation>
 <translation id="4378551569595875038">Conectando…</translation>
 <translation id="4379531060876907730">Estas son las herramientas de la pluma stylus</translation>
+<translation id="4381031910344220229">Permite el acceso al micrófono para <ph name="APP_NAME" /> y todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="4389184120735010762">Presionaste la combinación de teclas para activar la lupa con vista acoplada. ¿Quieres activarla?</translation>
 <translation id="439598569299422042">Pausado: <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">No se pudo guardar la presentación en pantalla</translation>
@@ -729,6 +731,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4987738733603015246">Escritorio 16</translation>
 <translation id="5003993274120026347">Oración siguiente</translation>
 <translation id="5016558321564993266">Activar o desactivar el marcador. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">El acceso al micrófono del dispositivo está activado</translation>
 <translation id="5030687792513154421">Se acabó el tiempo</translation>
 <translation id="5033299697334913360">Haz clic en cualquier parte para capturar la pantalla completa</translation>
 <translation id="5035236842988137213">Se conectó el dispositivo <ph name="DEVICE_NAME" /> a un teléfono nuevo</translation>
@@ -960,9 +963,11 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> es una sesión administrada por <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">El dispositivo <ph name="DEVICE_NAME" /> está conectado</translation>
 <translation id="6351032674660237738">SUGERENCIAS DE APPS</translation>
+<translation id="6352082849089527770">Redes desconocidas</translation>
 <translation id="6359587239691116345">Obtén las funciones y mejoras de seguridad más recientes. Si rechazas esta actualización, es posible que el dispositivo ya no funcione de manera adecuada y que tengas problemas de seguridad y rendimiento.</translation>
 <translation id="6376931439017688372">Se activó la conexión Bluetooth</translation>
 <translation id="6381109794406942707">Para desbloquear el dispositivo, ingresa el PIN.</translation>
+<translation id="638716340450135524">Activar el acceso a la cámara</translation>
 <translation id="639644700271529076">El bloqueo de mayúsculas está desactivado.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
@@ -970,6 +975,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="642644398083277086">Borra todas las notificaciones</translation>
 <translation id="643147933154517414">Todo listo</translation>
 <translation id="6431865393913628856">Grabación de pantalla</translation>
+<translation id="6442259747294754014">El acceso al micrófono del dispositivo está desactivado</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6449483711453944360">Por el momento, las apps de Linux y las ventanas de incógnito no son compatibles</translation>
@@ -1134,6 +1140,7 @@ Nueva instalación</translation>
 <translation id="7360036564632145207">Puedes optimizar el rendimiento si cambias la configuración de la protección de acceso a los datos para los dispositivos periféricos.</translation>
 <translation id="736045644501761622">Establecer estilo y fondo de pantalla</translation>
 <translation id="7371404428569700291">Grabar ventana</translation>
+<translation id="737315737514430195">Permite el acceso al micrófono para todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="7377169924702866686">Bloq Mayús está activado.</translation>
 <translation id="7377481913241237033">Conéctate con un código</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar un área que quieras grabar</translation>
@@ -1202,6 +1209,7 @@ Nueva instalación</translation>
 <translation id="7671610481353807627">Las apps están ordenadas por color</translation>
 <translation id="7672095158465655885">Conectado con <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Se estableció la entrada de cámara como <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Permite el acceso al micrófono para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Agregar una nueva red móvil</translation>
 <translation id="7720400844887872976">Activada hasta las <ph name="TIME" /></translation>
@@ -1365,6 +1373,7 @@ Nueva instalación</translation>
 <translation id="8598235756057743477">Ordena tus apps por nombre o color</translation>
 <translation id="8614517853887502247">Se ocultan las notificaciones de <ph name="APP_1_TITLE" /> y <ph name="APP_2_TITLE" /> porque está activada la protección de visualización</translation>
 <translation id="8627191004499078455">Conectado a <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Desactivar el acceso a la cámara</translation>
 <translation id="8631727435199967028">Configuración de accesibilidad</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante</translation>

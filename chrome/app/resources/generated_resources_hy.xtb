@@ -187,6 +187,7 @@
 <translation id="1166583374608765787">Դիտեք անվան փոփոխությունները</translation>
 <translation id="1166596238782048887">«<ph name="TAB_TITLE" />» ներդիրը պատկանում է «<ph name="DESK_TITLE" />» աշխատասեղանին</translation>
 <translation id="1168020859489941584">Բացվում է <ph name="TIME_REMAINING" />-ից…</translation>
+<translation id="116896278675803795">Ավտոմատ փոխել լեզուն՝ ըստ ընտրված բովանդակության</translation>
 <translation id="1169266963600477608">Խաղի կարգավորումներ</translation>
 <translation id="1169435433292653700">«<ph name="FILE_NAME" />» ֆայլը պարունակում է խիստ անձնական կամ վտանգավոր տվյալներ։ Հաղորդագրություն ձեր ադմինիստրատորից․ «<ph name="CUSTOM_MESSAGE" />»։</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> կայքն ուզում է միանալ HID սարքին</translation>
@@ -2565,7 +2566,6 @@
 <translation id="3341703758641437857">Թույլատրել ֆայլերի բացումը հղումներով</translation>
 <translation id="3342361181740736773">«<ph name="TRIGGERING_EXTENSION_NAME" />» ծրագիրը փորձում է հեռացնել այս ընդլայնումը։</translation>
 <translation id="3343977377045378693">Կարգավորում</translation>
-<translation id="3345135638360864351">Այս կայքից օգտվելու ձեր խնդրանքը չուղարկվեց <ph name="NAME" />-ին: Նորից փորձեք:</translation>
 <translation id="3345634917232014253">Անվտանգության ստուգումը հենց նոր արվեց</translation>
 <translation id="3345886924813989455">Աջակցվող դիտարկիչ չի գտնվել</translation>
 <translation id="3347086966102161372">Պատճենել պատկերի հասցեն</translation>
@@ -2575,6 +2575,7 @@
 <translation id="3353786022389205125">Միացրեք «Ցույց տալ կողպէկրանը քնի ռեժիմից դուրս գալիս» պարամետրը և նորից փորձեք</translation>
 <translation id="3354768182971982851">Chrome-ի հավելվածների հին տարբերակները 2022 թվականի դեկտեմբերից հետո չեն բացվի Mac սարքերում։ Դուք կարող եք ստուգել նոր տարբերակի առկայությունը։</translation>
 <translation id="3354972872297836698">Չհաջողվեց զուգակցվել «<ph name="DEVICE_NAME" />» սարքին։ Ընտրեք սարքը և նորից փորձեք։</translation>
+<translation id="335581015389089642">Speech</translation>
 <translation id="3355936511340229503">Կապակցման սխալ</translation>
 <translation id="3356036636691722598">Խաղեր խաղացեք Chromebook-ում</translation>
 <translation id="3356469410714175391">(Վիրտուալ քարտն ակտիվացված է)</translation>
@@ -3153,7 +3154,6 @@
 <translation id="3883482240657453056">Ստացեք զեղչեր <ph name="MERCHANT_NAME_1" /> և <ph name="MERCHANT_NAME_2" /> խանութներում</translation>
 <translation id="3884152383786131369">Տարբեր լեզուներով հասանելի վեբ բովանդակությունը կօգտագործի ցանկում նշված աջակցվող առաջին լեզուն։ Այս պարամետրերը համաժամացվում են ձեր դիտարկիչի կարգավորումների հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Թարմացումները կառավարվում են ադմինիստրատորի կողմից</translation>
-<translation id="3886446263141354045">Այս կայք մուտք գործելու ձեր հարցումն ուղարկվել է <ph name="NAME" />-ին</translation>
 <translation id="3887022758415973389">Ցուցադրել սարքերի ցանկը</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-ի կապակցում</translation>
 <translation id="3888550877729210209">Կատարեք նշումներ <ph name="LOCK_SCREEN_APP_NAME" />-ի միջոցով</translation>
@@ -8089,7 +8089,6 @@
 <translation id="8540942859441851323">Ռոումինգը պահանջվում է օպերատորի կողմից</translation>
 <translation id="8541462173655894684">Տպման սերվերում որևէ տպիչ չի գտնվել</translation>
 <translation id="8541838361296720865">Սեղմեք որևէ փոխանջատիչ կամ ստեղնաշարի ստեղն՝ «<ph name="ACTION" />» գործողությունը դրան նշանակելու համար։</translation>
-<translation id="8543556556237226809">Հարցերի դեպքում կապվեք ձեր պրոֆիլը վերահսկող անձի հետ:</translation>
 <translation id="8546186510985480118">Սարքի սկավառակում ազատ տարածքը քիչ է</translation>
 <translation id="8546306075665861288">Պատկերների քեշ</translation>
 <translation id="8546930481464505581">Հարմարեցնել հպման գոտին</translation>
@@ -8433,6 +8432,7 @@
 <translation id="8859174528519900719">Ենթաշրջանակ՝ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Չհաջողվեց բեռնել օգտագործման պայմանները</translation>
 <translation id="8859662783913000679">Ծնողի հաշիվը</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} հաշիվ}one{{COUNT} հաշիվ}other{{COUNT} հաշիվ}}</translation>
 <translation id="8861568709166518036">Օգտագործեք էկրանի կոճակները՝ գլխավոր էկրանը բացելու, հետ գնալու կամ մեկ հավելվածից մյուսն անցնելու համար։ Ավտոմատ կերպով միանում է, եթե ChromeVox-ը կամ ավտոմատ սեղմումները միացված են։</translation>
 <translation id="8862003515646449717">Ընտրեք արագ դիտարկիչ</translation>
 <translation id="8863753581171631212">Բացել հղումը <ph name="APP" />-ի նոր պատուհանում</translation>

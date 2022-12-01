@@ -730,6 +730,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4987738733603015246">Không gian làm việc 16</translation>
 <translation id="5003993274120026347">Câu tiếp theo</translation>
 <translation id="5016558321564993266">Bật/tắt tính năng đánh dấu. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Quyền truy cập vào micrô trên thiết bị đang bật</translation>
 <translation id="5030687792513154421">Đã hết thời gian</translation>
 <translation id="5033299697334913360">Nhấp vào bất cứ đâu để chụp toàn màn hình</translation>
 <translation id="5035236842988137213">Đã kết nối <ph name="DEVICE_NAME" /> với một điện thoại mới</translation>
@@ -965,6 +966,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6359587239691116345">Nhận các tính năng mới nhất và mức độ bảo mật cao hơn. Nếu bạn từ chối bản cập nhật này, thiết bị của bạn có thể sẽ không còn hoạt động bình thường. Đồng thời, bạn có thể gặp các vấn đề về hiệu suất và bảo mật.</translation>
 <translation id="6376931439017688372">Bluetooth đang bật</translation>
 <translation id="6381109794406942707">Để mở khóa thiết bị, hãy nhập mã PIN của bạn.</translation>
+<translation id="638716340450135524">Bật quyền truy cập vào máy ảnh</translation>
 <translation id="639644700271529076">CAPS LOCK tắt</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Trợ lý Google</translation>
@@ -972,6 +974,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="642644398083277086">Xóa tất cả thông báo</translation>
 <translation id="643147933154517414">Đã xong</translation>
 <translation id="6431865393913628856">Ghi màn hình</translation>
+<translation id="6442259747294754014">Quyền truy cập vào micrô trên thiết bị đang tắt</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> sự kiện</translation>
 <translation id="6449483711453944360">Hiện không hỗ trợ ứng dụng Linux và cửa sổ ẩn danh</translation>
@@ -1369,6 +1372,7 @@ Mới cài đặt</translation>
 <translation id="8598235756057743477">Sắp xếp ứng dụng theo tên hoặc màu sắc</translation>
 <translation id="8614517853887502247">Đã ẩn thông báo của <ph name="APP_1_TITLE" /> và <ph name="APP_2_TITLE" /> do đang bật chế độ chống nhìn lén</translation>
 <translation id="8627191004499078455">Đã kết nối với <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Tắt quyền truy cập vào máy ảnh</translation>
 <translation id="8631727435199967028">Cài đặt hỗ trợ tiếp cận</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="8639760480004882931">Còn <ph name="PERCENTAGE" /></translation>

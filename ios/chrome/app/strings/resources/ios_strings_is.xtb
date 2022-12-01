@@ -551,7 +551,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5190835502935405962">Bókamerkjastika</translation>
 <translation id="519530786644929958">Niðurhal mistókst og ekki er hægt að reyna það aftur.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Loka flipa</translation>
 <translation id="5219295696240154694">Hjálpaðu til við að auka öryggi allra á vefnum</translation>
 <translation id="5228579091201413441">Kveikja á samstillingu</translation>
 <translation id="5232485538978018676">Skráðu þig inn með stýrðum reikningi</translation>
@@ -876,6 +875,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7531345132340165516">Þessi síða</translation>
 <translation id="7537586195939242955">Því miður var ekki hægt að vista miðann í Passbook á þessari stundu.</translation>
 <translation id="7553234618121028547">Til að slökkva á þessu skaltu opna <ph name="BEGIN_LINK" />Stillingar<ph name="END_LINK" /> og fara í „Valkostir fyrir aðgangsorð“</translation>
+<translation id="7554645225856321710">Loka öllu</translation>
 <translation id="7554791636758816595">Nýr flipi</translation>
 <translation id="7561196759112975576">Alltaf</translation>
 <translation id="7583004045319035904">Notaðu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til að taka huliðsflipana þína úr lás.</translation>

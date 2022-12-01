@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">হাইলাইট কৰা পাঠটো চুটি কৰা হৈছে</translation>
 <translation id="1111673857033749125">আপোনাৰ ডিভাইচত ছেভ কৰা বুকমাৰ্কবোৰ ইয়াত দেখা পোৱা যাব।</translation>
 <translation id="1113597929977215864">সৰলীকৃত ভিউ প্ৰদর্শন কৰক</translation>
-<translation id="1118561384561215815">ৱেবত কাৰ্যসমূহৰ জৰিয়তে সহায় পাওক</translation>
 <translation id="1123070903960493543">আপুনি Chromeৰ সৈতে কেনেকৈ ব্যৱহাৰ কৰে, আপুনি বাছনি কৰা ছেটিং, Chrome ক্ৰেশ্বৰ সবিশেষ</translation>
 <translation id="1126809382673880764">আপোনাক বিপজ্জনক ৱেবছাইট, ডাউনল’ড অথবা এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষা প্ৰদান নকৰে। Gmail আৰু Searchৰ দৰে অন্য Google সেৱাসমূহ, য’ত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধাটো উপলব্ধ, সেইবিলাকত আপুনি তথাপি এই সুবিধাটো পাব।</translation>
 <translation id="1129510026454351943">সবিশেষ: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@
 <translation id="2286841657746966508">বিলিঙৰ ঠিকনা</translation>
 <translation id="228704530595896923">শ্বেয়াৰ কৰাৰ বিকল্পৰ সূচী।</translation>
 <translation id="230115972905494466">খাপ খোৱা কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
-<translation id="230155349749732438">এই ছেটিংটো ব্যৱহাৰ কৰিবলৈ <ph name="BEGIN_LINK" />সন্ধান আৰু ব্ৰাউজিং উন্নত কৰক<ph name="END_LINK" /> অন কৰিবই লাগিব</translation>
 <translation id="2318045970523081853">কল কৰিবলৈ টিপক</translation>
 <translation id="2321086116217818302">পাছৱর্ড সাজু কৰি থকা হৈছে…</translation>
 <translation id="2323763861024343754">ছাইট ষ্ট’ৰেজ</translation>
@@ -428,7 +426,6 @@
 <translation id="3269093882174072735">ছবি ল’ড কৰক</translation>
 <translation id="3280562213547448728">কণ্ঠধ্বনিৰ দ্বাৰা সন্ধান</translation>
 <translation id="3282568296779691940">Chromeত ছাইন-ইন কৰক</translation>
-<translation id="3284510035090979597">আগতীয়া সহায়</translation>
 <translation id="3285080554353377245">Chrome কেনেকৈ ব্যৱহাৰ কৰিব লাগে সেই সম্পৰ্কে ভিডিঅ'</translation>
 <translation id="3288003805934695103">এই পৃষ্ঠাটো পুনৰ ল’ড কৰি থকা হৈছে</translation>
 <translation id="3290249595466894471">নতুন ভাবুকিবোৰ বিচাৰি পোৱাত সহায় কৰিবলৈ পৃষ্ঠা, ডাউনল’ড, এক্সটেনশ্বনৰ কাৰ্যকলাপ আৰু ছিষ্টেমৰ তথ্যৰ এটা সৰু নমুনাও পঠিয়ায়</translation>
@@ -590,7 +587,6 @@
 <translation id="4209895695669353772">Googleএ চুপাৰিছ কৰা ব্যক্তিগতকৰণ কৰা সমল পাবলৈ ছিংক অন কৰক</translation>
 <translation id="4214315110991671325">আপুনি যদি কুকিৰ অনুমতি দিয়ে Chromeএ সেয়া আগতীয়াকৈ ল’ড কৰিবলৈ ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="4225895483398857530">টুলবাৰৰ শ্বৰ্টকাট</translation>
-<translation id="4227318652298512614">আপুনি বিচৰা যিকোনো ছাইট অনুসৰণ কৰক</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
 <translation id="4248098802131000011">আপোনাৰ পাছৱর্ডসমূহক ডেটা উলংঘন আৰু অন্য সুৰক্ষা সম্পর্কীয় সমস্যাসমূহৰ পৰা নিৰাপদে ৰাখক</translation>
 <translation id="424864128008805179">Chromeৰ পৰা ছাইন আউট কৰিবনে?</translation>
@@ -881,7 +877,6 @@
 <translation id="5795872532621730126">সন্ধান আৰু ব্ৰাউজ কৰক</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{#ঘণ্টা পূৰ্বে}one{#ঘণ্টা পূৰ্বে}other{#ঘণ্টা পূৰ্বে}}</translation>
 <translation id="5810288467834065221">স্বত্বাধিকাৰ <ph name="YEAR" /> Google Inc। সর্বস্বত্ব সংৰক্ষিত।</translation>
-<translation id="5810864297166300463">ৱেবৰ সহায়ক</translation>
 <translation id="5813552293717797987">এই ব্ৰাউজাৰটো <ph name="PARENT_NAME_1" /> আৰু <ph name="PARENT_NAME_2" />এ পৰিচালনা কৰে।</translation>
 <translation id="5814131985548525293">আৰম্ভ কৰিবলৈ ইয়াত টাইপ কৰক অথবা কণ্ঠধ্বনিৰ চিহ্নটোত টিপক</translation>
 <translation id="5814749351757353073">আপোনাৰ প্ৰিয় ছাইটসমূহৰ জৰিয়তে আপ টু ডেট হৈ থাকক</translation>
@@ -904,7 +899,6 @@
 <translation id="5869789175361934029">অন্য ডিভাইচৰ পৰা অব্যাহত ৰাখক</translation>
 <translation id="587735546353481577">এটা ছাইট ফ’ল’ কৰিবলৈ, ছাইটটোলৈ গৈ Chromeৰ মেনুখন খুলি ফ’ল’ কৰকত টিপক।</translation>
 <translation id="5879072387416556377">উন্নত পৰামৰ্শ পাওক</translation>
-<translation id="5884076754568147479">আপোনাক কামবোৰ সম্পূর্ণ কৰাত সহায় কৰিবলৈ, আপুনি Assistant ব্যৱহাৰ কৰা ছাইটসমূহৰ URL আৰু সমলবোৰ তথা আপুনি Assistantৰ জৰিয়তে দাখিল কৰা তথ্য Googleএ লাভ কৰিব</translation>
 <translation id="5906513782029855931">ছাইটৰ URL জনাটোৱে Google Assistantক কার্য সম্পূর্ণ কৰাৰ ক্ষেত্ৰত আপোনাক সহায় কৰিবলৈ দিয়ে। আপুনি Chromeৰ ছেটিঙত Assistant অফ কৰিব পাৰে।</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5919204609460789179">ছিংক আৰম্ভ কৰিবলৈ <ph name="PRODUCT_NAME" /> আপডে'ট কৰক</translation>
@@ -1346,7 +1340,6 @@
 <translation id="8127542551745560481">গৃহপৃষ্ঠা সম্পাদনা কৰক</translation>
 <translation id="8130309322784422030">আপুনি ষ্ট’ৰ কৰি থোৱা ছাইন ইন কৰাৰ তথ্যখিনিৰ ম্যাদ উকলিব পাৰে</translation>
 <translation id="813082847718468539">ছাইটৰ তথ্য চাওক</translation>
-<translation id="8153351135626613369">Assistantএ আপোনাক সমৰ্থিত ৱেবছাইটসমূহত সহায় কৰিব পাৰে বুলি চিনাক্ত কৰিলে ই প্ৰদৰ্শিত হ'ব</translation>
 <translation id="8156139159503939589">আপুনি কি ভাষা পঢ়িব পাৰে?</translation>
 <translation id="8168435359814927499">সমল</translation>
 <translation id="8186512483418048923"><ph name="FILES" />টা ফাইল বাকী আছে</translation>

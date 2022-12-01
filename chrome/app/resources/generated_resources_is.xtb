@@ -189,6 +189,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1166583374608765787">Fara yfir uppfærslu heitis</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilheyrir skrifborðinu <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Opnar í <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Skipta sjálfkrafa um tungumál í samræmi við valið efni</translation>
 <translation id="1169266963600477608">Leikjastýringar</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> inniheldur viðkvæm eða hættuleg gögn. Kerfisstjórinn þinn segir: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> vill tengjast við HID-tæki</translation>
@@ -2579,7 +2580,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3341703758641437857">Veita aðgang að vefslóðum skráa</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“ vill fjarlægja þessa viðbót.</translation>
 <translation id="3343977377045378693">Uppsetning í gangi</translation>
-<translation id="3345135638360864351">Ekki var hægt að senda beiðni þína um að opna þessa síðu til <ph name="NAME" />. Reyndu aftur.</translation>
 <translation id="3345634917232014253">Öryggisathugun var keyrð rétt áðan</translation>
 <translation id="3345886924813989455">Enginn studdur vafri fannst</translation>
 <translation id="3347086966102161372">A&amp;frita slóð myndar</translation>
@@ -2589,6 +2589,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3353786022389205125">Kveiktu á „Sýna lásskjá þegar komið er úr hvíldarstillingu“ og reyndu aftur</translation>
 <translation id="3354768182971982851">Þegar desember 2022 er liðinn verður ekki hægt að opna gamlar útgáfur Chrome forrita í Mac-tækjum. Þú getur athugað hvort ný útgáfa sé í boði.</translation>
 <translation id="3354972872297836698">Ekki tókst að para við tækið <ph name="DEVICE_NAME" />, veldu tæki til að reyna aftur</translation>
+<translation id="335581015389089642">Tal</translation>
 <translation id="3355936511340229503">Tengingarvilla</translation>
 <translation id="3356036636691722598">Njóttu leikjaspilunar í Chromebook</translation>
 <translation id="3356469410714175391">(Sýndarkort virkt)</translation>
@@ -3167,7 +3168,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3883482240657453056">Fá afslætti hjá <ph name="MERCHANT_NAME_1" /> og <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Vefefni sem er í boði á mörgum tungumálum mun nota fyrsta studda tungumálið á listanum. Þessar kjörstillingar eru samstilltar vafrastillingunum. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Kerfisstjórinn þinn stjórnar uppfærslum</translation>
-<translation id="3886446263141354045">Beiðni þín um aðgang að þessu vefsvæði hefur verið send til <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Sýna tækjalista</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> tenging</translation>
 <translation id="3888550877729210209">Glósur með <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8105,7 +8105,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8540942859441851323">Þjónustuaðili fer fram á gagnareiki</translation>
 <translation id="8541462173655894684">Engir prentarar fundust á prentþjóninum</translation>
 <translation id="8541838361296720865">Ýttu á rofa eða lyklaborðshnapp til að úthluta rofa/hnappi á „<ph name="ACTION" />“</translation>
-<translation id="8543556556237226809">Spurningar? Hafðu samband við manneskjuna sem hefur umsjón með reikningnum þínum.</translation>
 <translation id="8546186510985480118">Lítið geymslupláss er eftir á tæki</translation>
 <translation id="8546306075665861288">Skyndiminni mynda</translation>
 <translation id="8546930481464505581">Sérsníða snertistiku</translation>

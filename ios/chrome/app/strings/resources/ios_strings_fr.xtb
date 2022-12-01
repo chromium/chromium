@@ -133,6 +133,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1981118202195772574">Mobile</translation>
 <translation id="1989112275319619282">Parcourir</translation>
+<translation id="1990820278544963435">Rechercher</translation>
 <translation id="199425419756152024">Afficher le mot de passe</translation>
 <translation id="2010008505735295285">Actualiser</translation>
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
@@ -550,7 +551,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5190835502935405962">Barre de favoris</translation>
 <translation id="519530786644929958">Échec du téléchargement. Nouvelle tentative impossible.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5219295696240154694">Contribuer à améliorer la sécurité sur le Web pour tous</translation>
 <translation id="5228579091201413441">Activer la synchronisation</translation>
 <translation id="5232485538978018676">Se connecter avec un compte géré</translation>
@@ -1089,6 +1089,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9188680907066685419">Se déconnecter d'un compte géré</translation>
 <translation id="9200875785104711666">Il y a <ph name="TIME" /> j</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Rechercher dans les onglets…</translation>
 <translation id="9223358826628549784">Le rapport d'erreur a bien été envoyé.</translation>
 <translation id="941747855997058526">Sélectionner un mot de passe</translation>
 <translation id="952704832371081537">Annuler</translation>

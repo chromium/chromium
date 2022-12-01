@@ -185,6 +185,7 @@
 <translation id="1166583374608765787">परिवर्तन गरिएको नामको समीक्षा गर्नुहोस्</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> ट्याब <ph name="DESK_TITLE" /> डेस्कअन्तर्गत पर्छ</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> मा खुल्दै...</translation>
+<translation id="116896278675803795">चयन गरिएको सामग्रीका आधारमा स्वतः भाषा बदलियोस्</translation>
 <translation id="1169266963600477608">गेम कन्ट्रोलहरू</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> मा संवेदनशील वा खतरनाक डेटा छ। तपाईंका एड्मिन यसो भन्छन्: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> कुनै HID यन्त्रसँग जोडिन चाहन्छ</translation>
@@ -2561,7 +2562,6 @@
 <translation id="3341703758641437857">फाइल URLs मा पहुँच अनुमति दिनुहोस्</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" यो विस्तार हटाउन चाहन्छ।</translation>
 <translation id="3343977377045378693">सेटअप गरिँदै छ</translation>
-<translation id="3345135638360864351">यस साइटमा पहुँच गर्न तपाईंको अनुरोध <ph name="NAME" /> मा पठाउन सकिएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3345634917232014253">एकछिन अघि सुरक्षा जाँच गरियो</translation>
 <translation id="3345886924813989455">कुनै समर्थित ब्राउजर भेटिएन</translation>
 <translation id="3347086966102161372">छवि ठेगाना कपी गर्नुहोस्</translation>
@@ -2571,6 +2571,7 @@
 <translation id="3353786022389205125">"स्लिप मोडबाट वेक मोडमा जाँदा लक स्क्रिन देखाइयोस्" अन गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3354768182971982851">Chrome का पुराना संस्करणका एपहरू डिसेम्बर २०२२ पछि Mac डिभाइसहरूमा मा खुल्ने छैनन्। तपाईं नयाँ संस्करण उपलब्ध छ कि छैन भन्ने कुरा जाँच्न सक्नुहुन्छ।</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> डिभाइसमा कनेक्ट गर्न सकिएन। तपाईं फेरि कनेक्ट गरी हेर्न चाहनुहुन्छ भने उक्त डिभाइस चयन गर्नुहोस्</translation>
+<translation id="335581015389089642">बोली</translation>
 <translation id="3355936511340229503">जडान त्रुटि</translation>
 <translation id="3356036636691722598">Chromebook मा गेमिङको मजा लिनुहोस्</translation>
 <translation id="3356469410714175391">(भर्चुअल कार्ड सक्रिय गरिएको छ)</translation>
@@ -3149,7 +3150,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> र <ph name="MERCHANT_NAME_2" /> को छुट प्राप्त गर्नुहोस्</translation>
 <translation id="3884152383786131369">एकभन्दा बढी भाषामा उपलब्ध वेब सामग्री यो सूचीको प्रयोग गर्न मिल्ने पहिलो भाषामा देखाइने छ। यी प्राथमिकताहरू तपाईंको ब्राउजरका सेटिङसँग सिंक गरिन्छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">तपाईंका एड्मिनले अपडेटसम्बन्धी काम गर्नुहुन्छ</translation>
-<translation id="3886446263141354045">यो साइटमाथि पहुँच राख्ने तपाईंको अनुरोध <ph name="NAME" /> लाई पठाइएको छ</translation>
 <translation id="3887022758415973389">डिभाइसको सूची देखाइयोस्</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> कनेक्सन</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> मार्फत टिपोट लिँदै</translation>
@@ -8082,7 +8082,6 @@
 <translation id="8540942859441851323">प्रदायकको हकमा रोमिङ सेवा अन भएको हुनु पर्छ</translation>
 <translation id="8541462173655894684">प्रिन्ट सर्भरमा कुनै पनि प्रिन्टर फेला परेन</translation>
 <translation id="8541838361296720865">तपाईं “<ph name="ACTION" />” गर्ने कार्यका लागि जुन स्विच वा किबोर्ड की असाइन गर्न चाहनुहुन्छ उक्त स्विच वा की थिच्नुहोस्</translation>
-<translation id="8543556556237226809">कुनै प्रश्न छन्? आफ्नो प्रोफाइल सञ्चालन गर्ने व्यक्तिलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="8546186510985480118">यन्त्रमा खाली ठाउँ कम छ</translation>
 <translation id="8546306075665861288">छवि क्यास</translation>
 <translation id="8546930481464505581">टच बारलाई आफू अनुकूल पार्नुहोस्</translation>

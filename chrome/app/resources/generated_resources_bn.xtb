@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">নামের আপডেট দেখে নিন</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" />-এ আছে</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />-এর মধ্যে খুলছে...</translation>
+<translation id="116896278675803795">বেছে নেওয়া কন্টেন্টের সাথে মেলানোর জন্য ভাষা অটোমেটিক পরিবর্তন করুন</translation>
 <translation id="1169266963600477608">গেম কন্ট্রোল</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" />-এ সংবেদনশীল বা বিপজ্জনক ডেটা আছে। আপনার অ্যাডমিনিস্ট্রেটরের বক্তব্য হল: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> একটি HID ডিভাইসের সাথে কানেক্ট করতে চায়</translation>
@@ -596,6 +597,7 @@
 <translation id="1546280085599573572">আপনি হোম বোতাম ক্লিক করলে কোন পৃষ্ঠা দেখানো হবে তা এই এক্সটেনশনটি পরিবর্তন করেছে।</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> একটি <ph name="EXTENSION_TYPE" /> ইনস্টল করতে চাইছে যা এগুলি করতে পারে:</translation>
 <translation id="1547808936554660006">আমি এটি বুঝেছি যে ইনস্টল করা ই-সিম প্রোফাইল পাওয়ারওয়াশের ফলে সরে যাবে না</translation>
+<translation id="1547936895218027488">এটি খুলতে সাইড প্যানেল আইকনে ক্লিক করুন</translation>
 <translation id="1549275686094429035">ARC চালু করা হয়েছে</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> অ্যাক্সেস করতে চায়৷ এটি আপনার ফাইলগুলিকে মডিফাই করতে বা মুছে ফেলতে পারে৷</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" এক্সটেনশনের মাধ্যমে ডিফল্ট সার্চ ইঞ্জিনকে ওভাররাইড করা হয়েছে এবং এখন <ph name="SEARCH_PROVIDER_DOMAIN" />-এর মাধ্যমে কন্ট্রোল করা হচ্ছে</translation>
@@ -1432,6 +1434,7 @@
 <translation id="2287944065963043964">লগ-ইন করার স্ক্রিন</translation>
 <translation id="2289270750774289114">কাছাকাছি ব্লুটুথ ডিভাইস আছে কিনা তা কোনও সাইট খুঁজতে চাইলে আমাকে জিজ্ঞাসা করুন (সাজেস্ট করা হচ্ছে)</translation>
 <translation id="2290615375132886363">ট্যাবলেট মোডে নেভিগেশন বোতাম</translation>
+<translation id="2291452790265535215">বুকমার্ক, অ্যাক্টিভিটির সিরিজ এবং আরও অনেক কিছুর জন্য সাইড প্যানেল ব্যবহার করার চেষ্টা করুন</translation>
 <translation id="229182044471402145">কোনও মানানসই ফন্ট খুঁজে পাওয়া যাচ্ছে না</translation>
 <translation id="2292848386125228270">অনুগ্রহ করে একজন সাধারণ ব্যবহারকারী হিসেবে <ph name="PRODUCT_NAME" /> আরম্ভ করুন। আপনার যদি ডেভেলপমেন্টের জন্য রুট হিসাবে চালানোর প্রয়োজন হয়, তাহলে --নো-স্যান্ডবক্স ফ্ল্যাগটি আবার চালান।</translation>
 <translation id="2294081976975808113">স্ক্রিন সংক্রান্ত গোপনীয়তা</translation>
@@ -2579,7 +2582,6 @@
 <translation id="3341703758641437857">ফাইল URLগুলিতে অ্যাক্সেস মঞ্জুর করুন</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" এই এক্সটেনশনটি সরিয়ে দিতে চাইছে।</translation>
 <translation id="3343977377045378693">সেট-আপের ট্রায়াল চলছে</translation>
-<translation id="3345135638360864351">এই সাইটটি অ্যাক্সেস করার জন্য আপনার অনুরোধ <ph name="NAME" /> এ পাঠানো যায়নি৷ অনুগ্রহ করে আবার চেষ্টা করুন৷</translation>
 <translation id="3345634917232014253">নিরাপত্তা সংক্রান্ত পরীক্ষা কিছুক্ষণ আগে হয়ে গেছে</translation>
 <translation id="3345886924813989455">কোন সমর্থিত ব্রাউজার খুঁজে পাওয়া যায় নি</translation>
 <translation id="3347086966102161372">ছবি অ্যাড্রেস কপি করুন</translation>
@@ -2589,6 +2591,7 @@
 <translation id="3353786022389205125">"স্লিপ মোড থেকে বেরোলে লক স্ক্রিন দেখুন" বিকল্প চালু করে আবার চেষ্টা করুন</translation>
 <translation id="3354768182971982851">ডিসেম্বর ২০২২-এর পরে, Mac ডিভাইসে Chrome অ্যাপের পুরনো ভার্সন আর খুলবে না। নতুন ভার্সন উপলভ্য আছে কিনা তা আপনি চেক করতে পারবেন।</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ডিভাইসের সাথে পেয়ার করা যায়নি; আবার চেষ্টা করতে ডিভাইস বেছে নিন</translation>
+<translation id="335581015389089642">স্পিচ</translation>
 <translation id="3355936511340229503">সংযোগ ত্রুটি</translation>
 <translation id="3356036636691722598">আপনার Chromebook-এ গেম খেলার অভিজ্ঞতা উপভোগ করা</translation>
 <translation id="3356469410714175391">(ভার্চুয়াল কার্ড চালু করা হয়েছে)</translation>
@@ -3167,7 +3170,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> এবং <ph name="MERCHANT_NAME_2" />-এ ছাড় পান</translation>
 <translation id="3884152383786131369">যেসকল ওয়েব কন্টেন্ট একাধিক ভাষায় উপলভ্য সেগুলি এই তালিকা থেকে উপযুক্ত প্রথম ভাষাটি ব্যবহার করবে। আপনার ব্রাউজার সেটিংসের সাথে এই পছন্দ সিঙ্ক করা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">আপনার অ্যাডমিনিস্ট্রেটর আপডেটগুলি ম্যানেজ করে।</translation>
-<translation id="3886446263141354045">এই সাইটটি অ্যাক্সেস করার জন্য আপনার অনুরোধ <ph name="NAME" />কে পাঠানো হয়েছে</translation>
 <translation id="3887022758415973389">ডিভাইসের তালিকা দেখুন</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> কানেকশন</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ব্যবহার করে নোট নেওয়া হচ্ছে</translation>
@@ -3920,6 +3922,7 @@
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-এ কোনও ডিভাইস সেভ করা নেই</translation>
 <translation id="4592891116925567110">স্টাইলাস ব্যবহার করে আঁকার অ্যাপ</translation>
 <translation id="4593021220803146968">&amp;এখানে যান <ph name="URL" /></translation>
+<translation id="4594218792629569101">আপনার তালিকার নিচে পৃষ্ঠাটি সরাতে "পড়া হয়েছে হিসেবে চিহ্নিত করুন" বিকল্পটি বেছে নিন</translation>
 <translation id="4594577641390224176">সিস্টেম সম্পর্কিত পৃষ্ঠা খুঁজছেন? দেখুন</translation>
 <translation id="4595560905247879544">অ্যাপ্লিকেশান এবং এক্সটেনশানগুলি শুধুমাত্র পরিচালক (<ph name="CUSTODIAN_NAME" />) দ্বারা পরিবর্তন করা যাবে।</translation>
 <translation id="4596295440756783523">আপনার ফাইলে এমন শংসাপত্রগুলি রয়েছে যা এই সার্ভারগুলিকে শনাক্ত করে</translation>
@@ -4428,6 +4431,7 @@
 <translation id="5084328598860513926">প্রভিশনিং ফ্লোতে বিঘ্ন ঘটেছে। আবার চেষ্টা করুন অথবা আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="5085162214018721575">আপডেটের জন্য চেক করা হচ্ছে</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">নোটে ১০০০টির বেশি অক্ষর আছে</translation>
 <translation id="5086874064903147617">ডিফল্ট হোমপেজ পুনরুদ্ধার করবেন?</translation>
 <translation id="5087249366037322692">একটি তৃতীয় পক্ষের দ্বারা যোগ করা হয়েছে</translation>
 <translation id="5087580092889165836">কার্ড জুড়ুন</translation>
@@ -6594,6 +6598,7 @@
 <translation id="7111822978084196600">এই উইন্ডোর একটি নাম দিন</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" />টি আইটেম</translation>
 <translation id="7113502843173351041">আপনার ইমেল আইডি জানুন</translation>
+<translation id="7113974454301513811">এখন আপনার তালিকায় বর্তমান ট্যাব যোগ করুন</translation>
 <translation id="7114054701490058191">পাসওয়ার্ডগুলি মিলছে না</translation>
 <translation id="7114648273807173152">Smart Lock ব্যবহার করতে আপনার Google অ্যাকাউন্টে সাইন-ইন করে সেটিংস &gt; কানেক্ট করা ডিভাইস &gt; আপনার ফোন &gt; Smart Lock বিকল্পে যান।</translation>
 <translation id="7115361495406486998">যোগাযোগ করা যেতে পারে এমন কোনও পরিচিত নেই</translation>
@@ -8108,7 +8113,6 @@
 <translation id="8540942859441851323">পরিষেবা প্রদানকারীর মাধ্যমে রোমিং প্রয়োজন</translation>
 <translation id="8541462173655894684">প্রিন্ট সার্ভার থেকে কোনও প্রিন্টার খুঁজে পাওয়া যায়নি</translation>
 <translation id="8541838361296720865">এটি “<ph name="ACTION" />”-এ অ্যাসাইন করতে কোনও সুইচ বা কীবোর্ডের 'কী' প্রেস করুন</translation>
-<translation id="8543556556237226809">প্রশ্ন? আপনার প্রোফাইল যে তত্ত্বাবধান করে তার সাথে যোগাযোগ করুন।</translation>
 <translation id="8546186510985480118">ডিভাইসে জায়গা কম আছে</translation>
 <translation id="8546306075665861288">ছবি ক্যাশে</translation>
 <translation id="8546930481464505581">টাচ বার কাস্টমাইজ করুন</translation>
@@ -8452,6 +8456,7 @@
 <translation id="8859174528519900719">সাবফ্রেম: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">পরিষেবার শর্তাবলী লোড করা যায়নি</translation>
 <translation id="8859662783913000679">অভিভাবকের অ্যাকাউন্ট</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT}টি অ্যাকাউন্ট}one{{COUNT}টি অ্যাকাউন্ট}other{{COUNT}টি অ্যাকাউন্ট}}</translation>
 <translation id="8861568709166518036">হোমে নেভিগেট করতে, ফিরে যেতে ও অ্যাপ পাল্টাতে অন-স্ক্রিন বোতাম ব্যবহার করুন। ChromeVox বা অটোমেটিক ক্লিক চালু করা হলে, অটোমেটিক চালু হয়ে যায়।</translation>
 <translation id="8862003515646449717">একটি দ্রুত ব্রাউজারে স্যুইচ করুন</translation>
 <translation id="8863753581171631212">নতুন <ph name="APP" />-এ লিঙ্ক খুলুন</translation>
@@ -8825,6 +8830,7 @@
 <translation id="9201842707396338580">কিছু সমস্যা হয়েছে। আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="9203398526606335860">&amp;প্রোফাইলিং সক্ষমিত</translation>
 <translation id="9203904171912129171">একটি ডিভাইস বেছে নিন</translation>
+<translation id="920410963177453528">অন্য প্যানেল বেছে নিতে ড্রপ ডাউনে ক্লিক করুন</translation>
 <translation id="9206889157914079472">স্ক্রিন লক থাকাকালীন স্টাইলাস ব্যবহার করে নোট নেওয়া</translation>
 <translation id="9208192193641542858">স্থানীয় ডেটা আপনার পুরনো পাসওয়ার্ড দ্বারা সুরক্ষিত। আপনি সম্প্রতি পাসওয়ার্ড পরিবর্তন করে থাকলে, পুরনো পাসওয়ার্ড আবার ব্যবহার করুন।</translation>
 <translation id="9209563766569767417">Linux কন্টেনারের সেট-আপ চেক করে দেখা হচ্ছে</translation>

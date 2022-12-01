@@ -554,6 +554,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Joaktiv për një apl.}other{Joaktiv për # apl.}}</translation>
 <translation id="4066027111132117168">Aktive, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinjal mesatar</translation>
+<translation id="4086921558679520050">Aktivizo çelësin fizik të mikrofonit në pajisjen tënde</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
 <translation id="4114315158543974537">Aktivizo Phone Hub</translation>
 <translation id="4115378294792113321">E purpurt e errët</translation>
@@ -606,6 +607,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /> për qind</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
 <translation id="4379531060876907730">Këto janë veglat e tua të stilolapsit</translation>
+<translation id="4381031910344220229">Kjo lejon qasjen te mikrofoni për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e mikrofonit</translation>
 <translation id="4389184120735010762">Ke shtypur shkurtoren e tastierës për zmadhuesin me puthitje. Dëshiron ta aktivizosh?</translation>
 <translation id="439598569299422042">Në pauzë, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Transmetimi i ekranit nuk mund të ruhet</translation>
@@ -728,6 +730,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4987738733603015246">Tavolina e punës 16</translation>
 <translation id="5003993274120026347">Fjalia tjetër</translation>
 <translation id="5016558321564993266">Ndrysho treguesin. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Qasja te mikrofoni i pajisjes është aktiv</translation>
 <translation id="5030687792513154421">Koha mbaroi</translation>
 <translation id="5033299697334913360">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> u lidh me një telefon të ri</translation>
@@ -959,9 +962,11 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> është sesion i menaxhuar që menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> u lidh</translation>
 <translation id="6351032674660237738">SUGJERIMET E APLIKACIONEVE</translation>
+<translation id="6352082849089527770">Rrjete të panjohura</translation>
 <translation id="6359587239691116345">Merr veçoritë dhe përmirësimet më të fundit të sigurisë. Nëse e refuzon këtë përditësim, pajisja jote mund të mos funksionojë më siç duhet dhe mund të kesh probleme me sigurinë dhe cilësinë e funksionimit.</translation>
 <translation id="6376931439017688372">Bluetooth-i është aktiv</translation>
 <translation id="6381109794406942707">Për të shkyçur pajisjen, fut kodin PIN.</translation>
+<translation id="638716340450135524">Aktivizo qasjen te kamera</translation>
 <translation id="639644700271529076">KYÇJA E KAPITALEVE është joaktive</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asistenti i Google</translation>
@@ -969,6 +974,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="642644398083277086">Pastro të gjitha njoftimet</translation>
 <translation id="643147933154517414">Të gjitha në rregull</translation>
 <translation id="6431865393913628856">Regjistrimi i ekranit</translation>
+<translation id="6442259747294754014">Qasja te mikrofoni i pajisjes është joaktiv</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ngjarje</translation>
 <translation id="6449483711453944360">Aplikacionet për Linux dhe dritaret "E fshehta" nuk mbështeten aktualisht</translation>
@@ -1133,6 +1139,7 @@ Instalim i ri</translation>
 <translation id="7360036564632145207">Ndryshimi i mbrojtjes së qasjes te të dhënat e tua për pajisjet periferike mund të optimizojë cilësinë e funksionimit</translation>
 <translation id="736045644501761622">Cakto imazhin e sfondit dhe stilin</translation>
 <translation id="7371404428569700291">Regjistro dritaren</translation>
+<translation id="737315737514430195">Kjo lejon qasjen te mikrofoni për të gjitha aplikacionet dhe sajtet e uebit me lejen e mikrofonit</translation>
 <translation id="7377169924702866686">Kyçja e kapitaleve është aktive.</translation>
 <translation id="7377481913241237033">Lidhu me një kod</translation>
 <translation id="7378203170292176219">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
@@ -1201,6 +1208,7 @@ Instalim i ri</translation>
 <translation id="7671610481353807627">Aplikacionet janë renditur sipas ngjyrës</translation>
 <translation id="7672095158465655885">Lidhur me <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Hyrja e kamerës u caktua te <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Kjo lejon qasjen te mikrofoni për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e mikrofonit</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Shto rrjet të ri celular</translation>
 <translation id="7720400844887872976">Aktive deri në <ph name="TIME" /></translation>
@@ -1364,6 +1372,7 @@ Instalim i ri</translation>
 <translation id="8598235756057743477">Renditi aplikacionet sipas emrit dhe ngjyrës</translation>
 <translation id="8614517853887502247">Njoftimet e <ph name="APP_1_TITLE" /> dhe <ph name="APP_2_TITLE" /> janë fshehur sepse është aktivizuar mbrojtja e shikimit</translation>
 <translation id="8627191004499078455">I lidhur me <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Çaktivizo qasjen te kamera</translation>
 <translation id="8631727435199967028">Cilësimet e qasshmërisë</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> të mbetura</translation>

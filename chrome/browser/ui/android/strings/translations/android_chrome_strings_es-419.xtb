@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Se acortó el texto destacado</translation>
 <translation id="1111673857033749125">Los favoritos guardados en tus otros dispositivos aparecerán aquí.</translation>
 <translation id="1113597929977215864">Mostrar la vista simplificada</translation>
-<translation id="1118561384561215815">Obtener ayuda para la Web</translation>
 <translation id="1123070903960493543">Cómo interactúas con Chrome, las opciones de configuración que elegiste y detalles sobre las fallas de Chrome</translation>
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2286841657746966508">Dirección de facturación</translation>
 <translation id="228704530595896923">Lista de opciones para compartir.</translation>
 <translation id="230115972905494466">No se encontraron dispositivos compatibles</translation>
-<translation id="230155349749732438">Para usar esta configuración, debes activar <ph name="BEGIN_LINK" />Mejorar las búsquedas y la navegación<ph name="END_LINK" />.</translation>
 <translation id="2318045970523081853">Presiona para realizar la llamada</translation>
 <translation id="2321086116217818302">Preparando las contraseñas…</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio</translation>
@@ -428,7 +426,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3269093882174072735">Cargar imagen</translation>
 <translation id="3280562213547448728">Búsqueda por voz</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
-<translation id="3284510035090979597">Ayuda proactiva</translation>
 <translation id="3285080554353377245">Videos sobre cómo usar Chrome</translation>
 <translation id="3288003805934695103">Volver a cargar la página.</translation>
 <translation id="3290249595466894471">También envía una pequeña muestra de páginas, descargas, información del sistema y actividad de extensiones para ayudar a descubrir nuevas amenazas.</translation>
@@ -590,7 +587,6 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="4209895695669353772">Para obtener contenido personalizado y sugerido por Google, activa la sincronización</translation>
 <translation id="4214315110991671325">Si permites las cookies, Chrome puede usarlas para la precarga.</translation>
 <translation id="4225895483398857530">Acceso directo a la barra de herramientas</translation>
-<translation id="4227318652298512614">Sigue los sitios que quieras</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad.</translation>
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
@@ -881,7 +877,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5795872532621730126">Busca y explora</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Hace # hora}other{Hace # horas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
-<translation id="5810864297166300463">Asistencia web</translation>
 <translation id="5813552293717797987"><ph name="PARENT_NAME_1" /> y <ph name="PARENT_NAME_2" /> administran este navegador.</translation>
 <translation id="5814131985548525293">Escribe aquí o presiona el ícono de micrófono para comenzar</translation>
 <translation id="5814749351757353073">Mantente al tanto de tus sitios favoritos</translation>
@@ -904,7 +899,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5869789175361934029">Continua desde otro dispositivo</translation>
 <translation id="587735546353481577">Para seguir un sitio, visítalo, abre el menú de Chrome y presiona Seguir.</translation>
 <translation id="5879072387416556377">Obtén mejores sugerencias</translation>
-<translation id="5884076754568147479">Para ayudarte a completar tareas, Google recibirá las URL y los contenidos de los sitios en los que uses el Asistente, así como la información que envías a través de este servicio</translation>
 <translation id="5906513782029855931">Conocer las URLs de los sitios permite a Asistente de Google ayudarlo a completar las tareas. En la configuración de Chrome, puedes desactivar Asistente.</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5919204609460789179">Actualiza <ph name="PRODUCT_NAME" /> para iniciar la sincronización</translation>
@@ -1346,7 +1340,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8127542551745560481">Editar la página principal</translation>
 <translation id="8130309322784422030">Es posible que la información de acceso almacenada esté desactualizada</translation>
 <translation id="813082847718468539">Consulta la información del sitio</translation>
-<translation id="8153351135626613369">Asistente aparecerá cuando detecte que puede ayudarte en sitios web compatibles</translation>
 <translation id="8156139159503939589">¿En qué idioma lees?</translation>
 <translation id="8168435359814927499">Contenido</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> archivos</translation>

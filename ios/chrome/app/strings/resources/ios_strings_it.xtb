@@ -133,6 +133,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1981118202195772574">Dispositivo mobile</translation>
 <translation id="1989112275319619282">Esplora</translation>
+<translation id="1990820278544963435">Trova</translation>
 <translation id="199425419756152024">Visualizza password</translation>
 <translation id="2010008505735295285">Ricarica</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
@@ -550,7 +551,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5190835502935405962">Barra dei Preferiti</translation>
 <translation id="519530786644929958">Download non riuscito. Impossibile riprovare.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Chiudi scheda</translation>
 <translation id="5219295696240154694">Contribuisci a migliorare la sicurezza sul Web per tutti</translation>
 <translation id="5228579091201413441">Abilita sincronizzazione</translation>
 <translation id="5232485538978018676">Accesso con account gestito</translation>
@@ -1089,6 +1089,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9188680907066685419">Esci dall'account gestito</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> g fa</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Cerca tra le schede…</translation>
 <translation id="9223358826628549784">Report sugli arresti anomali inviato.</translation>
 <translation id="941747855997058526">Seleziona password…</translation>
 <translation id="952704832371081537">Annulla</translation>

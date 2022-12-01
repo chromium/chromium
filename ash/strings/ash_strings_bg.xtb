@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Изкл. за 1 прил.}other{Изкл. за # прил.}}</translation>
 <translation id="4066027111132117168">Включено, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">умерен сигнал</translation>
+<translation id="4086921558679520050">Включете физическия превключвател за микрофона на устройството си</translation>
 <translation id="4112140312785995938">Придвижване назад</translation>
 <translation id="4114315158543974537">Включване на функцията „Център за телефоните“</translation>
 <translation id="4115378294792113321">пурпурно</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /> процент(а)</translation>
 <translation id="4378551569595875038">Свързване...</translation>
 <translation id="4379531060876907730">Това са инструментите ви за писане</translation>
+<translation id="4381031910344220229">Разрешава достъп до микрофона за <ph name="APP_NAME" /> и всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="4389184120735010762">Използвахте клавишната комбинация за лупата в прикрепен режим. Искате ли да включите функцията?</translation>
 <translation id="439598569299422042">На пауза, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Скрийнкастът не може да се запази</translation>
@@ -728,6 +730,7 @@
 <translation id="4987738733603015246">Работен кът 16</translation>
 <translation id="5003993274120026347">Следващо изречение</translation>
 <translation id="5016558321564993266">Превключване на маркера. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Достъпът до микрофона на устройството е разрешен</translation>
 <translation id="5030687792513154421">Времето свърши</translation>
 <translation id="5033299697334913360">Кликнете върху произволно място, за да се заснеме целият екран</translation>
 <translation id="5035236842988137213">Устройството <ph name="DEVICE_NAME" /> е свързано с нов телефон</translation>
@@ -959,9 +962,11 @@
 <translation id="6338485349199627913">„<ph name="DISPLAY_NAME" />“ е сесия, управлявана от <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Установена е връзка с(ъс) <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">ПРЕДЛОЖЕНИЯ ЗА ПРИЛОЖЕНИЯ</translation>
+<translation id="6352082849089527770">Неизвестни мрежи</translation>
 <translation id="6359587239691116345">Получавайте най-новите функции и подобрения в сигурността. Ако отхвърлите тази актуализация, устройството ви може вече да не работи правилно и може да имате проблеми със сигурността и производителността.</translation>
 <translation id="6376931439017688372">Функцията за Bluetooth е включена</translation>
 <translation id="6381109794406942707">Въведете ПИН кода си, за да отключите устройството.</translation>
+<translation id="638716340450135524">Разрешаване на достъпа до камерата</translation>
 <translation id="639644700271529076">„CAPS LOCK“ е изключен</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
@@ -969,6 +974,7 @@
 <translation id="642644398083277086">Изчистване на всички известия</translation>
 <translation id="643147933154517414">Всичко е готово</translation>
 <translation id="6431865393913628856">Записване на екрана</translation>
+<translation id="6442259747294754014">Достъпът до микрофона на устройството е забранен</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> се предава към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6447111710783417522"><ph name="NUMBER" /> събитие на <ph name="DATE" /></translation>
 <translation id="6449483711453944360">Понастоящем не се поддържат приложения за Linux и прозорци в режим „инкогнито“</translation>
@@ -1133,6 +1139,7 @@
 <translation id="7360036564632145207">Промяната на настройката за защита на достъпа до данните от периферни устройства може да доведе до оптимизиране на ефективността</translation>
 <translation id="736045644501761622">Задаване на тапет и стил</translation>
 <translation id="7371404428569700291">Прозорец за записване</translation>
+<translation id="737315737514430195">Разрешава достъп до микрофона за всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="7377169924702866686">„Caps Lock“ е включен.</translation>
 <translation id="7377481913241237033">Свързване чрез код</translation>
 <translation id="7378203170292176219">С плъзгане изберете областта, която да бъде записана</translation>
@@ -1201,6 +1208,7 @@
 <translation id="7671610481353807627">Приложенията са сортирани по цвят</translation>
 <translation id="7672095158465655885">Установена е връзка с мрежата <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Избрана е камерата <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Разрешава достъп до микрофона за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавяне на нова мобилна мрежа</translation>
 <translation id="7720400844887872976">Включено до <ph name="TIME" /></translation>
@@ -1364,6 +1372,7 @@
 <translation id="8598235756057743477">Сортиране на приложенията ви по име или цвят</translation>
 <translation id="8614517853887502247">Известията от <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> са скрити, тъй като защитата срещу надничане е включена</translation>
 <translation id="8627191004499078455">Установена е връзка (<ph name="DEVICE_NAME" />)</translation>
+<translation id="8630991711272431708">Забраняване на достъпа до камерата</translation>
 <translation id="8631727435199967028">Настройки за достъпност</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="8639760480004882931">Батерия: <ph name="PERCENTAGE" /></translation>

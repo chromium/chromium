@@ -338,7 +338,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> होने पर, नीति तय हाेनी चाहिए. साथ ही, इसकी एक मान्य स्ट्रिंग भी होनी चाहिए.</translation>
 <translation id="1745880797583122200">आपका ब्राउज़र प्रबंधित है</translation>
 <translation id="1746113442205726301">इमेज Y शिफ़्ट</translation>
-<translation id="1747819498338037826">अपने-आप बदलने दें</translation>
 <translation id="17513872634828108">टैब खोलें</translation>
 <translation id="1752021286346845558">मेलबॉक्स 8</translation>
 <translation id="1753068535428855445">डेटिंग और निजी मामलों से जुड़ी सेवाएं</translation>
@@ -1368,7 +1367,6 @@
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
 <translation id="4451135742916150903">साइट, एचआईडी डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
 <translation id="4452328064229197696">आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें. इस तरह आपके खाते सुरक्षित रहेंगे.</translation>
-<translation id="4455222631300069614">अपना पासवर्ड तुरंत बदलें</translation>
 <translation id="4460315069258617173">तब तक अनुमति है, जब तक आप इस साइट के लिए टैब बंद नहीं कर देते</translation>
 <translation id="4464826014807964867">ऐसी वेबसाइटें जिनके बारे में आपके संगठन ने जानकारी दी है</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1603,7 +1601,6 @@
 <translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5040262127954254034">निजता</translation>
 <translation id="5043480802608081735">आपका कॉपी किया हुआ लिंक</translation>
-<translation id="5044545992476246592">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google Assistant, आपका पासवर्ड अपने-आप बदल सकती है.</translation>
 <translation id="5045550434625856497">ग़लत पासवर्ड</translation>
 <translation id="5051305769747448211">लाइव कॉमेडी</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इस फ़ाइल को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}one{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इस फ़ाइल को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}other{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इन फ़ाइलों को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}}</translation>
@@ -1669,7 +1666,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> एक से ज़्यादा फ़ाइलें डाउनलोड करना चाहते हैं</translation>
 <translation id="519422657042045905">व्याख्या की सुविधा उपलब्ध नहीं है</translation>
 <translation id="5201306358585911203">इस पेज पर एम्बेड किए गए पेज का कहना है कि</translation>
-<translation id="5204468114771111727">Chrome के मुताबिक, आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो गया था. Google Assistant, आपका पासवर्ड अपने-आप बदल सकती है.</translation>
 <translation id="5205222826937269299">नाम ज़रूरी है</translation>
 <translation id="5209518306177824490">SHA-1 फ़िंगरप्रिंट</translation>
 <translation id="5209670883520018268">ट्रे 20</translation>

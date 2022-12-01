@@ -493,6 +493,7 @@
 <translation id="5669267381087807207">啟用</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">家庭</translation>
+<translation id="5695599963893094957">在鍵盤上按下任何鍵，最多可同時按下 4 個按鍵。</translation>
 <translation id="5701381305118179107">置中</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">更新 <ph name="DEVICE_NAME" /></translation>
@@ -619,7 +620,6 @@
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">DNS 解析失敗率高</translation>
 <translation id="6791471867139427246">鍵盤背光顏色</translation>
-<translation id="6793680441750437230">在鍵盤上按下任何鍵，最多可同時按下 4 個按鍵。按下 Alt + Esc 鍵，即可關閉對話框。</translation>
 <translation id="680983167891198932">金鑰</translation>
 <translation id="6816797338148849397">你所揀嘅項目有相關資料可以提供。用向上箭咀掣就可以存取。</translation>
 <translation id="6853312040151791195">放電率</translation>

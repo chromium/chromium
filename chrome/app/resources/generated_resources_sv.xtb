@@ -189,6 +189,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1166583374608765787">Granska uppdaterat namn</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> hör till skrivbordet <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Öppnar om <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Ändra språk automatiskt för att matcha valt innehåll</translation>
 <translation id="1169266963600477608">Spelkontroller</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> har känsligt eller skadligt innehåll. Meddelande från administratören: <ph name="CUSTOM_MESSAGE" /></translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> försöker ansluta till en HID-enhet</translation>
@@ -2580,7 +2581,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3341703758641437857">Tillåt åtkomst till webbadresser i filen</translation>
 <translation id="3342361181740736773"><ph name="TRIGGERING_EXTENSION_NAME" /> vill ta bort det här tillägget.</translation>
 <translation id="3343977377045378693">Konfigurerar</translation>
-<translation id="3345135638360864351">Det gick inte att skicka begäran om åtkomst till den här webbplatsen till <ph name="NAME" />. Försök igen.</translation>
 <translation id="3345634917232014253">Säkerhetskontrollen kördes alldeles nyss</translation>
 <translation id="3345886924813989455">Det gick inte att hitta någon webbläsare som stöds</translation>
 <translation id="3347086966102161372">K&amp;opiera bildadress</translation>
@@ -2590,6 +2590,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3353786022389205125">Aktivera Visa låsskärm efter viloläge och försök igen</translation>
 <translation id="3354768182971982851">Äldre versioner av Chrome-appar öppnas inte på Mac-enheter efter december 2022. Du kan kolla om det finns en ny version tillgänglig.</translation>
 <translation id="3354972872297836698">Det gick inte att koppla till enheten <ph name="DEVICE_NAME" /> – välj enheten och försök igen</translation>
+<translation id="335581015389089642">Tal</translation>
 <translation id="3355936511340229503">Anslutningsfel</translation>
 <translation id="3356036636691722598">Börja spela på Chromebook</translation>
 <translation id="3356469410714175391">(Virtuellt kort aktiverat)</translation>
@@ -3168,7 +3169,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3883482240657453056">Få rabatter på <ph name="MERCHANT_NAME_1" /> och <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Det första språk som stöds i den här listan kommer att användas för webbinnehåll som är tillgängligt på flera språk. Dessa inställningar synkroniseras med inställningarna för webbläsaren. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Uppdateringar hanteras av administratören.</translation>
-<translation id="3886446263141354045">Din begäran om att få tillgång till denna webbplats har skickats till <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Visa enhetslista</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-koppling</translation>
 <translation id="3888550877729210209">Anteckna med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8108,7 +8108,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8540942859441851323">Roaming krävs av leverantören</translation>
 <translation id="8541462173655894684">Inga skrivare från utskriftsservern hittades</translation>
 <translation id="8541838361296720865">Tryck på en brytare eller en tangent för att tilldela den åtgärden <ph name="ACTION" /></translation>
-<translation id="8543556556237226809">Frågor? Kontakta den som kontrollerar profilen.</translation>
 <translation id="8546186510985480118">Enheten har ont om diskutrymme</translation>
 <translation id="8546306075665861288">Cacheminne för bilder</translation>
 <translation id="8546930481464505581">Anpassa pekfältet</translation>
@@ -8451,6 +8450,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8859174528519900719">Underram: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Det gick inte att läsa in användarvillkoren</translation>
 <translation id="8859662783913000679">Föräldrakonto</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} konto}other{{COUNT} konton}}</translation>
 <translation id="8861568709166518036">Använd knapparna på skärmen för att navigera till startsidan, tillbaka och byta appar. Aktiveras automatiskt om ChromeVox eller automatiska klick har aktiverats.</translation>
 <translation id="8862003515646449717">Byt till en snabb webbläsare</translation>
 <translation id="8863753581171631212">Öppna länken i en ny <ph name="APP" /></translation>

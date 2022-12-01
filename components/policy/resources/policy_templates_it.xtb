@@ -1843,6 +1843,15 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio viene impostato su Disattivato, la variazione dei picchi energetici rimane disattivata.
 
       Se non viene configurato, la variazione dei picchi energetici è inizialmente disattivata. Gli utenti non possono modificare questa impostazione.</translation>
+<translation id="2773036462435523078">Consente di attivare un'azione quando il computer è inattivo.
+
+      Se questo criterio viene configurato, consente di specificare il periodo di tempo senza input utente (in minuti) prima che <ph name="PRODUCT_NAME" /> esegua azioni configurate tramite il criterio <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
+
+      Se il criterio non viene configurato, non verrà eseguita alcuna azione.
+
+      La soglia minima è di 5 minuti.
+
+      "L'input utente" è definito dalle API del sistema operativo e include, ad esempio, lo spostamento del mouse o la digitazione tramite tastiera.</translation>
 <translation id="2773288106548584039">Supporto dei browser precedenti</translation>
 <translation id="2780840673734667062">Disattiva l'accesso con Account Google aggiuntivi</translation>
 <translation id="2784880732336446591">Cancella dati di navigazione all'uscita</translation>
@@ -2274,6 +2283,7 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
 <translation id="3171369832001535378">Modello del nome host della rete del dispositivo</translation>
 <translation id="3173844121395372156">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="3177802893484440532">Richiedi controlli OCSP/CRL online per i trust anchor</translation>
+<translation id="3179533009079100620">Mostra Selettore profilo</translation>
 <translation id="3180671894201217988">Se il criterio viene impostato su Attivato o se non viene configurato, i software di terze parti non possono inserire codice eseguibile nei processi di <ph name="PRODUCT_NAME" />.
 
       Se il criterio viene impostato su Disattivato, questi software possono inserire tale codice nei processi di <ph name="PRODUCT_NAME" />.</translation>
@@ -2694,6 +2704,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3540846231645422635">Disattiva i report sull'interfaccia di rete del dispositivo</translation>
 <translation id="3540935459049973317">Limiti di utilizzo per app</translation>
 <translation id="3547954654003013442">Impostazioni proxy</translation>
+<translation id="3548064438634502368">Chiudi i browser</translation>
 <translation id="3548642468619496972">Blocca download dannosi, download insoliti o indesiderati e tipi di file pericolosi.</translation>
 <translation id="3550122827225052130">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2750,6 +2761,19 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3591584750136265240">Configura il comportamento di autenticazione dell'accesso</translation>
 <translation id="3593905652755912452">Verrà utilizzato il comportamento precedente per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="3596112486106491038">Attiva l'accesso alla riga di comando delle macchine virtuali</translation>
+<translation id="3596335476793146071">Elenco di azioni da eseguire quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Se il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.
+
+      Quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> esegue le azioni configurate in questo criterio.
+
+      Se il criterio è vuoto o se non viene configurato, il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non ha alcun effetto.
+
+      Le azioni supportate sono:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": vengono chiuse tutte le finestre del browser e le PWA di questo profilo.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": viene mostrata la finestra Selettore profilo.</translation>
 <translation id="3603469950773500315">Consente di attivare le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" />, consentendo alle estensioni di mantenere un comportamento compatibile e a <ph name="PRODUCT_NAME" /> di inviare le intestazioni specificate senza controlli <ph name="CORS" />.
 
       Se questo elenco viene lasciato vuoto, <ph name="PRODUCT_NAME" /> prova a eseguire le estensioni in modalità compatibili e non introduce modifiche <ph name="API" /> per la versione 79 di <ph name="PRODUCT_NAME" />, come spiegato all'indirizzo <ph name="WEB_REQUEST_API_MANUAL" />.
@@ -3876,6 +3900,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se il criterio non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti a livello aziendale ed è consentita per gli utenti non gestiti.</translation>
 <translation id="4783415902268741066">Consenti la visualizzazione della pagina di risultati più recente del motore di ricerca predefinito in un riquadro laterale del browser</translation>
+<translation id="4786784434769279324">Azioni da eseguire quando il computer è inattivo</translation>
 <translation id="4787763197941188108">Consente di sostituire le dimensioni della pagina di stampa predefinita.
 
       <ph name="PAGE_SIZE_NAME" /> non dovrebbe contenere uno dei formati elencati o "personalizzato" se la dimensione della carta richiesta non è nell'elenco. Se viene fornito il valore "personalizzato", deve essere specificata la proprietà <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Descrive l'altezza e la larghezza desiderate in micrometri. Diversamente la proprietà <ph name="PAGE_SIZE_CUSTOM_SIZE" /> non deve essere specificata. Il criterio che viola queste regole viene ignorato.
@@ -5232,6 +5257,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio è impostato su false o non viene configurato, le informazioni relative ai report sugli arresti anomali
       non verranno segnalate. Se viene impostato su true, le informazioni relative ai report sugli arresti anomali verranno
       segnalate.</translation>
+<translation id="624219423122512710">Azioni per browser inattivo</translation>
 <translation id="6244061205361004687">Consenti all'utente di disconnettere o modificare manualmente una VPN</translation>
 <translation id="6244210204546589761">Pagine da aprire all'avvio</translation>
 <translation id="624595269193747921">Consente di stabilire se limitare o meno la ricerca della stampante corrispondente a un insieme specifico di stampanti.</translation>
@@ -5585,6 +5611,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Nota: al momento i riavvii automatici sono abilitati solo quando la schermata di accesso è in visualizzazione o è in corso una sessione di app kiosk.</translation>
 <translation id="6556586932263358975">Consenti il blocco dello schermo</translation>
+<translation id="6558013557780651644">Ritardo prima dell'esecuzione di azioni in caso di inattività</translation>
 <translation id="6559057113164934677">Non consentire ad alcun sito di accedere alla fotocamera e al microfono</translation>
 <translation id="65591220958874949">Utilizza il client DNS integrato su Windows, macOS, Android e ChromeOS</translation>
 <translation id="6559221564468029245">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente non viene considerato inattivo durante la riproduzione di audio. In questo modo non viene raggiunto il timeout di inattività e non viene compiuta l'azione per l'inattività. Tuttavia, lo schermo viene ancora oscurato, spento e bloccato dopo i timeout configurati, nonostante l'attività audio.
@@ -7579,6 +7606,8 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Avviso: non è consigliabile configurare restrizioni alle versioni, poiché potrebbero impedire agli utenti di ricevere aggiornamenti software e correzioni di sicurezza fondamentali. Limitare gli aggiornamenti a uno specifico prefisso per la versione potrebbe mettere a rischio gli utenti.</translation>
 <translation id="8508489378025029342">Attiva i report sul tempo di attività del dispositivo</translation>
 <translation id="8511192250554640451">Consenti che la limitazione dei timer JavaScript in background sia gestita dalla logica di Chrome e configurata dagli utenti</translation>
+<translation id="8511708772548158302">Consente di eseguire il rollback del dispositivo alla versione target se la versione attuale del sistema operativo è più recente di quella target. Viene eseguito il Powerwash del dispositivo, ma le configurazioni di rete a livello di dispositivo senza certificati vengono mantenute e il dispositivo viene registrato di nuovo automaticamente.
+Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non è supportato.</translation>
 <translation id="8519264904050090490">URL delle eccezioni manuali per gli utenti gestiti</translation>
 <translation id="8519516251436131647">Consente di attivare le scorciatoie delle funzioni di accessibilità.
 
@@ -8021,6 +8050,7 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
       Se questo criterio viene impostato su False o non viene impostato, gli elementi di controllo modulo verranno attivati come nel lancio delle versioni M81, M82 e M83.
 
       Questo criterio verrà rimosso nelle versioni successive alla versione 84 di Chrome.</translation>
+<translation id="8940173892071872775">Consente di stabilire le azioni da eseguire quando il browser è inattivo.</translation>
 <translation id="8942616385591203339">Questa norma consente di controllare se il consenso alla sincronizzazione può essere mostrato all'utente durante il primo accesso. Dovrebbe essere impostata su false se tale consenso non è mai necessario per l'utente.
       Se impostata su false, il consenso alla sincronizzazione non verrà visualizzato.
       Se impostata su true o non viene impostata, il consenso alla sincronizzazione può essere visualizzato.</translation>

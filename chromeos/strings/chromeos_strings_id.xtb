@@ -493,6 +493,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Keluarga</translation>
+<translation id="5695599963893094957">Tekan sembarang tombol di keyboard. Anda dapat menekan hingga 4 tombol sekaligus.</translation>
 <translation id="5701381305118179107">Tengah</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> dari <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
@@ -619,7 +620,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6766275201586212568">Resolusi DNS gagal</translation>
 <translation id="6768237774506518020">Tingkat kegagalan resolusi DNS tinggi</translation>
 <translation id="6791471867139427246">warna lampu keyboard</translation>
-<translation id="6793680441750437230">Tekan sembarang tombol di keyboard. Anda dapat menekan hingga 4 tombol sekaligus. Tekan Alt plus Esc untuk menutup dialog.</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
 <translation id="6853312040151791195">Kecepatan pemakaian daya</translation>
@@ -768,6 +768,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8372477600026034341">Host tambahan</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini dikelola perusahaan</translation>
 <translation id="8398927464629426868">Kecepatan pengisian atau pemakaian daya perangkat saat ini</translation>
+<translation id="8410244574650205435">Terdeteksi secara otomatis</translation>
 <translation id="8420955526972171689">Jalankan pengujian dan pemecahan masalah untuk masalah hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8431300646573772016">Yang baru di ChromeOS</translation>

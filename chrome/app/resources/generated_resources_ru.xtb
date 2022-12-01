@@ -187,6 +187,7 @@
 <translation id="1166583374608765787">Проверьте новое название</translation>
 <translation id="1166596238782048887">Вкладка "<ph name="TAB_TITLE" />" находится на рабочем столе "<ph name="DESK_TITLE" />"</translation>
 <translation id="1168020859489941584">Открытие через <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Автоматически устанавливать язык, соответствующий выбранному контенту</translation>
 <translation id="1169266963600477608">Настройки игры</translation>
 <translation id="1169435433292653700">В файле "<ph name="FILE_NAME" />" содержатся конфиденциальные или опасные данные. Сообщение от администратора: "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> запрашивает разрешение на подключение к HID-устройству</translation>
@@ -2565,7 +2566,6 @@
 <translation id="3341703758641437857">Разрешить открывать локальные файлы по ссылкам</translation>
 <translation id="3342361181740736773">Программа "<ph name="TRIGGERING_EXTENSION_NAME" />" пытается удалить это расширение.</translation>
 <translation id="3343977377045378693">Выполняется настройка</translation>
-<translation id="3345135638360864351">Не удалось отправить пользователю <ph name="NAME" /> запрос на доступ к этому сайту. Повторите попытку.</translation>
 <translation id="3345634917232014253">Проверка безопасности выполнена только что</translation>
 <translation id="3345886924813989455">Поддерживаемые браузеры не найдены</translation>
 <translation id="3347086966102161372">&amp;Копировать URL картинки</translation>
@@ -2575,6 +2575,7 @@
 <translation id="3353786022389205125">Установите флажок "Показывать заблокированный экран при выходе из спящего режима" и повторите попытку.</translation>
 <translation id="3354768182971982851">Старые версии приложений Chrome перестанут работать на устройствах с macOS после декабря 2022 года. Вы можете проверить наличие обновлений.</translation>
 <translation id="3354972872297836698">Не удалось подключиться к устройству "<ph name="DEVICE_NAME" />". Чтобы повторить попытку, выберите его.</translation>
+<translation id="335581015389089642">Озвучивание</translation>
 <translation id="3355936511340229503">Ошибка подключения</translation>
 <translation id="3356036636691722598">Наслаждайтесь играми на Chromebook</translation>
 <translation id="3356469410714175391">(виртуальная карта активирована)</translation>
@@ -3153,7 +3154,6 @@
 <translation id="3883482240657453056">Получайте скидки в магазинах "<ph name="MERCHANT_NAME_1" />" и "<ph name="MERCHANT_NAME_2" />"</translation>
 <translation id="3884152383786131369">Для веб-контента, доступного на нескольких языках, будет использоваться первый подходящий вариант из списка ниже. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Обновлениями управляет администратор</translation>
-<translation id="3886446263141354045">Ваш запрос на доступ к сайту отправлен пользователю <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Показать список устройств</translation>
 <translation id="3888053818972567950">Подключение к сервису "<ph name="WEB_DRIVE" />"</translation>
 <translation id="3888550877729210209">Заметки в приложении "<ph name="LOCK_SCREEN_APP_NAME" />"</translation>
@@ -8095,7 +8095,6 @@
 <translation id="8540942859441851323">Оператор требует включить мобильный интернет-роуминг</translation>
 <translation id="8541462173655894684">На сервере печати принтеры не найдены.</translation>
 <translation id="8541838361296720865">Нажмите на переключатель или клавишу, чтобы назначить их для действия "<ph name="ACTION" />".</translation>
-<translation id="8543556556237226809">Есть вопросы? Обратитесь к человеку, который контролирует ваш профиль.</translation>
 <translation id="8546186510985480118">Свободное пространство заканчивается</translation>
 <translation id="8546306075665861288">Кеш изображений</translation>
 <translation id="8546930481464505581">Настроить Touch Bar</translation>

@@ -551,7 +551,6 @@
 <translation id="5190835502935405962">書籤列</translation>
 <translation id="519530786644929958">下載失敗且無法重試。</translation>
 <translation id="5197255632782567636">網際網路</translation>
-<translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5219295696240154694">協助我們為所有人改善網路安全性</translation>
 <translation id="5228579091201413441">啟用同步功能</translation>
 <translation id="5232485538978018676">使用受管理的帳戶登入</translation>
@@ -876,6 +875,7 @@
 <translation id="7531345132340165516">目前網站</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
 <translation id="7553234618121028547">如要關閉，請開啟<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />並前往「密碼選項」部分。</translation>
+<translation id="7554645225856321710">全部關閉</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7561196759112975576">一律使用</translation>
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁。</translation>

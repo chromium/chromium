@@ -187,6 +187,7 @@
 <translation id="1166583374608765787">نام میں ہوئی اپ ڈیٹ کا جائزہ لیں</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> ڈیسک سے تعلق رکھتی ہے</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> میں کھولا جا رہا ہے…</translation>
+<translation id="116896278675803795">زبان کو منتخب کردہ مواد سے مماثل کرنے کے لیے خودکار طور پر تبدیل کریں</translation>
 <translation id="1169266963600477608">گیم کنٹرولز</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> میں حساس یا خطرناک ڈیٹا ہے۔ آپ کے منتظم کے مطابق: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665">‏<ph name="ORIGIN" /> HID آلہ سے منسلک کرنا چاہتا ہے</translation>
@@ -592,6 +593,7 @@
 <translation id="1546280085599573572">آپ کی جانب سے ہوم بٹن کلک کرنے پر دکھائی دینے والے صفحہ کو اس ایکسٹینشن نے تبدیل کر دیا ہے۔</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> ایک <ph name="EXTENSION_TYPE" /> انسٹال کرنا چاہتا ہے جو درجہ ذیل چیزیں کر سکتی ہے:</translation>
 <translation id="1547808936554660006">‏میں سمجھتا ہوں کہ انسٹال کردہ eSIM پروفائلز کو Powerwash کے ذریعے ہٹایا نہیں جائے گا</translation>
+<translation id="1547936895218027488">اسے کھولنے کے لیے سائیڈ پینل آئیکن پر کلک کریں</translation>
 <translation id="1549275686094429035">‏ARC فعال ہے</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> تک رسائی حاصل کرنا چاہتی ہے۔ یہ آپ کی فائلوں میں ترمیم یا انہیں حذف کر سکتی ہے۔</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> کے استعمال کے لیے "<ph name="EXTENSION_NAME" />" ایکسٹینشن نے تلاش کو تبدیل کر دیا</translation>
@@ -1417,6 +1419,7 @@
 <translation id="2287944065963043964">لاگ ان اسکرین</translation>
 <translation id="2289270750774289114">اس وقت پوچھیں جب کسی سائٹ میں قریبی بلوٹوتھ آلات کو دریافت کرنا مقصود ہو (تجویز کردہ)</translation>
 <translation id="2290615375132886363">ٹیبلیٹ کے نیویگیشن بٹنز</translation>
+<translation id="2291452790265535215">بُک مارکس، صارف کے تجربے وغیرہ کیلئے سائیڈ پینل استعمال کرنے کی کوشش کریں</translation>
 <translation id="229182044471402145">کوئی مماثل فونٹ نہیں ملا۔</translation>
 <translation id="2292848386125228270">‏براہ کرم <ph name="PRODUCT_NAME" /> کو ایک عام صارف کے بطور شروع کریں۔ اگر آپ کو ڈویلپمنٹ کیلئے روٹ کے بطور چلانے کی ضرورت پڑتی ہے تو ‎--no-sandbox پرچم کے ساتھ دوبارہ چلائیں۔</translation>
 <translation id="2294081976975808113">اسکرین کی رازداری</translation>
@@ -2565,7 +2568,6 @@
 <translation id="3341703758641437857">‏فائل URLs تک رسائی کی اجازت دیں</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" اس ایکسٹینشن کو ہٹانا چاہے گا۔</translation>
 <translation id="3343977377045378693">سیٹ اپ انجام دیا جا رہا ہے</translation>
-<translation id="3345135638360864351">اس سائٹ تک رسائی حاصل کرنے کی آپ کی درخواست <ph name="NAME" /> کو نہیں بھیجی جا سکی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="3345634917232014253">سیفٹی چیک ایک لمحہ پہلے کیا گیا</translation>
 <translation id="3345886924813989455">کوئی تعاون یافتہ براؤزر نہیں ملا</translation>
 <translation id="3347086966102161372">تصویر کا پتہ کا&amp;پی کریں</translation>
@@ -2575,6 +2577,7 @@
 <translation id="3353786022389205125">سلیپ وضع سے بیدار وضع میں جاتے وقت "مقفل اسکرین دکھائیں" آن کریں اور دوبارہ کوشش کریں</translation>
 <translation id="3354768182971982851">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Mac آلات پر اب مزید نہیں کھل سکیں گے۔ آپ چیک کر سکتے ہیں کہ کیا نیا ورژن دستیاب ہے۔</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> آلے سے جوڑا نہیں بنایا جا سکا؛ دوبارہ کوشش کرنے کے لیے آلہ منتخب کریں</translation>
+<translation id="335581015389089642">اسپیچ</translation>
 <translation id="3355936511340229503">کنکشن کی خرابی</translation>
 <translation id="3356036636691722598">‏اپنے Chromebook پر گیمنگ کا لطف اٹھائیں</translation>
 <translation id="3356469410714175391">(ورچوئل کارڈ فعال کیا گیا)</translation>
@@ -3153,7 +3156,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> اور <ph name="MERCHANT_NAME_2" /> کیلئے رعایتیں حاصل کریں</translation>
 <translation id="3884152383786131369">متعدد زبانوں میں دستیاب ویب مواد اس فہرست سے پہلی سپورٹ کی جانے والی زبان استعمال کرے گا۔ یہ ترجیحات آپ کے براؤزر کی ترتیبات کے ساتھ مطابقت پذیر ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">اپ ڈیٹس آپ کے منتظم کے زیر انتظام ہیں</translation>
-<translation id="3886446263141354045">اس سائٹ تک رسائی حاصل کرنے کی آپ کی درخواست <ph name="NAME" /> کو بھیج دی گئی ہے</translation>
 <translation id="3887022758415973389">آلے کی فہرست دکھائیں</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> کنکشن</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> کے ساتھ نوٹس لیے جا رہے ہیں</translation>
@@ -3905,6 +3907,7 @@
 <translation id="459204634473266369">کوئی بھی آلہ <ph name="PRIMARY_EMAIL" /> میں محفوظ نہیں ہے</translation>
 <translation id="4592891116925567110">اسٹائلس ڈرائنگ ایپ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> پر &amp;جائیں</translation>
+<translation id="4594218792629569101">صفحہ کو اپنی فہرست کے نیچے لے جانے کے لیے "پڑھا ہوا کے بطور نشان زد کریں" کو منتخب کریں</translation>
 <translation id="4594577641390224176">سسٹم کے تعارف کا صفحہ تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="4595560905247879544">ایپس اور ایکسٹینشنز میں صرف مینیجر (<ph name="CUSTODIAN_NAME" />) ترمیم کر سکتا ہے۔</translation>
 <translation id="4596295440756783523">آپ کے پاس فائل پر ان سرورز کی شناخت کرنے والے سرٹیفیکیٹس ہیں</translation>
@@ -4412,6 +4415,7 @@
 <translation id="5084328598860513926">فراہمی کے بہاؤ میں مداخلت ہو گئی۔ براہ کرم دوبارہ کوشش کریں یا اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="5085162214018721575">اپ ڈیٹس چیک کرنا</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">نوٹ 1000 سے زیادہ حروف کا ہے</translation>
 <translation id="5086874064903147617">ڈیفالٹ ہوم صفحہ کو بحال کریں؟</translation>
 <translation id="5087249366037322692">ایک فریق ثالث نے شامل کر دیا</translation>
 <translation id="5087580092889165836">کارڈ شامل کریں</translation>
@@ -6573,6 +6577,7 @@
 <translation id="7111822978084196600">اس ونڈو کو نام دیں</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> آئٹم</translation>
 <translation id="7113502843173351041">اپنا ای میل پتہ جانیں</translation>
+<translation id="7113974454301513811">اب موجودہ ٹیب کو اپنی فہرست میں شامل کریں</translation>
 <translation id="7114054701490058191">پاس ورڈز مماثل نہیں ہیں</translation>
 <translation id="7114648273807173152">‏اپنے Google اکاؤنٹ میں سائن ان کرنے کی خاطر Smart Lock استعمال کرنے کیلئے، ترتیبات &gt; منسلک کردہ آلات &gt; اپنے فون &gt; Smart Lock پر جائیں۔</translation>
 <translation id="7115361495406486998">کوئی قابل رسائی رابطہ نہیں</translation>
@@ -8087,7 +8092,6 @@
 <translation id="8540942859441851323">فراہم کنندہ کو رومنگ درکار ہے</translation>
 <translation id="8541462173655894684">پرنٹ سرور سے کوئی پرنٹر نہیں ملا</translation>
 <translation id="8541838361296720865">اسے "<ph name="ACTION" />" کو تفویض کرنے کیلئے سوئچ یا کی بورڈ کی کلید دبائیں</translation>
-<translation id="8543556556237226809">آپ کے پاس سوالات ہیں؟ اپنی پروفائل کی نگرانی کرنے والے شخص سے رابطہ کریں۔</translation>
 <translation id="8546186510985480118">آلہ میں جگہ کم ہے</translation>
 <translation id="8546306075665861288">تصویر کا کیش</translation>
 <translation id="8546930481464505581">ٹچ بار کو حسب ضرورت بنائيں</translation>
@@ -8803,6 +8807,7 @@
 <translation id="9201842707396338580">کچھ غلط ہوگیا۔ براہ کرم اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="9203398526606335860">&amp;پروفائلنگ فعال ہے</translation>
 <translation id="9203904171912129171">ایک آلہ منتخب کریں</translation>
+<translation id="920410963177453528">دوسرا پینل منتخب کرنے کے لیے ڈراپ ڈاؤن پر کلک کریں</translation>
 <translation id="9206889157914079472">مقفل اسکرین سے اسٹائلس نوٹ لینا</translation>
 <translation id="9208192193641542858">مقامی ڈیٹا کو آپ کے پرانے پاس ورڈ سے محفوظ کیا جاتا ہے۔ اگر آپ نے حال ہی میں اپنا پاس ورڈ تبدیل کیا ہے تو اپنا پرانا پاس ورڈ دوبارہ آزمائیں۔</translation>
 <translation id="9209563766569767417">‏Linux کنٹینر کا سیٹ اپ چیک کیا جا رہا ہے</translation>

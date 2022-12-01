@@ -1866,6 +1866,15 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée, le mode d'alimentation alternée en heures pleines l'est également.
 
       Si cette règle n'est pas configurée, ce mode est désactivé par défaut. Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
+<translation id="2773036462435523078">Déclenche une action lorsque l'ordinateur est inactif.
+
+      Si cette règle est définie, elle spécifie le délai (en minutes) sans entrée utilisateur avant que <ph name="PRODUCT_NAME" /> exécute les actions configurées via la règle <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
+
+      Si elle n'est pas configurée, aucune action n'est exécutée.
+
+      Le délai minimal est de 5 minutes.
+
+      Une "entrée utilisateur" est définie par les API du système d'exploitation et inclut, par exemple, déplacer la souris ou saisir sur le clavier.</translation>
 <translation id="2773288106548584039">Legacy Browser Support</translation>
 <translation id="2780840673734667062">Ne pas permettre la connexion avec d'autres comptes Google</translation>
 <translation id="2784880732336446591">Effacer les données de navigation en fin de session</translation>
@@ -2296,6 +2305,7 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="3171369832001535378">Modèle de nom d'hôte du réseau de l'appareil</translation>
 <translation id="3173844121395372156">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="3177802893484440532">Exiger des contrôles OCSP/CRL en ligne pour les ancres d'approbation locales</translation>
+<translation id="3179533009079100620">Affichez l'outil de sélection des profils</translation>
 <translation id="3180671894201217988">Si cette règle est activée ou si elle n'est pas configurée, les logiciels tiers ne peuvent pas injecter de code exécutable dans les processus de <ph name="PRODUCT_NAME" />.
 
       Si cette règle est désactivée, le logiciel peut injecter un tel code dans les processus de <ph name="PRODUCT_NAME" />.</translation>
@@ -2715,6 +2725,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="3540846231645422635">Désactiver les rapports sur l'interface réseau de l'appareil</translation>
 <translation id="3540935459049973317">Restrictions temporelles spécifiques à chaque application</translation>
 <translation id="3547954654003013442">Paramètres de proxy</translation>
+<translation id="3548064438634502368">Fermer les navigateurs</translation>
 <translation id="3548642468619496972">Bloquer les téléchargements malveillants, peu courants ou indésirables, ainsi que les types de fichiers dangereux.</translation>
 <translation id="3550122827225052130">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.)
 
@@ -2772,6 +2783,19 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
 <translation id="3593905652755912452">L'ancien comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="3596112486106491038">Activer l'accès par ligne de commande aux machines virtuelles</translation>
+<translation id="3596335476793146071">Liste des actions à exécuter lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint.
+
+      Cette règle n'a aucune incidence si la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'est pas configurée.
+
+      Lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint, <ph name="PRODUCT_NAME" /> exécute les actions configurées dans celle-ci.
+
+      La règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'a aucune incidence si elle est vide ou si elle n'est pas configurée.
+
+      Actions acceptées :
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />" : ferme toutes les fenêtres du navigateur et les PWA pour ce profil.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />" : affiche la fenêtre de l'outil de sélection des profils.</translation>
 <translation id="3603469950773500315">Permet d'atténuer les contrôles <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" />. Les extensions peuvent ainsi conserver un comportement compatible, et <ph name="PRODUCT_NAME" /> peut envoyer les en-têtes spécifiés sans contrôles <ph name="CORS" />.
 
       Si aucun paramètre d'atténuation n'est indiqué dans la liste, <ph name="PRODUCT_NAME" /> essaie d'exécuter les extensions de manière compatible, et n'introduit pas de modifications de <ph name="API" /> pour <ph name="PRODUCT_NAME" /> 79 (comme indiqué à la page <ph name="WEB_REQUEST_API_MANUAL" />).
@@ -3891,6 +3915,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 
       Si cette règle n'est pas configurée, par défaut, ce mode de partage n'est pas autorisé pour les utilisateurs gérés par une entreprise et est autorisé pour les utilisateurs non gérés.</translation>
 <translation id="4783415902268741066">Autoriser l'affichage de la page des résultats les plus récents du moteur de recherche par défaut dans un panneau latéral du navigateur</translation>
+<translation id="4786784434769279324">Actions à exécuter lorsque l'ordinateur est inactif</translation>
 <translation id="4787763197941188108">Cette règle permet d'ignorer le format de la page d'impression par défaut.
 
       La propriété <ph name="PAGE_SIZE_NAME" /> doit contenir l'un des formats répertoriés ou être définie sur "Personnalisé" si le format du papier requis ne figure pas dans la liste. Si elle est définie sur "Personnalisé", il est obligatoire de spécifier également la propriété <ph name="PAGE_SIZE_CUSTOM_SIZE" />. La hauteur et la largeur souhaitées sont exprimées en micromètres. Dans le cas contraire, la propriété <ph name="PAGE_SIZE_CUSTOM_SIZE" /> ne doit pas être renseignée. Toute règle qui ne respecte pas ces consignes sera ignorée.
@@ -5249,6 +5274,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6242147107333796512">Transmettre les informations liées aux rapports d'erreur, comme l'ID distant, la cause et l'horodatage du problème relevé.
 
       Si cette règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne sont pas transmises. Si cette règle est définie sur "True", ces informations sont transmises.</translation>
+<translation id="624219423122512710">Actions si le navigateur est inactif</translation>
 <translation id="6244061205361004687">Autoriser l'utilisateur à déconnecter ou modifier manuellement un VPN</translation>
 <translation id="6244210204546589761">URL à ouvrir au démarrage</translation>
 <translation id="624595269193747921">Limiter ou non la recherche d'une imprimante correspondant aux critères spécifiés à un groupe d'imprimantes spécifique.</translation>
@@ -5600,6 +5626,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Remarque : Pour le moment, les redémarrages automatiques ne sont activés que lorsque l'écran de connexion est affiché ou qu'une session d'appli kiosque est en cours.</translation>
 <translation id="6556586932263358975">Autoriser le verrouillage de l'écran</translation>
+<translation id="6558013557780651644">Délai avant exécution des actions en cas d'inactivité</translation>
 <translation id="6559057113164934677">Interdire à tous les sites d'accéder à la caméra et au microphone</translation>
 <translation id="65591220958874949">Utiliser le client DNS intégré sur Windows, macOS, Android et ChromeOS</translation>
 <translation id="6559221564468029245">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur n'est pas considéré comme inactif pendant la lecture audio. Le délai d'inactivité ne peut ainsi pas être atteint, et l'action à effectuer en cas d'inactivité n'est pas appliquée. Toutefois, l'écran peut quand même s'assombrir, s'éteindre ou se verrouiller au terme des délais configurés, malgré l'activité audio.
@@ -7603,6 +7630,8 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Avertissement : Il est déconseillé de configurer des restrictions de version, car cela pourrait empêcher les utilisateurs de recevoir des mises à jour logicielles et des correctifs de sécurité essentiels. Limiter les mises à jour à un préfixe de version spécifique pourrait constituer un risque pour les utilisateurs.</translation>
 <translation id="8508489378025029342">Activer les rapports sur le temps d'activité de l'appareil</translation>
 <translation id="8511192250554640451">Autoriser la limitation des minuteurs JavaScript en arrière-plan à être contrôlée par la logique Chrome et configurée par les utilisateurs</translation>
+<translation id="8511708772548158302">Effectuez un rollback de l'appareil vers la version cible si la version actuelle de l'OS est plus récente que la version cible. L'appareil fait l'objet d'un Powerwash, mais les configurations réseau sans certificat définies au niveau de l'appareil sont conservées et l'appareil est réenregistré automatiquement.
+Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est pas compatible.</translation>
 <translation id="8519264904050090490">URL d'exception manuelle des utilisateurs gérés</translation>
 <translation id="8519516251436131647">Activer les raccourcis des fonctionnalités d'accessibilité.
 
@@ -8044,6 +8073,7 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
       Si cette règle est définie sur "False" ou n'est pas définie, les éléments de contrôle de formulaire seront activés à mesure de leur lancement pour les versions M81, M82 et M83.
 
       Cette règle sera supprimée après Chrome 84.</translation>
+<translation id="8940173892071872775">Contrôle les actions exécutées lorsque le navigateur est inactif.</translation>
 <translation id="8942616385591203339">Permet d'activer l'affichage de l'autorisation de synchronisation lors de la première connexion de l'utilisateur. Si cette autorisation n'a jamais besoin d'être montrée à l'utilisateur, cette règle doit être définie sur False.
       Si cette règle est définie sur False, l'autorisation de synchronisation n'est pas affichée.
       Si cette règle est définie sur True ou si elle n'est pas configurée, l'autorisation de synchronisation peut être affichée.</translation>

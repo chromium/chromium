@@ -731,6 +731,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4987738733603015246">Töölaud 16</translation>
 <translation id="5003993274120026347">Järgmine lause</translation>
 <translation id="5016558321564993266">Markeri sisse-/väljalülitamine. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Juurdepääs seadme mikrofonile on sisse lülitatud</translation>
 <translation id="5030687792513154421">Aeg on läbi</translation>
 <translation id="5033299697334913360">Täisekraani jäädvustamiseks klõpsake ekraanikuval kus tahes</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ühendati uue telefoniga</translation>
@@ -966,6 +967,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6359587239691116345">Hankige uusimad funktsioonid ja turvatäiustused. Kui sellest värskendusest keeldute, ei pruugi teie seade enam korralikult töötada ning võite kogeda turva- ja toimivusprobleeme.</translation>
 <translation id="6376931439017688372">Bluetooth on sisse lülitatud</translation>
 <translation id="6381109794406942707">Seadme avamiseks sisestage oma PIN-kood.</translation>
+<translation id="638716340450135524">Lülita juurdepääs kaamerale sisse</translation>
 <translation id="639644700271529076">SUURTÄHELUKK on välja lülitatud</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google'i assistent</translation>
@@ -973,6 +975,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="642644398083277086">Kõikide märguannete kustutamine</translation>
 <translation id="643147933154517414">Kõik on valmis</translation>
 <translation id="6431865393913628856">Ekraani salvestamine</translation>
+<translation id="6442259747294754014">Juurdepääs seadme mikrofonile on välja lülitatud</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> sündmus</translation>
 <translation id="6449483711453944360">Linuxi rakendusi ja inkognito aknaid praegu ei toetata.</translation>
@@ -1370,6 +1373,7 @@ Uus installimine</translation>
 <translation id="8598235756057743477">Sortige oma rakendused nime või värvi järgi</translation>
 <translation id="8614517853887502247">Rakenduste <ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" /> märguanded on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="8627191004499078455">Ühendatud seadmega <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Lülita juurdepääs kaamerale välja</translation>
 <translation id="8631727435199967028">Juurdepääsetavuse seaded</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> on jäänud</translation>

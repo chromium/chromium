@@ -554,6 +554,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Desat p/ um app}one{Desat p/ # app}other{Desat p/ # apps}}</translation>
 <translation id="4066027111132117168">Ativado, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinal médio</translation>
+<translation id="4086921558679520050">Ativar a chave do microfone do dispositivo</translation>
 <translation id="4112140312785995938">Voltar</translation>
 <translation id="4114315158543974537">Ativar o Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -606,6 +607,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4379531060876907730">Estas são suas ferramentas da stylus</translation>
+<translation id="4381031910344220229">Dá acesso ao microfone para o app <ph name="APP_NAME" /> e todos os apps e sites com essa permissão</translation>
 <translation id="4389184120735010762">Você pressionou o atalho de teclado para a lupa em área fixa. Gostaria de ativá-la?</translation>
 <translation id="439598569299422042">Pausado, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Falha ao salvar screencast</translation>
@@ -960,6 +962,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerenciada por <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> conectado</translation>
 <translation id="6351032674660237738">SUGESTÕES DE APPS</translation>
+<translation id="6352082849089527770">Redes desconhecidas</translation>
 <translation id="6359587239691116345">Instale os recursos e melhorias de segurança mais recentes. Caso você recuse essa atualização, o dispositivo pode deixar de funcionar corretamente e você pode enfrentar problemas de segurança e performance.</translation>
 <translation id="6376931439017688372">Bluetooth ativado</translation>
 <translation id="6381109794406942707">Para desbloquear o dispositivo, digite o PIN.</translation>
@@ -1136,6 +1139,7 @@ Nova instalação</translation>
 <translation id="7360036564632145207">Mudar sua configuração de proteção de acesso a dados para periféricos pode otimizar o desempenho</translation>
 <translation id="736045644501761622">Definir Estilo e fundo de tela</translation>
 <translation id="7371404428569700291">Gravar janela</translation>
+<translation id="737315737514430195">Dá acesso ao microfone para todos os apps e sites com essa permissão</translation>
 <translation id="7377169924702866686">O Caps Lock está ativado.</translation>
 <translation id="7377481913241237033">Conectar com um código</translation>
 <translation id="7378203170292176219">Arraste para selecionar uma área para a gravação</translation>
@@ -1204,6 +1208,7 @@ Nova instalação</translation>
 <translation id="7671610481353807627">Os apps estão ordenados por cor</translation>
 <translation id="7672095158465655885">Conectado a <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Entrada de câmera definida como <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Dá acesso ao microfone para os apps <ph name="APP1_NAME" /> e <ph name="APP2_NAME" /> e todos os apps e sites com essa permissão</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Adicionar nova rede celular</translation>
 <translation id="7720400844887872976">Ativado até <ph name="TIME" /></translation>

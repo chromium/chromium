@@ -2576,7 +2576,6 @@
 <translation id="3341703758641437857">फ़ाइल के यूआरएल तक एक्सेस दें</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" इस एक्सटेंशन को हटाना चाहता है.</translation>
 <translation id="3343977377045378693">सेट अप पूरा किया जा रहा है</translation>
-<translation id="3345135638360864351">इस साइट को एक्‍सेस करने का आपका अनुरोध <ph name="NAME" /> को नहीं भेजा जा सका. कृपया फिर से कोशिश करें.</translation>
 <translation id="3345634917232014253">सुरक्षा जांच कुछ देर पहले की गई है</translation>
 <translation id="3345886924813989455">कोई समर्थित ब्राउज़र नहीं मिला</translation>
 <translation id="3347086966102161372">इमेज के पते को कॉपी करें</translation>
@@ -2586,6 +2585,7 @@
 <translation id="3353786022389205125">"स्लीप मोड से बाहर आने पर लॉक स्क्रीन दिखाएं" सेटिंग को चालू करने के बाद, फिर से कोशिश करें</translation>
 <translation id="3354768182971982851">दिसंबर 2022 के बाद, 'Chrome ऐप्स' के पुराने वर्शन, Mac डिवाइसों पर नहीं खुलेंगे. कृपया यह देख लें कि कोई नया वर्शन उपलब्ध है या नहीं.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> डिवाइस से नहीं जोड़ा जा सका. फिर से कोशिश करने के लिए, डिवाइस चुनें</translation>
+<translation id="335581015389089642">बोली</translation>
 <translation id="3355936511340229503">कनेक्शन गड़बड़ी</translation>
 <translation id="3356036636691722598">Chromebook पर गेम खेलने का आनंद लें</translation>
 <translation id="3356469410714175391">(वर्चुअल कार्ड चालू किया गया)</translation>
@@ -3160,7 +3160,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> और <ph name="MERCHANT_NAME_2" /> के लिए छूट पाएं</translation>
 <translation id="3884152383786131369">कई भाषाओं में उपलब्ध वेब कॉन्टेंट, इस सूची में दी गई पहली भाषा में दिखाया जाएगा. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">अपडेट को आपका एडमिन मैनेज करता है</translation>
-<translation id="3886446263141354045">यह साइट एक्सेस करने का आपका अनुरोध <ph name="NAME" /> को भेज दिया गया है</translation>
 <translation id="3887022758415973389">डिवाइसों की सूची दिखाएं</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> कनेक्शन</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> से नोट लेना</translation>
@@ -8083,7 +8082,6 @@
 <translation id="8540942859441851323">इंटरनेट सेवा देने वाली कंपनी को मोबाइल डेटा रोमिंग की ज़रूरत है</translation>
 <translation id="8541462173655894684">प्रिंट सर्वर पर कोई प्रिंटर नहीं मिला</translation>
 <translation id="8541838361296720865">कोई स्विच या कीबोर्ड की कोई कुंजी दबाएं, ताकि इसे “<ph name="ACTION" />” के लिए असाइन किया जा सके</translation>
-<translation id="8543556556237226809">प्रश्न पूछना चाहते हैं? तो उस व्यक्ति से संपर्क करें जो आपकी प्रोफ़ाइल की निगरानी करता है.</translation>
 <translation id="8546186510985480118">डिवाइस में स्पेस कम है</translation>
 <translation id="8546306075665861288">इमेज कैश</translation>
 <translation id="8546930481464505581">छूने वाले बार को पसंद के मुताबिक बनाएं</translation>

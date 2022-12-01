@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Wykonaj czynności z instrukcji rozwiązywania problemów</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Aby wyświetlić wygaszacz ekranu, połącz się z siecią i odśwież stronę.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2085089206770112532">Zmniejsz jasność wyświetlacza</translation>
 <translation id="2105810540595158374">Urządzenie to kontroler do gier.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Algorytm kompresji</translation>
 <translation id="4794140124556169553">Uruchomienie testu procesora może wpłynąć na wydajność systemu</translation>
 <translation id="4800589996161293643">Społeczność Chromebooka</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Zadanie drukowania <ph name="DOCUMENT_TITLE" /> zostało anulowane</translation>
 <translation id="4809927044794281115">Jasny motyw</translation>
 <translation id="4813136279048157860">Moje obrazy</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Obciążenie</translation>
 <translation id="4897058166682006107">Poziom naładowania baterii lewej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Włącz tę funkcję, aby wybrać opcje wygaszacza ekranu</translation>
+<translation id="4910858703033903787">Typy APN</translation>
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
 <translation id="491791267030419270">Wskazówki na temat pisania opinii</translation>
@@ -460,6 +463,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5358174242040570474">Coś poszło nie tak. Spróbuj jeszcze raz wybrać tapetę lub ponownie otwórz aplikację.</translation>
 <translation id="5372659122375744710">Sieć Wi-Fi nie jest bezpieczna</translation>
 <translation id="5376354385557966694">Automatyczny tryb jasny</translation>
+<translation id="5378184552853359930">Typ adresu IP</translation>
 <translation id="5389159777326897627">Tapeta i styl</translation>
 <translation id="5389224261615877010">Tęcza</translation>
 <translation id="5400907029458559844">Urządzenie się łączy.</translation>
@@ -489,6 +493,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5669267381087807207">Aktywowanie</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodzina</translation>
+<translation id="5695599963893094957">Naciśnij dowolny klawisz na klawiaturze. Możesz nacisnąć maksymalnie 4 klawisze naraz.</translation>
 <translation id="5701381305118179107">Wyśrodkuj</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Zaktualizuj: <ph name="DEVICE_NAME" /></translation>
@@ -615,7 +620,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
 <translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
 <translation id="6791471867139427246">kolor podświetlenia klawiatury</translation>
-<translation id="6793680441750437230">Naciśnij dowolny klawisz na klawiaturze. Możesz nacisnąć maksymalnie 4 klawisze jednocześnie. Aby zamknąć okno, naciśnij Alt + Esc.</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
@@ -743,6 +747,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Wybierz <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">Załącz</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>
 <translation id="8226628635270268143">Wybierz ulubione zdjęcia i albumy</translation>
@@ -831,6 +836,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="9025198690966128418">Użyj jako urządzenia osobistego</translation>
 <translation id="9028832514430399253">Włącz przełącznik, aby wybrać opcje wygaszacza ekranu</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Długi czas oczekiwania na rozpoznanie nazw DNS</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

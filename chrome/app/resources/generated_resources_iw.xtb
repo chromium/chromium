@@ -594,6 +594,7 @@
 <translation id="1546280085599573572">התוסף הזה שינה את הדף שמוצג כשלוחצים על הלחצן 'דף הבית'.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> רוצה להתקין <ph name="EXTENSION_TYPE" /> שיכול:</translation>
 <translation id="1547808936554660006">‏ברור לי שפרופילי ה-eSIM שהותקנו לא יוסרו על ידי Powerwash</translation>
+<translation id="1547936895218027488">כדי לפתוח את החלונית הצדדית, לוחצים על הסמל שלה</translation>
 <translation id="1549275686094429035">‏ARC מופעל</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> רוצה לגשת אל <ph name="VOLUME_NAME" />. ייתכן שהוא יישנה או ימחק את הקבצים.</translation>
 <translation id="1552301827267621511">התוסף "<ph name="EXTENSION_NAME" />" שינה את הגדרות החיפוש לשימוש ב-<ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -1294,6 +1295,7 @@
 <translation id="2157875535253991059">דף זה הוא במסך מלא כעת.</translation>
 <translation id="2158475082070321257">העתקת קישור לטקסט המודגש</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">ההיקף של <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">‏הוספת רשת Wi-Fi...</translation>
 <translation id="2162155940152307086">הסנכרון יתחיל מיד לאחר היציאה מהגדרות הסנכרון</translation>
 <translation id="2162705204091149050">קריאת מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו והקבצים</translation>
@@ -1427,6 +1429,7 @@
 <translation id="2287944065963043964">מסך התחברות</translation>
 <translation id="2289270750774289114">‏המערכת מבקשת אישור כשאתר רוצה לאתר התקני Bluetooth קרובים (מומלץ)</translation>
 <translation id="2290615375132886363">לחצני ניווט בטאבלט</translation>
+<translation id="2291452790265535215">אפשר לנסות להיעזר בחלונית הצדדית לשמירת סימניות, תהליכים ועוד</translation>
 <translation id="229182044471402145">לא נמצא גופן תואם.</translation>
 <translation id="2292848386125228270">‏הפעלת <ph name="PRODUCT_NAME" /> כמשתמש רגיל. אם ברצונך להפעיל כבסיס לצורך פיתוח, יש להפעיל מחדש עם הסימון ‎--no-sandbox.</translation>
 <translation id="2294081976975808113">פרטיות המסך</translation>
@@ -2575,7 +2578,6 @@
 <translation id="3341703758641437857">התרת גישה לכתובות אתרים של קבצים</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" רוצה להסיר את התוסף.</translation>
 <translation id="3343977377045378693">ההגדרה מתבצעת</translation>
-<translation id="3345135638360864351">לא ניתן היה לשלוח אל <ph name="NAME" /> את הבקשה שלך לגשת לאתר הזה. נסה שוב.</translation>
 <translation id="3345634917232014253">בדיקת האבטחה פעלה לפני כמה רגעים</translation>
 <translation id="3345886924813989455">לא נמצא דפדפן נתמך</translation>
 <translation id="3347086966102161372">העתקת כתובת &amp;תמונה</translation>
@@ -2585,6 +2587,7 @@
 <translation id="3353786022389205125">צריך להפעיל את האפשרות 'הצגת מסך הנעילה ביציאה ממצב שינה' ולנסות שוב</translation>
 <translation id="3354768182971982851">‏גרסאות ישנות של אפליקציות Chrome לא ייפתחו במכשירי Mac אחרי דצמבר 2022. ניתן לבדוק אם יש גרסה חדשה להורדה.</translation>
 <translation id="3354972872297836698">לא ניתן היה לבצע התאמה למכשיר <ph name="DEVICE_NAME" />. יש לבחור מכשיר כדי לנסות שוב</translation>
+<translation id="335581015389089642">דיבור</translation>
 <translation id="3355936511340229503">שגיאת חיבור</translation>
 <translation id="3356036636691722598">‏רוצה ליהנות ממשחקים ב-Chromebook?</translation>
 <translation id="3356469410714175391">(הופעל כרטיס וירטואלי)</translation>
@@ -2683,6 +2686,7 @@
 <translation id="3445047461171030979">‏תשובות מהירות מ-Google Assistant</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="344537926140058498">הקובץ הזה כולל תוכן רגיש או מסוכן ולכן הוא נחסם על ידי הארגון שלך. עליך לבקש מהבעלים שלו לתקן אותו.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{ההרשאות הוסרו מ<ph name="BEGIN_BOLD" />אתר אחד<ph name="END_BOLD" /> שלא ביקרת בו לאחרונה}two{ההרשאות הוסרו מ-<ph name="BEGIN_BOLD" />{NUM_SITES} אתרים<ph name="END_BOLD" /> שלא ביקרת בהם לאחרונה}many{ההרשאות הוסרו מ-<ph name="BEGIN_BOLD" />{NUM_SITES} אתרים<ph name="END_BOLD" /> שלא ביקרת בהם לאחרונה}other{ההרשאות הוסרו מ-<ph name="BEGIN_BOLD" />{NUM_SITES} אתרים<ph name="END_BOLD" /> שלא ביקרת בהם לאחרונה}}</translation>
 <translation id="3445925074670675829">‏מכשיר עם יציאת USB-C</translation>
 <translation id="3446274660183028131">‏יש להפעיל את Parallels Desktop כדי להתקין את Windows.</translation>
 <translation id="344630545793878684">קריאת הנתונים שלך במספר אתרים</translation>
@@ -2893,6 +2897,7 @@
 <translation id="3642699533549879077">תתקבל התראה כשמישהו אחר מסתכל על המסך שלך ותוכן ההתראה יוסתר.</translation>
 <translation id="3643962751030964445">המכשיר הזה מנוהל על ידי <ph name="DEVICE_MANAGER" />. יצירת פרופיל חדש לחשבון <ph name="USER_EMAIL_ADDRESS" /> נדרשת על ידי <ph name="DEVICE_MANAGER" />.</translation>
 <translation id="3645372836428131288">יש להזיז קצת את האצבע כדי לסרוק חלק אחר של טביעת האצבע.</translation>
+<translation id="3647051300407077858">בדיקת ההרשאות לשליחת התראות</translation>
 <translation id="3647654707956482440">אי אפשר להשתמש בקישור הזה. יש לבדוק אם הקישור מכיל שגיאות הקלדה או להשתמש בקישור אחר ולנסות שוב.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> התקבל מהמכשיר <ph name="DEVICE_NAME" />}two{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">המערכת זיהתה את <ph name="USB_DEVICE_NAME" /></translation>
@@ -3071,6 +3076,7 @@
 <translation id="380408572480438692">‏הפעלת האפשרות לאיסוף נתוני ביצועים תסייע ל-Google לשפר את המערכת עם הזמן. הנתונים נשלחים רק לאחר שמגישים דוח משוב (Alt-Shift-I) וכוללים את נתוני הביצועים. ניתן לחזור למסך זה כדי להשבית את איסוף הנתונים בכל עת.</translation>
 <translation id="3807249107536149332">לא ניתן להשתמש ב-<ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") במסך התחברות.</translation>
 <translation id="3807747707162121253">&amp;ביטול</translation>
+<translation id="3808202562160426447">עמעום תוכן ברקע</translation>
 <translation id="3808443763115411087">‏פיתוח אפליקציות ל-Android ב-Crostini</translation>
 <translation id="38089336910894858">‏הצגת אזהרה לפני יציאה באמצעות ‎⌘Q</translation>
 <translation id="3809272675881623365">ארנב</translation>
@@ -3159,7 +3165,6 @@
 <translation id="3883482240657453056">קבלת הנחות על המוצרים של <ph name="MERCHANT_NAME_1" /> ו-<ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">תוכן אינטרנט שזמין במספר שפות יוצג בשפה הנתמכת הראשונה ברשימה הזו. ההעדפות האלה מסונכרנות עם הגדרות הדפדפן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">העדכונים מנוהלים על ידי מנהל המערכת</translation>
-<translation id="3886446263141354045">הבקשה שלך לגשת לאתר הזה נשלחה אל <ph name="NAME" /></translation>
 <translation id="3887022758415973389">הצגה של רשימת המכשירים</translation>
 <translation id="3888053818972567950">חיבור אל <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">כתיבת הערות בעזרת <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -3659,6 +3664,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> משתף חלון.</translation>
 <translation id="4364830672918311045">הצגת הודעות</translation>
 <translation id="4366138410738374926">ההדפסה החלה</translation>
+<translation id="4367513928820380646">בדיקת ההרשאות שהוסרו</translation>
 <translation id="4369121877634339065">גוררים תמונה כלשהי כדי לחפש</translation>
 <translation id="4369215744064167350">הבקשה לגבי האתר אושרה</translation>
 <translation id="4370975561335139969">כתובת האימייל והסיסמה שהזנת אינן תואמות</translation>
@@ -3907,6 +3913,7 @@
 <translation id="459204634473266369">לא נשמרו מכשירים לחשבון <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">אפליקציה לציור עם סטיילוס</translation>
 <translation id="4593021220803146968">&amp;מעבר אל <ph name="URL" /></translation>
+<translation id="4594218792629569101">כדי להעביר את הדף לתחתית הרשימה, בוחרים באפשרות 'סימון כפריט שנקרא'</translation>
 <translation id="4594577641390224176">רוצה לאתר את דף המידע על המערכת? יש לעבור לכתובת</translation>
 <translation id="4595560905247879544">רק המנהל (<ph name="CUSTODIAN_NAME" />) יכול לשנות יישומים ותוספים.</translation>
 <translation id="4596295440756783523">יש לך אישורים בקובץ המזהים שרתים אלה</translation>
@@ -4375,6 +4382,7 @@
 <translation id="5045550434625856497">סיסמה שגויה</translation>
 <translation id="504561833207953641">פתיחה בסשן קיים של הדפדפן.</translation>
 <translation id="5049614114599109018">שימוש בהיסטוריית קלט</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{האתר הזה שלח הרבה התראות לאחרונה. יש לך אפשרות להפסיק את קבלת ההתראות מהאתר הזה.}two{האתרים האלה שלחו הרבה התראות לאחרונה. יש לך אפשרות להפסיק את קבלת ההתראות מהאתרים האלה.}many{האתרים האלה שלחו הרבה התראות לאחרונה. יש לך אפשרות להפסיק את קבלת ההתראות מהאתרים האלה.}other{האתרים האלה שלחו הרבה התראות לאחרונה. יש לך אפשרות להפסיק את קבלת ההתראות מהאתרים האלה.}}</translation>
 <translation id="5051836348807686060">בשפות שבחרת אין תמיכה בבדיקת איות</translation>
 <translation id="5052499409147950210">עריכת אתר</translation>
 <translation id="505347685865235222">קבוצה ללא שם – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4411,6 +4419,7 @@
 <translation id="5084328598860513926">תהליך ההכנה לשימוש נקטע. יש לנסות שוב, או לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">חיפוש עדכונים מתבצע</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">ההערה מכילה יותר מ-1,000 תווים</translation>
 <translation id="5086874064903147617">לשחזר את דף הבית שהוגדר כברירת המחדל?</translation>
 <translation id="5087249366037322692">נוסף על ידי צד שלישי</translation>
 <translation id="5087580092889165836">הוספת כרטיס</translation>
@@ -6576,6 +6585,7 @@
 <translation id="7111822978084196600">יש לתת שם לחלון</translation>
 <translation id="7113102733263608554">פריט אחד (<ph name="ITEM_COUNT_ONE" />)</translation>
 <translation id="7113502843173351041">לדעת את כתובת האימייל שלך</translation>
+<translation id="7113974454301513811">עכשיו צריך להוסיף את הכרטיסייה הנוכחית לרשימה</translation>
 <translation id="7114054701490058191">הסיסמאות לא תואמות</translation>
 <translation id="7114648273807173152">‏כדי להשתמש ב-Smart Lock על מנת להיכנס אל חשבון Google צריך לעבור אל 'הגדרות' &gt; 'מכשירים מחוברים' &gt; 'הטלפון שלך' &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">אין אנשי קשר זמינים</translation>
@@ -7271,6 +7281,7 @@
 <translation id="7775694664330414886">הכרטיסייה הועברה לקבוצה ללא שם – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">לאתר <ph name="ORIGIN" /> תהיה הרשאה לראות את הקבצים בתיקייה <ph name="FOLDERNAME" /> עד שכל הכרטיסיות של האתר הזה ייסגרו</translation>
 <translation id="7776701556330691704">לא נמצאו קולות</translation>
+<translation id="7777624210360383048">קיצור דרך <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
 <translation id="7781335840981796660">תתבצע הסרה של כל חשבונות המשתמש והנתונים השמורים במכשיר.</translation>
 <translation id="7782102568078991263">‏אין יותר הצעות מ-Google</translation>
 <translation id="7782717250816686129">אחסון נתונים קבועים במסך ההתחברות והזנה אוטומטית של פרטי הכניסה בסשן.</translation>
@@ -7302,6 +7313,7 @@
 <translation id="7807711621188256451">התרה תמיד ל-<ph name="HOST" /> לגשת למצלמה שלך</translation>
 <translation id="7810202088502699111">חלונות קופצים נחסמו בדף זה.</translation>
 <translation id="7814458197256864873">&amp;העתקה</translation>
+<translation id="7815583197273433531">עריכת קיצור הדרך <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">נחסמה הורדה מסוכנת</translation>
 <translation id="7817361223956157679">‏המקלדת שמופיעה במסך לא עובדת עדיין באפליקציות Linux</translation>
 <translation id="7818135753970109980">עיצוב חדש נוסף (<ph name="EXTENSION_NAME" />)</translation>
@@ -7376,6 +7388,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">הצגת חשבון</translation>
 <translation id="7883792253546618164">בכל שלב ניתן לבטל את ההרשמה.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{יש לבדוק אתר אחד ששלח הרבה התראות}two{יש לבדוק {NUM_SITES} אתרים ששלחו הרבה התראות}many{יש לבדוק {NUM_SITES} אתרים ששלחו הרבה התראות}other{יש לבדוק {NUM_SITES} אתרים ששלחו הרבה התראות}}</translation>
 <translation id="788453346724465748">פרטי החשבון בטעינה…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{פריט}two{# פריטים}many{# פריטים}other{# פריטים}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8087,7 +8100,6 @@
 <translation id="8540942859441851323">נדידה בהתאם לדרישת הספק</translation>
 <translation id="8541462173655894684">לא נמצאו מדפסות המשויכות לשרת ההדפסה</translation>
 <translation id="8541838361296720865">צריך להקיש על מתג או מקש במקלדת כדי להקצות אותם לפעולה "<ph name="ACTION" />"</translation>
-<translation id="8543556556237226809">יש לך שאלות? עליך לפנות לאיש הקשר שמפקח על הפרופיל שלך.</translation>
 <translation id="8546186510985480118">חסר שטח אחסון במכשיר</translation>
 <translation id="8546306075665861288">מטמון תמונות</translation>
 <translation id="8546930481464505581">התאמה אישית של סרגל המגע</translation>
@@ -8431,6 +8443,7 @@
 <translation id="8859174528519900719">תת-מסגרת: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">לא ניתן לטעון את התנאים וההגבלות</translation>
 <translation id="8859662783913000679">חשבון הורה</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{חשבון אחד ({COUNT})}two{{COUNT} חשבונות}many{{COUNT} חשבונות}other{{COUNT} חשבונות}}</translation>
 <translation id="8861568709166518036">‏משתמשים בלחצנים במסך כדי לנווט למסך הבית, לחזור למסך הקודם או לעבור בין אפליקציות. ההגדרה הזו מופעלת אוטומטית כשמפעילים את ChromeVox או את התכונה 'לחיצות אוטומטיות'.</translation>
 <translation id="8862003515646449717">החלפה לדפדפן מהיר</translation>
 <translation id="8863753581171631212">פתיחת הקישור ב-<ph name="APP" /></translation>
@@ -8802,6 +8815,7 @@
 <translation id="9201842707396338580">משהו השתבש. יש לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;יצירת פרופילים מופעלת</translation>
 <translation id="9203904171912129171">בחירת מכשיר</translation>
+<translation id="920410963177453528">אפשר לבחור חלונית אחרת בלחיצה על התפריט הנפתח</translation>
 <translation id="9206889157914079472">כתיבת הערות באמצעות סטיילוס במסך הנעילה</translation>
 <translation id="9208192193641542858">הנתונים המקומיים מוגנים באמצעות הסיסמה הישנה שלך. אם שינית לאחרונה את הסיסמה, עליך לנסות להיכנס שוב עם הסיסמה הישנה.</translation>
 <translation id="9209563766569767417">‏המערכת בודקת את הגדרות הקונטיינר של Linux</translation>

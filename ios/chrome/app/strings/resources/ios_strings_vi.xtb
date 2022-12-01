@@ -133,6 +133,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1974060860693918893">Nâng cao</translation>
 <translation id="1981118202195772574">Thiết bị di động</translation>
 <translation id="1989112275319619282">Duyệt qua</translation>
+<translation id="1990820278544963435">Tìm</translation>
 <translation id="199425419756152024">Xem mật khẩu</translation>
 <translation id="2010008505735295285">Tải lại</translation>
 <translation id="2015722694326466240">Để xem mật khẩu, trước tiên bạn phải đặt mật mã trên thiết bị của mình.</translation>
@@ -550,7 +551,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5190835502935405962">Thanh Dấu trang</translation>
 <translation id="519530786644929958">Tải xuống không thành công và không thử lại được.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Đóng thẻ</translation>
 <translation id="5219295696240154694">Giúp tăng cường bảo mật cho mọi người trên mạng</translation>
 <translation id="5228579091201413441">Bật đồng bộ hóa</translation>
 <translation id="5232485538978018676">Đăng nhập bằng Tài khoản được quản lý</translation>
@@ -1089,6 +1089,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9188680907066685419">Đăng xuất khỏi tài khoản được quản lý</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ngày trước</translation>
 <translation id="9203116392574189331">Tiếp nối</translation>
+<translation id="9219154867334666734">Tìm thẻ…</translation>
 <translation id="9223358826628549784">Đã gửi báo cáo lỗi.</translation>
 <translation id="941747855997058526">Chọn mật khẩu...</translation>
 <translation id="952704832371081537">Hủy</translation>

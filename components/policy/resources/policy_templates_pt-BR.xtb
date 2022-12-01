@@ -335,6 +335,13 @@ A disponibilidade das extensões ainda é controlada por outras políticas.</tra
 <translation id="1317658068839330898">Não permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web</translation>
 <translation id="1327466551276625742">Ativar prompt de configuração de rede quando estiver off-line</translation>
 <translation id="1330145147221172764">Ativar o teclado na tela</translation>
+<translation id="1330957570904024655">Se a política for ativada ou deixada sem definição, os arquivos transferidos por download vão ser enviados para análise pelo recurso Navegação segura, mesmo que sejam de uma fonte confiável.
+
+Se a política for desativada, os arquivos transferidos por download não serão enviados para análise pelo esse recurso quando forem de uma fonte confiável.
+
+Essas restrições são válidas para downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Elas não são válidas para opções de salvar ou fazer o download da página em exibição nem de salvar como PDF nas opções de impressão.
+
+No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="13356285923490863">Nome da política</translation>
 <translation id="1338603603553894503">Especifica se o seletor de perfil será ativado, desativado ou forçado na inicialização do navegador.
 
@@ -393,6 +400,7 @@ A disponibilidade das extensões ainda é controlada por outras políticas.</tra
           Se esta política não for definida, o usuário poderá instalar qualquer extensão no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1393485621820363363">Impressoras empresariais ativadas</translation>
 <translation id="1395505489889158859">Ativar o envio do nome de usuário e do nome de arquivo para impressoras nativas</translation>
+<translation id="1396119629372155901">O recurso ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes está desativado</translation>
 <translation id="1397855852561539316">URL sugerido do provedor de pesquisa padrão</translation>
 <translation id="1402227992519954892">Ativar relatórios de informações de apps do dispositivo</translation>
 <translation id="141279920573530952">Se a política for definida, você vai poder listar sites com permissão automática para acessar todas as portas seriais disponíveis.
@@ -597,6 +605,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1583248206450240930">Usar o <ph name="PRODUCT_FRAME_NAME" /> por padrão</translation>
 <translation id="1587585749332985896">Não permitir o uso do modo headless</translation>
 <translation id="1588240398285670601">Configurações do navegador</translation>
+<translation id="1590802206069983683">O recurso ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes está disponível</translation>
 <translation id="1592334921377856028">Desativar relatórios sobre o status de hardware do dispositivo</translation>
 <translation id="1595013560176869154">Se a política for definida como "Ativada", PINs fracos serão permitidos. Algumas características de PINs fracos: um único dígito (1111), em ordem crescente (1234), em ordem decrescente (4321) e PINs comuns. Se a política for definida como "Desativada", os usuários não poderão definir PINs fracos e fáceis de adivinhar.
 
@@ -2003,6 +2012,7 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
           |created_time_millis| é o carimbo de data/hora UTC para criação de uma modificação e é enviado como uma string, porque o carimbo de data/hora não se enquadra como um número inteiro. É usado para determinar se essa modificação ainda precisa ser aplicada. Se o recurso de limite de tempo ativo atual (limite de tempo de uso ou limite de tempo de janela) começa depois que a modificação é criada, nenhuma ação é tomada. Além disso, se a modificação foi criada antes da última alteração do time_window_limit ou time_usage_window ativos, ela não deve ser aplicada.
 
           Várias modificações podem ser enviadas, mas a entrada válida mais recente é a que será aplicada.</translation>
+<translation id="290041922664761002">Especificar um valor de sal a ser usado na política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> ao avaliar as informações de identidade</translation>
 <translation id="2901725272378498025">Ativar avisos de segurança para sinalizações de linha de comando</translation>
 <translation id="2905984450136807296">Ciclo de vida do cache de dados de autenticação</translation>
 <translation id="2906874737073861391">Lista de extensões AppPack</translation>
@@ -3153,6 +3163,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="3943930334592166130">Esta política controla se o usuário receberá uma solicitação para selecionar um certificado de cliente quando a <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> corresponder a mais de um certificado.
       Se esta política for definida como "Ativada", o usuário receberá uma solicitação para selecionar um certificado de cliente sempre que a política de seleção automática corresponder a vários certificados.
       Se esta política for definida como "Desativada" ou deixada sem definição, o usuário só receberá a solicitação quando nenhum certificado corresponder à seleção automática.</translation>
+<translation id="3947897854999940598">Especificar o modelo de URI do resolvedor de DNS sobre HTTPS desejado com informações de identidade</translation>
 <translation id="3950110092991281616">Ativar a autenticação pelo SO apenas em sessões normais.</translation>
 <translation id="3950239119790560549">Atualiza restrições de tempo</translation>
 <translation id="3953860513079094502">Relatar informações sobre eventos de detecção e resposta estendidas (XDR, na sigla em inglês)</translation>
@@ -7073,6 +7084,9 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="7925224837072026018">Se a política for definida, as extensões ou os apps Android terão acesso a chaves corporativas. Apenas chaves geradas usando a API chrome.enterprise.platformKeys em uma conta gerenciada são designadas para uso corporativo. O usuário não poderá conceder ou revogar o acesso de extensões ou apps Android a chaves corporativas.
 
       Por padrão, uma extensão ou um app Android não pode usar uma chave designada como corporativa. Isso é equivalente a definir allowCorporateKeyUsage como "Falsa" para a política. Uma extensão ou um app Android só poderá usar chaves de plataforma marcadas como corporativas para assinar dados arbitrários se allowCorporateKeyUsage for definida como "Verdadeira" para eles. Conceda essa permissão apenas se você confiar que a extensão ou o app Android protegerá a chave contra o acesso de invasores.</translation>
+<translation id="7930383470029339167">O ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes é um recurso do Chrome projetado para deixar os iframes de origem cruzada de mesmo processo e vários processos mais consistentes no comportamento de renderização. Para saber mais detalhes sobre a limitação de mesmo e vários processos, consulte https://chromestatus.com/feature/5175574929080320 (link em inglês).
+
+Esta política corporativa permite que os administradores controlem se os usuários podem ou não ativar outras limitações. Quando a política está desativada, ela impede a limitação. Quando está ativada ou é deixada sem definição, o usuário pode escolher usar a limitação ou ela pode ser ativada pelas variações do Chrome.</translation>
 <translation id="793188693675675950">Desativar a importação da página inicial na primeira execução</translation>
 <translation id="7933141401888114454">Ativar a criação de usuários supervisionados</translation>
 <translation id="793473937901685727">Definir a disponibilidade do certificado para apps ARC</translation>
@@ -7517,6 +7531,17 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8316940611391250886">Não permitir certificados sem uma extensão subjectAlternativeName</translation>
 <translation id="8319678975002906774">Define valores de configuração gerenciada para sites de origens específicas</translation>
 <translation id="8320149248919453401">Modo de carregamento da bateria</translation>
+<translation id="8327201984026238850">O modelo de URI do resolvedor de DNS sobre HTTPS desejado. Para especificar vários resolvedores de DNS sobre HTTPS, separe os modelos de URI correspondentes com espaços. Esta política é muito semelhante à <ph name="DOH_TEMPLATES_POLICY_NAME" />, que vai ser substituída se especificada. Em contraste, ela permite especificar informações de identidade.
+
+  Se a política <ph name="DOH_MODE_POLICY_NAME" /> for definida como <ph name="SECURE_DNS_MODE_SECURE" />, esta política ou a <ph name="DOH_TEMPLATES_POLICY_NAME" /> precisará ser definida e não poderá estar vazia.
+
+  Se a <ph name="DOH_MODE_POLICY_NAME" /> for definida como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e se esta política for definida, os modelos de URI especificados vão ser usados. Se esta política for deixada sem definição, os mapeamentos fixados no código serão usados para tentar fazer upgrade do resolvedor de DNS atual do usuário para um resolvedor de DoH operado pelo mesmo provedor.
+
+  Se o modelo de URI tiver uma variável <ph name="HTTP_VARIABLE_DNS" />, as solicitações para o resolvedor vão usar <ph name="HTTP_METHOD_GET" />. Caso contrário, as solicitações usarão <ph name="HTTP_METHOD_POST" />.
+
+  Se a política for definida, a <ph name="DOH_SALT_POLICY_NAME" /> também precisará ser.
+
+  Modelos formatados incorretamente vão ser ignorados.</translation>
 <translation id="8327651196906278510">Permitir captura de guia por estas origens</translation>
 <translation id="8329434144708110">Acionar fluxos de autenticação para sincronizar senhas com provedores SSO</translation>
 <translation id="8329984337216493753">Esta política é ativa somente no modo de varejo. Quando o DeviceIdleLogoutTimeout for especificado, esta política definirá a duração da caixa de aviso com contagem regressiva que será mostrada ao usuário antes da desconexão. O valor da política deve ser especificado em milésimos de segundos.</translation>
@@ -7996,6 +8021,8 @@ para essa VM. É possível instalar várias VMs de uma configuração no mesmo d
 
           Esta política não terá efeito se não for definida. Nesse caso, as conexões de acesso remoto não terão uma duração máxima nesta máquina.</translation>
 <translation id="8800453707696044281">Configurar a parada personalizada do carregamento da bateria, em porcentagem</translation>
+<translation id="880110452941793016">Esse sal é usado como um valor de sal para gerar hash de informações de identidade incluídas na string <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />.
+   Se a política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> for usada, ela precisará ser definida e ser uma string com 8 a 32 caracteres.</translation>
 <translation id="8801680448782904838">Notifica um usuário de que a reinicialização do navegador ou do dispositivo é recomendada ou obrigatória</translation>
 <translation id="8804685015028424497">Desativar o modo de navegação anônima</translation>
 <translation id="8806478127647484805">Impedir que usuários encerrem processos no gerenciador de tarefas do Chrome</translation>
@@ -8260,6 +8287,15 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
       Se esta política não for definida, não haverá seleção automática para nenhum site.
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).</translation>
+<translation id="9066311316566875681">O modelo de URI do resolvedor de DNS sobre HTTPS desejado. Para especificar vários resolvedores de DNS sobre HTTPS, separe os modelos de URI correspondentes com espaços.
+
+      Se a política DnsOverHttpsMode estiver definida como <ph name="SECURE_DNS_MODE_SECURE" />, esta política precisará ser definida e não poderá estar vazia. No <ph name="PRODUCT_OS_NAME" />, esta política ou a <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> precisam ser definidas. Caso contrário, a resolução de DNS vai falhar.
+
+      Se a DnsOverHttpsMode estiver definida como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e esta política for definida, os modelos de URI especificados vão ser usados. Se esta política for deixada sem definição, os mapeamentos fixados no código serão usados para tentar fazer upgrade do resolvedor de DNS atual do usuário para um resolvedor de DoH operado pelo mesmo provedor.
+
+      Se o modelo de URI tiver uma variável <ph name="HTTP_VARIABLE_DNS" />, as solicitações para o resolvedor vão usar <ph name="HTTP_METHOD_GET" />. Caso contrário, as solicitações usarão <ph name="HTTP_METHOD_POST" />.
+
+      Modelos formatados incorretamente vão ser ignorados.</translation>
 <translation id="9068629430243705879">porta 6566 (pode ser desbloqueada até 15/10/2021)</translation>
 <translation id="9069588907259547232">Se a política for ativada ou deixada sem definição, os dispositivos registrados vão informar o volume do áudio.
 
@@ -8375,6 +8411,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       Se ela não for definida ou for definida como "<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />", o modo usado para a experiência de integração será o padrão.
       Se ela for definida como "<ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />", o modo usado será o EDU.</translation>
+<translation id="9191821120522935133">Permite ativar a limitação de iframes de origem cruzada não visíveis</translation>
 <translation id="9192220384862917760">Ativar cortinas do host de acesso remoto</translation>
 <translation id="9194447412184412480">Controla as configurações para usuários autenticados por SAML com um IdP externo</translation>
 <translation id="9195766455191826480">Não informar status de segurança</translation>

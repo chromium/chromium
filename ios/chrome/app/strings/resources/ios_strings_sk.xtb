@@ -133,6 +133,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1974060860693918893">Rozšírené</translation>
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
+<translation id="1990820278544963435">Nájsť</translation>
 <translation id="199425419756152024">Zobraziť heslo</translation>
 <translation id="2010008505735295285">Opätovné načítanie</translation>
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
@@ -550,7 +551,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5190835502935405962">Panel so záložkami</translation>
 <translation id="519530786644929958">Súbor sa nestiahol. Pokus sa nedá zopakovať.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Zatvoriť kartu</translation>
 <translation id="5219295696240154694">Pomôžte zlepšiť zabezpečenie na internete pre všetkých</translation>
 <translation id="5228579091201413441">Povoliť synchronizáciu</translation>
 <translation id="5232485538978018676">Prihlásenie spravovaným účtom</translation>
@@ -1088,6 +1088,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9188680907066685419">Odhlásenie zo spravovaného účtu</translation>
 <translation id="9200875785104711666">Pred <ph name="TIME" /> d.</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Hľadať karty…</translation>
 <translation id="9223358826628549784">Správa o zlyhaní bola odoslaná.</translation>
 <translation id="941747855997058526">Vybrať heslo…</translation>
 <translation id="952704832371081537">Zrušiť</translation>

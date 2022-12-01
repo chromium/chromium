@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Эч качан сакталбайт</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Иштактадагы кыстармалар</translation>
+<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> саясаты коюлмайынча, <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> колдонулбайт.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> тилиндеги барактар эч качан которулбасын</translation>
 <translation id="1070853536588271387">Гибриддик жана альтернативдик унаалар</translation>
 <translation id="1070901266639972381">Түн</translation>
@@ -337,7 +338,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> деп жана мааниси туура көрсөтүлүшү керек.</translation>
 <translation id="1745880797583122200">Серепчиңиз башкарылып жатат</translation>
 <translation id="1746113442205726301">Y сүрөтүн жылдыруу</translation>
-<translation id="1747819498338037826">Автоматтык түрдө өзгөртүү</translation>
 <translation id="17513872634828108">Ачык өтмөктөр</translation>
 <translation id="1752021286346845558">8-электрондук каттар кутусу</translation>
 <translation id="1753068535428855445">Таанышуу жана жуп табуу</translation>
@@ -1369,7 +1369,6 @@
 <translation id="4450893287417543264">Экинчи көрүнбөсүн</translation>
 <translation id="4451135742916150903">HID түзмөктөрүнө туташууга уруксат сурай алат</translation>
 <translation id="4452328064229197696">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Google'дун Сырсөздөрдү башкаргычы сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
-<translation id="4455222631300069614">Сырсөзүңүздү азыр өзгөртүңүз</translation>
 <translation id="4460315069258617173">Бул сайттын өтмөктөрү жабылмайынча уруксат берилет</translation>
 <translation id="4464826014807964867">Уюмуңуздан маалымат алган вебсайттар</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1604,7 +1603,6 @@
 <translation id="5039804452771397117">Уруксат берүү</translation>
 <translation id="5040262127954254034">Купуялык</translation>
 <translation id="5043480802608081735">Сиз көчүргөн шилтеме</translation>
-<translation id="5044545992476246592">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Google Жардамчыңыз сырсөзүңүздү автоматтык түрдө өзгөртө алат.</translation>
 <translation id="5045550434625856497">Сырсөз туура эмес</translation>
 <translation id="5051305769747448211">Түз берилүүчү комедия</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Бул файлды Nearby Share функциясы аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}other{Бул файлдарды Nearby Share функциясы аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}}</translation>
@@ -1670,7 +1668,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> бир нече файлды жүктөп алганы жатат</translation>
 <translation id="519422657042045905">Аннотация жеткиликсиз</translation>
 <translation id="5201306358585911203">Бул веб баракчада кыстарылган барак мындай дейт:</translation>
-<translation id="5204468114771111727">Chrome жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганын аныктады. Google Жардамчыңыз сырсөзүңүздү автоматтык түрдө өзгөртө алат.</translation>
 <translation id="5205222826937269299">Атын киргизиңиз</translation>
 <translation id="5209518306177824490">SHA-1 Манжа изи</translation>
 <translation id="5209670883520018268">20-түпкүч</translation>
@@ -2098,6 +2095,7 @@
 <translation id="6328786501058569169">Бул – жасалма сайт</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> чейин орун бошотулат. Кийинки жолу киргениңизде, айрым сайттар жайыраак жүктөлүшү мүмкүн.</translation>
 <translation id="6337534724793800597">Саясаттарды аталышы боюнча чыпкалоо</translation>
+<translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> мааниси жараксыз, андыктан колдонулбайт.</translation>
 <translation id="6340739886198108203">Администратордун саясаты купуя мазмун көрүнүп турганда скриншотторду тартууну же жаздырууну сунуштабайт:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө жүктөп берүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө жүктөп берүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Активдүү варианттар</translation>
@@ -2993,6 +2991,7 @@
 <translation id="8654126188050905496">55 x 91 мм.</translation>
 <translation id="8663226718884576429">Буйрутма тууралуу маалымат, <ph name="TOTAL_LABEL" />, Толук маалымат</translation>
 <translation id="8666678546361132282">Англисче</translation>
+<translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> мааниси өлчөмгө коюлган талаптарга жооп бербейт.</translation>
 <translation id="867224526087042813">Колтамга</translation>
 <translation id="8672264262457010862">Бизнес жана өнөр-жай</translation>
 <translation id="8676424191133491403">Дароо</translation>
@@ -3092,6 +3091,7 @@
 <translation id="8913778647360618320">Төлөм ыкмаларын башкаруу баскычы. Chrome'дун жөндөөлөрүнө өтүп, төлөмдөрүңүздү жана насыя карточкасынын маалыматын башкаруу үчүн, Enter баскычын басыңыз</translation>
 <translation id="8922013791253848639">Бул сайттагы жарнамалар дайыма көрүнсүн</translation>
 <translation id="892588693504540538">Жогорку оң жагын тешүү</translation>
+<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> мааниси ылайыксыз, андыктан <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> деп коюлмайынча, ал колдонулбайт.</translation>
 <translation id="8930330541574156305">Кыймылсыз мүлк</translation>
 <translation id="8931333241327730545">Бул карточканы Google аккаунтуңузга сактап коесузбу?</translation>
 <translation id="8932102934695377596">Саатыңыз артта</translation>

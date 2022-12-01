@@ -187,6 +187,7 @@
 <translation id="1166583374608765787">შეამოწმეთ სახელის განახლება</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> ეკუთვნის სამუშაო დაფას „<ph name="DESK_TITLE" />“</translation>
 <translation id="1168020859489941584">დრო გახსნამდე: <ph name="TIME_REMAINING" />…</translation>
+<translation id="116896278675803795">ავტომატურად შეცვალეთ ენა, რომ არჩეულ კონტენტს დაემთხვეს</translation>
 <translation id="1169266963600477608">თამაშის მართვის საშუალებები</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> შეიცავს სენსიტიურ ან სახიფათო მონაცემებს. თქვენი ადმინისტრატორის შეტყობინება: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ითხოვს HID მოწყობილობასთან დაკავშირებას</translation>
@@ -2563,7 +2564,6 @@
 <translation id="3341703758641437857">ფაილის URL-ებზე წვდომის დაშვება</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“-ს სურს, ამოშალოს ეს გაფართოება.</translation>
 <translation id="3343977377045378693">მიმდინარეობს დაყენება</translation>
-<translation id="3345135638360864351">თქვენი მოთხოვნა, რომ შეხვიდეთ ამ საიტზე ვერ გაიგზავნა <ph name="NAME" /> -სთან. გთხოვთ სცადოთ განმეორებით.</translation>
 <translation id="3345634917232014253">უსაფრთხოების შემოწმება ეს-ესაა შესრულდა</translation>
 <translation id="3345886924813989455">მხარდაჭერილი ბრაუზერი ვერ მოიძებნა</translation>
 <translation id="3347086966102161372">სურათის მისამართის კ&amp;ოპირება</translation>
@@ -2573,6 +2573,7 @@
 <translation id="3353786022389205125">ჩართეთ „ჩაკეტილი ეკრანის ჩვენება გამოღვიძებისას“ და ცადეთ ხელახლა</translation>
 <translation id="3354768182971982851">Chrome-ის აპების ძველი ვერსიები 2022 წლის დეკემბრის შემდეგ აღარ გაიხსნება Mac‑მოწყობილობებზე. შეგიძლიათ შეამოწმოთ ახალი ვერსიის ხელმისაწვდომობა.</translation>
 <translation id="3354972872297836698">მოწყობილობასთან <ph name="DEVICE_NAME" /> დაწყვილება ვერ მოხერხდა; ხელახლა საცდელად არჩიეთ მოწყობილოა</translation>
+<translation id="335581015389089642">მეტყველება</translation>
 <translation id="3355936511340229503">კავშირის შეცდომა</translation>
 <translation id="3356036636691722598">ისიამოვნეთ თამაშებით თქვენს Chromebook-ში</translation>
 <translation id="3356469410714175391">(ვირტუალური ბარათი ჩართულია)</translation>
@@ -3151,7 +3152,6 @@
 <translation id="3883482240657453056">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME_1" />-ისა და <ph name="MERCHANT_NAME_2" />-ისთვის</translation>
 <translation id="3884152383786131369">რამდენიმე ენაზე ხელმისაწვდომი ვებკონტენტი ამ სიიდან პირველ მხარდაჭერილ ენას გამოიყენებს. ეს პარამეტრები სინქრონიზდება თქვენი ბრაუზერის პარამეტრებთან. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">განახლებებს მართავს თქვენი ადმინისტრატორი</translation>
-<translation id="3886446263141354045">ამ საიტზე წვდომის მოთხოვნა გაეგზავნა <ph name="NAME" />-ს</translation>
 <translation id="3887022758415973389">მოწყობილობების სიის ჩვენება</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> კავშირი</translation>
 <translation id="3888550877729210209">ჩანიშვნა <ph name="LOCK_SCREEN_APP_NAME" />-ის მეშვეობით</translation>
@@ -8086,7 +8086,6 @@
 <translation id="8540942859441851323">როუმინგს საჭიროებს პროვაიდერი</translation>
 <translation id="8541462173655894684">ბეჭდვის სერვერზე პრინტერები ვერ მოიძებნა</translation>
 <translation id="8541838361296720865">დააჭირეთ გადამრთველს ან კლავიატურის კლავიშს, „<ph name="ACTION" />“ რომ მიაკუთვნოთ</translation>
-<translation id="8543556556237226809">შეკითხვა გაქვთ? დაუკავშირდით იმ პიროვნებას, რომელიც აკონტროლებს თქვენს პროფილს.</translation>
 <translation id="8546186510985480118">მოწყობილობაზე ხელმისაწვდომი მეხსიერება არასაკმარისია</translation>
 <translation id="8546306075665861288">გამოსახულების კეშირება</translation>
 <translation id="8546930481464505581">შეხების ზოლის მორგება</translation>

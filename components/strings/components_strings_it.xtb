@@ -338,7 +338,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1741613555002899862">Deve essere specificato e corrispondere a una stringa valida quando DnsOverHttpsMode è <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Il browser in uso è gestito</translation>
 <translation id="1746113442205726301">Spostamento Y immagine</translation>
-<translation id="1747819498338037826">Cambia automaticamente</translation>
 <translation id="17513872634828108">Schede aperte</translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753068535428855445">Appuntamenti e annunci personali</translation>
@@ -1368,7 +1367,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="4451135742916150903">Può chiedere di connettersi ai dispositivi HID</translation>
 <translation id="4452328064229197696">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di controllare le password salvate.</translation>
-<translation id="4455222631300069614">Cambia subito la password</translation>
 <translation id="4460315069258617173">Consentita fino alla chiusura delle schede di questo sito</translation>
 <translation id="4464826014807964867">Siti web con informazioni della tua organizzazione</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1603,7 +1601,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="5043480802608081735">Link copiato</translation>
-<translation id="5044545992476246592">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. L'Assistente Google può cambiare automaticamente la password.</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
 <translation id="5051305769747448211">Commedie dal vivo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Per inviare questo file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}other{Per inviare questi file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}}</translation>
@@ -1669,7 +1666,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="51918995459521422"><ph name="ORIGIN" /> vuole scaricare più file</translation>
 <translation id="519422657042045905">Annotazione non disponibile</translation>
 <translation id="5201306358585911203">Una pagina incorporata in questa pagina dice</translation>
-<translation id="5204468114771111727">Chrome ha rilevato che la password appena usata è stata compromessa nell'ambito di una violazione dei dati. L'Assistente Google può cambiare automaticamente la password.</translation>
 <translation id="5205222826937269299">Nome obbligatorio</translation>
 <translation id="5209518306177824490">Impronta digitale SHA-1</translation>
 <translation id="5209670883520018268">Vassoio 20</translation>

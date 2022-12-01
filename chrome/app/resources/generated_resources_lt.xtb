@@ -189,6 +189,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1166583374608765787">Peržiūrėkite atnaujintą pavadinimą</translation>
 <translation id="1166596238782048887">„<ph name="TAB_TITLE" />“ priklauso to darbalaukiui „<ph name="DESK_TITLE" />“</translation>
 <translation id="1168020859489941584">Atidaroma po <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Automatiškai keisti kalbą, kad atitiktų pasirinktą turinį</translation>
 <translation id="1169266963600477608">Žaidimų valdikliai</translation>
 <translation id="1169435433292653700">Faile <ph name="FILE_NAME" /> yra neskelbtinų ar pavojingų duomenų. Administratorius sako: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> nori prisijungti prie HID įrenginio</translation>
@@ -2583,7 +2584,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3341703758641437857">Leisti pasiekti failo URL</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“ norėtų pašalinti šį plėtinį.</translation>
 <translation id="3343977377045378693">Atliekama sąranka</translation>
-<translation id="3345135638360864351">Nepavyko <ph name="NAME" /> išsiųsti jūsų prieigos prie šios svetainės užklausos. Bandykite dar kartą.</translation>
 <translation id="3345634917232014253">Saugos patikra buvo vykdyta prieš minutę</translation>
 <translation id="3345886924813989455">Rasta nepalaikoma naršyklė</translation>
 <translation id="3347086966102161372">K&amp;opijuoti vaizdo adresą</translation>
@@ -2593,6 +2593,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3353786022389205125">Įjunkite parinktį „Rodyti užrakto ekraną pažadinant iš miego būsenos“ ir bandykite dar kartą</translation>
 <translation id="3354768182971982851">Senų versijų „Chrome“ programos nebus atidaromos „Mac“ įrenginiuose po 2022 m. gruodžio mėn. Galite patikrinti, ar pasiekiama nauja versija.</translation>
 <translation id="3354972872297836698">Su įrenginiu „<ph name="DEVICE_NAME" />“ susieti nepavyko; pasirinkite įrenginį ir bandykite dar kartą</translation>
+<translation id="335581015389089642">Kalba</translation>
 <translation id="3355936511340229503">Ryšio klaida</translation>
 <translation id="3356036636691722598">Mėgaukitės žaidimais „Chromebook“ įrenginyje</translation>
 <translation id="3356469410714175391">(Įgalinta virtuali kortelė)</translation>
@@ -3171,7 +3172,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3883482240657453056">Gaukite nuolaidų parduotuvėse „<ph name="MERCHANT_NAME_1" />“ ir „<ph name="MERCHANT_NAME_2" />“</translation>
 <translation id="3884152383786131369">Žiniatinklio turiniui, kuris pasiekiamas keliomis kalbomis, bus naudojama pirma palaikoma kalba iš šio sąrašo. Šios nuostatos sinchronizuojamos su naršyklės nustatymais. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Naujinius tvarko administratorius</translation>
-<translation id="3886446263141354045">Jūsų užklausa pasiekti šią svetainę išsiųsta <ph name="NAME" />.</translation>
 <translation id="3887022758415973389">Rodyti įrenginių sąrašą</translation>
 <translation id="3888053818972567950">„<ph name="WEB_DRIVE" />“ ryšys</translation>
 <translation id="3888550877729210209">Užrašų kūrimas naudojant „<ph name="LOCK_SCREEN_APP_NAME" />“</translation>
@@ -8118,7 +8118,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8540942859441851323">Įjungti tarptinklinį ryšį reikalauja teikėjas</translation>
 <translation id="8541462173655894684">Nerasta jokių spausdintuvų iš spausdinimo serverio</translation>
 <translation id="8541838361296720865">Paspauskite jungiklį ar klaviatūros klavišą, kad priskirtumėte jį veiksmui „<ph name="ACTION" />“</translation>
-<translation id="8543556556237226809">Turite klausimų? Susisiekite su jūsų profilį prižiūrinčiu asmeniu.</translation>
 <translation id="8546186510985480118">Mažai vietos įrenginyje</translation>
 <translation id="8546306075665861288">Vaizdo talpykla</translation>
 <translation id="8546930481464505581">Tinkinti lietimo juostą</translation>

@@ -338,7 +338,6 @@
 <translation id="1741613555002899862">უნდა იყოს მითითებული და სწორი ფრაზა, როცა „DnsOverHttpsMode“ არის „<ph name="SECURE_DNS_MODE_SECURE" />“.</translation>
 <translation id="1745880797583122200">თქვენი ბრაუზერი მართულია</translation>
 <translation id="1746113442205726301">სურათის წანაცვლება Y ღერძზე</translation>
-<translation id="1747819498338037826">შეიცვალოს ავტომატურად</translation>
 <translation id="17513872634828108">გახსნილი ჩანართები</translation>
 <translation id="1752021286346845558">საფოსტო ყუთი 8</translation>
 <translation id="1753068535428855445">პაემნები და გაცნობა</translation>
@@ -1371,7 +1370,6 @@
 <translation id="4450893287417543264">აღარ გამოჩნდეს</translation>
 <translation id="4451135742916150903">შეუძლია HID-მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="4452328064229197696">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. თქვენი ანგარიშის დაცვის მიზნით, Google პაროლების მმართველი გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
-<translation id="4455222631300069614">შეცვალეთ თქვენი პაროლი ახლავე</translation>
 <translation id="4460315069258617173">დაშვებულია, სანამ ამ საიტის ჩანართებს დახურავდეთ</translation>
 <translation id="4464826014807964867">ვებსაიტები, რომლებსაც თქვენი ორგანიზაციისგან მიღებული აქვს გარკვეული ინფორმაცია</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1606,7 +1604,6 @@
 <translation id="5039804452771397117">დაშვება</translation>
 <translation id="5040262127954254034">კონფიდენციალურობა</translation>
 <translation id="5043480802608081735">თქვენ მიერ კოპირებული ბმული</translation>
-<translation id="5044545992476246592">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. Google ასისტენტს თქვენი პაროლის შეცვლა ავტომატურად შეუძლია.</translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
 <translation id="5051305769747448211">ლაივკომედია</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ეს ფაილი მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}other{ეს ფაილები მახლობლად გაზიარების მეშვეობით რომ გაგზავნოთ, გაათავისუფლეთ სივრცე (<ph name="DISK_SPACE_SIZE" />) თქვენს მოწყობილობაზე}}</translation>
@@ -1672,7 +1669,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> ითხოვს რამდენიმე ფაილის ჩამოტვირთვას</translation>
 <translation id="519422657042045905">ანოტაცია მიუწვდომელია</translation>
 <translation id="5201306358585911203">ამ გვერდში ჩაშენებული გვერდი იუწყება:</translation>
-<translation id="5204468114771111727">თქვენ მიერ ახლახან გამოყენებული პაროლი Chrome-მა გაჟონილ მონაცემებში იპოვა. Google ასისტენტს თქვენი პაროლის შეცვლა ავტომატურად შეუძლია.</translation>
 <translation id="5205222826937269299">აუცილებელია სახელის მითითება</translation>
 <translation id="5209518306177824490">SHA-1 თითის ანაბეჭდი</translation>
 <translation id="5209670883520018268">ლანგარი 20</translation>

@@ -551,7 +551,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="519530786644929958">Erro na descarga. Non se pode volver tentar.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Pechar pestana</translation>
 <translation id="5219295696240154694">Axudar a mellorar a seguranza na Web para todos</translation>
 <translation id="5228579091201413441">Activar sincronización</translation>
 <translation id="5232485538978018676">Iniciar sesión cunha conta xestionada</translation>
@@ -876,6 +875,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7531345132340165516">Sitio actual</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
 <translation id="7553234618121028547">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (Configuración) e vai a Password Options (Opcións de contrasinais).</translation>
+<translation id="7554645225856321710">Pechar todo</translation>
 <translation id="7554791636758816595">Nova pestana</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7583004045319035904">Utiliza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear as pestanas do modo de incógnito.</translation>

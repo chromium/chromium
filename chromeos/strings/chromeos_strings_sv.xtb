@@ -493,6 +493,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familj</translation>
+<translation id="5695599963893094957">Tryck på valfri tangent på tangentbordet. Du kan trycka på upp till fyra tangenter på samma gång.</translation>
 <translation id="5701381305118179107">Centrera</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Uppdatera <ph name="DEVICE_NAME" /></translation>
@@ -619,7 +620,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6766275201586212568">Misslyckade DNS-matchningar</translation>
 <translation id="6768237774506518020">Hög felfrekvens för DNS-matchningar</translation>
 <translation id="6791471867139427246">färg på tangentbordets belysning</translation>
-<translation id="6793680441750437230">Tryck på valfri tangent på tangentbordet. Du kan trycka på upp till fyra tangenter på samma gång. Tryck på Alt + Esc för att stänga dialogrutan.</translation>
 <translation id="680983167891198932">Nyckel</translation>
 <translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
 <translation id="6853312040151791195">Urladdningshastighet</translation>

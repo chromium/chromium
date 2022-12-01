@@ -99,6 +99,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1650222530560417226">Ketuk tombol "Mulai Logging" untuk mengumpulkan log dan error konsol JavaScript mendatang dari semua tab. Log akan dikumpulkan (dan disimpan hanya dalam memori) hingga halaman ini ditutup atau "Hentikan Logging" diketuk.</translation>
+<translation id="1653432787084483144">{count,plural, =1{{count} sandi tersimpan tersedia di atas keyboard Anda.}other{{count} sandi tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="1657011748321897393">Gagal berbagi karena tidak terhubung ke jaringan.</translation>
 <translation id="1657641691196698092">Cookie yang Diblokir</translation>
 <translation id="165877110639533037">Tidak Ada Tab yang Terbuka</translation>
@@ -139,6 +140,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="2021670401941426298">Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="202292859882676807">Akses Mikrofon Diizinkan</translation>
+<translation id="2050196510205866090">{count,plural, =1{{count} metode pembayaran tersimpan tersedia di atas keyboard Anda.}other{{count} metode pembayaran tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Lalu</translation>
 <translation id="2074131957428911366">Anda dapat memilih konten apa yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja.</translation>
 <translation id="2079545284768500474">Urungkan</translation>
@@ -180,6 +182,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2375243552872247702">Lihat Konten untuk Anda</translation>
 <translation id="2381405137052800939">Dasar</translation>
 <translation id="2386793615875593361">1 dipilih</translation>
+<translation id="2411749908844615428">{count,plural, =1{{count} alamat tersimpan tersedia di atas keyboard Anda.}other{{count} alamat tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="2421004566762153674">Memblokir cookie pihak ketiga</translation>
 <translation id="2421044535038393232">Terus Edit</translation>
 <translation id="2434405374328098816">Anda sudah menyimpan sandi untuk "<ph name="USERNAME" />" di <ph name="WEBSITE" /></translation>
@@ -477,6 +480,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 Data Anda dienkripsi dengan frasa sandi sinkronisasi. Loginkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="4682686630151240767">1. Buka Settings di iPhone</translation>
 <translation id="4689564913179979534">Kelola Metode Pembayaran...</translation>
+<translation id="469300482518076788">Tutup Tab</translation>
 <translation id="4697071790493980729">Hasil Tidak Ditemukan</translation>
 <translation id="470966556546083668">Jangan Aktifkan Sinkronisasi</translation>
 <translation id="4737560986434232178">Telusuri Tab Terbaru</translation>
@@ -551,7 +555,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5190835502935405962">Bilah Bookmark</translation>
 <translation id="519530786644929958">Download gagal dan tidak dapat dicoba lagi.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5219295696240154694">Bantu Tingkatkan Keamanan di Web untuk Semuanya</translation>
 <translation id="5228579091201413441">Aktifkan sinkronisasi</translation>
 <translation id="5232485538978018676">Login dengan Akun Terkelola</translation>
@@ -1026,6 +1029,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8731388423028622182">Anda telah logout dari akun <ph name="USER_NAME" /> sebagai bagian dari proses reset iPhone. Ketuk lanjutkan di bawah untuk login.</translation>
 <translation id="87371078663613140">Jelajahi opsi di panel menu</translation>
+<translation id="8737620822084008350">{count,plural, =1{{count} profil tersimpan tersedia di atas keyboard Anda.}other{{count} profil tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="8741995161408053644">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Tab Anda akan ditampilkan di sini</translation>
 <translation id="8756969031206844760">Perbarui sandi?</translation>

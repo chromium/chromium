@@ -551,7 +551,6 @@
 <translation id="5190835502935405962">Էջանիշների գոտի</translation>
 <translation id="519530786644929958">Ներբեռնումը ձախողվեց, և այն հնարավոր չէ կրկնել։</translation>
 <translation id="5197255632782567636">Համացանց</translation>
-<translation id="5210365745912300556">Փակել ներդիրը</translation>
 <translation id="5219295696240154694">Օգնեք բարելավել համացանցի օգտատերերի անվտանգությունը</translation>
 <translation id="5228579091201413441">Միացնել համաժամացումը</translation>
 <translation id="5232485538978018676">Մուտք կառավարվող հաշիվ</translation>
@@ -876,6 +875,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7531345132340165516">Ընթացիկ կայքը</translation>
 <translation id="7537586195939242955">Ներեցեք, այս պահին հնարավոր չէ տեղադրել ձեր Անցագիրը Անցագրերի մատյանում:</translation>
 <translation id="7553234618121028547">Անջատելու համար բացեք <ph name="BEGIN_LINK" />Կարգավորումները<ph name="END_LINK" /> և անցեք «Գաղտնաբառերի կարգավորումներ»։</translation>
+<translation id="7554645225856321710">Փակել բոլորը</translation>
 <translation id="7554791636758816595">Նոր ներդիր</translation>
 <translation id="7561196759112975576">Միշտ</translation>
 <translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />։</translation>

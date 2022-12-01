@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Nunca salvas</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Favoritos em computador</translation>
+<translation id="1067561478268651872">A política <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> só vai ser usada se a <ph name="SECURE_DNS_SALT" /> for definida.</translation>
 <translation id="1068672505746868501">Nunca traduzir páginas em <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Veículos híbridos e alternativos</translation>
 <translation id="1070901266639972381">Noite</translation>
@@ -337,7 +338,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1741613555002899862">Precisa ser especificada e ser uma string válida quando DnsOverHttpsMode for <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Seu navegador é gerenciado</translation>
 <translation id="1746113442205726301">Mudança Y na imagem</translation>
-<translation id="1747819498338037826">Mudar automaticamente</translation>
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1752021286346845558">Caixa de e-mails 8</translation>
 <translation id="1753068535428855445">Namoro e assuntos pessoais</translation>
@@ -1370,7 +1370,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4450893287417543264">Não mostrar novamente</translation>
 <translation id="4451135742916150903">Pode pedir para se conectar a dispositivos HID</translation>
 <translation id="4452328064229197696">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você revise suas senhas salvas.</translation>
-<translation id="4455222631300069614">Mude sua senha imediatamente</translation>
 <translation id="4460315069258617173">Com permissão enquanto as guias deste site estiverem abertas</translation>
 <translation id="4464826014807964867">Sites com informações da sua organização</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1605,7 +1604,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5043480802608081735">Link que você copiou</translation>
-<translation id="5044545992476246592">A senha que você usou foi encontrada em uma violação de dados. O Google Assistente pode mudar a senha automaticamente.</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="5051305769747448211">Shows de comédia ao vivo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}one{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes arquivos usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
@@ -1671,7 +1669,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="51918995459521422">Solicitação do download de vários arquivos feita por <ph name="ORIGIN" /></translation>
 <translation id="519422657042045905">Anotação indisponível</translation>
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
-<translation id="5204468114771111727">A senha que você acabou de usar foi encontrada pelo Chrome em uma violação de dados. O Google Assistente pode mudar a senha automaticamente.</translation>
 <translation id="5205222826937269299">Nome obrigatório</translation>
 <translation id="5209518306177824490">Assinatura digital SHA-1</translation>
 <translation id="5209670883520018268">Bandeja 20</translation>
@@ -2099,6 +2096,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6328786501058569169">Este site é enganoso</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. O carregamento de alguns sites pode ficar mais lento no seu próximo acesso.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nome</translation>
+<translation id="633770708279464947">O valor <ph name="SECURE_DNS_SALT" /> é inválido e não vai ser usado.</translation>
 <translation id="6340739886198108203">A política do administrador não recomenda fazer capturas de tela ou gravações quando há conteúdo confidencial visível:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda fazer upload dos arquivos para este local: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Variações ativas</translation>
@@ -2995,6 +2993,7 @@ Mais detalhes:
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
 <translation id="8666678546361132282">Inglês</translation>
+<translation id="8671519637524426245">O valor <ph name="SECURE_DNS_SALT" /> não atende aos requisitos de tamanho.</translation>
 <translation id="867224526087042813">Assinatura</translation>
 <translation id="8672264262457010862">Indústria e negócios</translation>
 <translation id="8676424191133491403">Sem atraso</translation>
@@ -3094,6 +3093,7 @@ Mais detalhes:
 <translation id="8913778647360618320">Botão "Gerenciar formas de pagamento". Pressione "Enter" para gerenciar suas informações de pagamento e de cartão de crédito nas configurações do Chrome</translation>
 <translation id="8922013791253848639">Sempre permitir anúncios neste site</translation>
 <translation id="892588693504540538">Perfuração na parte superior direita</translation>
+<translation id="8930098617363288380">O valor <ph name="SECURE_DNS_SALT" /> não é relevante e só vai ser usado se a política<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> for definida.</translation>
 <translation id="8930330541574156305">Imóveis</translation>
 <translation id="8931333241327730545">Quer salvar este cartão na sua Conta do Google?</translation>
 <translation id="8932102934695377596">Seu relógio está atrasado</translation>

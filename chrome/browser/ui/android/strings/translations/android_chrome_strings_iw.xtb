@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">ההדגשה קוצרה</translation>
 <translation id="1111673857033749125">סימניות שנשמרו במכשירים האחרים שלך יופיעו כאן.</translation>
 <translation id="1113597929977215864">צפייה בתצוגה נקייה</translation>
-<translation id="1118561384561215815">קבלת עזרה בביצוע משימות באינטרנט</translation>
 <translation id="1123070903960493543">‏האינטראקציות שלך עם Chrome, ההגדרות שבחרת, פרטים על קריסות של Chrome</translation>
 <translation id="1126809382673880764">‏במצב הזה המערכת לא מגינה עליך מפני אתרים, הורדות ותוספים מסוכנים. גלישה בטוחה עדיין תגן עליך בשירותים אחרים של Google שבהם היא זמינה, כמו Gmail והחיפוש.</translation>
 <translation id="1129510026454351943">פרטים: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@
 <translation id="2286841657746966508">כתובת לחיוב</translation>
 <translation id="228704530595896923">רשימת אפשרויות השיתוף.</translation>
 <translation id="230115972905494466">לא נמצאו מכשירים תואמים</translation>
-<translation id="230155349749732438">כדי להשתמש בהגדרה זו, יש להפעיל את האפשרות <ph name="BEGIN_LINK" />שיפור של חיפושים וגלישה<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">יש להקיש כדי להתקשר</translation>
 <translation id="2321086116217818302">המערכת מכינה את הסיסמאות…</translation>
 <translation id="2323763861024343754">נתוני אתר מאוחסנים</translation>
@@ -423,7 +421,6 @@
 <translation id="3269093882174072735">טעינת תמונה</translation>
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
-<translation id="3284510035090979597">עזרה פרואקטיבית</translation>
 <translation id="3285080554353377245">‏סרטוני הסבר על השימוש ב-Chrome</translation>
 <translation id="3288003805934695103">הדף נטען מחדש</translation>
 <translation id="3290249595466894471">בנוסף, נשלחת דגימה קטנה שכוללת דפים, הורדות, פעילות של תוספים ופרטי מערכת כדי לאתר איומים חדשים</translation>
@@ -580,7 +577,6 @@
 <translation id="4209895695669353772">‏כדי לקבל מ-Google הצעות לתוכן מותאם אישית, יש להפעיל את הסנכרון</translation>
 <translation id="4214315110991671325">‏אם מאפשרים שימוש בקובצי Cookie, יכול להיות שמערכת Chrome תשתמש בהם בטעינה מראש.</translation>
 <translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
-<translation id="4227318652298512614">עוקבים אחר כל אתר שרוצים</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4248098802131000011">הגנה על הסיסמאות שלך מפני פרצות באבטחת המידע ובעיות אבטחה אחרות</translation>
 <translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
@@ -870,7 +866,6 @@
 <translation id="5795872532621730126">חיפוש וגלישה</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{לפני שעה}two{לפני שעתיים}many{לפני # שעות}other{לפני # שעות}}</translation>
 <translation id="5810288467834065221">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
-<translation id="5810864297166300463">סיוע באינטרנט</translation>
 <translation id="5813552293717797987">הדפדפן הזה מנוהל על ידי <ph name="PARENT_NAME_1" /> ו-<ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">כדי להתחיל, יש להקליד כאן או להקיש על סמל המיקרופון</translation>
 <translation id="5814749351757353073">עוקבים אחר אתרים שאוהבים</translation>
@@ -893,7 +888,6 @@
 <translation id="5869789175361934029">המשך הפעילות במכשיר אחר</translation>
 <translation id="587735546353481577">‏כדי לעקוב אחר אתר כלשהו, עוברים אליו, פותחים את תפריט Chrome ומקישים על 'מעקב'.</translation>
 <translation id="5879072387416556377">קבלת הצעות טובות יותר</translation>
-<translation id="5884076754568147479">‏כדי לעזור לך להשלים משימות, Google תקבל את כתובות ה-URL והתוכן של האתרים שבהם נעשה שימוש ב-Assistant, וכן את המידע שנשלח דרך Assistant</translation>
 <translation id="5906513782029855931">‏אם מכירים כתובות של אתרים, Google Assistant יכולה לעזור להשלים משימות. ניתן להשבית את Assistant דרך ההגדרות של Chrome.</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5919204609460789179">יש לעדכן את <ph name="PRODUCT_NAME" /> כדי להתחיל סנכרון</translation>
@@ -1334,7 +1328,6 @@
 <translation id="8127542551745560481">עריכת דף הבית</translation>
 <translation id="8130309322784422030">יכול להיות שהפרטים שנשמרו לכניסה לחשבון לא עדכניים</translation>
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
-<translation id="8153351135626613369">‏Assistant תופיע כשהמערכת תזהה שהיא יכולה לעזור לך באתרים נתמכים</translation>
 <translation id="8156139159503939589">באילו שפות באפשרותך לקרוא?</translation>
 <translation id="8168435359814927499">תוכן</translation>
 <translation id="8186512483418048923">נותרו עוד <ph name="FILES" /> קבצים</translation>

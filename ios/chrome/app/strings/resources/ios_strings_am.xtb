@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1981118202195772574">ሞባይል</translation>
 <translation id="1989112275319619282">አስስ</translation>
+<translation id="1990820278544963435">አግኝ</translation>
 <translation id="199425419756152024">የይለፍ ቃልን አሳይ</translation>
 <translation id="2010008505735295285">እንደገና ጫን</translation>
 <translation id="2015722694326466240">የይለፍ ቃላትን ለመመልከት በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
@@ -549,7 +550,6 @@
 <translation id="5190835502935405962">የዕልባቶች አሞሌ</translation>
 <translation id="519530786644929958">ማውረድ አልተሳካም እና እንደገና መሞከር አይቻልም።</translation>
 <translation id="5197255632782567636">በይነመረብ</translation>
-<translation id="5210365745912300556">ትር ዝጋ</translation>
 <translation id="5219295696240154694">ድር ላይ ለሁሉም ሰው ደህንነት ለማሻሻል ያግዙ</translation>
 <translation id="5228579091201413441">ማመሳሰልን አንቃ</translation>
 <translation id="5232485538978018676">በሚተዳደር መለያ ይግቡ</translation>
@@ -874,6 +874,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7531345132340165516">የአሁኑ ጣቢያ</translation>
 <translation id="7537586195939242955">ይቅርታ፣ በአሁኑ ጊዜ የእርስዎ ማለፊያ ወደ Passbook ሊጫን አይችልም።</translation>
 <translation id="7553234618121028547">ለማጥፋት <ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" />ን ይክፈቱ እና ወደ የይለፍ ቃል አማራጮች ይሂዱ።</translation>
+<translation id="7554645225856321710">ሁሉንም ዝጋ</translation>
 <translation id="7554791636758816595">አዲስ ትር</translation>
 <translation id="7561196759112975576">ሁልጊዜ</translation>
 <translation id="7583004045319035904">የእርስዎን ማንነት የማያሳውቁ ትሮችን ለመከፈት <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይጠቀሙ።</translation>
@@ -1087,6 +1088,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9188680907066685419">ከሚተዳደር መለያ ዘግግተህ ውጣ</translation>
 <translation id="9200875785104711666">ከ<ph name="TIME" /> ቀ በፊት</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">ትሮችን ይፈልጉ…</translation>
 <translation id="9223358826628549784">የብልሽት ሪፖርት ተልኳል።</translation>
 <translation id="941747855997058526">የይለፍ ቃል ይምረጡ...</translation>
 <translation id="952704832371081537">ይቅር</translation>

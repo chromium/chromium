@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">نوشتار برجسته‌شده کوتاه شد</translation>
 <translation id="1111673857033749125">نشانک‌های ذخیره‌شده در سایر دستگاه‌های شما در اینجا نشان داده می‌شوند.</translation>
 <translation id="1113597929977215864">نمایش نمای ساده‌شده</translation>
-<translation id="1118561384561215815">دریافت راهنمایی برای کارها در وب</translation>
 <translation id="1123070903960493543">‏نحوه تعامل شما با Chrome، تنظیماتی که انتخاب کرده‌اید، جزئیات خرابی‌های Chrome</translation>
 <translation id="1126809382673880764">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. درصورت موجود بودن، همچنان ویژگی حفاظتی «مرور ایمن» را در سرویس‌های دیگر Google مثل Gmail و «جستجو» دریافت می‌کنید.</translation>
 <translation id="1129510026454351943">جزئیات: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@
 <translation id="2286841657746966508">آدرس ارسال صورتحساب</translation>
 <translation id="228704530595896923">فهرست گزینه‌های هم‌رسانی.</translation>
 <translation id="230115972905494466">هیچ دستگاه سازگاری پیدا نشد</translation>
-<translation id="230155349749732438">برای استفاده از این تنظیم، باید <ph name="BEGIN_LINK" />بهبود جستجو و مرور<ph name="END_LINK" /> روشن شود</translation>
 <translation id="2318045970523081853">برای برقراری تماس، ضربه بزنید.</translation>
 <translation id="2321086116217818302">درحال آماده‌سازی گذرواژه‌ها…</translation>
 <translation id="2323763861024343754">فضای ذخیره‌سازی سایت</translation>
@@ -428,7 +426,6 @@
 <translation id="3269093882174072735">بارگیری تصویر</translation>
 <translation id="3280562213547448728">جستجوی گفتاری</translation>
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
-<translation id="3284510035090979597">کمک کنش‌گرایانه</translation>
 <translation id="3285080554353377245">‏ویدیوهایی درباره نحوه استفاده از Chrome</translation>
 <translation id="3288003805934695103">بار کردن مجدد صفحه</translation>
 <translation id="3290249595466894471">نمونه کوچکی از صفحات، بارگیری‌ها، فعالیت افزونه، و اطلاعات سیستم را هم ارسال می‌کند تا به کشف تهدیدهای جدید کمک کند</translation>
@@ -590,7 +587,6 @@
 <translation id="4209895695669353772">‏برای اینکه Google محتوای شخصی‌‏سازی‌‏شده به شما پیشنهاد دهد، همگام‌سازی را روشن کنید</translation>
 <translation id="4214315110991671325">‏اگر کوکی‌ها را مجاز کنید، ممکن است Chrome از آن‌ها برای پیش‌بارگذاری استفاده کند.</translation>
 <translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
-<translation id="4227318652298512614">هر سایتی را که می‌خواهید دنبال کنید</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4248098802131000011">گذرواژه خود را از نقض داده و سایر مسائل امنیتی ایمن نگه دارید</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
@@ -881,7 +877,6 @@
 <translation id="5795872532621730126">جستجو و مرور</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{۱ ساعت قبل}one{# ساعت قبل}other{# ساعت قبل}}</translation>
 <translation id="5810288467834065221">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
-<translation id="5810864297166300463">دستیار وب</translation>
 <translation id="5813552293717797987">این مرورگر را <ph name="PARENT_NAME_1" /> و <ph name="PARENT_NAME_2" /> مدیریت می‌کنند.</translation>
 <translation id="5814131985548525293">برای شروع، اینجا تایپ کنید یا روی نماد صدا ضربه بزنید</translation>
 <translation id="5814749351757353073">از سایت‌های محبوبتان باخبر باشید</translation>
@@ -904,7 +899,6 @@
 <translation id="5869789175361934029">ادامه از دستگاهی دیگر</translation>
 <translation id="587735546353481577">‏برای دنبال کردن سایت، به سایت موردنظر بروید، منوی Chrome را باز کنید و روی «دنبال کردن» ضربه بزنید.</translation>
 <translation id="5879072387416556377">پیشنهادهای بهتری دریافت کنید</translation>
-<translation id="5884076754568147479">‏برای کمک به انجام کارها، Google نشانی‌های وب و محتوای سایت‌هایی را که در آن‌ها از «دستیار» استفاده می‌کنید، و همچنین اطلاعاتی را که ازطریق «دستیار» ارسال می‌کنید دریافت خواهد کرد</translation>
 <translation id="5906513782029855931">‏دانستن نشانی وب‌سایت‌ها به «دستیار Google» امکان می‌دهد در تکمیل تکالیف به شما کمک کند. می‌توانید «دستیار» را در «تنظیمات Chrome» خاموش کنید.</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5919204609460789179">برای شروع همگام‌سازی، <ph name="PRODUCT_NAME" /> را به‌روزرسانی کنید</translation>
@@ -1346,7 +1340,6 @@
 <translation id="8127542551745560481">ویرایش صفحه اصلی</translation>
 <translation id="8130309322784422030">ممکن است اطلاعات ذخیره‌شده ورود به سیستم قدیمی باشد</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
-<translation id="8153351135626613369">وقتی «دستیار» تشخیص دهد در وب‌سایت‌های پشتیبانی‌شده می‌تواند به شما کمک کند، ظاهر می‌شود</translation>
 <translation id="8156139159503939589">به چه زبانی مطالعه می‌کنید؟</translation>
 <translation id="8168435359814927499">محتوا</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> فایل باقی مانده است</translation>

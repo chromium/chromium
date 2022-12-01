@@ -338,7 +338,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1741613555002899862">Måste anges och vara en giltig sträng när DnsOverHttpsMode är <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Din webbläsare hanteras</translation>
 <translation id="1746113442205726301">Bild Y – byte</translation>
-<translation id="1747819498338037826">Ändra automatiskt</translation>
 <translation id="17513872634828108">Öppna flikar</translation>
 <translation id="1752021286346845558">Postfack 8</translation>
 <translation id="1753068535428855445">Dating och personligt</translation>
@@ -1371,7 +1370,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="4451135742916150903">Får begära tillstånd att ansluta till HID-enheter</translation>
 <translation id="4452328064229197696">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du bör se över dina sparade lösenord för att skydda dina konton.</translation>
-<translation id="4455222631300069614">Byt genast lösenord</translation>
 <translation id="4460315069258617173">Tillåts tills du stänger den här webbplatsens flikar</translation>
 <translation id="4464826014807964867">Webbplatser med information från organisationen</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1606,7 +1604,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5040262127954254034">Integritet</translation>
 <translation id="5043480802608081735">Länk som du har kopierat</translation>
-<translation id="5044545992476246592">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Google-assistenten kan byta lösenord åt dig automatiskt.</translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
 <translation id="5051305769747448211">Ståuppkomedi</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Om du vill skicka den här filen med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}other{Om du vill skicka de här filerna med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
@@ -1672,7 +1669,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="51918995459521422"><ph name="ORIGIN" /> vill ladda ned flera filer</translation>
 <translation id="519422657042045905">Kommentering är inte tillgängligt</translation>
 <translation id="5201306358585911203">På en inbäddad sida på den här sidan står det</translation>
-<translation id="5204468114771111727">Chrome upptäckte att lösenordet som du precis använde har läckt ut vid ett dataintrång. Google-assistenten kan byta lösenord åt dig automatiskt.</translation>
 <translation id="5205222826937269299">Namn måste anges</translation>
 <translation id="5209518306177824490">SHA-1-fingeravtryck</translation>
 <translation id="5209670883520018268">Fack 20</translation>

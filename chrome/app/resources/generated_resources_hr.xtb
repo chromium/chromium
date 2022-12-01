@@ -187,6 +187,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1166583374608765787">Pregled ažuriranja naziva</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pripada radnoj površini <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Otvaranje u <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Automatski promijeni jezik u jezik odabranog sadržaja</translation>
 <translation id="1169266963600477608">Kontrole igre</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> sadrži osjetljive ili opasne podatke. Administrator kaže: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> želi se povezati s HID uređajem</translation>
@@ -2568,7 +2569,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3341703758641437857">Dozvoli pristup URL-ovima datoteke</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" želi ukloniti to proširenje.</translation>
 <translation id="3343977377045378693">Postavljanje</translation>
-<translation id="3345135638360864351">Slanje zahtjeva za pristup ovoj web-lokaciji korisniku <ph name="NAME" /> nije uspjelo. Pokušaj ponovo.</translation>
 <translation id="3345634917232014253">Sigurnosna provjera upravo je izvršena</translation>
 <translation id="3345886924813989455">Nije pronađen podržani preglednik</translation>
 <translation id="3347086966102161372">K&amp;opiraj adresu slike</translation>
@@ -2578,6 +2578,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3353786022389205125">Uključite opciju Prikaži zaključan zaslon prilikom vraćanja iz mirovanja i pokušajte ponovo</translation>
 <translation id="3354768182971982851">Stare verzije Chromeovih aplikacija neće se otvoriti na Mac uređajima nakon prosinca 2022. Možete provjeriti je li dostupna nova verzija.</translation>
 <translation id="3354972872297836698">Uparivanje s uređajem <ph name="DEVICE_NAME" /> nije uspjelo; odaberite uređaj da biste pokušali ponovo</translation>
+<translation id="335581015389089642">Govor</translation>
 <translation id="3355936511340229503">Pogreška veze</translation>
 <translation id="3356036636691722598">Uživajte u videoigrama na Chromebooku</translation>
 <translation id="3356469410714175391">(Virtualna kartica je omogućena)</translation>
@@ -3156,7 +3157,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3883482240657453056">Traži popuste za trgovine <ph name="MERCHANT_NAME_1" /> i <ph name="MERCHANT_NAME_2" />.</translation>
 <translation id="3884152383786131369">Web-sadržaj dostupan na više jezika koristit će prvi podržani jezik s ovog popisa. Te se postavke sinkroniziraju s postavkama vašeg preglednika. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Ažuriranjima upravlja vaš administrator</translation>
-<translation id="3886446263141354045">Zahtjev za pristup toj web-lokaciji poslan je korisniku <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Prikaz popisa uređaja</translation>
 <translation id="3888053818972567950">Veza <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Izrada bilježaka pomoću aplikacije <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8096,7 +8096,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8540942859441851323">Davatelj usluga zahtijeva roaming</translation>
 <translation id="8541462173655894684">Nije pronađen nijedan pisač na poslužitelju za ispis</translation>
 <translation id="8541838361296720865">Pritisnite prekidač ili tipku tipkovnice da biste ih dodijelili radnji <ph name="ACTION" /></translation>
-<translation id="8543556556237226809">Imate li pitanja? Obratite se osobi koja nadzire vaš profil.</translation>
 <translation id="8546186510985480118">Na uređaju nema dovoljno prostora</translation>
 <translation id="8546306075665861288">Predmemorija slike</translation>
 <translation id="8546930481464505581">Prilagodba dodirne trake</translation>

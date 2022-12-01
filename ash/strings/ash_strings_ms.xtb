@@ -555,6 +555,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Mati, satu apl}other{Mati, # apl}}</translation>
 <translation id="4066027111132117168">Hidup, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Isyarat sederhana</translation>
+<translation id="4086921558679520050">Hidupkan suis mikrofon fizikal pada peranti anda</translation>
 <translation id="4112140312785995938">Cari Ke Belakang</translation>
 <translation id="4114315158543974537">Hidupkan Hab Telefon</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -607,6 +608,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, kekuatan isyarat <ph name="SIGNAL_STRENGTH" /> peratus</translation>
 <translation id="4378551569595875038">Menyambung...</translation>
 <translation id="4379531060876907730">Berikut ialah alatan stilus anda</translation>
+<translation id="4381031910344220229">Ini membenarkan akses mikrofon untuk <ph name="APP_NAME" /> dan semua apl serta laman web yang mempunyai kebenaran mikrofon</translation>
 <translation id="4389184120735010762">Anda menekan pintasan papan kekunci untuk penggadang yang didok. Adakah anda ingin menghidupkannya?</translation>
 <translation id="439598569299422042">Dijeda, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Tidak dapat menyimpan rakaman skrin</translation>
@@ -961,6 +963,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ialah sesi terurus yang diurus oleh <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> disambungkan</translation>
 <translation id="6351032674660237738">CADANGAN APL</translation>
+<translation id="6352082849089527770">Rangkaian tidak diketahui</translation>
 <translation id="6359587239691116345">Dapatkan ciri terkini dan peningkatan keselamatan. Jika anda menolak kemaskinian ini, peranti anda mungkin tidak lagi berfungsi dengan betul dan anda mungkin mengalami isu keselamatan dan prestasi.</translation>
 <translation id="6376931439017688372">Bluetooth dihidupkan</translation>
 <translation id="6381109794406942707">Untuk membuka kunci peranti, masukkan PIN anda.</translation>
@@ -1137,6 +1140,7 @@ Pemasangan baharu</translation>
 <translation id="7360036564632145207">Tindakan menukar perlindungan akses data anda untuk tetapan peranti persisian dapat mengoptimumkan prestasi</translation>
 <translation id="736045644501761622">Tetapkan hiasan latar &amp; gaya</translation>
 <translation id="7371404428569700291">Rakam tetingkap</translation>
+<translation id="737315737514430195">Ini membenarkan akses mikrofon untuk semua apl dan laman web yang mempunyai kebenaran mikrofon</translation>
 <translation id="7377169924702866686">Caps Lock dihidupkan.</translation>
 <translation id="7377481913241237033">Sambung menggunakan kod</translation>
 <translation id="7378203170292176219">Seret untuk memilih kawasan yang hendak dirakam</translation>
@@ -1205,6 +1209,7 @@ Pemasangan baharu</translation>
 <translation id="7671610481353807627">Apl diisih mengikut warna</translation>
 <translation id="7672095158465655885">Disambungkan kepada <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Input kamera ditetapkan kepada <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Ini membenarkan akses mikrofon untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dan semua apl serta laman web yang mempunyai kebenaran mikrofon</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Tambah rangkaian selular baharu</translation>
 <translation id="7720400844887872976">Dihidupkan hingga <ph name="TIME" /></translation>

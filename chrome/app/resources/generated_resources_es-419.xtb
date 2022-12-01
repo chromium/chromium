@@ -187,6 +187,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1166583374608765787">Revisar actualización del nombre</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertenece al escritorio <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Cambiar automáticamente el idioma para que coincida con el contenido seleccionado</translation>
 <translation id="1169266963600477608">Controles de juegos</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> incluye datos sensibles o peligrosos. Tu administrador dice "<ph name="CUSTOM_MESSAGE" />".</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> quiere conectarse a un dispositivo HID</translation>
@@ -1282,6 +1283,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2157875535253991059">Esta página está en modo de pantalla completa.</translation>
 <translation id="2158475082070321257">Copiar el vínculo al texto destacado</translation>
 <translation id="2159488579268505102">USB-C</translation>
+<translation id="2161058806218011758">Alcance de <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">Agregar Wi-Fi</translation>
 <translation id="2162155940152307086">La sincronización volverá a comenzar cuando salgas de la configuración</translation>
 <translation id="2162705204091149050">Leer información sobre tu navegador, SO, dispositivo, software y archivos instalados</translation>
@@ -2559,7 +2561,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3341703758641437857">Permitir el acceso a las URL del archivo</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" desea quitar esta extensión.</translation>
 <translation id="3343977377045378693">Realizando la configuración</translation>
-<translation id="3345135638360864351">No se pudo enviar la solicitud de acceso al sitio a <ph name="NAME" />. Vuelve a intentarlo.</translation>
 <translation id="3345634917232014253">Hace un momento, se ejecutó la verificación de seguridad</translation>
 <translation id="3345886924813989455">No se ha encontrado el navegador compatible</translation>
 <translation id="3347086966102161372">Copiar dirección de la imagen</translation>
@@ -2569,6 +2570,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3353786022389205125">Activa "Mostrar la pantalla bloqueada al salir del modo de suspensión" y vuelve a intentarlo.</translation>
 <translation id="3354768182971982851">Las versiones anteriores de las Apps de Chrome dejarán de funcionar en dispositivos con Mac después de diciembre de 2022. Puedes comprobar si hay una nueva versión disponible.</translation>
 <translation id="3354972872297836698">No se pudo vincular con el dispositivo <ph name="DEVICE_NAME" />; selecciónalo y vuelve a intentarlo</translation>
+<translation id="335581015389089642">Voz</translation>
 <translation id="3355936511340229503">Error de conexión</translation>
 <translation id="3356036636691722598">Disfruta los juegos en tu Chromebook</translation>
 <translation id="3356469410714175391">(Tarjeta virtual habilitada)</translation>
@@ -2667,6 +2669,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3445047461171030979">Respuestas rápidas del Asistente de Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344537926140058498">Tu organización bloqueó este archivo porque incluye contenido sensible o peligroso. Pídele al propietario que solucione el problema.</translation>
+<translation id="344546372406570257">{NUM_SITES,plural, =1{Se quitaron los permisos de <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que no visitaste recientemente}other{Se quitaron los permisos de <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que no visitaste recientemente}}</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Leer los datos en un número de sitios web</translation>
@@ -2877,6 +2880,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3642699533549879077">Si otra persona observa tu pantalla, recibirás una alerta y se ocultará el contenido de las notificaciones.</translation>
 <translation id="3643962751030964445">Este dispositivo está administrado por <ph name="DEVICE_MANAGER" />; <ph name="DEVICE_MANAGER" /> solicita un nuevo perfil para la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3645372836428131288">Mueve el dedo ligeramente para capturar otra parte de la huella dactilar.</translation>
+<translation id="3647051300407077858">Revisar los permisos de notificaciones</translation>
 <translation id="3647654707956482440">No se pudo usar este vínculo. Para intentarlo nuevamente, verifica que no haya errores ortográficos o usa otro vínculo.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recibido de <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recibidos de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Se detectó <ph name="USB_DEVICE_NAME" /></translation>
@@ -3056,6 +3060,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="380408572480438692">Si habilitas la recopilación de datos de rendimiento, ayudarás a Google a mejorar el sistema con el tiempo. Para que se envíen los datos, debes presentar un informe de comentarios (Alt+Mayúscula+I) e incluir datos de rendimiento. Puedes volver a esta pantalla para inhabilitar la recopilación en cualquier momento.</translation>
 <translation id="3807249107536149332">No se permite <ph name="EXTENSION_NAME" /> (ID de la extensión "<ph name="EXTENSION_ID" />") en una pantalla de acceso.</translation>
 <translation id="3807747707162121253">&amp;Cancelar</translation>
+<translation id="3808202562160426447">Atenuar el contenido en segundo plano</translation>
 <translation id="3808443763115411087">Desarrollo de apps para Android en Crostini</translation>
 <translation id="38089336910894858">Mostrar una advertencia antes de salir con ⌘Q</translation>
 <translation id="3809272675881623365">Conejo</translation>
@@ -3144,7 +3149,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3883482240657453056">Obtener descuentos para <ph name="MERCHANT_NAME_1" /> y <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">El contenido web disponible en múltiples idiomas usará el primer idioma compatible de esta lista. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">El administrador gestiona las actualizaciones</translation>
-<translation id="3886446263141354045">Tu solicitud de acceso a este sitio se envió a <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Mostrar la lista de dispositivos</translation>
 <translation id="3888053818972567950">Conexión con <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -3647,6 +3651,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4364567974334641491"><ph name="APP_NAME" /> comparte una ventana.</translation>
 <translation id="4364830672918311045">Mostrar notificaciones</translation>
 <translation id="4366138410738374926">Se inició la impresión</translation>
+<translation id="4367513928820380646">Revisar los permisos que se quitaron</translation>
 <translation id="4369121877634339065">Arrastra cualquier imagen para buscarla.</translation>
 <translation id="4369215744064167350">Se aprobó la solicitud de acceso al sitio web</translation>
 <translation id="4370975561335139969">El correo electrónico y la contraseña que ingresaste no coinciden.</translation>
@@ -4365,6 +4370,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
 <translation id="504561833207953641">Abriendo en una sesión existente del navegador</translation>
 <translation id="5049614114599109018">Utilizar el historial de entrada</translation>
+<translation id="5050063070033073713">{NUM_SITES,plural, =1{Este sitio envió muchas notificaciones recientemente. Puedes impedir que te envíe notificaciones en el futuro.}other{Estos sitios enviaron muchas notificaciones recientemente. Puedes impedir que te envíen notificaciones en el futuro.}}</translation>
 <translation id="5051836348807686060">Los idiomas seleccionados no son compatibles con el corrector ortográfico</translation>
 <translation id="5052499409147950210">Editar sitio</translation>
 <translation id="505347685865235222">Grupo sin nombre: <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -7259,6 +7265,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7775694664330414886">Se movió la pestaña a un grupo sin nombre - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> verá los archivos de <ph name="FOLDERNAME" /> hasta que cierres todas las pestañas de este sitio</translation>
 <translation id="7776701556330691704">No se encontraron voces</translation>
+<translation id="7777624210360383048">Acceso directo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
 <translation id="7781335840981796660">Se eliminarán todas las cuentas de usuario y todos los datos locales.</translation>
 <translation id="7782102568078991263">No hay más sugerencias de Google.</translation>
 <translation id="7782717250816686129">Almacena los datos persistentes en la pantalla de acceso para que en el inicio de sesión se completen las credenciales automáticamente.</translation>
@@ -7291,6 +7298,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
+<translation id="7815583197273433531">Editar el acceso directo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">Se bloqueó una descarga peligrosa</translation>
 <translation id="7817361223956157679">El teclado en pantalla todavía no es compatible con apps de Linux</translation>
 <translation id="7818135753970109980">Se agregó un tema nuevo (<ph name="EXTENSION_NAME" />).</translation>
@@ -7365,6 +7373,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Ver cuenta</translation>
 <translation id="7883792253546618164">Puedes anular la suscripción en cualquier momento.</translation>
+<translation id="7884372232153418877">{NUM_SITES,plural, =1{Revisa 1 sitio que envió muchas notificaciones}other{Revisa {NUM_SITES} sitios que enviaron muchas notificaciones}}</translation>
 <translation id="788453346724465748">Cargando información de la cuenta…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{un elemento}other{# elementos}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -8075,7 +8084,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8540942859441851323">El proveedor requiere el servicio de roaming</translation>
 <translation id="8541462173655894684">No se encontraron impresoras en el servidor de impresión</translation>
 <translation id="8541838361296720865">Presiona un interruptor o una tecla del teclado para asignarlo a "<ph name="ACTION" />".</translation>
-<translation id="8543556556237226809">¿Tienes preguntas? Comunícate con la persona que supervisa tu perfil.</translation>
 <translation id="8546186510985480118">El dispositivo tiene poco espacio</translation>
 <translation id="8546306075665861288">Caché de imagen</translation>
 <translation id="8546930481464505581">Personalizar la barra táctil</translation>
@@ -8418,6 +8426,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8859174528519900719">Submarco: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">No se pudieron cargar las Condiciones del Servicio</translation>
 <translation id="8859662783913000679">Cuenta parental</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} cuenta}other{{COUNT} cuentas}}</translation>
 <translation id="8861568709166518036">Usa los botones de la pantalla para navegar hacia la pantalla de inicio, volver atrás y cambiar de app. Se activa automáticamente si ChromeVox o los clics automáticos están activados.</translation>
 <translation id="8862003515646449717">Cambia a un navegador rápido</translation>
 <translation id="8863753581171631212">Abrir vínculo en una ventana nueva de <ph name="APP" /></translation>

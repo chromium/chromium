@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Haijahifadhiwa kamwe</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Alamisho za Eneokazi</translation>
+<translation id="1067561478268651872">Sera ya <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> haitumiki isipokuwa sera ya <ph name="SECURE_DNS_SALT" /> ikiwekwa.</translation>
 <translation id="1068672505746868501">Usiwahi kutafsiri kurasa katika lugha ya <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Magari mahuluti na magari mbadala</translation>
 <translation id="1070901266639972381">Usiku</translation>
@@ -337,7 +338,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1741613555002899862">Lazima ibainishwe na iwe mfuatano sahihi wakati DnsOverHttpsMode ni <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Kivinjari chako kinadhibitiwa</translation>
 <translation id="1746113442205726301">Ugeuzaji wa Picha ya Y</translation>
-<translation id="1747819498338037826">Badilisha kiotomatiki</translation>
 <translation id="17513872634828108">Vichupo vilivyo wazi</translation>
 <translation id="1752021286346845558">Kikasha cha barua cha nane</translation>
 <translation id="1753068535428855445">Kuchumbiana na mambo binafsi</translation>
@@ -1370,7 +1370,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4450893287417543264">Usionyeshe tena</translation>
 <translation id="4451135742916150903">Inaweza kuomba ruhusa ya kuunganisha kwenye vifaa vya HID</translation>
 <translation id="4452328064229197696">Nenosiri ulilotumia sasa hivi limepatikana kwenye tukio la ufichuzi haramu wa data. Ili uimarishe usalama wa akaunti zako, Kidhibiti cha Manenosiri cha Google kinapendekeza ukague manenosiri yako yaliyohifadhiwa.</translation>
-<translation id="4455222631300069614">Badilisha nenosiri lako sasa</translation>
 <translation id="4460315069258617173">Inaruhusiwa hadi utakapofunga vichupo vya tovuti hii</translation>
 <translation id="4464826014807964867">Tovuti zenye maelezo kutoka kwa shirika lako</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1605,7 +1604,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5039804452771397117">Ruhusu</translation>
 <translation id="5040262127954254034">Faragha</translation>
 <translation id="5043480802608081735">Kiungo Ulichonakili</translation>
-<translation id="5044545992476246592">Nenosiri ulilotumia hivi punde limepatikana kwenye ufichuzi haramu wa data. Programu yako ya Mratibu wa Google inaweza kubadilisha nenosiri lako kiotomatiki.</translation>
 <translation id="5045550434625856497">Nenosiri lisilo sahihi</translation>
 <translation id="5051305769747448211">Vichekesho vya moja kwa moja</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ili utume faili hii kwa kutumia kipengele cha Uhamishaji wa Karibu, futa baadhi ya faili kwenye kifaa chako ili upate nafasi (<ph name="DISK_SPACE_SIZE" />)}other{Ili utume faili hizi kwa kutumia kipengele cha Uhamishaji wa Karibu, futa baadhi ya faili kwenye kifaa chako ili upate nafasi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
@@ -1671,7 +1669,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="51918995459521422"><ph name="ORIGIN" /> inataka kupakua faili kadhaa</translation>
 <translation id="519422657042045905">Vidokezi havipatikani</translation>
 <translation id="5201306358585911203">Ukurasa uliopachikwa kwenye ukurasa huu unasema</translation>
-<translation id="5204468114771111727">Chrome imepata nenosiri ambalo umeweka sasa hivi kwenye tukio la ufichuzi haramu wa data. Programu yako ya Mratibu wa Google inaweza kubadilisha nenosiri lako kiotomatiki.</translation>
 <translation id="5205222826937269299">Jina linahitajika</translation>
 <translation id="5209518306177824490">Alama ya SHA-1</translation>
 <translation id="5209670883520018268">Trei ya 20</translation>
@@ -2099,6 +2096,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6328786501058569169">Tovuti hii ni ya udanganyifu</translation>
 <translation id="6337133576188860026">Huongeza nafasi isiyozidi <ph name="SIZE" />. Baadhi ya tovuti huenda zikapakia polepole zaidi utakapozivinjari tena.</translation>
 <translation id="6337534724793800597">Chuja sera kwa jina</translation>
+<translation id="633770708279464947">Thamani ya <ph name="SECURE_DNS_SALT" /> si sahihi na haitatumika.</translation>
 <translation id="6340739886198108203">Sera ya msimamizi haipendekezi kurekodi au kupiga picha za skrini wakati maudhui ya siri yanaonekana:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Sera ya msimamizi haipendekezi kupakia faili hii kwenye <ph name="DESTINATION_NAME" />}other{Sera ya msimamizi haipendekezi kupakia faili hizi kwenye <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aina Zinazotumika</translation>
@@ -2991,6 +2989,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8654126188050905496">Milimita 55 x 91</translation>
 <translation id="8663226718884576429">Muhtasari wa Agizo, <ph name="TOTAL_LABEL" />, Maelezo Zaidi</translation>
 <translation id="8666678546361132282">Kiingereza</translation>
+<translation id="8671519637524426245">Thamani ya <ph name="SECURE_DNS_SALT" /> haitimizi masharti ya ukubwa.</translation>
 <translation id="867224526087042813">Sahihi</translation>
 <translation id="8672264262457010862">Biashara na viwanda</translation>
 <translation id="8676424191133491403">Hakuna kuchelewa</translation>
@@ -3090,6 +3089,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8913778647360618320">Kitufe cha 'Dhibiti njia za kulipa', bonyeza 'Enter' ili udhibiti maelezo yako ya malipo na ya kadi ya mikopo katika mipangilio ya Chrome</translation>
 <translation id="8922013791253848639">Ruhusu matangazo kwenye tovuti hii wakati wote</translation>
 <translation id="892588693504540538">Toboa juu kulia</translation>
+<translation id="8930098617363288380">Thamani ya <ph name="SECURE_DNS_SALT" /> haifai na haitatumika, isipokuwa sera ya <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ikiwekwa.</translation>
 <translation id="8930330541574156305">Mali isiyohamishika</translation>
 <translation id="8931333241327730545">Je, ungependa kuhifadhi kadi hii katika Akaunti yako ya Google?</translation>
 <translation id="8932102934695377596">Saa yako iko nyuma</translation>

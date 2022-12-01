@@ -493,6 +493,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famille</translation>
+<translation id="5695599963893094957">Appuyez sur une touche de votre clavier. Vous pouvez appuyer sur un maximum de quatre touches en même temps.</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Mettre à jour <ph name="DEVICE_NAME" /></translation>
@@ -619,7 +620,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="6791471867139427246">couleur éclairage clavier</translation>
-<translation id="6793680441750437230">Appuyez sur une touche de votre clavier. Vous pouvez appuyer sur un maximum de quatre touches en même temps. Appuyez sur Alt+Échap pour fermer la boîte de dialogue.</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>

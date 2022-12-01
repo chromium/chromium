@@ -730,6 +730,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4987738733603015246">16. darbvieta</translation>
 <translation id="5003993274120026347">Nākamais teikums</translation>
 <translation id="5016558321564993266">Pārslēdziet marķieri. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Piekļuve ierīces mikrofonam ir ieslēgta</translation>
 <translation id="5030687792513154421">Izmantošanas laiks beidzies</translation>
 <translation id="5033299697334913360">Noklikšķiniet jebkurā vietā, lai tvertu visu ekrānu.</translation>
 <translation id="5035236842988137213">Ierīce <ph name="DEVICE_NAME" /> ir savienota ar jaunu tālruni</translation>
@@ -965,6 +966,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6359587239691116345">Iegūstiet jaunākās funkcijas un drošības uzlabojumus. Ja noraidīsiet šo atjauninājumu, iespējams, jūsu ierīce vairs nedarbosies pareizi un jūs saskarsieties ar drošības un veiktspējas problēmām.</translation>
 <translation id="6376931439017688372">Bluetooth ir ieslēgts</translation>
 <translation id="6381109794406942707">Lai atbloķētu ierīci, ievadiet PIN.</translation>
+<translation id="638716340450135524">Ieslēgt piekļuvi kamerai</translation>
 <translation id="639644700271529076">Funkcija CAPS LOCK ir izslēgta.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google asistents</translation>
@@ -972,6 +974,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="642644398083277086">Visu paziņojumu notīrīšana</translation>
 <translation id="643147933154517414">Viss gatavs</translation>
 <translation id="6431865393913628856">Ierakstīt ekrānu</translation>
+<translation id="6442259747294754014">Piekļuve ierīces mikrofonam ir izslēgta</translation>
 <translation id="6445835306623867477">“<ph name="ROUTE_TITLE" />” apraide ierīcē “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> pasākums</translation>
 <translation id="6449483711453944360">Linux lietotnes un inkognito režīma logi pašlaik netiek atbalstīti.</translation>
@@ -1369,6 +1372,7 @@ Jauna instalācija</translation>
 <translation id="8598235756057743477">Lietotņu kārtošana pēc nosaukuma vai krāsas</translation>
 <translation id="8614517853887502247">Lietotņu <ph name="APP_1_TITLE" /> un <ph name="APP_2_TITLE" /> paziņojumi ir paslēpti, jo ir ieslēgta skatīšanas aizsardzība.</translation>
 <translation id="8627191004499078455">Izveidots savienojums ar ierīci (<ph name="DEVICE_NAME" />)</translation>
+<translation id="8630991711272431708">Izslēgt piekļuvi kamerai</translation>
 <translation id="8631727435199967028">Pieejamības iestatījumi</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="8639760480004882931">Atlicis: <ph name="PERCENTAGE" />%</translation>

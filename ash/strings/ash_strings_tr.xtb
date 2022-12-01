@@ -554,6 +554,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Kapalı, 1 uygulama}other{Kapalı, # uygulama}}</translation>
 <translation id="4066027111132117168">Açık, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Orta düzeyde sinyal</translation>
+<translation id="4086921558679520050">Cihazınızda fiziksel mikrofon anahtarını açın</translation>
 <translation id="4112140312785995938">Geri Sar</translation>
 <translation id="4114315158543974537">Phone Hub'ı etkinleştirin</translation>
 <translation id="4115378294792113321">Macenta</translation>
@@ -606,6 +607,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, sinyal gücü yüzde <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="4378551569595875038">Bağlanıyor...</translation>
 <translation id="4379531060876907730">Bunlar ekran kalemi araçlarınızdır</translation>
+<translation id="4381031910344220229">Mikrofonun sesinin açılması; <ph name="APP_NAME" /> adlı uygulamanın yanı sıra mikrofon izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="4389184120735010762">Yerleştirilmiş büyüteç klavye kısayoluna bastınız. Bu özelliği açmak istiyor musunuz?</translation>
 <translation id="439598569299422042">Duraklatıldı, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ekran video kaydı kaydedilemiyor</translation>
@@ -728,6 +730,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4987738733603015246">Masa 16</translation>
 <translation id="5003993274120026347">Sonraki cümle</translation>
 <translation id="5016558321564993266">İşaretçiyi açın/kapatın. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Cihazın mikrofonu erişimi açık</translation>
 <translation id="5030687792513154421">Süre doldu</translation>
 <translation id="5033299697334913360">Tam ekran görüntüsünü yakalamak için herhangi bir yeri tıklayın</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />, yeni bir telefona bağlandı</translation>
@@ -959,9 +962,11 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" />, <ph name="MANAGER" /> tarafından yönetilen bir oturumdur</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> bağlandı</translation>
 <translation id="6351032674660237738">UYGULAMA ÖNERİLERİ</translation>
+<translation id="6352082849089527770">Bilinmeyen ağlar</translation>
 <translation id="6359587239691116345">En son özellikleri ve güvenlik iyileştirmelerini edinin. Bu güncellemeyi reddederseniz cihazınız artık düzgün çalışmayabilir, ayrıca güvenlik ve performans sorunları yaşayabilirsiniz.</translation>
 <translation id="6376931439017688372">Bluetooth açık</translation>
 <translation id="6381109794406942707">Cihazın kilidini açmak için PIN'inizi girin.</translation>
+<translation id="638716340450135524">Kamera erişimini etkinleştirin</translation>
 <translation id="639644700271529076">CAPS LOCK kapalı</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Asistan</translation>
@@ -969,6 +974,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="642644398083277086">Tüm bildirimleri temizleyin</translation>
 <translation id="643147933154517414">Tümü bitti</translation>
 <translation id="6431865393913628856">Ekran kaydı</translation>
+<translation id="6442259747294754014">Cihazın mikrofonu erişimi kapalı</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> etkinlik</translation>
 <translation id="6449483711453944360">Linux uygulamaları ve gizli pencereler şu anda desteklenmiyor</translation>
@@ -1133,6 +1139,7 @@ Yeni yüklenmiş</translation>
 <translation id="7360036564632145207">Çevre birimleri için veri erişimi koruma ayarınızı değiştirmek performansı optimize edebilir</translation>
 <translation id="736045644501761622">Duvar kağıdı ve stil ayarlayın</translation>
 <translation id="7371404428569700291">Pencereyi kaydet</translation>
+<translation id="737315737514430195">Mikrofonun sesinin açılması, izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="7377169924702866686">Caps Lock açık.</translation>
 <translation id="7377481913241237033">Kod kullanarak bağlanma</translation>
 <translation id="7378203170292176219">Kaydedilecek alanı seçmek için sürükleyin</translation>
@@ -1201,6 +1208,7 @@ Yeni yüklenmiş</translation>
 <translation id="7671610481353807627">Uygulamalar renge göre sıralandı</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> ağına bağlı, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Kamera girişi <ph name="CAMERA_NAME" /> olarak ayarlandı.</translation>
+<translation id="7689817529363080918">Mikrofonun sesinin açılması; <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ile birlikte mikrofon izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Yeni hücresel ağ ekle</translation>
 <translation id="7720400844887872976">Saat <ph name="TIME" /> olana kadar açık</translation>
@@ -1364,6 +1372,7 @@ Yeni yüklenmiş</translation>
 <translation id="8598235756057743477">Uygulamalarınızı ada veya renge göre sıralama</translation>
 <translation id="8614517853887502247">Görüntüleme koruması açık olduğundan <ph name="APP_1_TITLE" /> ve <ph name="APP_2_TITLE" /> bildirimleri gösterilmiyor</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> cihazına bağlandı</translation>
+<translation id="8630991711272431708">Kamera erişimini kapat</translation>
 <translation id="8631727435199967028">Erişebilirlik Ayarları</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> kaldı</translation>

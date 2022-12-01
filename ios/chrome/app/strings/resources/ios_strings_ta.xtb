@@ -551,7 +551,6 @@
 <translation id="5190835502935405962">புக்மார்க் பட்டி</translation>
 <translation id="519530786644929958">பதிவிறக்க முடியவில்லை, இதை மீண்டும் முயல முடியாது.</translation>
 <translation id="5197255632782567636">இணையம்</translation>
-<translation id="5210365745912300556">தாவலை மூடுக</translation>
 <translation id="5219295696240154694">இணையத்தில் உள்ள அனைவரின் பாதுகாப்பையும் மேம்படுத்த உதவுங்கள்</translation>
 <translation id="5228579091201413441">ஒத்திசைவை இயக்கு</translation>
 <translation id="5232485538978018676">நிர்வகிக்கப்படும் கணக்கு மூலம் உள்நுழைதல்</translation>
@@ -876,6 +875,7 @@
 <translation id="7531345132340165516">தற்போதைய தளம்</translation>
 <translation id="7537586195939242955">வருந்துகிறோம், இந்த நேரத்தில் உங்கள் பாஸை பாஸ்புக்கில் நிறுவ முடியாது.</translation>
 <translation id="7553234618121028547">முடக்க, <ph name="BEGIN_LINK" />அமைப்புகள்<ph name="END_LINK" /> என்பதைத் திறந்து கடவுச்சொல் விருப்பங்களுக்குச் செல்லவும்.</translation>
+<translation id="7554645225856321710">அனைத்தையும் மூடுக</translation>
 <translation id="7554791636758816595">புதிய தாவல்</translation>
 <translation id="7561196759112975576">எப்போதும்</translation>
 <translation id="7583004045319035904">மறைநிலைத் தாவல்களை அன்லாக் செய்ய <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ஐப் பயன்படுத்தவும்.</translation>

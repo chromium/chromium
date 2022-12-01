@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">Перевірте змінену назву</translation>
 <translation id="1166596238782048887">"<ph name="TAB_TITLE" />" – це вкладка з робочого столу "<ph name="DESK_TITLE" />"</translation>
 <translation id="1168020859489941584">Відкриття через <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Автоматично змінювати мову відповідно до вибраного контенту</translation>
 <translation id="1169266963600477608">Елементи керування іграми</translation>
 <translation id="1169435433292653700">Файл "<ph name="FILE_NAME" />" містить конфіденційні або небезпечні дані. Повідомлення від адміністратора: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> хоче під'єднатися до пристрою HID</translation>
@@ -2581,7 +2582,6 @@
 <translation id="3341703758641437857">Надавати доступ до URL-адрес файлу</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" хоче видалити це розширення.</translation>
 <translation id="3343977377045378693">Виконується налаштування</translation>
-<translation id="3345135638360864351">Не вдалося надіслати запит на доступ до цього сайту користувачеві <ph name="NAME" />. Повторіть спробу.</translation>
 <translation id="3345634917232014253">Щойно виконано перевірку безпеки</translation>
 <translation id="3345886924813989455">Не знайдено жодного веб-переглядача, який підтримується</translation>
 <translation id="3347086966102161372">Копіювати адресу зображення</translation>
@@ -2591,6 +2591,7 @@
 <translation id="3353786022389205125">Увімкніть опцію "Показувати заблокований екран, коли пристрій виходить із режиму сну" й повторіть спробу</translation>
 <translation id="3354768182971982851">Старі версії додатків Chrome не відкриватимуться на пристроях Mac після грудня 2022 року. Ви можете перевірити, чи доступна нова версія.</translation>
 <translation id="3354972872297836698">Не вдалося підключитися до пристрою "<ph name="DEVICE_NAME" />"; виберіть пристрій, щоб повторити спробу</translation>
+<translation id="335581015389089642">Speech</translation>
 <translation id="3355936511340229503">Помилка з’єднання</translation>
 <translation id="3356036636691722598">Насолоджуйтесь іграми на Chromebook</translation>
 <translation id="3356469410714175391">(Віртуальну картку ввімкнено)</translation>
@@ -3169,7 +3170,6 @@
 <translation id="3883482240657453056">Отримуйте знижки в магазинах "<ph name="MERCHANT_NAME_1" />" і "<ph name="MERCHANT_NAME_2" />"</translation>
 <translation id="3884152383786131369">Для веб-контенту, доступного багатьма мовами, використовуватиметься перший доступний варіант зі списку нижче. Ці параметри синхронізуються з налаштуваннями веб-переглядача. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Оновленнями керує адміністратор</translation>
-<translation id="3886446263141354045">Запит на доступ до цього сайту надіслано користувачу <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Показати список пристроїв</translation>
 <translation id="3888053818972567950">Підключення до сервісу <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Створення нотаток за допомогою додатка <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8109,7 +8109,6 @@
 <translation id="8540942859441851323">Постачальник вимагає ввімкнути мобільний Інтернет у роумінгу</translation>
 <translation id="8541462173655894684">На сервері друку немає принтерів</translation>
 <translation id="8541838361296720865">Натисніть перемикач або клавішу клавіатури, щоб призначити їх дії "<ph name="ACTION" />"</translation>
-<translation id="8543556556237226809">Маєте запитання? Зв’яжіться з особою, яка контролює ваш профіль.</translation>
 <translation id="8546186510985480118">На пристрої мало вільного місця</translation>
 <translation id="8546306075665861288">Кеш зображення</translation>
 <translation id="8546930481464505581">Налаштувати Touch Bar</translation>
@@ -8455,6 +8454,7 @@
 <translation id="8859174528519900719">Додатковий фрейм: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Не вдалося завантажити Умови використання</translation>
 <translation id="8859662783913000679">Батьківський обліковий запис</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} обліковий запис}one{{COUNT} обліковий запис}few{{COUNT} облікові записи}many{{COUNT} облікових записів}other{{COUNT} облікового запису}}</translation>
 <translation id="8861568709166518036">Використовуйте кнопки на екрані, щоб повернутися на попередній екран, відкрити головний чи переключатися між додатками. Цей параметр увімкнений, коли активовано ChromeVox або автоматичні кліки.</translation>
 <translation id="8862003515646449717">Виберіть швидкий веб-переглядач</translation>
 <translation id="8863753581171631212">Відкрити посилання в новому вікні додатка <ph name="APP" /></translation>

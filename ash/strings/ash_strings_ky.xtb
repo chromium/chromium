@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Колд-до өчүк}other{# колд-до өчүк}}</translation>
 <translation id="4066027111132117168">Күйүк, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Орточо сигнал</translation>
+<translation id="4086921558679520050">Түзмөгүңүздөгү микрофонду өчүргүчтү күйгүзүңүз</translation>
 <translation id="4112140312785995938">Артка түрдүрүү</translation>
 <translation id="4114315158543974537">Phone Hub'ды күйгүзүңүз</translation>
 <translation id="4115378294792113321">Маджента</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" /> пайыз</translation>
 <translation id="4378551569595875038">Туташууда…</translation>
 <translation id="4379531060876907730">Булар сиздин стилус куралдарыңыз</translation>
+<translation id="4381031910344220229">Микрофонго уруксаты бар колдонмолордун жана вебсайттардын баарына жана <ph name="APP_NAME" /> колдонмосуна микрофонду пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="4389184120735010762">Жалгаштырылган лупаны колдонуу үчүн тез баскычты бастыңыз. Ал күйгүзүлсүнбү?</translation>
 <translation id="439598569299422042">Тындырылды, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Скринкаст сакталган жок</translation>
@@ -728,6 +730,7 @@
 <translation id="4987738733603015246">16-иш такта</translation>
 <translation id="5003993274120026347">Кийинки сүйлөм</translation>
 <translation id="5016558321564993266">Белгилегичти өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">Түзмөктүн микрофонун колдонуу мүмкүнчүлүгү күйүк</translation>
 <translation id="5030687792513154421">Убакыт бүттү</translation>
 <translation id="5033299697334913360">Толук экранды сүрөткө тартуу үчүн каалаган жерин басыңыз</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> жаңы телефонго туташты</translation>
@@ -959,9 +962,11 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> тарабынан башкарылган сеанс</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> туташты</translation>
 <translation id="6351032674660237738">СУНУШТАЛГАН КОЛДОНМОЛОР</translation>
+<translation id="6352082849089527770">Белгисиз тармактар</translation>
 <translation id="6359587239691116345">Жаңы функцияларды жана коопсуздук жакшыртууларын алыңыз. Эгер бул жаңыртууну четке какчаңыз, түзмөгүңүз туура иштебей, коопсуздук жана майнаптуулук көйгөйлөрү чыгышы мүмкүн.</translation>
 <translation id="6376931439017688372">Bluetooth күйүк</translation>
 <translation id="6381109794406942707">Түзмөктүн кулпусун ачуу үчүн PIN кодуңузду киргизиңиз.</translation>
+<translation id="638716340450135524">Түзмөктүн микрофонун колдонуу мүмкүнчүлүгүн күйгүзүү</translation>
 <translation id="639644700271529076">CAPS LOCK өчүк</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Жардамчы</translation>
@@ -969,6 +974,7 @@
 <translation id="642644398083277086">Бардык билдирмелерди өчүрүү</translation>
 <translation id="643147933154517414">Баары даяр</translation>
 <translation id="6431865393913628856">Экрандан видео жаздырып алуу</translation>
+<translation id="6442259747294754014">Түзмөктүн микрофонун колдонуу мүмкүнчүлүгү өчүк</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> бөлмөсүндөгү <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> иш-чара</translation>
 <translation id="6449483711453944360">Linux колдонмолору жана жашыруун терезелер учурда колдоого алынбайт</translation>
@@ -1133,6 +1139,7 @@
 <translation id="7360036564632145207">Дайын-даректерге кирүүнү коргоо деңгээли өзгөрсө, перифериялык жөндөөлөр майнаптуулукту арттырат</translation>
 <translation id="736045644501761622">Тушкагаз жана стилди тууралоо</translation>
 <translation id="7371404428569700291">Терезеден видео жаздырып алуу</translation>
+<translation id="737315737514430195">Микрофонго уруксаты бар колдонмолордун жана вебсайттардын баарына микрофонду пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="7377169924702866686">Caps Lock күйүп турат.</translation>
 <translation id="7377481913241237033">Код менен туташуу</translation>
 <translation id="7378203170292176219">Жаздыргыңыз келген аймакты тандоо үчүн сүйрөңүз</translation>
@@ -1201,6 +1208,7 @@
 <translation id="7671610481353807627">Колдонмолор түсү боюнча иргелет</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> тармагына туташып турат, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067"><ph name="CAMERA_NAME" /> камерадан киргизүү үчүн тандалды.</translation>
+<translation id="7689817529363080918">Микрофонго уруксаты бар колдонмолордун жана вебсайттардын баарына жана <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> колдонмолоруна микрофонду пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Жаңы мобилдик тармакты кошуу</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> чейин күйүк</translation>
@@ -1364,6 +1372,7 @@
 <translation id="8598235756057743477">Колдонмолоруңузду аталышы же түсү боюнча иргей аласыз</translation>
 <translation id="8614517853887502247">Көрүүдөн коргоо функциясы күйүп тургандыктан, <ph name="APP_1_TITLE" /> менен <ph name="APP_2_TITLE" /> билдирмелери жашырылды</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> менен туташты</translation>
+<translation id="8630991711272431708">Камераны колдонуу мүмкүнчүлүгүн өчүрүү</translation>
 <translation id="8631727435199967028">Атайын мүмкүнчүлүктөрдүн жөндөөлөрү</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> калды</translation>

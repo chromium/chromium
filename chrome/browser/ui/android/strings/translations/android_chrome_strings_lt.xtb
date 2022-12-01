@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Paryškinimas sutrumpintas</translation>
 <translation id="1111673857033749125">Čia bus rodomos kituose įrenginiuose išsaugotos žymės.</translation>
 <translation id="1113597929977215864">Rodyti supaprastintą rodinį</translation>
-<translation id="1118561384561215815">Pagalba atliekant užduotis žiniatinklyje</translation>
 <translation id="1123070903960493543">Kaip sąveikaujate su „Chrome“, jūsų pasirinkti nustatymai, išsami „Chrome“ strigčių informacija</translation>
 <translation id="1126809382673880764">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Kai yra galimybė, vis tiek gausite saugaus naršymo pranešimus kitose „Google“ paslaugose, pvz., „Gmail“ ir paieškoje.</translation>
 <translation id="1129510026454351943">Išsami informacija: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="2286841657746966508">Atsiskaitymo adresas</translation>
 <translation id="228704530595896923">Bendrinimo parinkčių sąrašas.</translation>
 <translation id="230115972905494466">Nerasta jokių suderinamų įrenginių</translation>
-<translation id="230155349749732438">Norint naudoti šį nustatymą, parinktis <ph name="BEGIN_LINK" />„Tobulinti paieškas ir naršymą“<ph name="END_LINK" /> turi būti įjungta</translation>
 <translation id="2318045970523081853">Palieskite ir skambinkite</translation>
 <translation id="2321086116217818302">Ruošiami slaptažodžiai…</translation>
 <translation id="2323763861024343754">Svetainės saugykla</translation>
@@ -428,7 +426,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="3269093882174072735">Įkelti vaizdą</translation>
 <translation id="3280562213547448728">Paieška balsu</translation>
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
-<translation id="3284510035090979597">Aktyvi pagalba</translation>
 <translation id="3285080554353377245">Vaizdo įrašai apie „Chrome“ naudojimą</translation>
 <translation id="3288003805934695103">Iš naujo įkelti puslapį</translation>
 <translation id="3290249595466894471">Taip pat siunčia nedaug puslapių, atsisiuntimų, plėtinių veiklos ir sistemos informacijos, kad padėtų aptikti naujas grėsmes</translation>
@@ -590,7 +587,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="4209895695669353772">Jei norite gauti „Google“ siūlomo suasmeninto turinio, įjunkite sinchronizavimą</translation>
 <translation id="4214315110991671325">Jei leisite slapukus, „Chrome“ gali naudoti juos iš anksto įkeldama puslapius.</translation>
 <translation id="4225895483398857530">Įrankių juostos spartusis klavišas</translation>
-<translation id="4227318652298512614">Stebėkite bet kokias svetaines</translation>
 <translation id="4242533952199664413">Atidaryti nustatymus</translation>
 <translation id="4248098802131000011">Apsaugokite slaptažodžius nuo duomenų saugos pažeidimų ir kitų saugos problemų</translation>
 <translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
@@ -881,7 +877,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5795872532621730126">Ieškoti ir naršyti</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Prieš 1 valandą}one{Prieš # valandą}few{Prieš # valandas}many{Prieš # valandos}other{Prieš # valandų}}</translation>
 <translation id="5810288467834065221">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
-<translation id="5810864297166300463">Žiniatinklio pagalba</translation>
 <translation id="5813552293717797987">Šią naršyklę tvarko: <ph name="PARENT_NAME_1" /> ir <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Įveskite čia arba palieskite balso piktogramą, kad pradėtumėte</translation>
 <translation id="5814749351757353073">Stebėkite mėgstamiausias svetaines</translation>
@@ -904,7 +899,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5869789175361934029">Tęsti kitu įrenginiu</translation>
 <translation id="587735546353481577">Jei norite stebėti svetainę, eikite į svetainę, atidarykite „Chrome“ meniu ir palieskite „Stebėti“.</translation>
 <translation id="5879072387416556377">Gaukite geresnių pasiūlymų</translation>
-<translation id="5884076754568147479">Kad padėtų atlikti užduotis, „Google“ gaus svetainių, kuriose naudojate Padėjėją, URL ir turinį bei informaciją, kurią pateikiate naudodami Padėjėją.</translation>
 <translation id="5906513782029855931">Žinodamas svetainių URL, „Google“ padėjėjas gali padėti jums atlikti užduotis. Padėjėją galite išjungti „Chrome“ nustatymuose.</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5919204609460789179">Atnaujinkite „<ph name="PRODUCT_NAME" />“, kad galėtumėte pradėti sinchronizuoti</translation>
@@ -1346,7 +1340,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8127542551745560481">Redaguoti pagrindinį puslapį</translation>
 <translation id="8130309322784422030">Jūsų saugoma prisijungimo informacija gali būti pasenusi</translation>
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>
-<translation id="8153351135626613369">Padėjėjas bus rodomas, kai jis aptiks, kad gali padėti jums palaikomose svetainėse</translation>
 <translation id="8156139159503939589">Kokiomis kalbomis skaitote?</translation>
 <translation id="8168435359814927499">Turinys</translation>
 <translation id="8186512483418048923">Liko failų: <ph name="FILES" /></translation>

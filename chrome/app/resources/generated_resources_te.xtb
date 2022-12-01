@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">పేరుకు సంబంధించిన అప్‌డేట్‌ను రివ్యూ చేయండి</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" /> డెస్క్‌కు సంబంధించినది</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />లో తెరవబడుతోంది...</translation>
+<translation id="116896278675803795">ఎంచుకున్న కంటెంట్‌కు మ్యాచ్ అయ్యేలా భాష ఆటోమేటిక్‌గా మారుతుంది</translation>
 <translation id="1169266963600477608">గేమ్ కంట్రోల్స్</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" />లో గోప్యమైన లేదా హానికరమైన డేటా ఉంది. మీ అడ్మినిస్ట్రేటర్ ఇలా అన్నారు: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> ఒక HID పరికరానికి కనెక్ట్ చేయాలని కోరుకుంటోంది</translation>
@@ -2577,7 +2578,6 @@
 <translation id="3341703758641437857">ఫైల్ URLలకు యాక్సెస్‌ను అనుమతించండి</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ఈ ఎక్స్‌టెన్షన్‌ని తీసివేయాలనుకుంటోంది.</translation>
 <translation id="3343977377045378693">సెటప్‌ను అమలు చేస్తోంది</translation>
-<translation id="3345135638360864351">ఈ సైట్‌ను యాక్సెస్ చేయడానికి మీరు చేసిన రిక్వెస్ట్‌ <ph name="NAME" />కు పంపబడలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="3345634917232014253">ఒక క్షణం క్రితం భద్రతా చెక్ చేయబడింది</translation>
 <translation id="3345886924813989455">మద్దతు గల బ్రౌజర్ కనుగొనబడలేదు</translation>
 <translation id="3347086966102161372">చిత్రం అడ్రస్‌ను కా&amp;పీ చేయి</translation>
@@ -2587,6 +2587,7 @@
 <translation id="3353786022389205125">"స్లీప్ నుండి మేల్కొన్నప్పుడు లాక్ స్క్రీన్‌ను చూడండి" ఆప్షన్‌ను ఆన్ చేసి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="3354768182971982851">పాత వెర్షన్‌లతో కూడిన Chrome యాప్‌లు, డిసెంబర్ 2022 తర్వాత Mac పరికరాలలో తెరవబడవు. కొత్త వెర్షన్ అందుబాటులో ఉందో, లేదో మీరు చెక్ చేయవచ్చు.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> పరికరానికి పెయిర్ చేయడం సాధ్యపడలేదు; మళ్ళీ ట్రై చేయడానికి పరికరాన్ని ఎంచుకోండి</translation>
+<translation id="335581015389089642">ప్రసంగం</translation>
 <translation id="3355936511340229503">కనెక్షన్ ఎర్రర్</translation>
 <translation id="3356036636691722598">మీ Chromebookలో గేమింగ్‌ను ఆస్వాదించండి</translation>
 <translation id="3356469410714175391">(వర్చువల్ కార్డ్ ఎనేబుల్ చేయబడింది)</translation>
@@ -3165,7 +3166,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" />, మరిన్నిటి కోసం డిస్కౌంట్‌లను పొందండి</translation>
 <translation id="3884152383786131369">అనేక భాషలలో అందుబాటులో ఉన్న వెబ్ కంటెంట్, ఈ లిస్ట్‌లోని మొదటి సపోర్ట్ చేసే భాషను ఉపయోగిస్తుంది. ఈ ప్రాధాన్యతలు మీ బ్రౌజర్ సెట్టింగ్‌లతో సింక్ చేయబడతాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">అప్‌డేట్‌లను మీ అడ్మినిస్ట్రేటర్ మేనేజ్ చేస్తారు</translation>
-<translation id="3886446263141354045">మీరు ఈ సైట్‌ను యాక్సెస్ చేయడానికి చేసిన రిక్వెస్ట్‌ <ph name="NAME" />కు పంపబడింది</translation>
 <translation id="3887022758415973389">పరికర లిస్ట్‌ను చూడండి</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> కనెక్షన్</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />తో గమనికలు రూపొందిస్తున్నారు</translation>
@@ -8098,7 +8098,6 @@
 <translation id="8540942859441851323">ప్రొవైడర్ కోసం రోమింగ్ అవసరం</translation>
 <translation id="8541462173655894684">ప్రింట్ సర్వర్ నుండి ఎలాంటి ప్రింటర్‌లూ కనుగొనబడలేదు</translation>
 <translation id="8541838361296720865">స్విచ్ లేదా కీబోర్డ్ కీని "<ph name="ACTION" />"కు అసైన్ చేయడానికి సదరు స్విచ్ లేదా కీబోర్డ్ కీని నొక్కండి</translation>
-<translation id="8543556556237226809">ప్రశ్నలు ఏమైనా ఉన్నాయా? మీ ప్రొఫైల్‌ను పర్యవేక్షించే వ్యక్తిని సంప్రదించండి.</translation>
 <translation id="8546186510985480118">పరికరంలో తక్కువ స్థలం ఉంది</translation>
 <translation id="8546306075665861288">చిత్రం కాష్</translation>
 <translation id="8546930481464505581">టచ్ బార్‌ని అనుకూలంగా మార్చండి</translation>

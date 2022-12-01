@@ -338,7 +338,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode가 <ph name="SECURE_DNS_MODE_SECURE" />일 때 반드시 지정되어야 하며 유효한 문자열이어야 합니다.</translation>
 <translation id="1745880797583122200">관리 대상 브라우저입니다</translation>
 <translation id="1746113442205726301">이미지 Y 시프트</translation>
-<translation id="1747819498338037826">자동 변경</translation>
 <translation id="17513872634828108">열린 탭</translation>
 <translation id="1752021286346845558">메일박스 8</translation>
 <translation id="1753068535428855445">데이트 및 결혼 정보</translation>
@@ -1371,7 +1370,6 @@
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
 <translation id="4451135742916150903">HID 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="4452328064229197696">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 저장된 비밀번호를 확인하시기 바랍니다.</translation>
-<translation id="4455222631300069614">지금 비밀번호를 변경하세요</translation>
 <translation id="4460315069258617173">이 사이트의 탭을 닫을 때까지 허용</translation>
 <translation id="4464826014807964867">조직의 정보가 포함된 웹사이트</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1606,7 +1604,6 @@
 <translation id="5039804452771397117">허용</translation>
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="5043480802608081735">복사한 링크</translation>
-<translation id="5044545992476246592">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. Google 어시스턴트가 비밀번호를 자동으로 바꿀 수 있습니다.</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="5051305769747448211">라이브 코미디</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share를 사용해 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{Nearby Share를 사용해 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
@@ -1672,7 +1669,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" />에서 여러 파일을 다운로드하려고 합니다.</translation>
 <translation id="519422657042045905">주석을 사용할 수 없음</translation>
 <translation id="5201306358585911203">이 페이지에 삽입된 페이지 내용:</translation>
-<translation id="5204468114771111727">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. Google 어시스턴트가 비밀번호를 자동으로 바꿀 수 있습니다.</translation>
 <translation id="5205222826937269299">이름은 필수입니다.</translation>
 <translation id="5209518306177824490">SHA-1 지문</translation>
 <translation id="5209670883520018268">트레이 20</translation>

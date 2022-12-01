@@ -338,7 +338,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1741613555002899862">Rhaid iddo wedi'i nodi ac iddo fod yn llinyn dilys pan fydd DnsOverHttpsMode yn <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Rheolir eich porwr</translation>
 <translation id="1746113442205726301">Llun Y sifft</translation>
-<translation id="1747819498338037826">Newid yn awtomatig</translation>
 <translation id="17513872634828108">Tabiau agored</translation>
 <translation id="1752021286346845558">Blwch negeseuon 8</translation>
 <translation id="1753068535428855445">Detio a hysbysebion personol</translation>
@@ -1371,7 +1370,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4450893287417543264">Peidio â dangos eto</translation>
 <translation id="4451135742916150903">Yn gallu gofyn am gysylltu â dyfeisiau HID</translation>
 <translation id="4452328064229197696">Canfuwyd y cyfrinair rydych newydd ei ddefnyddio mewn achos o dor data. Er mwyn diogelu'ch cyfrifon, mae Rheolwr Cyfrineiriau Google yn argymell gwirio'ch cyfrineiriau sydd wedi'u cadw.</translation>
-<translation id="4455222631300069614">Newidiwch eich cyfrinair ar unwaith</translation>
 <translation id="4460315069258617173">Caniateir nes i chi gau tabiau ar gyfer y wefan hon</translation>
 <translation id="4464826014807964867">Gwefannau gyda gwybodaeth o'ch sefydliad</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1606,7 +1604,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5039804452771397117">Caniatáu</translation>
 <translation id="5040262127954254034">Preifatrwydd</translation>
 <translation id="5043480802608081735">Dolen y Gwnaethoch ei Chopïo</translation>
-<translation id="5044545992476246592">Canfuwyd y cyfrinair rydych newydd ei ddefnyddio mewn achos o dor data. Gall eich Google Assistant newid eich cyfrinair yn awtomatig.</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
 <translation id="5051305769747448211">Comedi byw</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{I anfon y ffeil hon drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}zero{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}two{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}few{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}many{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}other{I anfon y ffeiliau hyn drwy ddefnyddio Rhannu Gerllaw, crëwch ragor o le (<ph name="DISK_SPACE_SIZE" />) ar eich dyfais}}</translation>
@@ -1672,7 +1669,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="51918995459521422">Mae <ph name="ORIGIN" /> am lawrlwytho sawl ffeil</translation>
 <translation id="519422657042045905">Nid yw anodi ar gael</translation>
 <translation id="5201306358585911203">Mae tudalen wedi'i mewnblannu ar y dudalen hon yn dweud</translation>
-<translation id="5204468114771111727">Daeth Chrome o hyd i'r cyfrinair rydych newydd ei ddefnyddio mewn tor data. Gall eich Google Assistant newid eich cyfrinair yn awtomatig.</translation>
 <translation id="5205222826937269299">Mae angen enw</translation>
 <translation id="5209518306177824490">Ôl bys SHA-1</translation>
 <translation id="5209670883520018268">Hambwrdd 20</translation>

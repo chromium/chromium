@@ -133,6 +133,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1981118202195772574">Dispositivo móvil</translation>
 <translation id="1989112275319619282">Navegar</translation>
+<translation id="1990820278544963435">Buscar</translation>
 <translation id="199425419756152024">Ver contraseña</translation>
 <translation id="2010008505735295285">Volver a cargar</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
@@ -550,7 +551,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5190835502935405962">Barra de favoritos</translation>
 <translation id="519530786644929958">Se produjo un error en la descarga y no se puede reintentar.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5219295696240154694">Ayuda a mejorar la seguridad en la Web para todo el mundo</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
 <translation id="5232485538978018676">Acceder con una cuenta administrada</translation>
@@ -875,6 +875,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7531345132340165516">Sitio actual</translation>
 <translation id="7537586195939242955">Tu pase no se puede instalar en Passbook en este momento.</translation>
 <translation id="7553234618121028547">Para desactivar esta opción, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Opciones de contraseña.</translation>
+<translation id="7554645225856321710">Cerrar todas</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7583004045319035904">Desbloquea tus pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
@@ -1088,6 +1089,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9188680907066685419">Salir de la cuenta administrada</translation>
 <translation id="9200875785104711666">Hace <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Buscar pestañas…</translation>
 <translation id="9223358826628549784">Informe de fallos enviado.</translation>
 <translation id="941747855997058526">Seleccionar contraseña…</translation>
 <translation id="952704832371081537">Cancelar</translation>

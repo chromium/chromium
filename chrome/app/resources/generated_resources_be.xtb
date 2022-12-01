@@ -187,6 +187,7 @@
 <translation id="1166583374608765787">Праверце новае імя</translation>
 <translation id="1166596238782048887">"<ph name="TAB_TITLE" />" гэта ўкладка з працоўнага стала "<ph name="DESK_TITLE" />"</translation>
 <translation id="1168020859489941584">Адкрыецца праз <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Аўтаматычна змяняць мову ў адпаведнасці з выбраным змесцівам</translation>
 <translation id="1169266963600477608">Налады гульні</translation>
 <translation id="1169435433292653700">Файл "<ph name="FILE_NAME" />" змяшчае канфідэнцыяльныя або небяспечныя даныя. Паведамленне ад адміністратара: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665">"<ph name="ORIGIN" />" запытвае дазвол на падключэнне да прылады HID</translation>
@@ -2566,7 +2567,6 @@
 <translation id="3341703758641437857">Дазволіць доступ да спасылак на файлы</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" прапануе выдаліць гэта пашырэнне.</translation>
 <translation id="3343977377045378693">Выконваецца наладжванне</translation>
-<translation id="3345135638360864351">Не ўдалося адправіць карыстальніку <ph name="NAME" /> запыт на доступ да гэтага сайта. Паўтарыце спробу.</translation>
 <translation id="3345634917232014253">Праверка бяспекі выконвалася толькі што</translation>
 <translation id="3345886924813989455">Браўзераў, якія падтрымліваюцца, не знойдзена</translation>
 <translation id="3347086966102161372">К&amp;апіраваць адрас відарыса</translation>
@@ -2576,6 +2576,7 @@
 <translation id="3353786022389205125">Уключыце параметр "Паказваць экран блакіроўкі пры абуджэнні ад сну" і паўтарыце спробу</translation>
 <translation id="3354768182971982851">Старыя версіі праграм Chrome перастануць адкрывацца на прыладах Mac пасля снежня 2022 года. Вы можаце праверыць наяўнасць новай версіі.</translation>
 <translation id="3354972872297836698">Не ўдалося спалучыцца з прыладай <ph name="DEVICE_NAME" />; выберыце прыладу і паўтарыце спробу</translation>
+<translation id="335581015389089642">Маўленне</translation>
 <translation id="3355936511340229503">Памылка падключэння</translation>
 <translation id="3356036636691722598">Гуляйце на Chromebook з задавальненнем</translation>
 <translation id="3356469410714175391">(Віртуальная картка актывавана.)</translation>
@@ -3154,7 +3155,6 @@
 <translation id="3883482240657453056">Атрымлівайце скідкі ў крамах "<ph name="MERCHANT_NAME_1" />" і "<ph name="MERCHANT_NAME_2" />"</translation>
 <translation id="3884152383786131369">Вэб-змесціва, даступнае на некалькіх мовах, будзе адлюстроўвацца на першай мове з дадзенага спіса. Гэтыя параметры сінхранізуюцца з наладамі вашага браўзера. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Абнаўленнямі кіруе адміністратар</translation>
-<translation id="3886446263141354045">Запыт на доступ да гэтага сайта адпраўлены карыстальніку <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Паказаць спіс прылад</translation>
 <translation id="3888053818972567950">Падключэнне да сэрвісу "<ph name="WEB_DRIVE" />"</translation>
 <translation id="3888550877729210209">Нататкі ў <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8095,7 +8095,6 @@
 <translation id="8540942859441851323">Правайдар патрабуе выкарыстоўваць роўмінг</translation>
 <translation id="8541462173655894684">На серверы друку прынтараў не знойдзена</translation>
 <translation id="8541838361296720865">Націсніце пераключальнік або клавішу на клавіятуры, каб прызначыць іх для дзеяння "<ph name="ACTION" />"</translation>
-<translation id="8543556556237226809">Засталіся пытанні? Звяжыцеся з тым, хто кантралюе ваш профіль.</translation>
 <translation id="8546186510985480118">На прыладзе не хапае месца</translation>
 <translation id="8546306075665861288">Кэш відарысаў</translation>
 <translation id="8546930481464505581">Наладзіць сэнсарную палоску</translation>

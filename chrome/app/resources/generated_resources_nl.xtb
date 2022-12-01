@@ -187,6 +187,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1166583374608765787">Naamupdate bekijken</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> hoort bij bureau <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Openen in <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Taal automatisch wijzigen in overeenkomst met geselecteerde content</translation>
 <translation id="1169266963600477608">Gamebediening</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> bevat gevoelige of gevaarlijke gegevens. Je beheerder zegt: '<ph name="CUSTOM_MESSAGE" />'</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> wil verbinding maken met een HID-apparaat</translation>
@@ -2563,7 +2564,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3341703758641437857">Toegang tot bestand-URL's toestaan</translation>
 <translation id="3342361181740736773">'<ph name="TRIGGERING_EXTENSION_NAME" />' wil deze extensie verwijderen.</translation>
 <translation id="3343977377045378693">Instellen uitvoeren</translation>
-<translation id="3345135638360864351">Je verzoek om toegang tot deze site kan niet worden verzonden naar <ph name="NAME" />. Probeer het opnieuw.</translation>
 <translation id="3345634917232014253">Veiligheidscheck is zojuist uitgevoerd</translation>
 <translation id="3345886924813989455">Er is geen ondersteunde browser gevonden</translation>
 <translation id="3347086966102161372">Adres van afbeelding k&amp;opiëren</translation>
@@ -2573,6 +2573,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3353786022389205125">Zet 'Vergrendelscherm bekijken bij activering vanuit de slaapstand' aan en probeer het opnieuw</translation>
 <translation id="3354768182971982851">Oude versies van Chrome-apps kunnen na december 2022 niet meer worden geopend op Mac-apparaten. Je kunt checken of er een nieuwe versie beschikbaar is.</translation>
 <translation id="3354972872297836698">Kan niet koppelen met apparaat <ph name="DEVICE_NAME" />, selecteer het apparaat om het opnieuw te proberen</translation>
+<translation id="335581015389089642">Spraak</translation>
 <translation id="3355936511340229503">Verbindingsfout</translation>
 <translation id="3356036636691722598">Veel plezier met gamen op je Chromebook</translation>
 <translation id="3356469410714175391">(Virtuele kaart staat aan)</translation>
@@ -3151,7 +3152,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3883482240657453056">Krijg kortingen voor <ph name="MERCHANT_NAME_1" /> en <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Voor webcontent die in meerdere talen beschikbaar is, wordt de eerste ondersteunde taal in deze lijst gebruikt. Deze voorkeuren worden gesynchroniseerd met je browserinstellingen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates worden beheerd door je beheerder</translation>
-<translation id="3886446263141354045">Je verzoek voor toegang tot deze website is verzonden naar <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Apparaatlijst bekijken</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-verbinding</translation>
 <translation id="3888550877729210209">Notities maken met <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -5547,7 +5547,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6154240335466762404">Alle poorten verwijderen</translation>
 <translation id="615436196126345398">Protocol</translation>
 <translation id="6155141482566063812">Achtergrondtabblad deelt je scherm</translation>
-<translation id="6156323911414505561">Bookmarkbalk bekijken</translation>
+<translation id="6156323911414505561">Bookmarkbalk tonen</translation>
 <translation id="6156863943908443225">Script in cachegeheugen</translation>
 <translation id="6156944117133588106">Navigatieknoppen tonen in tabletmodus</translation>
 <translation id="615930144153753547">Sites kunnen afbeeldingen laten zien</translation>
@@ -5870,7 +5870,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> bestanden</translation>
 <translation id="6469557521904094793">Mobiel netwerk aanzetten</translation>
 <translation id="6470823736074966819">Meldingen negeren</translation>
-<translation id="6472893788822429178">Homepage-knop bekijken</translation>
+<translation id="6472893788822429178">Homepage-knop tonen</translation>
 <translation id="6474498546677193336">Kan het delen niet opheffen omdat een app deze map gebruikt. Het delen van de map wordt opgeheven als Linux weer wordt uitgezet.</translation>
 <translation id="6474884162850599008">Google Drive-account ontkoppelen</translation>
 <translation id="6475294023568239942">Maak schijfruimte vrij of pas de grootte van de Linux-schijf aan via Instellingen</translation>
@@ -7808,7 +7808,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
     <ph name="BEGIN_PARAGRAPH4" />Als de instelling Aanvullende web- en app-activiteit is aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind. Ga naar families.google.com voor meer informatie over deze instellingen en hoe je ze kunt aanpassen.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ongeldig clientcertificaat</translation>
 <translation id="8270162672241199380">Steam-installatieprogramma</translation>
-<translation id="827097179112817503">Homepage-knop bekijken</translation>
+<translation id="827097179112817503">Homepage-knop tonen</translation>
 <translation id="8271268254812352141">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen. Pas de talen voor vertaling aan in <ph name="LINK_BEGIN" />Websitetalen<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">De volgende stappen zijn bedoeld voor ouders. Als het account is ingesteld, kun je de <ph name="DEVICE_TYPE" /> teruggeven aan je kind.</translation>
 <translation id="8272194309885535896">Afbeelding downloaden</translation>
@@ -8078,7 +8078,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8540942859441851323">Roaming vereist door provider</translation>
 <translation id="8541462173655894684">Er zijn geen printers gevonden op de printerserver</translation>
 <translation id="8541838361296720865">Druk op een schakelaar of toets op het toetsenbord om deze toe te wijzen voor de actie <ph name="ACTION" /></translation>
-<translation id="8543556556237226809">Vragen? Neem contact op met de persoon die je profiel beheert.</translation>
 <translation id="8546186510985480118">Weinig ruimte beschikbaar op het apparaat</translation>
 <translation id="8546306075665861288">Cachegeheugen met afbeeldingen</translation>
 <translation id="8546930481464505581">Aanraakbalk aanpassen</translation>

@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Pinaikli ang highlight</translation>
 <translation id="1111673857033749125">Dito lalabas ang mga naka-save na bookmark sa iba mo pang mga device.</translation>
 <translation id="1113597929977215864">Ipakita ang pinasimpleng view</translation>
-<translation id="1118561384561215815">Humingi ng tulong sa task sa web</translation>
 <translation id="1123070903960493543">Paano ka makipag-ugnayan sa Chrome, ang mga setting na pinili mo, ang mga detalye ng mga pag-crash ng Chrome</translation>
 <translation id="1126809382673880764">Hindi ka pinoprotektahan laban sa mga mapanganib na website, download, at extension. Magkakaroon ka pa rin ng proteksyon ng Ligtas na Pag-browse, kung available, sa iba pang serbisyo ng Google, tulad ng Gmail at Search.</translation>
 <translation id="1129510026454351943">Mga Detalye: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2286841657746966508">Billing address</translation>
 <translation id="228704530595896923">Listahan ng mga opsyon sa pagbabahagi</translation>
 <translation id="230115972905494466">Walang nahanap na tugmang device</translation>
-<translation id="230155349749732438">Para magamit ang setting na ito, dapat naka-on ang <ph name="BEGIN_LINK" />Pahusayin ang mga paghahanap at pag-browse<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">I-tap para tumawag</translation>
 <translation id="2321086116217818302">Inihahanda ang mga password…</translation>
 <translation id="2323763861024343754">Storage ng site</translation>
@@ -428,7 +426,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3269093882174072735">I-load ang larawan</translation>
 <translation id="3280562213547448728">Paghahanap gamit ang boses</translation>
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
-<translation id="3284510035090979597">Proactive na Tulong</translation>
 <translation id="3285080554353377245">Mga video tungkol sa kung paano gamitin ang Chrome</translation>
 <translation id="3288003805934695103">I-reload ang page</translation>
 <translation id="3290249595466894471">Nagpapadala rin ng maliit na sample ng mga page, download, aktibidad ng extension, at impormasyon ng system para makatulong na tumuklas ng mga bagong banta</translation>
@@ -590,7 +587,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="4209895695669353772">Para makakuha ng naka-personalize na content na iminumungkahi ng Google, i-on ang pag-sync</translation>
 <translation id="4214315110991671325">Kung papayagan mo ang cookies, posibleng gamitin ng Chrome ang mga ito para sa pag-preload.</translation>
 <translation id="4225895483398857530">Shortcut ng toolbar</translation>
-<translation id="4227318652298512614">Subaybayan ang anumang site na gusto mo</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
 <translation id="4248098802131000011">Panatilihing ligtas ang iyong mga password mula sa mga paglabag sa data breaches at iba pang isyu sa seguridad</translation>
 <translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
@@ -881,7 +877,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5795872532621730126">Maghanap at mag-browse</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# oras ang nakalipas}one{# oras ang nakalipas}other{# na oras ang nakalipas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
-<translation id="5810864297166300463">Tulong sa Web</translation>
 <translation id="5813552293717797987">Pinapamahalaan ni <ph name="PARENT_NAME_1" /> at <ph name="PARENT_NAME_2" /> ang browser na ito.</translation>
 <translation id="5814131985548525293">Mag-type dito o i-tap ang icon na boses para magsimula</translation>
 <translation id="5814749351757353073">Makipagsabayan sa mga paborito mong site</translation>
@@ -904,7 +899,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5869789175361934029">Magpatuloy mula sa ibang device</translation>
 <translation id="587735546353481577">Para subaybayan ang isang site, pumunta sa site, buksan ang menu ng Chrome, at i-tap ang Subaybayan.</translation>
 <translation id="5879072387416556377">Makakuha ng mas magagandang suhestyon</translation>
-<translation id="5884076754568147479">Para tulungan kang tapusin ang mga gawain, matatanggap ng Google ang mga URL at content ng mga site kung saan ka gumamit ng Assistant, gayundin ang impormasyong isinumite mo sa pamamagitan ng Assistant</translation>
 <translation id="5906513782029855931">Kapag alam ang mga URL ng mga site, matutulungan ka ng Google Assistant na tumapos ng mga gawain. Puwede mong i-off ang Assistant sa mga setting ng Chrome.</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5919204609460789179">I-update ang <ph name="PRODUCT_NAME" /> upang simulan ang pag-sync</translation>
@@ -1346,7 +1340,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8127542551745560481">I-edit ang homepage</translation>
 <translation id="8130309322784422030">Posibleng hindi updated ang iyong naka-store na impormasyon sa pag-sign in</translation>
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>
-<translation id="8153351135626613369">Lalabas ang Assistant kapag na-detect nitong matutulungan ka nito sa mga suportadong website</translation>
 <translation id="8156139159503939589">Anong mga wika ang binabasa mo?</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> (na) file ang natitira</translation>

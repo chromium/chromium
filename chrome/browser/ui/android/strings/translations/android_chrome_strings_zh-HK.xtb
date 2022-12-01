@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">已縮短突顯文字長度</translation>
 <translation id="1111673857033749125">儲存在其他裝置上的書籤會在這裡顯示。</translation>
 <translation id="1113597929977215864">顯示簡化檢視模式</translation>
-<translation id="1118561384561215815">協助您在網絡上完成工作</translation>
 <translation id="1123070903960493543">您與 Chrome 互動的方式、已選取的設定、Chrome 當機的詳情</translation>
 <translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
 <translation id="1129510026454351943">詳情：<ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@
 <translation id="2286841657746966508">帳單地址</translation>
 <translation id="228704530595896923">分享選項清單。</translation>
 <translation id="230115972905494466">找不到兼容的裝置</translation>
-<translation id="230155349749732438">如要使用此設定，請務必開啟<ph name="BEGIN_LINK" />改善搜尋和瀏覽體驗<ph name="END_LINK" />功能</translation>
 <translation id="2318045970523081853">輕按即可撥打電話</translation>
 <translation id="2321086116217818302">正在準備密碼…</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
@@ -428,7 +426,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3269093882174072735">載入圖片</translation>
 <translation id="3280562213547448728">語音搜尋</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
-<translation id="3284510035090979597">主動提供協助</translation>
 <translation id="3285080554353377245">關於如何使用 Chrome 的影片</translation>
 <translation id="3288003805934695103">重新載入網頁</translation>
 <translation id="3290249595466894471">同時傳送網頁、下載檔案、擴充程式活動及系統資料的少量抽樣資料，以協助發現新威脅</translation>
@@ -590,7 +587,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4209895695669353772">如要接收 Google 建議的個人化內容，請開啟同步處理功能</translation>
 <translation id="4214315110991671325">如果您允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
 <translation id="4225895483398857530">工具列捷徑</translation>
-<translation id="4227318652298512614">追蹤您喜愛的所有網站</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4248098802131000011">確保密碼安全，避免發生資料外洩或其他安全性問題</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
@@ -881,7 +877,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5795872532621730126">搜尋和瀏覽</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="5810288467834065221">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
-<translation id="5810864297166300463">網絡協助</translation>
 <translation id="5813552293717797987">此瀏覽器由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="5814131985548525293">在此處輸入或輕按麥克風圖示以開始搜尋</translation>
 <translation id="5814749351757353073">緊貼最喜愛網站的最新動態</translation>
@@ -904,7 +899,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5869789175361934029">透過其他裝置繼續瀏覽</translation>
 <translation id="587735546353481577">如要追蹤網站，只要前往該網站並開啟 Chrome 選單，然後輕按 [追蹤] 即可。</translation>
 <translation id="5879072387416556377">取得更切題的建議</translation>
-<translation id="5884076754568147479">為協助您完成工作，系統會將您使用「Google 助理」的網站網址和內容，以及您透過「Google 助理」提交的資料傳送給 Google</translation>
 <translation id="5906513782029855931">如果「Google 助理」知道網站的網址，便能夠助您完成工作。您可在 Chrome 設定中關閉「Google 助理」。</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5919204609460789179">更新 <ph name="PRODUCT_NAME" /> 即可開始同步處理</translation>
@@ -1346,7 +1340,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8127542551745560481">編輯首頁</translation>
 <translation id="8130309322784422030">您儲存的登入資料可能已過期</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
-<translation id="8153351135626613369">「Google 助理」偵測到可在支援的網站上提供協助時就會顯示</translation>
 <translation id="8156139159503939589">您看得懂哪些語言？</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="8186512483418048923">尚餘 <ph name="FILES" /> 個檔案</translation>

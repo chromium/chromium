@@ -187,6 +187,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1166583374608765787">Nom oʻzgarishi tekshiruvi</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> nomli varaq <ph name="DESK_TITLE" /> ish stoliga tegishli</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> dan so‘ng ochiladi...</translation>
+<translation id="116896278675803795">Tanlangan kontentga moslash uchun tilni avtomatik almashtirish</translation>
 <translation id="1169266963600477608">Oʻyin boshqaruvlari</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> faylida maxfiy yoki xavfli axborot bor. Administrator xabari: “<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> sayti HID qurilmaga ulanmoqchi</translation>
@@ -590,6 +591,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1546280085599573572">Bu kengaytma “Boshi” tugmasi bosilganda ochiladigan sahifani o‘zgartirdi.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> <ph name="EXTENSION_TYPE" /> kengaytmasini oʻrnatmoqchi, bunga kerakli ruxsatlar:</translation>
 <translation id="1547808936554660006">Zavod sozlamalariga qaytarilganda oʻrnatilgan eSIM profillari olib tashlanmasligini tushunaman</translation>
+<translation id="1547936895218027488">Ochish uchun yon panel belgisini bosing</translation>
 <translation id="1549275686094429035">ARC yoniq</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ilovasi <ph name="VOLUME_NAME" /> bo‘limiga ruxsat so‘rayapti. Bu fayllarni tahrirlash va o‘chirib yuborishi mumkin.</translation>
 <translation id="1552301827267621511">“<ph name="EXTENSION_NAME" />” kengaytmasi <ph name="SEARCH_PROVIDER_DOMAIN" /> saytini qidiruv tizimi sifatida belgiladi</translation>
@@ -1418,6 +1420,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2287944065963043964">Kirish ekrani</translation>
 <translation id="2289270750774289114">Sayt atrofdagi Bluetooth qurilmalarni tekshirmoqchi boʻlsa, xabar berilsin (tavsiya etiladi)</translation>
 <translation id="2290615375132886363">Planshet rejimida navigatsiya tugmalari</translation>
+<translation id="2291452790265535215">Bukmarklar, sayohatlar va boshqalar uchun yon paneldan foydalaning</translation>
 <translation id="229182044471402145">Hech narsa topilmadi.</translation>
 <translation id="2292848386125228270"><ph name="PRODUCT_NAME" /> brauzerini oddiy foydalanuvchi nomidan ishga tushiring. Agar superfoydalanuvchi nomidan ishga tushirmoqchi bo‘lsangiz, brauzerni qaytadan ishga tushirib, “--no-sandbox” parametrini o‘rnating.</translation>
 <translation id="2294081976975808113">Ekran maxfiyligi</translation>
@@ -2565,7 +2568,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3341703758641437857">URL manzillardagi fayllarni o‘chishga ruxsat berish</translation>
 <translation id="3342361181740736773">“<ph name="TRIGGERING_EXTENSION_NAME" />” bu kengaytmani o‘chirib yubormoqchi.</translation>
 <translation id="3343977377045378693">Sozlanmoqda</translation>
-<translation id="3345135638360864351">Bu saytga kirish so‘rovingizni <ph name="NAME" />’ga yuborib bo‘lmadi. Qayta urinib ko‘ring.</translation>
 <translation id="3345634917232014253">Xavfsizlik tekshiruvi yaqinda bajarilgandi</translation>
 <translation id="3345886924813989455">Qo‘llab-quvvatlanadigan brauzerlar topilmadi</translation>
 <translation id="3347086966102161372">Tasvirning URL manzilini nusxalash</translation>
@@ -2575,6 +2577,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3353786022389205125">“Qurilma uyqu rejimidan chiqarilishida ekran qulfi koʻrsatilsin” funksiyasini yoqing va qayta urining</translation>
 <translation id="3354768182971982851">Chrome brauzerining eski versiyalari 2022-yil dekabr oyidan Mac qurilmalarida ochilmaydi. Yangilanishlar borligini quyidagicha tekshirish mumkin.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> qurilmasiga ulanmadi; qayta urinish uchun qurilmani tanlang</translation>
+<translation id="335581015389089642">Ovoz berish</translation>
 <translation id="3355936511340229503">Ulanish xatoligi</translation>
 <translation id="3356036636691722598">Chromebookda oʻyinlardan bahra oling</translation>
 <translation id="3356469410714175391">(Virtual karta yoqildi)</translation>
@@ -3153,7 +3156,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> va <ph name="MERCHANT_NAME_2" /> xaridlari uchun chegirma olish</translation>
 <translation id="3884152383786131369">Bir nechta tilda chiqadigan veb kontent shu roʻyxatdagi birinchi mos tilni ishlatadi. Bu parametrlar brauzeringiz sozlamalari bilan sinxronlanadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Yangilanishlar administrator tomonidan boshqariladi</translation>
-<translation id="3886446263141354045">Bu saytni ochishga ruxsat so‘rovi <ph name="NAME" />ga yuborildi</translation>
 <translation id="3887022758415973389">Qurilmalar roʻyxatini chiqarish</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> ombori</translation>
 <translation id="3888550877729210209">Qaydlar <ph name="LOCK_SCREEN_APP_NAME" /> dasturida yoziladi</translation>
@@ -3906,6 +3908,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="459204634473266369">Hech qanday qurilma <ph name="PRIMARY_EMAIL" /> manziliga saqlanmagan</translation>
 <translation id="4592891116925567110">Stilus yordamida chizish ilovasi</translation>
 <translation id="4593021220803146968"><ph name="URL" /> manzilga &amp;o‘tish</translation>
+<translation id="4594218792629569101">Sahifani roʻyxatning pastiga surish uchu “Ochilgan deb belgilash” tugmasini bosing</translation>
 <translation id="4594577641390224176">Tizim haqida sahifasini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="4595560905247879544">Ilovalar va kengaytmalarni faqat boshqaruvchi (<ph name="CUSTODIAN_NAME" />) o‘zgartira oladi.</translation>
 <translation id="4596295440756783523">Sizda quyidagi serverlar haqiqiyligini tasdiqlovchi sertifikatlar bor</translation>
@@ -4413,6 +4416,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5084328598860513926">Tekshiruv vaqtida xatolik yuz berdi. Qayta urining. Foydasi tegmasa, qurilma egasi yoki administratorga murojaat qiling. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Yangilanishlar mavjudligi tekshirilmoqda</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">Qayd 1000 ta belgidan oshib ketdi</translation>
 <translation id="5086874064903147617">Standart bosh sahifa tiklansinmi?</translation>
 <translation id="5087249366037322692">Tashqi ta’minotchi tomonidan qo‘shilgan</translation>
 <translation id="5087580092889165836">Yangi karta qo‘shish</translation>
@@ -6575,6 +6579,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7111822978084196600">Bu oynaga nom bering</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> ta narsa</translation>
 <translation id="7113502843173351041">Email manzilingizni bilish</translation>
+<translation id="7113974454301513811">Endi roʻyxatingizga joriy varaqni kiriting</translation>
 <translation id="7114054701490058191">Parollar bir-biriga mos kelmadi</translation>
 <translation id="7114648273807173152">Google hisobingizda Smart Lock himoyasini yoqish uchun Sozlamalar &gt; Ulangan qurilmalar &gt; Telefoningiz &gt; Smart Lock sahifasini oching.</translation>
 <translation id="7115361495406486998">Hech qanday kontakt atrofda emas</translation>
@@ -8088,7 +8093,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8540942859441851323">Tarmoq operatori rouming aloqasini talab qildi</translation>
 <translation id="8541462173655894684">Bosma serverda hech qanday printer topilmadi</translation>
 <translation id="8541838361296720865">“<ph name="ACTION" />” amali uchun belgilanadigan kalit yoki klaviatura tugmasini bosing</translation>
-<translation id="8543556556237226809">Savollar bormi? Profilingizni nazorat qiladigan shaxsga murojaat qiling.</translation>
 <translation id="8546186510985480118">Qurilmada bo‘sh joy kam</translation>
 <translation id="8546306075665861288">Tasvirlar keshi</translation>
 <translation id="8546930481464505581">Tegish panelini sozlash</translation>
@@ -8804,6 +8808,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9201842707396338580">Nimadir xato ketdi. Qurilma egasi yoki administratorga murojaat qiling. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Ma’lumotlarni yig‘ish yoniq</translation>
 <translation id="9203904171912129171">Qurilmani tanlang</translation>
+<translation id="920410963177453528">Boshqa panelni tanlash uchun pastga ochiluvchi menyuni bosing</translation>
 <translation id="9206889157914079472">Ekran qulfida stilus yordamida qaydlar yaratish</translation>
 <translation id="9208192193641542858">Qurilmadagi axborot eski parolingiz bilan himoyalangan. Parolingiz oʻzgargan boʻlsa, eskisini kiriting.</translation>
 <translation id="9209563766569767417">Linux konteyneri sozlamalari tekshirilmoqda</translation>

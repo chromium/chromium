@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Kiemelés lerövidítve</translation>
 <translation id="1111673857033749125">A más eszközökön mentett könyvjelzők itt jelennek meg.</translation>
 <translation id="1113597929977215864">Egyszerűsített nézet megjelenítése</translation>
-<translation id="1118561384561215815">Segítség a webes műveleteknél</translation>
 <translation id="1123070903960493543">A Chrome használata, a kiválasztott beállítások, a Chrome-összeomlásokkal kapcsolatos adatok</translation>
 <translation id="1126809382673880764">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. Ahol lehetséges (más Google-szolgáltatásokban, például a Gmailben és a Keresőben) továbbra is megkapja a Biztonságos Böngészés által nyújtott védelmet.</translation>
 <translation id="1129510026454351943">Részletek: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2286841657746966508">Számlázási cím</translation>
 <translation id="228704530595896923">A megosztási lehetőségek listája.</translation>
 <translation id="230115972905494466">Nem találhatók kompatibilis eszközök</translation>
-<translation id="230155349749732438">A beállítás használatához <ph name="BEGIN_LINK" />A keresések és a böngészés javítása<ph name="END_LINK" /> beállításnak is bekapcsolva kell lennie.</translation>
 <translation id="2318045970523081853">Koppintson a hívás indításához</translation>
 <translation id="2321086116217818302">Jelszavak előkészítése…</translation>
 <translation id="2323763861024343754">Webhely tárhelye</translation>
@@ -428,7 +426,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="3269093882174072735">Kép betöltése</translation>
 <translation id="3280562213547448728">Hangalapú keresés</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
-<translation id="3284510035090979597">Proaktív segítség</translation>
 <translation id="3285080554353377245">Videók a Chrome használatával kapcsolatban</translation>
 <translation id="3288003805934695103">Az oldal frissítése</translation>
 <translation id="3290249595466894471">Elküldi továbbá az oldalakkal, letöltésekkel, bővítményekkel és rendszerrel kapcsolatos adatok egy kisebb mintáját annak érdekében, hogy a jövőben könnyebben felismerhessük az új fenyegetéseket.</translation>
@@ -590,7 +587,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4209895695669353772">A Google által javasolt, személyre szabott tartalmak fogadásához kapcsolja be a szinkronizálást</translation>
 <translation id="4214315110991671325">Ha engedélyezi a cookie-kat, előfordulhat, hogy a Chrome előtöltéshez használja fel őket.</translation>
 <translation id="4225895483398857530">Eszköztár gyorsparancs</translation>
-<translation id="4227318652298512614">Követheti bármelyik webhelyet</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
 <translation id="4248098802131000011">Védje meg jelszavait az adatvédelmi incidensektől és más biztonsági problémáktól</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
@@ -881,7 +877,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5795872532621730126">Keresés és böngészés</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# órája}other{# órája}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
-<translation id="5810864297166300463">Webes segítség</translation>
 <translation id="5813552293717797987">Ezt a böngészőt <ph name="PARENT_NAME_1" /> és <ph name="PARENT_NAME_2" /> kezeli.</translation>
 <translation id="5814131985548525293">Ide írhat, vagy koppintson a hangalapú keresés ikonjára az indításhoz</translation>
 <translation id="5814749351757353073">Naprakész lehet a kedvenc webhelyeivel</translation>
@@ -904,7 +899,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5869789175361934029">Folytatás másik eszközről</translation>
 <translation id="587735546353481577">Webhely követéséhez lépjen a kívánt webhelyhez, nyissa meg a Chrome menüjét, majd koppintson a Követés pontra.</translation>
 <translation id="5879072387416556377">Relevánsabb javaslatokat kaphat</translation>
-<translation id="5884076754568147479">Annak érdekében, hogy segíteni tudjon a feladatok elvégzésében, a Google megkapja azoknak a webhelyeknek az URL-jeit és tartalmait, amelyeken Ön használta Segédjét, valamint megkapja a Segéden keresztül elküldött információkat</translation>
 <translation id="5906513782029855931">A webhelyek URL-jeinek ismerete lehetővé teszi a Google Segédnek, hogy segítsen bizonyos műveletek elvégzésében. A Segédet a Chrome beállításai között kapcsolhatja ki.</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5919204609460789179">A szinkronizálás megkezdéséhez frissítse a következőt: <ph name="PRODUCT_NAME" /></translation>
@@ -1346,7 +1340,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8127542551745560481">Kezdőlap szerkesztése</translation>
 <translation id="8130309322784422030">A tárolt bejelentkezési adatai elavultak lehetnek</translation>
 <translation id="813082847718468539">Az oldalinformációk megtekintése</translation>
-<translation id="8153351135626613369">A Segéd megjelenik, amikor azt észleli, hogy segíteni tud a támogatott webhelyeken.</translation>
 <translation id="8156139159503939589">Milyen nyelveken olvas?</translation>
 <translation id="8168435359814927499">Tartalom</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fájl maradt</translation>

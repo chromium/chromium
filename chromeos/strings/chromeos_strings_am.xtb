@@ -395,6 +395,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ተመርጧል፣ የ<ph name="TOPIC_SOURCE" /> አልበሞችን ለመምረጥ አስገባን ይጫኑ</translation>
 <translation id="484790837831576105">(Android) የዲኤንኤስ መፍትሔ</translation>
 <translation id="4848429997038228357">በማሄድ ላይ</translation>
+<translation id="4854586501323951986">አብሮገነብ ተነኪ ማያ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ሙከራ ቀርቷል}one{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}other{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}}</translation>
 <translation id="4873827928179867585">የማረጋገጥ ስልተ-ቀመር</translation>
 <translation id="4880328057631981605">የመዳረሻ ነጥብ ስም</translation>
@@ -487,6 +488,7 @@
 <translation id="5669267381087807207">በማግበር ላይ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ቤተሰብ</translation>
+<translation id="5695599963893094957">በቁልፍ ሰሌዳዎ ላይ ማንኛውም ቁልፍ ይተይቡ። በተመሳሳይ ጊዜ እስከ 4 ቁልፎች ድረስ መጫን ይችላሉ።</translation>
 <translation id="5701381305118179107">መሃከል</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> ከ<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />ን አዘምን</translation>
@@ -568,6 +570,7 @@
 <translation id="6394634179843537518">ፋይል አክል</translation>
 <translation id="6410257289063177456">የምስል ፋይሎች</translation>
 <translation id="641081527798843608">የርዕሰ ጉዳይ ተዛማጅ</translation>
+<translation id="6412715219990689313">አብሮገነብ ቁልፍሰሌዳ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ደካማ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ወደ የመለያ ቅንብሮች ሂድ</translation>
@@ -612,7 +615,6 @@
 <translation id="6766275201586212568">ያልተሳኩ የዲኤንኤስ ጥራቶች</translation>
 <translation id="6768237774506518020">ከፍተኛ የዲኤንኤስ ጥራት አለመሳካት ብዛት</translation>
 <translation id="6791471867139427246">የቁልፍ ሰሌዳ ብርሃን ቀለም</translation>
-<translation id="6793680441750437230">በቁልፍ ሰሌዳዎ ላይ ማንኛውንም ቁልፍ ይተይቡ። በተመሳሳይ ጊዜ እስከ 4 ቁልፎች ድረስ መጫን ይችላሉ። መገናኛውን ለመዝጋት Alt እና Escን ይጫኑ።</translation>
 <translation id="680983167891198932">ቁልፍ</translation>
 <translation id="6816797338148849397">ከሚገኘው የእርስዎ ምርጫ ጋር የተገናኘ መረጃ ለመድረስ የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
 <translation id="6853312040151791195">የኃይል ማለቂያ ፍጥነት</translation>
@@ -666,6 +668,7 @@
 <translation id="7359657277149375382">የፋይል አይነት</translation>
 <translation id="73631062356239394">የምርመራ ውሂብን ያጋሩ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7388959671917308825">አብሮገነብ የመዳሰሻ ሰሌዳ</translation>
 <translation id="7397270852490618635">ነጣ ያለ ገጽታን አጥፋ</translation>
 <translation id="741244894080940828">ልወጣ</translation>
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>

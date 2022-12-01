@@ -554,6 +554,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Wyłączono (1 aplikacja)}few{Wyłączono (# aplikacje)}many{Wyłączono (# aplikacji)}other{Wyłączono (# aplikacji)}}</translation>
 <translation id="4066027111132117168">Włączone. Pozostały czas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="4072264167173457037">średni sygnał</translation>
+<translation id="4086921558679520050">Włącz fizyczny przełącznik mikrofonu na urządzeniu</translation>
 <translation id="4112140312785995938">Przewiń do tyłu</translation>
 <translation id="4114315158543974537">Włącz Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -606,6 +607,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, siła sygnału <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4379531060876907730">To są Twoje narzędzia rysika</translation>
+<translation id="4381031910344220229">Zezwala to na dostęp do mikrofonu w przypadku aplikacji <ph name="APP_NAME" /> oraz wszystkich aplikacji i stron internetowych, które mają uprawnienia do korzystania z niego</translation>
 <translation id="4389184120735010762">Naciśnięto skrót klawiszowy lupy zadokowanej. Czy chcesz ją włączyć?</translation>
 <translation id="439598569299422042">Wstrzymano, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nie udało się zapisać screencastu</translation>
@@ -960,6 +962,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone</translation>
 <translation id="6351032674660237738">SUGEROWANE APLIKACJE</translation>
+<translation id="6352082849089527770">Nieznane sieci</translation>
 <translation id="6359587239691116345">Zainstaluj najnowsze funkcje i poprawki zabezpieczeń. Jeśli odrzucisz tę aktualizację, urządzenie może przestać działać prawidłowo i możesz mieć problemy z bezpieczeństwem i wydajnością.</translation>
 <translation id="6376931439017688372">Bluetooth jest włączony</translation>
 <translation id="6381109794406942707">Aby odblokować urządzenie, wpisz kod PIN.</translation>
@@ -1135,6 +1138,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7360036564632145207">Wydajność może się poprawić, jeśli zmienisz ustawienie Zabezpieczenie przed dostępem do danych przez urządzenia peryferyjne</translation>
 <translation id="736045644501761622">Ustaw tapetę i styl</translation>
 <translation id="7371404428569700291">Nagraj okno</translation>
+<translation id="737315737514430195">Zezwala to na dostęp do mikrofonu w przypadku wszystkich aplikacji i stron internetowych, które mają uprawnienia do korzystania z niego</translation>
 <translation id="7377169924702866686">Caps Lock jest włączony.</translation>
 <translation id="7377481913241237033">Połącz przy użyciu kodu</translation>
 <translation id="7378203170292176219">Przeciągnij, by wybrać obszar, który chcesz nagrać</translation>
@@ -1203,6 +1207,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7671610481353807627">Aplikacje są posortowane według koloru</translation>
 <translation id="7672095158465655885">Połączono z: <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Zmieniono kamerę. Obecnie podłączone urządzenie to <ph name="CAMERA_NAME" />.</translation>
+<translation id="7689817529363080918">Zezwala to na dostęp do mikrofonu w przypadku aplikacji <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> oraz wszystkich aplikacji i stron internetowych, które mają uprawnienia do korzystania z niego</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Dodaj nową sieć komórkową</translation>
 <translation id="7720400844887872976">Włączone do <ph name="TIME" /></translation>

@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">Markering is ingekort</translation>
 <translation id="1111673857033749125">Hier zie je bookmarks die je op andere apparaten hebt opgeslagen.</translation>
 <translation id="1113597929977215864">Vereenvoudigde weergave bekijken</translation>
-<translation id="1118561384561215815">Hulp bij webtaken</translation>
 <translation id="1123070903960493543">Hoe je Chrome gebruikt, de instellingen die je hebt geselecteerd, details van Chrome-crashes</translation>
 <translation id="1126809382673880764">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Je wordt voor andere services, zoals Gmail en Zoeken, nog steeds beschermd door Safe Browsing als dat beschikbaar is.</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="2286841657746966508">Factuuradres</translation>
 <translation id="228704530595896923">Lijst met deelopties.</translation>
 <translation id="230115972905494466">Geen geschikte apparaten gevonden</translation>
-<translation id="230155349749732438">Als je deze instelling wilt gebruiken, moet je <ph name="BEGIN_LINK" />Zoekopdrachten en browsefunctionaliteit verbeteren<ph name="END_LINK" /> aanzetten</translation>
 <translation id="2318045970523081853">Tik om te bellen</translation>
 <translation id="2321086116217818302">Wachtwoorden voorbereiden…</translation>
 <translation id="2323763861024343754">Site-opslag</translation>
@@ -428,7 +426,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3269093882174072735">Afbeelding laden</translation>
 <translation id="3280562213547448728">Gesproken zoekopdracht</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
-<translation id="3284510035090979597">Proactieve hulp</translation>
 <translation id="3285080554353377245">Video's over hoe je Chrome kunt gebruiken</translation>
 <translation id="3288003805934695103">Laad de pagina opnieuw</translation>
 <translation id="3290249595466894471">Stuurt ook een klein gedeelte pagina's, downloads, extensie-activiteit en systeeminformatie om nieuwe dreigingen te kunnen vinden</translation>
@@ -590,7 +587,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4209895695669353772">Zet de synchronisatie aan om suggesties voor gepersonaliseerde content van Google te ontvangen</translation>
 <translation id="4214315110991671325">Als je cookies toestaat, kan Chrome deze voor vooraf laden gebruiken.</translation>
 <translation id="4225895483398857530">Snelkoppeling voor werkbalk</translation>
-<translation id="4227318652298512614">Volg alle gewenste sites</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4248098802131000011">Bescherm je wachtwoorden tegen gegevenslekken en andere beveiligingsproblemen</translation>
 <translation id="424864128008805179">Uitloggen bij Chrome?</translation>
@@ -881,7 +877,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5795872532621730126">Zoeken en browsen</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# uur geleden}other{# uur geleden}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
-<translation id="5810864297166300463">Webhulp</translation>
 <translation id="5813552293717797987">Deze browser wordt beheerd door <ph name="PARENT_NAME_1" /> en <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Typ hier of tik op het microfoonicoon om te starten</translation>
 <translation id="5814749351757353073">Blijf op de hoogte van je favoriete sites</translation>
@@ -904,7 +899,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5869789175361934029">Doorgaan vanaf een ander apparaat</translation>
 <translation id="587735546353481577">Als je een site wilt volgen, ga je naar de site, open je het Chrome-menu en tik je op Volgen.</translation>
 <translation id="5879072387416556377">Krijg betere suggesties</translation>
-<translation id="5884076754568147479">Google kan je helpen taken sneller te voltooien en ontvangt daarom de URL's en content van sites waarop je de Assistent gebruikt en informatie die je via de Assistent indient</translation>
 <translation id="5906513782029855931">Als de Google Assistent de URL's van sites weet, kan deze je helpen taken af te ronden. Je kunt de Assistent uitzetten in de instellingen van Chrome.</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5919204609460789179">Update <ph name="PRODUCT_NAME" /> om de synchronisatie te starten</translation>
@@ -1346,7 +1340,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8127542551745560481">Homepage bewerken</translation>
 <translation id="8130309322784422030">Je opgeslagen inloggegevens zijn misschien verouderd</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
-<translation id="8153351135626613369">De Assistent verschijnt op ondersteunde websites als hij vaststelt dat hij je kan helpen</translation>
 <translation id="8156139159503939589">Welke talen lees je?</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> bestanden over</translation>

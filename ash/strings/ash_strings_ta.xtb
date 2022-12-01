@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ஒரு ஆப்ஸுக்கு ஆஃப்}other{# ஆப்ஸுக்கு ஆஃப்}}</translation>
 <translation id="4066027111132117168">இயக்கத்தில் உள்ளது, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">நடுத்தரமான சிக்னல்</translation>
+<translation id="4086921558679520050">சாதனத்தின் மைக் சுவிட்ச்சை இயக்குங்கள்</translation>
 <translation id="4112140312785995938">பின்செல்</translation>
 <translation id="4114315158543974537">Phone Hubபை இயக்குதல்</translation>
 <translation id="4115378294792113321">மெஜந்தா</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /> சதவீதம்</translation>
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
 <translation id="4379531060876907730">இவை உங்கள் ஸ்டைலஸ் கருவிகள்</translation>
+<translation id="4381031910344220229">மைக்ரோஃபோனைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP_NAME" /> ஆப்ஸுக்கும், ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் மைக்ரோஃபோனுக்கான அணுகலை இது வழங்கும்</translation>
 <translation id="4389184120735010762">டாக் செய்யப்பட்ட பெரிதாக்கியின் கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="439598569299422042">இடைநிறுத்தப்பட்டது, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ஸ்க்ரீன்காஸ்ட்டைச் சேமிக்க முடியவில்லை</translation>
@@ -960,6 +962,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> என்பது நிர்வகிக்கப்பட்ட ஓர் அமர்வாகும், <ph name="MANAGER" /> இதை நிர்வகிக்கிறது</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> இணைக்கப்பட்டது</translation>
 <translation id="6351032674660237738">பயன்பாட்டுப் பரிந்துரைகள்</translation>
+<translation id="6352082849089527770">தெரியாத நெட்வொர்க்குகள்</translation>
 <translation id="6359587239691116345">சமீபத்திய அம்சங்களையும் பாதுகாப்பு மேம்பாடுகளையும் பெறலாம். இந்தப் புதுப்பிப்பை நிராகரித்தால் உங்கள் சாதனம் சரியாகச் செயல்படாமல் போகக்கூடும். அத்துடன் பாதுகாப்பு மற்றும் செயல்திறன் சிக்கல்களும் ஏற்படக்கூடும்.</translation>
 <translation id="6376931439017688372">புளூடூத் இயக்கப்பட்டுள்ளது</translation>
 <translation id="6381109794406942707">சாதனத்தை அன்லாக் செய்ய உங்கள் பின்னை உள்ளிடவும்.</translation>
@@ -1136,6 +1139,7 @@
 <translation id="7360036564632145207">சாதனங்களில் தரவு அணுகல் பாதுகாப்பு அமைப்பை மாற்றினால் செயல்திறன் மேம்படலாம்</translation>
 <translation id="736045644501761622">வால்பேப்பரையும் ஸ்டைலையும் அமை</translation>
 <translation id="7371404428569700291">சாளரத்தை ரெக்கார்டு செய்யும்</translation>
+<translation id="737315737514430195">மைக்ரோஃபோனைப் பயன்படுத்த அனுமதி கேட்கும் ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் மைக்ரோஃபோனுக்கான அணுகலை இது வழங்கும்</translation>
 <translation id="7377169924702866686">Caps Lock இயக்கத்தில் உள்ளது.</translation>
 <translation id="7377481913241237033">குறியீடு மூலம் இணை</translation>
 <translation id="7378203170292176219">ரெக்கார்டு செய்வதற்கான பகுதியைத் தேர்ந்தெடுக்க இழுக்கவும்</translation>
@@ -1204,6 +1208,7 @@
 <translation id="7671610481353807627">வண்ணத்தின்படி ஆப்ஸ் வரிசைப்படுத்தப்பட்டுள்ளன</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> உடன் இணைக்கப்பட்டது, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">கேமரா உள்ளீடு <ph name="CAMERA_NAME" /> என அமைக்கப்பட்டுள்ளது.</translation>
+<translation id="7689817529363080918">மைக்ரோஃபோனைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ஆப்ஸுக்கும், ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் மைக்ரோஃபோனுக்கான அணுகலை இது வழங்கும்</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">புதிய மொபைல் நெட்வொர்க்கைச் சேர்</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> வரை இயங்கும்</translation>

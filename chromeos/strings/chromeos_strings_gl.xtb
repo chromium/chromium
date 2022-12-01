@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">Probar os pasos para tentar solucionar o problema</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">Para ver o protector de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>
+<translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Máis opcións de configuración</translation>
 <translation id="2085089206770112532">Reducir brillo da pantalla</translation>
 <translation id="2105810540595158374">O dispositivo é un mando de xogos.</translation>
@@ -385,6 +386,7 @@
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">A execución de probas de CPU pódelle afectar ao rendemento do sistema</translation>
 <translation id="4800589996161293643">Comunidade de Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">Cancelouse o traballo de impresión <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Tema claro</translation>
 <translation id="4813136279048157860">As miñas imaxes</translation>
@@ -405,6 +407,7 @@
 <translation id="4891842000192098784">Estrés</translation>
 <translation id="4897058166682006107">Nivel de batería do auricular esquerdo do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="4905998861748258752">Activa a función para seleccionar as opcións de protector de pantalla</translation>
+<translation id="4910858703033903787">Tipos de APN</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
 <translation id="491791267030419270">Consellos para escribir comentarios</translation>
@@ -460,6 +463,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5358174242040570474">Produciuse un erro. Proba a escoller un fondo de pantalla de novo ou volve abrir a aplicación.</translation>
 <translation id="5372659122375744710">A rede wifi non é segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
+<translation id="5378184552853359930">Tipo de IP</translation>
 <translation id="5389159777326897627">Estilo e fondo de pantalla</translation>
 <translation id="5389224261615877010">Arco da vella</translation>
 <translation id="5400907029458559844">O dispositivo estase conectando.</translation>
@@ -489,6 +493,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
+<translation id="5695599963893094957">Preme unha tecla calquera. Podes premer ata 4 teclas á vez.</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
@@ -615,7 +620,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6766275201586212568">Produciuse un erro coas resolucións de DNS</translation>
 <translation id="6768237774506518020">Hai un alto índice de erros relacionados coas resolucións de DNS</translation>
 <translation id="6791471867139427246">cor da luz do teclado</translation>
-<translation id="6793680441750437230">Preme unha tecla calquera. Podes premer ata 4 á vez. Preme Alt + Escape para pechar o cadro de diálogo.</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hai dispoñible información sobre a túa selección. Utilizar frecha arriba para acceder.</translation>
 <translation id="6853312040151791195">Taxa de descarga</translation>
@@ -743,6 +747,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Intro</translation>
+<translation id="8183974620058026102">Anexar</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8226628635270268143">Escolle as fotos e os álbums que máis che gustan</translation>
@@ -831,6 +836,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9025198690966128418">Utilizar como dispositivo persoal</translation>
 <translation id="9028832514430399253">Activa o interruptor para seleccionar as opcións do protector de pantalla</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">A resolución de DNS ten latencia alta</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

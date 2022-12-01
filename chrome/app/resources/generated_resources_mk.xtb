@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">Прегледајте го ажурирањето на името</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> припаѓа на работната површина <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Ќе се отвори за <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Автоматски променете го јазикот за да се совпаѓа со избраните содржини</translation>
 <translation id="1169266963600477608">Контроли за игри</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> содржи чувствителни или опасни податоци. Порака од администраторот: „<ph name="CUSTOM_MESSAGE" />“</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> сака да се поврзе со HID-уред</translation>
@@ -596,6 +597,7 @@
 <translation id="1546280085599573572">Екстензијата ја смени страницата што се прикажува кога ќе кликнете на копчето Почетна страница.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> сака да инсталира <ph name="EXTENSION_TYPE" /> што може:</translation>
 <translation id="1547808936554660006">Разбирам дека инсталираните профили на eSIM нема да бидат отстранети при фабричкото ресетирање</translation>
+<translation id="1547936895218027488">Кликнете на иконата за странична табла за да ја отворите</translation>
 <translation id="1549275686094429035">ARC е овозможена</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> сака да пристапи на <ph name="VOLUME_NAME" />. Тоа може да ги измени или да ги избрише вашите датотеки.</translation>
 <translation id="1552301827267621511">Екстензијата „<ph name="EXTENSION_NAME" />“ го смени пребарувачот и ќе го користи <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -1432,6 +1434,7 @@
 <translation id="2287944065963043964">Екран за најавување</translation>
 <translation id="2289270750774289114">Прашај кога некој сајт сака да открива уреди со Bluetooth во близина (се препорачува)</translation>
 <translation id="2290615375132886363">Копчиња за навигација во режим на таблет</translation>
+<translation id="2291452790265535215">Пробајте да ја користите страничната табла за обележувачи, патувања и друго</translation>
 <translation id="229182044471402145">Не е најден фонт што се совпаѓа</translation>
 <translation id="2292848386125228270">Стартувајте го <ph name="PRODUCT_NAME" /> како нормален корисник. Ако треба да го активирате како администратор за развој, повторно стартувајте го со знамето --no-sandbox.</translation>
 <translation id="2294081976975808113">Приватност на екранот</translation>
@@ -2579,7 +2582,6 @@
 <translation id="3341703758641437857">Дозволи пристап до URL на датотеките</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“ сака да ја отстрани екстензијата.</translation>
 <translation id="3343977377045378693">Се извршува поставување</translation>
-<translation id="3345135638360864351">Барањето за пристап до локацијата не може да се испрати до <ph name="NAME" />. Обидете се повторно.</translation>
 <translation id="3345634917232014253">Безбедносната проверка беше извршена предмалку</translation>
 <translation id="3345886924813989455">Не се најде поддржан прелистувач</translation>
 <translation id="3347086966102161372">К&amp;опирај ја адресата на сликата</translation>
@@ -2589,6 +2591,7 @@
 <translation id="3353786022389205125">Вклучете „Прикажи заклучен екран при будење од режим на мирување“ и пробајте пак</translation>
 <translation id="3354768182971982851">Старите верзии на апликациите на Chrome нема да се отвораат на уреди со Mac по декември 2022 година. Може да проверите дали има достапно нова верзија.</translation>
 <translation id="3354972872297836698">Не можеше да се спари со уредот „<ph name="DEVICE_NAME" />“, изберете уред за да се обидете повторно</translation>
+<translation id="335581015389089642">Говор</translation>
 <translation id="3355936511340229503">Грешка при поврзување</translation>
 <translation id="3356036636691722598">Уживајте во вашиот Chromebook</translation>
 <translation id="3356469410714175391">(Овозможена е виртуелна картичка)</translation>
@@ -3167,7 +3170,6 @@
 <translation id="3883482240657453056">Добијте попусти за <ph name="MERCHANT_NAME_1" /> и <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Содржините од интернет што се достапни на повеќе јазици ќе го користат првиот поддржан јазик од списоков. Поставкиве се синхронизираат со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Вашиот администратор управува со ажурирањата</translation>
-<translation id="3886446263141354045">Вашето барање за пристап на сајтов е испратено на <ph name="NAME" />.</translation>
 <translation id="3887022758415973389">Прикажете го списокот со уреди</translation>
 <translation id="3888053818972567950">Поврзување со <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Прибележување со <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -3920,6 +3922,7 @@
 <translation id="459204634473266369">Нема зачувани уреди во <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Апликација за цртање со пенкало</translation>
 <translation id="4593021220803146968">&amp;Оди на <ph name="URL" /></translation>
+<translation id="4594218792629569101">Изберете „Означи како прочитано“ за да ја преместите страницата најдолу на списокот</translation>
 <translation id="4594577641390224176">Ја барате страницата „За“ на системот? Оди</translation>
 <translation id="4595560905247879544">Апликациите и екстензиите може да ги менува само управникот (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Имате сертификати што ги идентификуваат овие сервери</translation>
@@ -4427,6 +4430,7 @@
 <translation id="5084328598860513926">Текот за поставување е прекинат. Обидете се повторно или контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Се проверуваат ажурирања</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">Белешката е поголема од 1.000 знаци</translation>
 <translation id="5086874064903147617">Да се врати стандардната почетна страница?</translation>
 <translation id="5087249366037322692">Додадено од трето лице</translation>
 <translation id="5087580092889165836">Додајте картичка</translation>
@@ -6591,6 +6595,7 @@
 <translation id="7111822978084196600">Именувајте го прозорецов</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> ставка</translation>
 <translation id="7113502843173351041">Знајте си ја адресата на е-пошта</translation>
+<translation id="7113974454301513811">Сега додајте ја тековната картичка во списокот</translation>
 <translation id="7114054701490058191">Лозинките не се совпаѓаат</translation>
 <translation id="7114648273807173152">За да ја користите Smart Lock за најавување на вашата сметка на Google, одете во „Поставки &gt; Поврзани уреди &gt; Вашиот телефон &gt; Smart Lock“.</translation>
 <translation id="7115361495406486998">Нема достапни контакти</translation>
@@ -8108,7 +8113,6 @@
 <translation id="8540942859441851323">Потребен е роаминг од операторот</translation>
 <translation id="8541462173655894684">Не се најдени печатачи од серверот за печатење</translation>
 <translation id="8541838361296720865">Притиснете прекинувач или копче од тастатурата за да го доделите на „<ph name="ACTION" />“</translation>
-<translation id="8543556556237226809">Имате прашања? Контактирајте со лицето што го надгледува вашиот профил.</translation>
 <translation id="8546186510985480118">Уредот нема доволно простор</translation>
 <translation id="8546306075665861288">Кеш на слика</translation>
 <translation id="8546930481464505581">Приспособи ја лентата на допир</translation>
@@ -8826,6 +8830,7 @@
 <translation id="9201842707396338580">Нешто тргна наопаку. Контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Профилирањето е овозможено</translation>
 <translation id="9203904171912129171">Изберете уред</translation>
+<translation id="920410963177453528">Кликнете на паѓачкото мени за да изберете друга табла</translation>
 <translation id="9206889157914079472">Земање белешки со пенкало од заклучен екран</translation>
 <translation id="9208192193641542858">Локалните податоци се заштитени со вашата стара лозинка. Ако неодамна сте ја промениле лозинката, пробајте ја старата лозинка повторно.</translation>
 <translation id="9209563766569767417">Се проверува поставувањето на контејнерот за Linux</translation>

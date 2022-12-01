@@ -493,6 +493,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Perhe</translation>
+<translation id="5695599963893094957">Kirjoita millä tahansa näppäimistön näppäimellä. Voit painaa enintään 4 näppäintä yhtä aikaa.</translation>
 <translation id="5701381305118179107">Keskitä</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Päivitä <ph name="DEVICE_NAME" /></translation>
@@ -619,7 +620,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
 <translation id="6791471867139427246">näppäimistön vaaleat värit</translation>
-<translation id="6793680441750437230">Kirjoita millä tahansa näppäimistön näppäimellä. Voit painaa enintään 4 näppäintä yhtä aikaa. Sulje valintaikkuna painamalla Alt + Esc.</translation>
 <translation id="680983167891198932">Avain</translation>
 <translation id="6816797338148849397">Valintaasi liittyvää tietoa on saatavilla. Paina ylänuolta, niin näet tiedot.</translation>
 <translation id="6853312040151791195">Tyhjentymisnopeus</translation>
@@ -768,6 +768,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8372477600026034341">Muut isännät</translation>
 <translation id="8395584934117017006">Tämä <ph name="DEVICE_TYPE" /> on yrityksen ylläpitämä</translation>
 <translation id="8398927464629426868">Laitteen tämänhetkinen latausnopeus tai latauksen purkunopeus</translation>
+<translation id="8410244574650205435">Havaittu automaattisesti</translation>
 <translation id="8420955526972171689">Testaa ja korjaa laitteisto-ongelmia</translation>
 <translation id="8422748173858722634">IMEI-koodi</translation>
 <translation id="8431300646573772016">Chrome OS: uutta</translation>

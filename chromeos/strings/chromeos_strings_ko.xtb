@@ -493,6 +493,7 @@
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">가족</translation>
+<translation id="5695599963893094957">키보드의 아무 키나 누르세요. 동시에 최대 4개의 키를 누를 수 있습니다.</translation>
 <translation id="5701381305118179107">가운데</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> 업데이트</translation>
@@ -619,7 +620,6 @@
 <translation id="6766275201586212568">DNS 변환 실패함</translation>
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="6791471867139427246">키보드 조명 색상</translation>
-<translation id="6793680441750437230">키보드의 아무 키나 누르세요. 동시에 최대 4개의 키를 누를 수 있습니다. Alt + Esc를 눌러 대화상자를 닫습니다.</translation>
 <translation id="680983167891198932">키</translation>
 <translation id="6816797338148849397">선택 항목과 관련된 정보를 이용할 수 있습니다. 액세스하려면 위쪽 화살표 키를 사용하세요.</translation>
 <translation id="6853312040151791195">방전 속도</translation>

@@ -133,6 +133,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1974060860693918893">Configuració avançada</translation>
 <translation id="1981118202195772574">Mòbil</translation>
 <translation id="1989112275319619282">Examina</translation>
+<translation id="1990820278544963435">Cerca</translation>
 <translation id="199425419756152024">Mostra la contrasenya</translation>
 <translation id="2010008505735295285">Torna a carregar</translation>
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
@@ -283,6 +284,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3153862085237805241">Desa la targeta</translation>
 <translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
 <translation id="3157684681743766797">Marca-ho tot com a…</translation>
+<translation id="315778507796115851">Historial</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">També pots utilitzar les contrasenyes desades en els teus altres dispositius.</translation>
 <translation id="3175081911749765310">Serveis web</translation>
@@ -549,7 +551,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5190835502935405962">Barra d'adreces d'interès</translation>
 <translation id="519530786644929958">La baixada ha fallat i no es pot tornar a provar.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5219295696240154694">Ajuda a millorar la seguretat al web per a tothom</translation>
 <translation id="5228579091201413441">Activa la sincronització</translation>
 <translation id="5232485538978018676">Inicia la sessió amb un compte gestionat</translation>
@@ -1088,6 +1089,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9188680907066685419">Tanqueu la sessió del compte gestionat</translation>
 <translation id="9200875785104711666">Fa <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Cerca pestanyes…</translation>
 <translation id="9223358826628549784">L'informe d'error s'ha enviat.</translation>
 <translation id="941747855997058526">Selecciona una contrasenya...</translation>
 <translation id="952704832371081537">Cancel·la</translation>

@@ -493,6 +493,7 @@
 <translation id="5669267381087807207">กำลังเปิดใช้</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ครอบครัว</translation>
+<translation id="5695599963893094957">ลองกดแป้นใดก็ได้บนแป้นพิมพ์ โดยกดได้ถึง 4 แป้นพร้อมกัน</translation>
 <translation id="5701381305118179107">กึ่งกลาง</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> จาก <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">อัปเดต <ph name="DEVICE_NAME" /></translation>
@@ -619,7 +620,6 @@
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="6791471867139427246">สีไฟแป้นพิมพ์</translation>
-<translation id="6793680441750437230">ลองกดแป้นใดก็ได้บนแป้นพิมพ์ โดยกดได้ถึง 4 แป้นพร้อมกัน กดแป้น Alt + Esc เพื่อปิดกล่องโต้ตอบ</translation>
 <translation id="680983167891198932">คีย์</translation>
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
 <translation id="6853312040151791195">อัตราการคายประจุ</translation>

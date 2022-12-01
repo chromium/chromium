@@ -133,6 +133,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1981118202195772574">Móvil</translation>
 <translation id="1989112275319619282">Examinar</translation>
+<translation id="1990820278544963435">Buscar</translation>
 <translation id="199425419756152024">Ver contraseña</translation>
 <translation id="2010008505735295285">Volver a cargar</translation>
 <translation id="2015722694326466240">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder ver las contraseñas.</translation>
@@ -550,7 +551,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="519530786644929958">La descarga ha fallado y no se puede reintentar.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5219295696240154694">Ayudar a mejorar la seguridad de todos los usuarios en la Web</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
 <translation id="5232485538978018676">Iniciar sesión con una cuenta gestionada</translation>
@@ -875,6 +875,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7531345132340165516">Sitio actual</translation>
 <translation id="7537586195939242955">No se puede instalar tu tarjeta en Passbook en este momento.</translation>
 <translation id="7553234618121028547">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Ajustes<ph name="END_LINK" /> y ve a Opciones de las contraseñas.</translation>
+<translation id="7554645225856321710">Cerrar todo</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7583004045319035904">Usa <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear tus pestañas de incógnito.</translation>
@@ -1088,6 +1089,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9188680907066685419">Cierra sesión en la cuenta gestionada</translation>
 <translation id="9200875785104711666">Hace <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">Buscar pestañas…</translation>
 <translation id="9223358826628549784">Informe sobre fallos enviado.</translation>
 <translation id="941747855997058526">Seleccionar contraseña...</translation>
 <translation id="952704832371081537">Cancelar</translation>

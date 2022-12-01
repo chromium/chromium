@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 後開啟…</translation>
+<translation id="116896278675803795">根據所選內容自動變更為相符的語言</translation>
 <translation id="1169266963600477608">遊戲控制項</translation>
 <translation id="1169435433292653700">「<ph name="FILE_NAME" />」含有敏感或危險的內容。管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> 要求連接 HID 裝置</translation>
@@ -595,6 +596,7 @@
 <translation id="1546280085599573572">擴充功能已變更您按下 [主頁] 按鈕時所顯示的網頁。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />要求安裝具有下列功能的<ph name="EXTENSION_TYPE" />：</translation>
 <translation id="1547808936554660006">我瞭解執行 Powerwash 將不會移除已安裝的 eSIM 卡設定檔</translation>
+<translation id="1547936895218027488">按一下側面板圖示即可開啟</translation>
 <translation id="1549275686094429035">已啟用 ARC</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」想要存取「<ph name="VOLUME_NAME" />」。它可以修改或刪除您的檔案。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」擴充程式已變更搜尋引擎，改為使用 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -1431,6 +1433,7 @@
 <translation id="2287944065963043964">登入畫面</translation>
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
 <translation id="2290615375132886363">平板電腦導覽按鈕</translation>
+<translation id="2291452790265535215">嘗試透過在側面板上使用書籤、瀏覽歷程及其他功能</translation>
 <translation id="229182044471402145">找不到相符的字型。</translation>
 <translation id="2292848386125228270">請以一般使用者身分啟動 <ph name="PRODUCT_NAME" />。如要以 root 身份作開發用途，請使用「--no-sandbox」標籤重新執行 Chrome。</translation>
 <translation id="2294081976975808113">螢幕私隱設定</translation>
@@ -2578,7 +2581,6 @@
 <translation id="3341703758641437857">允許存取檔案網址</translation>
 <translation id="3342361181740736773">「<ph name="TRIGGERING_EXTENSION_NAME" />」要求移除這個擴充程式。</translation>
 <translation id="3343977377045378693">設定中</translation>
-<translation id="3345135638360864351">您對這個網站的存取權要求無法傳送給 <ph name="NAME" />。請再試一次。</translation>
 <translation id="3345634917232014253">剛才已執行安全檢查</translation>
 <translation id="3345886924813989455">找不到支援的瀏覽器</translation>
 <translation id="3347086966102161372">複製圖片位址(&amp;O)</translation>
@@ -2588,6 +2590,7 @@
 <translation id="3353786022389205125">請開啟「從休眠狀態喚醒時顯示上鎖畫面」，然後再試一次</translation>
 <translation id="3354768182971982851">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Mac 裝置上開啟。您亦可檢查是否有可用的新版本。</translation>
 <translation id="3354972872297836698">同裝置 <ph name="DEVICE_NAME" /> 配對唔到；請揀裝置之後再試一次</translation>
+<translation id="335581015389089642">語音</translation>
 <translation id="3355936511340229503">連線錯誤</translation>
 <translation id="3356036636691722598">在 Chromebook 上享受遊戲體驗</translation>
 <translation id="3356469410714175391">(已啟用虛擬卡)</translation>
@@ -3166,7 +3169,6 @@
 <translation id="3883482240657453056">取得 <ph name="MERCHANT_NAME_1" /> 和 <ph name="MERCHANT_NAME_2" /> 的折扣</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用此清單上的第一個支援語言。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新由您的管理員管理</translation>
-<translation id="3886446263141354045">您想存取此網站的要求已傳送至<ph name="NAME" /></translation>
 <translation id="3887022758415973389">顯示裝置清單</translation>
 <translation id="3888053818972567950">「<ph name="WEB_DRIVE" />」連線</translation>
 <translation id="3888550877729210209">正在使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
@@ -3919,6 +3921,7 @@
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
 <translation id="4593021220803146968">前往 <ph name="URL" /> (&amp;G)</translation>
+<translation id="4594218792629569101">選取「標示為已讀取」即可將頁面移至清單底部</translation>
 <translation id="4594577641390224176">要查看系統的「關於」頁面嗎？請前往</translation>
 <translation id="4595560905247879544">只有管理員 (<ph name="CUSTODIAN_NAME" />) 才能修改應用程式和擴充程式。</translation>
 <translation id="4596295440756783523">您的檔案具備可以識別這些伺服器的憑證</translation>
@@ -4426,6 +4429,7 @@
 <translation id="5084328598860513926">佈建流程已中斷。請再試一次，或聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5085162214018721575">檢查更新</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">筆記超過 1000 個字元</translation>
 <translation id="5086874064903147617">要將首頁還原至預設值嗎？</translation>
 <translation id="5087249366037322692">由第三方新增</translation>
 <translation id="5087580092889165836">加入新卡</translation>
@@ -6586,6 +6590,7 @@
 <translation id="7111822978084196600">命名此視窗</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> 個項目</translation>
 <translation id="7113502843173351041">存取您的電郵地址</translation>
+<translation id="7113974454301513811">現在，將現有分頁加入清單</translation>
 <translation id="7114054701490058191">密碼不符</translation>
 <translation id="7114648273807173152">如要使用 Smart Lock 登入 Google 帳戶，請前往 [設定] &gt; [已連接的裝置] &gt; [您的手機] &gt; [Smart Lock]。</translation>
 <translation id="7115361495406486998">沒有可用的聯絡人</translation>
@@ -8101,7 +8106,6 @@
 <translation id="8540942859441851323">供應商要求漫遊</translation>
 <translation id="8541462173655894684">在列印伺服器中找不到任何打印機</translation>
 <translation id="8541838361296720865">按下按鈕裝置或鍵盤按鍵，即可指派為「<ph name="ACTION" />」</translation>
-<translation id="8543556556237226809">有問題嗎？請與您個人資料的監管者聯絡。</translation>
 <translation id="8546186510985480118">裝置的儲存空間即將用盡</translation>
 <translation id="8546306075665861288">圖片快取</translation>
 <translation id="8546930481464505581">自訂 Touch Bar</translation>
@@ -8818,6 +8822,7 @@
 <translation id="9201842707396338580">發生錯誤。請聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="9203398526606335860">分析已啟用(&amp;P)</translation>
 <translation id="9203904171912129171">選取裝置</translation>
+<translation id="920410963177453528">按一下下拉式選單選擇其他面板</translation>
 <translation id="9206889157914079472">在上鎖畫面使用觸控筆筆記功能</translation>
 <translation id="9208192193641542858">本機資料受舊密碼保護。如果您最近變更過密碼，請重新輸入舊密碼。</translation>
 <translation id="9209563766569767417">正在檢查 Linux 容器設定</translation>

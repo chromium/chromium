@@ -551,7 +551,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5190835502935405962">Xatcho‘plar paneli</translation>
 <translation id="519530786644929958">Yuklab olinmadi va qayta urinish imkonsiz.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5210365745912300556">Tabni yopish</translation>
 <translation id="5219295696240154694">Internetni hamma uchun xavfsiz boʻlishiga yordam bering</translation>
 <translation id="5228579091201413441">Sinxronlashni yoqish</translation>
 <translation id="5232485538978018676">Boshqariladigan hisobga kirish</translation>
@@ -876,6 +875,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7531345132340165516">Joriy sayt</translation>
 <translation id="7537586195939242955">Passbook ilovasiga ma’lumotlarni yozib bo‘lmadi.</translation>
 <translation id="7553234618121028547">Faolsizlantirish uchun avval <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" />, keyin Parol sozlamalarini oching.</translation>
+<translation id="7554645225856321710">Hammasini yopish</translation>
 <translation id="7554791636758816595">Yangi varaq</translation>
 <translation id="7561196759112975576">Har doim</translation>
 <translation id="7583004045319035904">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan oching.</translation>

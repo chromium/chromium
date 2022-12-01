@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">강조표시가 잘렸습니다.</translation>
 <translation id="1111673857033749125">다른 기기에서 저장한 북마크가 여기에 표시됩니다.</translation>
 <translation id="1113597929977215864">간단히 보기 표시</translation>
-<translation id="1118561384561215815">웹에서의 작업 관련 도움받기</translation>
 <translation id="1123070903960493543">Chrome과 상호작용하는 방식, 선택한 설정, Chrome 비정상 종료 세부정보</translation>
 <translation id="1126809382673880764">위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하지 않습니다. Gmail, Google 검색과 같은 다른 Google 서비스에서는 가능한 경우 세이프 브라우징 보호가 계속 제공됩니다.</translation>
 <translation id="1129510026454351943">세부정보: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@
 <translation id="2286841657746966508">결제주소</translation>
 <translation id="228704530595896923">공유 옵션 목록입니다.</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
-<translation id="230155349749732438">이 설정을 사용하려면 <ph name="BEGIN_LINK" />검색 및 탐색 기능 개선<ph name="END_LINK" />이 사용 설정되어 있어야 합니다.</translation>
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="2321086116217818302">비밀번호 준비 중…</translation>
 <translation id="2323763861024343754">사이트 저장공간</translation>
@@ -428,7 +426,6 @@
 <translation id="3269093882174072735">이미지 로드</translation>
 <translation id="3280562213547448728">음성 검색</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
-<translation id="3284510035090979597">능동적 지원</translation>
 <translation id="3285080554353377245">Chrome 사용 방법에 관한 동영상</translation>
 <translation id="3288003805934695103">페이지 새로고침</translation>
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
@@ -590,7 +587,6 @@
 <translation id="4209895695669353772">Google에서 추천하는 맞춤 콘텐츠를 보려면 동기화를 사용 설정하세요.</translation>
 <translation id="4214315110991671325">사용자가 쿠키를 허용하면 Chrome에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
 <translation id="4225895483398857530">툴바 바로가기</translation>
-<translation id="4227318652298512614">원하는 사이트 팔로우</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4248098802131000011">정보 유출 및 다른 보안 문제로부터 비밀번호를 안전하게 보호하세요.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
@@ -881,7 +877,6 @@
 <translation id="5795872532621730126">검색 및 탐색</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{#시간 전}other{#시간 전}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
-<translation id="5810864297166300463">웹 어시스턴트</translation>
 <translation id="5813552293717797987">이 브라우저는 <ph name="PARENT_NAME_1" />님 및 <ph name="PARENT_NAME_2" />님이 관리합니다.</translation>
 <translation id="5814131985548525293">여기에 입력하거나 음성 아이콘을 탭하여 시작</translation>
 <translation id="5814749351757353073">즐겨 찾는 사이트의 최신 소식 확인하기</translation>
@@ -904,7 +899,6 @@
 <translation id="5869789175361934029">다른 기기에서 탭 가져오기</translation>
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
 <translation id="5879072387416556377">추천 기능 개선</translation>
-<translation id="5884076754568147479">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠가 Google에 전송됩니다.</translation>
 <translation id="5906513782029855931">사이트의 URL을 알려 주시면 Google 어시스턴트가 작업을 도와드릴 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지하실 수 있습니다.</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
@@ -1346,7 +1340,6 @@
 <translation id="8127542551745560481">홈페이지 수정</translation>
 <translation id="8130309322784422030">저장된 로그인 정보가 오래되었을 수 있습니다</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
-<translation id="8153351135626613369">지원되는 웹사이트에서 도울 수 있는 작업이 감지되면 어시스턴트가 표시됩니다.</translation>
 <translation id="8156139159503939589">어떤 언어로 읽을 수 있으신가요?</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>

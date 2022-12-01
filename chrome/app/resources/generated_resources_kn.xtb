@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">ಹೆಸರಿನ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="1166596238782048887"><ph name="DESK_TITLE" /> ಡೆಸ್ಕ್‌ಗೆ <ph name="TAB_TITLE" /> ಸೇರಿದೆ</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ನಲ್ಲಿ ತೆರೆದುಕೊಳ್ಳುತ್ತಿದೆ...</translation>
+<translation id="116896278675803795">ಆಯ್ಕೆಮಾಡಿದ ವಿಷಯವನ್ನು ಹೊಂದಿಸಲು ಭಾಷೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬದಲಾಯಿಸಿ</translation>
 <translation id="1169266963600477608">ಗೇಮ್‌ನ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> ಸೂಕ್ಷ್ಮ ಅಥವಾ ಅಪಾಯಕಾರಿ ಡೇಟಾವನ್ನು ಒಳಗೊಂಡಿದೆ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಹೀಗೆ ಹೇಳುತ್ತಾರೆ: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> HID ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
@@ -2571,7 +2572,6 @@
 <translation id="3341703758641437857">URL ಗಳನ್ನು ಫೈಲ್‌ಗಳಿಗೆ ಪ್ರವೇಶಿಸಲು ಅನುಮತಿಸಿ</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ಈ ವಿಸ್ತರಣೆಯನ್ನು ತೆಗೆದುಹಾಕಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="3343977377045378693">ಸೆಟಪ್ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ</translation>
-<translation id="3345135638360864351">ಈ ಸೈಟ್ ಅನ್ನು ಪ್ರವೇಶಿಸಲು ನೀವು ಸಲ್ಲಿಸಿದ ವಿನಂತಿಯನ್ನು <ph name="NAME" /> ಗೆ ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3345634917232014253">ಸುರಕ್ಷತೆ ಪರಿಶೀಲನೆಯು ಸ್ವಲ್ಪ ಸಮಯದ ಹಿಂದೆ ನಡೆದಿದೆ</translation>
 <translation id="3345886924813989455">ಯಾವುದೇ ಬೆಂಬಲಿತ ಬ್ರೌಸರ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="3347086966102161372">ಚಿತ್ರದ ವಿಳಾಸ ನ&amp;ಕಲಿಸು</translation>
@@ -2581,6 +2581,7 @@
 <translation id="3353786022389205125">"ನಿದ್ರೆಯಿಂದ ಎಚ್ಚರಗೊಳ್ಳುವಾಗ ಲಾಕ್ ಸ್ಕ್ರೀನ್ ತೋರಿಸಿ" ಅನ್ನು ಆನ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="3354768182971982851">ಡಿಸೆಂಬರ್ 2022 ರ ನಂತರ Chrome ಆ್ಯಪ್‌ಗಳ ಹಳೆಯ ಆವೃತ್ತಿಗಳು Mac ಸಾಧನಗಳಲ್ಲಿ ತೆರೆಯುವುದಿಲ್ಲ. ಹೊಸ ಆವೃತ್ತಿ ಲಭ್ಯವಿದೆಯೇ ಎಂಬುದನ್ನು ನೀವು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ಸಾಧನಕ್ಕೆ ಜೋಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಪುನಃ ಪ್ರಯತ್ನಿಸಲು ಸಾಧನವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="335581015389089642">ಧ್ವನಿ</translation>
 <translation id="3355936511340229503">ಸಂಪರ್ಕ ದೋಷ</translation>
 <translation id="3356036636691722598">ನಿಮ್ಮ Chromebook ನಲ್ಲಿ ಗೇಮಿಂಗ್ ಅನ್ನು ಆನಂದಿಸಿ</translation>
 <translation id="3356469410714175391">(ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ)</translation>
@@ -3160,7 +3161,6 @@
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> ಮತ್ತು <ph name="MERCHANT_NAME_2" /> ಗಾಗಿ ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="3884152383786131369">ಹಲವು ಭಾಷೆಗಳಲ್ಲಿ ಲಭ್ಯವಿರುವ ವೆಬ್ ವಿಷಯವನ್ನು ಈ ಪಟ್ಟಿಯಿಂದ ಮೊದಲು ಬೆಂಬಲಿಸುವ ಭಾಷೆಯನ್ನು ಬಳಸುತ್ತವೆ. ಈ ಆದ್ಯತೆಗಳನ್ನು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
-<translation id="3886446263141354045">ಈ ಸೈಟ್‌ಗೆ ಪ್ರವೇಶಿಸುವ ನಿಮ್ಮ ವಿನಂತಿಯನ್ನು <ph name="NAME" /> ಅವರಿಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="3887022758415973389">ಸಾಧನ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> ಕನೆಕ್ಷನ್</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ಮೂಲಕ ಟಿಪ್ಪಣಿಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
@@ -8097,7 +8097,6 @@
 <translation id="8540942859441851323">ಪೂರೈಕೆದಾರರು ರೋಮಿಂಗ್ ಸೌಲಭ್ಯ ಒದಗಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8541462173655894684">ಪ್ರಿಂಟ್ ಸರ್ವರ್‌ನಿಂದ ಯಾವುದೇ ಪ್ರಿಂಟರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="8541838361296720865">ಇದನ್ನು “<ph name="ACTION" />” ಗೆ ನಿಯೋಜಿಸಲು ಸ್ವಿಚ್ ಅಥವಾ ಕೀಬೋರ್ಡ್ ಕೀಯನ್ನು ಒತ್ತಿ</translation>
-<translation id="8543556556237226809">ಪ್ರಶ್ನೆಗಳಿವೆಯೇ? ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡುವ ವ್ಯಕ್ತಿಯನ್ನು ಸಂಪರ್ಕಸಿ.</translation>
 <translation id="8546186510985480118">ಸಾಧನದ ಸ್ಥಳಾವಕಾಶ ಕಡಿಮೆ ಇದೆ</translation>
 <translation id="8546306075665861288">ಇಮೇಜ್ ಕ್ಯಾಷ್</translation>
 <translation id="8546930481464505581">ಸ್ಪರ್ಶ ಪಟ್ಟಿಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
@@ -8441,6 +8440,7 @@
 <translation id="8859174528519900719">ಉಪಫ್ರೇಮ್‌: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">ಸೇವಾ ನಿಯಮಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="8859662783913000679">ಪೋಷಕರ ಖಾತೆ</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} ಖಾತೆ}one{{COUNT} ಖಾತೆಗಳು}other{{COUNT} ಖಾತೆಗಳು}}</translation>
 <translation id="8861568709166518036">ಮನೆಗೆ, ಹಿಂತಿರುಗಲು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲು ಆನ್-ಸ್ಕ್ರೀನ್ ಬಟನ್‌ಗಳನ್ನು ಬಳಸಿ. ChromeVox ಅಥವಾ ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳು ಆನ್ ಆಗಿದ್ದರೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆನ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="8862003515646449717">ವೇಗವಾದ ಬ್ರೌಸರ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="8863753581171631212">ಹೊಸ <ph name="APP" /> ನಲ್ಲಿ ಲಿಂಕ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>

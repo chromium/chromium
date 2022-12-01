@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{යෙදුමකට අක්‍රියයි}one{යෙදුම් #කට අක්‍රියයි}other{යෙදුම් #කට අක්‍රියයි}}</translation>
 <translation id="4066027111132117168"><ph name="REMAINING_TIME" />ට</translation>
 <translation id="4072264167173457037">මධ්‍යම සංඥාව</translation>
+<translation id="4086921558679520050">ඔබේ උපාංගයෙහි භෞතික මයික් ස්විචය ක්‍රියාත්මක කරන්න</translation>
 <translation id="4112140312785995938">පසුපසට සොයන්න</translation>
 <translation id="4114315158543974537">දුරකථන මධ්‍යස්ථානය ක්‍රියාත්මක කරන්න</translation>
 <translation id="4115378294792113321">මැජෙන්ටා</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, සංඥා ප්‍රබලතාව සියයට <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="4378551569595875038">සම්බන්ධ වෙමින්...</translation>
 <translation id="4379531060876907730">ඔබේ පන්හිඳ මෙවලම් මේවායි</translation>
+<translation id="4381031910344220229">මෙය <ph name="APP_NAME" /> සඳහා මයික්‍රෆෝන ප්‍රවේශයට සහ මයික්‍රෆෝන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවිවලට ඉඩ දෙයි</translation>
 <translation id="4389184120735010762">ඔබ ඩොක් කළ විශාලකය සඳහා යතුරුපුවරු කෙටිමඟ ඔබා ඇත. ඔබට එය සක්‍රීය කළ යුතුද?</translation>
 <translation id="439598569299422042"><ph name="SIZE_INFO" />, විරාම කරන ලදි</translation>
 <translation id="440113666232554208">තිරසටහන සුරැකිය නොහැකිය</translation>
@@ -728,6 +730,7 @@
 <translation id="4987738733603015246">16 වෙනි මේසය</translation>
 <translation id="5003993274120026347">ඊළඟ වාක්‍යය</translation>
 <translation id="5016558321564993266">ලකුණුකරය ටොගල කරන්න. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">උපාංග මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මකයි</translation>
 <translation id="5030687792513154421">වේලාව අවසන්</translation>
 <translation id="5033299697334913360">පූර්ණ තිරය ග්‍රහණය කිරීමට ඕනෑම තැනක ක්ලික් කරන්න</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> නව දුරකථනයකට සම්බන්ධයි</translation>
@@ -959,9 +962,11 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> යනු <ph name="MANAGER" /> විසින් කළමනාකරණය කරනු ලබන කළමනාකරණය කළ සැසියකි</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> සම්බන්ධිතයි</translation>
 <translation id="6351032674660237738">යෙදුම් යෝජනා</translation>
+<translation id="6352082849089527770">නොදන්නා ජාල</translation>
 <translation id="6359587239691116345">නවතම විශේෂාංග සහ ආරක්ෂක වැඩි දියුණු කිරීම් ලබා ගන්න. ඔබ මෙම යාවත්කාලීනය ප්‍රතික්ෂේප කරන්නේ නම්, ඔබේ උපාංගය තවදුරටත් නිසි ලෙස ක්‍රියා නොකරන අතර ඔබ ආරක්ෂක සහ කාර්ය සාධන ගැටලු අත්විඳිය හැක.</translation>
 <translation id="6376931439017688372">බ්ලූටූත් ක්‍රියාත්මකයි</translation>
 <translation id="6381109794406942707">උපාංගය අගුලු ඇරීමට, ඔබේ රහස් අංකය ඇතුළත් කරන්න.</translation>
+<translation id="638716340450135524">කැමරා ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
 <translation id="639644700271529076">කැප්ස් ලොක් අක්‍රීයයි</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google සහායක</translation>
@@ -969,6 +974,7 @@
 <translation id="642644398083277086">සියලු දැනුම්දීම් හිස් කරන්න</translation>
 <translation id="643147933154517414">සියල්ල නිමයි</translation>
 <translation id="6431865393913628856">තිර පටිගත කිරීම</translation>
+<translation id="6442259747294754014">උපාංග මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාවිරහිතයි</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> මත <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, සිදුවීම් <ph name="NUMBER" />ක්</translation>
 <translation id="6449483711453944360">Linux යෙදුම් සහ අප්‍රසිද්ධ කවුළු දැනට සහාය නොදක්වයි</translation>
@@ -1133,6 +1139,7 @@
 <translation id="7360036564632145207">උපාංග සැකසීම සඳහා ඔබගේ දත්ත ප්‍රවේශ ආරක්ෂාව වෙනස් කිරීම කාර්ය සාධනය ප්‍රශස්ත කළ හැකිය</translation>
 <translation id="736045644501761622">වෝල්පේපරය සහ ශෛලිය සකසන්න</translation>
 <translation id="7371404428569700291">පටිගත කිරීමේ කවුළුව</translation>
+<translation id="737315737514430195">මෙය මයික්‍රෆෝන අවසරය ඇතිව සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා මයික්‍රෆෝන ප්‍රවේශයට ඉඩ දෙයි</translation>
 <translation id="7377169924702866686">කැප්ස් ලොක් සක්‍රීයයි.</translation>
 <translation id="7377481913241237033">කේතයක් සමගින් සම්බන්ධ වන්න</translation>
 <translation id="7378203170292176219">පටිගත කිරීමට ප්‍රදේශයක් තේරීමට අදින්න</translation>
@@ -1201,6 +1208,7 @@
 <translation id="7671610481353807627">වර්ණය අනුව යෙදුම් අනුපිළිවෙළට සකසා ඇත</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> වෙත සම්බන්ධිතයි, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">කැමරා ආදානය <ph name="CAMERA_NAME" />ට සකසා ඇත.</translation>
+<translation id="7689817529363080918">මෙය <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> සඳහා මයික්‍රෆෝන ප්‍රවේශයට සහ මයික්‍රෆෝන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවිවලට ඉඩ දෙයි</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">නව සෙලියුලර් ජාලයක් එක් කරන්න</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> තෙක් ක්‍රියාත්මකයි</translation>
@@ -1364,6 +1372,7 @@
 <translation id="8598235756057743477">ඔබගේ යෙදුම් නම හෝ වර්ණය අනුව අනුපිළිවෙළට සකසන්න</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> සහ <ph name="APP_2_TITLE" /> දැනුම්දීම් බැලීමේ ආරක්ෂාව ක්‍රියාත්මක බැවින් සඟවා ඇත</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> වෙත සම්බන්ධ විය</translation>
+<translation id="8630991711272431708">කැමරා ප්‍රවේශය ක්‍රියා විරහිත කරන්න</translation>
 <translation id="8631727435199967028">ප්‍රවේශ්‍යතා සැකසීම්</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ඉතිරිව ඇත</translation>

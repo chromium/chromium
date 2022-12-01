@@ -72,6 +72,7 @@
 <translation id="1067048845568873861">Yaradılıb</translation>
 <translation id="1067661089446014701">Təhlükəsizliyi artırmaq üçün Google Hesabınızda saxlanmazdan əvvəl cihazınızda parolları şifrələyin</translation>
 <translation id="1067922213147265141">Digər Google xidmətləri</translation>
+<translation id="106814709658156573">Barmaq izini ayarlamaq üçün uşağınızdan klaviaturanın aşağı sol küncündə olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="1069104208554708737">Bu giriş açarı yalnız bu cihazda yadda saxlanılacaq</translation>
 <translation id="1069355737714877171"><ph name="PROFILE_NAME" /> adlı eSIM profilini silin</translation>
 <translation id="1069814191880976658">Başqa ekran seçin</translation>
@@ -185,6 +186,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1166583374608765787">Ad güncəlləməsini nəzərdən keçirin</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> masasına aiddir</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> ərzində açılır...</translation>
+<translation id="116896278675803795">Seçilmiş kontentə uyğunlaşmaq üçün dili avtomatik olaraq dəyişdirin</translation>
 <translation id="1169266963600477608">Oyun nəzarətləri</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> həssas və ya təhlükəli data ehtiva edir. Administratorunuz "<ph name="CUSTOM_MESSAGE" />" deyir</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> HID cihazına qoşulmaq istəyir</translation>
@@ -590,6 +592,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1546280085599573572">Bu artırma əsas səhifə düyməsinə kliklədiyiniz zaman hansı səhifənin göstərildiyini dəyişdi</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> aşağıdakı imkanlara malik <ph name="EXTENSION_TYPE" /> quraşdırmaq istəyir:</translation>
 <translation id="1547808936554660006">Başa düşürəm ki, formatladıqda quraşdırılmış eSIM profilləri silinməyəcək</translation>
+<translation id="1547936895218027488">Açmaq üçün yan panel ikonasını klikləyin</translation>
 <translation id="1549275686094429035">ARC Aktivdir</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> daxil olmaq istəyir. Fayllarınızı dəyişə və ya silə bilər.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" artırması axtarış sistemini <ph name="SEARCH_PROVIDER_DOMAIN" /> seçiminə dəyişib</translation>
@@ -995,6 +998,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1892341345406963517">Salam <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Digər dillərdə</translation>
 <translation id="1895658205118569222">Söndürün</translation>
+<translation id="1896043844785689584">Barmaq izini ayarlamaq üçün uşağınızdan klaviaturanın aşağı sağ küncündə olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="1897120393475391208">Güclü paroldan istifadə edin</translation>
 <translation id="1900305421498694955">Google Play tətbiqləri xarici yaddaş cihazlarında faylları oxumaq və yazmaq üçün bütün fayl sisteminə giriş istəyə bilər. Cihazda yaradılan fayl və qovluqları xarici diskdən istifadə edən hər kəs görə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Hamısını seçin</translation>
@@ -1415,6 +1419,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2287944065963043964">Giriş ekranı</translation>
 <translation id="2289270750774289114">Sayt yaxınlıqdakı Bluetooth cihazlarını kəşf etmək istədikdə soruşun (tövsiyə edilir)</translation>
 <translation id="2290615375132886363">Planşet naviqasiya düymələri</translation>
+<translation id="2291452790265535215">Əlfəcinlər, səyahətlər və s. üçün yan paneldən istifadə etməyə çalışın</translation>
 <translation id="229182044471402145">Uyğun şrift tapılmadı.</translation>
 <translation id="2292848386125228270"><ph name="PRODUCT_NAME" /> tətbiqini normal sitifadəçi kimi başladın. Əgər inkişaf mənbəyi olaraq istifadə etmək istəyirsinizsə, --no-sandbox bayraq ilə işə salın.</translation>
 <translation id="2294081976975808113">Ekran məxfiliyi</translation>
@@ -2224,6 +2229,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> üçün icazə verilib</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001144475369593262">Uşaq hesabları</translation>
+<translation id="3001835006423291524">Klaviaturanızın aşağı sağ küncündə olan barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
 <translation id="3003144360685731741">Üstünlük verilən şəbəkələr</translation>
 <translation id="3003623123441819449">CSS Keşi</translation>
 <translation id="3003828226041301643">Cihaz domenə qoşulmadı. Cihaz əlavə etmək imtiyazınızın olduğunu yoxlamaq üçün hesabınızı yoxlayın.</translation>
@@ -2304,6 +2310,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3071624960923923138">Yeni pəncərə açmaq üçün bura klikləyin</translation>
 <translation id="3072775339180057696">Sayta <ph name="FILE_NAME" /> faylına baxmaq üçün icazə verilsin?</translation>
 <translation id="3074499504015191586">Tam Səhifəni Tərcümə edin</translation>
+<translation id="3075144191779656260"><ph name="DEVICE_TYPE" /> cihazınızın sol tərəfində olan barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
 <translation id="3075874217500066906">Sıfırlama prosesinə başlamaq üçün yenidən başlanma tələb olunur. Yenidən başlanmadan sonra davam etdiyinizi təsdiq etməyiniz istəniləcək.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Yalnız bu cihazda saxlayın</translation>
@@ -2562,7 +2569,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3341703758641437857">Fayl URL-lərinə girişə icazə verin</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" bu artırmanı silmək istəyir.</translation>
 <translation id="3343977377045378693">Ayarlama icra edilir</translation>
-<translation id="3345135638360864351">Bu sayta giriş sorğunuz <ph name="NAME" /> ünvanına göndərilə bilmədi. Yenidən cəhd edin.</translation>
 <translation id="3345634917232014253">Az öncə təhlükəsizlik yoxlaması icra edildi</translation>
 <translation id="3345886924813989455">Heç bir dəstəklənən brauzer tapılmadı</translation>
 <translation id="3347086966102161372">Şəkil ünvanını kopyalayın</translation>
@@ -2572,6 +2578,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3353786022389205125">"Yuxudan oyanarkən kilid ekranını göstər" seçimini aktiv edin və yenidən cəhd edin</translation>
 <translation id="3354768182971982851">Chrome tətbiqlərinin köhnə versiyaları 2022-ci ilin dekabrından sonra Mac cihazlarında açılmayacaq. Yeni versiyanın əlçatan olub-olmadığını yoxlayın.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> cihazı ilə birləşdirmək mümkün olmadı; yenidən cəhd etmək üçün cihaz seçin</translation>
+<translation id="335581015389089642">Nitq</translation>
 <translation id="3355936511340229503">Bağlantı xətası</translation>
 <translation id="3356036636691722598">Chromebook'da oyundan faydalanın</translation>
 <translation id="3356469410714175391">(Virtual kart aktiv edilib)</translation>
@@ -2626,6 +2633,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3406290648907941085">Virtual reallıq cihazları və verilənlərindən istifadə etmək icazəsi verilib</translation>
 <translation id="3406396172897554194">Dil və ya daxiletmə adı üzrə axtarın</translation>
 <translation id="3406605057700382950">Əlfəcin panelini göstərin</translation>
+<translation id="3407967630066378878">Barmaq izini ayarlamaq üçün uşağınızdan bu <ph name="DEVICE_TYPE" /> cihazının sol tərəfində olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 parol <ph name="USER_EMAIL" /> üçün Google Parol Menecerinə import edilib}other{{NUM_PASSWORDS} parol <ph name="USER_EMAIL" /> üçün Google Parol Menecerinə import edilib}}</translation>
 <translation id="3409785640040772790">Xəritə</translation>
 <translation id="3412265149091626468">Seçimə Keçin</translation>
@@ -3150,7 +3158,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> və <ph name="MERCHANT_NAME_2" /> üçün endirim əldə edin</translation>
 <translation id="3884152383786131369">Bir neçə dildə əlçatan veb məzmun siyahıdakı ilk dəstəklənən dili istifadə edəcək. Bu tərcihlər brauzer ayarlarınızla sinxronlaşdırılır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Güncəlləmələr administratorunuz tərəfindən idarə edilir</translation>
-<translation id="3886446263141354045">Bu sayta giriş sorğunuz <ph name="NAME" /> ünvanına göndərilib</translation>
 <translation id="3887022758415973389">Cihaz siyahısını göstərin</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> Bağlantısı</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ilə qeyd götürmə</translation>
@@ -3750,6 +3757,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4451479197788154834">Parolunuz bu cihazda və Google Hesabınızda saxlanılıb</translation>
 <translation id="4451757071857432900">İnadçı və ya aldadıcı reklam göstərən saytlarda blok edildi (tövsiyə olunur)</translation>
 <translation id="4452898361839215358">və ya PPD seçin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
+<translation id="4453430595102511050">Klaviaturanızın yuxarı sağ küncündə olan barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> üzrə axtarış edin və ya link yazın</translation>
 <translation id="4458535500699390320">Bu tab qeyri-aktiv olsa da, Yaddaşa Qənaət digər tapşırıqlar üçün yaddaşı boşaldıb. Bunu istənilən zaman ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> gün əvvəl aktiv olub</translation>
@@ -3900,6 +3908,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> hesabında cihaz saxlanmayıb</translation>
 <translation id="4592891116925567110">Stilus rəsm tətbiqi</translation>
 <translation id="4593021220803146968"><ph name="URL" /> linkinə keçin</translation>
+<translation id="4594218792629569101">Səhifəni siyahınızın aşağısına köçürmək üçün “Oxunmuş kimi qeyd et” seçin</translation>
 <translation id="4594577641390224176">Sistemin haqqında səhifəsini axtarırsınız? Ziyarət edin</translation>
 <translation id="4595560905247879544">Tətbiq və artırmalar menecerlər tərəfindən dəyişdirilə bilər (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Bu serverləri təsdiqləyən fayllarda sertifikatlarınız var</translation>
@@ -4407,6 +4416,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5084328598860513926">Təchizat axını kəsildi. Yenidən cəhd edin və ya cihaz sahibi və ya administrator ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Güncəlləşmələr yoxlanır</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">Qeyd 1000 simvoldan çoxdur</translation>
 <translation id="5086874064903147617">Defolt əsas səhifə bərpa edilsin?</translation>
 <translation id="5087249366037322692">Üçüncü tərəfindən əlavə edilib</translation>
 <translation id="5087580092889165836">Kart əlavə edin</translation>
@@ -6018,6 +6028,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6607831829715835317">Daha çox alətlər</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> hazırda <ph name="DOMAIN" /> tərəfindən idarə olunur. Başqa Google Hesabı ilə valideyn nəzarətini istifadə etmək üçün ayarlamadan sonra çıxın, sonra giriş ekranında "Şəxs əlavə edin" seçin.</translation>
 <translation id="6608166463665411119">eSIM'i sıfırlayın</translation>
+<translation id="6608773371844092260">Barmaq izini ayarlamaq üçün uşağınızdan bu <ph name="DEVICE_TYPE" /> cihazının sağ tərəfində olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="6609478180749378879">Anonim rejimdən çıxdıqdan sonra giriş datası bu cihazda saxlanılacaq. Bu veb sayta daha sonra cihazınızla yenidən daxil ola biləcəksiniz.</translation>
 <translation id="6610002944194042868">Tərcümə Seçimləri</translation>
 <translation id="6611907964265870728">Cihazınızın internetə qoşulduğuna əmin olun</translation>
@@ -6567,6 +6578,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7111822978084196600">Bu pəncərəyə ad verin</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> element</translation>
 <translation id="7113502843173351041">E-poçt ünvanınızı bilin</translation>
+<translation id="7113974454301513811">İndi siyahınıza cari tabı əlavə edin</translation>
 <translation id="7114054701490058191">Parollar eyni deyil</translation>
 <translation id="7114648273807173152">Smart Lock istifadə etmək üçün Google Hesabına daxil olun, Ayarlar &gt; Qoşulu cihazlar&gt; Telefon &gt; Smart Lock bölməsinə daxil olun.</translation>
 <translation id="7115361495406486998">Əlçatan kontakt yoxdur</translation>
@@ -6663,6 +6675,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7225082563376899794">Parolları daxil edərkən Windows Hello istifadə edin</translation>
 <translation id="7225179976675429563">Şəbəkə növü çatışmır</translation>
 <translation id="7227458944009118910">Aşağıda sadalanan tətbiqlər protokol keçidlərini də idarə edə bilər. Digər tətbiqlər icazə istəyəcək.</translation>
+<translation id="7228056665272655255">Barmaq izini ayarlamaq üçün uşağınızdan klaviaturanın yuxarı sağ küncündə olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="7228523857728654909">Ekran kilidi və giriş</translation>
 <translation id="7230222852462421043">&amp;Pəncərəni Bərpa edin</translation>
 <translation id="7231260028442989757">Telefonunuzun bildirişlərinə baxın, qapadın və cavab yazın</translation>
@@ -6790,6 +6803,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> üçün <ph name="PAGE_NUMBER" /> səhifə</translation>
 <translation id="7360257054721917104">Yadda saxlanmış masa və ya şablonlara baxılır. Keçmək üçün taba basın.</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> çalışdırmaq üçün sağ düymə ilə klikləyin</translation>
+<translation id="7361914392989692067">Barmağınızla qidalanma düyməsinə toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
 <translation id="7362387053578559123">Saytlar Bluetooth cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="7363349185727752629">Məxfilik seçimləriniz üçün bələdçi</translation>
 <translation id="7364591875953874521">Giriş sorğusu göndərildi</translation>
@@ -7842,6 +7856,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8299319456683969623">Hazırda oflaynsınız</translation>
 <translation id="8300011035382349091">Bu tab üçün əlfəcini redaktə edin</translation>
 <translation id="8300374739238450534">Gecə mavisi</translation>
+<translation id="8301242268274839723">Klaviaturanızın aşağı sol küncündə olan barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Ünvan}other{# ünvan}}</translation>
 <translation id="8304383784961451596">Bu cihazdan istifadə etmək icazəniz yoxdur. Giriş icazəsi üçün administrator ilə əlaqə saxlayın, yaxud Family Link ilə nəzarət edilən Google hesabı vasitəsilə daxil olun.</translation>
 <translation id="8306885873692337975">Ən son funksiyaları və təhlükəsizlik təkmilləşdirmələrini əldə edin.</translation>
@@ -8081,7 +8096,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8540942859441851323">Provayder tərəfindən rouminq tələb edilir</translation>
 <translation id="8541462173655894684">Çap serverindən heç bir printer tapılmadı</translation>
 <translation id="8541838361296720865">Keçirici və ya klaviatura düyməsinə basaraq onu “<ph name="ACTION" />” əməliyyatına təyin edin</translation>
-<translation id="8543556556237226809">Sualınız var? Profilinizə nəzarət edən şəxslə əlaqə saxlayın.</translation>
 <translation id="8546186510985480118">Yaddaş azdır</translation>
 <translation id="8546306075665861288">Şəkil keşi</translation>
 <translation id="8546930481464505581">Toxunuş Panelini fərdiləşdirin</translation>
@@ -8568,10 +8582,12 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> parolunuzu unutsanız, yenə də lokal datanızı bərpa edə bilərsiniz. Google Hesabınıza daxil olmalı və ya hesabın bərpasından istifadə etməlisiniz.</translation>
 <translation id="8993737615451556423">Oxu səsini sürətləndirmək, yavaşlatmaq və durdurmaq üçün nizamlayıcılar təmin edir</translation>
 <translation id="899384117894244799">Məhdudlaşdırılmış istifadəçini silin</translation>
+<translation id="8993945059918628059">Barmağınızla barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
 <translation id="899403249577094719">Netscape Sertifikat Base URL</translation>
 <translation id="899657321862108550">Chrome'unuz Hər Yerdə</translation>
 <translation id="8998078711690114234">Bu tip fayl təhlükəli ola bilər. Bu faylı yalnız <ph name="ORIGIN" /> mənbəyinə etibar edirsinizsə yadda saxlayın</translation>
 <translation id="8999560016882908256">Bölmə sintaksisi xətası: <ph name="ERROR_LINE" /></translation>
+<translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> cihazınızın sağ tərəfində olan barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
 <translation id="9003185744423389627">Cihaz Meneceri Serverinə <ph name="FAILURE_TIME" /> radələrində bağlanma '<ph name="STATUS_TEXT" />' statusu ilə alınmadı</translation>
 <translation id="9003647077635673607">Bütün saytlarda icazə verin</translation>
 <translation id="9003677638446136377">Yenidən yoxlayın</translation>
@@ -8796,6 +8812,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9201842707396338580">Xəta baş verdi. Cihazın sahibi və ya administrator ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilləşdirmə aktivdir</translation>
 <translation id="9203904171912129171">Cihaz seçin</translation>
+<translation id="920410963177453528">Başqa panel seçmək üçün aşağı açılan menyuya klikləyin</translation>
 <translation id="9206889157914079472">Kilid ekranından stilus ilə qeyd aparılması</translation>
 <translation id="9208192193641542858">Lokal data köhnə parolunuzla qorunur. Parolunuzu bu yaxınlarda dəyişmisinizsə, köhnə parolunuzu yenidən sınayın.</translation>
 <translation id="9209563766569767417">Linux konteynerinin quraşdırılması yoxlanılır</translation>

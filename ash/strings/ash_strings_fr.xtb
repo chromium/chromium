@@ -729,6 +729,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4987738733603015246">Bureau 16</translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
 <translation id="5016558321564993266">Activer/Désactiver le repère. <ph name="STATE_TEXT" /></translation>
+<translation id="5029356738310729434">L'accès au micro de l'appareil est activé</translation>
 <translation id="5030687792513154421">Temps écoulé</translation>
 <translation id="5033299697334913360">Cliquez n'importe où pour effectuer une capture en plein écran</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est associé à un nouveau téléphone</translation>
@@ -964,6 +965,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6359587239691116345">Bénéficiez des dernières fonctionnalités et améliorations de sécurité. Si vous refusez cette mise à jour, votre appareil risque de ne plus fonctionner correctement, et vous risquez de rencontrer des problèmes de sécurité et de performances.</translation>
 <translation id="6376931439017688372">Bluetooth activé</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, saisissez votre code.</translation>
+<translation id="638716340450135524">Activer l'accès à l'appareil photo</translation>
 <translation id="639644700271529076">La touche de verrouillage des majuscules est désactivée.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
@@ -971,6 +973,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="642644398083277086">Effacer toutes les notifications</translation>
 <translation id="643147933154517414">Terminé</translation>
 <translation id="6431865393913628856">Enregistrer l'écran</translation>
+<translation id="6442259747294754014">L'accès au micro de l'appareil est désactivé</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> événement</translation>
 <translation id="6449483711453944360">Les applis Linux et les fenêtres de navigation privée ne sont pas prises en charge actuellement</translation>
@@ -1368,6 +1371,7 @@ Nouvelle installation</translation>
 <translation id="8598235756057743477">Trier les applis par nom ou par couleur</translation>
 <translation id="8614517853887502247">Les notifications de <ph name="APP_1_TITLE" /> et <ph name="APP_2_TITLE" /> sont masquées, car la protection contre l'espionnage est activée</translation>
 <translation id="8627191004499078455">Connecté à <ph name="DEVICE_NAME" /></translation>
+<translation id="8630991711272431708">Désactiver l'accès à l'appareil photo</translation>
 <translation id="8631727435199967028">Paramètres d'accessibilité</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restant(s)</translation>

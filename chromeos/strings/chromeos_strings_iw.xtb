@@ -126,6 +126,7 @@
 <translation id="2016697457005847575">להוראות לפתרון בעיות</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2047316797244836561">כדי לצפות בשומר המסך, מתחברים לרשת וטוענים מחדש את הדף.</translation>
+<translation id="2056550196601855911">‏IPv4/‏IPv6</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2085089206770112532">הפחתת הבהירות של התצוגה</translation>
 <translation id="2105810540595158374">המכשיר הוא שלט לגיימינג.</translation>
@@ -384,6 +385,7 @@
 <translation id="4793756956024303490">האלגוריתם לדחיסת נתונים</translation>
 <translation id="4794140124556169553">‏הרצת בדיקה של יחידת עיבוד מרכזית (CPU) עלולה להשפיע על ביצועי המערכת</translation>
 <translation id="4800589996161293643">‏הקהילה של Chromebook</translation>
+<translation id="4803391892369051319">IPv4</translation>
 <translation id="4808449224298348341">משימת ההדפסה <ph name="DOCUMENT_TITLE" /> בוטלה</translation>
 <translation id="4809927044794281115">עיצוב בהיר</translation>
 <translation id="4813136279048157860">התמונות שלי</translation>
@@ -404,6 +406,7 @@
 <translation id="4891842000192098784">בדיקת עומסים</translation>
 <translation id="4897058166682006107">רמת הטעינה של האוזנייה השמאלית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="4905998861748258752">צריך להפעיל את התכונה כדי לבחור אפשרויות לשומר המסך</translation>
+<translation id="4910858703033903787">‏סוגי APN</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
 <translation id="491791267030419270">טיפים לכתיבת משוב</translation>
@@ -459,6 +462,7 @@
 <translation id="5358174242040570474">משהו השתבש. כדאי לנסות לבחור טפט מחדש או לפתוח מחדש את האפליקציה.</translation>
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
 <translation id="5376354385557966694">מצב בהיר אוטומטי</translation>
+<translation id="5378184552853359930">‏סוג IP</translation>
 <translation id="5389159777326897627">טפט וסגנון</translation>
 <translation id="5389224261615877010">קשת</translation>
 <translation id="5400907029458559844">המכשיר בתהליך התחברות.</translation>
@@ -488,6 +492,7 @@
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">משפחה</translation>
+<translation id="5695599963893094957">צריך להקיש על מקש כלשהו במקלדת. אפשר להקיש על עד 4 מקשים בו זמנית.</translation>
 <translation id="5701381305118179107">מרכז</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">עדכון של <ph name="DEVICE_NAME" /></translation>
@@ -614,7 +619,6 @@
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
 <translation id="6791471867139427246">צבע התאורה של המקלדת</translation>
-<translation id="6793680441750437230">‏צריך להקיש על מקש כלשהו במקלדת. אפשר להקיש על עד 4 מקשים בו זמנית. כדי לסגור את תיבת הדו-שיח, מקישים על Alt ועל Esc.</translation>
 <translation id="680983167891198932">מקש</translation>
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
@@ -742,6 +746,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">בחירת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183974620058026102">צירוף</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
@@ -830,6 +835,7 @@
 <translation id="9025198690966128418">שימוש בתור מכשיר אישי</translation>
 <translation id="9028832514430399253">צריך להפעיל את החלפת המצב כדי לבחור את האפשרויות של שומר המסך</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">‏זמן האחזור של רזולוציית ה-DNS ארוך</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

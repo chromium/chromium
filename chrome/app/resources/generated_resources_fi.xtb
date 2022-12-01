@@ -189,6 +189,7 @@
 <translation id="1166583374608765787">Katso nimen muutos</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> kuuluu tälle työpöydälle: <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Avautuu ajassa <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Vaihda kieli automaattisesti vastaamaan valittua sisältöä</translation>
 <translation id="1169266963600477608">Pelin säätimet</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> sisältää arkaluontoista tai vaarallista dataa. Järjestelmänvalvojan viesti: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> haluaa yhdistää HID-laitteeseen</translation>
@@ -2577,7 +2578,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3341703758641437857">Salli tiedostojen URL-osoitteiden käyttö</translation>
 <translation id="3342361181740736773"><ph name="TRIGGERING_EXTENSION_NAME" /> haluaa poistaa tämän laajennuksen.</translation>
 <translation id="3343977377045378693">Otetaan käyttöön</translation>
-<translation id="3345135638360864351">Tämän sivuston käyttöpyyntöä ei voitu lähettää henkilölle <ph name="NAME" />. Yritä uudelleen.</translation>
 <translation id="3345634917232014253">Turvatarkistus suoritettiin hetki sitten</translation>
 <translation id="3345886924813989455">Yhtään tuettua selainta ei löytynyt</translation>
 <translation id="3347086966102161372">K&amp;opioi kuvan osoite</translation>
@@ -2587,6 +2587,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3353786022389205125">Laita asetus "Näytä lukitusnäyttö, kun laite poistuu virransäästötilasta" päälle ja yritä uudelleen</translation>
 <translation id="3354768182971982851">Chrome-sovellusten vanhoja versioita ei voi avata Mac-laitteilla joulukuun 2022 jälkeen. Voit tarkistaa, onko uutta versiota saatavilla.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ei voinut muodostaa laiteparia, valitse laite ja yritä uudelleen</translation>
+<translation id="335581015389089642">Puhe</translation>
 <translation id="3355936511340229503">Yhteysvirhe</translation>
 <translation id="3356036636691722598">Nauti pelaamisesta Chromebookilla</translation>
 <translation id="3356469410714175391">(Virtuaalikortti käytössä)</translation>
@@ -3165,7 +3166,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3883482240657453056">Haluan alennuksia näissä: <ph name="MERCHANT_NAME_1" /> ja <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Verkkosisältö, joka on saatavilla useilla kielillä, käyttää ensimmäistä tuettua kieltä tältä listalta. Nämä asetukset synkronoidaan selainasetustesi kanssa. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Järjestelmänvalvoja päättää päivityksistä</translation>
-<translation id="3886446263141354045">Pyyntösi päästä tälle sivustolle on lähetetty henkilölle <ph name="NAME" />.</translation>
 <translation id="3887022758415973389">Näytä laiteluettelo</translation>
 <translation id="3888053818972567950">Yhteys: <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Muistiinpanojen kirjoittaminen sovelluksella <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -8098,7 +8098,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8540942859441851323">Palveluntarjoaja edellyttää roamingia</translation>
 <translation id="8541462173655894684">Tulostuspalvelimelta ei löytynyt yhtään tulostinta</translation>
 <translation id="8541838361296720865">Paina kytkintä tai näppäimistön näppäintä, niin se määritetään toiminnolle <ph name="ACTION" /></translation>
-<translation id="8543556556237226809">Onko sinulla kysyttävää? Ota yhteyttä profiiliasi valvovaan henkilöön.</translation>
 <translation id="8546186510985480118">Laitteen tallennustila on vähissä</translation>
 <translation id="8546306075665861288">Kuvavälimuisti</translation>
 <translation id="8546930481464505581">Muokkaa kosketuspalkkia</translation>
@@ -8441,6 +8440,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8859174528519900719">Alakehys: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Käyttöehtojen lataus ei onnistunut</translation>
 <translation id="8859662783913000679">Vanhemman tili</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} tili}other{{COUNT} tiliä}}</translation>
 <translation id="8861568709166518036">Voit siirtyä aloitusnäytölle ja takaisin ja vaihtaa sovelluksia näytöllä olevilla painikkeilla. Tämä menee päälle automaattisesti, jos ChromeVox tai automaattiset klikkaukset ovat päällä.</translation>
 <translation id="8862003515646449717">Siirry käyttämään nopeaa selainta.</translation>
 <translation id="8863753581171631212">Avaa linkki uudessa ikkunassa (<ph name="APP" />)</translation>

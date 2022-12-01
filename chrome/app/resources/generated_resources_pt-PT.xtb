@@ -72,6 +72,7 @@
 <translation id="1067048845568873861">Data da criação</translation>
 <translation id="1067661089446014701">Para maior segurança, pode encriptar as palavras-passe no seu dispositivo antes de serem guardadas na sua Conta Google</translation>
 <translation id="1067922213147265141">Outros serviços Google</translation>
+<translation id="106814709658156573">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no canto inferior esquerdo do teclado. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1069104208554708737">Esta chave de acesso só é guardada neste dispositivo</translation>
 <translation id="1069355737714877171">Remover perfil do eSIM com o nome <ph name="PROFILE_NAME" /></translation>
 <translation id="1069814191880976658">Escolher um ecrã diferente</translation>
@@ -187,6 +188,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1166583374608765787">Analise a atualização do nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertence ao espaço de trabalho <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">A abrir dentro de <ph name="TIME_REMAINING" />...</translation>
+<translation id="116896278675803795">Alterar automaticamente o idioma para corresponder ao conteúdo selecionado</translation>
 <translation id="1169266963600477608">Controlos do jogo</translation>
 <translation id="1169435433292653700">O ficheiro <ph name="FILE_NAME" /> tem dados confidenciais ou perigosos. O administrador diz "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> pretende estabelecer ligação a um dispositivo HID</translation>
@@ -1000,6 +1002,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1892341345406963517">Olá, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1895658205118569222">Encerrar</translation>
+<translation id="1896043844785689584">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no canto inferior direito do teclado. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1897120393475391208">Usar palavra-passe forte</translation>
 <translation id="1900305421498694955">As aplicações do Google Play podem necessitar de acesso completo ao sistema de ficheiros para ler e gravar ficheiros em dispositivos de armazenamento externos. Os ficheiros e as pastas criados no dispositivo são visíveis para qualquer pessoa que utilize a unidade externa. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Seleccion&amp;ar tudo</translation>
@@ -2228,6 +2231,7 @@ Pretende pará-lo?</translation>
 <translation id="3000378525979847272">Permitiu <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3001144475369593262">Contas de criança</translation>
+<translation id="3001835006423291524">Toque no sensor de impressões digitais no canto inferior direito do teclado. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Redes preferidas</translation>
 <translation id="3003623123441819449">Cache CSS</translation>
 <translation id="3003828226041301643">Não é possível associar o dispositivo ao domínio. Verifique a sua conta para se certificar de que tem privilégios para adicionar dispositivos.</translation>
@@ -2308,6 +2312,7 @@ Pretende pará-lo?</translation>
 <translation id="3071624960923923138">Pode clicar aqui para abrir um novo separador</translation>
 <translation id="3072775339180057696">Permitir que o site veja o ficheiro <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Traduzir página inteira</translation>
+<translation id="3075144191779656260">Toque no sensor de impressões digitais no lado esquerdo do dispositivo <ph name="DEVICE_TYPE" />. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075874217500066906">É necessário reiniciar para começar o processo Powerwash. Depois do reinício, terá de confirmar que pretende prosseguir.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Guardar apenas neste dispositivo</translation>
@@ -2566,7 +2571,6 @@ Pretende pará-lo?</translation>
 <translation id="3341703758641437857">Permitir acesso a URLs de ficheiro</translation>
 <translation id="3342361181740736773">A extensão "<ph name="TRIGGERING_EXTENSION_NAME" />" pretende remover esta extensão.</translation>
 <translation id="3343977377045378693">A executar a configuração</translation>
-<translation id="3345135638360864351">Não é possível enviar o seu pedido de acesso a este site a <ph name="NAME" />. Tente novamente.</translation>
 <translation id="3345634917232014253">A verificação de segurança foi efetuada há uns momentos.</translation>
 <translation id="3345886924813989455">Não encontrado um browser suportado</translation>
 <translation id="3347086966102161372">C&amp;opiar endereço da imagem</translation>
@@ -2576,6 +2580,7 @@ Pretende pará-lo?</translation>
 <translation id="3353786022389205125">Ative a opção "Mostrar o ecrã de bloqueio quando for ativado após a suspensão" e tente novamente</translation>
 <translation id="3354768182971982851">As versões antigas das Apps do Chrome não vão abrir nos dispositivos Mac depois de dezembro de 2022. Pode verificar se está disponível uma nova versão.</translation>
 <translation id="3354972872297836698">Não foi possível sincronizar com o dispositivo <ph name="DEVICE_NAME" />; selecione o dispositivo para tentar novamente</translation>
+<translation id="335581015389089642">Voz</translation>
 <translation id="3355936511340229503">Erro de ligação</translation>
 <translation id="3356036636691722598">Desfrute de jogos no Chromebook</translation>
 <translation id="3356469410714175391">(Cartão virtual ativado)</translation>
@@ -2630,6 +2635,7 @@ Pretende pará-lo?</translation>
 <translation id="3406290648907941085">Com autorização para utilizar dados e dispositivos de realidade virtual</translation>
 <translation id="3406396172897554194">Pesquise por idioma ou nome do método de introdução.</translation>
 <translation id="3406605057700382950">&amp;Mostrar barra de marcadores</translation>
+<translation id="3407967630066378878">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no lado esquerdo deste dispositivo <ph name="DEVICE_TYPE" />. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 palavra-passe importada para o Gestor de Palavras-passe da Google de <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} palavras-passe importadas para o Gestor de Palavras-passe da Google de <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Passar para a selecção</translation>
@@ -3154,7 +3160,6 @@ Pretende pará-lo?</translation>
 <translation id="3883482240657453056">Obtenha descontos para <ph name="MERCHANT_NAME_1" /> e <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">O conteúdo Web disponível em vários idiomas irá utilizar o primeiro idioma suportado desta lista. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">O seu administrador gere as atualizações</translation>
-<translation id="3886446263141354045">O seu pedido para aceder a este site foi enviado para <ph name="NAME" />.</translation>
 <translation id="3887022758415973389">Mostrar lista de dispositivos</translation>
 <translation id="3888053818972567950">Ligação ao <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Tirar notas com a aplicação <ph name="LOCK_SCREEN_APP_NAME" /></translation>
@@ -3756,6 +3761,7 @@ Pretende pará-lo?</translation>
 <translation id="4451479197788154834">A sua palavra-passe foi guardada neste dispositivo e na sua Conta Google.</translation>
 <translation id="4451757071857432900">Bloqueado em sites que apresentam anúncios intrusivos ou enganadores (recomendado)</translation>
 <translation id="4452898361839215358">ou selecionar um PPD. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="4453430595102511050">Toque no sensor de impressões digitais no canto superior direito do teclado. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Procurar no <ph name="SEARCH_ENGINE_NAME" /> ou introduzir um URL</translation>
 <translation id="4458535500699390320">Enquanto este separador estava inativo, a Poupança de memória libertou memória para outras tarefas. Pode alterar esta definição em qualquer altura nas definições.</translation>
 <translation id="4459169140545916303">Ativo há <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dias</translation>
@@ -6029,6 +6035,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6607831829715835317">Mais ferrament&amp;as</translation>
 <translation id="6607890859198268021">O endereço <ph name="USER_EMAIL" /> já está a ser gerido pelo domínio <ph name="DOMAIN" />. Para utilizar o controlo parental com uma Conta Google diferente, termine sessão após a configuração e, em seguida, selecione "Adicionar pessoa" no ecrã de início de sessão.</translation>
 <translation id="6608166463665411119">Repor eSIM</translation>
+<translation id="6608773371844092260">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no lado direito deste dispositivo <ph name="DEVICE_TYPE" />. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Os dados de início de sessão são armazenados neste dispositivo depois de sair do Modo de navegação anónima. Poderá iniciar sessão neste Website com o seu dispositivo novamente mais tarde.</translation>
 <translation id="6610002944194042868">Opções de tradução</translation>
 <translation id="6611907964265870728">Confirme que o seu dispositivo está ligado à Internet</translation>
@@ -6675,6 +6682,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7225082563376899794">Usar o Windows Hello ao preencher palavras-passe</translation>
 <translation id="7225179976675429563">Tipo de rede em falta</translation>
 <translation id="7227458944009118910">As apps listadas abaixo também podem processar links de protocolo. Outras apps pedirão autorização.</translation>
+<translation id="7228056665272655255">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no canto superior direito do teclado. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueio de ecrã e início de sessão</translation>
 <translation id="7230222852462421043">&amp;Restaurar janela</translation>
 <translation id="7231260028442989757">Veja, ignore e responda às notificações do telemóvel</translation>
@@ -6802,6 +6810,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> páginas para <ph name="PRINTER_NAME" /></translation>
 <translation id="7360257054721917104">A ver os modelos e os espaços de trabalho guardados. Prima Tab para navegar.</translation>
 <translation id="7361297102842600584">Clique com o botão direito do rato para executar o <ph name="PLUGIN_NAME" /></translation>
+<translation id="7361914392989692067">Toque no botão ligar/desligar com o dedo. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7362387053578559123">Os sites podem solicitar a ligação a dispositivos Bluetooth</translation>
 <translation id="7363349185727752629">Um guia das suas escolhas de privacidade</translation>
 <translation id="7364591875953874521">Acesso solicitado</translation>
@@ -7855,6 +7864,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8299319456683969623">De momento, está offline.</translation>
 <translation id="8300011035382349091">Edite o marcador para este separador</translation>
 <translation id="8300374739238450534">Azul noite</translation>
+<translation id="8301242268274839723">Toque no sensor de impressões digitais no canto inferior esquerdo do teclado. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{Endereço}other{# endereços}}</translation>
 <translation id="8304383784961451596">Não tem autorização para utilizar este dispositivo. Contacte o administrador para obter autorização de início de sessão ou inicie sessão com uma Conta Google supervisionada pelo Family Link.</translation>
 <translation id="8306885873692337975">Obtenha as funcionalidades e as melhorias de segurança mais recentes.</translation>
@@ -8094,7 +8104,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8540942859441851323">Roaming exigido pelo fornecedor</translation>
 <translation id="8541462173655894684">Não foram encontradas quaisquer impressoras no servidor de impressão.</translation>
 <translation id="8541838361296720865">Prima um interruptor ou uma tecla do teclado para atribuir a "<ph name="ACTION" />"</translation>
-<translation id="8543556556237226809">Tem dúvidas? Contacte a pessoa que supervisiona o seu perfil.</translation>
 <translation id="8546186510985480118">O dispositivo tem pouco espaço</translation>
 <translation id="8546306075665861288">Cache de imagem</translation>
 <translation id="8546930481464505581">Personalizar a barra tátil</translation>
@@ -8583,10 +8592,12 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8993059306046735527">Caso se esqueça da sua palavra-passe do <ph name="DEVICE_TYPE" />, ainda pode restaurar os seus dados locais. Vai ter de iniciar sessão na sua Conta Google ou usar a recuperação de conta.</translation>
 <translation id="8993737615451556423">Fornece controlos para acelerar, abrandar e pausar a voz de leitura.</translation>
 <translation id="899384117894244799">Remover utilizador restrito</translation>
+<translation id="8993945059918628059">Toque no sensor de impressões digitais com o dedo. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">URL base do certificado Netscape</translation>
 <translation id="899657321862108550">O seu Chrome, em qualquer lugar</translation>
 <translation id="8998078711690114234">Este tipo de ficheiro pode ser perigoso. Guarde este ficheiro apenas se confiar em <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Erro de sintaxe da secção: <ph name="ERROR_LINE" />.</translation>
+<translation id="9000185763019430629">Tocar no sensor de impressões digitais no lado direito do dispositivo <ph name="DEVICE_TYPE" />. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="9003185744423389627">Falha na ligação ao servidor de gestão de dispositivos com o estado "<ph name="STATUS_TEXT" />" a <ph name="FAILURE_TIME" /></translation>
 <translation id="9003647077635673607">Permitir em todos os Sites</translation>
 <translation id="9003677638446136377">Verificar novamente</translation>

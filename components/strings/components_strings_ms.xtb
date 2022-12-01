@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Tidak pernah disimpan</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Penanda Halaman Desktop</translation>
+<translation id="1067561478268651872">Dasar <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> tidak digunakan melainkan dasar <ph name="SECURE_DNS_SALT" /> ditetapkan.</translation>
 <translation id="1068672505746868501">Jangan sekali-kali terjemahkan halaman dalam <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Kenderaan hibrid &amp; alternatif</translation>
 <translation id="1070901266639972381">Malam</translation>
@@ -337,7 +338,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1741613555002899862">Mesti dinyatakan dan merupakan rentetan yang sah apabila DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Penyemak imbas anda diurus</translation>
 <translation id="1746113442205726301">Anjakan Y imej</translation>
-<translation id="1747819498338037826">Tukar secara automatik</translation>
 <translation id="17513872634828108">Buka tab</translation>
 <translation id="1752021286346845558">Peti mel 8</translation>
 <translation id="1753068535428855445">Dating &amp; peribadi</translation>
@@ -1371,7 +1371,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4450893287417543264">Jangan tunjukkan lagi</translation>
 <translation id="4451135742916150903">Boleh meminta untuk menyambung kepada peranti HID</translation>
 <translation id="4452328064229197696">Kata laluan yang baru sahaja anda gunakan telah ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, Pengurus Kata Laluan Google mengesyorkan agar anda menyemak kata laluan yang disimpan.</translation>
-<translation id="4455222631300069614">Tukar kata laluan anda sekarang</translation>
 <translation id="4460315069258617173">Dibenarkan sehingga anda menutup tab bagi laman ini</translation>
 <translation id="4464826014807964867">Laman web yang mempunyai maklumat daripada organisasi anda</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1606,7 +1605,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5040262127954254034">Privasi</translation>
 <translation id="5043480802608081735">Pautan yang Anda Salin</translation>
-<translation id="5044545992476246592">Kata laluan yang baru anda gunakan ditemukan dalam pelanggaran data. Google Assistant anda boleh menukar kata laluan secara automatik.</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
 <translation id="5051305769747448211">Jenaka langsung</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}other{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}}</translation>
@@ -1672,7 +1670,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="51918995459521422"><ph name="ORIGIN" /> mahu memuat turun berbilang fail</translation>
 <translation id="519422657042045905">Anotasi tidak tersedia</translation>
 <translation id="5201306358585911203">Halaman terbenam pada halaman ini menyatakan</translation>
-<translation id="5204468114771111727">Chrome menemukan kata laluan yang baru sahaja anda gunakan dalam pelanggaran data. Google Assistant anda boleh menukar kata laluan secara automatik.</translation>
 <translation id="5205222826937269299">Nama diperlukan</translation>
 <translation id="5209518306177824490">Cap jari SHA-1</translation>
 <translation id="5209670883520018268">Dulang 20</translation>
@@ -2100,6 +2097,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6328786501058569169">Tapak ini mengelirukan</translation>
 <translation id="6337133576188860026">Mengosongkan kurang daripada <ph name="SIZE" />. Sesetengah tapak mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
 <translation id="6337534724793800597">Tapis dasar mengikut nama</translation>
+<translation id="633770708279464947">Nilai <ph name="SECURE_DNS_SALT" /> tidak sah dan tidak akan digunakan.</translation>
 <translation id="6340739886198108203">Dasar pentadbir tidak mengesyorkan mengambil tangkapan skrin atau rakaman apabila kandungan sulit kelihatan:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda memuat naik fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda memuat naik fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Variasi Aktif</translation>
@@ -2996,6 +2994,7 @@ Butiran tambahan:
 <translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Ringkasan Pesanan, <ph name="TOTAL_LABEL" />, Butiran Lanjut</translation>
 <translation id="8666678546361132282">Bahasa Inggeris</translation>
+<translation id="8671519637524426245">Nilai <ph name="SECURE_DNS_SALT" /> tidak memenuhi keperluan saiz.</translation>
 <translation id="867224526087042813">Tandatangan</translation>
 <translation id="8672264262457010862">Perniagaan &amp; industri</translation>
 <translation id="8676424191133491403">Tiada kelewatan</translation>
@@ -3095,6 +3094,7 @@ Butiran tambahan:
 <translation id="8913778647360618320">Butang uruskan kaedah pembayaran, tekan Enter untuk menguruskan maklumat kad kredit dan pembayaran anda dalam tetapan Chrome</translation>
 <translation id="8922013791253848639">Sentiasa benarkan iklan di tapak ini</translation>
 <translation id="892588693504540538">Tebukan atas sebelah kanan</translation>
+<translation id="8930098617363288380">Nilai <ph name="SECURE_DNS_SALT" /> tidak berkaitan dan tidak akan digunakan, melainkan dasar <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ditetapkan.</translation>
 <translation id="8930330541574156305">Hartanah</translation>
 <translation id="8931333241327730545">Adakah anda mahu menyimpan kad ini ke Akaun Google anda?</translation>
 <translation id="8932102934695377596">Jam anda di belakang</translation>

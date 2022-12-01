@@ -338,7 +338,6 @@
 <translation id="1741613555002899862">DnsOverHttpsMode က <ph name="SECURE_DNS_MODE_SECURE" /> ဖြစ်သောအခါ သတ်မှတ်ထားပြီး မှန်ကန်သောလိုင်း ဖြစ်ရမည်။</translation>
 <translation id="1745880797583122200">သင်၏ဘရောင်ဇာကို စီမံခန့်ခွဲထားသည်</translation>
 <translation id="1746113442205726301">ပုံဒေါင်လိုက် အရွှေ့</translation>
-<translation id="1747819498338037826">အလိုအလျောက်ပြောင်းရန်</translation>
 <translation id="17513872634828108">တဲဘ်များ ဖွင့်ရန်</translation>
 <translation id="1752021286346845558">စာတိုက်ပုံး ၈</translation>
 <translation id="1753068535428855445">ချိန်းတွေ့ခြင်းနှင့် ပုဂ္ဂိုလ်ရေးရာများ</translation>
@@ -1372,7 +1371,6 @@
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
 <translation id="4451135742916150903">HID ကိရိယာများနှင့် ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="4452328064229197696">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ သင့်အကောင့်များကို လုံခြုံစေရန် ‘Google စကားဝှက်မန်နေဂျာ’ က သင်သိမ်းထားသော စကားဝှက်များကို စစ်ဆေးရန် အကြံပြုပါသည်။</translation>
-<translation id="4455222631300069614">သင့်စကားဝှက်ကို ယခုပြောင်းပါ</translation>
 <translation id="4460315069258617173">ဤဝဘ်ဆိုက်အတွက် တဘ်များကို မပိတ်မချင်း ခွင့်ပြုထားသည်</translation>
 <translation id="4464826014807964867">သင့်အဖွဲ့အစည်းမှ အချက်အလက်ပါဝင်သော ဝဘ်ဆိုက်များ</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />။ <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1607,7 +1605,6 @@
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5040262127954254034">ကိုယ်ရေး</translation>
 <translation id="5043480802608081735">သင် မိတ္တူကူးထားသော လင့်ခ်</translation>
-<translation id="5044545992476246592">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ Google Assistant က သင့်စကားဝှက်ကို အလိုအလျောက် ပြောင်းနိုင်သည်။</translation>
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
 <translation id="5051305769747448211">တိုက်ရိုက်လွှင့် ဟာသ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်ကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}other{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်များကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}}</translation>
@@ -1673,7 +1670,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> က ဖိုင်အများအပြားကို ​ဒေါင်းလုဒ်လုပ်လိုသည်</translation>
 <translation id="519422657042045905">မှတ်ချက် မရနိုင်ပါ</translation>
 <translation id="5201306358585911203">ဤစာမျက်နှာပေါ်တွင် ထည့်ထားသည့် စာမျက်နှာက ဆိုထားသည်မှာ</translation>
-<translation id="5204468114771111727">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် Chrome ကတွေ့ရှိထားသည်။ Google Assistant ကသင့်စကားဝှက်ကို အလိုအလျောက် ပြောင်းပေးနိုင်သည်။</translation>
 <translation id="5205222826937269299">အမည် လိုအပ်သည်</translation>
 <translation id="5209518306177824490">SHA-1 လက်ဗွေ</translation>
 <translation id="5209670883520018268">ဗန်း ၂၀</translation>

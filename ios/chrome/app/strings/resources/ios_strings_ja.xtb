@@ -133,6 +133,7 @@
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1981118202195772574">モバイル</translation>
 <translation id="1989112275319619282">閲覧</translation>
+<translation id="1990820278544963435">検索</translation>
 <translation id="199425419756152024">パスワードを表示</translation>
 <translation id="2010008505735295285">再読み込み</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスワードを設定する必要があります。</translation>
@@ -550,7 +551,6 @@
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="519530786644929958">ダウンロードに失敗し、再試行できません。</translation>
 <translation id="5197255632782567636">インターネット</translation>
-<translation id="5210365745912300556">タブを閉じる</translation>
 <translation id="5219295696240154694">すべてのユーザーのウェブ上のセキュリティ強化に協力する</translation>
 <translation id="5228579091201413441">同期を有効にする</translation>
 <translation id="5232485538978018676">管理対象アカウントでログインする</translation>
@@ -875,6 +875,7 @@
 <translation id="7531345132340165516">現在のサイト</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
 <translation id="7553234618121028547">オフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] を開いて [パスワードのオプション] に移動します。</translation>
+<translation id="7554645225856321710">すべて閉じる</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="7583004045319035904"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> を使用して、シークレット タブのロックを解除します。</translation>
@@ -1088,6 +1089,7 @@
 <translation id="9188680907066685419">管理対象アカウントからログアウトする</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 日前</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9219154867334666734">タブを検索…</translation>
 <translation id="9223358826628549784">クラッシュレポートを送信しました。</translation>
 <translation id="941747855997058526">パスワードの選択...</translation>
 <translation id="952704832371081537">キャンセル</translation>

@@ -38,6 +38,7 @@
 <translation id="10614374240317010">Незапазвани никога</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">Настолни отметки</translation>
+<translation id="1067561478268651872">Правилото <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> не се използва, освен ако не е зададено правилото <ph name="SECURE_DNS_SALT" />.</translation>
 <translation id="1068672505746868501">Страниците на <ph name="SOURCE_LANGUAGE" /> да не се превеждат</translation>
 <translation id="1070853536588271387">Хибридни и алтернативни превозни средства</translation>
 <translation id="1070901266639972381">През нощта</translation>
@@ -337,7 +338,6 @@
 <translation id="1741613555002899862">Трябва да бъде посочено посредством валиден низ, когато за правилото DnsOverHttpsMode е зададено <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Браузърът ви е управляван</translation>
 <translation id="1746113442205726301">Изместване на изображението по оста Y</translation>
-<translation id="1747819498338037826">Автоматична промяна</translation>
 <translation id="17513872634828108">Отворени раздели</translation>
 <translation id="1752021286346845558">Пощенска кутия 8</translation>
 <translation id="1753068535428855445">Запознанства и лични обяви</translation>
@@ -1370,7 +1370,6 @@
 <translation id="4450893287417543264">Да не се показва отново</translation>
 <translation id="4451135742916150903">Може да поиска разрешение да се свързва с HID устройства</translation>
 <translation id="4452328064229197696">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите в Google ви препоръчва да проверите запазените си пароли.</translation>
-<translation id="4455222631300069614">Променете паролата си сега</translation>
 <translation id="4460315069258617173">Разрешено, докато не затворите разделите със сайта</translation>
 <translation id="4464826014807964867">Уебсайтове, които разполагат с информация от организацията ви</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
@@ -1605,7 +1604,6 @@
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5040262127954254034">Поверителност</translation>
 <translation id="5043480802608081735">Копирана от вас връзка</translation>
-<translation id="5044545992476246592">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. Google Асистент може да я промени автоматично.</translation>
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="5051305769747448211">Комедия на живо</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{За да изпратите този файл чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
@@ -1671,7 +1669,6 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> иска да изтегли няколко файла</translation>
 <translation id="519422657042045905">Няма достъп до режима за пояснения</translation>
 <translation id="5201306358585911203">Страница, вградена в тази страница, изпраща съобщение</translation>
-<translation id="5204468114771111727">Chrome разкри паролата, която току-що използвахте, при нарушение на сигурността на данните. Google Асистент може да я промени автоматично.</translation>
 <translation id="5205222826937269299">Името е задължително</translation>
 <translation id="5209518306177824490">Пръстов отпечатък SHA-1</translation>
 <translation id="5209670883520018268">Тава 20</translation>
@@ -2099,6 +2096,7 @@
 <translation id="6328786501058569169">Този сайт е измамен</translation>
 <translation id="6337133576188860026">Ще освободите по-малко от <ph name="SIZE" />. Някои сайтове може да се заредят по-бавно при следващото ви посещение.</translation>
 <translation id="6337534724793800597">Филтриране на правилата по име</translation>
+<translation id="633770708279464947">Стойността на <ph name="SECURE_DNS_SALT" /> е невалидна и няма да се използва.</translation>
 <translation id="6340739886198108203">Според администраторско правило не се препоръчва правенето на екранни снимки или записи, когато се вижда поверително съдържание:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Според администраторско правило качването на този файл в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило качването на тези файлове в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
 <translation id="6348220984832452017">Активни варианти</translation>
@@ -2994,6 +2992,7 @@
 <translation id="8654126188050905496">55 x 91 мм</translation>
 <translation id="8663226718884576429">Обобщение на поръчката, <ph name="TOTAL_LABEL" />, още подробности</translation>
 <translation id="8666678546361132282">английски</translation>
+<translation id="8671519637524426245">Стойността на <ph name="SECURE_DNS_SALT" /> не отговаря на изискванията за размер.</translation>
 <translation id="867224526087042813">Подпис</translation>
 <translation id="8672264262457010862">Бизнес и индустрия</translation>
 <translation id="8676424191133491403">Без забавяне</translation>
@@ -3093,6 +3092,7 @@
 <translation id="8913778647360618320">Бутон „Управление на начините на плащане“. Натиснете Enter, за да управлявате информацията си за плащане и данните за кредитните си карти в настройките на Chrome</translation>
 <translation id="8922013791253848639">Рекламите на този сайт да са разрешени винаги</translation>
 <translation id="892588693504540538">Перфориране горе вдясно</translation>
+<translation id="8930098617363288380">Стойността на <ph name="SECURE_DNS_SALT" /> не е подходяща и няма да се използва, освен ако не е зададено правилото <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />.</translation>
 <translation id="8930330541574156305">Недвижими имоти</translation>
 <translation id="8931333241327730545">Искате ли да запазите тази карта в профила си в Google?</translation>
 <translation id="8932102934695377596">Часовникът ви е назад</translation>

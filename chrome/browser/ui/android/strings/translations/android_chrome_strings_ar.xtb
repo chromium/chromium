@@ -21,7 +21,6 @@
 <translation id="1110914759170138831">تم اقتصاص جزء من النص المحدَّد.</translation>
 <translation id="1111673857033749125">ستظهر هنا الإشارات التي تم حفظها على أجهزتك الأخرى.</translation>
 <translation id="1113597929977215864">إظهار العرض المبسَّط</translation>
-<translation id="1118561384561215815">المساعدة في المهام على الويب</translation>
 <translation id="1123070903960493543">‏كيفية التفاعل مع Chrome والإعدادات التي اختَرتها وتفاصيل الأعطال في Chrome</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1129510026454351943">التفاصيل: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -234,7 +233,6 @@
 <translation id="2286841657746966508">عنوان الفاتورة</translation>
 <translation id="228704530595896923">قائمة خيارات المشاركة</translation>
 <translation id="230115972905494466">لم يتم العثور على أي أجهزة متوافقة</translation>
-<translation id="230155349749732438">لاستخدام هذا الإعداد، يجب تفعيل الخيار <ph name="BEGIN_LINK" />تحسين عمليات البحث والتصفُّح<ph name="END_LINK" />.</translation>
 <translation id="2318045970523081853">انقر لإجراء اتصال.</translation>
 <translation id="2321086116217818302">جارٍ تحضير كلمات المرور…</translation>
 <translation id="2323763861024343754">مساحة تخزين الموقع</translation>
@@ -424,7 +422,6 @@
 <translation id="3269093882174072735">تحميل الصورة</translation>
 <translation id="3280562213547448728">بحث صوتي</translation>
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
-<translation id="3284510035090979597">المساعدة الاستباقية</translation>
 <translation id="3285080554353377245">‏فيديوهات حول كيفية استخدام Chrome</translation>
 <translation id="3288003805934695103">إعادة تحميل الصفحة</translation>
 <translation id="3290249595466894471">يُرسِل هذا الوضع أيضًا عددًا قليلاً من الصفحات وعمليات التنزيل وأنشطة الإضافات ومعلومات النظام للمساعدة في اكتشاف التهديدات الجديدة.</translation>
@@ -581,7 +578,6 @@
 <translation id="4209895695669353772">‏للحصول على محتوى مُخصَّص اقترحته Google، يُرجى تفعيل المزامنة.</translation>
 <translation id="4214315110991671325">‏إذا سمحت بملفات تعريف الارتباط، قد يستخدمها Chrome للتحميل المُسبق.</translation>
 <translation id="4225895483398857530">اختصارات شريط الأدوات</translation>
-<translation id="4227318652298512614">تابِع المواقع الإلكترونية التي تريدها.</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4248098802131000011">لحماية كلمة المرور من عمليات اختراق البيانات ومشاكل الأمان الأخرى</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
@@ -871,7 +867,6 @@
 <translation id="5795872532621730126">البحث والتصفُّح</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{قبل ساعة واحدة (#)}zero{قبل # ساعة}two{قبل ساعتين (#)}few{قبل # ساعات}many{قبل # ساعة}other{قبل # ساعة}}</translation>
 <translation id="5810288467834065221">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
-<translation id="5810864297166300463">المساعدة على الويب</translation>
 <translation id="5813552293717797987">تتم إدارة هذا المتصفِّح من خلال <ph name="PARENT_NAME_1" /> و<ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">يمكنك الكتابة هنا أو النقر على رمز الصوت للبدء.</translation>
 <translation id="5814749351757353073">متابعة المواقع الإلكترونية المفضّلة</translation>
@@ -894,7 +889,6 @@
 <translation id="5869789175361934029">متابعة من جهاز آخر</translation>
 <translation id="587735546353481577">‏لمتابعة موقع إلكتروني، انتقِل إلى الموقع الإلكتروني وافتح قائمة Chrome وانقر على "متابعة".</translation>
 <translation id="5879072387416556377">الحصول على اقتراحات أفضل</translation>
-<translation id="5884076754568147479">‏لمساعدتك على إنجاز المهام، ستتلقى Google عناوين URL للمواقع الإلكترونية ومحتواها عند استخدامك "مساعد Google" على تلك المواقع، بالإضافة إلى المعلومات التي يتم إرسالها من خلال "مساعد Google".</translation>
 <translation id="5906513782029855931">‏عند معرفة عناوين URL الخاصة بالمواقع الإلكترونية، يَسهُل على "مساعد Google" مساعدتك في إكمال المهام. ويمكنك إيقاف "مساعد Google" في إعدادات Chrome.</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5919204609460789179">تحديث <ph name="PRODUCT_NAME" /> لبدء المزامنة</translation>
@@ -1335,7 +1329,6 @@
 <translation id="8127542551745560481">تعديل الصفحة الرئيسية</translation>
 <translation id="8130309322784422030">معلومات تسجيل الدخول المُخزَّنة الخاصة بك قد تكون قديمة.</translation>
 <translation id="813082847718468539">عرض معلومات الموقع</translation>
-<translation id="8153351135626613369">‏سيظهر "مساعد Google" على المواقع الإلكترونية المتوافقة التي يمكنه مساعدتك فيها.</translation>
 <translation id="8156139159503939589">ما هي اللغات التي تقرؤها؟</translation>
 <translation id="8168435359814927499">المحتوى</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> من الملفات المتبقية</translation>
