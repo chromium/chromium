@@ -76,6 +76,10 @@ bool DialMediaRouteProviderEnabled();
 // Media Router is enabled for |context|.
 bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
 
+// Returns the command-line flag value to override the default mirroring refresh
+// interval, if set.
+absl::optional<base::TimeDelta> GetMirroringRefreshInterval();
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

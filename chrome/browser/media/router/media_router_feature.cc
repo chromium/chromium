@@ -4,12 +4,16 @@
 
 #include "chrome/browser/media/router/media_router_feature.h"
 
+#include <stdint.h>
+#include <string>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -168,6 +172,20 @@ bool DialMediaRouteProviderEnabled() {
 bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
   return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop) &&
          MediaRouterEnabled(context);
+}
+
+absl::optional<base::TimeDelta> GetMirroringRefreshInterval() {
+  const std::string refresh_interval_str =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "mirroring-refresh-interval-ms");
+  if (!refresh_interval_str.empty()) {
+    int64_t refresh_interval;
+    if (base::StringToInt64(refresh_interval_str, &refresh_interval) &&
+        refresh_interval > 0) {
+      return base::Milliseconds(refresh_interval);
+    }
+  }
+  return absl::nullopt;
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

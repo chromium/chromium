@@ -449,6 +449,12 @@ void OpenscreenSessionHost::OnNegotiated(
     video_stream_ = std::make_unique<VideoRtpStream>(
         std::move(video_sender), weak_factory_.GetWeakPtr(),
         mirror_settings_.refresh_interval());
+
+    LogInfoMessage(base::StringPrintf(
+        "Created video stream with refresh interval of %d ms",
+        static_cast<int>(
+            mirror_settings_.refresh_interval().InMilliseconds())));
+
     if (!video_capture_client_) {
       mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
       resource_provider_->GetVideoCaptureHost(
