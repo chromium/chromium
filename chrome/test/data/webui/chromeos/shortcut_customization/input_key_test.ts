@@ -50,7 +50,7 @@ suite('inputKeyTest', function() {
     const iconElement = inputKeyElement.shadowRoot!.querySelector(
                             '#key-icon') as IronIconElement;
     assertTrue(isVisible(iconElement));
-    assertEquals('shortcut-customization:overview', iconElement.icon);
+    assertEquals('shortcut-customization-keys:screenshot', iconElement.icon);
 
     const keyElement = inputKeyElement.shadowRoot!.querySelector('#key-text');
     assertFalse(isVisible(keyElement));

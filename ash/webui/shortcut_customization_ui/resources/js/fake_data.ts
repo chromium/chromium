@@ -4,8 +4,9 @@
 
 import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
+import {keyToIconNameMap} from './input_key.js';
 import {stringToMojoString16} from './mojo_utils.js';
-import {AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoLayoutInfo} from './shortcut_types.js';
+import {AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo} from './shortcut_types.js';
 
 export const fakeSubCategories: Map<AcceleratorSubcategory, string> = new Map([
   [0, 'Window Management'],
@@ -136,3 +137,45 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     action: 1001,
   },
 ];
+
+// The following code is used to add fake accelerator entries for each icon.
+// When useFakeProvider is true, this will display all available icons for
+// the purposes of debugging.
+const createFakeMojoAccelInfo = (keyDisplay: string): MojoAcceleratorInfo => {
+  return {
+    type: AcceleratorType.kDefault,
+    state: AcceleratorState.kEnabled,
+    locked: true,
+    hasKeyEvent: true,
+    keyDisplay: stringToMojoString16(keyDisplay),
+    accelerator: {
+      modifiers: 0,
+      keyCode: 0,
+      keyState: 0,
+      timeStamp: fakeTimestamp,
+    },
+  };
+};
+
+const createFakeMojoLayoutInfo =
+    (description: string, action: number): MojoLayoutInfo => {
+      return {
+        category: 1,
+        subCategory: 2,
+        description: stringToMojoString16(description),
+        style: LayoutStyle.kDefault,
+        source: AcceleratorSource.kBrowser,
+        action,
+      };
+    };
+
+const icons = Object.keys(keyToIconNameMap);
+
+for (const [index, iconName] of icons.entries()) {
+  const actionId = 10000 + index;
+  fakeAcceleratorConfig[AcceleratorSource.kBrowser] = {
+    ...fakeAcceleratorConfig[AcceleratorSource.kBrowser],
+    [actionId]: [createFakeMojoAccelInfo(iconName)],
+  };
+  fakeLayoutInfo.push(createFakeMojoLayoutInfo(`Icon: ${iconName}`, actionId));
+}
