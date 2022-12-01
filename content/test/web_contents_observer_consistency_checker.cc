@@ -171,14 +171,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
   }
 
   GlobalRoutingID routing_pair = GetRoutingPair(new_host);
-  bool host_exists = !current_hosts_.insert(routing_pair).second;
-  // TODO(https://crbug.com/1179683): Figure out a better way to deal with
-  // MPArch.
-  if (host_exists && !blink::features::IsPrerender2Enabled()) {
-    CHECK(false)
-        << "RenderFrameHostChanged called more than once for routing pair:"
-        << Format(new_host);
-  }
+  current_hosts_.insert(routing_pair);
 
   // If |new_host| is restored from the BackForwardCache, it can contain
   // iframes, otherwise it has just been created and can't contain iframes for
