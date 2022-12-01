@@ -457,6 +457,48 @@ static double ValueAsNumber(const CSSMathExpressionNode* node, bool& error) {
   return 0;
 }
 
+static bool SupportedCategoryForAtan2(const CalculationCategory category) {
+  switch (category) {
+    case kCalcNumber:
+    case kCalcLength:
+    case kCalcPercent:
+    case kCalcTime:
+    case kCalcFrequency:
+    case kCalcAngle:
+      return true;
+    default:
+      return false;
+  }
+}
+
+static bool IsRelativeLength(CSSPrimitiveValue::UnitType type) {
+  return CSSPrimitiveValue::IsRelativeUnit(type) &&
+         CSSPrimitiveValue::IsLength(type);
+}
+
+static double ResolveAtan2(const CSSMathExpressionNode* y_node,
+                           const CSSMathExpressionNode* x_node,
+                           bool& error) {
+  const CalculationCategory category = y_node->Category();
+  if (category != x_node->Category() || !SupportedCategoryForAtan2(category)) {
+    error = true;
+    return 0;
+  }
+  CSSPrimitiveValue::UnitType y_type = y_node->ResolvedUnitType();
+  CSSPrimitiveValue::UnitType x_type = x_node->ResolvedUnitType();
+  if (IsRelativeLength(y_type) || IsRelativeLength(x_type)) {
+    // TODO(crbug.com/1392594): Relative length units are currently hard
+    // to resolve. We ignore the units for now, so that
+    // we can at least support the case where both operands have the same unit.
+    double y = y_node->DoubleValue();
+    double x = x_node->DoubleValue();
+    return std::atan2(y, x);
+  }
+  auto y = y_node->ComputeValueInCanonicalUnit();
+  auto x = x_node->ComputeValueInCanonicalUnit();
+  return std::atan2(y.value(), x.value());
+}
+
 // Helper function for parsing trigonometric functions' parameter
 static double ValueAsRadian(const CSSMathExpressionNode* node, bool& error) {
   if (node->Category() == kCalcAngle)
@@ -524,6 +566,13 @@ CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
       unit_type = CSSPrimitiveValue::UnitType::kDegrees;
       value = Rad2deg(std::atan(ValueAsNumber(operands[0], error)));
       DCHECK(value >= -90 && value <= 90 || std::isnan(value));
+      break;
+    }
+    case CSSValueID::kAtan2: {
+      DCHECK_EQ(operands.size(), 2u);
+      unit_type = CSSPrimitiveValue::UnitType::kDegrees;
+      value = Rad2deg(ResolveAtan2(operands[0], operands[1], error));
+      DCHECK(value >= -180 && value <= 180 || std::isnan(value));
       break;
     }
     default:
@@ -1248,6 +1297,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAsin:
       case CSSValueID::kAcos:
       case CSSValueID::kAtan:
+      case CSSValueID::kAtan2:
         return RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled();
       case CSSValueID::kAnchor:
       case CSSValueID::kAnchorSize:
@@ -1357,6 +1407,11 @@ class CSSMathExpressionNodeParser {
         max_argument_count = 1;
         min_argument_count = 1;
         break;
+      case CSSValueID::kAtan2:
+        DCHECK(RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled());
+        max_argument_count = 2;
+        min_argument_count = 2;
+        break;
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         break;
@@ -1400,6 +1455,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAsin:
       case CSSValueID::kAcos:
       case CSSValueID::kAtan:
+      case CSSValueID::kAtan2:
         DCHECK(RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled());
         return CSSMathExpressionOperation::
             CreateTrigonometricFunctionSimplified(std::move(nodes),

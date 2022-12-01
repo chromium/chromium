@@ -1367,7 +1367,7 @@
     // "tan" - already declared for color value
     "asin",
     "atan",
-    // "atan2",
+    "atan2",
     "acos",
 
     "pi",
