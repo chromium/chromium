@@ -47,8 +47,8 @@ const char* kVariationsRestrictionsByPolicy =
     variations::prefs::kVariationsRestrictionsByPolicy;
 #endif
 
-// Converts a ListValue of StringValues into a vector of strings. Any Values
-// which cannot be converted will be skipped.
+// Converts a `base::Value::List` of StringValues into a vector of strings. Any
+// values which cannot be converted will be skipped.
 std::vector<std::string> ValueListToStringVector(
     const base::Value::List& list) {
   std::vector<std::string> results;

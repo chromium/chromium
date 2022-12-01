@@ -25,8 +25,6 @@
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ListValue;
-
 class SSLConfigServiceManagerTest : public testing::Test,
                                     public network::mojom::SSLConfigClient {
  public:
@@ -111,10 +109,10 @@ TEST_F(SSLConfigServiceManagerTest, GoodDisabledCipherSuites) {
 
   EXPECT_TRUE(initial_config_->disabled_cipher_suites.empty());
 
-  auto list_value = std::make_unique<base::ListValue>();
-  list_value->Append("0x0004");
-  list_value->Append("0x0005");
-  local_state.SetUserPref(prefs::kCipherSuiteBlacklist, std::move(list_value));
+  base::Value::List list;
+  list.Append("0x0004");
+  list.Append("0x0005");
+  local_state.SetUserPref(prefs::kCipherSuiteBlacklist, std::move(list));
 
   // Wait for the SSLConfigServiceManagerPref to be notified of the preferences
   // being changed, and for it to notify the test fixture of the change.
@@ -138,12 +136,12 @@ TEST_F(SSLConfigServiceManagerTest, BadDisabledCipherSuites) {
 
   EXPECT_TRUE(initial_config_->disabled_cipher_suites.empty());
 
-  auto list_value = std::make_unique<base::ListValue>();
-  list_value->Append("0x0004");
-  list_value->Append("TLS_NOT_WITH_A_CIPHER_SUITE");
-  list_value->Append("0x0005");
-  list_value->Append("0xBEEFY");
-  local_state.SetUserPref(prefs::kCipherSuiteBlacklist, std::move(list_value));
+  base::Value::List list;
+  list.Append("0x0004");
+  list.Append("TLS_NOT_WITH_A_CIPHER_SUITE");
+  list.Append("0x0005");
+  list.Append("0xBEEFY");
+  local_state.SetUserPref(prefs::kCipherSuiteBlacklist, std::move(list));
 
   // Wait for the SSLConfigServiceManagerPref to be notified of the preferences
   // being changed, and for it to notify the test fixture of the change.
@@ -283,17 +281,17 @@ TEST_F(SSLConfigServiceManagerTest, H2ClientCertCoalescingPref) {
   std::unique_ptr<SSLConfigServiceManager> config_manager =
       SetUpConfigServiceManager(&local_state);
 
-  auto patterns = std::make_unique<base::ListValue>();
+  base::Value::List patterns;
   // Patterns expected to be canonicalized.
-  patterns->Append(base::Value("canon.example"));
-  patterns->Append(base::Value(".NonCanon.example"));
-  patterns->Append(base::Value("Non-Canon.example"));
-  patterns->Append(base::Value("127.0.0.1"));
-  patterns->Append(base::Value("2147614986"));
+  patterns.Append("canon.example");
+  patterns.Append(".NonCanon.example");
+  patterns.Append("Non-Canon.example");
+  patterns.Append("127.0.0.1");
+  patterns.Append("2147614986");
   // Patterns expected to be skipped.
-  patterns->Append(base::Value("???"));
-  patterns->Append(base::Value("example.com/"));
-  patterns->Append(base::Value("xn--hellö.com"));
+  patterns.Append("???");
+  patterns.Append("example.com/");
+  patterns.Append("xn--hellö.com");
   local_state.SetUserPref(prefs::kH2ClientCertCoalescingHosts,
                           std::move(patterns));
 
