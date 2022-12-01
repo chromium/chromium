@@ -796,7 +796,7 @@ BASE_FEATURE(kIncognitoScreenshot,
 
 BASE_FEATURE(kInfobarScrollOptimization,
              "InfobarScrollOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
 

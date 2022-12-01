@@ -6053,21 +6053,6 @@
             ]
         }
     ],
-    "InfobarScrollOptimization": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InfobarScrollOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "InstallAndroidUnwindDfm": [
         {
             "platforms": [
