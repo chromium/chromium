@@ -242,6 +242,8 @@ void MojoVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                               DecodeCB decode_cb) {
   DVLOG(3) << __func__ << ": " << buffer->AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT1("media", "MojoVideoDecoder::Decode", "buffer",
+               buffer->AsHumanReadableString());
 
   if (has_connection_error_) {
     task_runner_->PostTask(FROM_HERE,

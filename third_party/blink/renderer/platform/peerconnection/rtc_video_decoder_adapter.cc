@@ -358,6 +358,9 @@ void RTCVideoDecoderAdapter::Impl::Decode(
     base::WaitableEvent* waiter,
     absl::optional<RTCVideoDecoderAdapter::DecodeResult>* result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  TRACE_EVENT1("webrtc", "RTCVideoDecoderAdapter::Impl::Decode", "buffer",
+               buffer->AsHumanReadableString());
+
   auto enque_result = EnqueueBuffer(std::move(buffer));
   if (const auto* fallback_reason =
           absl::get_if<RTCVideoDecoderFallbackReason>(&enque_result)) {
@@ -699,6 +702,8 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
 int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
                                        bool missing_frames,
                                        int64_t render_time_ms) {
+  TRACE_EVENT1("webrtc", "RTCVideoDecoderAdapter::Decode", "timestamp",
+               base::Microseconds(input_image.Timestamp()));
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   if (!impl_)
     return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
