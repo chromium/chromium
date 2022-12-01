@@ -6,10 +6,11 @@
 
 #import "base/ios/block_types.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/app/application_delegate/app_state_testing.h"
+#import "ios/chrome/app/application_delegate/app_state+private.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/main_application_delegate.h"
+#import "ios/chrome/app/safe_mode_app_state_agent+private.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
@@ -29,26 +30,6 @@ namespace {
 // A block that takes self as argument and return a BOOL.
 typedef BOOL (^DecisionBlock)(id self);
 }
-
-// Exposes private methods for testing.
-@interface SafeModeAppAgent (Private)
-@property(nonatomic, strong) SafeModeCoordinator* safeModeCoordinator;
-@property(nonatomic, assign) BOOL firstSceneHasActivated;
-
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousStage;
-- (void)sceneState:(SceneState*)sceneState
-    transitionedToActivationLevel:(SceneActivationLevel)level;
-- (void)coordinatorDidExitSafeMode:(SafeModeCoordinator*)coordinator;
-@end
-
-// Exposes private methods for testing.
-@interface AppState (Private)
-@property(nonatomic, assign) InitStage initStage;
-
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage;
-@end
 
 // Iterate through the init stages from `startInitStage` up to
 // `initStageDestination`.

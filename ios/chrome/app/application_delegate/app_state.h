@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"

@@ -8,6 +8,7 @@
 #import "base/version.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/safe_mode_app_state_agent+private.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
@@ -17,28 +18,14 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SafeModeAppAgent () <SafeModeCoordinatorDelegate,
-                                AppStateObserver,
-                                SceneStateObserver> {
+@implementation SafeModeAppAgent {
   // Multiwindow UI blocker used when safe mode is active to only show the safe
   // mode UI on one window.
   std::unique_ptr<ScopedUIBlocker> _safeModeBlocker;
+
+  // The app state the agent is connected to.
+  __weak AppState* _appState;
 }
-
-// This flag is set when the first scene has activated since the startup, and
-// never reset.
-@property(nonatomic, assign) BOOL firstSceneHasActivated;
-
-// The app state the agent is connected to.
-@property(nonatomic, weak, readonly) AppState* appState;
-
-// Safe mode coordinator. If this is non-nil, the app is displaying the safe
-// mode UI.
-@property(nonatomic, strong) SafeModeCoordinator* safeModeCoordinator;
-
-@end
-
-@implementation SafeModeAppAgent
 
 #pragma mark - AppStateAgent
 
@@ -47,7 +34,7 @@
   DCHECK(!_appState);
 
   _appState = appState;
-  [appState addObserver:self];
+  [_appState addObserver:self];
 }
 
 #pragma mark - SafeModeCoordinatorDelegate Implementation
@@ -57,8 +44,8 @@
   [self stopSafeMode];
   // Transition out of Safe Mode init stage to the next stage. Tell the appState
   // that the app is resuming from safe mode.
-  self.appState.resumingFromSafeMode = YES;
-  [self.appState queueTransitionToNextInitStage];
+  _appState.resumingFromSafeMode = YES;
+  [_appState queueTransitionToNextInitStage];
 }
 
 #pragma mark - SceneStateObserver
@@ -73,7 +60,7 @@
   // Don't try to trigger Safe Mode when the app has already passed the safe
   // mode stage when the scene transitions to foreground. If the init stage is
   // still Safe Mode at this moment it means that safe mode has to be triggered.
-  if (self.appState.initStage != InitStageSafeMode) {
+  if (_appState.initStage != InitStageSafeMode) {
     return;
   }
   // Don't try to show the safe mode UI on multiple scenes; one scene is
@@ -90,7 +77,7 @@
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (self.appState.initStage != InitStageSafeMode) {
+  if (_appState.initStage != InitStageSafeMode) {
     return;
   }
   // Iterate further in the init stages when safe mode isn't needed; stop
@@ -99,7 +86,7 @@
     return;
   }
 
-  [self.appState queueTransitionToNextInitStage];
+  [_appState queueTransitionToNextInitStage];
 }
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {

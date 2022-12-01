@@ -20,6 +20,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
+#import "ios/chrome/app/application_delegate/app_state+private.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
@@ -78,22 +79,7 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 #pragma mark - AppState
 
-@interface AppState () <AppStateObserver> {
-  // Browser launcher to launch browser in different states.
-  __weak id<BrowserLauncher> _browserLauncher;
-
-  // UIApplicationDelegate for the application.
-  __weak MainApplicationDelegate* _mainApplicationDelegate;
-
-  // Whether the application is currently in the background.
-  // This is a workaround for rdar://22392526 where
-  // -applicationDidEnterBackground: can be called twice.
-  // TODO(crbug.com/546196): Remove this once rdar://22392526 is fixed.
-  BOOL _applicationInBackground;
-
-  // YES if cookies are currently being flushed to disk.
-  BOOL _savingCookies;
-}
+@interface AppState () <AppStateObserver>
 
 // Container for observers.
 @property(nonatomic, strong) AppStateObserverList* observers;
@@ -140,12 +126,24 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 // while queueTransitionToNextInitStage is already on the call stack.
 @property(nonatomic, assign) BOOL needsIncrementInitStage;
 
-// Redefined internally as readwrite.
-@property(nonatomic, assign, readwrite) InitStage initStage;
-
 @end
 
-@implementation AppState
+@implementation AppState {
+  // Browser launcher to launch browser in different states.
+  __weak id<BrowserLauncher> _browserLauncher;
+
+  // UIApplicationDelegate for the application.
+  __weak MainApplicationDelegate* _mainApplicationDelegate;
+
+  // Whether the application is currently in the background.
+  // This is a workaround for rdar://22392526 where
+  // -applicationDidEnterBackground: can be called twice.
+  // TODO(crbug.com/546196): Remove this once rdar://22392526 is fixed.
+  BOOL _applicationInBackground;
+
+  // YES if cookies are currently being flushed to disk.
+  BOOL _savingCookies;
+}
 
 @synthesize userInteracted = _userInteracted;
 

@@ -12,8 +12,8 @@
 #import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/app/application_delegate/app_state+private.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
-#import "ios/chrome/app/application_delegate/app_state_testing.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
@@ -23,6 +23,7 @@
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/main_application_delegate.h"
+#import "ios/chrome/app/safe_mode_app_state_agent+private.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
@@ -61,34 +62,44 @@
 #error "This file requires ARC support."
 #endif
 
-// Exposes private safe mode start/stop methods.
-@interface AppState (Private)
-
-- (void)queueTransitionToFirstInitStage;
-- (void)completeUIInitialization;
-@end
-
+// Subclass of AppState that allow returning a fake list of connected scenes.
 @interface TestAppState : AppState
-// Override `connectedScenes` with a lazily instantiated mutable array.
-@property(nonatomic, strong, readwrite)
-    NSMutableArray<SceneState*>* connectedScenes;
+
+- (instancetype)
+    initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
+         startupInformation:(id<StartupInformation>)startupInformation
+        applicationDelegate:(MainApplicationDelegate*)applicationDelegate
+            connectedScenes:(NSArray<SceneState*>*)connectedScenes
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)
+    initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
+         startupInformation:(id<StartupInformation>)startupInformation
+        applicationDelegate:(MainApplicationDelegate*)applicationDelegate
+    NS_UNAVAILABLE;
+
 @end
 
-@implementation TestAppState
-
-- (NSMutableArray<SceneState*>*)connectedScenes {
-  if (!_connectedScenes) {
-    _connectedScenes = [[NSMutableArray alloc] init];
-  }
-  return _connectedScenes;
+@implementation TestAppState {
+  NSArray<SceneState*>* _connectedScenes;
 }
 
-@end
+- (instancetype)
+    initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
+         startupInformation:(id<StartupInformation>)startupInformation
+        applicationDelegate:(MainApplicationDelegate*)applicationDelegate
+            connectedScenes:(NSArray<SceneState*>*)connectedScenes {
+  if ((self = [super initWithBrowserLauncher:browserLauncher
+                          startupInformation:startupInformation
+                         applicationDelegate:applicationDelegate])) {
+    _connectedScenes = connectedScenes ? [connectedScenes copy] : @[];
+  }
+  return self;
+}
 
-@interface SafeModeAppAgent (Private) <SceneStateObserver, AppStateObserver>
-
-- (SafeModeCoordinator*)safeModeCoordinator;
-- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
+- (NSArray<SceneState*>*)connectedScenes {
+  return _connectedScenes;
+}
 
 @end
 
@@ -359,8 +370,8 @@ class AppStateTest : public BlockCleanupTest {
       app_state_ = [[TestAppState alloc]
           initWithBrowserLauncher:browser_launcher_mock_
                startupInformation:startup_information_mock_
-              applicationDelegate:main_application_delegate_];
-      [app_state_.connectedScenes addObject:main_scene_state_];
+              applicationDelegate:main_application_delegate_
+                  connectedScenes:@[ main_scene_state_ ]];
 
       main_scene_state_ =
           [main_scene_state_ initWithAppState:app_state_
@@ -401,8 +412,8 @@ class AppStateTest : public BlockCleanupTest {
       app_state_ = [[TestAppState alloc]
           initWithBrowserLauncher:browser_launcher_mock_
                startupInformation:startup_information_mock_
-              applicationDelegate:main_application_delegate_];
-      [app_state_.connectedScenes addObject:main_scene_state_];
+              applicationDelegate:main_application_delegate_
+                  connectedScenes:@[ main_scene_state_ ]];
 
       main_scene_state_ =
           [main_scene_state_ initWithAppState:app_state_

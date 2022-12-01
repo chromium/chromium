@@ -225,6 +225,7 @@ source_set("app_metrics_app_state_agent") {
 source_set("safe_mode_app_state_agent") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "safe_mode_app_state_agent+private.h",
     "safe_mode_app_state_agent.h",
     "safe_mode_app_state_agent.mm",
   ]

@@ -147,6 +147,7 @@ source_set("metric_kit_subscriber") {
 source_set("app_state_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "app_state+private.h",
     "app_state.h",
     "app_state_agent.h",
     "app_state_observer.h",
@@ -275,7 +276,6 @@ source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "app_state_testing.h",
     "fake_startup_information.h",
     "fake_startup_information.mm",
     "metrics_mediator_testing.h",
