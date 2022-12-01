@@ -398,7 +398,8 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
           {__uuidof(IProcessLauncher2), kUpdaterLegacyIndex},
       }};
   auto index = kTypeLibIndexes->find(iid);
-  return index != kTypeLibIndexes->end() ? index->second : L"";
+  CHECK(index != kTypeLibIndexes->end());
+  return index->second;
 }
 
 void RegisterUserRunAtStartup(const std::wstring& run_value_name,
