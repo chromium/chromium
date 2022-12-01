@@ -55,7 +55,7 @@ constexpr int kMaxResolutionWidth = 1920;
 constexpr int kMaxResolutionHeight = 1088;
 constexpr size_t kMaxFrameRate = 60;
 constexpr size_t kWidthAlignment = 16;
-constexpr size_t kHeightAlignment = 16;
+constexpr size_t kHeightAlignment = 2;
 constexpr uint32_t kBytesPerRowAlignment = 32;
 
 // Use 2 buffers for encoder input. Allocating more than one buffers ensures
