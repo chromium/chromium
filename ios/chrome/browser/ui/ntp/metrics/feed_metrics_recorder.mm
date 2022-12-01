@@ -343,15 +343,8 @@ using feed::FeedUserActionType;
 }
 
 - (void)recordCardTappedAtIndex:(NSUInteger)index {
-  switch ([self.feedControlDelegate selectedFeed]) {
-    case FeedTypeDiscover:
-      UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardOpenedAtIndex, index,
-                                 kMaxCardsInFeed);
-      break;
-    case FeedTypeFollowing:
-      UMA_HISTOGRAM_EXACT_LINEAR(kFollowingFeedCardOpenedAtIndex, index,
-                                 kMaxCardsInFeed);
-  }
+  // TODO(crbug.com/1174088): No-op since this function gets called multiple
+  // times for a tap. Log index when this is fixed.
 }
 
 - (void)recordNoticeCardShown:(BOOL)shown {
@@ -1002,8 +995,13 @@ using feed::FeedUserActionType;
                               IOSContentSuggestionsActionType::kFeedCard);
   }
 
-  // TODO(crbug.com/1174088): Add card Index and the max number of suggestions.
-  UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedURLOpened, 0, 1);
+  switch ([self.feedControlDelegate selectedFeed]) {
+    case FeedTypeDiscover:
+      UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedURLOpened, 0, 1);
+      break;
+    case FeedTypeFollowing:
+      UMA_HISTOGRAM_EXACT_LINEAR(kFollowingFeedURLOpened, 0, 1);
+  }
 }
 
 #pragma mark - Converters
