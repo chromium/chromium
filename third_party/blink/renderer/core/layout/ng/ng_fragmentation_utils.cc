@@ -467,6 +467,19 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
     final_block_size =
         std::min(final_block_size, desired_intrinsic_block_size) -
         trailing_border_padding;
+
+    // TODO(crbug.com/1381327): We shouldn't get negative sizes here, but this
+    // happens if we have incorrectly added trailing border/padding of a
+    // block-size-restricted container (of a spanner) in a previous fragment, so
+    // that we're past the block-end border edge, in which case
+    // desired_block_size will be zero (because of an overly large
+    // previously_consumed_block_size) - so that subtracting
+    // trailing_border_padding here might result in a negative value. Note that
+    // the code block right below has some subtractable_border_padding logic
+    // that could have saved us here, but it still wouldn't be correct. We
+    // should never add block-end border/padding if we're interrupted by as
+    // spanner. So just clamp to zero, to avoid DCHECK failures.
+    final_block_size = final_block_size.ClampNegativeToZero();
   } else if (space_left != kIndefiniteSize && desired_block_size > space_left &&
              space.HasBlockFragmentation()) {
     // We're taller than what we have room for. We don't want to use more than
