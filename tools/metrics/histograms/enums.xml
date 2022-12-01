@@ -26618,6 +26618,13 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="82" label="zu - Zulu"/>
 </enum>
 
+<enum name="DevToolsLighthouseModeRun">
+  <int value="0" label="Navigation"/>
+  <int value="1" label="Timespan"/>
+  <int value="2" label="Snapshot"/>
+  <int value="3" label="LegacyNavigation"/>
+</enum>
+
 <enum name="DevToolsLinearMemoryInspectorRevealedFrom">
   <int value="0" label="Context menu"/>
   <int value="1" label="Memory icon"/>

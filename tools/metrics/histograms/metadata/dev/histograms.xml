@@ -261,6 +261,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.LighthouseModeRun" enum="DevToolsLighthouseModeRun"
+    expires_after="2023-12-01">
+  <owner>asraine@chromium.org</owner>
+  <owner>paulirish@chromium.org</owner>
+  <owner>cjamcl@chromium.org</owner>
+  <summary>Records which Lighthouse mode was used to audit the page.</summary>
+</histogram>
+
 <histogram name="DevTools.LinearMemoryInspector.RevealedFrom"
     enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="2023-03-19">
   <owner>yangguo@chromium.org</owner>
