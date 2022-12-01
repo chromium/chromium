@@ -59,11 +59,9 @@ std::unique_ptr<AudioDSPKernel> BiquadProcessor::CreateKernel() {
 }
 
 void BiquadProcessor::CheckForDirtyCoefficients() {
-  // Deal with smoothing / de-zippering. Start out assuming filter parameters
-  // are not changing.
-
   // The BiquadDSPKernel objects rely on this value to see if they need to
-  // re-compute their internal filter coefficients.
+  // re-compute their internal filter coefficients. Start out assuming filter
+  // parameters are not changing.
   filter_coefficients_dirty_ = false;
   has_sample_accurate_values_ = false;
 

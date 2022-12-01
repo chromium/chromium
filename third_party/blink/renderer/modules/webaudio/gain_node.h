@@ -37,8 +37,7 @@ class GainOptions;
 class ExceptionState;
 
 // GainNode is an AudioNode with one input and one output which applies a gain
-// (volume) change to the audio signal.  De-zippering (smoothing) is applied
-// when the gain value is changed dynamically.
+// (volume) change to the audio signal.
 class GainNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();
 
