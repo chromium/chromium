@@ -25,6 +25,9 @@ syncer::DeviceInfo::FormFactor ToDeviceInfoFormFactor(
 sync_pb::SyncEnums_DeviceFormFactor ToDeviceFormFactorProto(
     const syncer::DeviceInfo::FormFactor& form_factor);
 
+syncer::DeviceInfo::OsType ToDeviceInfoOsType(
+    const sync_pb::SyncEnums_OsType& os_type);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_PROTO_ENUM_UTIL_H_

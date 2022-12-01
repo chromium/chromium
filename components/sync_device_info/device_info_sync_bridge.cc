@@ -855,22 +855,26 @@ void DeviceInfoSyncBridge::CommitAndNotify(std::unique_ptr<WriteBatch> batch,
   }
 }
 
-std::map<sync_pb::SyncEnums_DeviceType, int>
+std::map<DeviceInfo::FormFactor, int>
 DeviceInfoSyncBridge::CountActiveDevicesByType() const {
   // The algorithm below leverages sync timestamps to give a tight lower bound
   // (modulo clock skew) on how many distinct devices are currently active
   // (where active means being used recently enough as specified by
   // DeviceInfoUtil::kActiveThreshold).
   //
-  // Devices of the same type that have no overlap between their time-of-use are
-  // likely to be the same device (just with a different cache GUID). Thus, the
-  // algorithm counts, for each device type separately, the maximum number of
-  // devices observed concurrently active. Then returns the maximum.
+  // Devices of the same OsType and FormFactor that have no overlap
+  // between their time-of-use are likely to be the same device (just with a
+  // different cache GUID). Thus, the algorithm counts, for each device type
+  // separately, the maximum number of devices observed concurrently active.
+  // Then returns the maximum. Then aggregates by form factor. Note ASH and
+  // LACROS are both counted in desktop, as they have different OsType entries,
+  // yet it's probably the same device.
 
   // The series of relevant events over time, the value being +1 when a device
   // was seen for the first time, and -1 when a device was seen last.
   const base::Time now = base::Time::Now();
-  std::map<sync_pb::SyncEnums_DeviceType, std::multimap<base::Time, int>>
+  std::map<std::pair<DeviceInfo::FormFactor, DeviceInfo::OsType>,
+           std::multimap<base::Time, int>>
       relevant_events;
 
   for (const auto& [cache_guid, specifics] : all_data_) {
@@ -888,12 +892,24 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
       if (begin > end) {
         continue;
       }
-      relevant_events[specifics->device_type()].emplace(begin, 1);
-      relevant_events[specifics->device_type()].emplace(end, -1);
+      DeviceInfo::OsType os_type;
+      DeviceInfo::FormFactor form_factor;
+      if (specifics->has_os_type() && specifics->has_device_form_factor()) {
+        form_factor = ToDeviceInfoFormFactor(specifics->device_form_factor());
+        os_type = ToDeviceInfoOsType(specifics->os_type());
+      } else {
+        // Fallback to derive from old device type enum.
+        form_factor = DeriveFormFactorFromDeviceType(specifics->device_type());
+        os_type = DeriveOsFromDeviceType(specifics->device_type(),
+                                         specifics->manufacturer());
+      }
+      relevant_events[{form_factor, os_type}].emplace(begin, 1);
+      relevant_events[{form_factor, os_type}].emplace(end, -1);
     }
   }
 
-  std::map<sync_pb::SyncEnums_DeviceType, int> device_count_by_type;
+  std::map<std::pair<DeviceInfo::FormFactor, DeviceInfo::OsType>, int>
+      device_count_by_type;
   for (const auto& [type, events] : relevant_events) {
     int max_overlapping = 0;
     int overlapping = 0;
@@ -906,7 +922,12 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
     DCHECK_EQ(overlapping, 0);
   }
 
-  return device_count_by_type;
+  std::map<DeviceInfo::FormFactor, int> device_count_by_form_factor;
+  for (const auto& [type, counts] : device_count_by_type) {
+    device_count_by_form_factor[type.first] += counts;
+  }
+
+  return device_count_by_form_factor;
 }
 
 void DeviceInfoSyncBridge::ExpireOldEntries() {

@@ -213,7 +213,7 @@ SendTabToSelfMultiDeviceActiveChecker::
 bool SendTabToSelfMultiDeviceActiveChecker::IsExitConditionSatisfied(
     std::ostream* os) {
   *os << "Waiting for multiple devices to be active.";
-  const std::map<sync_pb::SyncEnums_DeviceType, int> device_count_by_type =
+  const std::map<syncer::DeviceInfo::FormFactor, int> device_count_by_type =
       tracker_->CountActiveDevicesByType();
   int total = 0;
   for (const auto& [type, count] : device_count_by_type) {

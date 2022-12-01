@@ -66,7 +66,7 @@ using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
-using DeviceCountMap = std::map<sync_pb::SyncEnums_DeviceType, int>;
+using DeviceCountMap = std::map<DeviceInfo::FormFactor, int>;
 using DeviceInfoList = std::vector<std::unique_ptr<DeviceInfo>>;
 using StorageKeyList = ModelTypeSyncBridge::StorageKeyList;
 using RecordList = ModelTypeStore::RecordList;
@@ -996,7 +996,7 @@ TEST_F(DeviceInfoSyncBridgeTest, MergeLocalGuid) {
 TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevices) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
   ON_CALL(*processor(), GetEntityCreationTime)
@@ -1008,32 +1008,32 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevices) {
   // have the same guid as the local device.
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityAddList({CreateLocalDeviceSpecifics()}));
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityAddList({CreateLocalDeviceSpecifics()}));
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
   // A different guid will actually contribute to the count.
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityAddList({CreateSpecifics(1)}));
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 2}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
             bridge()->CountActiveDevicesByType());
 
   // Now set time to long ago in the past, it should not be active anymore.
   bridge()->ApplySyncChanges(
       bridge()->CreateMetadataChangeList(),
       EntityAddList({CreateSpecifics(1, base::Time::Now() - base::Days(365))}));
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithOverlappingTime) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
   const DeviceInfoSpecifics specifics1 = CreateSpecifics(1);
@@ -1059,7 +1059,7 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithOverlappingTime) {
                              EntityAddList({specifics1, specifics2}));
 
   ASSERT_EQ(3u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 2}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
             bridge()->CountActiveDevicesByType());
 
   // The third device is also overlapping with the first two (and the local one
@@ -1068,14 +1068,14 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithOverlappingTime) {
                              EntityAddList({specifics3}));
 
   ASSERT_EQ(4u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 3}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 3}}),
             bridge()->CountActiveDevicesByType());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithNonOverlappingTime) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
   const DeviceInfoSpecifics specifics1 = CreateSpecifics(1);
@@ -1101,7 +1101,7 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithNonOverlappingTime) {
       EntityAddList({specifics1, specifics2, specifics3}));
 
   ASSERT_EQ(4u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 }
 
@@ -1109,7 +1109,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
        CountActiveDevicesWithNonOverlappingTimeAndDistinctType) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
   DeviceInfoSpecifics specifics1 = CreateSpecifics(1);
@@ -1140,17 +1140,15 @@ TEST_F(DeviceInfoSyncBridgeTest,
       EntityAddList({specifics1, specifics2, specifics3}));
 
   ASSERT_EQ(4u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1},
-                            {sync_pb::SyncEnums_DeviceType_TYPE_PHONE, 1},
-                            {sync_pb::SyncEnums_DeviceType_TYPE_CROS, 1},
-                            {sync_pb::SyncEnums_DeviceType_TYPE_WIN, 1}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 3},
+                            {DeviceInfo::FormFactor::kPhone, 1}}),
             bridge()->CountActiveDevicesByType());
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithMalformedTimestamps) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
   const DeviceInfoSpecifics specifics1 = CreateSpecifics(1);
@@ -1171,7 +1169,7 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithMalformedTimestamps) {
                              EntityAddList({specifics1, specifics2}));
 
   ASSERT_EQ(3u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 }
 
@@ -1179,7 +1177,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
        ShouldFilterOutNonChromeClientsFromDeviceTracker) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 1}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
   ON_CALL(*processor(), GetEntityCreationTime)
@@ -1192,7 +1190,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
                              EntityAddList({CreateSpecifics(1)}));
   ASSERT_THAT(GetAllData(), SizeIs(2));
   ASSERT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
-  ASSERT_EQ(DeviceCountMap({{kLocalDeviceType, 2}}),
+  ASSERT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
             bridge()->CountActiveDevicesByType());
   ASSERT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(1)), NotNull());
 
@@ -1203,7 +1201,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
                              EntityAddList({specifics2}));
   ASSERT_THAT(GetAllData(), SizeIs(3));
   EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(2));
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 2}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 2}}),
             bridge()->CountActiveDevicesByType());
   EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(2)), IsNull());
 
@@ -1216,7 +1214,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
                              EntityAddList({specifics3}));
   ASSERT_THAT(GetAllData(), SizeIs(4));
   EXPECT_THAT(bridge()->GetAllDeviceInfo(), SizeIs(3));
-  EXPECT_EQ(DeviceCountMap({{kLocalDeviceType, 3}}),
+  EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 3}}),
             bridge()->CountActiveDevicesByType());
   EXPECT_THAT(bridge()->GetDeviceInfo(CacheGuidForSuffix(3)), NotNull());
 }

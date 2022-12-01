@@ -93,7 +93,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   std::vector<std::unique_ptr<DeviceInfo>> GetAllDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  std::map<sync_pb::SyncEnums_DeviceType, int> CountActiveDevicesByType()
+  std::map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()
       const override;
   bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override;
 

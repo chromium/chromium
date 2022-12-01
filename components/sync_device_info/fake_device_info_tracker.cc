@@ -72,15 +72,15 @@ void FakeDeviceInfoTracker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-std::map<sync_pb::SyncEnums_DeviceType, int>
+std::map<DeviceInfo::FormFactor, int>
 FakeDeviceInfoTracker::CountActiveDevicesByType() const {
   if (device_count_per_type_override_) {
     return *device_count_per_type_override_;
   }
 
-  std::map<sync_pb::SyncEnums_DeviceType, int> count_by_type;
+  std::map<DeviceInfo::FormFactor, int> count_by_type;
   for (const auto* device : devices_) {
-    count_by_type[device->device_type()]++;
+    count_by_type[device->form_factor()]++;
   }
   return count_by_type;
 }
@@ -122,7 +122,7 @@ void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
 }
 
 void FakeDeviceInfoTracker::OverrideActiveDeviceCount(
-    const std::map<sync_pb::SyncEnums_DeviceType, int>& counts) {
+    const std::map<DeviceInfo::FormFactor, int>& counts) {
   device_count_per_type_override_ = counts;
   for (auto& observer : observers_) {
     observer.OnDeviceInfoChange();

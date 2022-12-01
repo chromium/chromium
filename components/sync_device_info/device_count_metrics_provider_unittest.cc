@@ -23,7 +23,7 @@ class DeviceCountMetricsProviderTest : public testing::Test {
             base::BindRepeating(&DeviceCountMetricsProviderTest::GetTrackers,
                                 base::Unretained(this))) {}
 
-  void AddTracker(const std::map<sync_pb::SyncEnums_DeviceType, int>& count) {
+  void AddTracker(const std::map<DeviceInfo::FormFactor, int>& count) {
     auto tracker = std::make_unique<FakeDeviceInfoTracker>();
     tracker->OverrideActiveDeviceCount(count);
     trackers_.emplace_back(std::move(tracker));
@@ -66,31 +66,31 @@ TEST_F(DeviceCountMetricsProviderTest, NoTrackers) {
 }
 
 TEST_F(DeviceCountMetricsProviderTest, SingleTracker) {
-  AddTracker({{sync_pb::SyncEnums_DeviceType_TYPE_WIN, 1},
-              {sync_pb::SyncEnums_DeviceType_TYPE_PHONE, 1}});
+  AddTracker({{DeviceInfo::FormFactor::kDesktop, 1},
+              {DeviceInfo::FormFactor::kPhone, 1}});
   TestProvider(ExpectedCount{
       .total = 2, .desktop_count = 1, .phone_count = 1, .tablet_count = 0});
 }
 
 TEST_F(DeviceCountMetricsProviderTest, MultipileTrackers) {
-  AddTracker({{sync_pb::SyncEnums_DeviceType_TYPE_PHONE, 1}});
-  AddTracker({{sync_pb::SyncEnums_DeviceType_TYPE_TABLET, 3},
-              {sync_pb::SyncEnums_DeviceType_TYPE_MAC, 2}});
-  AddTracker({{sync_pb::SyncEnums_DeviceType_TYPE_WIN, -120}});
-  AddTracker({{sync_pb::SyncEnums_DeviceType_TYPE_WIN, 3}});
+  AddTracker({{DeviceInfo::FormFactor::kPhone, 1}});
+  AddTracker({{DeviceInfo::FormFactor::kTablet, 3},
+              {DeviceInfo::FormFactor::kDesktop, 2}});
+  AddTracker({{DeviceInfo::FormFactor::kDesktop, -120}});
+  AddTracker({{DeviceInfo::FormFactor::kDesktop, 3}});
   TestProvider(ExpectedCount{
       .total = 5, .desktop_count = 3, .phone_count = 1, .tablet_count = 3});
 }
 
 TEST_F(DeviceCountMetricsProviderTest, OnlyNegative) {
-  AddTracker({{sync_pb::SyncEnums_DeviceType_TYPE_PHONE, -121}});
+  AddTracker({{DeviceInfo::FormFactor::kPhone, -121}});
   TestProvider(ExpectedCount{
       .total = 0, .desktop_count = 0, .phone_count = 0, .tablet_count = 0});
 }
 
 TEST_F(DeviceCountMetricsProviderTest, VeryLarge) {
-  AddTracker({{sync_pb::SyncEnums_DeviceType_TYPE_LINUX, 123456789},
-              {sync_pb::SyncEnums_DeviceType_TYPE_PHONE, 1}});
+  AddTracker({{DeviceInfo::FormFactor::kDesktop, 123456789},
+              {DeviceInfo::FormFactor::kPhone, 1}});
   TestProvider(ExpectedCount{
       .total = 100, .desktop_count = 100, .phone_count = 1, .tablet_count = 0});
 }
