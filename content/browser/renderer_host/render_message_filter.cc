@@ -69,6 +69,7 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
 #include "base/threading/platform_thread.h"
+#include "content/public/browser/child_process_launcher_utils.h"
 #endif
 
 namespace content {
@@ -131,9 +132,11 @@ void RenderMessageFilter::GenerateFrameRoutingID(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void RenderMessageFilter::SetThreadTypeOnWorkerThread(
+void RenderMessageFilter::SetThreadTypeOnLauncherThread(
     base::PlatformThreadId ns_tid,
     base::ThreadType thread_type) {
+  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+
   bool ns_pid_supported = false;
   pid_t peer_tid = base::FindThreadID(peer_pid(), ns_tid, &ns_pid_supported);
   if (peer_tid == -1) {
@@ -154,12 +157,13 @@ void RenderMessageFilter::SetThreadTypeOnWorkerThread(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void RenderMessageFilter::SetThreadType(int32_t ns_tid,
                                         base::ThreadType thread_type) {
-  constexpr base::TaskTraits kTraits = {
-      base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-      base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
-  base::ThreadPool::PostTask(
-      FROM_HERE, kTraits,
-      base::BindOnce(&RenderMessageFilter::SetThreadTypeOnWorkerThread, this,
+  // Post this task to process launcher task runner. All thread type changes
+  // (nice value, c-group setting) of renderer process would be performed on the
+  // same sequence as renderer process priority changes, to guarantee that
+  // there's no race of c-group manipulations.
+  GetProcessLauncherTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RenderMessageFilter::SetThreadTypeOnLauncherThread, this,
                      static_cast<base::PlatformThreadId>(ns_tid), thread_type));
 }
 #endif

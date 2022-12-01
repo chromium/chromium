@@ -126,6 +126,10 @@ enum class ThreadPriorityForTest : int {
   kMaxValue = kRealtimeAudio,
 };
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+class ThreadTypeDelegate;
+#endif
+
 // A namespace for low-level thread functions.
 class BASE_EXPORT PlatformThread {
  public:
@@ -258,6 +262,10 @@ class BASE_EXPORT PlatformThread {
   static absl::optional<TimeDelta> GetThreadLeewayOverride();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Sets a delegate which handles thread type changes for this process. This
+  // must be externally synchronized with any call to SetCurrentThreadType.
+  static void SetThreadTypeDelegate(ThreadTypeDelegate* delegate);
+
   // Toggles a specific thread's type at runtime. This can be used to
   // change the priority of a thread in a different process and will fail
   // if the calling process does not have proper permissions. The

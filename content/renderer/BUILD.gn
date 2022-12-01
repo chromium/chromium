@@ -191,7 +191,11 @@ target(link_target_type, "renderer") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [ "renderer_main_platform_delegate_linux.cc" ]
+    sources += [
+      "renderer_main_platform_delegate_linux.cc",
+      "renderer_thread_type_handler.cc",
+      "renderer_thread_type_handler.h",
+    ]
   }
 
   if (is_mac) {

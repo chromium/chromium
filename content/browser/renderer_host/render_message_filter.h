@@ -85,8 +85,8 @@ class RenderMessageFilter
   void OnResolveProxy(const GURL& url, IPC::Message* reply_msg);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  void SetThreadTypeOnWorkerThread(base::PlatformThreadId ns_tid,
-                                   base::ThreadType thread_type);
+  void SetThreadTypeOnLauncherThread(base::PlatformThreadId ns_tid,
+                                     base::ThreadType thread_type);
 #endif
 
   void OnMediaLogRecords(const std::vector<media::MediaLogRecord>&);

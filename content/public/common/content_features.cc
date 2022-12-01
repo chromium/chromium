@@ -481,6 +481,16 @@ BASE_FEATURE(kGetDisplayMediaSetAutoSelectAllScreens,
 // (activated by kUserAgentClientHint)
 BASE_FEATURE(kGreaseUACH, "GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Supports proxying thread type changes of renderer processes to browser
+// process and having browser process handle adjusting thread properties (nice
+// value, c-group, latency sensitivity...) for renderers which have sandbox
+// restrictions.
+BASE_FEATURE(kHandleRendererThreadTypeChangesInBrowser,
+             "HandleRendererThreadTypeChangesInBrowser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // This is intended as a kill switch for the Idle Detection feature. To enable
 // this feature, the experimental web platform features flag should be set,
 // or the site should obtain an Origin Trial token.

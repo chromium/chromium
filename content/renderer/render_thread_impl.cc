@@ -182,6 +182,10 @@
 #include "media/base/win/mf_feature_checks.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "content/renderer/renderer_thread_type_handler.h"
+#endif
+
 #ifdef ENABLE_VTUNE_JIT_INTERFACE
 #include "v8/src/third_party/vtune/v8-vtune.h"
 #endif
@@ -619,6 +623,10 @@ void RenderThreadImpl::Init() {
     GetChannel()->set_outgoing_message_filter(filter);
     mojo::MessageDumper::SetMessageDumpDirectory(dump_directory);
   }
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  RendererThreadTypeHandler::NotifyRenderThreadCreated();
 #endif
 
   cc::SetClientNameForMetrics("Renderer");
