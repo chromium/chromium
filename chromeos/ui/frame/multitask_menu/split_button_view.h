@@ -33,10 +33,6 @@ class SplitButtonView : public views::BoxLayoutView {
 
   ~SplitButtonView() override = default;
 
-  // Only one of the split buttons may be disabled for some windows. This
-  // disables only the one third button in the split button view.
-  void DisableOneThirdSplit();
-
  private:
   class SplitButton;
 

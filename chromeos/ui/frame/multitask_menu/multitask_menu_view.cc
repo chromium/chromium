@@ -17,7 +17,6 @@
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_delegate.h"
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -49,18 +48,6 @@ std::unique_ptr<views::View> CreateButtonContainer(
   label->SetEnabledColor(gfx::kGoogleGrey900);
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   return container;
-}
-
-// Returns true if the window is too wide (or tall, in portrait mode) to be put
-// into one third split.
-bool ShouldDisableOneThirdSplit(aura::Window* window, bool is_portrait_mode) {
-  if (!window || !window->delegate())
-    return false;
-  const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
-  const gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
-  return is_portrait_mode ? minimum_size.height() > work_area.height() * 0.33f
-                          : minimum_size.width() > work_area.width() * 0.33f;
 }
 
 }  // namespace
@@ -105,8 +92,6 @@ MultitaskMenuView::MultitaskMenuView(
                             base::Unretained(this), /*left_top=*/false),
         is_portrait_mode);
     partial_button_ = partial_button.get();
-    if (ShouldDisableOneThirdSplit(window, is_portrait_mode))
-      partial_button_->DisableOneThirdSplit();
     AddChildView(CreateButtonContainer(std::move(partial_button),
                                        IDS_APP_ACCNAME_PARTIAL));
   }
