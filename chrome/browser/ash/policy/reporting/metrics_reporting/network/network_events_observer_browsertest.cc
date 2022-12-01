@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
 IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
                        ConnectionStateAffiliatedUserAndPolicyEnabled) {
   chromeos::MissiveClientTestObserver missive_observer_(
-      ::reporting::Destination::EVENT_METRIC);
+      Destination::EVENT_METRIC);
 
   EnablePolicy();
   ash::ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
@@ -119,9 +119,8 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
 
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
   // Testing event found successfully.
-  EXPECT_THAT(
-      record_data.event_data().type(),
-      Eq(::reporting::MetricEventType::NETWORK_CONNECTION_STATE_CHANGE));
+  EXPECT_THAT(record_data.event_data().type(),
+              Eq(MetricEventType::NETWORK_STATE_CHANGE));
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
@@ -132,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
 IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
                        SignalStrengthAffiliatedUserAndPolicyEnabled) {
   chromeos::MissiveClientTestObserver missive_observer_(
-      ::reporting::Destination::EVENT_METRIC);
+      Destination::EVENT_METRIC);
 
   const std::string service_config_low_signal =
       base::StringPrintf(kWifiConfig, kWifiGuid, kLowSignalStrengthRssi);
@@ -150,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
 
   // Testing event found successfully.
   EXPECT_THAT(record_data.event_data().type(),
-              Eq(::reporting::MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW));
+              Eq(MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW));
 }
 
 }  // namespace
