@@ -171,6 +171,10 @@ void WaylandToplevelWindow::Hide() {
   }
   WaylandWindow::Hide();
 
+  // Request the compositor to cease any possible ongoing snapping
+  // preview/commit.
+  CommitSnap(WaylandWindowSnapDirection::kNone);
+
   if (IsSupportedOnAuraSurface(ZAURA_SURFACE_RELEASE_SINCE_VERSION))
     SetAuraSurface(nullptr);
 

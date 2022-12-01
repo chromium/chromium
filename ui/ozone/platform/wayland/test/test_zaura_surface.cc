@@ -13,6 +13,8 @@ namespace wl {
 
 namespace {
 
+// TODO(https://crbug.com/1395061): Replace NOTREACHED() by NOTIMPLEMENTED() for
+// all methods?
 void set_frame(struct wl_client* client,
                struct wl_resource* resource,
                uint32_t type) {
@@ -86,7 +88,7 @@ void set_snap_right(struct wl_client* client, struct wl_resource* resource) {
   NOTREACHED();
 }
 void unset_snap(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 void set_window_session_id(struct wl_client* client,
                            struct wl_resource* resource,
