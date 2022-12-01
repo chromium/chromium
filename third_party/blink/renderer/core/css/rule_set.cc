@@ -532,7 +532,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       AddCounterStyleRule(counter_style_rule);
     } else if (auto* position_fallback_rule =
                    DynamicTo<StyleRulePositionFallback>(rule)) {
-      // TODO(crbug.com/1309178): Handle interaction with cascade layers.
+      position_fallback_rule->SetCascadeLayer(cascade_layer);
       AddPositionFallbackRule(position_fallback_rule);
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
       if (supports_rule->ConditionIsSupported()) {

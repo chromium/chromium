@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class CascadeLayer;
 class CSSTryRule;
 class StyleRuleTry;
 
@@ -30,11 +31,15 @@ class StyleRulePositionFallback final : public StyleRuleBase {
     return MakeGarbageCollected<StyleRulePositionFallback>(*this);
   }
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+
   void TraceAfterDispatch(Visitor*) const;
 
  private:
   AtomicString name_;
   HeapVector<Member<StyleRuleTry>> try_rules_;
+  Member<const CascadeLayer> layer_;
 };
 
 template <>

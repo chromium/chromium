@@ -288,10 +288,18 @@ void ScopedStyleResolver::RebuildCascadeLayerMap(
 }
 
 void ScopedStyleResolver::AddPositionFallbackRules(const RuleSet& rule_set) {
-  // TODO(crbug.com/1309178): Reorder @position-fallback rules according to
-  // cascade layers.
-  for (StyleRulePositionFallback* rule : rule_set.PositionFallbackRules())
-    position_fallback_rule_map_.Set(rule->Name(), rule);
+  for (StyleRulePositionFallback* rule : rule_set.PositionFallbackRules()) {
+    auto result = position_fallback_rule_map_.insert(rule->Name(), rule);
+    if (result.is_new_entry)
+      continue;
+    Member<StyleRulePositionFallback>& stored_rule = result.stored_value->value;
+    const bool should_override =
+        !cascade_layer_map_ ||
+        cascade_layer_map_->CompareLayerOrder(stored_rule->GetCascadeLayer(),
+                                              rule->GetCascadeLayer()) <= 0;
+    if (should_override)
+      stored_rule = rule;
+  }
 }
 
 StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(

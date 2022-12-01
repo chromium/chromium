@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -24,6 +25,7 @@ void StyleRulePositionFallback::ParserAppendTryRule(StyleRuleTry* try_rule) {
 
 void StyleRulePositionFallback::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(try_rules_);
+  visitor->Trace(layer_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
