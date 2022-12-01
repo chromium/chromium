@@ -538,6 +538,19 @@ TEST(TimerTest, DeadlineTimerTaskDestructed) {
   testing::Mock::VerifyAndClearExpectations(&destructed);
 }
 
+TEST(TimerTest, DeadlineTimerStartTwice) {
+  test::TaskEnvironment task_environment(
+      test::TaskEnvironment::TimeSource::MOCK_TIME);
+  DeadlineTimer timer;
+  TimeTicks start = TimeTicks::Now();
+
+  RunLoop run_loop;
+  timer.Start(FROM_HERE, start + Seconds(5), run_loop.QuitClosure());
+  timer.Start(FROM_HERE, start + Seconds(10), run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(start + Seconds(10), TimeTicks::Now());
+}
+
 TEST(TimerTest, MetronomeTimer) {
   test::TaskEnvironment task_environment(
       test::TaskEnvironment::TimeSource::MOCK_TIME);

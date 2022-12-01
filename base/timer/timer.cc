@@ -367,7 +367,7 @@ void DeadlineTimer::Start(const Location& posted_from,
                           OnceClosure user_task,
                           ExactDeadline exact) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!delayed_task_handle_.IsValid());
+  AbandonScheduledTask();
   user_task_ = std::move(user_task);
   posted_from_ = posted_from;
   subtle::DelayPolicy delay_policy =
