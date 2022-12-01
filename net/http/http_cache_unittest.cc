@@ -14015,6 +14015,36 @@ TEST_F(HttpCacheSingleKeyedCacheTest, RedirectUnusable) {
   }
 }
 
+TEST_F(HttpCacheSingleKeyedCacheTest, GETWith206ResponseCode) {
+  MockHttpCache cache;
+  MockTransaction transaction = kSimpleGET_Transaction;
+  // We should never get a partial response since we never send a range request,
+  // but it behaves differently from other bad response codes.
+  transaction.status = "HTTP/1.1 206 Partial";
+  const auto site_a = SchemefulSite(GURL("https://a.com/"));
+  // The response is not cached.
+  {
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_a, site_a),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(1, cache.network_layer()->transaction_count());
+    EXPECT_EQ(0, cache.disk_cache()->open_count());
+    EXPECT_EQ(1, cache.disk_cache()->create_count());
+  }
+
+  // It is fetched from the network again.
+  {
+    RunTransactionTestForSingleKeyedCache(cache.http_cache(), transaction,
+                                          NetworkIsolationKey(site_a, site_a),
+                                          kChecksumForSimpleGET);
+
+    EXPECT_EQ(2, cache.network_layer()->transaction_count());
+    EXPECT_EQ(0, cache.disk_cache()->open_count());
+    EXPECT_EQ(2, cache.disk_cache()->create_count());
+  }
+}
+
 TEST_F(HttpCacheSingleKeyedCacheTest, SuccessfulRevalidation) {
   MockHttpCache cache;
   MockTransaction transaction = kSimpleGET_Transaction;
@@ -14167,6 +14197,91 @@ TEST_F(HttpCacheSingleKeyedCacheTest, RevalidationChangingCheckedHeader) {
     EXPECT_EQ(2, cache.disk_cache()->open_count());
     EXPECT_EQ(2, cache.disk_cache()->create_count());
   }
+}
+
+TEST_F(HttpCacheSingleKeyedCacheTest, SuccessfulGETManyWriters) {
+  MockHttpCache cache;
+
+  MockHttpRequest request(kSimpleGET_Transaction);
+  request.checksum = kChecksumForSimpleGET;
+
+  constexpr int kNumTransactions = 2;
+  std::vector<Context> context_list(kNumTransactions);
+
+  for (Context& c : context_list) {
+    c.result = cache.CreateTransaction(&c.trans);
+    ASSERT_THAT(c.result, IsOk());
+
+    c.result =
+        c.trans->Start(&request, c.callback.callback(), NetLogWithSource());
+  }
+
+  // Allow all requests to move from the Create queue to the active entry.
+  // All would have been added to writers.
+  base::RunLoop().RunUntilIdle();
+  std::string cache_key = cache.http_cache()
+                              ->GenerateCacheKeyForRequest(
+                                  &request, /*use_single_keyed_cache=*/true)
+                              .value();
+  EXPECT_EQ(kNumTransactions, cache.GetCountWriterTransactions(cache_key));
+
+  // The second transaction skipped validation, thus only one network
+  // transaction is created.
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // Complete the transactions.
+  for (Context& c : context_list) {
+    ReadAndVerifyTransaction(c.trans.get(), kSimpleGET_Transaction);
+  }
+
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+}
+
+TEST_F(HttpCacheSingleKeyedCacheTest, BadChecksumManyWriters) {
+  MockHttpCache cache;
+
+  MockHttpRequest request(kSimpleGET_Transaction);
+  request.checksum =
+      "0000000000000000000000000000000000000000000000000000000000000000";
+
+  constexpr int kNumTransactions = 2;
+  std::vector<Context> context_list(kNumTransactions);
+
+  for (Context& c : context_list) {
+    c.result = cache.CreateTransaction(&c.trans);
+    ASSERT_THAT(c.result, IsOk());
+
+    c.result =
+        c.trans->Start(&request, c.callback.callback(), NetLogWithSource());
+  }
+
+  // Allow all requests to move from the Create queue to the active entry.
+  // All would have been added to writers.
+  base::RunLoop().RunUntilIdle();
+  std::string cache_key = cache.http_cache()
+                              ->GenerateCacheKeyForRequest(
+                                  &request, /*use_single_keyed_cache=*/true)
+                              .value();
+  EXPECT_EQ(kNumTransactions, cache.GetCountWriterTransactions(cache_key));
+
+  // The second transaction skipped validation, thus only one network
+  // transaction is created.
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // Complete the transactions.
+  for (Context& c : context_list) {
+    ReadAndVerifyTransaction(c.trans.get(), kSimpleGET_Transaction);
+  }
+
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
 }
 
 }  // namespace net
