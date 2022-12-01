@@ -16,6 +16,7 @@ Background Fetch Success:
         instanceId : my-fetch-success
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [1] : {
@@ -25,6 +26,7 @@ Background Fetch Success:
         instanceId : my-fetch-success
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [2] : {
@@ -42,6 +44,7 @@ Background Fetch Success:
         instanceId : my-fetch-success
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [3] : {
@@ -67,6 +70,7 @@ Background Fetch Success:
         instanceId : my-fetch-success
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [4] : {
@@ -80,6 +84,7 @@ Background Fetch Success:
         instanceId : my-fetch-success
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
 ]
@@ -100,6 +105,7 @@ Background Fetch Failure:
         instanceId : my-fetch-failure
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [1] : {
@@ -109,6 +115,7 @@ Background Fetch Failure:
         instanceId : my-fetch-failure
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [2] : {
@@ -126,6 +133,7 @@ Background Fetch Failure:
         instanceId : my-fetch-failure
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [3] : {
@@ -151,6 +159,7 @@ Background Fetch Failure:
         instanceId : my-fetch-failure
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [4] : {
@@ -168,6 +177,7 @@ Background Fetch Failure:
         instanceId : my-fetch-failure
         origin : http://127.0.0.1:8000/
         service : backgroundFetch
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
 ]
@@ -180,6 +190,7 @@ Background Sync Success:
         instanceId : background-sync-resolve
         origin : http://127.0.0.1:8000/
         service : backgroundSync
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [1] : {
@@ -193,6 +204,7 @@ Background Sync Success:
         instanceId : background-sync-resolve
         origin : http://127.0.0.1:8000/
         service : backgroundSync
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [2] : {
@@ -206,6 +218,7 @@ Background Sync Success:
         instanceId : background-sync-resolve
         origin : http://127.0.0.1:8000/
         service : backgroundSync
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
 ]
@@ -218,6 +231,7 @@ Background Sync Failure:
         instanceId : background-sync-reject
         origin : http://127.0.0.1:8000/
         service : backgroundSync
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [1] : {
@@ -231,6 +245,7 @@ Background Sync Failure:
         instanceId : background-sync-reject
         origin : http://127.0.0.1:8000/
         service : backgroundSync
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
     [2] : {
@@ -248,6 +263,7 @@ Background Sync Failure:
         instanceId : background-sync-reject
         origin : http://127.0.0.1:8000/
         service : backgroundSync
+        storageKey : http://127.0.0.1:8000/
         timestamp : <number>
     }
 ]

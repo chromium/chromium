@@ -15,7 +15,6 @@ element.style { ()
         animation-fill-mode: ;
         animation-play-state: ;
         animation-name: ;
-        animation-timeline: ;
 
 [expanded] 
 div { (user agent stylesheet)

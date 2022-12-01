@@ -8107,9 +8107,6 @@ crbug.com/1385483 [ Linux ] http/tests/devtools/indexeddb/resources-panel.js [ F
 crbug.com/1383990 [ Mac ] external/wpt/html/dom/idlharness.worker.html [ Failure Skip ]
 crbug.com/1383989 [ Mac ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure Skip ]
 
-# Temporarily disable tests to land background service changes.
-crbug.com/1382392 http/tests/inspector-protocol/background-services/background-services-events.js [ Failure Skip ]
-
 # Tests disabled for the memory measurement API.
 crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/detached.https.window.html [ Skip Timeout ]
 crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/window-open.mix.https.window.html [ Skip Timeout ]
@@ -8145,9 +8142,6 @@ crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Failure 
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Failure Pass ]
 crbug.com/1393056 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Failure Pass Timeout ]
 
-# Temporarily disable test to land BackgroundServices frontend CL
-crbug.com/1382392 http/tests/devtools/background-services/background-service-grid.js [ Failure Skip ]
-
 # Temporarily disable test to land CPU-backed canvas switching change
 crbug.com/1385633 [ Linux ] virtual/oopr-canvas2d/fast/canvas/check-stale-putImageData.html [ Failure ]
 
@@ -8176,7 +8170,4 @@ crbug.com/1385379 http/tests/devtools/elements/styles-4/styles-invalid-color-val
 crbug.com/1394361 http/tests/inspector-protocol/tracing/interactions.js [ Failure Pass ]
 
 # Sheriff 2022-11-29
-crbug.com/1394524 external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-form-state-restore.tentative.html [ Failure Pass Timeout ]
-
-# Temporarily disable test to roll protocol
-crbug.com/1382392 http/tests/devtools/elements/styles-4/styles-keyframes-display-none.js [ Failure Skip ]
+crbug.com/1394524 external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-form-state-restore.tentative.html [ Failure Pass ]

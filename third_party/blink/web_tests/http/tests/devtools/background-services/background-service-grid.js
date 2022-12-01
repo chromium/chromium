@@ -60,6 +60,7 @@ function setOriginCheckbox(value) {
       eventName: 'Event1',
       instanceId: 'Instance1',
       eventMetadata: [],
+      storageKey: 'testKey',
     },
   });
   dumpBackgroundServiceGrid();
@@ -74,6 +75,7 @@ function setOriginCheckbox(value) {
       eventName: 'Event1',
       instanceId: 'Instance2',
       eventMetadata: [],
+      storageKey: 'testKey',
     },
   });
   dumpBackgroundServiceGrid();
@@ -88,6 +90,7 @@ function setOriginCheckbox(value) {
       eventName: 'Event2',
       instanceId: 'Instance1',
       eventMetadata: [],
+      storageKey: 'testKey',
     },
   });
   dumpBackgroundServiceGrid();
