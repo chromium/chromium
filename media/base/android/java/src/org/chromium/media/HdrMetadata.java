@@ -5,12 +5,9 @@
 package org.chromium.media;
 
 import android.media.MediaFormat;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -22,7 +19,6 @@ import java.nio.ByteOrder;
 @JNINamespace("media")
 @MainDex
 class HdrMetadata {
-    private static final String TAG = "HdrMetadata";
     private static final int MAX_CHROMATICITY = 50000; // Defined in CTA-861.3.
 
     private long mNativeJniHdrMetadata;
@@ -51,14 +47,9 @@ class HdrMetadata {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     public void addMetadataToFormat(MediaFormat format) {
         synchronized (mLock) {
             assert mNativeJniHdrMetadata != 0;
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                Log.e(TAG, "HDR not supported before Android N");
-                return;
-            }
 
             // TODO(sandv): Use color space matrix when android has support for it.
             int colorStandard = getColorStandard();
