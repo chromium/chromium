@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
@@ -163,9 +164,13 @@ public class SectionHeaderView extends LinearLayout {
             actionTitleId = R.string.feed_options_dropdown_description;
         }
 
-        ViewCompat.removeAccessibilityAction(tab.view, mActionId);
-        mActionId = ViewCompat.addAccessibilityAction(
-                tab.view, getResources().getString(actionTitleId), (view, arguments) -> {
+        tab.view.setOnLongClickListener(v -> {
+            mTabListener.onTabReselected(tab);
+            return true;
+        });
+
+        ViewCompat.replaceAccessibilityAction(tab.view, AccessibilityActionCompat.ACTION_LONG_CLICK,
+                getResources().getString(actionTitleId), (view, arguments) -> {
                     mTabListener.onTabReselected(tab);
                     return true;
                 });
@@ -282,8 +287,11 @@ public class SectionHeaderView extends LinearLayout {
             // Sets up a11y and ensures indicator is pointing in the right direction.
             updateDrawable(index, false);
         } else {
+            tab.view.setOnLongClickListener(null);
+            tab.view.setLongClickable(false);
             // If not visible, remove the expand/collapse actions.
-            ViewCompat.removeAccessibilityAction(tab.view, mActionId);
+            ViewCompat.replaceAccessibilityAction(
+                    tab.view, AccessibilityActionCompat.ACTION_LONG_CLICK, null, null);
         }
     }
 
