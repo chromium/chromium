@@ -308,7 +308,7 @@ BASE_FEATURE(kToolbarUseHardwareBitmapDraw,
 // chrome renderers are present.
 BASE_FEATURE(kTopChromeWebUIUsesSpareRenderer,
              "TopChromeWebUIUsesSpareRenderer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnifiedSidePanel,
              "UnifiedSidePanel",
