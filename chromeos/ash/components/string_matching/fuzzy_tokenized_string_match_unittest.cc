@@ -213,7 +213,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCamelCase) {
     VLOG(1) << FormatRelevanceResult(query, text, relevance,
                                      /*query_first*/ false);
   }
-  ExpectAllNearlyEqual(scores, /*abs_error*/ 0.01);
+  ExpectAllNearlyEqual(scores, /*abs_error*/ 0.05);
 }
 
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCompleteMatchSingleToken) {
@@ -413,7 +413,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkTokenOrderVariation) {
     VLOG(1) << FormatRelevanceResult(query, text_three_words, relevance,
                                      /*query_first*/ false);
   }
-  ExpectAllNearlyEqual(scores_query_three_words, /*abs_error*/ 0.02);
+  ExpectAllNearlyEqual(scores_query_three_words, /*abs_error*/ 0.05);
 }
 
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkTokensPresentInTextButNotQuery) {
@@ -431,7 +431,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkTokensPresentInTextButNotQuery) {
   // There is a score boost in prefix matcher when a matched token is the first
   // token of both text and query.
   scores_query_single_token[0] -= 0.125;
-  ExpectAllNearlyEqual(scores_query_single_token);
+  ExpectAllNearlyEqual(scores_query_single_token, /*abs_error*/ 0.01);
 
   // Case: multi-token text, two-token query.
   std::vector<std::u16string> queries_two_tokens = {u"abc def", u"abc ghi",
@@ -528,7 +528,7 @@ TEST_F(FuzzyTokenizedStringMatchTest,
                                      /*query_first*/ false);
     scores1_shuffled.push_back(relevance);
   }
-  ExpectAllNearlyEqualTo(scores1_shuffled, 0.55, /*abs_error*/ 0.1);
+  ExpectAllNearlyEqualTo(scores1_shuffled, 0.54, /*abs_error*/ 0.1);
 
   // Case 2: multi-token text.
   std::u16string text2 = u"abcdef ghi";
@@ -600,7 +600,7 @@ TEST_F(FuzzyTokenizedStringMatchTest,
                                      /*query_first*/ true);
     scores1_shuffled.push_back(relevance);
   }
-  ExpectAllNearlyEqualTo(scores1_shuffled, 0.65, /*abs_error*/ 0.2);
+  ExpectAllNearlyEqualTo(scores1_shuffled, 0.6, /*abs_error*/ 0.2);
 
   // Case 2: multi-token query.
   std::u16string query2 = u"abcdef ghi";
@@ -909,8 +909,8 @@ TEST_F(FuzzyTokenizedStringMatchTest,
   }
   // There is a score boost in prefix matcher when a matched token is the first
   // token of both text and query.
-  scores[0] -= 0.05;
-  scores[1] -= 0.05;
+  scores[0] -= 0.04;
+  scores[1] -= 0.04;
   ExpectAllNearlyEqual(scores, /*abs_error*/ 0.01);
 }
 

@@ -35,6 +35,9 @@ constexpr double kMaxScore = 1.0;
 // The maximum supported size for a prefix matching scoring boost.
 constexpr size_t kMaxBoostSize = 2;
 
+// The scale ratio for non exact matching results.
+constexpr double kNonExactMatchScaleRatio = 0.97;
+
 // Returns sorted tokens from a TokenizedString.
 std::vector<std::u16string> ProcessAndSort(const TokenizedString& text) {
   std::vector<std::u16string> result;
@@ -300,9 +303,11 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
 
   // Find hits using SequenceMatcher on original query and text.
   Hits sequence_hits;
+  size_t match_size = 0;
   for (const auto& match :
        SequenceMatcher(query_text, text_text).GetMatchingBlocks()) {
     if (match.length > 0) {
+      match_size += match.length;
       sequence_hits.emplace_back(match.pos_second_string,
                                  match.pos_second_string + match.length);
     }
@@ -322,7 +327,9 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
       std::max_element(relevances.begin(), relevances.end()) -
       relevances.begin();
   hits_ = hits_vector[best_match_pos];
-  return relevances[best_match_pos];
+  return match_size == text_size
+             ? relevances[best_match_pos]
+             : relevances[best_match_pos] * kNonExactMatchScaleRatio;
 }
 
 }  // namespace ash::string_matching
