@@ -795,7 +795,7 @@
     },
     {
       name: "CSSOverflowForReplacedElements",
-      status: "test",
+      status: "stable",
       base_feature: "CSSOverflowForReplacedElements",
       copied_from_base_feature_if: "overridden",
     },
