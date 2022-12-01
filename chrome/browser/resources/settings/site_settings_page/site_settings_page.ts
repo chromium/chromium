@@ -280,7 +280,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.SITE_DATA,
       // TODO(crbug/1378703): Replace label.
       label: 'privacyPageTitle',
-      icon: 'settings:palette',
+      icon: 'settings:database',
       shouldShow: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
     },
     {
