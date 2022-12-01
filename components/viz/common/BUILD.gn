@@ -398,6 +398,7 @@ viz_source_set("unit_tests") {
     "quads/render_pass_io_unittest.cc",
     "resources/resource_format_utils_unittest.cc",
     "resources/resource_sizes_unittest.cc",
+    "resources/shared_image_format_unittest.cc",
     "surfaces/child_local_surface_id_allocator_unittest.cc",
     "surfaces/local_surface_id_unittest.cc",
     "surfaces/parent_local_surface_id_allocator_unittest.cc",
