@@ -78,6 +78,9 @@ extern const char kAttributionReportingDebugModeDescription[];
 extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[];
 extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[];
 
+extern const char kCertDualVerificationEnabledName[];
+extern const char kCertDualVerificationEnabledDescription[];
+
 extern const char kCOLRV1FontsDescription[];
 
 extern const char kChromeRootStoreEnabledName[];

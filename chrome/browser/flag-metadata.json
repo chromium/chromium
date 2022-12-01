@@ -880,6 +880,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "cert-dual-verification-enabled",
+    "owners": ["hchao", "mattm", "davidben", "chrome-trusty-transport-core@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "check-offline-capability",
     "owners": [ "asamidoi", "//content/browser/service_worker/OWNERS" ],
     "expiry_milestone": 93

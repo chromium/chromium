@@ -9442,6 +9442,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(net::features::kChromeRootStoreUsed)},
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+    {"cert-dual-verification-enabled",
+     flag_descriptions::kCertDualVerificationEnabledName,
+     flag_descriptions::kCertDualVerificationEnabledDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(net::features::kCertDualVerificationTrialFeature)},
+#endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+
 #if BUILDFLAG(IS_ANDROID)
     {"highlight-managed-pref-disclaimer-android",
      flag_descriptions::kHighlightManagedPrefDisclaimerAndroidName,

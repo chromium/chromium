@@ -91,6 +91,12 @@ const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[] =
     "Broker file operations on disk cache running in the Network Service. This "
     "is no-op when the Network Service is running in the browser process.";
 
+const char kCertDualVerificationEnabledName[] = "Cert Dual Verification";
+const char kCertDualVerificationEnabledDescription[] =
+    "Runs both platform Cert Verifer and Chrome Cert Verifier, reporting "
+    "any differences to Chrome if Safe Browsing Extended Reporting is "
+    "enabled.";
+
 const char kClipboardUnsanitizedContentName[] =
     "Clipboard unsanitized read and write";
 const char kClipboardUnsanitizedContentDescription[] =

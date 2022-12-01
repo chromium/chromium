@@ -57612,6 +57612,7 @@ from previous Chrome versions.
   <int value="-1809865209" label="KernelnextVMs:enabled"/>
   <int value="-1809835803" label="LayoutNG:disabled"/>
   <int value="-1809060811" label="EyeDropper:disabled"/>
+  <int value="-1808998588" label="CertDualVerificationTrial:enabled"/>
   <int value="-1808576075" label="SystemTrayUnified:enabled"/>
   <int value="-1808556124" label="SanitizerAPI:disabled"/>
   <int value="-1808477331" label="MidiManagerCros:disabled"/>
@@ -63409,6 +63410,7 @@ from previous Chrome versions.
   <int value="1628259213" label="DuetTabStripIntegrationAndroid:enabled"/>
   <int value="1628831121" label="SafeBrowsingUseLocalBlacklistsV2:enabled"/>
   <int value="1629289109" label="EnableBloom:disabled"/>
+  <int value="1629497607" label="CertDualVerificationTrial:disabled"/>
   <int value="1630159957" label="SharingSendViaSync:disabled"/>
   <int value="1630283072" label="CrOSAutoSelect:enabled"/>
   <int value="1630988998" label="VrBrowsingExperimentalRendering:disabled"/>
