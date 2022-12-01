@@ -283,10 +283,6 @@ public class CustomTabActivityTabController implements InflationObserver {
                     mIntent.getIntExtra(ServiceTabLauncher.LAUNCH_REQUEST_ID_EXTRA, 0),
                     tab.getWebContents());
         }
-
-        if (mRealtimeEngagementSignalObserver != null) {
-            mRealtimeEngagementSignalObserver.onFinishNativeInitialization();
-        }
     }
 
     // Creates the tab on native init, if it hasn't been created yet, and does all the additional
