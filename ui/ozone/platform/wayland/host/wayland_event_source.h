@@ -204,6 +204,7 @@ class WaylandEventSource : public PlatformEventSource,
   bool ShouldUnsetTouchFocus(WaylandWindow* window, PointerId id);
 
   // Computes initial velocity of fling scroll based on recent frames.
+  // The fling velocity is computed the same way as in libgestures.
   gfx::Vector2dF ComputeFlingVelocity();
 
   // For pointer events.
