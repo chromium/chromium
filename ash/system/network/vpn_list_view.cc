@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -15,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
+#include "ash/style/rounded_container.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/network_icon_animation.h"
@@ -39,6 +41,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -49,6 +52,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 using chromeos::network_config::mojom::ConnectionStateType;
 using chromeos::network_config::mojom::FilterType;
@@ -63,6 +67,10 @@ using chromeos::network_config::mojom::VpnType;
 
 namespace ash {
 namespace {
+
+// Layout constants for QsRevamp.
+constexpr auto kQsContainerShortMargin = gfx::Insets::TLBR(0, 0, 2, 0);
+constexpr auto kQsContainerTallMargin = gfx::Insets::TLBR(0, 0, 8, 0);
 
 struct CompareArcVpnProviderByLastLaunchTime {
   bool operator()(const VpnProviderPtr& provider1,
@@ -115,6 +123,8 @@ bool IsVpnConfigAllowed() {
 // A list entry that represents a VPN provider.
 class VPNListProviderEntry : public views::View {
  public:
+  METADATA_HEADER(VPNListProviderEntry);
+
   // Currently the |enabled| flag will be always true for VPN providers other
   // than the built-in VPNs.
   VPNListProviderEntry(const VpnProviderPtr& vpn_provider,
@@ -171,9 +181,6 @@ class VPNListProviderEntry : public views::View {
   VPNListProviderEntry(const VPNListProviderEntry&) = delete;
   VPNListProviderEntry& operator=(const VPNListProviderEntry&) = delete;
 
-  // views::View:
-  const char* GetClassName() const override { return "VPNListProviderEntry"; }
-
  private:
   views::ImageView* GetPolicyIndicatorIcon() {
     views::ImageView* policy_indicator_icon =
@@ -210,6 +217,9 @@ class VPNListProviderEntry : public views::View {
   VpnProviderPtr vpn_provider_;
 };
 
+BEGIN_METADATA(VPNListProviderEntry, views::View)
+END_METADATA
+
 // A list entry that represents a network. If the network is currently
 // connecting, the icon shown by this list entry will be animated. If the
 // network is currently connected, a disconnect button will be shown next to its
@@ -217,6 +227,8 @@ class VPNListProviderEntry : public views::View {
 class VPNListNetworkEntry : public HoverHighlightView,
                             public network_icon::AnimationObserver {
  public:
+  METADATA_HEADER(VPNListNetworkEntry);
+
   VPNListNetworkEntry(VPNListView* vpn_list_view,
                       TrayNetworkStateModel* model,
                       const NetworkStateProperties* network);
@@ -229,9 +241,6 @@ class VPNListNetworkEntry : public HoverHighlightView,
   // network_icon::AnimationObserver:
   void NetworkIconChanged() override;
 
-  // views::View:
-  const char* GetClassName() const override { return "VPNListNetworkEntry"; }
-
  private:
   void OnGetNetworkState(NetworkStatePropertiesPtr result);
   void UpdateFromNetworkState(const NetworkStateProperties* network);
@@ -243,6 +252,9 @@ class VPNListNetworkEntry : public HoverHighlightView,
 
   base::WeakPtrFactory<VPNListNetworkEntry> weak_ptr_factory_{this};
 };
+
+BEGIN_METADATA(VPNListNetworkEntry, HoverHighlightView)
+END_METADATA
 
 VPNListNetworkEntry::VPNListNetworkEntry(VPNListView* owner,
                                          TrayNetworkStateModel* model,
@@ -398,8 +410,10 @@ void VPNListView::OnGetNetworkStateList(NetworkStateList networks) {
   scroller()->Layout();
 
   if (scroll_to_show_view) {
-    // Scroll the list so that |scroll_to_show_view| is in view.
-    scroll_content()->ScrollRectToVisible(scroll_to_show_view->bounds());
+    // Scroll the list so that `scroll_to_show_view` is in view. The ScrollView
+    // may be several layers up the view hierarchy. `ScrollViewToVisible`
+    // handles this case.
+    const_cast<views::View*>(scroll_to_show_view)->ScrollViewToVisible();
   }
 }
 
@@ -419,21 +433,31 @@ void VPNListView::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kVpnConfigAllowed, true);
 }
 
-const char* VPNListView::GetClassName() const {
-  return "VPNListView";
-}
-
-void VPNListView::AddNetwork(const NetworkStateProperties* network) {
+void VPNListView::AddNetwork(const NetworkStateProperties* network,
+                             views::View* container) {
   views::View* entry(new VPNListNetworkEntry(this, model(), network));
-  scroll_content()->AddChildView(entry);
+  container->AddChildView(entry);
   network_view_guid_map_[entry] = network->guid;
   list_empty_ = false;
+}
+
+void VPNListView::AddUnnestedNetwork(const NetworkStateProperties* network) {
+  views::View* container;
+  if (features::IsQsRevampEnabled()) {
+    container =
+        scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
+    container->SetProperty(views::kMarginsKey, kQsContainerTallMargin);
+  } else {
+    container = scroll_content();
+  }
+  AddNetwork(network, container);
 }
 
 void VPNListView::AddProviderAndNetworks(VpnProviderPtr vpn_provider,
                                          const NetworkStateList& networks) {
   // Add a visual separator, unless this is the topmost entry in the list.
-  if (!list_empty_) {
+  // QsRevamp does not use separators.
+  if (!list_empty_ && !features::IsQsRevampEnabled()) {
     scroll_content()->AddChildView(
         TrayPopupUtils::CreateListSubHeaderSeparator());
   }
@@ -449,20 +473,57 @@ void VPNListView::AddProviderAndNetworks(VpnProviderPtr vpn_provider,
   bool vpn_enabled = vpn_provider->type != VpnType::kOpenVPN ||
                      !model()->IsBuiltinVpnProhibited();
 
+  // Compute whether this provider has any networks configured.
+  bool has_networks = false;
+  if (vpn_enabled) {
+    for (const auto& network : networks) {
+      if (VpnProviderMatchesNetwork(vpn_provider.get(), network.get())) {
+        has_networks = true;
+        break;
+      }
+    }
+  }
+
+  // Set up the container for the provider entry.
+  views::View* provider_container;
+  if (features::IsQsRevampEnabled()) {
+    // Use square corners on the bottom if the provider has networks.
+    provider_container =
+        scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
+            has_networks ? RoundedContainer::Behavior::kTopRounded
+                         : RoundedContainer::Behavior::kAllRounded));
+    provider_container->SetProperty(
+        views::kMarginsKey,
+        has_networks ? kQsContainerShortMargin : kQsContainerTallMargin);
+  } else {
+    provider_container = scroll_content();
+  }
+
   provider_view =
       new VPNListProviderEntry(vpn_provider, list_empty_, vpn_name, vpn_enabled,
                                IDS_ASH_STATUS_TRAY_ADD_CONNECTION);
-  scroll_content()->AddChildView(provider_view);
+  provider_container->AddChildView(provider_view);
   const VpnProvider* vpn_providerp = vpn_provider.get();
   provider_view_map_[provider_view] = std::move(vpn_provider);
   list_empty_ = false;
 
-  if (vpn_enabled) {
+  if (vpn_enabled && has_networks) {
+    // Set up the container for the networks.
+    views::View* networks_container;
+    if (features::IsQsRevampEnabled()) {
+      networks_container =
+          scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
+              RoundedContainer::Behavior::kBottomRounded));
+      networks_container->SetProperty(views::kMarginsKey,
+                                      kQsContainerTallMargin);
+    } else {
+      networks_container = scroll_content();
+    }
     // Add the networks belonging to this provider, in the priority order
     // returned by shill.
     for (const auto& network : networks) {
       if (VpnProviderMatchesNetwork(vpn_providerp, network.get()))
-        AddNetwork(network.get());
+        AddNetwork(network.get(), networks_container);
     }
   }
 }
@@ -511,7 +572,7 @@ void VPNListView::AddProvidersAndNetworks(const NetworkStateList& networks) {
     // If no matched provider found for this network. Show it unnested.
     // TODO(lgcheng@) add UMA status to track this.
     if (!ProcessProviderForNetwork(network.get(), networks, &arc_providers))
-      AddNetwork(network.get());
+      AddUnnestedNetwork(network.get());
   }
 
   // Add providers with at least one configured network along with their
@@ -531,5 +592,8 @@ void VPNListView::AddProvidersAndNetworks(const NetworkStateList& networks) {
     AddProviderAndNetworks(std::move(arc_provider), {});
   }
 }
+
+BEGIN_METADATA(VPNListView, NetworkStateListDetailedView)
+END_METADATA
 
 }  // namespace ash

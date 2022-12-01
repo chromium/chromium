@@ -3028,6 +3028,7 @@ test("ash_unittests") {
     "system/network/sms_observer_unittest.cc",
     "system/network/vpn_feature_pod_controller_unittest.cc",
     "system/network/vpn_list_unittest.cc",
+    "system/network/vpn_list_view_unittest.cc",
     "system/network/wifi_toggle_notification_controller_unittest.cc",
     "system/night_light/night_light_controller_unittest.cc",
     "system/night_light/night_light_feature_pod_controller_unittest.cc",
