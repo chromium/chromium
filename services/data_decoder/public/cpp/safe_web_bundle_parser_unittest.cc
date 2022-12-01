@@ -16,12 +16,16 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace data_decoder {
 
 namespace {
+
+using testing::UnorderedElementsAreArray;
 
 constexpr char kConnectionError[] =
     "Cannot connect to the remote parser service";
@@ -96,11 +100,13 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
   // web_package::mojom::WebBundleParserFactory implementation.
   void GetParserForFile(
       mojo::PendingReceiver<web_package::mojom::WebBundleParser> receiver,
+      const absl::optional<GURL>& base_url,
       base::File file) override {
     parser_ = std::make_unique<MockParser>(std::move(receiver));
   }
   void GetParserForDataSource(
       mojo::PendingReceiver<web_package::mojom::WebBundleParser> receiver,
+      const absl::optional<GURL>& base_url,
       mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source)
       override {
     parser_ = std::make_unique<MockParser>(std::move(receiver));
@@ -152,7 +158,7 @@ class SafeWebBundleParserTest : public testing::Test {
 };
 
 TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
-  SafeWebBundleParser parser;
+  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
   base::File test_file =
       OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
@@ -191,12 +197,12 @@ TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
 }
 
 TEST_F(SafeWebBundleParserTest, OpenInvalidFile) {
-  SafeWebBundleParser parser;
+  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
   EXPECT_EQ(base::File::FILE_ERROR_FAILED, parser.OpenFile(base::File()));
 }
 
 TEST_F(SafeWebBundleParserTest, CallWithoutOpen) {
-  SafeWebBundleParser parser;
+  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
   bool metadata_parsed = false;
   parser.ParseMetadata(
       /*offset=*/-1,
@@ -231,7 +237,7 @@ TEST_F(SafeWebBundleParserTest, CallWithoutOpen) {
 }
 
 TEST_F(SafeWebBundleParserTest, UseMockFactory) {
-  SafeWebBundleParser parser;
+  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
   MockFactory* raw_factory = InitializeMockFactory();
 
   EXPECT_FALSE(raw_factory->GetCreatedParser());
@@ -263,7 +269,8 @@ TEST_F(SafeWebBundleParserTest, UseMockFactory) {
 }
 
 TEST_F(SafeWebBundleParserTest, ConnectionError) {
-  auto parser = std::make_unique<SafeWebBundleParser>();
+  auto parser =
+      std::make_unique<SafeWebBundleParser>(/*base_url=*/absl::nullopt);
   MockFactory* raw_factory = InitializeMockFactory();
 
   mojo::PendingRemote<web_package::mojom::BundleDataSource> remote_data_source;
@@ -334,7 +341,7 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
 }
 
 TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
-  SafeWebBundleParser parser;
+  SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
   base::File test_file =
       OpenTestFile(base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")));
   ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
@@ -378,6 +385,30 @@ TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
       responses["https://test.example.org/"]->response_headers["content-type"],
       "text/html; charset=UTF-8");
   EXPECT_TRUE(responses["https://test.example.org/index.html"]);
+}
+
+TEST_F(SafeWebBundleParserTest, ParseWebBundleWithRelativeUrls) {
+  SafeWebBundleParser parser(GURL("https://example.com/foo/"));
+  base::File test_file = OpenTestFile(
+      base::FilePath(FILE_PATH_LITERAL("mixed_absolute_relative_urls.wbn")));
+  ASSERT_EQ(base::File::FILE_OK, parser.OpenFile(std::move(test_file)));
+
+  base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
+                         web_package::mojom::BundleMetadataParseErrorPtr>
+      metadata_future;
+  parser.ParseMetadata(/*offset=*/-1, metadata_future.GetCallback());
+  auto [metadata, metadata_error] = metadata_future.Take();
+  ASSERT_TRUE(metadata);
+  ASSERT_FALSE(metadata_error);
+
+  std::vector<GURL> requests;
+  requests.reserve(metadata->requests.size());
+  base::ranges::transform(metadata->requests, std::back_inserter(requests),
+                          [](const auto& entry) { return entry.first; });
+  EXPECT_THAT(requests, UnorderedElementsAreArray(
+                            {GURL("https://test.example.org/absolute-url"),
+                             GURL("https://example.com/relative-url-1"),
+                             GURL("https://example.com/foo/relative-url-2")}));
 }
 
 }  // namespace data_decoder

@@ -13,15 +13,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
+#include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/url_constants.h"
 
 namespace web_app {
 
@@ -93,10 +96,14 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
     }
   }
 
+  GURL base_url(
+      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    web_bundle_id.id()}));
+
   std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
       signature_verifier = signature_verifier_factory_.Run();
   std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
-      web_bundle_path, std::move(signature_verifier));
+      web_bundle_path, base_url, std::move(signature_verifier));
 
   auto [cache_entry_it, was_insertion] =
       reader_cache_.Emplace(web_bundle_path, Cache::Entry(std::move(reader)));

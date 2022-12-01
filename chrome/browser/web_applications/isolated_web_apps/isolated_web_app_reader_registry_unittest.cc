@@ -12,16 +12,19 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
+#include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -32,6 +35,8 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/url_constants.h"
 
 namespace web_app {
 
@@ -95,8 +100,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
 
-    parser_factory_ =
-        std::make_unique<web_package::MockWebBundleParserFactory>();
+    parser_factory_ = std::make_unique<web_package::MockWebBundleParserFactory>(
+        on_create_parser_future_.GetCallback());
 
     response_ = web_package::mojom::BundleResponse::New();
     response_->response_code = 200;
@@ -175,6 +180,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
   base::FilePath web_bundle_path_;
+  base::test::RepeatingTestFuture<absl::optional<GURL>>
+      on_create_parser_future_;
 
   const web_package::SignedWebBundleId kWebBundleId =
       *web_package::SignedWebBundleId::Create(
@@ -213,6 +220,11 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
   ReadResult result = read_response_future.Take();
   ASSERT_TRUE(result.has_value()) << result.error().message;
   EXPECT_EQ(result->head()->response_code, 200);
+
+  GURL expected_parser_base_url(
+      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    kWebBundleId.id()}));
+  EXPECT_EQ(expected_parser_base_url, on_create_parser_future_.Take());
 
   histogram_tester.ExpectBucketCount(
       "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",

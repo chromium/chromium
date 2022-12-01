@@ -16,6 +16,7 @@
 #include "components/web_package/web_bundle_parser_factory.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -70,6 +71,7 @@ class WebBundleParserFuzzer {
     web_package::WebBundleParserFactory factory_impl;
     web_package::mojom::WebBundleParserFactory& factory = factory_impl;
     factory.GetParserForDataSource(parser_.BindNewPipeAndPassReceiver(),
+                                   /*base_url=*/absl::nullopt,
                                    std::move(data_source_remote));
 
     quit_loop_ = run_loop->QuitClosure();

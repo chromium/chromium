@@ -27,6 +27,11 @@ gen-bundle \
 
 gen-bundle \
   -version b2 \
+  -har mixed_absolute_relative_urls.har \
+  -o mixed_absolute_relative_urls.wbn
+
+gen-bundle \
+  -version b2 \
   -har simple.har \
   -o simple_b2.wbn
 

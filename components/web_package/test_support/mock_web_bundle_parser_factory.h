@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_MOCK_WEB_BUNDLE_PARSER_FACTORY_H_
 #define COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_MOCK_WEB_BUNDLE_PARSER_FACTORY_H_
 
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/test_support/mock_web_bundle_parser.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace web_package {
 
@@ -23,7 +26,9 @@ namespace web_package {
 // the test does not have fine-grained control over when the the parser is used.
 class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
  public:
-  MockWebBundleParserFactory();
+  explicit MockWebBundleParserFactory(
+      base::RepeatingCallback<void(absl::optional<GURL>)> on_create_parser =
+          base::DoNothing());
 
   MockWebBundleParserFactory(const MockWebBundleParserFactory&) = delete;
   MockWebBundleParserFactory& operator=(const MockWebBundleParserFactory&) =
@@ -66,15 +71,19 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
   void SimulateParseResponseCrash();
 
  private:
-  void GetParser(mojo::PendingReceiver<mojom::WebBundleParser> receiver);
+  void GetParser(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
+                 const absl::optional<GURL>& base_url);
 
   // mojom::WebBundleParserFactory implementation.
   void GetParserForFile(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
+                        const absl::optional<GURL>& base_url,
                         base::File file) override;
   void GetParserForDataSource(
       mojo::PendingReceiver<mojom::WebBundleParser> receiver,
+      const absl::optional<GURL>& base_url,
       mojo::PendingRemote<mojom::BundleDataSource> data_source) override;
 
+  base::RepeatingCallback<void(absl::optional<GURL>)> on_create_parser_;
   std::unique_ptr<MockWebBundleParser> parser_;
   int parser_creation_count_ = 0;
   bool simulate_parse_integrity_block_crash_ = false;

@@ -8,6 +8,8 @@
 #include "components/web_package/web_bundle_parser.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace web_package {
 
@@ -66,11 +68,13 @@ WebBundleParserFactory::CreateFileDataSourceForTesting(
 
 void WebBundleParserFactory::GetParserForFile(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
+    const absl::optional<GURL>& base_url,
     base::File file) {
   mojo::PendingRemote<mojom::BundleDataSource> remote_data_source;
   auto data_source = std::make_unique<FileDataSource>(
       remote_data_source.InitWithNewPipeAndPassReceiver(), std::move(file));
-  GetParserForDataSource(std::move(receiver), std::move(remote_data_source));
+  GetParserForDataSource(std::move(receiver), base_url,
+                         std::move(remote_data_source));
 
   // |data_source| will be destructed on |remote_data_source| destruction.
   data_source.release();
@@ -78,12 +82,12 @@ void WebBundleParserFactory::GetParserForFile(
 
 void WebBundleParserFactory::GetParserForDataSource(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
+    const absl::optional<GURL>& base_url,
     mojo::PendingRemote<mojom::BundleDataSource> data_source) {
   // TODO(crbug.com/1247939): WebBundleParserFactory doesn't support |base_url|.
   // For features::kWebBundlesFromNetwork should support |base_url|.
-  auto parser = std::make_unique<WebBundleParser>(std::move(receiver),
-                                                  std::move(data_source),
-                                                  /*base_url=*/GURL());
+  auto parser = std::make_unique<WebBundleParser>(
+      std::move(receiver), std::move(data_source), base_url.value_or(GURL()));
 
   // |parser| will be destructed on remote mojo ends' disconnection.
   parser.release();

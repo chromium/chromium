@@ -111,7 +111,7 @@ void GetSignedWebBundleIdByPath(
     base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
         callback) {
   std::unique_ptr<SignedWebBundleReader> reader =
-      SignedWebBundleReader::Create(path);
+      SignedWebBundleReader::Create(path, /*base_url=*/absl::nullopt);
 
   SignedWebBundleReader* reader_raw_ptr = reader.get();
 

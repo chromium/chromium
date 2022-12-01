@@ -677,7 +677,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
 class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
     : public IsolatedWebAppURLLoaderFactoryTest,
-      public ::testing::WithParamInterface</*is_dev_mode=*/bool> {
+      public ::testing::WithParamInterface<std::tuple</*is_dev_mode=*/bool,
+                                                      /*relative_urls=*/bool>> {
  public:
   explicit IsolatedWebAppURLLoaderFactorySignedWebBundleTest(
       bool enable_isolated_web_apps_feature_flag = true)
@@ -686,7 +687,7 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
 
  protected:
   void SetUp() override {
-    bool is_dev_mode = GetParam();
+    bool is_dev_mode = std::get<0>(GetParam());
 
     IsolatedWebAppURLLoaderFactoryTest::SetUp();
 
@@ -703,11 +704,14 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
   }
 
   base::FilePath CreateSignedBundleAndWriteToDisk() {
+    bool relative_urls = std::get<1>(GetParam());
+    std::string base_url = relative_urls ? "/" : kEd25519AppOriginUrl.spec();
+
     web_package::WebBundleBuilder builder;
-    builder.AddExchange(kEd25519AppOriginUrl,
+    builder.AddExchange(base_url,
                         {{":status", "200"}, {"content-type", "text/html"}},
                         "Hello World");
-    builder.AddExchange(kEd25519AppOriginUrl.Resolve("/invalid-status-code"),
+    builder.AddExchange(base_url + "invalid-status-code",
                         {{":status", "201"}, {"content-type", "text/html"}},
                         "Hello World");
 
@@ -816,13 +820,15 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
   EXPECT_THAT(CompletionStatus().decoded_body_length, Eq(body_length));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
-                         ::testing::Bool(),
-                         [](::testing::TestParamInfo<bool> is_dev_mode) {
-                           return is_dev_mode.param ? "DevModeBundle"
-                                                    : "InstalledBundle";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+    [](::testing::TestParamInfo<std::tuple<bool, bool>> param_info) {
+      return base::StrCat(
+          {std::get<0>(param_info.param) ? "DevModeBundle" : "InstalledBundle",
+           std::get<1>(param_info.param) ? "RelativeUrls" : "AbsoluteUrls"});
+    });
 
 using IsolatedWebAppURLLoaderFactoryForServiceWorkerTest =
     IsolatedWebAppURLLoaderFactoryTest;
@@ -859,12 +865,14 @@ TEST_P(IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest,
   EXPECT_THAT(ResponseInfo(), IsNull());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest,
-                         ::testing::Bool(),
-                         [](::testing::TestParamInfo<bool> is_dev_mode) {
-                           return is_dev_mode.param ? "DevModeBundle"
-                                                    : "InstalledBundle";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+    [](::testing::TestParamInfo<std::tuple<bool, bool>> param_info) {
+      return base::StrCat(
+          {std::get<0>(param_info.param) ? "DevModeBundle" : "InstalledBundle",
+           std::get<1>(param_info.param) ? "RelativeUrls" : "AbsoluteUrls"});
+    });
 
 }  // namespace web_app

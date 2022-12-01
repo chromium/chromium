@@ -25,15 +25,18 @@
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
 SignedWebBundleReader::SignedWebBundleReader(
     const base::FilePath& web_bundle_path,
+    const absl::optional<GURL>& base_url,
     std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
         signature_verifier)
     : web_bundle_path_(web_bundle_path),
+      base_url_(base_url),
       signature_verifier_(std::move(signature_verifier)) {}
 
 SignedWebBundleReader::~SignedWebBundleReader() {
@@ -43,10 +46,11 @@ SignedWebBundleReader::~SignedWebBundleReader() {
 // static
 std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
     const base::FilePath& web_bundle_path,
+    const absl::optional<GURL>& base_url,
     std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
         signature_verifier) {
   return base::WrapUnique(new SignedWebBundleReader(
-      web_bundle_path, std::move(signature_verifier)));
+      web_bundle_path, base_url, std::move(signature_verifier)));
 }
 
 void SignedWebBundleReader::StartReading(
@@ -67,7 +71,7 @@ void SignedWebBundleReader::Initialize(
 
   state_ = State::kInitializing;
 
-  parser_ = std::make_unique<data_decoder::SafeWebBundleParser>();
+  parser_ = std::make_unique<data_decoder::SafeWebBundleParser>(base_url_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -439,7 +443,7 @@ void SignedWebBundleReader::OnParserDisconnected() {
 
 void SignedWebBundleReader::Reconnect() {
   DCHECK(!parser_);
-  parser_ = std::make_unique<data_decoder::SafeWebBundleParser>();
+  parser_ = std::make_unique<data_decoder::SafeWebBundleParser>(base_url_);
 
   file_->DuplicateFile(base::BindOnce(&SignedWebBundleReader::ReconnectForFile,
                                       weak_ptr_factory_.GetWeakPtr()));

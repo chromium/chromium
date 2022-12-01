@@ -5,6 +5,8 @@
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 
 #include "base/bind.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace data_decoder {
 
@@ -13,7 +15,8 @@ constexpr char kConnectionError[] =
     "Cannot connect to the remote parser service";
 }  // namespace
 
-SafeWebBundleParser::SafeWebBundleParser() = default;
+SafeWebBundleParser::SafeWebBundleParser(const absl::optional<GURL>& base_url)
+    : base_url_(base_url) {}
 
 SafeWebBundleParser::~SafeWebBundleParser() = default;
 
@@ -24,7 +27,7 @@ base::File::Error SafeWebBundleParser::OpenFile(base::File file) {
     return file.error_details();
 
   GetFactory()->GetParserForFile(parser_.BindNewPipeAndPassReceiver(),
-                                 std::move(file));
+                                 base_url_, std::move(file));
   parser_.set_disconnect_handler(base::BindOnce(
       &SafeWebBundleParser::OnDisconnect, base::Unretained(this)));
 
@@ -37,7 +40,7 @@ void SafeWebBundleParser::OpenDataSource(
     mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source) {
   DCHECK(disconnected_);
   GetFactory()->GetParserForDataSource(parser_.BindNewPipeAndPassReceiver(),
-                                       std::move(data_source));
+                                       base_url_, std::move(data_source));
   parser_.set_disconnect_handler(base::BindOnce(
       &SafeWebBundleParser::OnDisconnect, base::Unretained(this)));
 

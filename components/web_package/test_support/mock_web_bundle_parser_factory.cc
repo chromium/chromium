@@ -9,10 +9,14 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/web_package/test_support/mock_web_bundle_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace web_package {
 
-MockWebBundleParserFactory::MockWebBundleParserFactory() = default;
+MockWebBundleParserFactory::MockWebBundleParserFactory(
+    base::RepeatingCallback<void(absl::optional<GURL>)> on_create_parser)
+    : on_create_parser_(std::move(on_create_parser)) {}
 
 MockWebBundleParserFactory::~MockWebBundleParserFactory() = default;
 
@@ -130,7 +134,10 @@ void MockWebBundleParserFactory::SimulateParseResponseCrash() {
 }
 
 void MockWebBundleParserFactory::GetParser(
-    mojo::PendingReceiver<mojom::WebBundleParser> receiver) {
+    mojo::PendingReceiver<mojom::WebBundleParser> receiver,
+    const absl::optional<GURL>& base_url) {
+  on_create_parser_.Run(base_url);
+
   if (parser_) {
     // If a parser existed previously, assume that it has been disconnected, and
     // copy its `wait_` callbacks over to the new instance.
@@ -172,18 +179,20 @@ void MockWebBundleParserFactory::GetParser(
 
 void MockWebBundleParserFactory::GetParserForFile(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
+    const absl::optional<GURL>& base_url,
     base::File file) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     file.Close();
   }
-  GetParser(std::move(receiver));
+  GetParser(std::move(receiver), base_url);
 }
 
 void MockWebBundleParserFactory::GetParserForDataSource(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
+    const absl::optional<GURL>& base_url,
     mojo::PendingRemote<mojom::BundleDataSource> data_source) {
-  GetParser(std::move(receiver));
+  GetParser(std::move(receiver), base_url);
 }
 
 }  // namespace web_package

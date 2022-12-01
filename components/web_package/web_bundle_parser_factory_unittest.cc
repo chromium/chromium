@@ -7,17 +7,21 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
 namespace {
+
+using testing::UnorderedElementsAreArray;
 
 base::FilePath GetTestFilePath(const base::FilePath& path) {
   base::FilePath test_path;
@@ -42,9 +46,11 @@ class WebBundleParserFactoryTest : public testing::Test {
   }
 
   void GetParserForFile(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-                        base::File file) {
+                        base::File file,
+                        const absl::optional<GURL>& base_url) {
     mojom::WebBundleParserFactory* factory = factory_.get();
-    return factory->GetParserForFile(std::move(receiver), std::move(file));
+    return factory->GetParserForFile(std::move(receiver), base_url,
+                                     std::move(file));
   }
 
  private:
@@ -122,7 +128,8 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
   ASSERT_TRUE(file.IsValid());
 
   mojo::Remote<mojom::WebBundleParser> parser;
-  GetParserForFile(parser.BindNewPipeAndPassReceiver(), std::move(file));
+  GetParserForFile(parser.BindNewPipeAndPassReceiver(), std::move(file),
+                   absl::nullopt);
 
   mojom::BundleMetadataPtr metadata;
   {
@@ -155,6 +162,36 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
   EXPECT_TRUE(responses["https://test.example.org/index.html"]);
   EXPECT_TRUE(responses["https://test.example.org/manifest.webmanifest"]);
   EXPECT_TRUE(responses["https://test.example.org/script.js"]);
+}
+
+TEST_F(WebBundleParserFactoryTest, GetParserForFileWithRelativeUrls) {
+  base::File file(GetTestFilePath(base::FilePath(
+                      FILE_PATH_LITERAL("mixed_absolute_relative_urls.wbn"))),
+                  base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+
+  mojo::Remote<mojom::WebBundleParser> parser;
+  GetParserForFile(parser.BindNewPipeAndPassReceiver(), std::move(file),
+                   GURL("https://example.com/foo/"));
+
+  mojom::BundleMetadataPtr metadata;
+  {
+    base::test::TestFuture<mojom::BundleMetadataPtr,
+                           mojom::BundleMetadataParseErrorPtr>
+        future;
+    parser->ParseMetadata(/*offset=*/-1, future.GetCallback());
+    metadata = std::get<0>(future.Take());
+  }
+  ASSERT_TRUE(metadata);
+
+  std::vector<GURL> requests;
+  requests.reserve(metadata->requests.size());
+  base::ranges::transform(metadata->requests, std::back_inserter(requests),
+                          [](const auto& entry) { return entry.first; });
+  EXPECT_THAT(requests, UnorderedElementsAreArray(
+                            {GURL("https://test.example.org/absolute-url"),
+                             GURL("https://example.com/relative-url-1"),
+                             GURL("https://example.com/foo/relative-url-2")}));
 }
 
 }  // namespace web_package

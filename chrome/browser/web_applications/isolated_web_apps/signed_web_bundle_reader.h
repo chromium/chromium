@@ -19,6 +19,7 @@
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace network {
 struct ResourceRequest;
@@ -116,9 +117,13 @@ class SignedWebBundleReader {
   using ReadErrorCallback = base::OnceCallback<void(
       absl::optional<ReadIntegrityBlockAndMetadataError> error)>;
 
-  // Creates a new instance of this class.
+  // Creates a new instance of this class. `base_url` is used inside the
+  // `WebBundleParser` to convert relative URLs contained in the Web Bundle into
+  // absolute URLs. If `base_url` is `absl::nullopt`, then relative URLs inside
+  // the Web Bundle will result in an error.
   static std::unique_ptr<SignedWebBundleReader> Create(
       const base::FilePath& web_bundle_path,
+      const absl::optional<GURL>& base_url,
       std::unique_ptr<
           web_package::SignedWebBundleSignatureVerifier> signature_verifier =
           std::make_unique<web_package::SignedWebBundleSignatureVerifier>());
@@ -219,6 +224,7 @@ class SignedWebBundleReader {
  private:
   explicit SignedWebBundleReader(
       const base::FilePath& web_bundle_path,
+      const absl::optional<GURL>& base_url,
       std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
           signature_verifier);
 
@@ -293,6 +299,7 @@ class SignedWebBundleReader {
 
   bool is_disconnected_ = false;
   base::FilePath web_bundle_path_;
+  absl::optional<GURL> base_url_;
   std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
       signature_verifier_;
 

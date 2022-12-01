@@ -15,12 +15,15 @@
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace content {
 
 WebBundleReader::WebBundleReader(std::unique_ptr<WebBundleSource> source)
     : source_(std::move(source)),
-      parser_(std::make_unique<data_decoder::SafeWebBundleParser>()) {
+      parser_(std::make_unique<data_decoder::SafeWebBundleParser>(
+          /*base_url=*/absl::nullopt)) {
   DCHECK(source_->is_trusted_file() || source_->is_file());
 }
 
@@ -31,7 +34,8 @@ WebBundleReader::WebBundleReader(
     network::mojom::URLLoaderClientEndpointsPtr endpoints,
     BrowserContext::BlobContextGetter blob_context_getter)
     : source_(std::move(source)),
-      parser_(std::make_unique<data_decoder::SafeWebBundleParser>()) {
+      parser_(std::make_unique<data_decoder::SafeWebBundleParser>(
+          /*base_url=*/absl::nullopt)) {
   DCHECK(source_->is_network());
   mojo::PendingRemote<web_package::mojom::BundleDataSource> pending_remote;
   blob_data_source_ = std::make_unique<WebBundleBlobDataSource>(
@@ -112,7 +116,8 @@ void WebBundleReader::ReadResponseInternal(
 
 void WebBundleReader::Reconnect() {
   DCHECK(!parser_);
-  parser_ = std::make_unique<data_decoder::SafeWebBundleParser>();
+  parser_ = std::make_unique<data_decoder::SafeWebBundleParser>(
+      /*base_url=*/absl::nullopt);
 
   if (!blob_data_source_) {
     DCHECK(source_->is_trusted_file() || source_->is_file());
