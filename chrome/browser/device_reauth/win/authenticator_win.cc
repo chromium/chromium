@@ -15,6 +15,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
 #include "base/win/registry.h"
@@ -103,6 +104,11 @@ void GetBiometricAvailabilityFromWindows(
     ReportCantCheckAvailability(thread, std::move(callback));
     return;
   }
+
+  // Mitigate the issues caused by loading DLLs on a background thread
+  // (http://crbug/973868).
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
   ComPtr<IUserConsentVerifierStatics> factory;
   HRESULT hr = base::win::GetActivationFactory<
       IUserConsentVerifierStatics,
