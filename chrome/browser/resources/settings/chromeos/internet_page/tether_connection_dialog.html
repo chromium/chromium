@@ -1,10 +1,15 @@
 <style include="settings-shared iron-flex">
-  [slot=title] {
-    margin-top: 9px;
-  }
+  :host { 
+    --section-padding: 24px;
+    --bottom-padding: 20px;
 
-  [slot=body] {
-    border-top: solid 2px var(--cros-separator-color);
+    --cr-dialog-title-slot-padding-top: var(--section-padding);
+    --cr-dialog-title-slot-padding-bottom: var(--section-padding);
+    --cr-dialog-title-slot-padding-start: var(--section-padding);
+    --cr-dialog-title-slot-padding-end: var(--section-padding);
+
+    --cr-dialog-button-container-padding-horizontal: var(--section-padding);
+    --cr-dialog-button-container-padding-bottom: var(--bottom-padding);
   }
 
   [slot=body] > * {
