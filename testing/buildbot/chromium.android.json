@@ -2137,7 +2137,11 @@
       }
     ]
   },
-  "Android arm64 Builder (dbg)": {},
+  "Android arm64 Builder (dbg)": {
+    "additional_compile_targets": [
+      "android_lint"
+    ]
+  },
   "Android arm64 Builder All Targets (dbg)": {
     "additional_compile_targets": [
       "all"

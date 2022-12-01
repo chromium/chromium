@@ -1019,7 +1019,7 @@
       'android_archive_rel_ng': 'android_release_trybot',
       'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
       'android_blink_rel': 'android_release_trybot_x64_reclient',
-      'android_compile_dbg': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
+      'android_compile_dbg': 'android_debug_trybot_compile_only_arm64_reclient',
       'android_compile_x64_dbg': 'android_debug_trybot_compile_only_x64_reclient',
       'android_compile_x86_dbg': 'android_debug_trybot_compile_only_x86_reclient',
       'android_coverage': 'android_debug_trybot_java_coverage',
@@ -1552,6 +1552,10 @@
 
     'android_debug_trybot_compile_only_arm64_fastbuild_reclient': [
       'android', 'debug_bot_reclient', 'compile_only', 'arm64', 'android_fastbuild'
+    ],
+
+    'android_debug_trybot_compile_only_arm64_reclient': [
+      'android', 'debug_bot_reclient', 'compile_only', 'arm64'
     ],
 
     'android_debug_trybot_compile_only_x64_reclient': [

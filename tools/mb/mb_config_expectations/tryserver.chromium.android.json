@@ -989,7 +989,6 @@
   },
   "android_compile_dbg": {
     "gn_args": {
-      "android_static_analysis": "off",
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
