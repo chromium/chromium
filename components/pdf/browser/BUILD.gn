@@ -7,27 +7,29 @@ import("//pdf/features.gni")
 
 assert(enable_pdf)
 
-static_library("browser") {
+source_set("browser") {
   sources = [
     "pdf_web_contents_helper.cc",
     "pdf_web_contents_helper.h",
     "pdf_web_contents_helper_client.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//content/public/browser",
-    "//ui/base",
+    "//mojo/public/cpp/bindings",
+    "//pdf/mojom",
     "//ui/touch_selection",
   ]
 
-  public_deps = [
-    "//ipc",
-    "//pdf/mojom",
+  deps = [
+    "//content/public/common",
+    "//ui/base",
+    "//ui/gfx/geometry",
   ]
 }
 
-static_library("interceptors") {
+source_set("interceptors") {
   friend = [ ":unit_tests" ]
 
   public = [
@@ -44,17 +46,20 @@ static_library("interceptors") {
     "plugin_response_writer.h",
   ]
 
+  public_deps = [
+    "//content/public/browser",
+    "//skia",
+    "//url",
+  ]
+
   deps = [
     "//base",
-    "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
     "//services/network/public/cpp:cpp_base",
     "//services/network/public/mojom",
-    "//skia",
     "//ui/base",
-    "//url",
   ]
 }
 
