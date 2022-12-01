@@ -32,12 +32,14 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
 
     @Override
     public boolean hasUsernamePassword() {
+        WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_HAS_USERNAME_PASSWORD);
         // This is a deprecated API: intentional no-op.
         return false;
     }
 
     @Override
     public void clearUsernamePassword() {
+        WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_CLEAR_USERNAME_PASSWORD);
         // This is a deprecated API: intentional no-op.
     }
 
@@ -47,11 +49,15 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
             return mFactory.runOnUiThreadBlocking(new Callable<Boolean>() {
                 @Override
                 public Boolean call() {
+                    WebViewChromium.recordWebViewApiCall(
+                            ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD);
                     return mHttpAuthDatabase.hasHttpAuthUsernamePassword();
                 }
 
             });
         }
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD);
         return mHttpAuthDatabase.hasHttpAuthUsernamePassword();
     }
 
@@ -61,12 +67,16 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
             mFactory.addTask(new Runnable() {
                 @Override
                 public void run() {
+                    WebViewChromium.recordWebViewApiCall(
+                            ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD);
                     mHttpAuthDatabase.clearHttpAuthUsernamePassword();
                 }
 
             });
             return;
         }
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD);
         mHttpAuthDatabase.clearHttpAuthUsernamePassword();
     }
 
@@ -77,11 +87,16 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
             mFactory.addTask(new Runnable() {
                 @Override
                 public void run() {
+                    WebViewChromium.recordWebViewApiCall(
+                            ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD);
                     mHttpAuthDatabase.setHttpAuthUsernamePassword(host, realm, username, password);
                 }
             });
             return;
         }
+
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD);
         mHttpAuthDatabase.setHttpAuthUsernamePassword(host, realm, username, password);
     }
 
@@ -110,11 +125,14 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
             return mFactory.runOnUiThreadBlocking(new Callable<Boolean>() {
                 @Override
                 public Boolean call() {
+                    WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA);
                     return AwFormDatabase.hasFormData();
                 }
 
             });
         }
+
+        WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA);
         return AwFormDatabase.hasFormData();
     }
 
@@ -126,12 +144,15 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
             mFactory.addTask(new Runnable() {
                 @Override
                 public void run() {
+                    WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA);
                     AwFormDatabase.clearFormData();
                 }
 
             });
             return;
         }
+
+        WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA);
         AwFormDatabase.clearFormData();
     }
 

@@ -107479,6 +107479,13 @@ Called by update_scheduler_enums.py.-->
   <int value="76" label="showFindDialog"/>
   <int value="77" label="stopLoading"/>
   <int value="78" label="WebViewDatabase.getHttpAuthUsernamePassword"/>
+  <int value="79" label="WebViewDatabase.clearFormData"/>
+  <int value="80" label="WebViewDatabase.clearHttpAuthUsernamePassword"/>
+  <int value="81" label="WebViewDatabase.clearUsernamePassword"/>
+  <int value="82" label="WebViewDatabase.hasFormData"/>
+  <int value="83" label="WebViewDatabase.hasHttpAuthUsernamePassword"/>
+  <int value="84" label="WebViewDatabase.hasUsernamePassword"/>
+  <int value="85" label="WebViewDatabase.setHttpAuthUsernamePassword"/>
 </enum>
 
 <enum name="WebViewAppProvidedMimeType">
