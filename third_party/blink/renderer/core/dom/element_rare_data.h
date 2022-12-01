@@ -401,6 +401,13 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
     ClearElementFlag(ElementFlags::kTabIndexWasSetExplicitly);
   }
 
+  void IncrementAnchoredPopoverCount() override { ++anchored_popover_count_; }
+  void DecrementAnchoredPopoverCount() override {
+    DCHECK(anchored_popover_count_);
+    --anchored_popover_count_;
+  }
+  bool HasAnchoredPopover() const override { return anchored_popover_count_; }
+
   void Trace(blink::Visitor*) const override;
 
  private:
@@ -437,6 +444,8 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
 
   FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
   HasInvalidationFlags has_invalidation_flags_;
+
+  wtf_size_t anchored_popover_count_ = 0;
 
   unsigned did_attach_internals_ : 1;
   unsigned should_force_legacy_layout_for_child_ : 1;

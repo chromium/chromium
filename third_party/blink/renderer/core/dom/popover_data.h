@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/popover_animation_finished_event_listener.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
@@ -18,6 +19,24 @@ enum class PopoverVisibilityState {
   kHidden,
   kTransitioning,
   kShowing,
+};
+
+class PopoverAnchorObserver : public IdTargetObserver {
+ public:
+  PopoverAnchorObserver(const AtomicString& id, HTMLElement* element)
+      : IdTargetObserver(element->GetTreeScope().GetIdTargetObserverRegistry(),
+                         id),
+        element_(element) {}
+
+  void IdTargetChanged() override { element_->PopoverAnchorElementChanged(); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(element_);
+    IdTargetObserver::Trace(visitor);
+  }
+
+ private:
+  Member<HTMLElement> element_;
 };
 
 class PopoverData final : public GarbageCollected<PopoverData> {
@@ -71,6 +90,12 @@ class PopoverData final : public GarbageCollected<PopoverData> {
     animation_finished_listener_ = listener;
   }
 
+  void setAnchorElement(Element* anchor) { anchor_element_ = anchor; }
+  Element* anchorElement() const { return anchor_element_; }
+  void setAnchorObserver(PopoverAnchorObserver* observer) {
+    anchor_observer_ = observer;
+  }
+
   HTMLSelectMenuElement* ownerSelectMenuElement() const {
     return owner_select_menu_element_;
   }
@@ -82,6 +107,8 @@ class PopoverData final : public GarbageCollected<PopoverData> {
     visitor->Trace(invoker_);
     visitor->Trace(previously_focused_element_);
     visitor->Trace(animation_finished_listener_);
+    visitor->Trace(anchor_element_);
+    visitor->Trace(anchor_observer_);
     visitor->Trace(owner_select_menu_element_);
   }
 
@@ -93,6 +120,10 @@ class PopoverData final : public GarbageCollected<PopoverData> {
   // We hold a strong reference to the animation finished listener, so that we
   // can confirm that the listeners get removed before cleanup.
   Member<PopoverAnimationFinishedEventListener> animation_finished_listener_;
+
+  // Target of the 'anchor' attribute.
+  Member<Element> anchor_element_;
+  Member<PopoverAnchorObserver> anchor_observer_;
 
   // TODO(crbug.com/1197720): The popover position should be provided by the new
   // anchored positioning scheme.

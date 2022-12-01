@@ -812,6 +812,10 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
     GetDocument().UpdateStyleAndLayoutTreeForNode(this);
     if (!SupportsFocus())
       blur();
+  } else if (params.name == html_names::kAnchorAttr && HasPopoverAttribute()) {
+    DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+        GetDocument().GetExecutionContext()));
+    ResetPopoverAnchorObserver();
   }
 }
 
@@ -1223,6 +1227,7 @@ void HTMLElement::UpdatePopoverAttribute(String value) {
   DCHECK_EQ(type, GetPopoverTypeFromAttributeValue(
                       FastGetAttribute(html_names::kPopoverAttr)));
   EnsurePopoverData()->setType(type);
+  ResetPopoverAnchorObserver();
 }
 
 bool HTMLElement::HasPopoverAttribute() const {
@@ -1846,17 +1851,39 @@ void HTMLElement::InvokePopover(Element* invoker) {
 }
 
 Element* HTMLElement::anchorElement() const {
-  if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-          GetDocument().GetExecutionContext()))
-    return nullptr;
-  if (!HasPopoverAttribute())
-    return nullptr;
+  if (PopoverData* data = GetPopoverData())
+    return data->anchorElement();
+  return nullptr;
+}
+
+void HTMLElement::ResetPopoverAnchorObserver() {
+  DCHECK(GetPopoverData());
+  DCHECK(HasPopoverAttribute());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+      GetDocument().GetExecutionContext()));
   const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
-  if (anchor_id.IsNull())
-    return nullptr;
-  if (!IsInTreeScope())
-    return nullptr;
-  return GetTreeScope().getElementById(anchor_id);  // may be null
+  GetPopoverData()->setAnchorObserver(
+      IsInTreeScope() && anchor_id
+          ? MakeGarbageCollected<PopoverAnchorObserver>(anchor_id, this)
+          : nullptr);
+  PopoverAnchorElementChanged();
+}
+
+void HTMLElement::PopoverAnchorElementChanged() {
+  DCHECK(GetPopoverData());
+  DCHECK(HasPopoverAttribute());
+  const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
+  Element* new_anchor = IsInTreeScope() && anchor_id
+                            ? GetTreeScope().getElementById(anchor_id)
+                            : nullptr;
+  Element* old_anchor = anchorElement();
+  if (new_anchor == old_anchor)
+    return;
+  if (old_anchor)
+    old_anchor->DecrementAnchoredPopoverCount();
+  if (new_anchor)
+    new_anchor->IncrementAnchoredPopoverCount();
+  GetPopoverData()->setAnchorElement(new_anchor);
 }
 
 void HTMLElement::SetNeedsRepositioningForSelectMenu(bool flag) {
@@ -2390,17 +2417,23 @@ Node::InsertionNotificationRequest HTMLElement::InsertedInto(
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().InsertedInto(insertion_point);
 
+  if (HasPopoverAttribute())
+    ResetPopoverAnchorObserver();
+
   return kInsertionDone;
 }
 
 void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
-  // If a popover is removed from the document, make sure it gets
-  // removed from the popover element stack and the top layer.
-  bool was_in_document = insertion_point.isConnected();
-  if (was_in_document && HasPopoverAttribute()) {
-    // We can't run focus event handlers while removing elements.
-    HidePopoverInternal(HidePopoverFocusBehavior::kNone,
-                        HidePopoverForcingLevel::kHideImmediately);
+  if (HasPopoverAttribute()) {
+    ResetPopoverAnchorObserver();
+    // If a popover is removed from the document, make sure it gets
+    // removed from the popover element stack and the top layer.
+    bool was_in_document = insertion_point.isConnected();
+    if (was_in_document) {
+      // We can't run focus event handlers while removing elements.
+      HidePopoverInternal(HidePopoverFocusBehavior::kNone,
+                          HidePopoverForcingLevel::kHideImmediately);
+    }
   }
 
   Element::RemovedFrom(insertion_point);

@@ -234,6 +234,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists, and if this element is a popover.
   Element* anchorElement() const;
+  void ResetPopoverAnchorObserver();
+  void PopoverAnchorElementChanged();
   static void HandlePopoverLightDismiss(const Event& event, const Node& node);
   void InvokePopover(Element* invoker);
   Element* GetPopoverFirstFocusableElement(bool autofocus_only);

@@ -50,6 +50,7 @@ struct SameSizeAsElementRareData : NodeRareData, ElementRareDataBase {
   Member<void*> members[22];
   FocusgroupFlags focusgroup_flags;
   HasInvalidationFlags has_invalidation_flags;
+  wtf_size_t anchored_popover_count;
   unsigned flags[1];
 };
 

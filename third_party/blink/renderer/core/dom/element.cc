@@ -8237,4 +8237,18 @@ AnchorScrollData* Element::GetAnchorScrollData() const {
   return HasRareData() ? GetElementRareData()->GetAnchorScrollData() : nullptr;
 }
 
+void Element::IncrementAnchoredPopoverCount() {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+      GetDocument().GetExecutionContext()));
+  EnsureElementRareData().IncrementAnchoredPopoverCount();
+}
+void Element::DecrementAnchoredPopoverCount() {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+      GetDocument().GetExecutionContext()));
+  EnsureElementRareData().DecrementAnchoredPopoverCount();
+}
+bool Element::HasAnchoredPopover() const {
+  return HasRareData() && GetElementRareData()->HasAnchoredPopover();
+}
+
 }  // namespace blink

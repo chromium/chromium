@@ -194,6 +194,10 @@ class ElementRareDataBase : public GarbageCollectedMixin {
   virtual void RemoveAnchorScrollData() = 0;
   virtual AnchorScrollData& EnsureAnchorScrollData(Element*) = 0;
 
+  virtual void IncrementAnchoredPopoverCount() = 0;
+  virtual void DecrementAnchoredPopoverCount() = 0;
+  virtual bool HasAnchoredPopover() const = 0;
+
   // from NodeRareData
   virtual bool HasElementFlag(ElementFlags mask) const = 0;
   virtual void SetElementFlag(ElementFlags mask, bool value) = 0;

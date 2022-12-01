@@ -282,4 +282,53 @@ TEST_F(HTMLElementTest, SlotDirAutoBySingleSlottedNodeRemoved) {
   EXPECT_EQ(slot->GetComputedStyle()->Direction(), TextDirection::kRtl);
 }
 
+TEST_F(HTMLElementTest, HasAnchoredPopover) {
+  ScopedHTMLPopoverAttributeForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="anchor1"></div>
+    <div id="anchor2"></div>
+    <div id="target" popover anchor="anchor1"></div>
+  )HTML");
+
+  Element* anchor1 = GetDocument().getElementById("anchor1");
+  Element* anchor2 = GetDocument().getElementById("anchor2");
+  HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
+
+  EXPECT_EQ(target->anchorElement(), anchor1);
+  EXPECT_TRUE(anchor1->HasAnchoredPopover());
+  EXPECT_FALSE(anchor2->HasAnchoredPopover());
+
+  target->setAttribute(html_names::kAnchorAttr, "anchor2");
+
+  EXPECT_EQ(target->anchorElement(), anchor2);
+  EXPECT_FALSE(anchor1->HasAnchoredPopover());
+  EXPECT_TRUE(anchor2->HasAnchoredPopover());
+}
+
+TEST_F(HTMLElementTest, AnchoredPopoverIdChange) {
+  ScopedHTMLPopoverAttributeForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="anchor1"></div>
+    <div id="anchor2"></div>
+    <div id="target" popover anchor="anchor1"></div>
+  )HTML");
+
+  Element* anchor1 = GetDocument().getElementById("anchor1");
+  Element* anchor2 = GetDocument().getElementById("anchor2");
+  HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
+
+  EXPECT_EQ(target->anchorElement(), anchor1);
+  EXPECT_TRUE(anchor1->HasAnchoredPopover());
+  EXPECT_FALSE(anchor2->HasAnchoredPopover());
+
+  anchor1->setAttribute(html_names::kIdAttr, "anchor2");
+  anchor2->setAttribute(html_names::kIdAttr, "anchor1");
+
+  EXPECT_EQ(target->anchorElement(), anchor2);
+  EXPECT_FALSE(anchor1->HasAnchoredPopover());
+  EXPECT_TRUE(anchor2->HasAnchoredPopover());
+}
+
 }  // namespace blink
