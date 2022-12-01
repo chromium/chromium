@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
-#include "chromeos/login/login_state/login_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

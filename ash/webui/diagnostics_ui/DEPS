@@ -1,5 +1,5 @@
 include_rules = [
-  "+chromeos/login/login_state",
+  "+chromeos/ash/components/login/login_state",
   "+chromeos/services/network_config",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+components",

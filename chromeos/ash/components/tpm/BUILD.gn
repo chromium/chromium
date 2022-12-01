@@ -24,10 +24,10 @@ component("tpm") {
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/login/login_state",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
-    "//chromeos/login/login_state",
     "//components/account_id",
     "//crypto",
   ]

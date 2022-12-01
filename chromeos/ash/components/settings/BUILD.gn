@@ -12,7 +12,7 @@ component("settings") {
     "//ash/constants",
     "//base",
     "//base:i18n",
-    "//chromeos/login/login_state",
+    "//chromeos/ash/components/login/login_state",
     "//third_party/icu",
   ]
   sources = [

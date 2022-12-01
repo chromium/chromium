@@ -655,7 +655,7 @@ source_set("browser_sources") {
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/ash/crosapi:browser_util",
-      "//chromeos/login/login_state",
+      "//chromeos/ash/components/login/login_state",
     ]
   }
 
@@ -759,11 +759,11 @@ source_set("browser_tests") {
       "//chromeos/ash/components/dbus/media_analytics",
       "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
       "//chromeos/ash/components/dbus/upstart",
+      "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
-      "//chromeos/login/login_state",
       "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
       "//extensions/common:mojom",
     ]
@@ -1008,10 +1008,10 @@ source_set("unit_tests") {
       "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
       "//chromeos/ash/components/dbus/shill",
       "//chromeos/ash/components/dbus/upstart",
+      "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network:test_support",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
-      "//chromeos/login/login_state",
       "//components/feedback",
       "//components/prefs:prefs",
       "//extensions/shell:app_shell_lib",

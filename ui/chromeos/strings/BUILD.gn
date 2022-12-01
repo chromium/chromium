@@ -21,8 +21,8 @@ if (is_chromeos_ash) {
     ]
     deps = [
       "//ash/constants",
+      "//chromeos/ash/components/login/login_state:login_state",
       "//chromeos/ash/components/network",
-      "//chromeos/login/login_state:login_state",
       "//chromeos/strings:strings_grit",
       "//components/login:login",
       "//components/strings:components_strings",

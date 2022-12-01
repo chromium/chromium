@@ -39,8 +39,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/login/login_state/login_state.h"
 #endif
 
 class TestChromeMetricsServiceClient : public ChromeMetricsServiceClient {

@@ -4,8 +4,8 @@ include_rules = [
   "+base",
   "+chromeos/ash/components/cryptohome",
   "+chromeos/ash/components/dbus",
+  "+chromeos/ash/components/login/login_state",
   "+chromeos/dbus/tpm_manager",
-  "+chromeos/login/login_state",
   "+components/account_id",
   "+crypto",
 

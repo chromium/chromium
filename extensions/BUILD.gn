@@ -189,7 +189,7 @@ static_library("test_support") {
   # of the APIs and the extensions shell already do. We should try to avoid
   # expanding these dependencies.
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/login/login_state" ]
+    deps += [ "//chromeos/ash/components/login/login_state" ]
   }
 
   if (is_chromeos_lacros) {

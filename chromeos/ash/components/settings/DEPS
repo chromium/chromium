@@ -3,7 +3,7 @@ noparent = True
 include_rules = [
   "+ash/constants",
   "+base",
-  "+chromeos/login/login_state",
+  "+chromeos/ash/components/login/login_state",
   "+third_party/icu",
 ]
 

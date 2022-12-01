@@ -39,7 +39,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#include "chromeos/login/login_state/login_state.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #else
 #include <algorithm>
 #include "chrome/browser/profiles/gaia_info_update_service.h"

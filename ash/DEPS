@@ -83,10 +83,10 @@ include_rules = [
   # TODO(https://crbug.com/1164001): removed after all clients have migrated.
   "+chromeos/dbus",
   # //ash should use code in //ash/session to get login state. The state in
-  # //ash/session and the state in //chromeos/login/login_state are both
-  # derived from the canonical state in the browser. Using both sources could
-  # create subtle inconsistencies based on when observers are called.
-  "-chromeos/login/login_state",
+  # //ash/session and the state in //chromeos/ash/components/login/login_state
+  # are both derived from the canonical state in the browser. Using both sources
+  # could create subtle inconsistencies based on when observers are called.
+  "-chromeos/ash/compoments/login/login_state",
   "+chromeos/ash/components/network",
   # //ash can use the public interfaces of various services.
   "+chromeos/ash/services/assistant/public/cpp" ,

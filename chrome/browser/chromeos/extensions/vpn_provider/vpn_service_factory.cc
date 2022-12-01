@@ -13,7 +13,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/login/login_state/login_state.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #endif
 
 namespace {

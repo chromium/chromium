@@ -29,6 +29,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/components/multidevice/remote_device_cache.h"
@@ -38,7 +39,6 @@
 #include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "chromeos/ash/components/tpm/tpm_token_loader.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
-#include "chromeos/login/login_state/login_state.h"
 
 namespace ash {
 

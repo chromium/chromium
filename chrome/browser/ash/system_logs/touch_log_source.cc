@@ -16,7 +16,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/login/login_state/login_state.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"

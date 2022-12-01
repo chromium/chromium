@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/public/cpp",
   "+chromeos/ash/components/dbus/shill",
+  "+chromeos/ash/components/login/login_state",
   "+chromeos/ash/components/network",
   "+components/keyed_service/core",
   "+components/onc",

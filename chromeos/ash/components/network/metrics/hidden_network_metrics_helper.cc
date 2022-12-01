@@ -5,10 +5,10 @@
 #include "chromeos/ash/components/network/metrics/hidden_network_metrics_helper.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/login/login_state/login_state.h"
 
 namespace ash {
 

@@ -237,8 +237,8 @@ source_set("app_shell_lib") {
       "//chromeos/ash/components/dbus/hermes",
       "//chromeos/ash/components/dbus/shill",
       "//chromeos/ash/components/disks",
+      "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network",
-      "//chromeos/login/login_state",
       "//ui/chromeos",
       "//ui/display/manager",
     ]

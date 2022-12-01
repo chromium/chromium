@@ -10,9 +10,9 @@
 
 #include "base/component_export.h"
 #include "base/values.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
-#include "chromeos/login/login_state/login_state.h"
 
 namespace ash {
 

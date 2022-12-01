@@ -51,9 +51,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/shill:test_support",
+    "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/services/hotspot_config/public/cpp:test_support",
-    "//chromeos/login/login_state",
     "//testing/gtest",
   ]
 }

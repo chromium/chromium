@@ -9,7 +9,7 @@
 
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
-#include "chromeos/login/login_state/login_state.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 
 namespace memory {
 

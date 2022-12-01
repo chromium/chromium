@@ -77,8 +77,8 @@ source_set("test_support_source_set") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos/ash/components/dbus:test_support",
+      "//chromeos/ash/components/login/login_state:test_support",
       "//chromeos/ash/components/network:test_support",
-      "//chromeos/login/login_state:test_support",
       "//google_apis",
       "//net:test_support",
       "//services/network:test_support",
@@ -123,7 +123,6 @@ test("chromeos_unittests") {
       "//chromeos/crosapi/cpp:unit_tests",
       "//chromeos/crosapi/mojom:unit_tests",
       "//chromeos/dbus:unit_tests",
-      "//chromeos/login/login_state:unit_tests",
       "//chromeos/printing:unit_tests",
       "//chromeos/process_proxy:unit_tests",
       "//chromeos/services:unit_tests",

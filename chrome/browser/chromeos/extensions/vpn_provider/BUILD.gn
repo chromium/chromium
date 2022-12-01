@@ -35,7 +35,7 @@ source_set("vpn_provider") {
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/ash/crosapi",
-      "//chromeos/login/login_state",
+      "//chromeos/ash/components/login/login_state",
     ]
   }
 
