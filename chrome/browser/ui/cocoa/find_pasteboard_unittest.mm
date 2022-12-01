@@ -14,42 +14,39 @@
 
 // A subclass of FindPasteboard that doesn't write to the real find pasteboard.
 @interface FindPasteboardTesting : FindPasteboard {
- @public
-  int _notificationCount;
  @private
-  scoped_refptr<ui::UniquePasteboard> _pboard;
+  scoped_refptr<ui::UniquePasteboard> _pasteboard;
 }
-- (NSPasteboard*)findPboard;
-
-- (void)callback:(id)sender;
+- (NSPasteboard*)findPasteboard;
 
 // These are for checking that pasteboard content is copied to/from the
 // FindPasteboard correctly.
-- (NSString*)findPboardText;
-- (void)setFindPboardText:(NSString*)text;
+- (NSString*)findPasteboardText;
+- (void)setFindPasteboardText:(NSString*)text;
 @end
 
 @implementation FindPasteboardTesting
 
-- (NSPasteboard*)findPboard {
+- (NSPasteboard*)findPasteboard {
   // This method is called by the super class's -init, otherwise initialization
   // would go into this class's -init.
-  if (!_pboard)
-    _pboard = new ui::UniquePasteboard;
-  return _pboard->get();
+  if (!_pasteboard) {
+    _pasteboard = new ui::UniquePasteboard;
+  }
+  return _pasteboard->get();
 }
 
-- (void)callback:(id)sender {
-  ++_notificationCount;
+- (void)setFindPasteboardText:(NSString*)text {
+  NSPasteboard* pasteboard = _pasteboard->get();
+  [pasteboard clearContents];
+  [pasteboard writeObjects:@[ text ]];
 }
 
-- (void)setFindPboardText:(NSString*)text {
-  [_pboard->get() declareTypes:@[ NSStringPboardType ] owner:nil];
-  [_pboard->get() setString:text forType:NSStringPboardType];
-}
-
-- (NSString*)findPboardText {
-  return [_pboard->get() stringForType:NSStringPboardType];
+- (NSString*)findPasteboardText {
+  NSArray* objects =
+      [_pasteboard->get() readObjectsForClasses:@[ [NSString class] ]
+                                        options:nil];
+  return objects.firstObject;
 }
 @end
 
@@ -57,62 +54,61 @@ namespace {
 
 class FindPasteboardTest : public CocoaTest {
  public:
-  FindPasteboardTest() {}
+  FindPasteboardTest() = default;
 
   void SetUp() override {
     CocoaTest::SetUp();
-    pboard_.reset([[FindPasteboardTesting alloc] init]);
-    ASSERT_TRUE(pboard_.get());
+    pasteboard_.reset([[FindPasteboardTesting alloc] init]);
+    ASSERT_TRUE(pasteboard_.get());
   }
 
   void TearDown() override {
-    pboard_.reset();
+    pasteboard_.reset();
     CocoaTest::TearDown();
   }
 
  protected:
-  base::scoped_nsobject<FindPasteboardTesting> pboard_;
+  base::scoped_nsobject<FindPasteboardTesting> pasteboard_;
 };
 
 TEST_F(FindPasteboardTest, SettingTextUpdatesPboard) {
-  [pboard_.get() setFindText:@"text"];
-  EXPECT_EQ(
-      NSOrderedSame,
-      [[pboard_.get() findPboardText] compare:@"text"]);
+  [pasteboard_.get() setFindText:@"text"];
+  EXPECT_EQ(NSOrderedSame,
+            [[pasteboard_.get() findPasteboardText] compare:@"text"]);
 }
 
 TEST_F(FindPasteboardTest, ReadingFromPboardUpdatesFindText) {
-  [pboard_.get() setFindPboardText:@"text"];
-  [pboard_.get() loadTextFromPasteboard:nil];
-  EXPECT_EQ(
-      NSOrderedSame,
-      [[pboard_.get() findText] compare:@"text"]);
+  [pasteboard_.get() setFindPasteboardText:@"text"];
+  [pasteboard_.get() loadTextFromPasteboard:nil];
+  EXPECT_EQ(NSOrderedSame, [[pasteboard_.get() findText] compare:@"text"]);
 }
 
 TEST_F(FindPasteboardTest, SendsNotificationWhenTextChanges) {
-  [[NSNotificationCenter defaultCenter]
-      addObserver:pboard_.get()
-         selector:@selector(callback:)
-             name:kFindPasteboardChangedNotification
-           object:pboard_.get()];
-  EXPECT_EQ(0, pboard_.get()->_notificationCount);
-  [pboard_.get() setFindText:@"text"];
-  EXPECT_EQ(1, pboard_.get()->_notificationCount);
-  [pboard_.get() setFindText:@"text"];
-  EXPECT_EQ(1, pboard_.get()->_notificationCount);
-  [pboard_.get() setFindText:@"other text"];
-  EXPECT_EQ(2, pboard_.get()->_notificationCount);
+  __block int notification_count = 0;
+  [NSNotificationCenter.defaultCenter
+      addObserverForName:kFindPasteboardChangedNotification
+                  object:pasteboard_.get()
+                   queue:nil
+              usingBlock:^(NSNotification* note) {
+                ++notification_count;
+              }];
+  EXPECT_EQ(0, notification_count);
+  [pasteboard_.get() setFindText:@"text"];
+  EXPECT_EQ(1, notification_count);
+  [pasteboard_.get() setFindText:@"text"];
+  EXPECT_EQ(1, notification_count);
+  [pasteboard_.get() setFindText:@"other text"];
+  EXPECT_EQ(2, notification_count);
 
-  [pboard_.get() setFindPboardText:@"other text"];
-  [pboard_.get() loadTextFromPasteboard:nil];
-  EXPECT_EQ(2, pboard_.get()->_notificationCount);
+  [pasteboard_.get() setFindPasteboardText:@"other text"];
+  [pasteboard_.get() loadTextFromPasteboard:nil];
+  EXPECT_EQ(2, notification_count);
 
-  [pboard_.get() setFindPboardText:@"otherer text"];
-  [pboard_.get() loadTextFromPasteboard:nil];
-  EXPECT_EQ(3, pboard_.get()->_notificationCount);
+  [pasteboard_.get() setFindPasteboardText:@"otherer text"];
+  [pasteboard_.get() loadTextFromPasteboard:nil];
+  EXPECT_EQ(3, notification_count);
 
-  [[NSNotificationCenter defaultCenter] removeObserver:pboard_.get()];
+  [[NSNotificationCenter defaultCenter] removeObserver:pasteboard_.get()];
 }
-
 
 }  // namespace

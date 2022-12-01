@@ -41,14 +41,17 @@ NSString* kFindPasteboardChangedNotification =
   [super dealloc];
 }
 
-- (NSPasteboard*)findPboard {
+- (NSPasteboard*)findPasteboard {
   return [NSPasteboard pasteboardWithName:NSPasteboardNameFind];
 }
 
 - (void)loadTextFromPasteboard:(NSNotification*)notification {
-  NSPasteboard* findPboard = [self findPboard];
-  if ([[findPboard types] containsObject:NSStringPboardType])
-    [self setFindText:[findPboard stringForType:NSStringPboardType]];
+  NSPasteboard* findPasteboard = [self findPasteboard];
+  NSArray* objects = [findPasteboard readObjectsForClasses:@[ [NSString class] ]
+                                                   options:nil];
+  if (objects.count) {
+    [self setFindText:objects.firstObject];
+  }
 }
 
 - (NSString*)findText {
@@ -57,17 +60,20 @@ NSString* kFindPasteboardChangedNotification =
 
 - (void)setFindText:(NSString*)newText {
   DCHECK(newText);
-  if (!newText)
+  if (!newText) {
     return;
+  }
 
-  DCHECK([NSThread isMainThread]);
+  DCHECK(NSThread.isMainThread);
 
-  BOOL needToSendNotification = ![_findText.get() isEqualToString:newText];
-  if (needToSendNotification) {
+  BOOL textChanged = ![_findText.get() isEqualToString:newText];
+  if (textChanged) {
     _findText.reset([newText copy]);
-    NSPasteboard* findPboard = [self findPboard];
-    [findPboard declareTypes:@[ NSStringPboardType ] owner:nil];
-    [findPboard setString:_findText.get() forType:NSStringPboardType];
+
+    NSPasteboard* findPasteboard = [self findPasteboard];
+    [findPasteboard clearContents];
+    [findPasteboard writeObjects:@[ _findText.get() ]];
+
     [[NSNotificationCenter defaultCenter]
         postNotificationName:kFindPasteboardChangedNotification
                       object:self];

@@ -34,17 +34,17 @@ COMPONENT_EXPORT(UI_BASE)
 // find pasteboard, this returns an empty string.
 - (NSString*)findText;
 
-// Sets the current find text to |newText| and sends a
-// |kFindPasteboardChangedNotification| to the default notification center if
-// it the new text different from the current text. |newText| must not be nil.
+// Sets the current find text to `newText` and sends a
+// `kFindPasteboardChangedNotification` to the default notification center if
+// it the new text different from the current text. `newText` must not be nil.
 - (void)setFindText:(NSString*)newText;
 @end
 
 @interface FindPasteboard (TestingAPI)
 - (void)loadTextFromPasteboard:(NSNotification*)notification;
 
-// This methods is meant to be overridden in tests.
-- (NSPasteboard*)findPboard;
+// This method is meant to be overridden in tests.
+- (NSPasteboard*)findPasteboard;
 @end
 
 #endif  // UI_BASE_COCOA_FIND_PASTEBOARD_H_
