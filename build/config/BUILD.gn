@@ -266,16 +266,21 @@ group("executable_deps") {
   if (export_libcxxabi_from_executables) {
     public_deps += [ "//buildtools/third_party/libc++abi" ]
   }
+  public_configs = [ "//build/config/sanitizers:link_executable" ]
 }
 
 # Only the loadable_module template in BUILDCONFIG.gn should reference this.
 group("loadable_module_deps") {
   public_deps = [ ":common_deps" ]
+
+  public_configs = [ "//build/config/sanitizers:link_shared_library" ]
 }
 
 # Only the shared_library template in BUILDCONFIG.gn should reference this.
 group("shared_library_deps") {
   public_deps = [ ":common_deps" ]
+
+  public_configs = [ "//build/config/sanitizers:link_shared_library" ]
 }
 
 # Executable configs -----------------------------------------------------------
@@ -316,7 +321,6 @@ config("executable_config") {
   if (use_locally_built_instrumented_libraries) {
     configs += [ "//third_party/instrumented_libraries:locally_built_ldflags" ]
   }
-  configs += [ "//build/config/sanitizers:link_executable" ]
 }
 
 # Shared library configs -------------------------------------------------------
@@ -348,7 +352,6 @@ config("shared_library_config") {
   if (use_locally_built_instrumented_libraries) {
     configs += [ "//third_party/instrumented_libraries:locally_built_ldflags" ]
   }
-  configs += [ "//build/config/sanitizers:link_shared_library" ]
 }
 
 # Add this config to your target to enable precompiled headers.
