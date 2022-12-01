@@ -1030,4 +1030,11 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
       std::move(subresource_web_bundle_navigation_info), http_response_code);
 }
 
+void FrameTreeNode::CancelNavigation() {
+  if (navigation_request() && navigation_request()->IsNavigationStarted()) {
+    navigation_request()->set_net_error(net::ERR_ABORTED);
+  }
+  ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+}
+
 }  // namespace content

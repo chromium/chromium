@@ -91,6 +91,9 @@ class RenderFrameHostOwner {
       std::unique_ptr<SubresourceWebBundleNavigationInfo>
           subresource_web_bundle_navigation_info,
       int http_response_code) = 0;
+
+  // Cancel ongoing navigation in this frame, if any.
+  virtual void CancelNavigation() = 0;
 };
 
 }  // namespace content

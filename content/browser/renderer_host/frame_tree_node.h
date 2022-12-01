@@ -629,6 +629,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       std::unique_ptr<SubresourceWebBundleNavigationInfo>
           subresource_web_bundle_navigation_info,
       int http_response_code) override;
+  void CancelNavigation() override;
 
  private:
   friend class CSPEmbeddedEnforcementUnitTest;

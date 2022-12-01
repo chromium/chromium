@@ -8317,12 +8317,8 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
   if (!for_navigation) {
     // Cancel any pending navigations, to avoid their navigation commit/fail
     // event from wiping out the is_waiting_for_beforeunload_completion_ state.
-    if (frame_tree_node_->navigation_request() &&
-        frame_tree_node_->navigation_request()->IsNavigationStarted()) {
-      frame_tree_node_->navigation_request()->set_net_error(net::ERR_ABORTED);
-    }
-    frame_tree_node_->ResetNavigationRequest(
-        NavigationDiscardReason::kCancelled);
+    CHECK(owner_);
+    owner_->CancelNavigation();
   }
 
   // In renderer-initiated navigations, don't check for beforeunload in the
