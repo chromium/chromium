@@ -9,6 +9,16 @@
 
 namespace blink {
 
+namespace {
+
+Element* ResolveReferenceElement(
+    Document& document,
+    const absl::optional<Element*>& reference_element) {
+  return reference_element.value_or(document.ScrollingElementNoLayout());
+}
+
+}  // namespace
+
 CSSScrollTimeline::Options::Options(
     Document& document,
     ScrollTimeline::ReferenceType reference_type,
@@ -38,16 +48,18 @@ ScrollTimeline::ScrollAxis CSSScrollTimeline::Options::ComputeAxis(
 }
 
 CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
-    : ScrollTimeline(document,
-                     options.reference_type_,
-                     options.reference_element_.value_or(
-                         document->ScrollingElementNoLayout()),
-                     options.axis_),
+    : ScrollTimeline(
+          document,
+          options.reference_type_,
+          ResolveReferenceElement(*document, options.reference_element_),
+          options.axis_),
       name_(options.name_) {}
 
-bool CSSScrollTimeline::Matches(const Options& options) const {
+bool CSSScrollTimeline::Matches(Document& document,
+                                const Options& options) const {
   return (GetReferenceType() == options.reference_type_) &&
-         (ReferenceElement() == options.reference_element_) &&
+         (ReferenceElement() ==
+          ResolveReferenceElement(document, options.reference_element_)) &&
          (GetAxis() == options.axis_) && (name_ == options.name_);
 }
 

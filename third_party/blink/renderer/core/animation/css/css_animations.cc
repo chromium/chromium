@@ -484,7 +484,7 @@ void CSSAnimations::CalculateScrollTimelineUpdate(
                                        ScrollTimeline::ReferenceType::kSource,
                                        &animating_element, name, axis);
     // No need to change the timeline if it would be the same as the previous.
-    if (existing_timeline && existing_timeline->Matches(options))
+    if (existing_timeline && existing_timeline->Matches(document, options))
       return;
     new_timeline =
         MakeGarbageCollected<CSSScrollTimeline>(&document, std::move(options));
@@ -667,7 +667,8 @@ ComputeReference(Element* element, TimelineScroller scroller) {
 
 CSSScrollTimeline* ComputeScrollFunctionTimeline(
     Element* element,
-    const StyleTimeline::ScrollData& scroll_data) {
+    const StyleTimeline::ScrollData& scroll_data,
+    AnimationTimeline* existing_timeline) {
   Document& document = element->GetDocument();
 
   auto [reference_type, reference_element] =
@@ -675,6 +676,10 @@ CSSScrollTimeline* ComputeScrollFunctionTimeline(
   CSSScrollTimeline::Options options(document, reference_type,
                                      reference_element, g_null_atom /* name */,
                                      scroll_data.GetAxis());
+  if (auto* scroll_timeline = DynamicTo<CSSScrollTimeline>(existing_timeline);
+      scroll_timeline && scroll_timeline->Matches(document, options)) {
+    return scroll_timeline;
+  }
   // TODO(crbug.com/1356482): Cache/re-use timelines created from scroll().
   return MakeGarbageCollected<CSSScrollTimeline>(&document, std::move(options));
 }
@@ -684,7 +689,8 @@ CSSScrollTimeline* ComputeScrollFunctionTimeline(
 AnimationTimeline* CSSAnimations::ComputeTimeline(
     Element* element,
     const StyleTimeline& style_timeline,
-    const CSSAnimationUpdate& update) {
+    const CSSAnimationUpdate& update,
+    AnimationTimeline* existing_timeline) {
   Document& document = element->GetDocument();
   if (style_timeline.IsKeyword()) {
     if (style_timeline.GetKeyword() == CSSValueID::kAuto)
@@ -699,7 +705,8 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
                                                &update);
   }
   DCHECK(style_timeline.IsScroll());
-  return ComputeScrollFunctionTimeline(element, style_timeline.GetScroll());
+  return ComputeScrollFunctionTimeline(element, style_timeline.GetScroll(),
+                                       existing_timeline);
 }
 
 CSSAnimations::CSSAnimations() = default;
@@ -974,8 +981,10 @@ void CSSAnimations::CalculateAnimationUpdate(
         }
 
         AnimationTimeline* timeline = existing_animation->Timeline();
-        if (!is_animation_style_change && !animation->GetIgnoreCSSTimeline())
-          timeline = ComputeTimeline(&element, style_timeline, update);
+        if (!is_animation_style_change && !animation->GetIgnoreCSSTimeline()) {
+          timeline = ComputeTimeline(&element, style_timeline, update,
+                                     existing_animation->Timeline());
+        }
 
         if (keyframes_rule != existing_animation->style_rule ||
             keyframes_rule->Version() !=
@@ -1043,8 +1052,8 @@ void CSSAnimations::CalculateAnimationUpdate(
         }
       } else {
         DCHECK(!is_animation_style_change);
-        AnimationTimeline* timeline =
-            ComputeTimeline(&element, style_timeline, update);
+        AnimationTimeline* timeline = ComputeTimeline(
+            &element, style_timeline, update, /* existing_timeline */ nullptr);
         absl::optional<AnimationTimeDelta> inherited_time =
             AnimationTimeDelta();
 

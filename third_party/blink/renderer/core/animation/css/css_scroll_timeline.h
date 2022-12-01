@@ -44,7 +44,7 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
 
   const AtomicString& Name() const { return name_; }
 
-  bool Matches(const Options&) const;
+  bool Matches(Document&, const Options&) const;
 
   // AnimationTimeline implementation.
   bool IsCSSScrollTimeline() const override { return true; }

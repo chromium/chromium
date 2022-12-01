@@ -304,9 +304,11 @@ class CORE_EXPORT CSSAnimations final {
       Node*,
       const CSSAnimationUpdate*);
 
-  static AnimationTimeline* ComputeTimeline(Element*,
-                                            const StyleTimeline& timeline_name,
-                                            const CSSAnimationUpdate&);
+  static AnimationTimeline* ComputeTimeline(
+      Element*,
+      const StyleTimeline& timeline_name,
+      const CSSAnimationUpdate&,
+      AnimationTimeline* existing_timeline);
 
   // The before-change style is defined as the computed values of all properties
   // on the element as of the previous style change event, except with any
