@@ -35,6 +35,10 @@ class PageWithFrame(page_module.Page):
             '--disk-cache-dir=/dev/null',
         ],
         cache_temperature=cache_temperature_module.COLD)
+    # We are loading a local file, which causes the page to mark itself as
+    # local. This results in the test not downloading the WPR files we need.
+    # Manually override the value so that it doesn't skip that step.
+    self._is_local = False
 
   def RunNavigateSteps(self, action_runner):
     super(PageWithFrame, self).RunNavigateSteps(action_runner)
