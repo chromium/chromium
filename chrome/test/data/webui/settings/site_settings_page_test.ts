@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ContentSetting, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -107,5 +107,45 @@ suite('SiteSettingsPage', function() {
     assertTrue(isChildVisible(
         page.shadowRoot!.querySelector('#advancedContentList')!,
         '#protected-content'));
+  });
+
+  // TODO(crbug/1378703): Remove after crbug/1378703 launched.
+  test('SiteDataLinkRow', function() {
+    setupPage();
+    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
+    flush();
+
+    assertTrue(isChildVisible(
+        page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));
+  });
+});
+
+// TODO(crbug/1378703): Remove after crbug/1378703 launched.
+suite('PrivacySandboxSettings4Disabled', function() {
+  let page: SettingsSiteSettingsPageElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxSettings4: false,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-site-settings-page');
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  test('SiteDataLinkRow', function() {
+    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
+    flush();
+
+    assertFalse(isChildVisible(
+        page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));
   });
 });

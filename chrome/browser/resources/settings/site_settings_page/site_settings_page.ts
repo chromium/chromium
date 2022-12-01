@@ -276,6 +276,14 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsSerialPortsBlocked',
     },
     {
+      route: routes.PRIVACY,
+      id: Id.SITE_DATA,
+      // TODO(crbug/1378703): Replace label.
+      label: 'privacyPageTitle',
+      icon: 'settings:palette',
+      shouldShow: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
+    },
+    {
       route: routes.SITE_SETTINGS_SOUND,
       id: Id.SOUND,
       label: 'siteSettingsSound',
@@ -395,6 +403,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
               Id.PROTECTED_CONTENT,
               Id.MIXEDSCRIPT,
               Id.FEDERATED_IDENTITY_API,
+              Id.SITE_DATA,
             ]),
           };
         },

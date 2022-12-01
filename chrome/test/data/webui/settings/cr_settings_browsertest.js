@@ -816,6 +816,32 @@ TEST_F(
       mocha.run();
     });
 
+var CrSettingsSiteSettingsPageTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/site_settings_page_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'privacy_sandbox::kPrivacySandboxSettings4',
+      ],
+    };
+  }
+};
+
+TEST_F('CrSettingsSiteSettingsPageTest', 'SiteSettingsPage', function() {
+  mocha.run();
+});
+
+TEST_F(
+    'CrSettingsSiteSettingsPageTest', 'PrivacySandboxSettings4Disabled',
+    function() {
+      mocha.run();
+    });
+
 [['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
  [
    'SettingsCategoryDefaultRadioGroup',
@@ -858,7 +884,6 @@ TEST_F(
  ['SiteEntry', 'site_entry_tests.js'],
  ['SiteFavicon', 'site_favicon_test.js'],
  ['SiteListEntry', 'site_list_entry_tests.js'],
- ['SiteSettingsPage', 'site_settings_page_test.js'],
  ['Slider', 'settings_slider_tests.js'],
  ['StartupUrlsPage', 'startup_urls_page_test.js'],
  // Flaky on all OSes. TODO(crbug.com/1302405): Enable the test.

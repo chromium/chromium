@@ -44,9 +44,10 @@ export enum ContentSettingsTypes {
   WINDOW_MANAGEMENT = 'window-placement',
   ZOOM_LEVELS = 'zoom-levels',
 
-  // The following item is not in the C++ kContentSettingsTypeGroupNames, but it
-  // is used everywhere where ContentSettingsTypes is used in JS.
+  // The following items are not in the C++ kContentSettingsTypeGroupNames, but
+  // are used everywhere where ContentSettingsTypes is used in JS.
   PDF_DOCUMENTS = 'pdfDocuments',
+  SITE_DATA = 'site-data',
 }
 
 /**

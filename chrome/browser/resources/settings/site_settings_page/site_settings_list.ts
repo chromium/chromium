@@ -152,11 +152,12 @@ class SettingsSiteSettingsListElement extends
    */
   private refreshDefaultValueLabel_(category: ContentSettingsTypes):
       Promise<void> {
-    // Default labels are not applicable to ZOOM_LEVELS, PDF or
-    // PROTECTED_CONTENT
+    // Default labels are not applicable to ZOOM_LEVELS, PDF, PROTECTED_CONTENT,
+    // or SITE_DATA.
     if (category === ContentSettingsTypes.ZOOM_LEVELS ||
         category === ContentSettingsTypes.PROTECTED_CONTENT ||
-        category === ContentSettingsTypes.PDF_DOCUMENTS) {
+        category === ContentSettingsTypes.PDF_DOCUMENTS ||
+        category === ContentSettingsTypes.SITE_DATA) {
       return Promise.resolve();
     }
 
