@@ -7,12 +7,12 @@ source_set("passwords") {
   sources = [
     "password_infobar_banner_interaction_handler.h",
     "password_infobar_banner_interaction_handler.mm",
-    "password_infobar_interaction_handler.h",
-    "password_infobar_interaction_handler.mm",
     "password_infobar_modal_interaction_handler.h",
     "password_infobar_modal_interaction_handler.mm",
     "password_infobar_modal_overlay_request_callback_installer.h",
     "password_infobar_modal_overlay_request_callback_installer.mm",
+    "save_password_infobar_interaction_handler.h",
+    "save_password_infobar_interaction_handler.mm",
     "update_password_infobar_interaction_handler.h",
     "update_password_infobar_interaction_handler.mm",
   ]

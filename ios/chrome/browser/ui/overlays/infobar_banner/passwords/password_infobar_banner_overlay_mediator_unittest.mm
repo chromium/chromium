@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/save_password_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/password_infobar_banner_overlay_mediator.h"
 
 #import <string>
 
@@ -13,7 +13,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
@@ -34,14 +34,14 @@ namespace {
 // Constants used in tests.
 NSString* const kUsername = @"username";
 NSString* const kPassword = @"12345";
-}
+}  // namespace
 
-// Test fixture for SavePasswordInfobarBannerOverlayMediator.
-using SavePasswordInfobarBannerOverlayMediatorTest = PlatformTest;
+// Test fixture for PasswordInfobarBannerOverlayMediator.
+using PasswordInfobarBannerOverlayMediatorTest = PlatformTest;
 
-// Tests that a SavePasswordInfobarBannerOverlayMediator correctly sets up its
+// Tests that a PasswordInfobarBannerOverlayMediator correctly sets up its
 // consumer.
-TEST_F(SavePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
+TEST_F(PasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
   std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> passed_delegate =
       MockIOSChromeSavePasswordInfoBarDelegate::Create(kUsername, kPassword);
@@ -51,9 +51,9 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   // Package the infobar into an OverlayRequest, then create a mediator that
   // uses this request in order to set up a fake consumer.
   std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
-      SavePasswordInfobarBannerOverlayRequestConfig>(&infobar);
-  SavePasswordInfobarBannerOverlayMediator* mediator =
-      [[SavePasswordInfobarBannerOverlayMediator alloc]
+      PasswordInfobarBannerOverlayRequestConfig>(&infobar);
+  PasswordInfobarBannerOverlayMediator* mediator =
+      [[PasswordInfobarBannerOverlayMediator alloc]
           initWithRequest:request.get()];
   FakeInfobarBannerConsumer* consumer =
       [[FakeInfobarBannerConsumer alloc] init];
@@ -80,9 +80,9 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   EXPECT_TRUE(consumer.presentsModal);
 }
 
-// Tests that a SavePasswordInfobarBannerOverlayMediator correctly sets up its
+// Tests that a PasswordInfobarBannerOverlayMediator correctly sets up its
 // consumer's icon with legacy assets.
-TEST_F(SavePasswordInfobarBannerOverlayMediatorTest,
+TEST_F(PasswordInfobarBannerOverlayMediatorTest,
        SetUpConsumerIconNotUseSymbols) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kUseSFSymbols);
@@ -95,9 +95,9 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest,
   // Package the infobar into an OverlayRequest, then create a mediator that
   // uses this request in order to set up a fake consumer.
   std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
-      SavePasswordInfobarBannerOverlayRequestConfig>(&infobar);
-  SavePasswordInfobarBannerOverlayMediator* mediator =
-      [[SavePasswordInfobarBannerOverlayMediator alloc]
+      PasswordInfobarBannerOverlayRequestConfig>(&infobar);
+  PasswordInfobarBannerOverlayMediator* mediator =
+      [[PasswordInfobarBannerOverlayMediator alloc]
           initWithRequest:request.get()];
   FakeInfobarBannerConsumer* consumer =
       [[FakeInfobarBannerConsumer alloc] init];
@@ -114,10 +114,9 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest,
   }
 }
 
-// Tests that a SavePasswordInfobarBannerOverlayMediator correctly sets up its
+// Tests that a PasswordInfobarBannerOverlayMediator correctly sets up its
 // consumer's icon with SF symbol.
-TEST_F(SavePasswordInfobarBannerOverlayMediatorTest,
-       SetUpConsumerIconUseSymbols) {
+TEST_F(PasswordInfobarBannerOverlayMediatorTest, SetUpConsumerIconUseSymbols) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kUseSFSymbols);
 
@@ -129,9 +128,9 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest,
   // Package the infobar into an OverlayRequest, then create a mediator that
   // uses this request in order to set up a fake consumer.
   std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
-      SavePasswordInfobarBannerOverlayRequestConfig>(&infobar);
-  SavePasswordInfobarBannerOverlayMediator* mediator =
-      [[SavePasswordInfobarBannerOverlayMediator alloc]
+      PasswordInfobarBannerOverlayRequestConfig>(&infobar);
+  PasswordInfobarBannerOverlayMediator* mediator =
+      [[PasswordInfobarBannerOverlayMediator alloc]
           initWithRequest:request.get()];
   FakeInfobarBannerConsumer* consumer =
       [[FakeInfobarBannerConsumer alloc] init];

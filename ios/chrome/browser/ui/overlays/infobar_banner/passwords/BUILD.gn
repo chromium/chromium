@@ -4,10 +4,8 @@
 
 source_set("passwords") {
   sources = [
-    "save_password_infobar_banner_overlay_mediator.h",
-    "save_password_infobar_banner_overlay_mediator.mm",
-    "update_password_infobar_banner_overlay_mediator.h",
-    "update_password_infobar_banner_overlay_mediator.mm",
+    "password_infobar_banner_overlay_mediator.h",
+    "password_infobar_banner_overlay_mediator.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -26,10 +24,7 @@ source_set("passwords") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "save_password_infobar_banner_overlay_mediator_unittest.mm",
-    "update_password_infobar_banner_overlay_mediator_unittest.mm",
-  ]
+  sources = [ "password_infobar_banner_overlay_mediator_unittest.mm" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 

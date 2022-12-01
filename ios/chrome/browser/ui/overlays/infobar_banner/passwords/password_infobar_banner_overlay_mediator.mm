@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/update_password_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/password_infobar_banner_overlay_mediator.h"
 
-#import "ios/chrome/browser/overlays/public/infobar_banner/update_password_infobar_banner_overlay.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
@@ -16,33 +16,34 @@
 #error "This file requires ARC support."
 #endif
 
-@interface UpdatePasswordInfobarBannerOverlayMediator ()
-// The update password banner config from the request.
+@interface PasswordInfobarBannerOverlayMediator ()
+// The password banner config from the request.
 @property(nonatomic, readonly)
-    UpdatePasswordInfobarBannerOverlayRequestConfig* config;
+    PasswordInfobarBannerOverlayRequestConfig* config;
 @end
 
-@implementation UpdatePasswordInfobarBannerOverlayMediator
+@implementation PasswordInfobarBannerOverlayMediator
 
 #pragma mark - Accessors
 
-- (UpdatePasswordInfobarBannerOverlayRequestConfig*)config {
-  return self.request ? self.request->GetConfig<
-                            UpdatePasswordInfobarBannerOverlayRequestConfig>()
-                      : nullptr;
+- (PasswordInfobarBannerOverlayRequestConfig*)config {
+  return self.request
+             ? self.request
+                   ->GetConfig<PasswordInfobarBannerOverlayRequestConfig>()
+             : nullptr;
 }
 
 #pragma mark - OverlayRequestMediator
 
 + (const OverlayRequestSupport*)requestSupport {
-  return UpdatePasswordInfobarBannerOverlayRequestConfig::RequestSupport();
+  return PasswordInfobarBannerOverlayRequestConfig::RequestSupport();
 }
 
 #pragma mark - Private
 
 // The icon image, can be from the config or not from it.
 - (UIImage*)iconImageWithConfig:
-    (UpdatePasswordInfobarBannerOverlayRequestConfig*)config {
+    (PasswordInfobarBannerOverlayRequestConfig*)config {
   UIImage* image;
   if (UseSymbols()) {
     image = CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
@@ -54,10 +55,10 @@
 
 @end
 
-@implementation UpdatePasswordInfobarBannerOverlayMediator (ConsumerSupport)
+@implementation PasswordInfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  UpdatePasswordInfobarBannerOverlayRequestConfig* config = self.config;
+  PasswordInfobarBannerOverlayRequestConfig* config = self.config;
   if (!self.consumer || !config)
     return;
 

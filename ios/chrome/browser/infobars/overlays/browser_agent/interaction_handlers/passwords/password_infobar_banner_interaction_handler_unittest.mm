@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -24,8 +24,7 @@
 class PasswordInfobarBannerInteractionHandlerTest : public PlatformTest {
  public:
   PasswordInfobarBannerInteractionHandlerTest()
-      : handler_(
-            SavePasswordInfobarBannerOverlayRequestConfig::RequestSupport()) {
+      : handler_(PasswordInfobarBannerOverlayRequestConfig::RequestSupport()) {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfobarOverlayRequestInserter::CreateForWebState(

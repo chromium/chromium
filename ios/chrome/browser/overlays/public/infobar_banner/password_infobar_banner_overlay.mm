@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
@@ -19,15 +19,15 @@
 using infobars::InfoBar;
 
 namespace {
-// The name of the icon image for the save passwords banner.
+// The name of the icon image for the passwords banner.
 NSString* const kLegacyIconImageName = @"legacy_password_key";
 NSString* const kIconImageName = @"password_key";
-}
+}  // namespace
 
-OVERLAY_USER_DATA_SETUP_IMPL(SavePasswordInfobarBannerOverlayRequestConfig);
+OVERLAY_USER_DATA_SETUP_IMPL(PasswordInfobarBannerOverlayRequestConfig);
 
-SavePasswordInfobarBannerOverlayRequestConfig::
-    SavePasswordInfobarBannerOverlayRequestConfig(InfoBar* infobar)
+PasswordInfobarBannerOverlayRequestConfig::
+    PasswordInfobarBannerOverlayRequestConfig(InfoBar* infobar)
     : infobar_(infobar) {
   DCHECK(infobar_);
   IOSChromeSavePasswordInfoBarDelegate* delegate =
@@ -45,10 +45,10 @@ SavePasswordInfobarBannerOverlayRequestConfig::
   password_length_ = delegate->GetPasswordText().length;
 }
 
-SavePasswordInfobarBannerOverlayRequestConfig::
-    ~SavePasswordInfobarBannerOverlayRequestConfig() = default;
+PasswordInfobarBannerOverlayRequestConfig::
+    ~PasswordInfobarBannerOverlayRequestConfig() = default;
 
-void SavePasswordInfobarBannerOverlayRequestConfig::CreateAuxiliaryData(
+void PasswordInfobarBannerOverlayRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   InfobarOverlayRequestConfig::CreateForUserData(
       user_data, static_cast<InfoBarIOS*>(infobar_),
