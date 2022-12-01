@@ -1456,6 +1456,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.WarningData.SurfaceWithoutWarningShown"
+    enum="DownloadWarningSurface" expires_after="2023-05-29">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the warning surface that does not have a warning shown event logged
+    in advance. Logged each time an action is taken on the download warning and
+    there is no warning shown event logged (the NOT_ADDED_MISSING_FIRST_WARNING
+    bucket in DownloadAddWarningActionEventOutcome).
+  </summary>
+</histogram>
+
 <histogram name="Download.WinFileMoveError" enum="WinIFileOperationError"
     expires_after="2023-10-12">
   <owner>drubery@chromium.org</owner>

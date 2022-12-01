@@ -41,6 +41,11 @@ void RecordAddWarningActionEventOutcome(AddWarningActionEventOutcome outcome) {
   base::UmaHistogramEnumeration(
       "Download.WarningData.AddWarningActionEventOutcome", outcome);
 }
+
+void RecordSurfaceWithoutWarningShown(WarningSurface surface) {
+  base::UmaHistogramEnumeration(
+      "Download.WarningData.SurfaceWithoutWarningShown", surface);
+}
 }  // namespace
 
 // static
@@ -86,6 +91,7 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
   if (data->warning_first_shown_time_.is_null()) {
     RecordAddWarningActionEventOutcome(
         AddWarningActionEventOutcome::NOT_ADDED_MISSING_FIRST_WARNING);
+    RecordSurfaceWithoutWarningShown(surface);
     return;
   }
   if (data->action_events_.size() >= kWarningActionEventMaxLength) {

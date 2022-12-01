@@ -29676,6 +29676,13 @@ Called by update_document_policy_enum.py.-->
   <int value="9" label="WMV"/>
 </enum>
 
+<enum name="DownloadWarningSurface">
+  <int value="1" label="BUBBLE_MAINPAGE"/>
+  <int value="2" label="BUBBLE_SUBPAGE"/>
+  <int value="3" label="DOWNLOADS_PAGE"/>
+  <int value="4" label="DOWNLOAD_PROMPT"/>
+</enum>
+
 <enum name="DragContent">
   <obsolete>
     Deprecated 12/2020.

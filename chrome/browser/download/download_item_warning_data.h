@@ -22,6 +22,8 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
  public:
   // The surface that the warning is shown. See
   // go/chrome-download-warning-surfaces for details.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum WarningSurface {
     // Applicable actions: DISCARD
     BUBBLE_MAINPAGE = 1,
@@ -31,6 +33,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     DOWNLOADS_PAGE = 3,
     // Applicable actions: PROCEED, CANCEL, CLOSE
     DOWNLOAD_PROMPT = 4,
+    kMaxValue = DOWNLOAD_PROMPT
   };
 
   // Users action on the warning surface.
