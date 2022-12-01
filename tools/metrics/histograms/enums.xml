@@ -107500,6 +107500,11 @@ Called by update_scheduler_enums.py.-->
   <int value="97" label="CookieManager.setAcceptFileSchemeCookies"/>
   <int value="98" label="CookieManager.setAcceptThirdPartyCookies"/>
   <int value="99" label="CookieManager.setCookie"/>
+  <int value="100" label="WebStorage.deleteAllData"/>
+  <int value="101" label="WebStorage.deleteOrigin"/>
+  <int value="102" label="WebStorage.getOrigins"/>
+  <int value="103" label="WebStorage.getQuotaForOrigin"/>
+  <int value="104" label="WebStorage.getUsageForOrigin"/>
 </enum>
 
 <enum name="WebViewAppProvidedMimeType">

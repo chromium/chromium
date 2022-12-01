@@ -173,7 +173,9 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             ApiCall.COOKIE_MANAGER_REMOVE_SESSION_COOKIES, ApiCall.COOKIE_MANAGER_SET_ACCEPT_COOKIE,
             ApiCall.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES,
             ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES,
-            ApiCall.COOKIE_MANAGER_SET_COOKIE})
+            ApiCall.COOKIE_MANAGER_SET_COOKIE, ApiCall.WEB_STORAGE_DELETE_ALL_DATA,
+            ApiCall.WEB_STORAGE_DELETE_ORIGIN, ApiCall.WEB_STORAGE_GET_ORIGINS,
+            ApiCall.WEB_STORAGE_GET_QUOTA_FOR_ORIGIN, ApiCall.WEB_STORAGE_GET_USAGE_FOR_ORIGIN})
 
     @interface ApiCall {
         int ADD_JAVASCRIPT_INTERFACE = 0;
@@ -276,7 +278,12 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         int COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES = 97;
         int COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES = 98;
         int COOKIE_MANAGER_SET_COOKIE = 99;
-        int COUNT = 100;
+        int WEB_STORAGE_DELETE_ALL_DATA = 100;
+        int WEB_STORAGE_DELETE_ORIGIN = 101;
+        int WEB_STORAGE_GET_ORIGINS = 102;
+        int WEB_STORAGE_GET_QUOTA_FOR_ORIGIN = 103;
+        int WEB_STORAGE_GET_USAGE_FOR_ORIGIN = 104;
+        int COUNT = 105;
     }
 
     public static void recordWebViewApiCall(@ApiCall int sample) {
