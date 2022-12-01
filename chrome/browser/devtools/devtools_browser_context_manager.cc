@@ -47,7 +47,7 @@ Profile* DevToolsBrowserContextManager::GetProfileById(
 
 content::BrowserContext* DevToolsBrowserContextManager::CreateBrowserContext() {
   Profile* original_profile =
-      ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+      ProfileManager::GetLastUsedProfile()->GetOriginalProfile();
 
   Profile* otr_profile = original_profile->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForDevTools(),
@@ -70,7 +70,7 @@ DevToolsBrowserContextManager::GetBrowserContexts() {
 
 content::BrowserContext*
 DevToolsBrowserContextManager::GetDefaultBrowserContext() {
-  return ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+  return ProfileManager::GetLastUsedProfile()->GetOriginalProfile();
 }
 
 void DevToolsBrowserContextManager::DisposeBrowserContext(
