@@ -69,6 +69,7 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -185,11 +186,9 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (exp_web_platform_features_enabled_) {
-      // Enable experimental features for subscription restrictions.
-      command_line->AppendSwitch(
-          switches::kEnableExperimentalWebPlatformFeatures);
-    }
+    // Enable experimental features for subscription restrictions.
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
 
     // HTTPS server only serves a valid cert for localhost, so this is needed to
     // load webby domains like "embedded.com" without an interstitial.
@@ -397,7 +396,6 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
-  bool exp_web_platform_features_enabled_ = true;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -597,9 +595,17 @@ void PushMessagingBrowserTestBase::SendMessageAndWaitUntilHandled(
 class PushMessagingBrowserTest : public PushMessagingBrowserTestBase {
  public:
   PushMessagingBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kPushMessagingDisallowSenderIDs);
+    disabled_features_.push_back(features::kPushMessagingDisallowSenderIDs);
   }
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
+    PushMessagingBrowserTestBase::SetUp();
+  }
+
+ protected:
+  std::vector<base::test::FeatureRef> enabled_features_{};
+  std::vector<base::test::FeatureRef> disabled_features_{};
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -607,17 +613,23 @@ class PushMessagingBrowserTest : public PushMessagingBrowserTestBase {
 
 // This class is used to execute PushMessagingBrowserTest tests with
 // experimental web platform features both enabled/disabled.
-class PushMessagingExpWebFeaturesBrowserTest
+class PushMessagingPartitionedBrowserTest
     : public PushMessagingBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  PushMessagingExpWebFeaturesBrowserTest() {
-    exp_web_platform_features_enabled_ = GetParam();
+  PushMessagingPartitionedBrowserTest() {
+    if (GetParam()) {
+      enabled_features_.push_back(
+          net::features::kThirdPartyStoragePartitioning);
+    } else {
+      disabled_features_.push_back(
+          net::features::kThirdPartyStoragePartitioning);
+    }
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(PushMessagingExpWebFeaturesBrowserTest,
-                         PushMessagingExpWebFeaturesBrowserTest,
+INSTANTIATE_TEST_SUITE_P(PushMessagingPartitionedBrowserTest,
+                         PushMessagingPartitionedBrowserTest,
                          testing::Values(true, false));
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2027,10 +2039,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PermissionStateSaysDenied) {
   EXPECT_EQ("permission status - denied", script_result);
 }
 
-IN_PROC_BROWSER_TEST_P(PushMessagingExpWebFeaturesBrowserTest,
-                       CrossOriginFrame) {
-  bool storage_partitioned = base::FeatureList::IsEnabled(
-      net::features::kThirdPartyStoragePartitioning);
+IN_PROC_BROWSER_TEST_P(PushMessagingPartitionedBrowserTest, CrossOriginFrame) {
   const GURL kEmbedderURL = https_server()->GetURL(
       "embedder.com", "/push_messaging/framed_test.html");
   const GURL kRequesterURL = https_server()->GetURL("requester.com", "/");
@@ -2108,12 +2117,7 @@ IN_PROC_BROWSER_TEST_P(PushMessagingExpWebFeaturesBrowserTest,
 
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       subframe, "documentSubscribePush()", &script_result));
-  if (storage_partitioned) {
-    EXPECT_EQ("AbortError - Registration failed - storage error",
-              script_result);
-  } else {
-    ASSERT_NO_FATAL_FAILURE(EndpointToToken(script_result));
-  }
+  ASSERT_NO_FATAL_FAILURE(EndpointToToken(script_result));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {

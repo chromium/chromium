@@ -19,12 +19,12 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -129,11 +129,11 @@ bool IsRequestFromDocument(int render_frame_id) {
 }  // namespace
 
 struct PushMessagingManager::RegisterData {
-  RegisterData();
+  RegisterData() = default;
   RegisterData(RegisterData&& other) = default;
 
-  url::Origin requesting_origin;
-  int64_t service_worker_registration_id;
+  blink::StorageKey requesting_storage_key{};
+  int64_t service_worker_registration_id{0};
   absl::optional<std::string> existing_subscription_id;
   blink::mojom::PushSubscriptionOptionsPtr options;
   SubscribeCallback callback;
@@ -141,9 +141,6 @@ struct PushMessagingManager::RegisterData {
   // True if the call to register was made with a user gesture.
   bool user_gesture;
 };
-
-PushMessagingManager::RegisterData::RegisterData()
-    : service_worker_registration_id(0) {}
 
 PushMessagingManager::PushMessagingManager(
     RenderProcessHost& render_process_host,
@@ -204,16 +201,16 @@ void PushMessagingManager::Subscribe(
     return;
   }
 
-  const url::Origin& origin = service_worker_registration->key().origin();
+  const blink::StorageKey& storage_key = service_worker_registration->key();
 
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-          render_process_host_->GetID(), origin)) {
+          render_process_host_->GetID(), storage_key.origin())) {
     bad_message::ReceivedBadMessage(&*render_process_host_,
                                     bad_message::PMM_SUBSCRIBE_INVALID_ORIGIN);
     return;
   }
 
-  data.requesting_origin = origin;
+  data.requesting_storage_key = storage_key;
 
   DCHECK(!(data.options->application_server_key.empty() &&
            IsRequestFromDocument(render_frame_id_)));
@@ -328,26 +325,26 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
             std::move(data),
             blink::mojom::PushRegistrationStatus::INCOGNITO_PERMISSION_DENIED);
       } else {
-        RenderFrameHost* render_frame_host = RenderFrameHost::FromID(
-            render_process_host_->GetID(), render_frame_id_);
-        if (render_frame_host) {
-          render_frame_host->AddMessageToConsole(
+        RenderFrameHostImpl* render_frame_host_impl =
+            RenderFrameHostImpl::FromID(render_process_host_->GetID(),
+                                        render_frame_id_);
+        if (render_frame_host_impl) {
+          render_frame_host_impl->AddMessageToConsole(
               blink::mojom::ConsoleMessageLevel::kError,
               kIncognitoPushUnsupportedMessage);
 
           // Request notifications permission (which will fail, since
           // notifications aren't supported in incognito), so the website can't
           // detect whether incognito is active.
-          url::Origin requesting_origin = data.requesting_origin;
           bool user_gesture = data.user_gesture;
 
-          DCHECK_EQ(data.requesting_origin,
-                    render_frame_host->GetLastCommittedOrigin());
+          DCHECK_EQ(data.requesting_storage_key,
+                    render_frame_host_impl->storage_key());
 
-          render_frame_host->GetBrowserContext()
+          render_frame_host_impl->GetBrowserContext()
               ->GetPermissionController()
               ->RequestPermissionFromCurrentDocument(
-                  blink::PermissionType::NOTIFICATIONS, render_frame_host,
+                  blink::PermissionType::NOTIFICATIONS, render_frame_host_impl,
                   user_gesture,
                   base::BindOnce(
                       &PushMessagingManager::DidRequestPermissionInIncognito,
@@ -359,7 +356,7 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
   }
 
   int64_t registration_id = data.service_worker_registration_id;
-  url::Origin requesting_origin = data.requesting_origin;
+  url::Origin requesting_origin = data.requesting_storage_key.origin();
   bool user_gesture = data.user_gesture;
 
   auto options = data.options->Clone();
@@ -435,7 +432,7 @@ void PushMessagingManager::PersistRegistration(
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  blink::StorageKey storage_key = blink::StorageKey(data.requesting_origin);
+  blink::StorageKey storage_key = data.requesting_storage_key;
   int64_t registration_id = data.service_worker_registration_id;
   std::string application_server_key(
       std::string(data.options->application_server_key.begin(),
