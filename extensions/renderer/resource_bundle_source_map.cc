@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/resource_bundle_source_map.h"
 
+#include <ostream>
+
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
