@@ -32,7 +32,10 @@ history::DeletionInfo HistoryDeletionBridge::SanitizeDeletionInfo(
     if (!row.url().is_empty() && row.url().is_valid())
       sanitized_rows.push_back(row);
   }
-  return history::DeletionInfo::ForUrls(sanitized_rows, {});
+  return history::DeletionInfo(
+      deletion_info.time_range(), deletion_info.is_from_expiration(),
+      /*deleted_rows=*/sanitized_rows, deletion_info.favicon_urls(),
+      deletion_info.restrict_urls());
 }
 
 HistoryDeletionBridge::HistoryDeletionBridge(const JavaRef<jobject>& jobj)

@@ -28,3 +28,23 @@ TEST(HistoryDeletionBridge, TestSanitizeDeletionInfo) {
   for (auto row : actual)
     EXPECT_TRUE(base::Contains(expected, row.url()));
 }
+
+TEST(HistoryDeletionBridge, TestAllHistoryDeletion) {
+  history::DeletionInfo info = history::DeletionInfo::ForAllHistory();
+  history::DeletionInfo sanitized_info =
+      HistoryDeletionBridge::SanitizeDeletionInfo(info);
+  EXPECT_TRUE(sanitized_info.IsAllHistory());
+}
+
+TEST(HistoryDeletionBridge, TestTimeRangeDeletion) {
+  base::Time now = base::Time::Now();
+  history::DeletionTimeRange time_range(now - base::Days(2), now);
+  history::DeletionInfo info(time_range,
+                             /*is_from_expiration=*/false, /*deleted_rows=*/{},
+                             /*favicon_urls=*/{},
+                             /*restrict_urls=*/absl::nullopt);
+  history::DeletionInfo sanitized_info =
+      HistoryDeletionBridge::SanitizeDeletionInfo(info);
+  EXPECT_EQ(time_range.begin(), sanitized_info.time_range().begin());
+  EXPECT_EQ(time_range.end(), sanitized_info.time_range().end());
+}
