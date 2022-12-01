@@ -28,6 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -58,7 +59,7 @@ class InstallIsolatedWebAppFromCommandLineBrowserTest
 
   WebAppRegistrar& GetWebAppRegistrar() {
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
-    DCHECK(provider != nullptr);
+    CHECK(provider != nullptr);
     return provider->registrar();
   }
 
@@ -78,7 +79,7 @@ class InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    DCHECK(command_line != nullptr);
+    CHECK(command_line != nullptr);
 
     command_line->AppendSwitchASCII("install-isolated-web-app-from-url",
                                     GetAppUrl().spec());
@@ -110,33 +111,27 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
     : public InstallIsolatedWebAppFromCommandLineBrowserTest {
  protected:
   void SetUp() override {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-    signed_web_bundle_path_ =
-        scoped_temp_dir_.GetPath().AppendASCII("test_bundle.swbn");
-    CreateSignedWebBundle(signed_web_bundle_path_);
+    CHECK(scoped_temp_dir_.CreateUniqueTempDir());
+    signed_web_bundle_path_ = scoped_temp_dir_.GetPath().Append(
+        base::FilePath::FromASCII("test-bundle.swbn"));
+    TestSignedWebBundle bundle = BuildDefaultTestSignedWebBundle();
+    bundle_id_ = std::make_unique<web_package::SignedWebBundleId>(bundle.id);
+    CHECK(base::WriteFile(signed_web_bundle_path_, bundle.data));
 
     InstallIsolatedWebAppFromCommandLineBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    DCHECK(command_line != nullptr);
+    CHECK(command_line != nullptr);
     command_line->AppendSwitchPath("install-isolated-web-app-from-file",
                                    signed_web_bundle_path_);
     InstallIsolatedWebAppFromCommandLineBrowserTest::SetUpCommandLine(
         command_line);
   }
 
-  void CreateSignedWebBundle(base::FilePath path) {
-    TestSignedWebBundle bundle = BuildDefaultTestSignedWebBundle();
-    bundle_id_ = bundle.id;
-    DCHECK(base::WriteFile(path, bundle.data));
-  }
-
   base::ScopedTempDir scoped_temp_dir_;
   base::FilePath signed_web_bundle_path_;
-  absl::optional<web_package::SignedWebBundleId> bundle_id_;
+  std::unique_ptr<web_package::SignedWebBundleId> bundle_id_;
 };
 
 // TODO: http://b/232991707 Enable this test with dev-mode signed web bundle
@@ -146,10 +141,10 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
   WebAppTestInstallObserver observer(browser()->profile());
   AppId id = observer.BeginListeningAndWait();
 
-  ASSERT_TRUE(bundle_id_.has_value());
+  ASSERT_TRUE(bundle_id_);
   ASSERT_EQ(
-      id, IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id_.value())
-              .app_id());
+      id,
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(*bundle_id_).app_id());
   ASSERT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
 
   EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
