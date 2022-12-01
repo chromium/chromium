@@ -106,14 +106,21 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // Sets the cleared flag on level 0 of the texture.
   virtual void SetCleared(GLuint service_id) = 0;
 
-  // Binds level 0 of the texture to an image.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Binds level 0 of the texture to an unbound image.
   //
-  // If the sampler binding already exists, set |client_managed| to true.
-  // Otherwise set it to false, and BindTexImage()/CopyTexImage() will be called
-  // when the texture is used.
-  virtual bool BindImage(GLuint service_id,
-                         gl::GLImage* image,
-                         bool client_managed) = 0;
+  // BindTexImage()/CopyTexImage() will be called when the texture is used.
+  virtual bool BindDecoderManagedImage(GLuint service_id,
+                                       gl::GLImage* image) = 0;
+#else
+  // Binds level 0 of the texture to an image for which the sampler binding
+  // already exists.
+  //
+  // BindTexImage()/CopyTexImage() will *not* be called when the texture is
+  // used.
+  virtual bool BindClientManagedImage(GLuint service_id,
+                                      gl::GLImage* image) = 0;
+#endif
 
   // Creates a mailbox for a texture.
   //

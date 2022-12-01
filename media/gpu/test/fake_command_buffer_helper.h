@@ -59,9 +59,11 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
                        GLenum type) override;
   void DestroyTexture(GLuint service_id) override;
   void SetCleared(GLuint service_id) override;
-  bool BindImage(GLuint service_id,
-                 gl::GLImage* image,
-                 bool client_managed) override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  bool BindDecoderManagedImage(GLuint service_id, gl::GLImage* image) override;
+#else
+  bool BindClientManagedImage(GLuint service_id, gl::GLImage* image) override;
+#endif
   gpu::Mailbox CreateMailbox(GLuint service_id) override;
   void WaitForSyncToken(gpu::SyncToken sync_token,
                         base::OnceClosure done_cb) override;
@@ -71,6 +73,8 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
 
  private:
   ~FakeCommandBufferHelper() override;
+
+  bool BindImageInternal(GLuint service_id, gl::GLImage* image);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

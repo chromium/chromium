@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/error_state.h"
@@ -46,8 +47,24 @@ void PassthroughAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
   gl_api_->glTexParameteriFn(texture_passthrough_->target(), pname, param);
 }
 
-void PassthroughAbstractTextureImpl::BindImage(gl::GLImage* image,
-                                               bool client_managed) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void PassthroughAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
+  BindImageInternal(image, /*client_managed=*/false);
+}
+#else
+void PassthroughAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
+  BindImageInternal(image, /*client_managed=*/true);
+}
+#endif
+
+void PassthroughAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
+                                                       bool client_managed) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  CHECK(!client_managed);
+#else
+  CHECK(client_managed);
+#endif
+
   if (!texture_passthrough_)
     return;
 

@@ -27,7 +27,7 @@ class MockAbstractTexture
   MOCK_METHOD2(SetParameteri, void(GLenum pname, GLint param));
   MOCK_METHOD2(BindStreamTextureImage,
                void(gl::GLImage* image, GLuint service_id));
-  MOCK_METHOD2(BindImage, void(gl::GLImage* image, bool client_managed));
+  MOCK_METHOD1(SetBoundImage, void(gl::GLImage* image));
   MOCK_METHOD0(ReleaseImage, void());
   MOCK_CONST_METHOD0(GetImageForTesting, gl::GLImage*());
   MOCK_METHOD0(SetCleared, void());

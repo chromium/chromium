@@ -63,8 +63,8 @@ bool BindDecoderManagedImage(
     uint32_t client_texture_id,
     uint32_t texture_target,
     const scoped_refptr<gl::GLImage>& image) {
-  return command_buffer_helper->BindImage(client_texture_id, image.get(),
-                                          /*client_managed=*/false);
+  return command_buffer_helper->BindDecoderManagedImage(client_texture_id,
+                                                        image.get());
 }
 #else
 bool BindClientManagedImage(
@@ -72,8 +72,8 @@ bool BindClientManagedImage(
     uint32_t client_texture_id,
     uint32_t texture_target,
     const scoped_refptr<gl::GLImage>& image) {
-  return command_buffer_helper->BindImage(client_texture_id, image.get(),
-                                          /*client_managed=*/true);
+  return command_buffer_helper->BindClientManagedImage(client_texture_id,
+                                                       image.get());
 }
 #endif
 

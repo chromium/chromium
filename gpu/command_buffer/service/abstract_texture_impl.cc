@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -68,9 +69,15 @@ void AbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
   texture_->SetLevelCleared(target, level, true);
 }
 
-void AbstractTextureImpl::BindImage(gl::GLImage* image, bool client_managed) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void AbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   NOTIMPLEMENTED();
 }
+#else
+void AbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
+  NOTIMPLEMENTED();
+}
+#endif
 
 gl::GLImage* AbstractTextureImpl::GetImageForTesting() const {
   NOTIMPLEMENTED();
@@ -141,10 +148,15 @@ void AbstractTextureImplPassthrough::BindStreamTextureImage(gl::GLImage* image,
   texture_->set_is_bind_pending(true);
 }
 
-void AbstractTextureImplPassthrough::BindImage(gl::GLImage* image,
-                                               bool client_managed) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void AbstractTextureImplPassthrough::SetUnboundImage(gl::GLImage* image) {
   NOTIMPLEMENTED();
 }
+#else
+void AbstractTextureImplPassthrough::SetBoundImage(gl::GLImage* image) {
+  NOTIMPLEMENTED();
+}
+#endif
 
 gl::GLImage* AbstractTextureImplPassthrough::GetImageForTesting() const {
   NOTIMPLEMENTED();

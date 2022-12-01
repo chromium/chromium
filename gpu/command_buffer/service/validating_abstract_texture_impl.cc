@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/validating_abstract_texture_impl.h"
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/error_state.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -51,8 +52,24 @@ void ValidatingAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
                                      texture_ref_.get(), pname, param);
 }
 
-void ValidatingAbstractTextureImpl::BindImage(gl::GLImage* image,
-                                              bool client_managed) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void ValidatingAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
+  BindImageInternal(image, /*client_managed=*/false);
+}
+#else
+void ValidatingAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
+  BindImageInternal(image, /*client_managed=*/true);
+}
+#endif
+
+void ValidatingAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
+                                                      bool client_managed) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  CHECK(!client_managed);
+#else
+  CHECK(client_managed);
+#endif
+
   if (!texture_ref_)
     return;
 

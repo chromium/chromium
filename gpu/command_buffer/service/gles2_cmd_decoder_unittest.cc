@@ -269,13 +269,10 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
                                           GL_RGBA, GL_UNSIGNED_BYTE);
   scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
 
-  // Invoke BindImage() in the way that is done in production on each platform
-  // (note that blundell@ will shortly be hardening the code to enforce that
-  // BindImage() is invoked only as expected on a per-platform basis).
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  abstract_texture->BindImage(image.get(), /*client_managed=*/false);
+  abstract_texture->SetUnboundImage(image.get());
 #else
-  abstract_texture->BindImage(image.get(), /*client_managed=*/true);
+  abstract_texture->SetBoundImage(image.get());
 #endif
 
   auto* validating_texture =
@@ -330,15 +327,12 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   // Attach an image and see if it works.
   scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
 
-  // Invoke BindImage() in the way that is done in production on each platform
-  // (note that blundell@ will shortly be hardening the code to enforce that
-  // BindImage() is invoked only as expected on a per-platform basis).
   // NOTE: For this test, it doesn't actually matter whether the image is
   // client-managed or decoder-managed.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  abstract_texture->BindImage(image.get(), /*client_managed=*/false);
+  abstract_texture->SetUnboundImage(image.get());
 #else
-  abstract_texture->BindImage(image.get(), /*client_managed=*/true);
+  abstract_texture->SetBoundImage(image.get());
 #endif
 
   EXPECT_EQ(abstract_texture->GetImageForTesting(), image.get());
@@ -347,16 +341,10 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   EXPECT_EQ(texture->GetLevelImage(target, 0), image.get());
 
   // Unbinding should make it not renderable.
-
-  // Invoke BindImage() in the way that is done in production on each platform
-  // (note that blundell@ will shortly be hardening the code to enforce that
-  // BindImage() is invoked only as expected on a per-platform basis).
-  // NOTE: For this test, it doesn't actually matter whether the image is
-  // client-managed or decoder-managed.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  abstract_texture->BindImage(nullptr, /*client_managed=*/false);
+  abstract_texture->SetUnboundImage(nullptr);
 #else
-  abstract_texture->BindImage(nullptr, /*client_managed=*/true);
+  abstract_texture->SetBoundImage(nullptr);
 #endif
 
   EXPECT_EQ(texture->SafeToRenderFrom(), false);

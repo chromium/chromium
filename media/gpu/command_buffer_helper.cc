@@ -162,16 +162,25 @@ class CommandBufferHelperImpl
     textures_[service_id]->SetCleared();
   }
 
-  bool BindImage(GLuint service_id,
-                 gl::GLImage* image,
-                 bool client_managed) override {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  bool BindDecoderManagedImage(GLuint service_id, gl::GLImage* image) override {
     DVLOG(2) << __func__ << "(" << service_id << ")";
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     DCHECK(textures_.count(service_id));
-    textures_[service_id]->BindImage(image, client_managed);
+    textures_[service_id]->SetUnboundImage(image);
     return true;
   }
+#else
+  bool BindClientManagedImage(GLuint service_id, gl::GLImage* image) override {
+    DVLOG(2) << __func__ << "(" << service_id << ")";
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    DCHECK(textures_.count(service_id));
+    textures_[service_id]->SetBoundImage(image);
+    return true;
+  }
+#endif
 
   gpu::Mailbox CreateMailbox(GLuint service_id) override {
     DVLOG(2) << __func__ << "(" << service_id << ")";
