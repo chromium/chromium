@@ -777,6 +777,16 @@ class StubMFMediaType : public MockInterface<IMFMediaType> {
       value->uintVal = MFVideoInterlace_Progressive;
       return S_OK;
     }
+    if (key == MF_MT_VIDEO_NOMINAL_RANGE) {
+      value->vt = VT_UI4;
+      value->uintVal = MFNominalRange_0_255;
+      return S_OK;
+    }
+    if (key == MF_MT_VIDEO_PRIMARIES) {
+      value->vt = VT_UI4;
+      value->uintVal = MFVideoPrimaries_BT709;
+      return S_OK;
+    }
     return E_FAIL;
   }
   IFACEMETHODIMP GetItemType(REFGUID guidKey,
@@ -802,6 +812,15 @@ class StubMFMediaType : public MockInterface<IMFMediaType> {
       *value = media_type_index_;
       return S_OK;
     }
+    if (key == MF_MT_VIDEO_NOMINAL_RANGE) {
+      *value = MFNominalRange_0_255;
+      return S_OK;
+    }
+    if (key == MF_MT_VIDEO_PRIMARIES) {
+      *value = MFVideoPrimaries_BT709;
+      return S_OK;
+    }
+
     return E_NOTIMPL;
   }
   IFACEMETHODIMP GetUINT64(REFGUID key, UINT64* value) override {
@@ -2128,42 +2147,6 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, EnsureNV12SinkSubtype) {
         GUID sink_video_media_subtype;
         media_type->GetGUID(MF_MT_SUBTYPE, &sink_video_media_subtype);
         EXPECT_EQ(sink_video_media_subtype, expected_subtype);
-        return S_OK;
-      }));
-
-  VideoCaptureFormat format(gfx::Size(640, 480), 30, media::PIXEL_FORMAT_NV12);
-  VideoCaptureParams video_capture_params;
-  video_capture_params.requested_format = format;
-
-  task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
-                           device_->AllocateAndStart(video_capture_params,
-                                                     std::move(client_));
-                         }));
-  task_environment_.RunUntilIdle();
-
-  capture_preview_sink_->sample_callback->OnSample(nullptr);
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, EnsureNoFakeNV12MediaType) {
-  if (ShouldSkipTest())
-    return;
-
-  PrepareMFDeviceWithVideoStreams(
-      {MFVideoFormat_NV12, MFVideoFormat_MJPG, MFVideoFormat_NV12});
-  // First NV12 format should be ignored as fake (MJPG backed).
-  uint32_t kExpectedMediaTypeIndex = 2;
-  EXPECT_CALL(*(engine_.Get()), OnStartPreview());
-  EXPECT_CALL(*client_, OnStarted());
-
-  EXPECT_CALL(*(capture_source_.get()), DoSetCurrentDeviceMediaType(0, _))
-      .WillOnce(Invoke([kExpectedMediaTypeIndex](DWORD stream_index,
-                                                 IMFMediaType* media_type) {
-        GUID source_video_media_subtype;
-        media_type->GetGUID(MF_MT_SUBTYPE, &source_video_media_subtype);
-        uint32_t media_type_index;
-        media_type->GetUINT32(GUID_MEDIA_TYPE_INDEX, &media_type_index);
-        EXPECT_EQ(media_type_index, kExpectedMediaTypeIndex);
         return S_OK;
       }));
 

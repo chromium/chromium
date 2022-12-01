@@ -28,11 +28,13 @@
 #include "base/threading/platform_thread.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
+#include "media/base/win/color_space_util_win.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
 #include "media/capture/video/win/capability_list_win.h"
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/video_capture_device_utils_win.h"
+#include "ui/gfx/color_space.h"
 
 using base::Location;
 using base::win::ScopedCoMem;
@@ -431,6 +433,21 @@ HRESULT ConvertToVideoSinkMediaType(IMFMediaType* source_media_type,
   // format is kept unchanged, and causes AddStream error MF_E_INVALIDMEDIATYPE.
   if (FAILED(hr) || passthrough)
     return hr;
+
+  // Both NV12 and I420 usually use 16..235 nominal range.
+  hr = sink_media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE,
+                                  MFNominalRange_16_235);
+  if (FAILED(hr))
+    return hr;
+
+  hr = CopyAttribute(source_media_type, sink_media_type, MF_MT_VIDEO_PRIMARIES);
+  if (FAILED(hr))
+    return hr;
+
+  // Next two attributes may be missing, unless a HDR video is captured so
+  // ignore errors.
+  CopyAttribute(source_media_type, sink_media_type, MF_MT_TRANSFER_FUNCTION);
+  CopyAttribute(source_media_type, sink_media_type, MF_MT_YUV_MATRIX);
 
   hr = CopyAttribute(source_media_type, sink_media_type, MF_MT_FRAME_SIZE);
   if (FAILED(hr))
@@ -844,9 +861,22 @@ HRESULT VideoCaptureDeviceMFWin::FillCapabilities(
               type.Get(), photo,
               /*use_hardware_format=*/!photo &&
                   static_cast<bool>(dxgi_device_manager_),
-              &format, &source_pixel_format))
+              &format, &source_pixel_format)) {
+        uint32_t nominal_range = 0;
+        auto attribute_hr =
+            type->GetUINT32(MF_MT_VIDEO_NOMINAL_RANGE, &nominal_range);
+        // 0..255 range NV12 is usually just an unpacked MJPG.
+        // Since YUV formats should have 16..235 range, unlike MJPG.
+        // Using fake NV12 is discouraged, because if the output is also NV12, a
+        // passthrough mode is used by MFCaptureEngine and we get that unusual
+        // nominal range in the sink also.
+        bool maybe_fake = SUCCEEDED(attribute_hr) &&
+                          nominal_range == MFNominalRange_0_255 &&
+                          source_pixel_format == media::PIXEL_FORMAT_NV12;
         capabilities->emplace_back(media_type_index, format, stream_index,
-                                   source_pixel_format);
+                                   source_pixel_format, maybe_fake);
+      }
+
       type.Reset();
       ++media_type_index;
     }
@@ -856,28 +886,6 @@ HRESULT VideoCaptureDeviceMFWin::FillCapabilities(
     if (FAILED(hr)) {
       return hr;
     }
-  }
-
-  // Usually windows inserts fake NV12 stream before each MJPEG
-  // stream. The fake stream has the same resolution and framerate.
-  // This is observed but undocumented behavior, which might change.
-  // |maybe_fake| is used as a tie breaker between otherwise identical
-  // formats.
-  // TODO(crbug.com/1323677): Do a less minimal fix and add unit tests.
-  if (capabilities->empty()) {
-    return hr;
-  }
-  auto prev_capability = capabilities->begin();
-  auto cur_capability = prev_capability;
-  ++cur_capability;
-  while (cur_capability != capabilities->end()) {
-    if (cur_capability->source_pixel_format == PIXEL_FORMAT_MJPEG &&
-        prev_capability->source_pixel_format == PIXEL_FORMAT_NV12 &&
-        prev_capability->supported_format == cur_capability->supported_format) {
-      prev_capability->maybe_fake = true;
-    }
-    prev_capability = cur_capability;
-    ++cur_capability;
   }
 
   return hr;
@@ -1115,6 +1123,15 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
         FROM_HERE, hr);
     return;
   }
+
+  // Nominal range is rewritten to be 16..235 in non-passthrough mode.
+  // So update it before extracting the color space information.
+  if (best_match_video_capability.source_pixel_format !=
+      best_match_video_capability.supported_format.pixel_format) {
+    source_video_media_type->SetUINT32(MF_MT_VIDEO_NOMINAL_RANGE,
+                                       MFNominalRange_16_235);
+  }
+  color_space_ = media::GetMediaTypeColorSpace(source_video_media_type.Get());
 
   DWORD dw_sink_stream_index = 0;
   hr = preview_sink->AddStream(best_match_video_capability.stream_index,
@@ -1740,7 +1757,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
       VideoCaptureFormat(
           texture_size, selected_video_capability_->supported_format.frame_rate,
           pixel_format),
-      gfx::ColorSpace(), reference_time, timestamp, gfx::Rect(texture_size),
+      color_space_, reference_time, timestamp, gfx::Rect(texture_size),
       frame_metadata);
 
   return hr;
@@ -1796,12 +1813,9 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal(
   }
 
   if (!delivered_texture && client_.get()) {
-    // TODO(julien.isorce): retrieve the color space information using Media
-    // Foundation api, MFGetAttributeSize/MF_MT_VIDEO_PRIMARIES,in order to
-    // build a gfx::ColorSpace. See http://crbug.com/959988.
     client_->OnIncomingCapturedData(
         locked_buffer.data(), locked_buffer.length(),
-        selected_video_capability_->supported_format, gfx::ColorSpace(),
+        selected_video_capability_->supported_format, color_space_,
         camera_rotation_.value(), false /* flip_y */, reference_time,
         timestamp);
   }

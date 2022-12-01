@@ -29,6 +29,7 @@ component("media_foundation_util") {
   deps = [
     "//base",
     "//media:shared_memory_support",
+    "//ui/gfx:color_space",
   ]
   libs = [
     "d3d11.lib",
@@ -37,6 +38,28 @@ component("media_foundation_util") {
     "mfreadwrite.lib",
     "dxguid.lib",
     "dxgi.lib",
+  ]
+
+  # MediaFoundation is not available on Windows N, so must be delay loaded.
+  all_dependent_configs = [ ":delay_load_mf" ]
+}
+
+component("color_space_util_win") {
+  defines = [ "IS_MEDIA_IMPL" ]
+  sources = [
+    "color_space_util_win.cc",
+    "color_space_util_win.h",
+  ]
+  configs += [ "//media:media_config" ]
+  deps = [
+    "//media:shared_memory_support",
+    "//media/base",
+    "//ui/gfx:color_space",
+  ]
+  libs = [
+    "mf.lib",
+    "mfplat.lib",
+    "mfreadwrite.lib",
   ]
 
   # MediaFoundation is not available on Windows N, so must be delay loaded.

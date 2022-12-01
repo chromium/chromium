@@ -56,6 +56,14 @@ bool CompareCapability(const VideoCaptureFormat& requested,
 
   // Compare by internal pixel format to avoid conversions when possible.
   if (lhs.source_pixel_format != rhs.source_pixel_format) {
+    // Deprioritize fake formats in passthrough mode to avoid extra conversions.
+    // But do so only if the requested format is I420, because
+    // MFCaptureEngine doesn't support MJPG->I420 conversion, so fake NV12 is
+    // at least working.
+    if (requested.pixel_format == media::PIXEL_FORMAT_NV12 &&
+        lhs.maybe_fake ^ rhs.maybe_fake) {
+      return rhs.maybe_fake;
+    }
     // Choose the format with no conversion if possible.
     if (lhs.source_pixel_format == requested.pixel_format)
       return true;
@@ -89,7 +97,7 @@ bool CompareCapability(const VideoCaptureFormat& requested,
     }
   }
 
-  // Deprioritize fake formats to avoid extra conversions.
+  // Always prefer non-fake format over the same mjpg-backed.
   if (lhs.source_pixel_format == rhs.source_pixel_format &&
       (lhs.maybe_fake ^ rhs.maybe_fake)) {
     return rhs.maybe_fake;

@@ -33,6 +33,10 @@ source_set("base") {
     visibility += [ "//media/base/mac" ]
   }
 
+  if (is_win) {
+    visibility += [ "//media/base/win:color_space_util_win" ]
+  }
+
   if (is_android) {
     visibility +=
         [ "//gpu/command_buffer/service:android_texture_owner_unittests" ]
