@@ -1,3 +1,9 @@
+function waitForNextFrame() {
+  return new Promise((resolve, _) => {
+    window.requestAnimationFrame(resolve);
+  });
+}
+
 function fourColorsFrame(ctx, width, height, text) {
   const kYellow = '#FFFF00';
   const kRed = '#FF0000';
