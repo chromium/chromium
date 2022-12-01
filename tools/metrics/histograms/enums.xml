@@ -107505,6 +107505,90 @@ Called by update_scheduler_enums.py.-->
   <int value="102" label="WebStorage.getOrigins"/>
   <int value="103" label="WebStorage.getQuotaForOrigin"/>
   <int value="104" label="WebStorage.getUsageForOrigin"/>
+  <int value="105" label="WebSettings.getAllowContentAccess"/>
+  <int value="106" label="WebSettings.getAllowFileAccess"/>
+  <int value="107" label="WebSettings.getAllowFileAccessFromFileURLs"/>
+  <int value="108" label="WebSettings.getAllowUniversalAccessFromFileURLs"/>
+  <int value="109" label="WebSettings.getBlockNetworkImage"/>
+  <int value="110" label="WebSettings.getBlockNetworkLoads"/>
+  <int value="111" label="WebSettings.getBuiltInZoomControls"/>
+  <int value="112" label="WebSettings.getCacheMode"/>
+  <int value="113" label="WebSettings.getCursiveFontFamily"/>
+  <int value="114" label="WebSettings.getDatabaseEnabled"/>
+  <int value="115" label="WebSettings.getDefaultFixedFontSize"/>
+  <int value="116" label="WebSettings.getDefaultFontSize"/>
+  <int value="117" label="WebSettings.getDefaultTextEncodingName"/>
+  <int value="118" label="WebSettings.getDisabledActionModeMenuItems"/>
+  <int value="119" label="WebSettings.getDisplayZoomControls"/>
+  <int value="120" label="WebSettings.getDomStorageEnabled"/>
+  <int value="121" label="WebSettings.getFantasyFontFamily"/>
+  <int value="122" label="WebSettings.getFixedFontFamily"/>
+  <int value="123" label="WebSettings.getForceDark"/>
+  <int value="124"
+      label="WebSettings.getJavaScriptCanOpenWindowsAutomatically"/>
+  <int value="125" label="WebSettings.getJavaScriptEnabled"/>
+  <int value="126" label="WebSettings.getLayoutAlgorithm"/>
+  <int value="127" label="WebSettings.getLoadWithOverviewMode"/>
+  <int value="128" label="WebSettings.getLoadsImagesAutomatically"/>
+  <int value="129" label="WebSettings.getMediaPlaybackRequiresUserGesture"/>
+  <int value="130" label="WebSettings.getMinimumFontSize"/>
+  <int value="131" label="WebSettings.getMinimumLogicalFontSize"/>
+  <int value="132" label="WebSettings.getMixedContentMode"/>
+  <int value="133" label="WebSettings.getOffscreenPreRaster"/>
+  <int value="134" label="WebSettings.getPluginState"/>
+  <int value="135" label="WebSettings.getSafeBrowsingEnabled"/>
+  <int value="136" label="WebSettings.getSansSerifFontFamily"/>
+  <int value="137" label="WebSettings.getSaveFormData"/>
+  <int value="138" label="WebSettings.getSerifFontFamily"/>
+  <int value="139" label="WebSettings.getStandardFontFamily"/>
+  <int value="140" label="WebSettings.getTextZoom"/>
+  <int value="141" label="WebSettings.getUseWideViewPort"/>
+  <int value="142" label="WebSettings.getUserAgentString"/>
+  <int value="143" label="WebSettings.setAllowContentAccess"/>
+  <int value="144" label="WebSettings.setAllowFileAccess"/>
+  <int value="145" label="WebSettings.setAllowFileAccessFromFileURLs"/>
+  <int value="146" label="WebSettings.setAllowUniversalAccessFromFileURLs"/>
+  <int value="147" label="WebSettings.setBlockNetworkImage"/>
+  <int value="148" label="WebSettings.setBlockNetworkLoads"/>
+  <int value="149" label="WebSettings.setBuiltInZoomControls"/>
+  <int value="150" label="WebSettings.setCacheMode"/>
+  <int value="151" label="WebSettings.setCursiveFontFamily"/>
+  <int value="152" label="WebSettings.setDatabaseEnabled"/>
+  <int value="153" label="WebSettings.setDefaultFixedFontSize"/>
+  <int value="154" label="WebSettings.setDefaultFontSize"/>
+  <int value="155" label="WebSettings.setDefaultTextEncodingName"/>
+  <int value="156" label="WebSettings.setDisabledActionModeMenuItems"/>
+  <int value="157" label="WebSettings.setDisplayZoomControls"/>
+  <int value="158" label="WebSettings.setDomStorageEnabled"/>
+  <int value="159" label="WebSettings.setFantasyFontFamily"/>
+  <int value="160" label="WebSettings.setFixedFontFamily"/>
+  <int value="161" label="WebSettings.setGeolocationEnabled"/>
+  <int value="162"
+      label="WebSettings.setJavaScriptCanOpenWindowsAutomatically"/>
+  <int value="163" label="WebSettings.setJavaScriptEnabled"/>
+  <int value="164" label="WebSettings.setLayoutAlgorithm"/>
+  <int value="165" label="WebSettings.setLoadWithOverviewMode"/>
+  <int value="166" label="WebSettings.setLoadsImagesAutomatically"/>
+  <int value="167" label="WebSettings.setMediaPlaybackRequiresUserGesture"/>
+  <int value="168" label="WebSettings.setMinimumFontSize"/>
+  <int value="169" label="WebSettings.setMinimumLogicalFontSize"/>
+  <int value="170" label="WebSettings.setMixedContentMode"/>
+  <int value="171" label="WebSettings.setNeedInitialFocus"/>
+  <int value="172" label="WebSettings.setOffscreenPreRaster"/>
+  <int value="173" label="WebSettings.setPluginState"/>
+  <int value="174" label="WebSettings.setSafeBrowsingEnabled"/>
+  <int value="175" label="WebSettings.setSansSerifFontFamily"/>
+  <int value="176" label="WebSettings.setSaveFormData"/>
+  <int value="177" label="WebSettings.setSerifFontFamily"/>
+  <int value="178" label="WebSettings.setStandardFontFamily"/>
+  <int value="179" label="WebSettings.setSupportMultipleWindows"/>
+  <int value="180" label="WebSettings.setSupportZoom"/>
+  <int value="181" label="WebSettings.setTextSize"/>
+  <int value="182" label="WebSettings.setTextZoom"/>
+  <int value="183" label="WebSettings.setUseWideViewPort"/>
+  <int value="184" label="WebSettings.setUserAgentString"/>
+  <int value="185" label="WebSettings.supportMultipleWindows"/>
+  <int value="186" label="WebSettings.supportZoom"/>
 </enum>
 
 <enum name="WebViewAppProvidedMimeType">
