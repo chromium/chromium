@@ -27,8 +27,6 @@ using BrowserAppLauncherForTesting =
 void SetBrowserAppLauncherForTesting(
     const BrowserAppLauncherForTesting& launcher);
 
-void SetMacShimStartupDoneCallbackForTesting(base::OnceClosure callback);
-
 class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
  public:
   // AppShimManager::Delegate:

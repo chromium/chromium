@@ -38,26 +38,12 @@ web_app::BrowserAppLauncherForTesting& GetBrowserAppLauncherForTesting() {
   return *instance;
 }
 
-base::OnceClosure& GetMacShimStartupDoneCallbackForTesting() {
-  static base::NoDestructor<base::OnceClosure> instance;
-  return *instance;
-}
-
-void OnShimLaunchResolved() {
-  if (GetMacShimStartupDoneCallbackForTesting())
-    std::move(GetMacShimStartupDoneCallbackForTesting()).Run();
-}
-
 // Launches the app specified by `params` and `file_launches` in the given
 // `profile`.
 void LaunchAppWithParams(
     Profile* profile,
     apps::AppLaunchParams params,
     const WebAppFileHandlerManager::LaunchInfos& file_launches) {
-  auto callback = GetMacShimStartupDoneCallbackForTesting()
-                      ? base::IgnoreArgs<content::WebContents*>(std::move(
-                            GetMacShimStartupDoneCallbackForTesting()))
-                      : base::DoNothing();
   if (!file_launches.empty()) {
     for (const auto& [url, files] : file_launches) {
       apps::AppLaunchParams params_copy(params.app_id, params.container,
@@ -68,11 +54,10 @@ void LaunchAppWithParams(
 
       if (GetBrowserAppLauncherForTesting()) {
         GetBrowserAppLauncherForTesting().Run(params_copy);
-        OnShimLaunchResolved();
       } else {
         apps::AppServiceProxyFactory::GetForProfile(profile)
             ->BrowserAppLauncher()
-            ->LaunchAppWithParams(std::move(params_copy), std::move(callback));
+            ->LaunchAppWithParams(std::move(params_copy), base::DoNothing());
       }
     }
     return;
@@ -80,11 +65,10 @@ void LaunchAppWithParams(
 
   if (GetBrowserAppLauncherForTesting()) {
     GetBrowserAppLauncherForTesting().Run(params);
-    OnShimLaunchResolved();
   } else {
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params), std::move(callback));
+        ->LaunchAppWithParams(std::move(params), base::DoNothing());
   }
 }
 
@@ -92,7 +76,6 @@ void LaunchAppWithParams(
 // in the app shim exiting.
 void CancelAppLaunch(Profile* profile, const web_app::AppId& app_id) {
   apps::AppShimManager::Get()->OnAppLaunchCancelled(profile, app_id);
-  OnShimLaunchResolved();
 }
 
 // Called after the user's preference has been persisted, and the OS
@@ -146,10 +129,6 @@ void UserChoiceDialogCompleted(
 void SetBrowserAppLauncherForTesting(
     const BrowserAppLauncherForTesting& launcher) {
   GetBrowserAppLauncherForTesting() = launcher;
-}
-
-void SetMacShimStartupDoneCallbackForTesting(base::OnceClosure callback) {
-  GetMacShimStartupDoneCallbackForTesting() = std::move(callback);  // IN-TEST
 }
 
 WebAppShimManagerDelegate::WebAppShimManagerDelegate(

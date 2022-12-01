@@ -149,7 +149,6 @@
 #if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
-#include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
@@ -276,9 +275,7 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .relative_manifest_id = "webapps_integration/file_handler/basic.html",
       .app_name = "File Handler",
       .wco_not_enabled_title = u"File Handler",
-      .icon_color = SK_ColorBLACK,
-      .alternate_titles = {"File Handler - Text Handler",
-                           "File Handler - Image Handler"}}},
+      .icon_color = SK_ColorBLACK}},
     {Site::kNoServiceWorker,
      {.relative_url = "/webapps_integration/site_no_service_worker/basic.html",
       .relative_manifest_id =
@@ -1188,14 +1185,9 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
   FileHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(
       ask_again == AskAgainOptions::kRemember);
 
-  base::RunLoop run_loop;
-#if BUILDFLAG(IS_MAC)
-  web_app::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
-#else
-  web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
-#endif
-
   LaunchFile(site, files_options);
+
+  BrowserAddedWaiter browser_added_waiter;
 
   // Check the file handling dialog shows up.
   views::Widget* widget = waiter.WaitIfNeededAndGet();
@@ -1214,7 +1206,13 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
   // File handling dialog should be destroyed after choosing the action.
   widget->CloseWithReason(close_reason);
   destroyed_waiter.Wait();
-  run_loop.Run();
+
+  if (allow_deny == AllowDenyOptions::kAllow) {
+    browser_added_waiter.Wait();
+    app_browser_ = browser_added_waiter.browser_added();
+    ActivateBrowserAndWait(app_browser_);
+    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
+  }
   AfterStateChangeAction();
 }
 
@@ -1223,20 +1221,17 @@ void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
     FilesOptions files_options) {
   BeforeStateChangeAction(__FUNCTION__);
   AppId app_id = GetAppIdBySiteMode(site);
-  base::RunLoop run_loop;
-#if BUILDFLAG(IS_MAC)
-  web_app::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
-#else
-  web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
-#endif
-
+  BrowserAddedWaiter browser_added_waiter;
   LaunchFile(site, files_options);
 
   // If the user previously denied access to open files with this app, a window
   // is still opened for the app. The only difference is that no files would
   // have been passed to the app. Either way, we should always wait for a
-  // window / tab to be added.
-  run_loop.Run();
+  // browser to be added.
+  browser_added_waiter.Wait();
+  app_browser_ = browser_added_waiter.browser_added();
+  ActivateBrowserAndWait(app_browser_);
+  EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
 
   AfterStateChangeAction();
 }

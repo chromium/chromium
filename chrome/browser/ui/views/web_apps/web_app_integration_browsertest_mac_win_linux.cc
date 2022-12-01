@@ -66,6 +66,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteNotHandlesFile) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectDialog) {
   helper_.InstallMenuOption(InstallableSite::kFileHandler);
+  helper_.ClosePwa();
   helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneFooFile,
                                  AllowDenyOptions::kAllow,
                                  AskAgainOptions::kAskAgain);
@@ -74,11 +75,12 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectDialog) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog_Allow) {
   helper_.InstallOmniboxIcon(InstallableSite::kFileHandler);
+  helper_.ClosePwa();
   // Open the file and set AskAgainOption to kRemember.
   helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneFooFile,
                                  AllowDenyOptions::kAllow,
                                  AskAgainOptions::kRemember);
-  helper_.CheckWindowCreated();
+  helper_.ClosePwa();
   // Open the file again.
   helper_.LaunchFileExpectNoDialog(Site::kFileHandler,
                                    FilesOptions::kOneFooFile);
@@ -87,12 +89,12 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog_Allow) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog_Deny) {
   helper_.InstallOmniboxIcon(InstallableSite::kFileHandler);
+  helper_.ClosePwa();
   // Open the file and set AskAgainOption to kRemember.
   helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneFooFile,
                                  AllowDenyOptions::kDeny,
                                  AskAgainOptions::kRemember);
-  // No new window is created when denied.
-  helper_.CheckWindowNotCreated();
+
   // Open the file again.
   helper_.LaunchFileExpectNoDialog(Site::kFileHandler,
                                    FilesOptions::kOneFooFile);
