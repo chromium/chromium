@@ -14,14 +14,15 @@ import '../../settings_shared.css.js';
 
 import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AudioSystemProperties, AudioSystemPropertiesObserverReceiver, CrosAudioConfigInterface, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
+import {AudioDevice, AudioSystemProperties, AudioSystemPropertiesObserverReceiver, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {routes} from '../os_route.js';
 
 import {getTemplate} from './audio.html.js';
-import {getCrosAudioConfig} from './cros_audio_config.js';
+import {CrosAudioConfigInterface, getCrosAudioConfig} from './cros_audio_config.js';
 
 // TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
 // once RouteObserverMixin is converted to TS
@@ -116,8 +117,23 @@ class SettingsAudioElement extends SettingsAudioElementBase {
   // TODO(crbug.com/1092970): Create onOutputMuteTap_ method for setting output
   // mute state.
 
-  // TODO(crbug.com/1092970): Create onOutputDeviceChanged_ method for setting
-  // active output device.
+  /** Handles updating active output device. */
+  protected onOutputDeviceChanged(): void {
+    // TODO(b/260277007): Remove condition when setActiveDevice added to mojo
+    // definition.
+    if (!this.crosAudioConfig_.setActiveDevice) {
+      return;
+    }
+    const outputDeviceSelect =
+        this.shadowRoot!.querySelector<HTMLSelectElement>(
+            '#audioOutputDeviceDropdown');
+    assert(!!outputDeviceSelect);
+    const nextActiveDevice = this.audioSystemProperties_.outputDevices.find(
+        (device: AudioDevice) =>
+            device.id === BigInt(outputDeviceSelect.value));
+    assert(!!nextActiveDevice);
+    this.crosAudioConfig_.setActiveDevice(nextActiveDevice);
+  }
 
   override currentRouteChanged(route: Route) {
     // Does not apply to this page.

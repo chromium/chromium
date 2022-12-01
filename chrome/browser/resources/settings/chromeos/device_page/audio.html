@@ -109,7 +109,8 @@
           $i18n{audioDeviceTitle}
         </div>
         <select id="audioOutputDeviceDropdown" class="md-select"
-            aria-labelledby="audioOutputDeviceLabel">
+            aria-labelledby="audioOutputDeviceLabel"
+            on-change="onOutputDeviceChanged">
           <template is="dom-repeat"
               items="[[audioSystemProperties_.outputDevices]]">
             <option value="[[item.id]]" selected="[[item.isActive]]">

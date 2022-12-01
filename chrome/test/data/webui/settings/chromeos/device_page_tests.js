@@ -739,6 +739,27 @@ suite('SettingsDevicePage', function() {
           activeSpeakerFakeAudioSystemProperties.outputDevices.length,
           outputDeviceDropdown.length);
     });
+
+    test('simulate setting active output device', async function() {
+      // Get dropdown.
+      /** @type {!HTMLSelectElement}*/
+      const outputDeviceDropdown =
+          audioPage.shadowRoot.querySelector('#audioOutputDeviceDropdown');
+
+      // Verify selected is active device.
+      const expectedInitialSelectionId =
+          `${fakeCrosAudioConfig.defaultFakeMicJack.id}`;
+      assertEquals(expectedInitialSelectionId, outputDeviceDropdown.value);
+
+      // change active device.
+      outputDeviceDropdown.selectedIndex = 0;
+      await flushTasks();
+
+      // Verify selected updated to latest active device.
+      const expectedUpdatedSelectionId =
+          `${fakeCrosAudioConfig.defaultFakeSpeaker.id}`;
+      assertEquals(expectedUpdatedSelectionId, outputDeviceDropdown.value);
+    });
   });
 
   suite(assert(TestNames.Pointers), function() {
