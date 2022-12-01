@@ -149,6 +149,11 @@ void MessagePopupCollection::AnimateResize() {
 MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
     const std::string& notification_id) {
   auto it = base::ranges::find_if(popup_items_, [&](const auto& child) {
+    // Exit early if the popup ptr has been set to nullptr by
+    // `NotifyPopupClosed` but has not been cleared from `popup_items_`.
+    if (!child.popup)
+      return false;
+
     auto* widget = child.popup->GetWidget();
     // Do not return popups that are in the process of closing, but have not
     // yet been removed from `popup_items_`.
