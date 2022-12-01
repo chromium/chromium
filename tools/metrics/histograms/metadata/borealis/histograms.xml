@@ -101,6 +101,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Borealis.Disk.HighestDirtyPagesDaily" units="KiB"
+    expires_after="2023-04-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The highest dirty page value observed in Borealis that day (taken
+    from`/proc/meminfo`). Reported daily.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.InodeRatioAtStartup" units="KiB"
+    expires_after="2023-04-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The amount of bytes used per an inode, on average, in Borealis. This is
+    recorded once during each startup, when maitred emits disk related metrics.
+  </summary>
+</histogram>
+
 <histogram name="Borealis.Disk.Startup.Result"
     enum="BorealisSyncDiskSizeResult" expires_after="2023-04-16">
   <owner>danielng@google.com</owner>
@@ -160,6 +180,28 @@ chromium-metrics-reviews@google.com.
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>Borealis swap file KiB written per day. Reported daily.</summary>
+</histogram>
+
+<histogram name="Borealis.Disk.VMUsageToTotalSpacePercentageAtStartup"
+    units="%" expires_after="2023-04-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The percent of space that the VM is using in comparison to the total size of
+    the disk (i.e VM_usage/total_disk_size). This is recorded once during each
+    startup, when maitred emits disk related metrics.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.VMUsageToTotalUsagePercentageAtStartup"
+    units="%" expires_after="2023-04-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The percent of space that the VM is using in comparison to the total amount
+    of space being used (i.e VM_usage/total_usage). This is recorded once during
+    each startup, when maitred emits disk related metrics.
+  </summary>
 </histogram>
 
 <histogram name="Borealis.EngagementTime.{Variant}" units="ms"
@@ -254,6 +296,26 @@ chromium-metrics-reviews@google.com.
     A record of post-startup failures in Borealis components. Buckets are
     recorded to when we become aware that the corresponding component has
     failed.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Startup.fsckResult" enum="BorealisStartupFsckResult"
+    expires_after="2023-04-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Return code from running fsck during VM startup. This is recorded once
+    during each startup, when maitred emits disk related metrics.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Startup.fsckTime" units="ms"
+    expires_after="2023-04-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The time taken for fsck to complete during VM startup. This is recorded once
+    during each startup, when maitred emits disk related metrics.
   </summary>
 </histogram>
 
