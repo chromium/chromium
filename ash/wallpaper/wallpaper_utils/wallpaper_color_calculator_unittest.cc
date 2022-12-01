@@ -115,7 +115,8 @@ class WallpaperColorCalculatorTest : public testing::Test {
 
  private:
   // Required for asynchronous calculations, e.g. by PostTaskAndReplyImpl.
-  std::unique_ptr<base::ThreadTaskRunnerHandle> task_runner_handle_;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
+      task_runner_handle_;
 };
 
 WallpaperColorCalculatorTest::WallpaperColorCalculatorTest()
@@ -130,7 +131,8 @@ void WallpaperColorCalculatorTest::InstallTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   task_runner_handle_.reset();
   task_runner_handle_ =
-      std::make_unique<base::ThreadTaskRunnerHandle>(task_runner);
+      std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+          task_runner);
   if (calculator_)
     calculator_->SetTaskRunnerForTest(task_runner);
 }

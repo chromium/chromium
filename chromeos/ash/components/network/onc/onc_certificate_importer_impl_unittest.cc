@@ -39,7 +39,8 @@ class ONCCertificateImporterImplTest : public testing::Test {
 
     task_runner_ = new base::TestSimpleTaskRunner();
     thread_task_runner_handle_ =
-        std::make_unique<base::ThreadTaskRunnerHandle>(task_runner_);
+        std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+            task_runner_);
 
     test_nssdb_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(public_nssdb_.slot())),
@@ -143,7 +144,8 @@ class ONCCertificateImporterImplTest : public testing::Test {
   crypto::ScopedTestNSSDB private_nssdb_;
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  std::unique_ptr<base::ThreadTaskRunnerHandle> thread_task_runner_handle_;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
+      thread_task_runner_handle_;
   std::unique_ptr<net::NSSCertDatabaseChromeOS> test_nssdb_;
   base::Value onc_certificates_;
   // List of certs in the nssdb's public slot.

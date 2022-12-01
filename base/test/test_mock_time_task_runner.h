@@ -317,7 +317,8 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   ConditionVariable tasks_lock_cv_;
 
   const scoped_refptr<NonOwningProxyTaskRunner> proxy_task_runner_;
-  std::unique_ptr<ThreadTaskRunnerHandle> thread_task_runner_handle_;
+  std::unique_ptr<SingleThreadTaskRunner::CurrentDefaultHandle>
+      thread_task_runner_handle_;
 
   // Set to true in RunLoop::Delegate::Quit() to signal the topmost
   // RunLoop::Delegate::Run() instance to stop, reset to false when it does.

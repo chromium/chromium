@@ -179,7 +179,8 @@ TestMockTimeTaskRunner::TestMockTimeTaskRunner(Time start_time,
   if (type == Type::kBoundToThread) {
     RunLoop::RegisterDelegateForCurrentThread(this);
     thread_task_runner_handle_ =
-        std::make_unique<ThreadTaskRunnerHandle>(proxy_task_runner_);
+        std::make_unique<SingleThreadTaskRunner::CurrentDefaultHandle>(
+            proxy_task_runner_);
   }
 }
 

@@ -44,13 +44,16 @@ class ChromeVoxHintDetectorTest : public testing::Test {
  private:
   MockDetectorObserver observer_;
   std::unique_ptr<ChromeVoxHintDetector> detector_;
-  std::unique_ptr<base::ThreadTaskRunnerHandle> runner_handle_;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
+      runner_handle_;
   ui::UserActivityDetector user_activity_detector_;
 };
 
 ChromeVoxHintDetectorTest::ChromeVoxHintDetectorTest() {
   runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  runner_handle_ = std::make_unique<base::ThreadTaskRunnerHandle>(runner_);
+  runner_handle_ =
+      std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+          runner_);
 }
 
 void ChromeVoxHintDetectorTest::ExpectChromeVoxHintWillBeGiven() {

@@ -35,7 +35,9 @@ class SharedGpuContextTestBase : public Test {
  public:
   void SetUp() override {
     task_runner_ = base::MakeRefCounted<base::NullTaskRunner>();
-    handle_ = std::make_unique<base::ThreadTaskRunnerHandle>(task_runner_);
+    handle_ =
+        std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+            task_runner_);
     auto factory = [](GLES2InterfaceType* gl, bool* gpu_compositing_disabled)
         -> std::unique_ptr<WebGraphicsContext3DProvider> {
       *gpu_compositing_disabled = false;
@@ -58,7 +60,7 @@ class SharedGpuContextTestBase : public Test {
   }
 
   scoped_refptr<base::NullTaskRunner> task_runner_;
-  std::unique_ptr<base::ThreadTaskRunnerHandle> handle_;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle> handle_;
   GLES2InterfaceType gl_;
 };
 
@@ -86,7 +88,9 @@ class BadSharedGpuContextTest : public Test {
  public:
   void SetUp() override {
     task_runner_ = base::MakeRefCounted<base::NullTaskRunner>();
-    handle_ = std::make_unique<base::ThreadTaskRunnerHandle>(task_runner_);
+    handle_ =
+        std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+            task_runner_);
     auto factory = [](bool* gpu_compositing_disabled)
         -> std::unique_ptr<WebGraphicsContext3DProvider> {
       *gpu_compositing_disabled = false;
@@ -103,7 +107,7 @@ class BadSharedGpuContextTest : public Test {
   }
 
   scoped_refptr<base::NullTaskRunner> task_runner_;
-  std::unique_ptr<base::ThreadTaskRunnerHandle> handle_;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle> handle_;
 };
 
 // Test fixure that simulate not using gpu compositing.
@@ -131,7 +135,9 @@ class SharedGpuContextTestViz : public Test {
  public:
   void SetUp() override {
     task_runner_ = base::MakeRefCounted<base::NullTaskRunner>();
-    handle_ = std::make_unique<base::ThreadTaskRunnerHandle>(task_runner_);
+    handle_ =
+        std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+            task_runner_);
     test_context_provider_ = viz::TestContextProvider::Create();
     InitializeSharedGpuContext(test_context_provider_.get(),
                                /*cache = */ nullptr,
@@ -144,7 +150,7 @@ class SharedGpuContextTestViz : public Test {
     SharedGpuContext::ResetForTesting();
   }
   scoped_refptr<base::NullTaskRunner> task_runner_;
-  std::unique_ptr<base::ThreadTaskRunnerHandle> handle_;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle> handle_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
 };
 

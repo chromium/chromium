@@ -36,7 +36,8 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     media_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     copy_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     media_task_runner_handle_ =
-        std::make_unique<base::ThreadTaskRunnerHandle>(media_task_runner_);
+        std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+            media_task_runner_);
     mock_gpu_factories_ =
         std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
     gpu_memory_buffer_pool_ = std::make_unique<GpuMemoryBufferVideoFramePool>(
@@ -250,7 +251,8 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> copy_task_runner_;
   // GpuMemoryBufferVideoFramePool uses BindToCurrentLoop(), which requires
   // ThreadTaskRunnerHandle initialization.
-  std::unique_ptr<base::ThreadTaskRunnerHandle> media_task_runner_handle_;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
+      media_task_runner_handle_;
   std::unique_ptr<viz::TestSharedImageInterface> sii_;
 };
 

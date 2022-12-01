@@ -44,7 +44,8 @@ class InkDropTest : public testing::TestWithParam<testing::tuple<InkDropType>> {
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 
   // Required by base::Timer's.
-  std::unique_ptr<base::ThreadTaskRunnerHandle> thread_task_runner_handle_;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
+      thread_task_runner_handle_;
 };
 
 InkDropTest::InkDropTest() : ink_drop_(nullptr) {
@@ -64,7 +65,8 @@ InkDropTest::InkDropTest() : ink_drop_(nullptr) {
       scoped_refptr<base::TestMockTimeTaskRunner> task_runner(
           new base::TestMockTimeTaskRunner);
       thread_task_runner_handle_ =
-          std::make_unique<base::ThreadTaskRunnerHandle>(task_runner);
+          std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+              task_runner);
       break;
   }
 }

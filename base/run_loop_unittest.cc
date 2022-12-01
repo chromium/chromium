@@ -149,7 +149,8 @@ class TestBoundDelegate final : public InjectableTestDelegate {
   // ThreadTaskRunnerHandle for this thread.
   void BindToCurrentThread() {
     thread_task_runner_handle_ =
-        std::make_unique<ThreadTaskRunnerHandle>(simple_task_runner_);
+        std::make_unique<SingleThreadTaskRunner::CurrentDefaultHandle>(
+            simple_task_runner_);
     RunLoop::RegisterDelegateForCurrentThread(this);
   }
 
@@ -191,7 +192,8 @@ class TestBoundDelegate final : public InjectableTestDelegate {
   scoped_refptr<SimpleSingleThreadTaskRunner> simple_task_runner_ =
       MakeRefCounted<SimpleSingleThreadTaskRunner>();
 
-  std::unique_ptr<ThreadTaskRunnerHandle> thread_task_runner_handle_;
+  std::unique_ptr<SingleThreadTaskRunner::CurrentDefaultHandle>
+      thread_task_runner_handle_;
 
   bool should_quit_ = false;
 };

@@ -114,7 +114,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
     raw_ptr<SequencedTaskSource> task_source = nullptr;            // Not owned.
     raw_ptr<RunLoop::NestingObserver> nesting_observer = nullptr;  // Not owned.
-    std::unique_ptr<ThreadTaskRunnerHandle> thread_task_runner_handle;
+    std::unique_ptr<SingleThreadTaskRunner::CurrentDefaultHandle>
+        thread_task_runner_handle;
 
     // Indicates that we should yield DoWork between each task to let a possibly
     // nested RunLoop exit.

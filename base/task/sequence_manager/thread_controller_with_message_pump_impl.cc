@@ -222,7 +222,8 @@ void ThreadControllerWithMessagePumpImpl::InitializeThreadTaskRunnerHandle() {
   // so reset the old one.
   main_thread_only().thread_task_runner_handle.reset();
   main_thread_only().thread_task_runner_handle =
-      std::make_unique<ThreadTaskRunnerHandle>(task_runner_);
+      std::make_unique<SingleThreadTaskRunner::CurrentDefaultHandle>(
+          task_runner_);
   // When the task runner is known, bind the power manager. Power notifications
   // are received through that sequence.
   power_monitor_.BindToCurrentThread();

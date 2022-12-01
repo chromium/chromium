@@ -123,7 +123,8 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
 
   blink::Platform::InitializeBlink();
   scoped_refptr<base::SingleThreadTaskRunner> dummy_task_runner;
-  std::unique_ptr<base::ThreadTaskRunnerHandle> dummy_task_runner_handle;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
+      dummy_task_runner_handle;
   if (scheduler_type == SchedulerType::kMockScheduler) {
     main_thread_scheduler_ =
         blink::scheduler::CreateWebMainThreadSchedulerForTests();
@@ -136,7 +137,8 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     // TestBlinkWebUnitTestSupport would introduce a conflict.
     dummy_task_runner = base::MakeRefCounted<base::NullTaskRunner>();
     dummy_task_runner_handle =
-        std::make_unique<base::ThreadTaskRunnerHandle>(dummy_task_runner);
+        std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+            dummy_task_runner);
     // Force V8 to run single threaded.
     v8_flags += " --single-threaded";
   } else {

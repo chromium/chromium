@@ -139,7 +139,8 @@ class MidiTaskServiceTest : public ::testing::Test {
     ResetEvent();
     task_runner_ = new base::TestSimpleTaskRunner();
     thread_task_runner_handle_ =
-        std::make_unique<base::ThreadTaskRunnerHandle>(task_runner_);
+        std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+            task_runner_);
   }
 
   void TearDown() override {
@@ -148,7 +149,8 @@ class MidiTaskServiceTest : public ::testing::Test {
   }
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  std::unique_ptr<base::ThreadTaskRunnerHandle> thread_task_runner_handle_;
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
+      thread_task_runner_handle_;
   TaskService task_service_;
 };
 

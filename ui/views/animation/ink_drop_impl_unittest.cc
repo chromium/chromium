@@ -69,8 +69,10 @@ class InkDropImplTest : public testing::Test {
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
   // Required by base::Timer's.
-  std::unique_ptr<base::ThreadTaskRunnerHandle> thread_task_runner_handle_ =
-      std::make_unique<base::ThreadTaskRunnerHandle>(task_runner_);
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
+      thread_task_runner_handle_ =
+          std::make_unique<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+              task_runner_);
 
  private:
   TestInkDropHost ink_drop_host_;
