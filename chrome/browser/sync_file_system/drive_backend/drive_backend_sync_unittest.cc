@@ -180,8 +180,8 @@ class DriveBackendSyncTest : public testing::Test,
     base::RunLoop run_loop;
     bool success = false;
     FileTracker tracker;
-    PostTaskAndReplyWithResult(
-        worker_task_runner_.get(), FROM_HERE,
+    worker_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&MetadataDatabase::FindAppRootTracker,
                        base::Unretained(metadata_database()), app_id, &tracker),
         base::BindOnce(&SetValueAndCallClosure<bool>, run_loop.QuitClosure(),
@@ -205,8 +205,8 @@ class DriveBackendSyncTest : public testing::Test,
     FileTracker tracker;
     base::FilePath result_path;
     base::FilePath normalized_path = path.NormalizePathSeparators();
-    PostTaskAndReplyWithResult(
-        worker_task_runner_.get(), FROM_HERE,
+    worker_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&MetadataDatabase::FindNearestActiveAncestor,
                        base::Unretained(metadata_database()), app_id,
                        normalized_path, &tracker, &result_path),
@@ -365,8 +365,8 @@ class DriveBackendSyncTest : public testing::Test,
 
         base::RunLoop run_loop;
         int64_t largest_fetched_change_id = -1;
-        PostTaskAndReplyWithResult(
-            worker_task_runner_.get(), FROM_HERE,
+        worker_task_runner_->PostTaskAndReplyWithResult(
+            FROM_HERE,
             base::BindOnce(&MetadataDatabase::GetLargestFetchedChangeID,
                            base::Unretained(metadata_database())),
             base::BindOnce(&SetValueAndCallClosure<int64_t>,
@@ -533,8 +533,8 @@ class DriveBackendSyncTest : public testing::Test,
   size_t CountMetadata() {
     size_t count = 0;
     base::RunLoop run_loop;
-    PostTaskAndReplyWithResult(
-        worker_task_runner_.get(), FROM_HERE,
+    worker_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&MetadataDatabase::CountFileMetadata,
                        base::Unretained(metadata_database())),
         base::BindOnce(&SetValueAndCallClosure<size_t>, run_loop.QuitClosure(),
@@ -546,8 +546,8 @@ class DriveBackendSyncTest : public testing::Test,
   size_t CountTracker() {
     size_t count = 0;
     base::RunLoop run_loop;
-    PostTaskAndReplyWithResult(
-        worker_task_runner_.get(), FROM_HERE,
+    worker_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&MetadataDatabase::CountFileTracker,
                        base::Unretained(metadata_database())),
         base::BindOnce(&SetValueAndCallClosure<size_t>, run_loop.QuitClosure(),

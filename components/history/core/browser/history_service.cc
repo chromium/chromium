@@ -30,7 +30,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -374,8 +373,8 @@ void HistoryService::GetCountsAndLastVisitForOriginsForTesting(
     GetCountsAndLastVisitForOriginsCallback callback) const {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&HistoryBackend::GetCountsAndLastVisitForOrigins,
                      history_backend_, origins),
       std::move(callback));
@@ -777,8 +776,8 @@ void HistoryService::CanSetOnDemandFavicons(
     return;
   }
 
-  PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&HistoryBackend::CanSetOnDemandFavicons, history_backend_,
                      page_url, icon_type),
       std::move(callback));
@@ -797,8 +796,8 @@ void HistoryService::SetOnDemandFavicons(
     return;
   }
 
-  PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&HistoryBackend::SetOnDemandFavicons, history_backend_,
                      page_url, icon_type, icon_url, bitmaps),
       std::move(callback));
@@ -981,17 +980,18 @@ void HistoryService::CreateDownload(const DownloadRow& create_info,
                                     DownloadCreateCallback callback) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PostTaskAndReplyWithResult(backend_task_runner_.get(), FROM_HERE,
-                             base::BindOnce(&HistoryBackend::CreateDownload,
-                                            history_backend_, create_info),
-                             std::move(callback));
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&HistoryBackend::CreateDownload, history_backend_,
+                     create_info),
+      std::move(callback));
 }
 
 void HistoryService::GetNextDownloadId(DownloadIdCallback callback) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&HistoryBackend::GetNextDownloadId, history_backend_),
       std::move(callback));
 }
@@ -1001,8 +1001,8 @@ void HistoryService::GetNextDownloadId(DownloadIdCallback callback) {
 void HistoryService::QueryDownloads(DownloadQueryCallback callback) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&HistoryBackend::QueryDownloads, history_backend_),
       std::move(callback));
 }

@@ -22,7 +22,6 @@ specific_include_rules = {
     "+base/strings/string_split.h",
     "+base/strings/utf_string_conversions.h",
     "+base/task/current_thread.h",
-    "+base/task/task_runner_util.h",
     "+base/threading/thread.h",
     "+components/viz/test",
     "+media/base",

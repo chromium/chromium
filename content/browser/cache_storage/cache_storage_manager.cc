@@ -29,7 +29,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
@@ -853,8 +852,8 @@ void CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo(
     } else {
       // This must be for an unmigrated cache storage instance using an origin
       // path, so just directly delete the directory.
-      PostTaskAndReplyWithResult(
-          cache_task_runner_.get(), FROM_HERE,
+      cache_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE,
           base::BindOnce(&DeleteDir, CacheStorageManager::ConstructBucketPath(
                                          profile_path_, bucket_locator, owner)),
           base::BindOnce(&DeleteBucketDidDeleteDir, barrier_callback));
@@ -1019,8 +1018,8 @@ void CacheStorageManager::DeleteBucketDidClose(
     return;
   }
 
-  PostTaskAndReplyWithResult(
-      cache_task_runner_.get(), FROM_HERE,
+  cache_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&DeleteDir, CacheStorageManager::ConstructBucketPath(
                                      profile_path_, bucket_locator, owner)),
       base::BindOnce(&DeleteBucketDidDeleteDir, std::move(callback)));

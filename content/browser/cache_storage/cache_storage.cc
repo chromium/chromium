@@ -30,7 +30,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -273,8 +272,8 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
                                   CacheAndErrorCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    PostTaskAndReplyWithResult(
-        cache_task_runner_.get(), FROM_HERE,
+    cache_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&SimpleCacheLoader::PrepareNewCacheDirectoryInPool,
                        directory_path_),
         base::BindOnce(&SimpleCacheLoader::PrepareNewCacheCreateCache,
@@ -386,8 +385,8 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     base::FilePath index_path =
         directory_path_.AppendASCII(CacheStorage::kIndexFileName);
 
-    PostTaskAndReplyWithResult(
-        cache_task_runner_.get(), FROM_HERE,
+    cache_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&SimpleCacheLoader::WriteIndexWriteToFileInPool,
                        tmp_path, index_path, serialized, quota_manager_proxy_,
                        bucket_locator_),
@@ -414,8 +413,8 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
   void LoadIndex(CacheStorageIndexLoadCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    PostTaskAndReplyWithResult(
-        cache_task_runner_.get(), FROM_HERE,
+    cache_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&SimpleCacheLoader::ReadAndMigrateIndexInPool,
                        directory_path_, quota_manager_proxy_, bucket_locator_),
         base::BindOnce(&SimpleCacheLoader::LoadIndexDidReadIndex,

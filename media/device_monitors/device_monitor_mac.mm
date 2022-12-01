@@ -16,7 +16,6 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/thread_checker.h"
 
 namespace {
@@ -239,8 +238,8 @@ void SuspendObserverDelegate::StartObserver(
   // Enumerate the devices in Device thread and post the observers start to be
   // done on UI thread. The devices array is retained in |device_thread| and
   // released in DoStartObserver().
-  base::PostTaskAndReplyWithResult(
-      device_thread.get(), FROM_HERE, base::BindOnce(base::RetainBlock(^{
+  device_thread->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(base::RetainBlock(^{
         return [ListCameras() retain];
       })),
       base::BindOnce(&SuspendObserverDelegate::DoStartObserver, this));
@@ -252,8 +251,8 @@ void SuspendObserverDelegate::OnDeviceChanged(
   // Enumerate the devices in Device thread and post the consolidation of the
   // new devices and the old ones to be done on main thread. The devices array
   // is retained in |device_thread| and released in DoOnDeviceChanged().
-  PostTaskAndReplyWithResult(
-      device_thread.get(), FROM_HERE, base::BindOnce(base::RetainBlock(^{
+  device_thread->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(base::RetainBlock(^{
         return [ListCameras() retain];
       })),
       base::BindOnce(&SuspendObserverDelegate::DoOnDeviceChanged, this));

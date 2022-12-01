@@ -19,7 +19,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "google_apis/common/request_sender.h"
@@ -66,9 +65,8 @@ void ParseJsonOnBlockingPool(
     base::TaskRunner* blocking_task_runner,
     std::string json,
     base::OnceCallback<void(std::unique_ptr<base::Value> value)> callback) {
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner, FROM_HERE,
-      base::BindOnce(&google_apis::ParseJson, std::move(json)),
+  blocking_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&google_apis::ParseJson, std::move(json)),
       std::move(callback));
 }
 
@@ -479,8 +477,8 @@ void MultipartUploadRequestBase::Prepare(PrepareCallback callback) {
   // |UrlFetchRequestBase::Cancel| and OnPrepareUploadContent won't be called.
   std::string* const upload_content_type = new std::string();
   std::string* const upload_content_data = new std::string();
-  PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GetMultipartContent, boundary_, metadata_json_,
                      content_type_, local_path_,
                      base::Unretained(upload_content_type),

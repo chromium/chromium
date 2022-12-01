@@ -9,7 +9,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"

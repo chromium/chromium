@@ -21,7 +21,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account.h"
@@ -362,8 +361,8 @@ void AccountManager::Initialize(
 
   if (!IsEphemeralMode()) {
     DCHECK(task_runner_);
-    PostTaskAndReplyWithResult(
-        task_runner_.get(), FROM_HERE,
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
         base::BindOnce(&AccountManager::LoadAccountsFromDisk, tokens_file_path),
         base::BindOnce(
             &AccountManager::InsertAccountsAndRunInitializationCallbacks,

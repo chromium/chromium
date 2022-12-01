@@ -26,7 +26,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -753,10 +752,10 @@ void BlobMemoryController::CalculateBlobStorageLimits() {
     return;
   did_schedule_limit_calculation_ = true;
   if (file_runner_) {
-    PostTaskAndReplyWithResult(
-        file_runner_.get(), FROM_HERE,
-        base::BindOnce(&CalculateBlobStorageLimitsImpl, blob_storage_dir_,
-                       true, amount_of_memory_for_testing_),
+    file_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CalculateBlobStorageLimitsImpl, blob_storage_dir_, true,
+                       amount_of_memory_for_testing_),
         base::BindOnce(&BlobMemoryController::OnStorageLimitsCalculated,
                        weak_factory_.GetWeakPtr()));
   } else {

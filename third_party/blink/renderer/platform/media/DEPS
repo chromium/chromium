@@ -13,7 +13,6 @@ include_rules = [
   "+base/strings/utf_string_conversions.h",
   "+base/task/bind_post_task.h",
   "+base/task/task_runner.h",
-  "+base/task/task_runner_util.h",
   "+base/threading/thread.h",
   "+cc/layers",
   "+components/viz/common",
