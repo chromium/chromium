@@ -73,16 +73,28 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
 
+  struct IdentityProviderGetInfo {
+    IdentityProviderGetInfo(blink::mojom::IdentityProvider,
+                            bool prefer_auto_signin);
+    ~IdentityProviderGetInfo();
+    IdentityProviderGetInfo(const IdentityProviderGetInfo&);
+
+    blink::mojom::IdentityProvider provider;
+    bool prefer_auto_signin{false};
+  };
+
   struct IdentityProviderInfo {
     IdentityProviderInfo(blink::mojom::IdentityProvider,
                          FederatedManifestRequester::Endpoints,
-                         IdentityProviderMetadata);
+                         IdentityProviderMetadata,
+                         bool prefer_auto_signin);
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
 
     blink::mojom::IdentityProvider provider;
     FederatedManifestRequester::Endpoints endpoints;
     IdentityProviderMetadata metadata;
+    bool prefer_auto_signin{false};
     bool has_failing_idp_signin_status{false};
     absl::optional<IdentityProviderData> data;
   };
@@ -100,7 +112,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void OnAllManifestsFetched(
       std::unique_ptr<FederatedManifestRequester> manifest_requester,
-      base::flat_map<GURL, blink::mojom::IdentityProvider> providers,
+      base::flat_map<GURL, IdentityProviderGetInfo> get_infos,
       std::vector<FederatedManifestRequester::FetchResult> fetch_results);
   void OnClientMetadataResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
@@ -196,8 +208,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Helper that records FedCM UMA and UKM metrics. Initialized in the
   // RequestToken() method, so all metrics must be recorded after that.
   std::unique_ptr<FedCmMetrics> fedcm_metrics_;
-
-  bool prefer_auto_sign_in_;
 
   // Populated in OnAllManifestsFetched().
   base::flat_map<GURL, GURL> metrics_endpoints_;
