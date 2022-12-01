@@ -919,8 +919,11 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
 
 TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
   // Make sure the thread cache is enabled in the main partition.
-  allocator_shim::internal::PartitionAllocMalloc::Allocator()
-      ->EnableThreadCacheIfSupported();
+  if (!allocator_shim::internal::PartitionAllocMalloc::Allocator()
+           ->thread_cache_for_testing()) {
+    allocator_shim::internal::PartitionAllocMalloc::Allocator()
+        ->EnableThreadCacheIfSupported();
+  }
 
   Thread service_thread = Thread("ServiceThread");
   Thread::Options service_thread_options;
