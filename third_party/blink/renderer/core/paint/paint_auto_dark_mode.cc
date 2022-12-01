@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 

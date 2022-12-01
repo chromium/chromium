@@ -23,8 +23,6 @@
 
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 
-#include <algorithm>
-
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -43,7 +41,8 @@
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "ui/gfx/geometry/rect_conversions.h"
+
+#include <algorithm>
 
 namespace blink {
 

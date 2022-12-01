@@ -28,7 +28,9 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
     virtual void DidPinImage(size_t bytes) = 0;
   };
 
-  MemoryManagedPaintCanvas(const gfx::Size& size, Client* client);
+  MemoryManagedPaintCanvas(cc::DisplayItemList* list,
+                           const gfx::Size& size,
+                           Client* client);
   explicit MemoryManagedPaintCanvas(const cc::RecordPaintCanvas&) = delete;
   ~MemoryManagedPaintCanvas() override;
 
@@ -55,7 +57,6 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
       cached_image_ids_;
 
   Client* client_;
-  std::unique_ptr<PaintCanvas> canvas_;
 };
 
 }  // namespace blink

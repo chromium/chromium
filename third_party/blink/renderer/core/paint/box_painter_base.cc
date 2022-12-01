@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_interpolation_quality.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 

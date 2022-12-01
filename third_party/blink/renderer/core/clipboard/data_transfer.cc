@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 

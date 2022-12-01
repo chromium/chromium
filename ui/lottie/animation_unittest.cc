@@ -303,6 +303,11 @@ class AnimationTest : public testing::Test {
 
 class AnimationWithImageAssetsTest : public AnimationTest {
  protected:
+  AnimationWithImageAssetsTest()
+      : display_list_(base::MakeRefCounted<cc::DisplayItemList>(
+            cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)),
+        record_canvas_(display_list_.get()) {}
+
   void SetUp() override {
     canvas_ = std::make_unique<gfx::Canvas>(&record_canvas_, kCanvasImageScale);
     skottie_ = cc::CreateSkottieFromString(cc::kLottieDataWith2Assets);
@@ -320,6 +325,7 @@ class AnimationWithImageAssetsTest : public AnimationTest {
         .quality = cc::PaintFlags::FilterQuality::kHigh};
   }
 
+  const scoped_refptr<cc::DisplayItemList> display_list_;
   cc::RecordPaintCanvas record_canvas_;
   TestSkottieFrameDataProvider frame_data_provider_;
   raw_ptr<TestSkottieFrameDataProvider::ImageAssetImpl> asset_0_;
@@ -1331,9 +1337,12 @@ TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
   asset_0->set_current_frame_data(frame_0);
   asset_1->set_current_frame_data(frame_1);
 
+  display_list_->StartPaint();
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
 
-  sk_sp<cc::PaintRecord> paint_record = record_canvas_.ReleaseAsRecord();
+  sk_sp<cc::PaintRecord> paint_record = display_list_->ReleaseAsRecord();
+  ASSERT_THAT(paint_record, NotNull());
   ASSERT_THAT(paint_record->size(), Eq(1u));
   const cc::DrawSkottieOp* op =
       paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
@@ -1343,9 +1352,12 @@ TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
 
   AdvanceClock(animation_->GetAnimationDuration() * .75);
 
+  display_list_->StartPaint();
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
 
-  paint_record = record_canvas_.ReleaseAsRecord();
+  paint_record = display_list_->ReleaseAsRecord();
+  ASSERT_THAT(paint_record, NotNull());
   ASSERT_THAT(paint_record->size(), Eq(1u));
   op = paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
   ASSERT_THAT(op, NotNull());
@@ -1358,9 +1370,13 @@ TEST_F(AnimationWithImageAssetsTest, GracefullyHandlesNullImages) {
 
   animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
       Animation::Style::kLoop, *animation_));
-  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
-  sk_sp<cc::PaintRecord> paint_record = record_canvas_.ReleaseAsRecord();
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+
+  sk_sp<cc::PaintRecord> paint_record = display_list_->ReleaseAsRecord();
+  ASSERT_THAT(paint_record, NotNull());
   ASSERT_THAT(paint_record->size(), Eq(1u));
   const cc::DrawSkottieOp* op =
       paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
@@ -1379,7 +1395,9 @@ TEST_F(AnimationWithImageAssetsTest, LoadsCorrectFrameTimestamp) {
   asset_0_->set_current_frame_data(CreateHighQualityTestFrameData());
   asset_1_->set_current_frame_data(CreateHighQualityTestFrameData());
 
+  display_list_->StartPaint();
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
 
   ASSERT_TRUE(asset_0_->last_frame_t().has_value());
   EXPECT_THAT(asset_0_->last_frame_t().value(), FloatEq(0));
@@ -1388,7 +1406,9 @@ TEST_F(AnimationWithImageAssetsTest, LoadsCorrectFrameTimestamp) {
       animation_->GetAnimationDuration() * .75;
   AdvanceClock(three_quarter_duration);
 
+  display_list_->StartPaint();
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
 
   // The timestamp is "relative to the image layer timeline origin" (see
   // SkResources.h). The test animation used in this case has 2 layers for the
@@ -1403,7 +1423,9 @@ TEST_F(AnimationWithImageAssetsTest, LoadsCorrectFrameTimestamp) {
 
   AdvanceClock(half_duration);
 
+  display_list_->StartPaint();
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
 
   base::TimeDelta quarter_duration = animation_->GetAnimationDuration() / 4;
   ASSERT_TRUE(asset_0_->last_frame_t().has_value());
@@ -1420,7 +1442,9 @@ TEST_F(AnimationWithImageAssetsTest, LoadsCorrectImageScale) {
 
   asset_0_->set_current_frame_data(CreateHighQualityTestFrameData());
 
+  display_list_->StartPaint();
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
 
   ASSERT_TRUE(asset_0_->last_frame_scale_factor().has_value());
   EXPECT_THAT(asset_0_->last_frame_scale_factor().value(),

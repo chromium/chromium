@@ -5,7 +5,7 @@
 #include "ui/gfx/image/canvas_image_source.h"
 
 #include "base/check_op.h"
-#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/display_item_list.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -53,8 +53,14 @@ ImageSkia CanvasImageSource::CreatePadded(const ImageSkia& image,
 CanvasImageSource::CanvasImageSource(const Size& size) : size_(size) {}
 
 ImageSkiaRep CanvasImageSource::GetImageForScale(float scale) {
+  scoped_refptr<cc::DisplayItemList> display_item_list =
+      base::MakeRefCounted<cc::DisplayItemList>(
+          cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
+  display_item_list->StartPaint();
+
   Size size_in_pixel = ScaleToCeiledSize(size_, scale);
-  cc::InspectableRecordPaintCanvas record_canvas(size_in_pixel);
+  cc::InspectableRecordPaintCanvas record_canvas(display_item_list.get(),
+                                                 size_in_pixel);
   gfx::Canvas canvas(&record_canvas, scale);
 #if DCHECK_IS_ON()
   Rect clip_rect;
@@ -64,7 +70,9 @@ ImageSkiaRep CanvasImageSource::GetImageForScale(float scale) {
   canvas.Scale(scale, scale);
   Draw(&canvas);
 
-  return ImageSkiaRep(record_canvas.ReleaseAsRecord(),
+  display_item_list->EndPaintOfPairedEnd();
+  display_item_list->Finalize();
+  return ImageSkiaRep(display_item_list->ReleaseAsRecord(),
                       gfx::ScaleToCeiledSize(size_, scale), scale);
 }
 
