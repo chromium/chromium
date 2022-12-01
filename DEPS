@@ -722,7 +722,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86',
-          'version': 'EYKR6SE965eKhz9JBv_pfJol97nN5UdqymhpRRU2w2YC',
+          'version': '4Oh5tWq0xRHAZxrzFx4-zq--tyOD7PYP3ArR0LcQDDUC',
         },
       ],
   },
@@ -733,7 +733,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86_64',
-          'version': 'MkKzihmknEOqtwuFmCdXA-TsgU0FBh7jWl3LHGLptYcC',
+          'version': 'RNBntB8V10a1NrLV-y6Hayv5BcYJoamZeFg6JcqV5C0C',
         },
       ],
   },
