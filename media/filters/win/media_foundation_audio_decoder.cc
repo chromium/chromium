@@ -122,7 +122,10 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
   if (config.codec() == AudioCodec::kDTS ||
       config.codec() == AudioCodec::kDTSXP2) {
     std::move(init_cb).Run(
-        CreateDecoder() ? OkStatus() : DecoderStatus::Codes::kUnsupportedCodec);
+        CreateDecoder()
+            ? DecoderStatus(OkStatus())
+            : DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec,
+                            "MFT Codec does not support DTS content"));
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 }
