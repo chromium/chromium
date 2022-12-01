@@ -3,32 +3,10 @@
 version = 3
 
 [[package]]
-name = "addr2line"
-version = "0.17.0"
-dependencies = [
- "gimli",
-]
-
-[[package]]
-name = "adler"
-version = "1.0.2"
-
-[[package]]
 name = "aho-corasick"
 version = "0.7.18"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "aquamarine"
-version = "0.1.11"
-dependencies = [
- "itertools 0.9.0",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -43,116 +21,6 @@ dependencies = [
 [[package]]
 name = "autocfg"
 version = "1.1.0"
-
-[[package]]
-name = "autocxx"
-version = "0.23.1"
-dependencies = [
- "aquamarine",
- "autocxx-macro",
- "cxx",
- "moveit",
-]
-
-[[package]]
-name = "autocxx-bindgen"
-version = "0.62.0"
-dependencies = [
- "bitflags",
- "cexpr",
- "clang-sys",
- "itertools 0.10.3",
- "lazy_static",
- "lazycell",
- "log",
- "peeking_take_while",
- "proc-macro2",
- "quote",
- "regex",
- "rustc-hash",
- "shlex",
- "syn",
- "which",
-]
-
-[[package]]
-name = "autocxx-engine"
-version = "0.23.1"
-dependencies = [
- "aquamarine",
- "autocxx-bindgen",
- "autocxx-parser",
- "cxx-gen",
- "indexmap",
- "indoc",
- "itertools 0.10.3",
- "log",
- "miette",
- "once_cell",
- "prettyplease",
- "proc-macro2",
- "quote",
- "regex",
- "rustversion",
- "serde_json",
- "strum_macros",
- "syn",
- "tempfile",
- "thiserror",
- "version_check",
-]
-
-[[package]]
-name = "autocxx-gen"
-version = "0.23.1"
-dependencies = [
- "autocxx-engine",
- "clap 3.1.12",
- "env_logger",
- "indexmap",
- "miette",
- "pathdiff",
- "proc-macro2",
-]
-
-[[package]]
-name = "autocxx-macro"
-version = "0.23.1"
-dependencies = [
- "autocxx-parser",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "autocxx-parser"
-version = "0.23.1"
-dependencies = [
- "indexmap",
- "itertools 0.10.3",
- "log",
- "once_cell",
- "proc-macro2",
- "quote",
- "serde",
- "serde_json",
- "syn",
- "thiserror",
-]
-
-[[package]]
-name = "backtrace"
-version = "0.3.64"
-dependencies = [
- "addr2line",
- "cfg-if",
- "libc",
- "miniz_oxide",
- "object",
- "rustc-demangle",
-]
 
 [[package]]
 name = "bindgen"
@@ -219,9 +87,6 @@ version = "1.0.0"
 name = "chromium"
 version = "0.1.0"
 dependencies = [
- "autocxx",
- "autocxx-bindgen",
- "autocxx-gen",
  "bindgen",
  "bitflags",
  "cargo-platform",
@@ -265,7 +130,6 @@ dependencies = [
  "bitflags",
  "clap_lex 0.1.1",
  "indexmap",
- "lazy_static",
  "strsim",
  "termcolor",
  "textwrap",
@@ -311,16 +175,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cxx-gen"
-version = "0.7.81"
-dependencies = [
- "codespan-reporting",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "cxxbridge-cmd"
 version = "1.0.82"
 dependencies = [
@@ -363,20 +217,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "gimli"
-version = "0.26.1"
-
-[[package]]
 name = "glob"
 version = "0.3.0"
 
 [[package]]
 name = "hashbrown"
 version = "0.11.2"
-
-[[package]]
-name = "heck"
-version = "0.4.0"
 
 [[package]]
 name = "hermit-abi"
@@ -397,14 +243,6 @@ version = "1.8.1"
 dependencies = [
  "autocfg",
  "hashbrown",
- "serde",
-]
-
-[[package]]
-name = "indoc"
-version = "1.0.3"
-dependencies = [
- "unindent",
 ]
 
 [[package]]
@@ -414,24 +252,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "is_ci"
-version = "1.1.1"
-
-[[package]]
-name = "itertools"
-version = "0.9.0"
-dependencies = [
- "either",
-]
-
-[[package]]
-name = "itertools"
-version = "0.10.3"
-dependencies = [
- "either",
 ]
 
 [[package]]
@@ -485,50 +305,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "miette"
-version = "5.4.1"
-dependencies = [
- "atty",
- "backtrace",
- "miette-derive",
- "once_cell",
- "owo-colors",
- "supports-color",
- "supports-hyperlinks",
- "supports-unicode",
- "terminal_size",
- "textwrap",
- "thiserror",
- "unicode-width",
-]
-
-[[package]]
-name = "miette-derive"
-version = "5.4.1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "minimal-lexical"
 version = "0.2.1"
-
-[[package]]
-name = "miniz_oxide"
-version = "0.4.4"
-dependencies = [
- "adler",
- "autocfg",
-]
-
-[[package]]
-name = "moveit"
-version = "0.5.0"
-dependencies = [
- "cxx",
-]
 
 [[package]]
 name = "nom"
@@ -540,13 +318,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "object"
-version = "0.27.1"
-dependencies = [
- "memchr",
-]
-
-[[package]]
 name = "once_cell"
 version = "1.16.0"
 
@@ -555,44 +326,8 @@ name = "os_str_bytes"
 version = "6.0.0"
 
 [[package]]
-name = "owo-colors"
-version = "3.3.0"
-
-[[package]]
-name = "pathdiff"
-version = "0.2.1"
-
-[[package]]
 name = "peeking_take_while"
 version = "0.1.2"
-
-[[package]]
-name = "prettyplease"
-version = "0.1.19"
-dependencies = [
- "proc-macro2",
- "syn",
-]
-
-[[package]]
-name = "proc-macro-error"
-version = "1.0.4"
-dependencies = [
- "proc-macro-error-attr",
- "proc-macro2",
- "quote",
- "syn",
- "version_check",
-]
-
-[[package]]
-name = "proc-macro-error-attr"
-version = "1.0.4"
-dependencies = [
- "proc-macro2",
- "quote",
- "version_check",
-]
 
 [[package]]
 name = "proc-macro2"
@@ -647,10 +382,6 @@ dependencies = [
  "rustc_version",
  "syn",
 ]
-
-[[package]]
-name = "rustc-demangle"
-version = "0.1.21"
 
 [[package]]
 name = "rustc-hash"
@@ -721,49 +452,12 @@ name = "small_ctor"
 version = "0.1.0"
 
 [[package]]
-name = "smawk"
-version = "0.3.1"
-
-[[package]]
 name = "static_assertions"
 version = "1.1.0"
 
 [[package]]
 name = "strsim"
 version = "0.10.0"
-
-[[package]]
-name = "strum_macros"
-version = "0.24.0"
-dependencies = [
- "heck",
- "proc-macro2",
- "quote",
- "rustversion",
- "syn",
-]
-
-[[package]]
-name = "supports-color"
-version = "1.3.0"
-dependencies = [
- "atty",
- "is_ci",
-]
-
-[[package]]
-name = "supports-hyperlinks"
-version = "1.2.0"
-dependencies = [
- "atty",
-]
-
-[[package]]
-name = "supports-unicode"
-version = "1.0.2"
-dependencies = [
- "atty",
-]
 
 [[package]]
 name = "syn"
@@ -794,37 +488,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "terminal_size"
-version = "0.1.17"
-dependencies = [
- "libc",
- "winapi",
-]
-
-[[package]]
 name = "textwrap"
 version = "0.15.0"
-dependencies = [
- "smawk",
- "unicode-linebreak",
- "unicode-width",
-]
-
-[[package]]
-name = "thiserror"
-version = "1.0.30"
-dependencies = [
- "thiserror-impl",
-]
-
-[[package]]
-name = "thiserror-impl"
-version = "1.0.30"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "toml"
@@ -848,10 +513,6 @@ dependencies = [
 [[package]]
 name = "unicode-width"
 version = "0.1.9"
-
-[[package]]
-name = "unindent"
-version = "0.1.7"
 
 [[package]]
 name = "version_check"

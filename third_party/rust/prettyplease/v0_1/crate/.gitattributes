@@ -1,2 +1,0 @@
-cargo-expand/*.rs linguist-generated
-examples/*.rs linguist-generated

@@ -1,6 +1,0 @@
-Name: terminal_size
-URL: https://crates.io/crates/terminal_size
-Description: Gets the size of your Linux or Windows terminal
-Version: 0.1.17
-Security Critical: yes
-License: Apache 2.0

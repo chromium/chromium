@@ -1,6 +1,0 @@
-Name: aquamarine
-URL: https://crates.io/crates/aquamarine
-Description: A mermaid.js integration for rustdoc
-Version: 0.1.11
-Security Critical: no
-License: MIT

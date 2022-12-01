@@ -1,6 +1,0 @@
-Name: thiserror-impl
-URL: https://crates.io/crates/thiserror-impl
-Description: Implementation detail of the `thiserror` crate
-Version: 1.0.30
-Security Critical: yes
-License: Apache 2.0

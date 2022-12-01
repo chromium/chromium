@@ -1,6 +1,0 @@
-Name: heck
-URL: https://crates.io/crates/heck
-Description: heck is a case conversion library.
-Version: 0.4.0
-Security Critical: yes
-License: Apache 2.0

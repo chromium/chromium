@@ -1,6 +1,0 @@
-Name: pathdiff
-URL: https://crates.io/crates/pathdiff
-Description: Library for diffing paths to obtain relative paths
-Version: 0.2.1
-Security Critical: yes
-License: Apache 2.0

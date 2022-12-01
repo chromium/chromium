@@ -1,6 +1,0 @@
-Name: smawk
-URL: https://crates.io/crates/smawk
-Description: Functions for finding row-minima in a totally monotone matrix.
-Version: 0.3.1
-Security Critical: yes
-License: MIT

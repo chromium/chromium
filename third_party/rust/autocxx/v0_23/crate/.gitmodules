@@ -1,3 +1,0 @@
-[submodule "examples/s2/s2geometry"]
-	path = examples/s2/s2geometry
-	url = https://github.com/google/s2geometry.git

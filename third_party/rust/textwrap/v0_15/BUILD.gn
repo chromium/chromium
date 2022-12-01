@@ -27,14 +27,4 @@ cargo_crate("lib") {
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  deps = [
-    "//third_party/rust/smawk/v0_3:lib",
-    "//third_party/rust/unicode_linebreak/v0_1:lib",
-    "//third_party/rust/unicode_width/v0_1:lib",
-  ]
-  features = [
-    "smawk",
-    "unicode-linebreak",
-    "unicode-width",
-  ]
 }

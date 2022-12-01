@@ -1,6 +1,0 @@
-Name: object
-URL: https://crates.io/crates/object
-Description: A unified interface for reading and writing object file formats.
-Version: 0.27.1
-Security Critical: yes
-License: Apache 2.0

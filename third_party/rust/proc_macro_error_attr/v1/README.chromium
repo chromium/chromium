@@ -1,6 +1,0 @@
-Name: proc-macro-error-attr
-URL: https://crates.io/crates/proc-macro-error-attr
-Description: Attribute macro for proc-macro-error crate
-Version: 1.0.4
-Security Critical: no
-License: Apache 2.0

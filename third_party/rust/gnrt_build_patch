@@ -1,18 +1,3 @@
-diff --git a/third_party/rust/autocxx_bindgen/v0_62/BUILD.gn b/third_party/rust/autocxx_bindgen/v0_62/BUILD.gn
-index 3fca887f2acb7..63129d6dec0e5 100644
---- a/third_party/rust/autocxx_bindgen/v0_62/BUILD.gn
-+++ b/third_party/rust/autocxx_bindgen/v0_62/BUILD.gn
-@@ -38,7 +38,9 @@ cargo_crate("lib") {
-   features = [
-     "log",
-     "logging",
--    "runtime",
-+
-+    # TODO(crbug/1314345): 'runtime' feature removed because it conflicts with static
-+    # "runtime",
-     "static",
-     "which",
-     "which-rustfmt",
 diff --git a/third_party/rust/bindgen/v0_60/BUILD.gn b/third_party/rust/bindgen/v0_60/BUILD.gn
 index 277bfc5d8cda8..b826004e73899 100644
 --- a/third_party/rust/bindgen/v0_60/BUILD.gn

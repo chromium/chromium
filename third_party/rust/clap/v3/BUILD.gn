@@ -30,16 +30,13 @@ cargo_crate("lib") {
     "//third_party/rust/bitflags/v1:lib",
     "//third_party/rust/clap_lex/v0_1:lib",
     "//third_party/rust/indexmap/v1:lib",
-    "//third_party/rust/lazy_static/v1:lib",
     "//third_party/rust/strsim/v0_10:lib",
     "//third_party/rust/termcolor/v1:lib",
     "//third_party/rust/textwrap/v0_15:lib",
   ]
   features = [
     "atty",
-    "cargo",
     "color",
-    "lazy_static",
     "std",
     "strsim",
     "suggestions",

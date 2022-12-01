@@ -1,6 +1,0 @@
-Name: supports-hyperlinks
-URL: https://crates.io/crates/supports-hyperlinks
-Description: Detects whether a terminal supports rendering hyperlinks.
-Version: 1.2.0
-Security Critical: yes
-License: Apache 2.0

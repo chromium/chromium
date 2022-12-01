@@ -1,6 +1,0 @@
-Name: supports-unicode
-URL: https://crates.io/crates/supports-unicode
-Description: Detects whether a terminal supports unicode.
-Version: 1.0.2
-Security Critical: yes
-License: Apache 2.0
