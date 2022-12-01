@@ -117,13 +117,6 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
-  void Mount(const ::user_data_auth::MountRequest& request,
-             MountCallback callback) override {
-    CallProtoMethod(::user_data_auth::kMount,
-                    ::user_data_auth::kUserDataAuthInterface, request,
-                    std::move(callback));
-  }
-
   void Remove(const ::user_data_auth::RemoveRequest& request,
               RemoveCallback callback) override {
     CallProtoMethod(::user_data_auth::kRemove,

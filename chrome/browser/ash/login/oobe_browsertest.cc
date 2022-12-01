@@ -97,9 +97,6 @@ class OobeTest : public OobeBaseTest, public FeatureAsParameterInterface<1> {
 IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
   WaitForGaiaPageLoad();
 
-  // Make the MountEx cryptohome call fail iff the `create` field is missing,
-  // which simulates the real cryptohomed's behavior for the new user mount.
-  FakeUserDataAuthClient::TestApi::Get()->set_mount_create_required(true);
   LoginDisplayHost::default_host()
       ->GetOobeUI()
       ->GetView<GaiaScreenHandler>()

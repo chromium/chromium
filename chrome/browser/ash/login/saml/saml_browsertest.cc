@@ -196,15 +196,16 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
   SecretInterceptingFakeUserDataAuthClient& operator=(
       const SecretInterceptingFakeUserDataAuthClient&) = delete;
 
+  // Key-based API for AuthSessions.
+  // TODO(b/260718534): Remove as part of UserAuthFactors cleanup.
   void AuthenticateAuthSession(
       const ::user_data_auth::AuthenticateAuthSessionRequest& request,
       AuthenticateAuthSessionCallback callback) override;
+
   void AddAuthFactor(const ::user_data_auth::AddAuthFactorRequest& request,
                      AddAuthFactorCallback callback) override;
   void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
                       AddCredentialsCallback callback) override;
-  void Mount(const ::user_data_auth::MountRequest& request,
-             MountCallback callback) override;
 
   const std::string& salted_hashed_secret() { return salted_hashed_secret_; }
 
@@ -215,6 +216,8 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
 SecretInterceptingFakeUserDataAuthClient::
     SecretInterceptingFakeUserDataAuthClient() = default;
 
+// Key-based API for AuthSessions.
+// TODO(b/260718534): Remove as part of UserAuthFactors cleanup.
 void SecretInterceptingFakeUserDataAuthClient::AuthenticateAuthSession(
     const ::user_data_auth::AuthenticateAuthSessionRequest& request,
     AuthenticateAuthSessionCallback callback) {
@@ -222,6 +225,8 @@ void SecretInterceptingFakeUserDataAuthClient::AuthenticateAuthSession(
   FakeUserDataAuthClient::AuthenticateAuthSession(request, std::move(callback));
 }
 
+// Key-based API for AuthSessions.
+// TODO(b/260718534): Remove as part of UserAuthFactors cleanup.
 void SecretInterceptingFakeUserDataAuthClient::AddCredentials(
     const ::user_data_auth::AddCredentialsRequest& request,
     AddCredentialsCallback callback) {
@@ -236,15 +241,6 @@ void SecretInterceptingFakeUserDataAuthClient::AddAuthFactor(
         user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
   salted_hashed_secret_ = request.auth_input().password_input().secret();
   FakeUserDataAuthClient::AddAuthFactor(request, std::move(callback));
-}
-
-void SecretInterceptingFakeUserDataAuthClient::Mount(
-    const ::user_data_auth::MountRequest& request,
-    MountCallback callback) {
-  if (request.has_authorization()) {
-    salted_hashed_secret_ = request.authorization().key().secret();
-  }
-  FakeUserDataAuthClient::Mount(request, std::move(callback));
 }
 
 }  // namespace

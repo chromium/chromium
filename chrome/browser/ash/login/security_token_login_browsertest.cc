@@ -111,29 +111,8 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
     challenge_response_account_id_ = account_id;
   }
 
-  // TODO(crbug.com/1311355): This method can be cleaned up after full migration
-  // to AuthSession.
-  void Mount(const ::user_data_auth::MountRequest& request,
-             chromeos::DBusMethodCallback<::user_data_auth::MountReply>
-                 callback) override {
-    chromeos::CertificateProviderService* certificate_provider_service =
-        chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
-            GetOriginalSigninProfile());
-    // Note: The real cryptohome would call the "ChallengeKey" D-Bus method
-    // exposed by Chrome via org.chromium.CryptohomeKeyDelegateInterface, but
-    // we're directly requesting the extension in order to avoid extra
-    // complexity in this UI-oriented browser test.
-    certificate_provider_service->RequestSignatureBySpki(
-        TestCertificateProviderExtension::GetCertificateSpki(),
-        SSL_SIGN_RSA_PKCS1_SHA256,
-        base::as_bytes(base::make_span(kChallengeData)),
-        challenge_response_account_id_,
-        base::BindOnce(&ChallengeResponseFakeUserDataAuthClient::
-                           ContinueMountExWithSignature,
-                       base::Unretained(this), request.account(),
-                       std::move(callback)));
-  }
-
+  // Key-based API for AuthSessions.
+  // TODO(b/260718534): Remove as part of UserAuthFactors cleanup.
   void AuthenticateAuthSession(
       const ::user_data_auth::AuthenticateAuthSessionRequest& request,
       AuthenticateAuthSessionCallback callback) override {
@@ -185,22 +164,8 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
   }
 
  private:
-  // TODO(crbug.com/1311355): This method can be cleaned up after full migration
-  // to AuthSession.
-  void ContinueMountExWithSignature(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      chromeos::DBusMethodCallback<::user_data_auth::MountReply> callback,
-      net::Error error,
-      const std::vector<uint8_t>& signature) {
-    ::user_data_auth::MountReply reply;
-    reply.set_sanitized_username(GetStubSanitizedUsername(cryptohome_id));
-    if (error != net::OK || signature.empty())
-      reply.set_error(
-          ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_FATAL);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), reply));
-  }
-
+  // Key-based API for AuthSessions.
+  // TODO(b/260718534): Remove as part of UserAuthFactors cleanup.
   void ContinueAuthenticateSessionWithSignature(
       const ::user_data_auth::AuthenticateAuthSessionRequest& request,
       AuthenticateAuthSessionCallback callback,

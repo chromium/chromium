@@ -67,15 +67,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       FakeUserDataAuthClient::Get()->enable_auth_check_ = enable_auth_check;
     }
 
-    // Sets whether the Mount() call should fail when the |create| field is not
-    // provided (the error code will be CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND).
-    // This allows to simulate the behavior during the new user profile
-    // creation.
-    void set_mount_create_required(bool mount_create_required) {
-      FakeUserDataAuthClient::Get()->mount_create_required_ =
-          mount_create_required;
-    }
-
     // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
     // pending callbacks if is_available is true.
     void SetServiceIsAvailable(bool is_available);
@@ -185,8 +176,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
                  IsMountedCallback callback) override;
   void Unmount(const ::user_data_auth::UnmountRequest& request,
                UnmountCallback callback) override;
-  void Mount(const ::user_data_auth::MountRequest& request,
-             MountCallback callback) override;
   void Remove(const ::user_data_auth::RemoveRequest& request,
               RemoveCallback callback) override;
   void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,
@@ -279,26 +268,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Sets the CryptohomeError value to return.
   void set_cryptohome_error(::user_data_auth::CryptohomeErrorCode error) {
     cryptohome_error_ = error;
-  }
-  // Get the MountRequest to last Mount().
-  int get_mount_request_count() const { return mount_request_count_; }
-  const ::user_data_auth::MountRequest& get_last_mount_request() const {
-    return last_mount_request_;
-  }
-  // If the last call to Mount() have to_migrate_from_ecryptfs set.
-  bool to_migrate_from_ecryptfs() const {
-    return last_mount_request_.to_migrate_from_ecryptfs();
-  }
-  // If the last call to Mount() have public_mount set.
-  bool public_mount() const { return last_mount_request_.public_mount(); }
-  // Return the authorization request passed to the last Mount().
-  const cryptohome::AuthorizationRequest& get_last_mount_authentication()
-      const {
-    return last_mount_request_.authorization();
-  }
-  // Return the secret passed to last Mount().
-  const std::string& get_secret_for_last_mount_authentication() const {
-    return last_mount_request_.authorization().key().secret();
   }
 
   // Returns the `unlock_webauthn_secret` parameter passed in the last
@@ -401,8 +370,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   int prepare_guest_request_count_ = 0;
-  int mount_request_count_ = 0;
-  ::user_data_auth::MountRequest last_mount_request_;
 
   // The `unlock_webauthn_secret` parameter passed in the last CheckKeyEx call.
   bool last_unlock_webauthn_secret_;
@@ -470,9 +437,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // If true, authentication requests actually check the key.
   bool enable_auth_check_ = false;
-
-  // If true, fails if |create| field is not provided
-  bool mount_create_required_ = false;
 
   // If set, we tell callers that service is available.
   bool service_is_available_ = true;

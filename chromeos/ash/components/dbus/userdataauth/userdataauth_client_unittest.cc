@@ -341,20 +341,6 @@ TEST_F(UserDataAuthClientTest, Unmount) {
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_unmount_reply_));
 }
 
-TEST_F(UserDataAuthClientTest, Mount) {
-  constexpr char kUsername[] = "0123456789abcdef0123456789abcdef";
-  expected_mount_reply_.set_error(
-      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  expected_mount_reply_.set_sanitized_username(std::string(kUsername));
-  absl::optional<::user_data_auth::MountReply> result_reply;
-
-  client_->Mount(::user_data_auth::MountRequest(),
-                 CreateCopyCallback(&result_reply));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_mount_reply_));
-}
-
 TEST_F(UserDataAuthClientTest, Remove) {
   expected_remove_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);

@@ -51,43 +51,72 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       chromeos::DBusMethodCallback<::user_data_auth::IsMountedReply>;
   using UnmountCallback =
       chromeos::DBusMethodCallback<::user_data_auth::UnmountReply>;
-  using MountCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::MountReply>;
   using RemoveCallback =
       chromeos::DBusMethodCallback<::user_data_auth::RemoveReply>;
+
+  // Key-based API, still used by PIN codepath.
+  // TODO(b/260718534): Remove next group as part of UserAuthFactors cleanup.
   using GetKeyDataCallback =
       chromeos::DBusMethodCallback<::user_data_auth::GetKeyDataReply>;
-  using CheckKeyCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::CheckKeyReply>;
   using AddKeyCallback =
       chromeos::DBusMethodCallback<::user_data_auth::AddKeyReply>;
   using RemoveKeyCallback =
       chromeos::DBusMethodCallback<::user_data_auth::RemoveKeyReply>;
+
+  // This API is still used by old WebAuthN path.
+  // TODO(b/260715686): Remove as part of UseAuthsessionForWebAuthN cleanup.
+  using CheckKeyCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::CheckKeyReply>;
+
   using StartFingerprintAuthSessionCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::StartFingerprintAuthSessionReply>;
   using EndFingerprintAuthSessionCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::EndFingerprintAuthSessionReply>;
-  using StartMigrateToDircryptoCallback = chromeos::DBusMethodCallback<
-      ::user_data_auth::StartMigrateToDircryptoReply>;
-  using NeedsDircryptoMigrationCallback = chromeos::DBusMethodCallback<
-      ::user_data_auth::NeedsDircryptoMigrationReply>;
   using GetSupportedKeyPoliciesCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::GetSupportedKeyPoliciesReply>;
   using GetAccountDiskUsageCallback =
       chromeos::DBusMethodCallback<::user_data_auth::GetAccountDiskUsageReply>;
-  using StartAuthSessionCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::StartAuthSessionReply>;
+
+  // Key-based API for AuthSessions.
+  // TODO(b/260718534): Remove next group as part of UserAuthFactors cleanup.
   using AuthenticateAuthSessionCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::AuthenticateAuthSessionReply>;
   using AddCredentialsCallback =
       chromeos::DBusMethodCallback<::user_data_auth::AddCredentialsReply>;
   using UpdateCredentialCallback =
       chromeos::DBusMethodCallback<::user_data_auth::UpdateCredentialReply>;
+
+  // AuthSession interaction API.
+  using StartAuthSessionCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::StartAuthSessionReply>;
+  using GetAuthSessionStatusCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::GetAuthSessionStatusReply>;
+  using InvalidateAuthSessionCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::InvalidateAuthSessionReply>;
+  using ExtendAuthSessionCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::ExtendAuthSessionReply>;
+  // AuthFactors API for AuthSession.
+  using AuthenticateAuthFactorCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::AuthenticateAuthFactorReply>;
+  using AddAuthFactorCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::AddAuthFactorReply>;
+  using UpdateAuthFactorCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
+  using RemoveAuthFactorCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
+  using ListAuthFactorsCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::ListAuthFactorsReply>;
+  using GetAuthFactorExtendedInfoCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::GetAuthFactorExtendedInfoReply>;
+
+  using GetRecoveryRequestCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::GetRecoveryRequestReply>;
+  // Asynchronous (biometric) AuthFactors API.
   using PrepareAuthFactorCallback =
       chromeos::DBusMethodCallback<::user_data_auth::PrepareAuthFactorReply>;
   using TerminateAuthFactorCallback =
       chromeos::DBusMethodCallback<::user_data_auth::TerminateAuthFactorReply>;
-
+  // Home directory-related API.
   using PrepareGuestVaultCallback =
       chromeos::DBusMethodCallback<::user_data_auth::PrepareGuestVaultReply>;
   using PrepareEphemeralVaultCallback = chromeos::DBusMethodCallback<
@@ -98,26 +127,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       ::user_data_auth::PreparePersistentVaultReply>;
   using PrepareVaultForMigrationCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::PrepareVaultForMigrationReply>;
-  using InvalidateAuthSessionCallback = chromeos::DBusMethodCallback<
-      ::user_data_auth::InvalidateAuthSessionReply>;
-  using ExtendAuthSessionCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::ExtendAuthSessionReply>;
-  using AddAuthFactorCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::AddAuthFactorReply>;
-  using AuthenticateAuthFactorCallback = chromeos::DBusMethodCallback<
-      ::user_data_auth::AuthenticateAuthFactorReply>;
-  using UpdateAuthFactorCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
-  using RemoveAuthFactorCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
-  using ListAuthFactorsCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::ListAuthFactorsReply>;
-  using GetAuthFactorExtendedInfoCallback = chromeos::DBusMethodCallback<
-      ::user_data_auth::GetAuthFactorExtendedInfoReply>;
-  using GetRecoveryRequestCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::GetRecoveryRequestReply>;
-  using GetAuthSessionStatusCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::GetAuthSessionStatusReply>;
+
+  using StartMigrateToDircryptoCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::StartMigrateToDircryptoReply>;
+  using NeedsDircryptoMigrationCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::NeedsDircryptoMigrationReply>;
 
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
@@ -173,26 +187,24 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void Unmount(const ::user_data_auth::UnmountRequest& request,
                        UnmountCallback callback) = 0;
 
-  // Mounts user's vault.
-  virtual void Mount(const ::user_data_auth::MountRequest& request,
-                     MountCallback callback) = 0;
-
   // Removes user's vault.
   virtual void Remove(const ::user_data_auth::RemoveRequest& request,
                       RemoveCallback callback) = 0;
 
-  // Get key metadata for user's vault.
-  virtual void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,
-                          GetKeyDataCallback callback) = 0;
-
+  // This API is still used by old WebAuthN path.
+  // TODO(b/260715686): Remove as part of UseAuthsessionForWebAuthN cleanup.
   // Try authenticating with key in user's vault.
   virtual void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
                         CheckKeyCallback callback) = 0;
 
+  // Key-based API, still used by PIN codepath.
+  // TODO(b/260718534): Remove next group as part of UserAuthFactors cleanup.
+  // Get key metadata for user's vault.
+  virtual void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,
+                          GetKeyDataCallback callback) = 0;
   // Add a key to user's vault.
   virtual void AddKey(const ::user_data_auth::AddKeyRequest& request,
                       AddKeyCallback callback) = 0;
-
   // Remove a key from user's vault.
   virtual void RemoveKey(const ::user_data_auth::RemoveKeyRequest& request,
                          RemoveKeyCallback callback) = 0;
@@ -233,17 +245,17 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       const ::user_data_auth::StartAuthSessionRequest& request,
       StartAuthSessionCallback callback) = 0;
 
+  // Key-based API for AuthSessions.
+  // TODO(b/260718534): Remove next group as part of UserAuthFactors cleanup.
   // Attempts to authenticate with the given auth session.
   virtual void AuthenticateAuthSession(
       const ::user_data_auth::AuthenticateAuthSessionRequest& request,
       AuthenticateAuthSessionCallback callback) = 0;
-
   // Attempts to add credentials to the vault identified/authorized by auth
   // session.
   virtual void AddCredentials(
       const ::user_data_auth::AddCredentialsRequest& request,
       AddCredentialsCallback callback) = 0;
-
   // Attempts to update credentials in the vault identified/authorized by auth
   // session.
   virtual void UpdateCredential(

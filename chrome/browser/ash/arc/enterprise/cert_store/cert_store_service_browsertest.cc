@@ -387,7 +387,7 @@ CertStoreServiceTest::CertStoreServiceTest()
     : test_cert_data_vector_(std::get<0>(GetParam())) {
   cryptohome_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
 
-  // TODO(crbug.com/1311355): This test is run with the feature
+  // TODO(b/260718534): This test is run with the feature
   // kUseAuthFactors enabled and disabled because of a
   // transitive dependency of AffiliationTestHelper on that feature. Remove
   // the parameter when kUseAuthFactors is removed.

@@ -37,11 +37,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
                UnmountCallback callback),
               (override));
   MOCK_METHOD(void,
-              Mount,
-              (const ::user_data_auth::MountRequest& request,
-               MountCallback callback),
-              (override));
-  MOCK_METHOD(void,
               Remove,
               (const ::user_data_auth::RemoveRequest& request,
                RemoveCallback callback),
