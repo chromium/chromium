@@ -20,7 +20,9 @@ input {
 p, h2, h3, h4 {
   margin: 8px 0 4px 0;
 }
-
+a:not([href]) {
+  opacity: 0.3;
+}
 #right-toolbar {
   position: absolute;
   top: 8px;
@@ -507,7 +509,7 @@ class Traversal {
 
 const PathParserGlobals = {
   layout_tests_dir: null,
-  chromium_revision: null
+  chromium_revision: null,
 };
 
 class PathParser {
@@ -538,21 +540,59 @@ class PathParser {
     this.testHref = this.testBaseHref() + href;
   }
 
-  static initGlobals(fullResults) {
+  // If these are not null, we should fetch artifacts from ResultDB.
+  static buildId = null;
+  static testSuite = null;
+  static resultDBArtifacts = {};
+  static resultNameToArtifactName = {
+    '-actual.png': 'actual_image',
+    '-expected.png': 'expected_image',
+    '-diff.png': 'image_diff',
+    '-actual.txt': 'actual_text',
+    '-expected.txt': 'expected_txt',
+    '-diff.txt': 'text_diff',
+    '-pretty-diff.html': 'pretty_text_diff',
+    '-actual.wav': 'actual_audio',
+    '-expected.wav': 'expected_audio',
+    '-leak-log.txt': 'leak_log',
+    '-crash-log.txt': 'crash_log',
+    '-stderr.txt': 'stderr',
+    '-command.txt': 'command',
+  };
+  static numCachedTests = 0;
+  static numCachedArtifacts = 0;
+
+  static initGlobals(fullResults, buildId, testSuite) {
     for (let p in PathParserGlobals)
       PathParserGlobals[p] = fullResults[p];
+    PathParser.buildId = buildId;
+    PathParser.testSuite = testSuite;
+    // Pre-load artifacts for tests with unexpected results. If a test that is
+    // not included in this pre-loading is expanded, we'll request artifacts
+    // for the test.
+    PathParser.queryArtifacts({
+      expectancy: 'VARIANTS_WITH_UNEXPECTED_RESULTS',
+      variant: {contains: {def: {test_suite: testSuite}}},
+    });
   }
 
-  resultLink(resultName) {
-    return this.dir + this.resultPrefix + resultName;
+  async resultLink(resultName) {
+    if (!PathParser.buildId || !PathParser.testSuite) {
+      return this.dir + this.resultPrefix + resultName;
+    }
+    let artifacts = await this.getArtifacts();
+    return artifacts[PathParser.resultNameToArtifactName[resultName]];
   }
 
   resultFilename(resultName) {
     return this.resultPrefix + resultName;
   }
 
+  // TODO(wangxianzhu): This doesn't support ResultDB. Should generate the HTML
+  // dynamically instead of using it as an artifact.
   repaintOverlayLink() {
-    return this.resultLink("-overlay.html?") + encodeURIComponent(this.testHref);
+    return this.dir + this.resultPrefix + "-overlay.html?" +
+           encodeURIComponent(this.testHref);
   }
 
   testBaseHref() {
@@ -572,6 +612,99 @@ class PathParser {
     } else {
       return "https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/web_tests";
     }
+  }
+
+  getArtifacts() {
+    let cache = PathParser.resultDBArtifacts[this.path];
+    if (cache) {
+      // Refresh if the artifacts will expire in 10 minutes.
+      if (cache.artifacts && cache.expiration - new Date().getTime() > 600000) {
+        return Promise.resolve(cache.artifacts);
+      } else if (cache.promise) {
+        // Returns the promise if we are already requesting the artifacts.
+        return cache.promise;
+      }
+    }
+
+    cache = PathParser.resultDBArtifacts[this.path] =
+        { artifacts: {}, expiration: 0 };
+    let promise = PathParser.queryArtifacts({
+      testIdRegexp: `ninja://:${PathParser.testSuite}${this.path}`,
+      expectancy: 'ALL',
+    }).then(() => { return Promise.resolve(cache.artifacts); });
+    // If the promise is not fulfilled immediately, save the promise in the
+    // cache entry, so that subsequent requests for the same test can wait for
+    // the same promise without creating new requests.
+    if (cache.expiration == 0)
+      cache.promise = promise;
+    return promise;
+  }
+
+  static queryArtifacts(testResultPredicate, pageToken) {
+    let timeId = "queryArtifacts: " + JSON.stringify(testResultPredicate) +
+                 (pageToken || '');
+    console.time(timeId);
+    return new Promise((resolve, reject) => {
+      let xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://results.api.cr.dev/prpc/luci.resultdb.v1.ResultDB/QueryArtifacts');
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onload = () => {
+        try {
+          if (xhr.status == 200) {
+            let response = xhr.responseText;
+            if (response.startsWith(")]}'"))
+              response = response.substring(5);
+            let responseJson = JSON.parse(response);
+            if (responseJson.artifacts) {
+              for (let artifact of responseJson.artifacts) {
+                let [_, testPath] = artifact.name.match(
+                    /\/tests\/ninja:%2F%2F:[^%]*(%2F.*)\/results\//);
+                testPath = decodeURIComponent(testPath);
+                let cache = PathParser.resultDBArtifacts[testPath];
+                if (!cache) {
+                  cache = PathParser.resultDBArtifacts[testPath] =
+                      { artifacts: {}, expiration: 0 };
+                }
+                PathParser.numCachedArtifacts++;
+                if (cache.expiration == 0) {
+                  PathParser.numCachedTests++;
+                  console.log('Fetched artifacts for: ' + testPath +
+                              ' total tests: ' + PathParser.numCachedTests +
+                              ' total artifacts: ' + PathParser.numCachedArtifacts);
+                }
+                cache.artifacts[artifact.artifactId] = artifact.fetchUrl;
+                cache.expiration = new Date(artifact.fetchUrlExpiration).getTime();
+                delete cache.promise;
+              }
+            }
+            if (responseJson.nextPageToken) {
+              PathParser.queryArtifacts(testResultPredicate,
+                                        responseJson.nextPageToken);
+            }
+            resolve();
+          } else {
+            reject(xhr.statusText);
+          }
+        } catch (e) {
+          reject(e);
+        } finally {
+          console.timeEnd(timeId);
+        }
+      };
+      xhr.onerror = () => {
+        console.timeEnd(timeId);
+        reject(xhr.statusText);
+      };
+      let request = {
+        invocations: [`invocations/build-${PathParser.buildId}`],
+        predicate: {testResultPredicate: testResultPredicate},
+        pageSize: 1000,
+      };
+      if (pageToken)
+        request.pageToken = pageToken;
+      xhr.send(JSON.stringify(request));
+    });
   }
 } // class PathParser
 
@@ -720,7 +853,11 @@ const Report = {
       traversal.rebaselineDir = dir;
     }
     for (let i=0; i<actualNames.length; i++) {
-      let url = new URL(parser.resultLink(actualNames[i]), window.location.href);
+      let resultLink;
+      parser.resultLink(actualNames[i]).then((href) => { resultLink = href; });
+      // This works only if resultLink() fulfills immediately.
+      console.assert(resultLink);
+      let url = new URL(resultLink, document.baseURI);
       if (url.href.startsWith('file://')) {
         let actualFile = url.href.substring('file://'.length);
         traversal.html.push(`<div>cp ${actualFile} ${parser.basename + expectedNames[i]};</div>`);
@@ -919,29 +1056,6 @@ const Report = {
 const Query = {
   lastReport: null,
   currentRAF: null,
-  currentPromise: null,
-  currentResolve: null,
-  currentReject: null,
-
-  createReportPromise: function() {
-    if (this.currentPromise) {
-      this.currentPromise = null;
-      this.currentReject();
-    }
-    this.currentPromise = new Promise( (resolve, reject) => {
-      this.currentResolve = resolve;
-      this.currentReject = reject;
-    });
-    this.currentPromise.catch( _ => {}); // stops uncaught rejection errors.
-  },
-
-  completeReportPromise: function(traversal) {
-    if (this.currentResolve)
-      this.currentResolve(traversal);
-    this.currentPromise = null;
-    this.currentResolve = null;
-    this.currentReject = null;
-  },
 
   resetFilters: function() {
     // Reset all filters.
@@ -1063,8 +1177,9 @@ const Query = {
     this.generateReport(name, composedFilter);
   },
 
-  // generateReport is async, returns promise.
-  // promise id fullfilled when traversal completes. Display will continue async.
+  // generateReport starts an async job to avoid blocking UI. The previous async
+  // job will be canceled if generateReport is called again before the previous
+  // one finishes.
   generateReport: function(name, filter, report) {
     console.time("generateReport");
     if (this.currentRAF)
@@ -1075,7 +1190,6 @@ const Query = {
 
     // Store last report to redisplay.
     this.lastReport = {name: name, filter: filter};
-    this.createReportPromise();
     this.resultCounts = {};
 
     document.querySelector("#report").innerHTML = "";
@@ -1104,7 +1218,6 @@ const Query = {
     window.setTimeout( _ => {
       traversal.traverse(filter, report.print, report.endPrint);
       this.updateFilters();
-      this.completeReportPromise(traversal);
       this.currentRAF = window.requestAnimationFrame(callback);
     }, 0);
     return this.currentPromise;
@@ -1179,7 +1292,7 @@ const Filters = {
 
 // Event handling, initialization.
 const GUI = {
-  initPage: function(results) {
+  initPage: function(results, buildId, testSuite) {
     results.tests = GUI.convertToMap(results.tests);
     globalResults = results;
     if (window.localStorage.getItem("reportFormat")) {
@@ -1188,7 +1301,7 @@ const GUI = {
     GUI.optimizeResults(globalResults);
     GUI.printSummary(globalResults);
     GUI.initEvents();
-    PathParser.initGlobals(results);
+    PathParser.initGlobals(results, buildId, testSuite);
     // Show regressions on startup.
     document.querySelector("#button_regressions").click();
   },
@@ -1934,6 +2047,23 @@ class TXToolbar {
     return false;
   }
 
+  createAnchor(className, linkOrPromise, title, innerHTML, download) {
+    let anchor = document.createElement('a');
+    anchor.className = className;
+    anchor.title = title;
+    anchor.innerHTML = innerHTML;
+    if (download)
+      anchor.download = download;
+    let updateViewer = (() => { this.updateViewer(anchor); }).bind(this);
+    Promise.resolve(linkOrPromise).then((href) => {
+      anchor.href = href;
+      if (anchor.hasAttribute("data-selected")) {
+        setTimeout(updateViewer, 0);
+      }
+    });
+    return anchor;
+  }
+
   selectAnchor(target, extendSelection) {
     let toggle = false;
     if (extendSelection === undefined) {
@@ -1956,6 +2086,17 @@ class TXToolbar {
     }
     this.updateViewer(target);
   }
+
+  getAnchorInfo(query) {
+    let anchorInfo = [];
+    for (let anchor of this.toolbar.querySelectorAll(query)) {
+      // One of the anchors' href is not ready yet.
+      if (!anchor.href)
+        return undefined;
+      anchorInfo.push({src: anchor.href, title: anchor.title});
+    }
+    return anchorInfo;
+  }
 } // class TXToolbar
 
 class ImageResultsToolbar extends TXToolbar {
@@ -1972,28 +2113,36 @@ class ImageResultsToolbar extends TXToolbar {
     this.toolbar.classList.add("image-toolbar");
     this.toolbar.classList.add("tx-toolbar");
 
-    let html = "image: ";
-    html += `<a class="toggle" href="${pathParser.resultLink("-actual.png")}" title="Actual result">actual</a>`;
-    html += `<a download="${pathParser.resultFilename("-expected.png")}" href="${pathParser.resultLink("-actual.png")}" title="Download new expectation file">`;
-    html += '<img class="download-button" alt="Download new expectation file" />';
-    html += '</a>';
-    html += `<a class="toggle" href="${pathParser.resultLink("-expected.png")}" title="Expected result">expected</a>`;
+    this.toolbar.appendChild(document.createTextNode("image: "));
+    let actualLinkPromise = pathParser.resultLink("-actual.png");
+    this.toolbar.appendChild(this.createAnchor(
+        "toggle", actualLinkPromise, "Actual result", "actual"));
+    this.toolbar.appendChild(this.createAnchor(
+        "", actualLinkPromise, "Download new expectation file",
+        '<img class="download-button" alt="Download new expectation file" />'));
+    this.toolbar.lastChild.download = pathParser.resultFilename("-expected.png");
+    this.toolbar.appendChild(this.createAnchor(
+        "toggle", pathParser.resultLink("-expected.png"), "Expected result", "expected"));
     if (test.reference) {
-      html += `<span style="margin-left: -2px; margin-right: 2px">(` +
-              `<a style="margin: 0; padding: 0" target="reference" href="../${test.reference}">ref</a>` +
-              `)</span>`;
+      let span = document.createElement("span");
+      span.style = "margin-left: -2px; margin-right: 2px";
+      // TODO(wangxianzhu): Make this link work for bot results.
+      span.appendChild(this.createAnchor("", `../${test.reference}`, "Reference", "ref"));
+      span.lastChild.target = "reference";
+      this.toolbar.appendChild(span);
     }
-    html += `<a class="toggle" href="${pathParser.resultLink("-diff.png")}" title="Difference">diff</a>`;
+    this.toolbar.appendChild(this.createAnchor(
+        "toggle", pathParser.resultLink("-diff.png"), "Difference", "diff"));
+    this.toolbar.lastChild.className = "toggle";
 
-    html += `
+    this.toolbar.insertAdjacentHTML("beforeend", `
       <label><select class="view-options">
         <option value="single">Single view</option>
         <option value="animated">Animated view</option>
         <option value="multiple">Side by side view</option>
       </select></label>
-    `;
+    `);
 
-    this.toolbar.innerHTML = html;
     this.toolbar.addEventListener("click", ev => {
       if (ev.target.tagName == "A" && ev.target.className == "toggle") {
         this.selectAnchor(ev.target);
@@ -2063,8 +2212,9 @@ class ImageResultsToolbar extends TXToolbar {
     }
     let viewer = this.getViewer();
     if (!viewer) {
-      let imgInfo = Array.from(this.toolbar.querySelectorAll("a.toggle")).map(
-        anchor => { return {src: anchor.href, title: anchor.title}; });
+      let imgInfo = this.getAnchorInfo("a.toggle");
+      if (!imgInfo)
+        return;
       viewer = (new ImageResultsViewer()).createDom(imgInfo, this);
       this.setAnimation(this.toolbar.querySelector(".view-options").value == "animated");
       GUI.setResultViewer(element, viewer);
@@ -2076,12 +2226,8 @@ class ImageResultsToolbar extends TXToolbar {
     if (animate) {
       if (!this.animationIntervalId)
         this.animationIntervalId = window.setInterval(_ => {
-          if (!this.getViewer()) {
-            console.log("element is gone");
-            window.clearInterval(this.animationIntervalId);
-            this.animationIntervalId = null;
+          if (!this.getViewer())
             return;
-          }
           if (this.animationPaused)
             return;
           // Find next anchor.
@@ -2522,14 +2668,19 @@ class TextResultsToolbar extends TXToolbar {
     }).bind(this);
     this.toolbar.classList.add("text-results-toolbar");
     this.toolbar.classList.add("tx-toolbar");
-    let html = "text:";
-    html += `<a class="pretty" href="${pathParser.resultLink("-pretty-diff.html")}" title="Pretty difference">pretty</a>`;
-    html += `<a class="actual" href="${pathParser.resultLink("-actual.txt")}" title="Actual text">actual</a>`;
-    html += `<a class="expected" href="${pathParser.resultLink("-expected.txt")}" title="Expected result">expected</a>`;
-    html += `<a class="diff" href="${pathParser.resultLink("-diff.txt")}" title="Difference">diff</a>`;
-    if (test.has_repaint_overlay)
-      html += ` <a class="repaint" href="${pathParser.repaintOverlayLink()}" title="Repaint overlay">repaint</a>`;
-    this.toolbar.innerHTML = html + "\n";
+    this.toolbar.appendChild(document.createTextNode("text:"));
+    this.toolbar.appendChild(this.createAnchor(
+        "pretty", pathParser.resultLink("-pretty-diff.html"), "Pretty difference", "pretty"));
+    this.toolbar.appendChild(this.createAnchor(
+        "actual", pathParser.resultLink("-actual.txt"), "Actual text", "actual"));
+    this.toolbar.appendChild(this.createAnchor(
+        "expected", pathParser.resultLink("-expected.txt"), "Expected result", "expected"));
+    this.toolbar.appendChild(this.createAnchor(
+        "diff", pathParser.resultLink("-diff.txt"), "Difference", "diff"));
+    if (test.has_repaint_overlay) {
+      this.toolbar.appendChild(this.createAnchor(
+          "repaint", pathParser.repaintOverlayLink(), "Repaint overlay", "repaint"));
+    }
     this.toolbar.addEventListener("click", ev => {
       if (ev.target.tagName == "A") {
         this.selectAnchor(ev.target);
@@ -2548,8 +2699,9 @@ class TextResultsToolbar extends TXToolbar {
     }
     let viewer = this.getViewer();
     if (!viewer) {
-      let fileInfo = Array.from(this.toolbar.querySelectorAll("a")).map(
-        anchor => { return {src: anchor.href, title: anchor.title}; });
+      let fileInfo = this.getAnchorInfo("a");
+      if (!fileInfo)
+        return;
       viewer = (new TextFileViewer()).createDom(fileInfo, this);
       GUI.setResultViewer(this.toolbar, viewer);
     }
@@ -2632,14 +2784,14 @@ class PlainHtmlToolbar extends TXToolbar {
 } // class PlainHtmlToolbar
 
 class SimpleLinkToolbar extends TXToolbar {
-  createDom(href, title, text) {
+  createDom(linkOrPromise, title, innerHTML) {
     super.importStyle();
     this.toolbar = document.createElement("li");
     // Toolbar DOM API
     this.toolbar.showDefault = (_ => {this.selectAnchor(this.toolbar.querySelector("a"));}).bind(this);
 
     this.toolbar.classList.add("tx-toolbar");
-    this.toolbar.innerHTML = `<a href="${href}" title="${title}">${text}</a>`;
+    this.toolbar.appendChild(this.createAnchor("", linkOrPromise, title, innerHTML));
     this.toolbar.addEventListener("click", ev => {
       if (ev.target.tagName == "A") {
         this.selectAnchor(ev.target);
@@ -2658,8 +2810,9 @@ class SimpleLinkToolbar extends TXToolbar {
     }
     let viewer = this.getViewer();
     if (!viewer) {
-      let fileInfo = Array.from(this.toolbar.querySelectorAll("a")).map(
-        anchor => { return {src: anchor.href, title: anchor.title};});
+      let fileInfo = this.getAnchorInfo("a");
+      if (!fileInfo)
+        return;
       viewer = (new TextFileViewer()).createDom(fileInfo, this);
       GUI.setResultViewer(this.toolbar, viewer);
     }
@@ -2705,14 +2858,22 @@ class AudioResultsViewer {
     let pathParser = new PathParser(test.expectPath);
     this.viewer.innerHTML = `
       <p>Actual:
-        <audio controls src="${pathParser.resultLink('-actual.wav')}"></audio>
-        <a download="actual.wav" href="${pathParser.resultLink('-actual.wav')}">download</a>
+        <audio class="actual" controls></audio>
+        <a class="actual" download="actual.wav"">download</a>
       </p>
       <p>Expected:
-        <audio controls src="${pathParser.resultLink('-expected.wav')}"></audio>
-        <a download="expected.wav" href="${pathParser.resultLink('-expected.wav')}">download</a>
+        <audio class="expected" controls></audio>
+        <a class="expected" download="expected.wav">download</a>
       </p>
     `;
+    pathParser.resultLink('-actual.wav').then((href) => {
+      this.viewer.querySelector("audio.actual").src = href;
+      this.viewer.querySelector("a.actual").href = href;
+    });
+    pathParser.resultLink('-expected.wav').then((href) => {
+      this.viewer.querySelector("audio.expected").src = href;
+      this.viewer.querySelector("a.expected").href = href;
+    });
     return this.viewer;
   }
 } // class AudioResultsViewer
@@ -2729,9 +2890,43 @@ class AudioResultsViewer {
 })();
 </script>
 <script>
-// jsonp callback
-function ADD_FULL_RESULTS(results) {
-  GUI.initPage(results);
-}
+(function() {
+  // Initialization.
+  let jsonpUrl = 'full_results_jsonp.js';
+  let buildId = '';
+  let testSuite = '';
+  if (location.search) {
+    let matches = location.search.match(/\?json=([^&]*)(&build_id=([^&]*))?/);
+    if (matches[1])
+      jsonpUrl = decodeURIComponent(matches[1]);
+    if (matches[3])
+      buildId = decodeURIComponent(matches[3]);
+  }
+  let slashPos = jsonpUrl.lastIndexOf('/');
+  if (slashPos != -1) {
+    let base = document.createElement('base');
+    base.href = jsonpUrl.substring(0, slashPos + 1);
+    document.head.appendChild(base);
+    let nextSlashPos = jsonpUrl.lastIndexOf('/', slashPos - 1);
+    if (nextSlashPos != -1) {
+      testSuite = jsonpUrl.substring(nextSlashPos + 1, slashPos);
+      if (testSuite == "layout-test-results") {
+        let nextNextSlashPos = jsonpUrl.lastIndexOf('/', nextSlashPos - 1);
+        testSuite = jsonpUrl.substring(nextNextSlashPos + 1, nextSlashPos);
+      }
+      // Remove suffixes like " (with patch)".
+      let spacePos = testSuite.indexOf(' ');
+      if (spacePos != -1)
+        testSuite = testSuite.substring(0, spacePos);
+    }
+  }
+
+  // jsonp callback
+  window.ADD_FULL_RESULTS = function(results) {
+    GUI.initPage(results, buildId, testSuite);
+  };
+  let script = document.createElement('script');
+  script.src = jsonpUrl.substring(slashPos + 1);
+  document.body.appendChild(script);
+})();
 </script>
-<script src="full_results_jsonp.js"></script>
