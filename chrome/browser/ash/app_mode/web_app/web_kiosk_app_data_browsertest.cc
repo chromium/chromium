@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <codecvt>
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 
 #include "base/path_service.h"
@@ -29,6 +28,7 @@ const char kAppId[] = "123";
 const char kAppUrl[] = "https://example.com/";
 const char kAppKey[] = "apps";
 const char kAppTitle[] = "Title";
+const char16_t kAppTitle16[] = u"Title";
 const char kAppTitle2[] = "Title2";
 const char kTitleKey[] = "name";
 const char kIconKey[] = "icon";
@@ -271,8 +271,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest,
 
   WebAppInstallInfo app_info;
   app_info.start_url = GURL(kStartUrl);
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-  app_info.title = convert.from_bytes(kAppTitle);
+  app_info.title = kAppTitle16;
   PopulateIcon(&app_info, kIconExampleUrl1);
 
   app_data.UpdateFromWebAppInfo(app_info);

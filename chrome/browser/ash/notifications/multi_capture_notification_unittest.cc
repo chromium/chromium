@@ -4,11 +4,10 @@
 
 #include "chrome/browser/ash/notifications/multi_capture_notification.h"
 
-#include <codecvt>
-
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -61,9 +60,8 @@ class MultiCaptureNotificationTest : public BrowserWithTestWindowTest {
   void OnNotificationAdded() { notification_count_++; }
 
   void CheckNotification(const std::u16string& origin) {
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
     absl::optional<message_center::Notification> notification =
-        GetNotification(converter.to_bytes(origin));
+        GetNotification(base::UTF16ToUTF8(origin));
     ASSERT_TRUE(notification);
     EXPECT_EQ(u"", notification->title());
     EXPECT_EQ(u"Your system administrator has allowed " + origin +
