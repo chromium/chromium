@@ -236,11 +236,16 @@ source_set("unit_tests") {
   sources = [
     "clients/security_delegate_binding_test.cc",
     "server_unittest.cc",
+    "surface_unittest.cc",
     "test/client_util.cc",
     "test/client_util.h",
     "test/resource_key.h",
     "test/server_util.cc",
     "test/server_util.h",
+    "test/shm_buffer_factory.cc",
+    "test/shm_buffer_factory.h",
+    "test/test_buffer.cc",
+    "test/test_buffer.h",
     "test/test_client.cc",
     "test/test_client.h",
     "test/test_wayland_client_thread.cc",
@@ -302,6 +307,8 @@ source_set("client_support") {
     "clients/client_base.h",
     "clients/client_helper.cc",
     "clients/client_helper.h",
+    "clients/globals.cc",
+    "clients/globals.h",
   ]
 
   deps = [

@@ -50,8 +50,10 @@ class WaylandServerTest : public WaylandServerTestBase {
   }
 
   // Subclasses can override this method to create a TestClient subclass
-  // instance if needed.
-  virtual std::unique_ptr<TestClient> CreateClient();
+  // instance or customize client configuration if needed.
+  // This method is run on the client thread.
+  virtual std::unique_ptr<TestClient> InitOnClientThread(
+      const std::string& wayland_socket);
 
   std::unique_ptr<Server> server_;
 

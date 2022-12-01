@@ -27,13 +27,14 @@ class TestWaylandClientThread : public base::Thread,
 
   ~TestWaylandClientThread() override;
 
-  // Starts the client thread; initializes `client` by calling its Init() method
-  // with `params` on the client thread. This method blocks until the
-  // initialization on the client thread is done.
+  using InitCallback = base::OnceCallback<std::unique_ptr<TestClient>()>;
+  // Starts the client thread; initializes `client` by calling `init_callback`
+  // on the client thread. This method blocks until the initialization on the
+  // client thread is done.
   //
   // Returns false on failure. In that case, the other public APIs of this class
   // are not supposed to be called.
-  bool Start(std::unique_ptr<TestClient> client, TestClient::InitParams params);
+  bool Start(InitCallback init_callback);
 
   // Runs `callback` or `closure` on the client thread; blocks until the
   // callable is run and all pending Wayland requests and events are delivered.
@@ -45,7 +46,7 @@ class TestWaylandClientThread : public base::Thread,
   void OnFileCanReadWithoutBlocking(int fd) override;
   void OnFileCanWriteWithoutBlocking(int fd) override;
 
-  void DoInit(TestClient::InitParams params);
+  void DoInit(InitCallback init_callback);
   void DoRun(base::OnceClosure closure);
   void DoCleanUp();
 

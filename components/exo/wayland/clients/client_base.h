@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "components/exo/wayland/clients/client_helper.h"
+#include "components/exo/wayland/clients/globals.h"
 #include "linux-dmabuf-unstable-v1-client-protocol.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -71,34 +72,6 @@ class ClientBase {
     bool use_stylus = false;
     absl::optional<std::string> wayland_socket = {};
     uint32_t linux_dmabuf_version = ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION;
-  };
-
-  struct Globals {
-    Globals();
-    ~Globals();
-
-    std::unique_ptr<wl_output> output;
-    std::unique_ptr<wl_compositor> compositor;
-    std::unique_ptr<wl_shm> shm;
-    std::unique_ptr<wp_presentation> presentation;
-    std::unique_ptr<zwp_linux_dmabuf_v1> linux_dmabuf;
-    std::unique_ptr<wl_shell> shell;
-    std::unique_ptr<wl_seat> seat;
-    std::unique_ptr<wl_subcompositor> subcompositor;
-    std::unique_ptr<wl_touch> touch;
-    std::unique_ptr<zaura_shell> aura_shell;
-    std::unique_ptr<zaura_output> aura_output;
-    std::unique_ptr<zxdg_shell_v6> xdg_shell_v6;
-    std::unique_ptr<xdg_wm_base> xdg_wm_base;
-    std::unique_ptr<zwp_fullscreen_shell_v1> fullscreen_shell;
-    std::unique_ptr<zwp_input_timestamps_manager_v1> input_timestamps_manager;
-    std::unique_ptr<zwp_linux_explicit_synchronization_v1>
-        linux_explicit_synchronization;
-    std::unique_ptr<zcr_vsync_feedback_v1> vsync_feedback;
-    std::unique_ptr<zcr_color_manager_v1> color_manager;
-    std::unique_ptr<zcr_stylus_v2> stylus;
-    std::unique_ptr<zcr_remote_shell_v1> cr_remote_shell_v1;
-    std::unique_ptr<zcr_remote_shell_v2> cr_remote_shell_v2;
   };
 
   struct Buffer {
@@ -226,7 +199,6 @@ class ClientBase {
   bool y_invert_ = false;
 
   std::unique_ptr<wl_display> display_;
-  std::unique_ptr<wl_registry> registry_;
   std::unique_ptr<wl_surface> surface_;
   std::unique_ptr<wl_shell_surface> shell_surface_;
   std::unique_ptr<xdg_surface> xdg_surface_;

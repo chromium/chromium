@@ -166,45 +166,8 @@ void ExplicitReleaseBuffer(int* release_buffer_call_count,
   (*release_buffer_call_count)++;
 }
 
-// Instantiate the Boolean which is used to toggle mouse and touch events in
-// the parameterized tests.
+// Instantiate the values of device scale factor in the parameterized tests.
 INSTANTIATE_TEST_SUITE_P(All, SurfaceTest, testing::Values(1.0f, 1.25f, 2.0f));
-
-TEST_P(SurfaceTest, Attach) {
-  gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-
-  // Set the release callback that will be run when buffer is no longer in use.
-  int release_buffer_call_count = 0;
-  buffer->set_release_callback(base::BindRepeating(
-      &ReleaseBuffer, base::Unretained(&release_buffer_call_count)));
-
-  std::unique_ptr<Surface> surface(new Surface);
-
-  // Attach the buffer to surface1.
-  surface->Attach(buffer.get());
-  EXPECT_TRUE(surface->HasPendingAttachedBuffer());
-  surface->Commit();
-  EXPECT_EQ(gfx::SizeF(buffer_size), surface->content_size());
-
-  // Commit without calling Attach() should have no effect.
-  surface->Commit();
-  EXPECT_EQ(0, release_buffer_call_count);
-
-  // Attach a null buffer to surface, this should release the previously
-  // attached buffer.
-  surface->Attach(nullptr);
-  EXPECT_FALSE(surface->HasPendingAttachedBuffer());
-  surface->Commit();
-  EXPECT_TRUE(surface->content_size().IsEmpty());
-  // LayerTreeFrameSinkHolder::ReclaimResources() gets called via
-  // CompositorFrameSinkClient interface. We need to wait here for the mojo
-  // call to finish so that the release callback finishes running before
-  // the assertion below.
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(1, release_buffer_call_count);
-}
 
 TEST_P(SurfaceTest, Damage) {
   gfx::Size buffer_size(256, 256);

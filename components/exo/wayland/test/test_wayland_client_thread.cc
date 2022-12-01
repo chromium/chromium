@@ -32,16 +32,14 @@ TestWaylandClientThread::~TestWaylandClientThread() {
   FlushForTesting();
 }
 
-bool TestWaylandClientThread::Start(std::unique_ptr<TestClient> client,
-                                    TestClient::InitParams params) {
-  client_ = std::move(client);
-
+bool TestWaylandClientThread::Start(
+    base::OnceCallback<std::unique_ptr<TestClient>()> init_callback) {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
   CHECK(base::Thread::StartWithOptions(std::move(options)));
 
   RunAndWait(base::BindOnce(&TestWaylandClientThread::DoInit,
-                            base::Unretained(this), std::move(params)));
+                            base::Unretained(this), std::move(init_callback)));
 
   return !!client_;
 }
@@ -73,14 +71,13 @@ void TestWaylandClientThread::OnFileCanReadWithoutBlocking(int fd) {
 
 void TestWaylandClientThread::OnFileCanWriteWithoutBlocking(int fd) {}
 
-void TestWaylandClientThread::DoInit(TestClient::InitParams params) {
-  bool result = client_->Init(params);
-  if (!result) {
-    client_.reset();
+void TestWaylandClientThread::DoInit(
+    TestWaylandClientThread::InitCallback init_callback) {
+  client_ = std::move(init_callback).Run();
+  if (!client_)
     return;
-  }
 
-  result = base::CurrentIOThread::Get().WatchFileDescriptor(
+  const bool result = base::CurrentIOThread::Get().WatchFileDescriptor(
       wl_display_get_fd(client_->display()), /*persistent=*/true,
       base::MessagePumpLibevent::WATCH_READ, &controller_, this);
 

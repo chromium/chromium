@@ -31,9 +31,9 @@ void WaylandServerTest::SetUp() {
 
   client_thread_ =
       std::make_unique<TestWaylandClientThread>("client-" + socket_name);
-  TestClient::InitParams params;
-  params.wayland_socket = socket_name;
-  ASSERT_TRUE(client_thread_->Start(CreateClient(), std::move(params)));
+  ASSERT_TRUE(client_thread_->Start(
+      base::BindOnce(&WaylandServerTest::InitOnClientThread,
+                     base::Unretained(this), socket_name)));
 }
 
 void WaylandServerTest::TearDown() {
@@ -52,8 +52,13 @@ void WaylandServerTest::PostToClientAndWait(base::OnceClosure closure) {
   client_thread_->RunAndWait(std::move(closure));
 }
 
-std::unique_ptr<TestClient> WaylandServerTest::CreateClient() {
-  return std::make_unique<TestClient>();
+std::unique_ptr<TestClient> WaylandServerTest::InitOnClientThread(
+    const std::string& wayland_socket) {
+  auto client = std::make_unique<TestClient>();
+  if (!client->Init(wayland_socket))
+    return nullptr;
+
+  return client;
 }
 
 }  // namespace exo::wayland::test
