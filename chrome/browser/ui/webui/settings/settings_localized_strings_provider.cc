@@ -1303,8 +1303,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                              base::UTF8ToUTF16(chrome::kPaymentMethodsURL)));
   html_source->AddString("manageCreditCardsUrl",
                          autofill::payments::GetManageInstrumentsUrl().spec());
-  html_source->AddString("paymentMethodsLearnMoreURL",
-                         chrome::kPaymentMethodsLearnMoreURL);
+  html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
+                         chrome::kAddressesAndPaymentMethodsLearnMoreURL);
   html_source->AddString(
       "weakPasswordsDescription",
       l10n_util::GetStringFUTF16(

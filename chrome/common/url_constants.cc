@@ -228,7 +228,7 @@ const char kPaymentMethodsURL[] =
     "home?utm_source=chrome&utm_medium=settings&utm_campaign=chrome-payment#"
     "paymentMethods";
 
-const char kPaymentMethodsLearnMoreURL[] =
+const char kAddressesAndPaymentMethodsLearnMoreURL[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "https://support.google.com/chromebook/answer/"
     "142893?visit_id=636857416902558798-696405304&p=settings_autofill&rd=1";

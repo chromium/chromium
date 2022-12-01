@@ -217,7 +217,8 @@ extern const char kPasswordManagerLearnMoreURL[];
 // Help URL for the Payment methods page of the Google Pay site.
 extern const char kPaymentMethodsURL[];
 
-extern const char kPaymentMethodsLearnMoreURL[];
+// The URL for the "Fill out forms automatically" support page.
+extern const char kAddressesAndPaymentMethodsLearnMoreURL[];
 
 // "Learn more" URL for the Privacy section under Options.
 extern const char kPrivacyLearnMoreURL[];

@@ -85,7 +85,7 @@
         <settings-subpage
             associated-control="[[$$('#paymentManagerButton')]]"
             page-title="$i18n{creditCards}"
-            learn-more-url="$i18n{paymentMethodsLearnMoreURL}">
+            learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}">
           <settings-payments-section id="paymentsSection" prefs="{{prefs}}">
           </settings-payments-section>
         </settings-subpage>
@@ -93,7 +93,8 @@
       <template is="dom-if" route-path="/addresses">
         <settings-subpage
             associated-control="[[$$('#addressesManagerButton')]]"
-            page-title="$i18n{addressesTitle}">
+            page-title="$i18n{addressesTitle}"
+            learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}">
           <settings-autofill-section id="autofillSection" prefs="{{prefs}}">
           </settings-autofill-section>
         </settings-subpage>
