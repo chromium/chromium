@@ -909,7 +909,7 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   if (!style_request.IsPseudoStyleRequest()) {
     if (IsA<HTMLBodyElement>(*element)) {
       GetDocument().GetTextLinkColors().SetTextColor(
-          state.Style()->GetCurrentColor());
+          state.StyleBuilder().GetCurrentColor());
     }
 
     if (RuntimeEnabledFeatures::MathMLCoreEnabled() &&

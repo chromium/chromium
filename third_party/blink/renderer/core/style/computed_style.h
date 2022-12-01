@@ -2758,6 +2758,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetClipPathInternal(std::move(clip_path));
   }
 
+  // color
+  blink::Color GetCurrentColor() const {
+    return Color().Resolve(blink::Color(), UsedColorScheme());
+  }
+
   // column-count
   void SetColumnCount(uint16_t c) {
     SetHasAutoColumnCountInternal(false);
