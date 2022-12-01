@@ -12,8 +12,8 @@
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_manager.h"
-#include "media/audio/audio_output_stream_sink.h"
 #include "media/audio/audio_thread_impl.h"
+#include "media/audio/null_audio_sink.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media.h"
 #include "media/base/media_log.h"
@@ -74,9 +74,9 @@ std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
 #endif
   }
 
-  // We cannot share AudioOutputStreamSink or NullVideoSink among different
+  // We cannot share the NullAudioSink or NullVideoSink among different
   // RendererImpls. Thus create one for each Renderer creation.
-  auto audio_sink = base::MakeRefCounted<AudioOutputStreamSink>();
+  auto audio_sink = base::MakeRefCounted<NullAudioSink>(task_runner);
   auto video_sink = std::make_unique<NullVideoSink>(
       false, base::Seconds(1.0 / 60), NullVideoSink::NewFrameCB(), task_runner);
   auto* video_sink_ptr = video_sink.get();

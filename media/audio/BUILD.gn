@@ -104,8 +104,6 @@ source_set("audio") {
     "audio_output_proxy.h",
     "audio_output_resampler.cc",
     "audio_output_resampler.h",
-    "audio_output_stream_sink.cc",
-    "audio_output_stream_sink.h",
     "audio_sink_parameters.cc",
     "audio_sink_parameters.h",
     "audio_source_parameters.cc",
