@@ -36,9 +36,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       customize_themes_factory_receiver_(this) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIProfileCustomizationHost);
-  webui::SetJSModuleDefaults(source);
-  source->SetDefaultResource(
-      IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_HTML);
+
   static constexpr webui::ResourcePath kResources[] = {
       {"profile_customization_app.js",
        IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_APP_JS},
@@ -53,7 +51,10 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
-  source->AddResourcePaths(kResources);
+
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kResources),
+      IDR_SIGNIN_PROFILE_CUSTOMIZATION_PROFILE_CUSTOMIZATION_HTML);
 
   // Localized strings.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {

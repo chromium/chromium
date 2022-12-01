@@ -94,8 +94,6 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISigninReauthHost);
-  webui::SetJSModuleDefaults(source);
-  source->SetDefaultResource(IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_HTML);
 
   static constexpr webui::ResourcePath kResources[] = {
       {"signin_reauth_app.js", IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_JS},
@@ -111,7 +109,9 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
       {"images/signin_reauth_illustration_dark.svg",
        IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG},
   };
-  source->AddResourcePaths(kResources);
+
+  webui::SetupWebUIDataSource(source, base::make_span(kResources),
+                              IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_HTML);
 
   source->AddString("accountImageUrl", GetAccountImageURL(profile));
 

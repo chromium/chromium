@@ -30,10 +30,7 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIEnterpriseProfileWelcomeHost);
-  webui::SetJSModuleDefaults(source);
 
-  source->SetDefaultResource(
-      IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_HTML);
   static constexpr webui::ResourcePath kResources[] = {
       {"enterprise_profile_welcome_app.js",
        IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_APP_JS},
@@ -44,7 +41,11 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
-  source->AddResourcePaths(kResources);
+
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kResources),
+      IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_HTML);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   source->AddResourcePath(
       "images/lacros_enterprise_profile_welcome_illustration.svg",
