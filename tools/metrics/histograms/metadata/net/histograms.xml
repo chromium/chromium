@@ -385,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.IntermediateCacheInitTime"
-    units="ms" expires_after="2023-02-01">
+    units="ms" expires_after="2023-04-09">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -402,9 +402,9 @@ chromium-metrics-reviews@google.com.
   <owner>hchao@chromium.org</owner>
   <summary>
     When initializing the builtin certificate verifier on Mac using the
-    DomainCacheFullCerts implementation of the system trust store integration,
-    this records the number of certificates that were included in the cache of
-    intermediate certificates.
+    DomainCacheFullCerts or KeychainCacheFullCerts implementation of the system
+    trust store integration, this records the number of certificates that were
+    included in the cache of intermediate certificates.
   </summary>
 </histogram>
 
@@ -414,8 +414,21 @@ chromium-metrics-reviews@google.com.
   <owner>hchao@chromium.org</owner>
   <summary>
     When initializing the builtin certificate verifier on Mac using the
-    DomainCacheFullCerts implementation of the system trust store integration,
-    this records the number of certificates found in the Mac keychain.
+    DomainCacheFullCerts or KeychainCacheFullCerts implementation of the system
+    trust store integration, this records the number of certificates found in
+    the Mac keychain.
+  </summary>
+</histogram>
+
+<histogram name="Net.CertVerifier.MacKeychainCerts.TrustCount"
+    units="certificates" expires_after="2023-04-09">
+  <owner>mattm@chromium.org</owner>
+  <owner>hchao@chromium.org</owner>
+  <summary>
+    When initializing the builtin certificate verifier on Mac using the
+    KeychainCacheFullCerts implementation of the system trust store integration,
+    this records the number of certificates found in the Mac keychain which had
+    trust records marking them as either trusted or distrusted.
   </summary>
 </histogram>
 
@@ -434,7 +447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacTrustDomainCertCount.{Domain}"
-    units="certificates" expires_after="2023-02-01">
+    units="certificates" expires_after="2023-04-09">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -450,6 +463,20 @@ chromium-metrics-reviews@google.com.
     <variant name="System"/>
     <variant name="User"/>
   </token>
+</histogram>
+
+<histogram name="Net.CertVerifier.MacTrustImplInitTime" units="ms"
+    expires_after="2023-04-09">
+  <owner>mattm@chromium.org</owner>
+  <owner>hchao@chromium.org</owner>
+  <summary>
+    When the builtin certificate verifier is used on Mac and the platform
+    trusted certificates cache is initialized (or re-initialized if keychain
+    trust settings changed), records how long it took to initialize both the
+    trust cache and the intermediates cache. Only recorded by the
+    DomainCacheFullCerts and KeychainCacheFullCerts implementations, which may
+    or may not be used depending on Finch trial parameters.
+  </summary>
 </histogram>
 
 <histogram base="true" name="Net.CertVerifier.NameNormalizationPrivateRoots"

@@ -108,6 +108,8 @@ const char* TrustImplTypeToString(TrustStoreMac::TrustImplType t) {
       return "Simple";
     case TrustStoreMac::TrustImplType::kDomainCacheFullCerts:
       return "DomainCacheFullCerts";
+    case TrustStoreMac::TrustImplType::kKeychainCacheFullCerts:
+      return "KeychainCacheFullCerts";
     case TrustStoreMac::TrustImplType::kUnknown:
       return "Unknown";
   }
@@ -339,7 +341,8 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
       }
       auto* trust_debug_data = TrustStoreMac::ResultDebugData::Get(&debug_data);
       ASSERT_TRUE(trust_debug_data);
-      if (is_trust_anchor) {
+      if (is_trust_anchor &&
+          trust_impl != TrustStoreMac::TrustImplType::kKeychainCacheFullCerts) {
         // Since this test queries the real trust store, can't know exactly
         // what bits should be set in the trust debug info, but if it's trusted
         // it should at least have something set.
@@ -364,15 +367,50 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     EXPECT_EQ(trust_debug_data->trust_impl(), trust_debug_data2->trust_impl());
   }
 
-  if (trust_impl == TrustStoreMac::TrustImplType::kDomainCacheFullCerts) {
-    // Since this is testing the actual platform trust settings, we don't know
-    // what values the histogram should be for each domain, so just verify that
-    // the histogram is recorded (or not) depending on the requested trust
-    // domains.
+  // Since this is testing the actual platform certs and trust settings, we
+  // don't know what values the histograms should be, so just verify that the
+  // histogram is recorded (or not) depending on the requested trust impl.
+
+  {
+    // Histograms only logged by DomainCacheFullCerts impl:
+    const int expected_count =
+        (trust_impl == TrustStoreMac::TrustImplType::kDomainCacheFullCerts) ? 1
+                                                                            : 0;
     histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacTrustDomainCertCount.User", 1);
+        "Net.CertVerifier.MacTrustDomainCertCount.User", expected_count);
     histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacTrustDomainCertCount.Admin", 1);
+        "Net.CertVerifier.MacTrustDomainCertCount.Admin", expected_count);
+    histogram_tester.ExpectTotalCount(
+        "Net.CertVerifier.MacTrustDomainCacheInitTime", expected_count);
+    histogram_tester.ExpectTotalCount(
+        "Net.CertVerifier.MacKeychainCerts.IntermediateCacheInitTime",
+        expected_count);
+  }
+
+  {
+    // Histograms only logged by KeychainCacheFullCerts impl:
+    const int expected_count =
+        (trust_impl == TrustStoreMac::TrustImplType::kKeychainCacheFullCerts)
+            ? 1
+            : 0;
+    histogram_tester.ExpectTotalCount(
+        "Net.CertVerifier.MacKeychainCerts.TrustCount", expected_count);
+  }
+
+  {
+    // Histograms logged by both DomainCacheFullCerts and KeychainCacheFullCerts
+    // impls:
+    const int expected_count =
+        (trust_impl == TrustStoreMac::TrustImplType::kDomainCacheFullCerts ||
+         trust_impl == TrustStoreMac::TrustImplType::kKeychainCacheFullCerts)
+            ? 1
+            : 0;
+    histogram_tester.ExpectTotalCount(
+        "Net.CertVerifier.MacKeychainCerts.IntermediateCount", expected_count);
+    histogram_tester.ExpectTotalCount(
+        "Net.CertVerifier.MacKeychainCerts.TotalCount", expected_count);
+    histogram_tester.ExpectTotalCount(
+        "Net.CertVerifier.MacTrustImplCacheInitTime", expected_count);
   }
 }
 
@@ -380,7 +418,8 @@ INSTANTIATE_TEST_SUITE_P(
     Impl,
     TrustStoreMacImplTest,
     testing::Values(TrustStoreMac::TrustImplType::kSimple,
-                    TrustStoreMac::TrustImplType::kDomainCacheFullCerts),
+                    TrustStoreMac::TrustImplType::kDomainCacheFullCerts,
+                    TrustStoreMac::TrustImplType::kKeychainCacheFullCerts),
     [](const testing::TestParamInfo<TrustStoreMacImplTest::ParamType>& info) {
       return TrustImplTypeToString(info.param);
     });

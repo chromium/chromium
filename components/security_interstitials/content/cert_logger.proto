@@ -305,6 +305,7 @@ message TrialVerificationInfo {
     MAC_TRUST_IMPL_SIMPLE = 2;
     MAC_TRUST_IMPL_MRU_CACHE = 3;
     MAC_TRUST_IMPL_DOMAIN_CACHE_FULL_CERTS = 4;
+    MAC_TRUST_IMPL_KEYCHAIN_CACHE_FULL_CERTS = 5;
   };
   optional MacTrustImplType mac_trust_impl = 13;
 

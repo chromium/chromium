@@ -72,6 +72,7 @@ struct CertVerifierDebugInfo {
     kUnknown = 0,
     kSimple = 2,
     kDomainCacheFullCerts = 4,
+    kKeychainCacheFullCerts = 5,
   };
   [EnableIf=is_mac]
   MacTrustImplType mac_trust_impl;

@@ -81,6 +81,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
     kUnknown = 0,
     kSimple = 2,
     kDomainCacheFullCerts = 4,
+    kKeychainCacheFullCerts = 5,
   };
 
   class ResultDebugData : public base::SupportsUserData::Data {
@@ -131,6 +132,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
  private:
   class TrustImpl;
   class TrustImplDomainCacheFullCerts;
+  class TrustImplKeychainCacheFullCerts;
   class TrustImplNoCache;
 
   // Finds certificates in the OS keychains whose Subject matches |name_data|.

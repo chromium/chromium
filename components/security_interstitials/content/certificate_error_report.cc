@@ -161,6 +161,8 @@ TrustImplTypeFromMojom(
       return TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
     case mojom_MacTrustImplType::kDomainCacheFullCerts:
       return TrialVerificationInfo::MAC_TRUST_IMPL_DOMAIN_CACHE_FULL_CERTS;
+    case mojom_MacTrustImplType::kKeychainCacheFullCerts:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_KEYCHAIN_CACHE_FULL_CERTS;
   }
 }
 #endif  // BUILDFLAG(IS_APPLE)

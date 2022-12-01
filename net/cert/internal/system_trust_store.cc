@@ -233,12 +233,14 @@ TrustStoreMac::TrustImplType ParamToTrustImplType(
     int param,
     TrustStoreMac::TrustImplType default_impl) {
   // These values are used in experiment configs, do not change or reuse the
-  // numbers.
+  // numbers. Next available value: 6.
   switch (param) {
     case 2:
       return TrustStoreMac::TrustImplType::kSimple;
     case 4:
       return TrustStoreMac::TrustImplType::kDomainCacheFullCerts;
+    case 5:
+      return TrustStoreMac::TrustImplType::kKeychainCacheFullCerts;
     default:
       return default_impl;
   }
