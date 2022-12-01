@@ -31,6 +31,7 @@
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -43,10 +44,9 @@ using ICompleteStatusPtr = ::Microsoft::WRL::ComPtr<ICompleteStatus>;
 
 // This class implements the IUpdaterObserver interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
-class UpdaterObserver
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IUpdaterObserver> {
+class UpdaterObserver : public DynamicIIDsImpl<IUpdaterObserver,
+                                               IUpdaterObserverUser,
+                                               IUpdaterObserverSystem> {
  public:
   UpdaterObserver(UpdateService::StateChangeCallback state_update_callback,
                   UpdateService::Callback callback)
@@ -212,10 +212,9 @@ class UpdaterObserver
 
 // This class implements the IUpdaterCallback interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
-class UpdaterCallback
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IUpdaterCallback> {
+class UpdaterCallback : public DynamicIIDsImpl<IUpdaterCallback,
+                                               IUpdaterCallbackUser,
+                                               IUpdaterCallbackSystem> {
  public:
   explicit UpdaterCallback(base::OnceCallback<void(LONG)> callback)
       : callback_(std::move(callback)) {}
@@ -262,8 +261,8 @@ class UpdateServiceProxyImpl
     : public base::RefCountedThreadSafe<UpdateServiceProxyImpl>,
       public ProxyImplBase<UpdateServiceProxyImpl,
                            IUpdater,
-                           IUpdater,
-                           IUpdater> {
+                           IUpdaterUser,
+                           IUpdaterSystem> {
  public:
   explicit UpdateServiceProxyImpl(UpdaterScope scope) : ProxyImplBase(scope) {}
 

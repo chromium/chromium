@@ -102,10 +102,9 @@ library UpdaterInternalLib {
     [default] interface IUnknown;
   }
 
-  interface IUpdaterInternal;
   interface IUpdaterInternalUser;
   interface IUpdaterInternalSystem;
-  interface IUpdaterInternalCallback;
+
   interface IUpdaterInternalCallbackUser;
   interface IUpdaterInternalCallbackSystem;
 };

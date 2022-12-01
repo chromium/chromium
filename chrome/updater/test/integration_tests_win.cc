@@ -824,7 +824,10 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
                                        : __uuidof(UpdaterUserClass),
         updater_server));
     Microsoft::WRL::ComPtr<IUpdater> updater;
-    EXPECT_HRESULT_SUCCEEDED(updater_server.As(&updater));
+    EXPECT_HRESULT_SUCCEEDED(updater_server.CopyTo(
+        scope == UpdaterScope::kSystem ? __uuidof(IUpdaterSystem)
+                                       : __uuidof(IUpdaterUser),
+        IID_PPV_ARGS_Helper(&updater)));
 
     Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
     ASSERT_HRESULT_SUCCEEDED(CreateLocalServer(

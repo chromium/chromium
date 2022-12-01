@@ -29,10 +29,9 @@ namespace updater {
 // object. The purpose of this class is to remote the state of the
 // |UpdateService|. Instances of this class are typically passed as arguments
 // to RPC method calls which model COM events.
-class UpdateStateImpl
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IUpdateState> {
+class UpdateStateImpl : public DynamicIIDsImpl<IUpdateState,
+                                               IUpdateStateUser,
+                                               IUpdateStateSystem> {
  public:
   explicit UpdateStateImpl(const UpdateService::UpdateState& update_state)
       : update_state_(update_state) {}
@@ -60,10 +59,9 @@ class UpdateStateImpl
 
 // This class implements the ICompleteStatus interface and exposes it as a COM
 // object.
-class CompleteStatusImpl
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          ICompleteStatus> {
+class CompleteStatusImpl : public DynamicIIDsImpl<ICompleteStatus,
+                                                  ICompleteStatusUser,
+                                                  ICompleteStatusSystem> {
  public:
   CompleteStatusImpl(int code, const std::wstring& message)
       : code_(code), message_(message) {}
@@ -83,9 +81,7 @@ class CompleteStatusImpl
 
 // This class implements the IUpdater interface and exposes it as a COM object.
 class UpdaterImpl
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IUpdater> {
+    : public DynamicIIDsImpl<IUpdater, IUpdaterUser, IUpdaterSystem> {
  public:
   UpdaterImpl() = default;
   UpdaterImpl(const UpdaterImpl&) = delete;

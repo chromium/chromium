@@ -130,27 +130,42 @@ std::vector<IID> GetSideBySideInterfaces(UpdaterScope scope) {
   }
 }
 
-std::vector<IID> GetActiveInterfaces(UpdaterScope /*scope*/) {
-  return {
-      __uuidof(IUpdateState),
-      __uuidof(IUpdater),
-      __uuidof(IUpdaterObserver),
-      __uuidof(IUpdaterCallback),
-
-      // legacy interfaces.
-      __uuidof(IAppBundleWeb),
-      __uuidof(IAppWeb),
-      __uuidof(IAppCommandWeb),
-      __uuidof(ICompleteStatus),
-      __uuidof(ICurrentState),
-      __uuidof(IGoogleUpdate3Web),
-      __uuidof(IPolicyStatus),
-      __uuidof(IPolicyStatus2),
-      __uuidof(IPolicyStatus3),
-      __uuidof(IPolicyStatusValue),
-      __uuidof(IProcessLauncher),
-      __uuidof(IProcessLauncher2),
-  };
+std::vector<IID> GetActiveInterfaces(UpdaterScope scope) {
+  return JoinVectors(
+      [&scope]() -> std::vector<IID> {
+        switch (scope) {
+          case UpdaterScope::kUser:
+            return {
+                __uuidof(IUpdateStateUser),
+                __uuidof(IUpdaterUser),
+                __uuidof(ICompleteStatusUser),
+                __uuidof(IUpdaterObserverUser),
+                __uuidof(IUpdaterCallbackUser),
+            };
+          case UpdaterScope::kSystem:
+            return {
+                __uuidof(IUpdateStateSystem),
+                __uuidof(IUpdaterSystem),
+                __uuidof(ICompleteStatusSystem),
+                __uuidof(IUpdaterObserverSystem),
+                __uuidof(IUpdaterCallbackSystem),
+            };
+        }
+      }(),
+      {
+          // legacy interfaces.
+          __uuidof(IAppBundleWeb),
+          __uuidof(IAppWeb),
+          __uuidof(IAppCommandWeb),
+          __uuidof(ICurrentState),
+          __uuidof(IGoogleUpdate3Web),
+          __uuidof(IPolicyStatus),
+          __uuidof(IPolicyStatus2),
+          __uuidof(IPolicyStatus3),
+          __uuidof(IPolicyStatusValue),
+          __uuidof(IProcessLauncher),
+          __uuidof(IProcessLauncher2),
+      });
 }
 
 std::vector<IID> GetInterfaces(bool is_internal, UpdaterScope scope) {
@@ -352,11 +367,16 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
   static const base::NoDestructor<std::unordered_map<IID, const wchar_t*>>
       kTypeLibIndexes{{
           // Updater typelib.
-          {__uuidof(ICompleteStatus), kUpdaterIndex},
-          {__uuidof(IUpdater), kUpdaterIndex},
-          {__uuidof(IUpdaterObserver), kUpdaterIndex},
-          {__uuidof(IUpdateState), kUpdaterIndex},
-          {__uuidof(IUpdaterCallback), kUpdaterIndex},
+          {__uuidof(ICompleteStatusUser), kUpdaterIndex},
+          {__uuidof(ICompleteStatusSystem), kUpdaterIndex},
+          {__uuidof(IUpdaterUser), kUpdaterIndex},
+          {__uuidof(IUpdaterSystem), kUpdaterIndex},
+          {__uuidof(IUpdaterObserverUser), kUpdaterIndex},
+          {__uuidof(IUpdaterObserverSystem), kUpdaterIndex},
+          {__uuidof(IUpdateStateUser), kUpdaterIndex},
+          {__uuidof(IUpdateStateSystem), kUpdaterIndex},
+          {__uuidof(IUpdaterCallbackUser), kUpdaterIndex},
+          {__uuidof(IUpdaterCallbackSystem), kUpdaterIndex},
 
           // Updater internal typelib.
           {__uuidof(IUpdaterInternalUser), kUpdaterInternalIndex},

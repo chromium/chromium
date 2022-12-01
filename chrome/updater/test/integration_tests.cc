@@ -379,7 +379,14 @@ TEST_F(IntegrationTest, Install) {
   Uninstall();
 }
 
-TEST_F(IntegrationTest, OverinstallWorking) {
+// TODO(crbug.com/1341471): this test is disabled temporarily. Reenable after
+// the build for the current CL is published to CIPD.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OverinstallWorking DISABLED_OverinstallWorking
+#else
+#define MAYBE_OverinstallWorking OverinstallWorking
+#endif
+TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionNotActive(kUpdaterVersion);
@@ -778,7 +785,14 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(COMPONENT_BUILD)
-TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
+// TODO(crbug.com/1341471): this test is disabled temporarily. Reenable after
+// the build for the current CL is published to CIPD.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SelfUpdateFromOldReal DISABLED_SelfUpdateFromOldReal
+#else
+#define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
+#endif
+TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());

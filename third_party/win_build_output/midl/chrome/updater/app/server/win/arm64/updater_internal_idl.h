@@ -119,13 +119,6 @@ typedef struct UpdaterInternalSystemClass UpdaterInternalSystemClass;
 #endif 	/* __UpdaterInternalSystemClass_FWD_DEFINED__ */
 
 
-#ifndef __IUpdaterInternal_FWD_DEFINED__
-#define __IUpdaterInternal_FWD_DEFINED__
-typedef interface IUpdaterInternal IUpdaterInternal;
-
-#endif 	/* __IUpdaterInternal_FWD_DEFINED__ */
-
-
 #ifndef __IUpdaterInternalUser_FWD_DEFINED__
 #define __IUpdaterInternalUser_FWD_DEFINED__
 typedef interface IUpdaterInternalUser IUpdaterInternalUser;
@@ -709,8 +702,6 @@ EXTERN_C const IID IID_IUpdaterInternalSystem;
 
 /* library UpdaterInternalLib */
 /* [helpstring][version][uuid] */ 
-
-
 
 
 
