@@ -121,7 +121,13 @@
   }
 </style>
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
+  <!-- On tablets, touching the addFileLabel button will not open the file input
+        dialog, although it will trigger the click event. This seems to be an
+        CrOS issue. As a workaround, wiring the same event handler to the
+        touchend event fixes the issue.
+      -->
   <button id="addFileLabel" class="file-input" aria-hidden="true"
+      on-touchend="handleOpenFileInputClick_"
       on-click="handleOpenFileInputClick_" tabindex="-1">
     <cr-icon-button id="addFileIcon" iron-icon="attachment:add-file"
         aria-label="[[i18n('addFileLabel')]]" title="[[i18n('addFileLabel')]]">
@@ -146,6 +152,7 @@
       </div>
       <button id="replaceFileButton" class="file-input focusable"
           aria-label="[[i18n('replaceFileLabel')]]"
+          on-touchend="handleOpenFileInputClick_"
           on-click="handleOpenFileInputClick_" tabindex="0">
         [[i18n('replaceFileLabel')]]
       </button>

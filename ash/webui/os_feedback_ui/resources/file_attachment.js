@@ -173,6 +173,7 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
    * @protected
    */
   handleOpenFileInputClick_(e) {
+    e.preventDefault();
     const fileInput = this.getElement_('#selectFileDialog');
     fileInput.click();
   }
