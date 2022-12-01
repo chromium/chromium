@@ -16,7 +16,7 @@ class Clock;
 
 namespace extensions {
 struct Alarm;
-using AlarmList = std::vector<std::unique_ptr<Alarm>>;
+using AlarmList = std::vector<Alarm>;
 
 class AlarmsCreateFunction : public ExtensionFunction {
  public:

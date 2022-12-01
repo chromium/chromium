@@ -112,8 +112,7 @@ ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
                          : alarms_api_constants::kReleaseDelayMinimum)) *
       kSecondsPerMinute;
 
-  std::unique_ptr<Alarm> alarm(
-      new Alarm(alarm_name, params->alarm_info, granularity, clock_->Now()));
+  Alarm alarm(alarm_name, params->alarm_info, granularity, clock_->Now());
   AlarmManager::Get(browser_context())
       ->AddAlarm(extension_id(), std::move(alarm),
                  base::BindOnce(&AlarmsCreateFunction::Callback, this));
@@ -142,10 +141,11 @@ ExtensionFunction::ResponseAction AlarmsGetFunction::Run() {
 
 void AlarmsGetFunction::Callback(const std::string& name,
                                  extensions::Alarm* alarm) {
-  if (alarm)
+  if (alarm) {
     Respond(ArgumentList(alarms::Get::Results::Create(*alarm->js_alarm)));
-  else
+  } else {
     Respond(NoArguments());
+  }
 }
 
 ExtensionFunction::ResponseAction AlarmsGetAllFunction::Run() {
@@ -159,8 +159,8 @@ ExtensionFunction::ResponseAction AlarmsGetAllFunction::Run() {
 void AlarmsGetAllFunction::Callback(const AlarmList* alarms) {
   base::Value::List alarms_value;
   if (alarms) {
-    for (const std::unique_ptr<Alarm>& alarm : *alarms)
-      alarms_value.Append(alarm->js_alarm->ToValue());
+    for (const auto& alarm : *alarms)
+      alarms_value.Append(alarm.js_alarm->ToValue());
   }
   Respond(OneArgument(base::Value(std::move(alarms_value))));
 }
