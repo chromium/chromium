@@ -186,6 +186,8 @@ static_library("test_support") {
     "command_buffer/service/shared_image/test_image_backing.h",
     "command_buffer/service/test_helper.cc",
     "command_buffer/service/test_helper.h",
+    "command_buffer/service/test_memory_tracker.cc",
+    "command_buffer/service/test_memory_tracker.h",
     "ipc/raster_in_process_context.cc",
     "ipc/raster_in_process_context.h",
     "ipc/service/gpu_memory_buffer_factory_test_template.h",

@@ -324,7 +324,7 @@ AHardwareBufferImageBacking::ProduceGLTexture(SharedImageManager* manager,
   // if GL_OES_EGL_image is supported then <target> may also be TEXTURE_2D.
   auto* texture =
       GenGLTexture(hardware_buffer_handle_.get(), GL_TEXTURE_2D, color_space(),
-                   size(), estimated_size(), ClearedRect());
+                   size(), GetEstimatedSize(), ClearedRect());
   if (!texture)
     return nullptr;
 
@@ -347,7 +347,7 @@ AHardwareBufferImageBacking::ProduceGLTexturePassthrough(
   // if GL_OES_EGL_image is supported then <target> may also be TEXTURE_2D.
   auto texture = GenGLTexturePassthrough(hardware_buffer_handle_.get(),
                                          GL_TEXTURE_2D, color_space(), size(),
-                                         estimated_size(), ClearedRect());
+                                         GetEstimatedSize(), ClearedRect());
   if (!texture)
     return nullptr;
 
@@ -385,7 +385,7 @@ AHardwareBufferImageBacking::ProduceSkia(
   DCHECK(hardware_buffer_handle_.is_valid());
   auto* texture =
       GenGLTexture(hardware_buffer_handle_.get(), GL_TEXTURE_2D, color_space(),
-                   size(), estimated_size(), ClearedRect());
+                   size(), GetEstimatedSize(), ClearedRect());
   if (!texture)
     return nullptr;
   auto gl_representation =

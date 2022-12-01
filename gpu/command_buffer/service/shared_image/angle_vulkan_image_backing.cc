@@ -473,7 +473,7 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
   GLTextureImageBackingHelper::MakeTextureAndSetParameters(
       GL_TEXTURE_2D, /*service_id=*/0,
       /*framebuffer_attachment_angle=*/true, &passthrough_texture, nullptr);
-  passthrough_texture->SetEstimatedSize(estimated_size());
+  passthrough_texture->SetEstimatedSize(GetEstimatedSize());
 
   GLuint texture = passthrough_texture->service_id();
 

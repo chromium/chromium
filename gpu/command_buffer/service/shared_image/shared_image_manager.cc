@@ -393,7 +393,7 @@ bool SharedImageManager::OnMemoryDump(
       base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
     size_t total_size = 0;
     for (auto& backing : images_)
-      total_size += backing->EstimatedSizeForMemTracking();
+      total_size += backing->GetEstimatedSizeForMemoryDump();
 
     base::trace_event::MemoryAllocatorDump* dump =
         pmd->CreateAllocatorDump(base_dump_name);

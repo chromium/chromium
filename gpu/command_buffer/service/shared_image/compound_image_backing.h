@@ -115,7 +115,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
                     base::trace_event::MemoryAllocatorDumpGuid client_guid,
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override;
-  size_t EstimatedSizeForMemTracking() const override;
 
   // The first call will attempt to allocate `gpu_backing_`. This can fail
   // so `gpu_backing_` may be null afterwards.

@@ -39,7 +39,6 @@ class RawDrawImageBacking : public ClearTrackingSharedImageBacking {
                     base::trace_event::MemoryAllocatorDumpGuid client_guid,
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override;
-  size_t EstimatedSizeForMemTracking() const override;
 
  protected:
   std::unique_ptr<RasterImageRepresentation> ProduceRaster(

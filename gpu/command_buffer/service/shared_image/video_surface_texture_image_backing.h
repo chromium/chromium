@@ -46,7 +46,7 @@ class GPU_GLES2_EXPORT VideoSurfaceTextureImageBacking
       const VideoSurfaceTextureImageBacking&) = delete;
 
   // SharedImageBacking implementation.
-  size_t EstimatedSizeForMemTracking() const override;
+  size_t GetEstimatedSizeForMemoryDump() const override;
 
   // SharedContextState::ContextLostObserver implementation.
   void OnContextLost() override;

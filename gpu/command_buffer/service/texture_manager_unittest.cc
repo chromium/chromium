@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
+#include "gpu/command_buffer/service/test_memory_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_image_stub.h"
 #include "ui/gl/gl_mock.h"
@@ -2138,34 +2139,6 @@ TEST_F(ProduceConsumeTextureTest, ProduceConsumeCube) {
       GetLevelInfo(restored_texture.get(), GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0));
 }
 
-class CountingMemoryTracker : public MemoryTracker {
- public:
-  CountingMemoryTracker() {
-    current_size_ = 0;
-  }
-
-  CountingMemoryTracker(const CountingMemoryTracker&) = delete;
-  CountingMemoryTracker& operator=(const CountingMemoryTracker&) = delete;
-
-  ~CountingMemoryTracker() override = default;
-
-  void TrackMemoryAllocatedChange(int64_t delta) override {
-    DCHECK(delta >= 0 || current_size_ >= static_cast<uint64_t>(-delta));
-    current_size_ += delta;
-  }
-
-  uint64_t GetSize() const override { return current_size_; }
-
-  uint64_t ClientTracingId() const override { return 0; }
-
-  int ClientId() const override { return 0; }
-
-  uint64_t ContextGroupTracingId() const override { return 0; }
-
- private:
-  uint64_t current_size_;
-};
-
 class SharedTextureTest : public GpuServiceTest {
  public:
   static const bool kUseDefaultTextures = false;
@@ -2234,9 +2207,9 @@ class SharedTextureTest : public GpuServiceTest {
 
   scoped_refptr<FeatureInfo> feature_info_;
   ServiceDiscardableManager discardable_manager_;
-  CountingMemoryTracker memory_tracker1_;
+  TestMemoryTracker memory_tracker1_;
   std::unique_ptr<TextureManager> texture_manager1_;
-  CountingMemoryTracker memory_tracker2_;
+  TestMemoryTracker memory_tracker2_;
   std::unique_ptr<TextureManager> texture_manager2_;
 };
 

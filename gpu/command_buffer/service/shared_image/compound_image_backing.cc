@@ -364,7 +364,7 @@ CompoundImageBacking::CompoundImageBacking(
                          surface_origin,
                          alpha_type,
                          usage,
-                         shm_backing->estimated_size(),
+                         shm_backing->GetEstimatedSize(),
                          /*is_thread_safe=*/false),
       surface_handle_(surface_handle),
       allow_shm_overlays_(allow_shm_overlays),
@@ -583,13 +583,6 @@ void CompoundImageBacking::OnMemoryDump(
   }
 }
 
-size_t CompoundImageBacking::EstimatedSizeForMemTracking() const {
-  size_t estimated_size = shm_backing_->EstimatedSizeForMemTracking();
-  if (gpu_backing_)
-    estimated_size += gpu_backing_->EstimatedSizeForMemTracking();
-  return estimated_size;
-}
-
 void CompoundImageBacking::LazyAllocateGpuBacking() {
   if (gpu_backing_)
     return;
@@ -616,6 +609,14 @@ void CompoundImageBacking::LazyAllocateGpuBacking() {
 
   gpu_backing_->SetNotRefCounted();
   gpu_backing_->SetClearedRect(gfx::Rect(size()));
+
+  // Update peak GPU memory tracking with the new estimated size.
+  size_t estimated_size = shm_backing_->GetEstimatedSize();
+  if (gpu_backing_)
+    estimated_size += gpu_backing_->GetEstimatedSize();
+
+  AutoLock auto_lock(this);
+  UpdateEstimatedSize(estimated_size);
 }
 
 }  // namespace gpu

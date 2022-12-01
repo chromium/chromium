@@ -1005,7 +1005,7 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, EstimatedSize) {
   }
   ASSERT_TRUE(backing);
 
-  size_t backing_estimated_size = backing->estimated_size();
+  size_t backing_estimated_size = backing->GetEstimatedSize();
   EXPECT_GT(backing_estimated_size, 0u);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
