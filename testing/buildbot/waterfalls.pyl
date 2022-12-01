@@ -5683,6 +5683,21 @@
           'gtest_tests': 'updater_gtests_mac',
         },
       },
+      # TODO(crbug.com/1381588): move to macOS 12 once crbug.com/1394839 is
+      # resolved.
+      'mac11.0-updater-tester-asan-dbg': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_mac',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'os': 'Mac-11',
+            }
+          ]
+        },
+      },
       'mac11.0-updater-tester-dbg': {
         'test_suites': {
           'gtest_tests': 'updater_gtests_mac',
