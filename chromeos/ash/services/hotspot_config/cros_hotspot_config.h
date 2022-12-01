@@ -54,7 +54,6 @@ class CrosHotspotConfig : public mojom::CrosHotspotConfig,
                     HotspotController* hotspot_controller);
   // HotspotStateHandler::Observer:
   void OnHotspotStatusChanged() override;
-  void OnHotspotStateFailed(const std::string& error) override;
   void OnHotspotCapabilitiesChanged() override;
 
   HotspotStateHandler* hotspot_state_handler_;

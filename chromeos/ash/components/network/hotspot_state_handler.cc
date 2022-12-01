@@ -291,23 +291,6 @@ void HotspotStateHandler::UpdateHotspotStatus(const base::Value& status) {
     return;
   }
 
-  if (*state == shill::kTetheringStateFailure) {
-    // Fall back to either idle or active state if the current state is enabling
-    // or disabling.
-    FallbackStateOnFailure();
-
-    const std::string* error =
-        status.FindStringKey(shill::kTetheringStatusErrorProperty);
-    if (!error) {
-      NET_LOG(ERROR)
-          << "HotspotStateHandler: Failed to get hotspot status error.";
-    } else {
-      NET_LOG(ERROR) << "HotspotStateHandler: Hotspot status error: " << *error;
-    }
-    NotifyHotspotStateFailed(error ? *error : std::string());
-    return;
-  }
-
   hotspot_config::mojom::HotspotState mojom_state =
       ShillTetheringStateToMojomState(*state);
   if (mojom_state != hotspot_state_) {
@@ -435,21 +418,6 @@ void HotspotStateHandler::OnCheckReadinessFailure(
   std::move(callback).Run(CheckTetheringReadinessResult::kShillOperationFailed);
 }
 
-void HotspotStateHandler::FallbackStateOnFailure() {
-  using HotspotState = hotspot_config::mojom::HotspotState;
-  if (hotspot_state_ == HotspotState::kEnabled ||
-      hotspot_state_ == HotspotState::kDisabled) {
-    return;
-  }
-
-  if (hotspot_state_ == HotspotState::kEnabling) {
-    hotspot_state_ = HotspotState::kDisabled;
-  } else if (hotspot_state_ == HotspotState::kDisabling) {
-    hotspot_state_ = HotspotState::kEnabled;
-  }
-  NotifyHotspotStatusChanged();
-}
-
 void HotspotStateHandler::SetHotspotCapablities(
     hotspot_config::mojom::HotspotAllowStatus new_allow_status) {
   if (hotspot_capabilities_.allow_status == new_allow_status)
@@ -466,11 +434,6 @@ void HotspotStateHandler::SetPolicyAllowHotspot(bool allow) {
 void HotspotStateHandler::NotifyHotspotStatusChanged() {
   for (auto& observer : observer_list_)
     observer.OnHotspotStatusChanged();
-}
-
-void HotspotStateHandler::NotifyHotspotStateFailed(const std::string& error) {
-  for (auto& observer : observer_list_)
-    observer.OnHotspotStateFailed(error);
 }
 
 void HotspotStateHandler::NotifyHotspotCapabilitiesChanged() {

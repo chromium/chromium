@@ -18,10 +18,4 @@ void CrosHotspotConfigTestObserver::OnHotspotInfoChanged() {
   hotspot_info_changed_count_++;
 }
 
-void CrosHotspotConfigTestObserver::OnHotspotStateFailed(
-    const std::string& error_code) {
-  hotspot_state_failed_count_++;
-  last_hotspot_failed_error_ = error_code;
-}
-
 }  // namespace ash::hotspot_config

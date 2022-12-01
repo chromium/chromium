@@ -16,7 +16,6 @@ class CrosHotspotConfigObserver : public mojom::CrosHotspotConfigObserver {
   ~CrosHotspotConfigObserver() override = default;
 
   void OnHotspotInfoChanged() override;
-  void OnHotspotStateFailed(const std::string& error_code) override;
 };
 
 }  // namespace ash::hotspot_config

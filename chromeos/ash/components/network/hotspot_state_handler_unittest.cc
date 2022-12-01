@@ -48,11 +48,6 @@ class TestObserver : public HotspotStateHandler::Observer {
   // HotspotStateHandler::Observer:
   void OnHotspotStatusChanged() override { hotspot_status_changed_count_++; }
 
-  void OnHotspotStateFailed(const std::string& error) override {
-    hotspot_state_failed_count_++;
-    last_hotspot_failed_error_ = error;
-  }
-
   void OnHotspotCapabilitiesChanged() override {
     hotspot_capabilities_changed_count_++;
   }
@@ -65,17 +60,9 @@ class TestObserver : public HotspotStateHandler::Observer {
     return hotspot_capabilities_changed_count_;
   }
 
-  size_t hotspot_state_failed_count() { return hotspot_state_failed_count_; }
-
-  const std::string& last_hotspot_failed_error() {
-    return last_hotspot_failed_error_;
-  }
-
  private:
   size_t hotspot_status_changed_count_ = 0u;
-  size_t hotspot_state_failed_count_ = 0u;
   size_t hotspot_capabilities_changed_count_ = 0u;
-  std::string last_hotspot_failed_error_;
 };
 
 class HotspotStateHandlerTest : public ::testing::Test {
@@ -168,7 +155,6 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
             hotspot_config::mojom::HotspotState::kEnabled);
   EXPECT_EQ(1u, observer_.hotspot_status_changed_count());
-  EXPECT_EQ(0u, observer_.hotspot_state_failed_count());
 
   // Update tethering status to idle in Shill.
   status_dict.GetDict().Set(shill::kTetheringStatusStateProperty,
@@ -180,49 +166,17 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
             hotspot_config::mojom::HotspotState::kDisabled);
   EXPECT_EQ(2u, observer_.hotspot_status_changed_count());
-  EXPECT_EQ(0u, observer_.hotspot_state_failed_count());
 
-  // Simulate user starting tethering and failed.
+  // Simulate user starting tethering.
   status_dict.GetDict().Set(shill::kTetheringStatusStateProperty,
                             base::Value(shill::kTetheringStateStarting));
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringStatusProperty, status_dict);
   base::RunLoop().RunUntilIdle();
-  // Update tethering status to failure in Shill.
-  status_dict.GetDict().Set(shill::kTetheringStatusStateProperty,
-                            base::Value(shill::kTetheringStateFailure));
-  status_dict.GetDict().Set(
-      shill::kTetheringStatusErrorProperty,
-      base::Value(shill::kTetheringEnableResultUpstreamNotAvailable));
-  network_state_test_helper_.manager_test()->SetManagerProperty(
-      shill::kTetheringStatusProperty, status_dict);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
-            hotspot_config::mojom::HotspotState::kDisabled);
-  EXPECT_EQ(4u, observer_.hotspot_status_changed_count());
-  EXPECT_EQ(1u, observer_.hotspot_state_failed_count());
-  EXPECT_EQ(shill::kTetheringEnableResultUpstreamNotAvailable,
-            observer_.last_hotspot_failed_error());
-
-  // Verify the edge case where the state is failure but error is not provided.
-  status_dict.GetDict().Set(shill::kTetheringStatusStateProperty,
-                            base::Value(shill::kTetheringStateStarting));
-  network_state_test_helper_.manager_test()->SetManagerProperty(
-      shill::kTetheringStatusProperty, status_dict);
-  base::RunLoop().RunUntilIdle();
-  status_dict.GetDict().Set(shill::kTetheringStatusStateProperty,
-                            base::Value(shill::kTetheringStateFailure));
-  status_dict.GetDict().Remove(shill::kTetheringStatusErrorProperty);
-  ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
-      shill::kTetheringStatusProperty, status_dict);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
-            hotspot_config::mojom::HotspotState::kDisabled);
-  EXPECT_EQ(6u, observer_.hotspot_status_changed_count());
-  EXPECT_EQ(2u, observer_.hotspot_state_failed_count());
-  EXPECT_EQ(std::string(), observer_.last_hotspot_failed_error());
+            hotspot_config::mojom::HotspotState::kEnabling);
+  EXPECT_EQ(3u, observer_.hotspot_status_changed_count());
 }
 
 TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {

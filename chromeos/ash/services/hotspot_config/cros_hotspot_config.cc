@@ -77,9 +77,4 @@ void CrosHotspotConfig::OnHotspotCapabilitiesChanged() {
     observer->OnHotspotInfoChanged();
 }
 
-void CrosHotspotConfig::OnHotspotStateFailed(const std::string& error) {
-  for (auto& observer : observers_)
-    observer->OnHotspotStateFailed(error);
-}
-
 }  // namespace ash::hotspot_config

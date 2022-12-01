@@ -228,25 +228,10 @@ TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
   EXPECT_EQ(GetHotspotInfo()->state, mojom::HotspotState::kDisabled);
   EXPECT_EQ(observer()->hotspot_info_changed_count(), 4u);
 
-  // Simulate user starting tethering and failed.
+  // Simulate user starting tethering
   SetHotspotStateInShill(shill::kTetheringStateStarting);
+  EXPECT_EQ(GetHotspotInfo()->state, mojom::HotspotState::kEnabling);
   EXPECT_EQ(observer()->hotspot_info_changed_count(), 5u);
-  // Update tethering status to failure in Shill.
-  base::Value status_dict(base::Value::Type::DICTIONARY);
-  status_dict.GetDict().Set(shill::kTetheringStatusStateProperty,
-                            base::Value(shill::kTetheringStateFailure));
-  status_dict.GetDict().Set(
-      shill::kTetheringStatusErrorProperty,
-      base::Value(shill::kTetheringEnableResultUpstreamNotAvailable));
-  helper()->manager_test()->SetManagerProperty(shill::kTetheringStatusProperty,
-                                               status_dict);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(GetHotspotInfo()->state, mojom::HotspotState::kDisabled);
-  EXPECT_EQ(observer()->hotspot_info_changed_count(), 6u);
-  EXPECT_EQ(observer()->hotspot_state_failed_count(), 1u);
-  EXPECT_EQ(shill::kTetheringEnableResultUpstreamNotAvailable,
-            observer()->last_hotspot_failed_error());
 }
 
 TEST_F(CrosHotspotConfigTest, SetHotspotConfig) {

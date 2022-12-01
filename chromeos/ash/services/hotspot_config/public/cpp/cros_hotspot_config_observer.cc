@@ -8,7 +8,4 @@ namespace ash::hotspot_config {
 
 void CrosHotspotConfigObserver::OnHotspotInfoChanged() {}
 
-void CrosHotspotConfigObserver::OnHotspotStateFailed(
-    const std::string& error_code) {}
-
 }  // namespace ash::hotspot_config
