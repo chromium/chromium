@@ -6,6 +6,7 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("tab_grid") {
   sources = [
+    "tab_grid_coordinator+private.h",
     "tab_grid_coordinator.h",
     "tab_grid_coordinator.mm",
     "tab_grid_coordinator_delegate.h",

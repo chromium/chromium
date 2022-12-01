@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/block_cleanup_test.h"
@@ -39,10 +40,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-@interface TabGridCoordinator (Testing)
-@property(nonatomic, strong, readonly) BVCContainerViewController* bvcContainer;
-@end
 
 @interface StubSceneState : SceneState
 
