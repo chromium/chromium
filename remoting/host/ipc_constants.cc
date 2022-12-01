@@ -43,6 +43,8 @@ const base::FilePath::CharType kHostBinaryName[] =
 const base::FilePath::CharType kDesktopBinaryName[] =
     FILE_PATH_LITERAL("remoting_desktop");
 
+const uint64_t kChromotingHostServicesMessagePipeId = 0u;
+
 bool GetInstalledBinaryPath(const base::FilePath::StringType& binary,
                             base::FilePath* full_path) {
   base::FilePath dir_path;

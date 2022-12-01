@@ -6,10 +6,11 @@
 
 #include "base/environment.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
@@ -29,14 +30,23 @@ bool g_initialized = false;
 mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
     mojo::IsolatedConnection& connection) {
   auto server_name = GetChromotingHostServicesServerName();
-  auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(server_name);
+  auto endpoint = named_mojo_ipc_server::ConnectToServer(server_name);
   if (!endpoint.is_valid()) {
     LOG(WARNING) << "Cannot connect to IPC through server name " << server_name
                  << ". Endpoint is invalid.";
     return {};
   }
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1378803): Make Windows hosts work with non-isolated
+  // connections.
+  auto message_pipe = connection.Connect(std::move(endpoint));
+#else
+  auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
+  auto message_pipe =
+      invitation.ExtractMessagePipe(kChromotingHostServicesMessagePipeId);
+#endif
   return mojo::PendingRemote<mojom::ChromotingHostServices>(
-      connection.Connect(std::move(endpoint)), /* version= */ 0);
+      std::move(message_pipe), /* version= */ 0);
 }
 
 }  // namespace

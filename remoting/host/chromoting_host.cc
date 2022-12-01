@@ -126,11 +126,18 @@ void ChromotingHost::StartChromotingHostServices() {
   DCHECK(!ipc_server_);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1378803): Make Windows hosts work with non-isolated
+  // connections.
+  auto message_pipe_id =
+      named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection;
+#else
+  auto message_pipe_id = kChromotingHostServicesMessagePipeId;
+#endif
   ipc_server_ = std::make_unique<
       named_mojo_ipc_server::NamedMojoIpcServer<mojom::ChromotingHostServices>>(
-      GetChromotingHostServicesServerName(),
-      named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
-      this, base::BindRepeating(&IsTrustedMojoEndpoint));
+      GetChromotingHostServicesServerName(), message_pipe_id, this,
+      base::BindRepeating(&IsTrustedMojoEndpoint));
   ipc_server_->StartServer();
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
 #else

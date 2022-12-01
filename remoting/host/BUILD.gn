@@ -139,6 +139,7 @@ source_set("chromoting_host_services_client") {
   deps = [
     ":ipc_constants",
     "//base",
+    "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
     "//remoting/host/mojom",
   ]
