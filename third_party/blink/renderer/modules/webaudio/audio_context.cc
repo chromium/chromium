@@ -565,14 +565,28 @@ ScriptPromise AudioContext::setSinkId(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
+  // setSinkId invoked from a detached document should throw kInvalidStateError
+  // DOMException.
+  if (!GetExecutionContext()) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "Cannot proceed setSinkId on a detached document."));
+  }
+
+  // setSinkId invoked from a closed AudioContext should throw
+  // kInvalidStateError DOMException.
+  if (ContextState() == kClosed) {
+    return ScriptPromise::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kInvalidStateError,
+            "Cannot proceed setSinkId on a closed AudioContext."));
+  }
+
   SetSinkIdResolver* resolver =
       SetSinkIdResolver::Create(script_state, *this, *v8_sink_id);
   ScriptPromise promise = resolver->Promise();
-
-  if (ContextState() == kClosed) {
-    resolver->Reject();
-    return promise;
-  }
 
   set_sink_id_resolvers_.push_back(resolver);
 
