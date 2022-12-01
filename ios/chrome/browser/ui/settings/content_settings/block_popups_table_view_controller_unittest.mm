@@ -24,10 +24,6 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SettingsRootTableViewController (ExposedForTesting)
-- (void)editButtonPressed;
-@end
-
 namespace {
 
 const char* kAllowedPattern = "[*.]example.com";
