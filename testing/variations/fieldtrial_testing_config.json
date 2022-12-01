@@ -2968,7 +2968,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20221128",
                     "params": {
                         "delay": "30s"
                     },
@@ -2978,7 +2978,6 @@
                         "CacheFeatureOverrideState",
                         "DelayFirstParkingOfStrings",
                         "EarlyExitOnNoopClassOrStyleChange",
-                        "ExplicitHighResolutionTimerWin",
                         "MessagePumpMacDelayedWorkOptimizations",
                         "NoWakeUpsForCanceledTasks",
                         "ReduceCpuUtilization",
