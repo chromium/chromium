@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "tab_style_views.h"
 
 class TabDragWithScrollManager;

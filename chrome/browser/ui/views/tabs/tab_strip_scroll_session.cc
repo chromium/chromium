@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/scroll_view.h"
 
