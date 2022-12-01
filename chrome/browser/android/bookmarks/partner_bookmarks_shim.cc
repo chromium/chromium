@@ -283,7 +283,7 @@ void PartnerBookmarksShim::SaveNodeMapping() {
   if (!prefs_)
     return;
 
-  base::ListValue list;
+  base::Value::List list;
   for (NodeRenamingMap::const_iterator i = node_rename_remove_map_.begin();
        i != node_rename_remove_map_.end();
        ++i) {
@@ -291,9 +291,9 @@ void PartnerBookmarksShim::SaveNodeMapping() {
     dict.Set(kMappingUrl, i->first.url().spec());
     dict.Set(kMappingProviderTitle, i->first.provider_title());
     dict.Set(kMappingTitle, i->second);
-    list.Append(base::Value(std::move(dict)));
+    list.Append(std::move(dict));
   }
-  prefs_->Set(prefs::kPartnerBookmarkMappings, list);
+  prefs_->SetList(prefs::kPartnerBookmarkMappings, std::move(list));
 }
 
 void PartnerBookmarksShim::GetPartnerBookmarksMatchingProperties(
