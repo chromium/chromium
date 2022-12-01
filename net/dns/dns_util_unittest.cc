@@ -35,261 +35,274 @@ const DohProviderEntry& GetDohProviderEntry(base::StringPiece provider) {
 }  // namespace
 
 using testing::Eq;
+using testing::Optional;
 
-class DNSUtilTest : public testing::Test {
-};
+class DNSUtilTest : public testing::Test {};
 
-// IncludeNUL converts a char* to a std::string and includes the terminating
-// NUL in the result.
-static std::string IncludeNUL(const char* in) {
-  return std::string(in, strlen(in) + 1);
+// ToBytes converts a char* to a std::vector<uint8_t> and includes the
+// terminating NUL in the result.
+static std::vector<uint8_t> ToBytes(const char* in) {
+  size_t size = strlen(in) + 1;
+  std::vector<uint8_t> out(size, 0);
+  memcpy(out.data(), in, size);
+  return out;
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromDot) {
-  std::string out;
-
-  EXPECT_TRUE(DNSDomainFromDot("com", &out));
-  EXPECT_EQ(out, IncludeNUL("\003com"));
-  EXPECT_TRUE(DNSDomainFromDot("google.com", &out));
-  EXPECT_EQ(out, IncludeNUL("\x006google\003com"));
-  EXPECT_TRUE(DNSDomainFromDot("www.google.com", &out));
-  EXPECT_EQ(out, IncludeNUL("\003www\006google\003com"));
+  EXPECT_THAT(DNSDomainFromDot("com"), Optional(ToBytes("\003com")));
+  EXPECT_THAT(DNSDomainFromDot("google.com"),
+              Optional(ToBytes("\x006google\003com")));
+  EXPECT_THAT(DNSDomainFromDot("www.google.com"),
+              Optional(ToBytes("\003www\006google\003com")));
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromUnrestrictedDot) {
-  std::string out;
-
-  EXPECT_TRUE(DNSDomainFromUnrestrictedDot("com", &out));
-  EXPECT_EQ(out, IncludeNUL("\003com"));
-  EXPECT_TRUE(DNSDomainFromUnrestrictedDot("google.com", &out));
-  EXPECT_EQ(out, IncludeNUL("\x006google\003com"));
-  EXPECT_TRUE(DNSDomainFromUnrestrictedDot("www.google.com", &out));
-  EXPECT_EQ(out, IncludeNUL("\003www\006google\003com"));
+  EXPECT_THAT(DNSDomainFromUnrestrictedDot("com"),
+              Optional(ToBytes("\003com")));
+  EXPECT_THAT(DNSDomainFromUnrestrictedDot("google.com"),
+              Optional(ToBytes("\x006google\003com")));
+  EXPECT_THAT(DNSDomainFromUnrestrictedDot("www.google.com"),
+              Optional(ToBytes("\003www\006google\003com")));
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromDotRejectsEmptyLabels) {
-  std::string out;
-
-  EXPECT_FALSE(DNSDomainFromDot("", &out));
-  EXPECT_FALSE(DNSDomainFromDot(".", &out));
-  EXPECT_FALSE(DNSDomainFromDot("..", &out));
-  EXPECT_FALSE(DNSDomainFromDot(".google.com", &out));
-  EXPECT_FALSE(DNSDomainFromDot("www..google.com", &out));
+  EXPECT_FALSE(DNSDomainFromDot("").has_value());
+  EXPECT_FALSE(DNSDomainFromDot(".").has_value());
+  EXPECT_FALSE(DNSDomainFromDot("..").has_value());
+  EXPECT_FALSE(DNSDomainFromDot(".google.com").has_value());
+  EXPECT_FALSE(DNSDomainFromDot("www..google.com").has_value());
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromUnrestrictedDotRejectsEmptyLabels) {
-  std::string out;
-
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot("", &out));
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(".", &out));
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot("..", &out));
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(".google.com", &out));
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot("www..google.com", &out));
+  EXPECT_FALSE(DNSDomainFromUnrestrictedDot("").has_value());
+  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(".").has_value());
+  EXPECT_FALSE(DNSDomainFromUnrestrictedDot("..").has_value());
+  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(".google.com").has_value());
+  EXPECT_FALSE(DNSDomainFromUnrestrictedDot("www..google.com").has_value());
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromDotAcceptsEmptyLabelAtEnd) {
-  std::string out;
-
-  EXPECT_TRUE(DNSDomainFromDot("www.google.com.", &out));
-  EXPECT_EQ(out, IncludeNUL("\003www\006google\003com"));
+  EXPECT_THAT(DNSDomainFromDot("www.google.com."),
+              Optional(ToBytes("\003www\006google\003com")));
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromUnrestrictedDotAcceptsEmptyLabelAtEnd) {
-  std::string out;
-
-  EXPECT_TRUE(DNSDomainFromUnrestrictedDot("www.google.com.", &out));
-  EXPECT_EQ(out, IncludeNUL("\003www\006google\003com"));
+  EXPECT_THAT(DNSDomainFromUnrestrictedDot("www.google.com."),
+              Optional(ToBytes("\003www\006google\003com")));
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromDotAllowsLongNames) {
-  std::string out;
-
   // Label is 63 chars: still valid
-  EXPECT_TRUE(DNSDomainFromDot(
-      "z23456789a123456789a123456789a123456789a123456789a123456789a123", &out));
-  EXPECT_EQ(out, IncludeNUL("\077z23456789a123456789a123456789a123456789a123456"
-                            "789a123456789a123"));
-  EXPECT_TRUE(DNSDomainFromDot(
-      "z23456789a123456789a123456789a123456789a123456789a123456789a123.",
-      &out));
-  EXPECT_EQ(out, IncludeNUL("\077z23456789a123456789a123456789a123456789a123456"
-                            "789a123456789a123"));
+  EXPECT_THAT(
+      DNSDomainFromDot(
+          "z23456789a123456789a123456789a123456789a123456789a123456789a123"),
+      Optional(ToBytes("\077z23456789a123456789a123456789a123456789a123456"
+                       "789a123456789a123")));
+  EXPECT_THAT(
+      DNSDomainFromDot(
+          "z23456789a123456789a123456789a123456789a123456789a123456789a123."),
+      Optional(ToBytes("\077z23456789a123456789a123456789a123456789a123456"
+                       "789a123456789a123")));
 
   // 253 characters in the name: still valid
-  EXPECT_TRUE(DNSDomainFromDot(
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abc",
-      &out));
-  EXPECT_EQ(out, IncludeNUL(
-                     "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011a"
-                     "bcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdef"
-                     "ghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
-                     "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011a"
-                     "bcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdef"
-                     "ghi\011abcdefghi\011abcdefghi\011abcdefghi\003abc"));
+  EXPECT_THAT(
+      DNSDomainFromDot(
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abc"),
+      Optional(ToBytes("\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\003abc")));
 
   // 253 characters in the name plus final dot: still valid
-  EXPECT_TRUE(DNSDomainFromDot(
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abc.",
-      &out));
-  EXPECT_EQ(out, IncludeNUL(
-                     "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011a"
-                     "bcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdef"
-                     "ghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
-                     "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011a"
-                     "bcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdef"
-                     "ghi\011abcdefghi\011abcdefghi\011abcdefghi\003abc"));
+  EXPECT_THAT(
+      DNSDomainFromDot(
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abc."),
+      Optional(ToBytes("\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\003abc")));
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromUnrestrictedDotAllowsLongNames) {
-  std::string out;
-
   // Label is 63 chars: still valid
-  EXPECT_TRUE(DNSDomainFromUnrestrictedDot(
-      "z23456789a123456789a123456789a123456789a123456789a123456789a123", &out));
-  EXPECT_EQ(out, IncludeNUL("\077z23456789a123456789a123456789a123456789a123456"
-                            "789a123456789a123"));
+  EXPECT_THAT(
+      DNSDomainFromUnrestrictedDot(
+          "z23456789a123456789a123456789a123456789a123456789a123456789a123"),
+      Optional(ToBytes("\077z23456789a123456789a123456789a123456789a123456"
+                       "789a123456789a123")));
   // Label is 63 chars: still valid
-  EXPECT_TRUE(DNSDomainFromUnrestrictedDot(
-      "z23456789a123456789a123456789a123456789a123456789a123456789a123.",
-      &out));
-  EXPECT_EQ(out, IncludeNUL("\077z23456789a123456789a123456789a123456789a123456"
-                            "789a123456789a123"));
+  EXPECT_THAT(
+      DNSDomainFromUnrestrictedDot(
+          "z23456789a123456789a123456789a123456789a123456789a123456789a123."),
+      Optional(ToBytes("\077z23456789a123456789a123456789a123456789a123456"
+                       "789a123456789a123")));
 
   // 253 characters in the name: still valid
-  EXPECT_TRUE(DNSDomainFromUnrestrictedDot(
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abc",
-      &out));
-  EXPECT_EQ(out, IncludeNUL(
-                     "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011a"
-                     "bcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdef"
-                     "ghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
-                     "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011a"
-                     "bcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdef"
-                     "ghi\011abcdefghi\011abcdefghi\011abcdefghi\003abc"));
+  EXPECT_THAT(
+      DNSDomainFromUnrestrictedDot(
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abc"),
+      Optional(ToBytes("\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\003abc")));
 
   // 253 characters in the name plus final dot: still valid
-  EXPECT_TRUE(DNSDomainFromUnrestrictedDot(
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
-      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abc.",
-      &out));
-  EXPECT_EQ(out, IncludeNUL(
-                     "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011a"
-                     "bcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdef"
-                     "ghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
-                     "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011a"
-                     "bcdefghi\011abcdefghi\011abcdefghi\011abcdefghi\011abcdef"
-                     "ghi\011abcdefghi\011abcdefghi\011abcdefghi\003abc"));
+  EXPECT_THAT(
+      DNSDomainFromUnrestrictedDot(
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abc."),
+      Optional(ToBytes("\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\003abc")));
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromDotRejectsTooLongNames) {
   std::string out;
 
   // Label is too long: invalid
-  EXPECT_FALSE(DNSDomainFromDot(
-      "123456789a123456789a123456789a123456789a123456789a123456789a1234",
-      &out));
-  EXPECT_FALSE(DNSDomainFromDot(
-      "123456789a123456789a123456789a123456789a123456789a123456789a1234.",
-      &out));
+  EXPECT_FALSE(
+      DNSDomainFromDot(
+          "123456789a123456789a123456789a123456789a123456789a123456789a1234")
+          .has_value());
+  EXPECT_FALSE(
+      DNSDomainFromDot(
+          "123456789a123456789a123456789a123456789a123456789a123456789a1234.")
+          .has_value());
 
   // 254 characters in the name: invalid
-  EXPECT_FALSE(DNSDomainFromDot(
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.1234",
-      &out));
-  EXPECT_FALSE(DNSDomainFromDot(
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.1234.",
-      &out));
+  EXPECT_FALSE(
+      DNSDomainFromDot(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.1234")
+          .has_value());
+  EXPECT_FALSE(
+      DNSDomainFromDot(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.1234.")
+          .has_value());
 
   // 255 characters in the name: invalid before even trying to add a final
   // zero-length termination
-  EXPECT_FALSE(DNSDomainFromDot(
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.12345",
-      &out));
-  EXPECT_FALSE(DNSDomainFromDot(
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.12345.",
-      &out));
+  EXPECT_FALSE(
+      DNSDomainFromDot(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.12345")
+          .has_value());
+  EXPECT_FALSE(
+      DNSDomainFromDot(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.12345.")
+          .has_value());
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromUnrestrictedDotRejectsTooLongNames) {
   std::string out;
 
   // Label is too long: invalid
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(
-      "123456789a123456789a123456789a123456789a123456789a123456789a1234",
-      &out));
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(
-      "123456789a123456789a123456789a123456789a123456789a123456789a1234.",
-      &out));
+  EXPECT_FALSE(
+      DNSDomainFromUnrestrictedDot(
+          "123456789a123456789a123456789a123456789a123456789a123456789a1234")
+          .has_value());
+  EXPECT_FALSE(
+      DNSDomainFromUnrestrictedDot(
+          "123456789a123456789a123456789a123456789a123456789a123456789a1234.")
+          .has_value());
 
   // 254 characters in the name: invalid
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.1234",
-      &out));
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.1234.",
-      &out));
+  EXPECT_FALSE(
+      DNSDomainFromUnrestrictedDot(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.1234")
+          .has_value());
+  EXPECT_FALSE(
+      DNSDomainFromUnrestrictedDot(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.1234.")
+          .has_value());
 
   // 255 characters in the name: invalid before even trying to add a final
   // zero-length termination
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.12345",
-      &out));
-  EXPECT_FALSE(DNSDomainFromUnrestrictedDot(
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.123456789.123456789.123456789."
-      "123456789.123456789.123456789.123456789.12345.",
-      &out));
+  EXPECT_FALSE(
+      DNSDomainFromUnrestrictedDot(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.12345")
+          .has_value());
+  EXPECT_FALSE(
+      DNSDomainFromUnrestrictedDot(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.12345.")
+          .has_value());
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromDotRejectsRestrictedCharacters) {
   std::string out;
 
-  EXPECT_FALSE(DNSDomainFromDot("foo,bar.com", &out));
-  EXPECT_FALSE(DNSDomainFromDot("_ipp._tcp.local.foo printer (bar)", &out));
+  EXPECT_FALSE(DNSDomainFromDot("foo,bar.com").has_value());
+  EXPECT_FALSE(
+      DNSDomainFromDot("_ipp._tcp.local.foo printer (bar)").has_value());
 }
 
 TEST_F(DNSUtilTest, DNSDomainFromUnrestrictedDotAcceptsRestrictedCharacters) {
   std::string out;
 
-  EXPECT_TRUE(DNSDomainFromUnrestrictedDot("foo,bar.com", &out));
-  EXPECT_EQ(out, IncludeNUL("\007foo,bar\003com"));
+  EXPECT_THAT(DNSDomainFromUnrestrictedDot("foo,bar.com"),
+              Optional(ToBytes("\007foo,bar\003com")));
 
-  EXPECT_TRUE(
-      DNSDomainFromUnrestrictedDot("_ipp._tcp.local.foo printer (bar)", &out));
-  EXPECT_EQ(out, IncludeNUL("\004_ipp\004_tcp\005local\021foo printer (bar)"));
+  EXPECT_THAT(
+      DNSDomainFromUnrestrictedDot("_ipp._tcp.local.foo printer (bar)"),
+      Optional(ToBytes("\004_ipp\004_tcp\005local\021foo printer (bar)")));
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleSimpleNames) {

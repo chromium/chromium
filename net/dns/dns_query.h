@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
@@ -48,7 +49,7 @@ class NET_EXPORT_PRIVATE DnsQuery {
   // If |opt_rdata| is not null, an OPT record will be added to the "Additional"
   // section of the query.
   DnsQuery(uint16_t id,
-           base::StringPiece qname,
+           base::span<const uint8_t> qname,
            uint16_t qtype,
            const OptRecordRdata* opt_rdata = nullptr,
            PaddingStrategy padding_strategy = PaddingStrategy::NONE);
@@ -80,7 +81,7 @@ class NET_EXPORT_PRIVATE DnsQuery {
 
   // DnsQuery field accessors.
   uint16_t id() const;
-  base::StringPiece qname() const;
+  base::span<const uint8_t> qname() const;
   uint16_t qtype() const;
 
   // Returns the Question section of the query.  Used when matching the

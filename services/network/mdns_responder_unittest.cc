@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/mdns_responder.h"
+
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "services/network/mdns_responder.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -32,6 +33,7 @@
 #include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -68,9 +70,10 @@ const char kMdnsNameGeneratorServiceInstanceName[] =
 std::string CreateMdnsQuery(uint16_t query_id,
                             const std::string& dotted_name,
                             uint16_t qtype = net::dns_protocol::kTypeA) {
-  std::string qname;
-  CHECK(net::DNSDomainFromUnrestrictedDot(dotted_name, &qname));
-  net::DnsQuery query(query_id, qname, qtype);
+  absl::optional<std::vector<uint8_t>> qname =
+      net::DNSDomainFromUnrestrictedDot(dotted_name);
+  CHECK(qname.has_value());
+  net::DnsQuery query(query_id, qname.value(), qtype);
   return std::string(query.io_buffer()->data(), query.io_buffer()->size());
 }
 

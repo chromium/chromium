@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
@@ -150,7 +151,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
 
   static DnsResponse CreateEmptyNoDataResponse(uint16_t id,
                                                bool is_authoritative,
-                                               base::StringPiece qname,
+                                               base::span<const uint8_t> qname,
                                                uint16_t qtype);
 
   // Move-only.

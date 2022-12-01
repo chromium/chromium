@@ -5,8 +5,10 @@
 #include "net/dns/mdns_client_impl.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -24,6 +26,7 @@
 #include "net/dns/public/util.h"
 #include "net/dns/record_rdata.h"
 #include "net/socket/datagram_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(gene): Remove this temporary method of disabling NSEC support once it
 // becomes clear whether this feature should be
@@ -217,11 +220,12 @@ int MDnsClientImpl::Core::Init(MDnsSocketFactory* socket_factory) {
 }
 
 bool MDnsClientImpl::Core::SendQuery(uint16_t rrtype, const std::string& name) {
-  std::string name_dns;
-  if (!DNSDomainFromUnrestrictedDot(name, &name_dns))
+  absl::optional<std::vector<uint8_t>> name_dns =
+      DNSDomainFromUnrestrictedDot(name);
+  if (!name_dns.has_value())
     return false;
 
-  DnsQuery query(0, name_dns, rrtype);
+  DnsQuery query(0, name_dns.value(), rrtype);
   query.set_flags(0);  // Remove the RD flag from the query. It is unneeded.
 
   connection_->Send(query.io_buffer(), query.io_buffer()->size());

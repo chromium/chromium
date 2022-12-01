@@ -5,6 +5,7 @@
 #include "net/dns/host_resolver_manager.h"
 
 #include <cmath>
+#include <cstdint>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -469,10 +470,10 @@ absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
 
 DnsResponse CreateFakeEmptyResponse(base::StringPiece hostname,
                                     DnsQueryType query_type) {
-  std::string qname;
-  CHECK(DNSDomainFromDot(hostname, &qname));
+  absl::optional<std::vector<uint8_t>> qname = DNSDomainFromDot(hostname);
+  CHECK(qname.has_value());
   return DnsResponse::CreateEmptyNoDataResponse(
-      /*id=*/0u, /*is_authoritative=*/true, qname,
+      /*id=*/0u, /*is_authoritative=*/true, qname.value(),
       DnsQueryTypeToQtype(query_type));
 }
 

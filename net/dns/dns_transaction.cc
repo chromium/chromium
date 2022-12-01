@@ -4,6 +4,7 @@
 
 #include "net/dns/dns_transaction.h"
 
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <string>
@@ -16,6 +17,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -110,7 +112,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 const char kDnsOverHttpResponseContentType[] = "application/dns-message";
 
 // Count labels in the fully-qualified name in DNS format.
-int CountLabels(const std::string& name) {
+int CountLabels(base::span<const uint8_t> name) {
   size_t count = 0;
   for (size_t i = 0; i < name.size() && name[i]; i += name[i] + 1)
     ++count;
@@ -628,7 +630,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
 
 void ConstructDnsHTTPAttempt(DnsSession* session,
                              size_t doh_server_index,
-                             std::string hostname,
+                             base::span<const uint8_t> qname,
                              uint16_t qtype,
                              const OptRecordRdata* opt_rdata,
                              std::vector<std::unique_ptr<DnsAttempt>>* attempts,
@@ -640,7 +642,7 @@ void ConstructDnsHTTPAttempt(DnsSession* session,
   std::unique_ptr<DnsQuery> query;
   if (attempts->empty()) {
     query =
-        std::make_unique<DnsQuery>(0 /* id */, hostname, qtype, opt_rdata,
+        std::make_unique<DnsQuery>(/*id=*/0, qname, qtype, opt_rdata,
                                    DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
   } else {
     query = std::make_unique<DnsQuery>(*attempts->at(0)->GetQuery());
@@ -939,7 +941,10 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
     DCHECK(!session_->config().doh_config.servers().empty());
     DCHECK(context_);
 
-    DNSDomainFromDot(kDohProbeHostname, &formatted_probe_hostname_);
+    absl::optional<std::vector<uint8_t>> qname =
+        DNSDomainFromDot(kDohProbeHostname);
+    DCHECK(qname.has_value());
+    formatted_probe_qname_ = std::move(qname).value();
 
     for (size_t i = 0; i < session_->config().doh_config.servers().size();
          i++) {
@@ -1025,8 +1030,8 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 
     unsigned attempt_number = probe_stats->probe_attempts.size();
     ConstructDnsHTTPAttempt(
-        session_.get(), doh_server_index, formatted_probe_hostname_,
-        dns_protocol::kTypeA, nullptr /* opt_rdata */,
+        session_.get(), doh_server_index, formatted_probe_qname_,
+        dns_protocol::kTypeA, /*opt_rdata=*/nullptr,
         &probe_stats->probe_attempts, context_->url_request_context(),
         context_->isolation_info(), RequestPriority::DEFAULT_PRIORITY);
 
@@ -1092,7 +1097,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 
   base::WeakPtr<DnsSession> session_;
   base::WeakPtr<ResolveContext> context_;
-  std::string formatted_probe_hostname_;
+  std::vector<uint8_t> formatted_probe_qname_;
 
   // List of ProbeStats, one for each DoH server, indexed by the DoH server
   // config index.
@@ -1211,46 +1216,48 @@ class DnsTransactionImpl : public DnsTransaction,
   int PrepareSearch() {
     const DnsConfig& config = session_->config();
 
-    std::string labeled_hostname;
-    if (!DNSDomainFromDot(hostname_, &labeled_hostname))
+    absl::optional<std::vector<uint8_t>> labeled_qname =
+        DNSDomainFromDot(hostname_);
+    if (!labeled_qname.has_value())
       return ERR_INVALID_ARGUMENT;
 
     if (hostname_.back() == '.') {
       // It's a fully-qualified name, no suffix search.
-      qnames_.push_back(labeled_hostname);
+      qnames_.push_back(std::move(labeled_qname).value());
       return OK;
     }
 
-    int ndots = CountLabels(labeled_hostname) - 1;
+    int ndots = CountLabels(labeled_qname.value()) - 1;
 
     if (ndots > 0 && !config.append_to_multi_label_name) {
-      qnames_.push_back(labeled_hostname);
+      qnames_.push_back(std::move(labeled_qname).value());
       return OK;
     }
 
-    // Set true when |labeled_hostname| is put on the list.
-    bool had_hostname = false;
+    // Set true when `labeled_qname` is put on the list.
+    bool had_qname = false;
 
     if (ndots >= config.ndots) {
-      qnames_.push_back(labeled_hostname);
-      had_hostname = true;
+      qnames_.push_back(labeled_qname.value());
+      had_qname = true;
     }
 
-    std::string qname;
     for (const auto& suffix : config.search) {
+      absl::optional<std::vector<uint8_t>> qname =
+          DNSDomainFromDot(hostname_ + "." + suffix);
       // Ignore invalid (too long) combinations.
-      if (!DNSDomainFromDot(hostname_ + "." + suffix, &qname))
+      if (!qname.has_value())
         continue;
-      if (qname.size() == labeled_hostname.size()) {
-        if (had_hostname)
+      if (qname.value().size() == labeled_qname.value().size()) {
+        if (had_qname)
           continue;
-        had_hostname = true;
+        had_qname = true;
       }
-      qnames_.push_back(qname);
+      qnames_.push_back(std::move(qname).value());
     }
 
-    if (ndots > 0 && !had_hostname)
-      qnames_.push_back(labeled_hostname);
+    if (ndots > 0 && !had_qname)
+      qnames_.push_back(std::move(labeled_qname).value());
 
     return qnames_.empty() ? ERR_DNS_SEARCH_EMPTY : OK;
   }
@@ -1680,7 +1687,7 @@ class DnsTransactionImpl : public DnsTransaction,
   NetLogWithSource net_log_;
 
   // Search list of fully-qualified DNS names to query next (in DNS format).
-  base::circular_deque<std::string> qnames_;
+  base::circular_deque<std::vector<uint8_t>> qnames_;
   size_t qnames_initial_size_ = 0;
 
   // List of attempts for the current name.

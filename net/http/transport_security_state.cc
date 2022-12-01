@@ -5,6 +5,7 @@
 #include "net/http/transport_security_state.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -193,10 +194,9 @@ std::string HashesToBase64String(const HashValueVector& hashes) {
   return str;
 }
 
-std::string HashHost(base::StringPiece canonicalized_host) {
-  char hashed[crypto::kSHA256Length];
-  crypto::SHA256HashString(canonicalized_host, hashed, sizeof(hashed));
-  return std::string(hashed, sizeof(hashed));
+TransportSecurityState::HashedHost HashHost(
+    base::span<const uint8_t> canonicalized_host) {
+  return crypto::SHA256Hash(canonicalized_host);
 }
 
 // Returns true if the intersection of |a| and |b| is not empty. If either
@@ -219,7 +219,7 @@ bool AddHash(const char* sha256_hash, HashValueVector* out) {
 // Converts |hostname| from dotted form ("www.google.com") to the form
 // used in DNS: "\x03www\x06google\x03com", lowercases that, and returns
 // the result.
-std::string CanonicalizeHost(const std::string& host) {
+std::vector<uint8_t> CanonicalizeHost(const std::string& host) {
   // We cannot perform the operations as detailed in the spec here as `host`
   // has already undergone IDN processing before it reached us. Thus, we
   // lowercase the input (probably redudnant since most input here has been
@@ -227,14 +227,15 @@ std::string CanonicalizeHost(const std::string& host) {
   // invalid characters in the host (via DNSDomainFromDot()).
   std::string lowered_host = base::ToLowerASCII(host);
 
-  std::string new_host;
-  if (!DNSDomainFromDot(lowered_host, &new_host)) {
+  absl::optional<std::vector<uint8_t>> new_host =
+      DNSDomainFromDot(lowered_host);
+  if (!new_host.has_value()) {
     // DNSDomainFromDot can fail if any label is > 63 bytes or if the whole
     // name is >255 bytes. However, search terms can have those properties.
-    return std::string();
+    return std::vector<uint8_t>();
   }
 
-  return new_host;
+  return new_host.value();
 }
 
 // PreloadResult is the result of resolving a specific name in the preloaded
@@ -653,7 +654,7 @@ void TransportSecurityState::AddHSTSInternal(
     const base::Time& expiry,
     bool include_subdomains) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  const std::string canonicalized_host = CanonicalizeHost(host);
+  const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
   if (canonicalized_host.empty())
     return;
 
@@ -670,7 +671,7 @@ void TransportSecurityState::AddHSTSInternal(
   if (sts_state.ShouldUpgradeToSSL()) {
     enabled_sts_hosts_[HashHost(canonicalized_host)] = sts_state;
   } else {
-    const std::string hashed_host = HashHost(canonicalized_host);
+    const HashedHost hashed_host = HashHost(canonicalized_host);
     enabled_sts_hosts_.erase(hashed_host);
   }
 
@@ -684,7 +685,7 @@ void TransportSecurityState::AddHPKPInternal(const std::string& host,
                                              const HashValueVector& hashes,
                                              const GURL& report_uri) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  const std::string canonicalized_host = CanonicalizeHost(host);
+  const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
   if (canonicalized_host.empty())
     return;
 
@@ -702,7 +703,7 @@ void TransportSecurityState::AddHPKPInternal(const std::string& host,
   if (pkp_state.HasPublicKeyPins()) {
     enabled_pkp_hosts_[HashHost(canonicalized_host)] = pkp_state;
   } else {
-    const std::string hashed_host = HashHost(canonicalized_host);
+    const HashedHost hashed_host = HashHost(canonicalized_host);
     enabled_pkp_hosts_.erase(hashed_host);
   }
 
@@ -720,7 +721,7 @@ void TransportSecurityState::AddExpectCTInternal(
   if (!IsDynamicExpectCTEnabled())
     return;
 
-  const std::string canonicalized_host = CanonicalizeHost(host);
+  const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
   if (canonicalized_host.empty())
     return;
 
@@ -859,11 +860,11 @@ void TransportSecurityState::MaybeNotifyExpectCTFailed(
 bool TransportSecurityState::DeleteDynamicDataForHost(const std::string& host) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const std::string canonicalized_host = CanonicalizeHost(host);
+  const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
   if (canonicalized_host.empty())
     return false;
 
-  const std::string hashed_host = HashHost(canonicalized_host);
+  const HashedHost hashed_host = HashHost(canonicalized_host);
   bool deleted = false;
   auto sts_interator = enabled_sts_hosts_.find(hashed_host);
   if (sts_interator != enabled_sts_hosts_.end()) {
@@ -1249,15 +1250,15 @@ bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
                                                 STSState* result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const std::string canonicalized_host = CanonicalizeHost(host);
+  const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
   if (canonicalized_host.empty())
     return false;
 
   base::Time current_time(base::Time::Now());
 
   for (size_t i = 0; canonicalized_host[i]; i += canonicalized_host[i] + 1) {
-    base::StringPiece host_sub_chunk =
-        base::StringPiece(canonicalized_host).substr(i);
+    base::span<const uint8_t> host_sub_chunk =
+        base::make_span(canonicalized_host).subspan(i);
     auto j = enabled_sts_hosts_.find(HashHost(host_sub_chunk));
     if (j == enabled_sts_hosts_.end())
       continue;
@@ -1290,15 +1291,15 @@ bool TransportSecurityState::GetDynamicPKPState(const std::string& host,
                                                 PKPState* result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const std::string canonicalized_host = CanonicalizeHost(host);
+  const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
   if (canonicalized_host.empty())
     return false;
 
   base::Time current_time(base::Time::Now());
 
   for (size_t i = 0; canonicalized_host[i]; i += canonicalized_host[i] + 1) {
-    base::StringPiece host_sub_chunk =
-        base::StringPiece(canonicalized_host).substr(i);
+    base::span<const uint8_t> host_sub_chunk =
+        base::make_span(canonicalized_host).subspan(i);
     auto j = enabled_pkp_hosts_.find(HashHost(host_sub_chunk));
     if (j == enabled_pkp_hosts_.end())
       continue;
@@ -1340,7 +1341,7 @@ bool TransportSecurityState::GetDynamicExpectCTState(
     ExpectCTState* result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const std::string canonicalized_host = CanonicalizeHost(host);
+  const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
   if (canonicalized_host.empty())
     return false;
 
@@ -1361,7 +1362,7 @@ bool TransportSecurityState::GetDynamicExpectCTState(
 }
 
 void TransportSecurityState::AddOrUpdateEnabledSTSHosts(
-    const std::string& hashed_host,
+    const HashedHost& hashed_host,
     const STSState& state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(state.ShouldUpgradeToSSL());
@@ -1369,7 +1370,7 @@ void TransportSecurityState::AddOrUpdateEnabledSTSHosts(
 }
 
 void TransportSecurityState::AddOrUpdateEnabledExpectCTHosts(
-    const std::string& hashed_host,
+    const HashedHost& hashed_host,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ExpectCTState& state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1404,7 +1405,7 @@ TransportSecurityState::ExpectCTState::ExpectCTState() = default;
 TransportSecurityState::ExpectCTState::~ExpectCTState() = default;
 
 TransportSecurityState::ExpectCTStateIndex::ExpectCTStateIndex(
-    const std::string& hashed_host,
+    const HashedHost& hashed_host,
     const NetworkAnonymizationKey& network_anonymization_key,
     bool respect_network_anonymization_key)
     : hashed_host(hashed_host),
@@ -1483,7 +1484,7 @@ bool TransportSecurityState::PKPState::HasPublicKeyPins() const {
 
 TransportSecurityState::ExpectCTStateIndex
 TransportSecurityState::CreateExpectCTStateIndex(
-    const std::string& hashed_host,
+    const HashedHost& hashed_host,
     const NetworkAnonymizationKey& network_anonymization_key) {
   return ExpectCTStateIndex(hashed_host, network_anonymization_key,
                             key_expect_ct_by_nik_);

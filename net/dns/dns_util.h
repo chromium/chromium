@@ -5,9 +5,11 @@
 #ifndef NET_DNS_DNS_UTIL_H_
 #define NET_DNS_DNS_UTIL_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -28,20 +30,21 @@ namespace net {
 
 // DNSDomainFromDot - convert a domain string to DNS format. From DJB's
 // public domain DNS library. `dotted` may include only characters a-z, A-Z,
-// 0-9, -, and _.
+// 0-9, -, and _. Returns a result in DNS form: "\x03www\x06google\x03com\x00",
+// or nullopt on invalid input.
 //
 //   dotted: a string in dotted form: "www.google.com"
-//   out: a result in DNS form: "\x03www\x06google\x03com\x00"
-NET_EXPORT bool DNSDomainFromDot(base::StringPiece dotted, std::string* out);
+NET_EXPORT absl::optional<std::vector<uint8_t>> DNSDomainFromDot(
+    base::StringPiece dotted);
 
 // DNSDomainFromUnrestrictedDot - convert a domain string to DNS format. Adapted
 // from DJB's public domain DNS library. No validation of the characters in
-// `dotted` is performed.
+// `dotted` is performed. Returns a result in DNS form:
+// "\x03www\x06google\x03com\x00", or nullopt on invalid input.
 //
 //   dotted: a string in dotted form: "Foo Printer._tcp.local"
-//   out: a result in DNS form: "\x0bFoo Printer\x04_tcp\x05local\x00"
-NET_EXPORT bool DNSDomainFromUnrestrictedDot(base::StringPiece dotted,
-                                             std::string* out);
+NET_EXPORT absl::optional<std::vector<uint8_t>> DNSDomainFromUnrestrictedDot(
+    base::StringPiece dotted);
 
 // Returns true iff `dotted` is acceptable to be encoded as a DNS name. That is
 // that it is non-empty and fits size limitations. Also must match the expected
@@ -65,6 +68,9 @@ NET_EXPORT_PRIVATE bool IsValidDnsName(base::StringPiece dotted);
 // DNS name compression (see RFC 1035, section 4.1.4) is disallowed and
 // considered malformed. To handle a potentially compressed name, in a
 // DnsResponse object, use DnsRecordParser::ReadName().
+NET_EXPORT absl::optional<std::string> DnsDomainToString(
+    base::span<const uint8_t> dns_name,
+    bool require_complete = false);
 NET_EXPORT absl::optional<std::string> DnsDomainToString(
     base::StringPiece dns_name,
     bool require_complete = false);

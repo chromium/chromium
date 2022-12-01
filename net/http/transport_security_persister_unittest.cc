@@ -175,14 +175,14 @@ TEST_P(TransportSecurityPersisterTest, SerializeData3) {
                       report_uri, NetworkAnonymizationKey());
 
   // Save a copy of everything.
-  std::set<std::string> sts_saved;
+  std::set<TransportSecurityState::HashedHost> sts_saved;
   TransportSecurityState::STSStateIterator sts_iter(*state_);
   while (sts_iter.HasNext()) {
     sts_saved.insert(sts_iter.hostname());
     sts_iter.Advance();
   }
 
-  std::set<std::string> expect_ct_saved;
+  std::set<TransportSecurityState::HashedHost> expect_ct_saved;
   TransportSecurityState::ExpectCTStateIterator expect_ct_iter(*state_);
   while (expect_ct_iter.HasNext()) {
     expect_ct_saved.insert(expect_ct_iter.hostname());

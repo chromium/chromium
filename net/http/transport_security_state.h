@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <set>
 #include <string>
@@ -18,6 +19,7 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "crypto/sha2.h"
 #include "net/base/expiring_cache.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -61,6 +63,8 @@ void NET_EXPORT_PRIVATE SetTransportSecurityStateSourceForTesting(
 // http://tools.ietf.org/html/ietf-websec-strict-transport-sec.
 class NET_EXPORT TransportSecurityState {
  public:
+  using HashedHost = std::array<uint8_t, crypto::kSHA256Length>;
+
   class NET_EXPORT Delegate {
    public:
     // This function may not block and may be called with internal locks held.
@@ -155,12 +159,12 @@ class NET_EXPORT TransportSecurityState {
 
     bool HasNext() const { return iterator_ != end_; }
     void Advance() { ++iterator_; }
-    const std::string& hostname() const { return iterator_->first; }
+    const HashedHost& hostname() const { return iterator_->first; }
     const STSState& domain_state() const { return iterator_->second; }
 
    private:
-    std::map<std::string, STSState>::const_iterator iterator_;
-    std::map<std::string, STSState>::const_iterator end_;
+    std::map<HashedHost, STSState>::const_iterator iterator_;
+    std::map<HashedHost, STSState>::const_iterator end_;
   };
 
   // PKPStatus describes the result of a pinning check.
@@ -267,7 +271,7 @@ class NET_EXPORT TransportSecurityState {
     // creation of the TransportSecurityState, and then passed in to this method
     // whenever an ExpectCTStateIndex() is created, to avoid constantly querying
     // the field trial.
-    ExpectCTStateIndex(const std::string& hashed_host,
+    ExpectCTStateIndex(const HashedHost& hashed_host,
                        const NetworkAnonymizationKey& network_anonymization_key,
                        bool respect_network_anonymization_key);
 
@@ -276,7 +280,7 @@ class NET_EXPORT TransportSecurityState {
              std::tie(other.hashed_host, other.network_anonymization_key);
     }
 
-    std::string hashed_host;
+    HashedHost hashed_host;
     NetworkAnonymizationKey network_anonymization_key;
   };
 
@@ -287,7 +291,7 @@ class NET_EXPORT TransportSecurityState {
 
     bool HasNext() const { return iterator_ != end_; }
     void Advance() { ++iterator_; }
-    const std::string& hostname() const { return iterator_->first.hashed_host; }
+    const HashedHost& hostname() const { return iterator_->first.hashed_host; }
     const NetworkAnonymizationKey& network_anonymization_key() const {
       return iterator_->first.network_anonymization_key;
     }
@@ -513,7 +517,7 @@ class NET_EXPORT TransportSecurityState {
   // |hashed_host| is already in the internal representation.
   // Note: This is only used for serializing/deserializing the
   // TransportSecurityState.
-  void AddOrUpdateEnabledSTSHosts(const std::string& hashed_host,
+  void AddOrUpdateEnabledSTSHosts(const HashedHost& hashed_host,
                                   const STSState& state);
 
   // Inserts |state| into |enabled_expect_ct_hosts_| under the key
@@ -521,7 +525,7 @@ class NET_EXPORT TransportSecurityState {
   // Note: This is only used for serializing/deserializing the
   // TransportSecurityState.
   void AddOrUpdateEnabledExpectCTHosts(
-      const std::string& hashed_host,
+      const HashedHost& hashed_host,
       const NetworkAnonymizationKey& network_anonymization_key,
       const ExpectCTState& state);
 
@@ -660,8 +664,8 @@ class NET_EXPORT TransportSecurityState {
   FRIEND_TEST_ALL_PREFIXES(HttpSecurityHeadersTest, NoClobberPins);
   FRIEND_TEST_ALL_PREFIXES(URLRequestTestHTTP, PreloadExpectCTHeader);
 
-  typedef std::map<std::string, STSState> STSStateMap;
-  typedef std::map<std::string, PKPState> PKPStateMap;
+  typedef std::map<HashedHost, STSState> STSStateMap;
+  typedef std::map<HashedHost, PKPState> PKPStateMap;
   typedef std::map<ExpectCTStateIndex, ExpectCTState> ExpectCTStateMap;
   typedef ExpiringCache<std::string, bool, base::TimeTicks, std::less<>>
       ReportCache;
@@ -746,7 +750,7 @@ class NET_EXPORT TransportSecurityState {
   // Convenience method to create ExpectCTStateIndex, taking into account
   // |key_expect_ct_by_nik_|.
   ExpectCTStateIndex CreateExpectCTStateIndex(
-      const std::string& hashed_host,
+      const HashedHost& hashed_host,
       const NetworkAnonymizationKey& network_anonymization_key);
 
   // Checks if Expect-CT entries should be pruned, based on number of them and

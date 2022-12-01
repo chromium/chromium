@@ -4,8 +4,11 @@
 
 #include "net/http/transport_security_persister.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
@@ -19,7 +22,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
-#include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/cert/x509_certificate.h"
@@ -32,21 +34,22 @@ namespace {
 
 // This function converts the binary hashes to a base64 string which we can
 // include in a JSON file.
-std::string HashedDomainToExternalString(const std::string& hashed) {
-  std::string out;
-  base::Base64Encode(hashed, &out);
-  return out;
+std::string HashedDomainToExternalString(
+    const TransportSecurityState::HashedHost& hashed) {
+  return base::Base64Encode(hashed);
 }
 
 // This inverts |HashedDomainToExternalString|, above. It turns an external
-// string (from a JSON file) into an internal (binary) string.
-std::string ExternalStringToHashedDomain(const std::string& external) {
-  std::string out;
-  if (!base::Base64Decode(external, &out) ||
-      out.size() != crypto::kSHA256Length) {
-    return std::string();
+// string (from a JSON file) into an internal (binary) array.
+absl::optional<TransportSecurityState::HashedHost> ExternalStringToHashedDomain(
+    const std::string& external) {
+  TransportSecurityState::HashedHost out;
+  absl::optional<std::vector<uint8_t>> hashed = base::Base64Decode(external);
+  if (!hashed.has_value() || hashed.value().size() != out.size()) {
+    return absl::nullopt;
   }
 
+  std::copy_n(hashed.value().begin(), out.size(), out.begin());
   return out;
 }
 
@@ -171,11 +174,12 @@ void DeserializeSTSData(const base::Value& sts_list,
     if (sts_state.expiry < current_time || !sts_state.ShouldUpgradeToSSL())
       continue;
 
-    std::string hashed = ExternalStringToHashedDomain(*hostname);
-    if (hashed.empty())
+    absl::optional<TransportSecurityState::HashedHost> hashed =
+        ExternalStringToHashedDomain(*hostname);
+    if (!hashed.has_value())
       continue;
 
-    state->AddOrUpdateEnabledSTSHosts(hashed, sts_state);
+    state->AddOrUpdateEnabledSTSHosts(hashed.value(), sts_state);
   }
 }
 
@@ -263,8 +267,9 @@ void DeserializeExpectCTData(const base::Value& ct_list,
       continue;
     }
 
-    std::string hashed = ExternalStringToHashedDomain(*hostname);
-    if (hashed.empty())
+    absl::optional<TransportSecurityState::HashedHost> hashed =
+        ExternalStringToHashedDomain(*hostname);
+    if (!hashed.has_value())
       continue;
 
     NetworkAnonymizationKey network_anonymization_key;
@@ -280,8 +285,8 @@ void DeserializeExpectCTData(const base::Value& ct_list,
     if (!partition_by_nik && !network_anonymization_key.IsEmpty())
       continue;
 
-    state->AddOrUpdateEnabledExpectCTHosts(hashed, network_anonymization_key,
-                                           expect_ct_state);
+    state->AddOrUpdateEnabledExpectCTHosts(
+        hashed.value(), network_anonymization_key, expect_ct_state);
   }
 }
 

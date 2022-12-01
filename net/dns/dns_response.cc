@@ -5,12 +5,14 @@
 #include "net/dns/dns_response.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
 #include <numeric>
 #include <utility>
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -377,10 +379,11 @@ DnsResponse::DnsResponse(const void* data, size_t length, size_t answer_offset)
 }
 
 // static
-DnsResponse DnsResponse::CreateEmptyNoDataResponse(uint16_t id,
-                                                   bool is_authoritative,
-                                                   base::StringPiece qname,
-                                                   uint16_t qtype) {
+DnsResponse DnsResponse::CreateEmptyNoDataResponse(
+    uint16_t id,
+    bool is_authoritative,
+    base::span<const uint8_t> qname,
+    uint16_t qtype) {
   return DnsResponse(id, is_authoritative,
                      /*answers=*/{},
                      /*authority_records=*/{},
@@ -564,20 +567,23 @@ bool DnsResponse::WriteRecord(base::BigEndianWriter* writer,
     return false;
   }
 
-  std::string domain_name;
+  absl::optional<std::vector<uint8_t>> domain_name;
   if (validate_name_as_internet_hostname) {
-    if (!DNSDomainFromDot(record.name, &domain_name)) {
+    domain_name = DNSDomainFromDot(record.name);
+    if (!domain_name.has_value()) {
       VLOG(1) << "Invalid dotted name (as Internet hostname).";
       return false;
     }
   } else {
-    if (!DNSDomainFromUnrestrictedDot(record.name, &domain_name)) {
+    domain_name = DNSDomainFromUnrestrictedDot(record.name);
+    if (!domain_name.has_value()) {
       VLOG(1) << "Invalid dotted name (as DNS name).";
       return false;
     }
   }
 
-  return writer->WriteBytes(domain_name.data(), domain_name.size()) &&
+  return writer->WriteBytes(domain_name.value().data(),
+                            domain_name.value().size()) &&
          writer->WriteU16(record.type) && writer->WriteU16(record.klass) &&
          writer->WriteU32(record.ttl) &&
          writer->WriteU16(record.owned_rdata.size()) &&

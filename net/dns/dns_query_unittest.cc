@@ -4,10 +4,13 @@
 
 #include "net/dns/dns_query.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <tuple>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_util.h"
@@ -16,6 +19,7 @@
 #include "net/dns/record_rdata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -44,7 +48,8 @@ const char kQNameData[] =
     "example"
     "\x03"
     "com";
-const base::StringPiece kQName(kQNameData, sizeof(kQNameData));
+const base::span<const uint8_t> kQName =
+    base::as_bytes(base::make_span(kQNameData));
 
 TEST(DnsQueryTest, Constructor) {
   // This includes \0 at the end.
@@ -66,7 +71,7 @@ TEST(DnsQueryTest, Constructor) {
   DnsQuery q1(0xbeef, kQName, dns_protocol::kTypeA);
   EXPECT_EQ(dns_protocol::kTypeA, q1.qtype());
   EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
-  EXPECT_EQ(kQName, q1.qname());
+  EXPECT_THAT(q1.qname(), ElementsAreArray(kQName));
 
   base::StringPiece question(reinterpret_cast<const char*>(query_data) + 12,
                              21);
@@ -85,9 +90,7 @@ TEST(DnsQueryTest, CopiesAreIndependent) {
 }
 
 TEST(DnsQueryTest, Clone) {
-  base::StringPiece qname(kQNameData, sizeof(kQNameData));
-
-  DnsQuery q1(0, qname, dns_protocol::kTypeA);
+  DnsQuery q1(0, kQName, dns_protocol::kTypeA);
   EXPECT_EQ(0, q1.id());
   std::unique_ptr<DnsQuery> q2 = q1.CloneWithNewId(42);
   EXPECT_EQ(42, q2->id());
@@ -121,11 +124,10 @@ TEST(DnsQueryTest, EDNS0) {
       0xDE, 0xAD, 0xBE, 0xEF   // OPT data
   };
 
-  base::StringPiece qname(kQNameData, sizeof(kQNameData));
   OptRecordRdata opt_rdata;
   opt_rdata.AddOpt(
       OptRecordRdata::UnknownOpt::CreateForTesting(255, "\xde\xad\xbe\xef"));
-  DnsQuery q1(0xbeef, qname, dns_protocol::kTypeA, &opt_rdata);
+  DnsQuery q1(0xbeef, kQName, dns_protocol::kTypeA, &opt_rdata);
   EXPECT_EQ(dns_protocol::kTypeA, q1.qtype());
 
   EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
@@ -146,29 +148,28 @@ TEST(DnsQueryTest, Block128Padding) {
   // Ensure created query still parses as expected.
   DnsQuery parsed_query(query.io_buffer());
   ASSERT_TRUE(parsed_query.Parse(query.io_buffer()->size()));
-  EXPECT_EQ(kQName, parsed_query.qname());
-  EXPECT_EQ(dns_protocol::kTypeAAAA, parsed_query.qtype());
+  EXPECT_THAT(parsed_query.qname(), ElementsAreArray(kQName));
+  EXPECT_EQ(parsed_query.qtype(), dns_protocol::kTypeAAAA);
 }
 
 TEST(DnsQueryTest, Block128Padding_LongName) {
-  std::string qname;
-  DNSDomainFromDot(
+  absl::optional<std::vector<uint8_t>> qname = DNSDomainFromDot(
       "really.long.domain.name.that.will.push.us.past.the.128.byte.block.size."
-      "because.it.would.be.nice.to.test.something.realy.long.like.that.com",
-      &qname);
-  DnsQuery query(112 /* id */, qname, dns_protocol::kTypeAAAA,
+      "because.it.would.be.nice.to.test.something.realy.long.like.that.com");
+  ASSERT_TRUE(qname.has_value());
+  DnsQuery query(112 /* id */, qname.value(), dns_protocol::kTypeAAAA,
                  nullptr /* opt_rdata */,
                  DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
 
   // Query is expected to pad into a second 128-byte block.
-  EXPECT_EQ(256, query.io_buffer()->size());
-  EXPECT_EQ(qname, query.qname());
+  EXPECT_EQ(query.io_buffer()->size(), 256);
+  EXPECT_THAT(query.qname(), ElementsAreArray(qname.value()));
 
   // Ensure created query still parses as expected.
   DnsQuery parsed_query(query.io_buffer());
   ASSERT_TRUE(parsed_query.Parse(query.io_buffer()->size()));
-  EXPECT_EQ(qname, parsed_query.qname());
-  EXPECT_EQ(dns_protocol::kTypeAAAA, parsed_query.qtype());
+  EXPECT_THAT(parsed_query.qname(), ElementsAreArray(qname.value()));
+  EXPECT_EQ(parsed_query.qtype(), dns_protocol::kTypeAAAA);
 }
 
 TEST(DnsQueryParseTest, SingleQuestionForTypeARecord) {
@@ -188,10 +189,9 @@ TEST(DnsQueryParseTest, SingleQuestionForTypeARecord) {
   std::unique_ptr<DnsQuery> query;
   EXPECT_TRUE(ParseAndCreateDnsQueryFromRawPacket(query_data,
                                                   sizeof(query_data), &query));
-  EXPECT_EQ(0x1234, query->id());
-  base::StringPiece qname(kQNameData, sizeof(kQNameData));
-  EXPECT_EQ(qname, query->qname());
-  EXPECT_EQ(dns_protocol::kTypeA, query->qtype());
+  EXPECT_EQ(query->id(), 0x1234);
+  EXPECT_THAT(query->qname(), ElementsAreArray(kQName));
+  EXPECT_EQ(query->qtype(), dns_protocol::kTypeA);
 }
 
 TEST(DnsQueryParseTest, SingleQuestionForTypeAAAARecord) {
@@ -211,10 +211,9 @@ TEST(DnsQueryParseTest, SingleQuestionForTypeAAAARecord) {
   std::unique_ptr<DnsQuery> query;
   EXPECT_TRUE(ParseAndCreateDnsQueryFromRawPacket(query_data,
                                                   sizeof(query_data), &query));
-  EXPECT_EQ(0x1234, query->id());
-  base::StringPiece qname(kQNameData, sizeof(kQNameData));
-  EXPECT_EQ(qname, query->qname());
-  EXPECT_EQ(dns_protocol::kTypeAAAA, query->qtype());
+  EXPECT_EQ(query->id(), 0x1234);
+  EXPECT_THAT(query->qname(), ElementsAreArray(kQName));
+  EXPECT_EQ(query->qtype(), dns_protocol::kTypeAAAA);
 }
 
 const uint8_t kQueryTruncatedQuestion[] = {
@@ -504,7 +503,7 @@ TEST(DnsQueryParseTest, IgnoresExtraQuestion) {
   EXPECT_TRUE(query.Parse(sizeof(kData) - 1));
 
   std::string expected_qname("\003www\006google\004test\000", 17);
-  EXPECT_EQ(query.qname(), expected_qname);
+  EXPECT_THAT(query.qname(), ElementsAreArray(expected_qname));
 
   EXPECT_EQ(query.qtype(), dns_protocol::kTypeA);
 }
