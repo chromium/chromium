@@ -78,17 +78,17 @@ bool BackupRefPtrImpl<AllowDangling>::IsPointeeAlive(uintptr_t address) {
 }
 
 template <bool AllowDangling>
-bool BackupRefPtrImpl<AllowDangling>::IsValidSignedDelta(
-    uintptr_t address,
-    ptrdiff_t delta_in_bytes) {
+partition_alloc::PtrPosWithinAlloc
+BackupRefPtrImpl<AllowDangling>::IsValidSignedDelta(uintptr_t address,
+                                                    ptrdiff_t delta_in_bytes) {
   return partition_alloc::internal::PartitionAllocIsValidPtrDelta(
       address, delta_in_bytes);
 }
 
 template <bool AllowDangling>
-bool BackupRefPtrImpl<AllowDangling>::IsValidUnsignedDelta(
-    uintptr_t address,
-    size_t delta_in_bytes) {
+partition_alloc::PtrPosWithinAlloc
+BackupRefPtrImpl<AllowDangling>::IsValidUnsignedDelta(uintptr_t address,
+                                                      size_t delta_in_bytes) {
   return partition_alloc::internal::PartitionAllocIsValidPtrDelta(
       address, delta_in_bytes);
 }

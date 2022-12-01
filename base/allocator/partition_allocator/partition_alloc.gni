@@ -106,6 +106,9 @@ declare_args() {
   #   are too expensive to have on by default.
   # - enable_dangling_raw_ptr_checks: enable checking raw_ptr do not become
   #   dangling during their lifetime.
+  # - backup_ref_ptr_poison_oob_ptr: poison out-of-bounds (OOB) pointers to
+  #   generate an exception in the event that an OOB pointer is dereferenced.
+  #   TODO(mdlemay): Does not yet work on Windows.
   put_ref_count_in_previous_slot =
       put_ref_count_in_previous_slot_default && enable_backup_ref_ptr_support
 
@@ -124,6 +127,9 @@ declare_args() {
   # This flag is temporary, and isn't used by PA embedders, so it doesn't need
   # to go through build_overrides
   enable_dangling_raw_ptr_perf_experiment = false
+
+  backup_ref_ptr_poison_oob_ptr =
+      use_partition_alloc && backup_ref_ptr_poison_oob_ptr_default
 }
 
 declare_args() {
@@ -149,6 +155,7 @@ if (!use_partition_alloc) {
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
   enable_dangling_raw_ptr_perf_experiment = false
+  backup_ref_ptr_poison_oob_ptr = false
 }
 
 # put_ref_count_in_previous_slot can only be used if
@@ -173,6 +180,12 @@ assert(
 assert(
     enable_dangling_raw_ptr_checks || !enable_dangling_raw_ptr_perf_experiment,
     "Missing dangling pointer checks feature for its performance experiment")
+
+# To poison OOB pointers for BackupRefPtr, the underlying feature must
+# be enabled, too.
+assert(
+    enable_backup_ref_ptr_support || !backup_ref_ptr_poison_oob_ptr,
+    "Can't enable poisoning for OOB pointers if BackupRefPtr isn't enabled at all")
 
 declare_args() {
   enable_pkeys = is_linux && target_cpu == "x64"

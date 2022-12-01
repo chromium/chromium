@@ -152,6 +152,10 @@ static_assert(sizeof(void*) == 8);
 #define PA_HAS_MEMORY_TAGGING
 #endif
 
+#if defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#define PA_USE_OOB_POISON
+#endif
+
 // Build MTECheckedPtr code.
 //
 // Only applicable to code with 64-bit pointers. Currently conflicts with true

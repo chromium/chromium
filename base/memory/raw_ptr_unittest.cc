@@ -1479,13 +1479,21 @@ void RunBackupRefPtrImplAdvanceTest(
   protected_ptr = protected_ptr + 123;
   protected_ptr = protected_ptr - 123;
   protected_ptr += requested_size / 2;
-  protected_ptr =
-      protected_ptr + requested_size / 2;  // end-of-allocation address is ok
+  // end-of-allocation address should not cause an error immediately, but it may
+  // result in the pointer being poisoned.
+  protected_ptr = protected_ptr + requested_size / 2;
+#if defined(PA_USE_OOB_POISON)
+  EXPECT_DEATH_IF_SUPPORTED(*protected_ptr = ' ', "");
+  protected_ptr -= 1;  // This brings the pointer back within
+                       // bounds, which causes the poison to be removed.
+  *protected_ptr = ' ';
+  protected_ptr += 1;  // Reposition pointer back past end of allocation.
+#endif
   EXPECT_CHECK_DEATH(protected_ptr = protected_ptr + 1);
   EXPECT_CHECK_DEATH(protected_ptr += 1);
   EXPECT_CHECK_DEATH(++protected_ptr);
 
-  // Even though |protected_ptr| is already puinting to the end of the
+  // Even though |protected_ptr| is already pointing to the end of the
   // allocation, assign it explicitly to make sure the underlying implementation
   // doesn't "switch" to the next slot.
   protected_ptr = ptr + requested_size;
@@ -1508,7 +1516,7 @@ TEST_F(BackupRefPtrTest, Advance) {
   size_t slot_size = 512;
   size_t requested_size =
       allocator_.root()->AdjustSizeForExtrasSubtract(slot_size);
-  // Verify that we're indeed fillin up the slot.
+  // Verify that we're indeed filling up the slot.
   ASSERT_EQ(
       requested_size,
       allocator_.root()->AllocationCapacityFromRequestedSize(requested_size));
@@ -1822,6 +1830,47 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
   ptr = nullptr;
 #endif
 }
+
+TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
+  size_t slot_size = 512;
+  size_t requested_size =
+      allocator_.root()->AdjustSizeForExtrasSubtract(slot_size);
+  // Verify that we're indeed filling up the slot.
+  ASSERT_EQ(
+      requested_size,
+      allocator_.root()->AllocationCapacityFromRequestedSize(requested_size));
+
+  int* ptr =
+      reinterpret_cast<int*>(allocator_.root()->Alloc(requested_size, ""));
+  raw_ptr<int> protected_ptr = ptr;
+
+  int gen_val = 1;
+  std::generate(protected_ptr, protected_ptr + requested_size / sizeof(int),
+                [&gen_val]() {
+                  gen_val ^= gen_val + 1;
+                  return gen_val;
+                });
+
+  allocator_.root()->Free(ptr);
+}
+
+#if defined(PA_USE_OOB_POISON)
+TEST_F(BackupRefPtrTest, Duplicate) {
+  size_t requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(512);
+  char* ptr = static_cast<char*>(allocator_.root()->Alloc(requested_size, ""));
+  raw_ptr<char> protected_ptr1 = ptr;
+  protected_ptr1 += requested_size;  // Pointer should now be poisoned.
+
+  // Duplicating a poisoned pointer should be allowed.
+  raw_ptr<char> protected_ptr2 = protected_ptr1;
+
+  // The poison bit should be propagated to the duplicate such that the OOB
+  // access is disallowed:
+  EXPECT_DEATH_IF_SUPPORTED(*protected_ptr2 = ' ', "");
+
+  allocator_.root()->Free(ptr);
+}
+#endif  // PA_USE_OOB_POISON
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

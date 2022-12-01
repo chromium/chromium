@@ -16,6 +16,7 @@
 # - put_ref_count_in_previous_slot
 # - enable_backup_ref_ptr_slow_checks
 # - enable_dangling_raw_ptr_checks
+# - backup_ref_ptr_poison_oob_ptr
 #
 # Temporarily defines use_allocator_shim here. After deciding what
 # allocator_shim should be (e.g. a part of PartitionAlloc, a new component:
@@ -81,3 +82,4 @@ enable_mte_checked_ptr_support_default = false
 put_ref_count_in_previous_slot_default = true
 enable_backup_ref_ptr_slow_checks_default = false
 enable_dangling_raw_ptr_checks_default = false
+backup_ref_ptr_poison_oob_ptr_default = false
