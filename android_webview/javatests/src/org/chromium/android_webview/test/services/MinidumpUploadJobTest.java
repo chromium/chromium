@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test.services;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.os.ParcelFileDescriptor;
 
@@ -33,7 +34,6 @@ import org.chromium.components.minidump_uploader.CrashTestRule;
 import org.chromium.components.minidump_uploader.CrashTestRule.MockCrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.MinidumpUploadJob;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobImpl;
-import org.chromium.components.minidump_uploader.MinidumpUploadTestUtility;
 import org.chromium.components.minidump_uploader.MinidumpUploaderDelegate;
 import org.chromium.components.minidump_uploader.MinidumpUploaderTestConstants;
 import org.chromium.components.minidump_uploader.TestMinidumpUploadJobImpl;
@@ -44,6 +44,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Instrumentation tests for WebView's implementation of MinidumpUploaderDelegate, and the
@@ -143,8 +146,7 @@ public class MinidumpUploadJobTest {
                 });
 
         // Ensure that we don't crash when trying to upload minidumps without a crash directory.
-        MinidumpUploadTestUtility.uploadMinidumpsSync(
-                minidumpUploadJob, false /* expectReschedule */);
+        uploadMinidumpsSync(minidumpUploadJob, false /* expectReschedule */);
     }
 
     /**
@@ -300,8 +302,7 @@ public class MinidumpUploadJobTest {
         File expectedSecondFile = new File(mTestRule.getCrashDir(),
                 secondFile.getName().replace(".dmp", isSampled ? ".up" : ".skipped"));
 
-        MinidumpUploadTestUtility.uploadMinidumpsSync(
-                minidumpUploadJob, false /* expectReschedule */);
+        uploadMinidumpsSync(minidumpUploadJob, false /* expectReschedule */);
 
         Assert.assertFalse(firstFile.exists());
         Assert.assertTrue(expectedFirstFile.exists());
@@ -376,8 +377,7 @@ public class MinidumpUploadJobTest {
         File expectedSecondFile = new File(mTestRule.getCrashDir(),
                 secondFile.getName().replace(".dmp", userConsent ? ".up" : ".skipped"));
 
-        MinidumpUploadTestUtility.uploadMinidumpsSync(
-                minidumpUploadJob, false /* expectReschedule */);
+        uploadMinidumpsSync(minidumpUploadJob, false /* expectReschedule */);
 
         Assert.assertFalse(firstFile.exists());
         Assert.assertTrue(expectedFirstFile.exists());
@@ -437,6 +437,32 @@ public class MinidumpUploadJobTest {
     }
 
     /**
+     * Utility method for uploading minidumps, and waiting for the uploads to finish.
+     * @param minidumpUploadJob the implementation to use to upload minidumps.
+     * @param expectReschedule value used to assert whether the uploads should be rescheduled,
+     *                         e.g. when uploading succeeds we should normally not expect to
+     *                         reschedule.
+     */
+    private static void uploadMinidumpsSync(
+            MinidumpUploadJob minidumpUploadJob, boolean expectReschedule) {
+        final CountDownLatch uploadsFinishedLatch = new CountDownLatch(1);
+        AtomicBoolean wasRescheduled = new AtomicBoolean();
+        ThreadUtils.runOnUiThread(() -> {
+            minidumpUploadJob.uploadAllMinidumps(reschedule -> {
+                wasRescheduled.set(reschedule);
+                uploadsFinishedLatch.countDown();
+            });
+        });
+        try {
+            Assert.assertTrue(
+                    uploadsFinishedLatch.await(scaleTimeout(3000), TimeUnit.MILLISECONDS));
+            Assert.assertEquals(expectReschedule, wasRescheduled.get());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Copy and upload {@param minidumps} by one array at a time - i.e. the minidumps in a single
      * array in {@param minidumps} will all be copied in the same call into CrashReceiverService.
      * @param fileManager the CrashFileManager to use when copying/renaming minidumps.
@@ -486,8 +512,7 @@ public class MinidumpUploadJobTest {
                     }
                 });
 
-        MinidumpUploadTestUtility.uploadMinidumpsSync(
-                minidumpUploadJob, false /* expectReschedule */);
+        uploadMinidumpsSync(minidumpUploadJob, false /* expectReschedule */);
         // Ensure there are no minidumps left to upload.
         File[] nonUploadedMinidumps = fileManager.getMinidumpsReadyForUpload(
                 MinidumpUploadJobImpl.MAX_UPLOAD_TRIES_ALLOWED);
