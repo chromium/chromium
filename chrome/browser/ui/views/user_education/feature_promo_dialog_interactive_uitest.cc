@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest,
                        InvokeUi_IPH_DesktopTabGroupsNewGroup) {
-  set_baseline("2936082");
+  set_baseline("4067389");
   ShowAndVerifyUi();
 }
 

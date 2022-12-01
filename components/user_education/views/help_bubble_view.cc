@@ -74,9 +74,6 @@ constexpr int kBubbleMaxWidthDip = 340;
 // The insets from the bubble border to the text inside.
 constexpr auto kBubbleContentsInsets = gfx::Insets::VH(16, 20);
 
-// The insets from the button border to the text inside.
-constexpr auto kBubbleButtonPadding = gfx::Insets::VH(6, 16);
-
 // Translates from HelpBubbleArrow to the Views equivalent.
 views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow) {
   switch (arrow) {
@@ -117,7 +114,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
                     PressedCallback callback,
                     const std::u16string& text,
                     bool is_default_button)
-      : MdTextButton(callback, text, delegate->GetButtonTextContext()),
+      : MdTextButton(callback, text),
         delegate_(delegate),
         is_default_button_(is_default_button) {
     // Prominent style gives a button hover highlight.
@@ -441,7 +438,6 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
                               base::Passed(std::move(button_params.callback))),
           button_params.text, button_params.is_default);
       button->SetMinSize(gfx::Size(0, 0));
-      button->SetCustomPadding(kBubbleButtonPadding);
       if (button_params.is_default) {
         DCHECK(!default_button);
         default_button = std::move(button);

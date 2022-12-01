@@ -38,7 +38,6 @@ class TestHelpBubbleDelegate : public HelpBubbleDelegate {
   // typography system.
   int GetTitleTextContext() const override;
   int GetBodyTextContext() const override;
-  int GetButtonTextContext() const override;
 
   // These methods return color codes that will be handled by the app's theming
   // system.

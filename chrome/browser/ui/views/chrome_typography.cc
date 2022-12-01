@@ -106,7 +106,6 @@ void ApplyCommonFontStyles(int context,
     case CONTEXT_IPH_BUBBLE_BODY:
       details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       break;
-    case CONTEXT_IPH_BUBBLE_BUTTON:
     case CONTEXT_SIDE_PANEL_TITLE:
       details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
       break;

@@ -96,9 +96,6 @@ class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
   int GetBodyTextContext() const override {
     return ChromeTextContext::CONTEXT_IPH_BUBBLE_BODY;
   }
-  int GetButtonTextContext() const override {
-    return ChromeTextContext::CONTEXT_IPH_BUBBLE_BUTTON;
-  }
 
   // These methods return color codes that will be handled by the app's theming
   // system.

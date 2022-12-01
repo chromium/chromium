@@ -21,9 +21,6 @@ int TestHelpBubbleDelegate::GetTitleTextContext() const {
 int TestHelpBubbleDelegate::GetBodyTextContext() const {
   return 0;
 }
-int TestHelpBubbleDelegate::GetButtonTextContext() const {
-  return 0;
-}
 
 ui::ColorId TestHelpBubbleDelegate::GetHelpBubbleBackgroundColorId() const {
   return 0;

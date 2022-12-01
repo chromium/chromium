@@ -36,7 +36,6 @@ class HelpBubbleDelegate {
   // typography system.
   virtual int GetTitleTextContext() const = 0;
   virtual int GetBodyTextContext() const = 0;
-  virtual int GetButtonTextContext() const = 0;
 
   // These methods return color codes that will be handled by the app's theming
   // system.
