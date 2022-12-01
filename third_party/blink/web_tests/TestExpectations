@@ -3039,6 +3039,7 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendondiscard.tentative.https.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
@@ -8171,7 +8172,7 @@ crbug.com/1385379 http/tests/devtools/elements/styles-4/styles-invalid-color-val
 crbug.com/1394361 http/tests/inspector-protocol/tracing/interactions.js [ Failure Pass ]
 
 # Sheriff 2022-11-29
-crbug.com/1394524 external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-form-state-restore.tentative.html [ Failure Timeout Pass ]
+crbug.com/1394524 external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-form-state-restore.tentative.html [ Failure Pass Timeout ]
 
 # Temporarily disable test to roll protocol
 crbug.com/1382392 http/tests/devtools/elements/styles-4/styles-keyframes-display-none.js [ Failure Skip ]
