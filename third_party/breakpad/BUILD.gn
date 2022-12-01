@@ -335,6 +335,20 @@ if (is_mac) {
       # For breakpad/src/common/stabs_reader.h.
       defines = [ "HAVE_MACH_O_NLIST_H" ]
     }
+    test("breakpad_unittests") {
+      sources = [ "breakpad/src/common/module_unittest.cc" ]
+      deps = [
+        ":common",
+        "//testing/gmock",
+        "//testing/gtest",
+        "//testing/gtest:gtest_main",
+      ]
+      include_dirs = [
+        "breakpad/src",
+        "chromium",  # Use our copy of breakpad_googletest_includes.h
+        ".",
+      ]
+    }
 
     executable("dump_syms") {
       sources = [ "breakpad/src/tools/mac/dump_syms/dump_syms_tool.cc" ]
