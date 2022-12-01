@@ -389,6 +389,14 @@ BASE_FEATURE(kFedCmMultipleIdentityProviders,
 // used in FedCM API.
 const char kFedCmIdpSigninStatusFieldTrialParamName[] = "IdpSigninStatus";
 
+// Alternative to `kFedCmIdpSigninStatusFieldTrialParamName` which runs
+// IdpSigninStatus API in a metrics-only mode. This field trial is default-on
+// and is intended as a kill switch.
+// `kFedCmIdpSigninStatusFieldTrialParamName` takes precedence over
+// `kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName`.
+const char kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName[] =
+    "IdpSigninStatusMetricsOnly";
+
 // Enables usage of First Party Sets to determine cookie availability.
 BASE_FEATURE(kFirstPartySets,
              "FirstPartySets",

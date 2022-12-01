@@ -9,6 +9,9 @@
 
 namespace content {
 
+// IDP IdpSigninStatus API modes.
+enum class FedCmIdpSigninStatusMode { DISABLED, METRICS_ONLY, ENABLED };
+
 // Whether FedCM auto sign-in is enabled.
 bool IsFedCmAutoSigninEnabled();
 
@@ -18,8 +21,8 @@ bool IsFedCmIdpSignoutEnabled();
 // Whether multiple identity providers are enabled.
 bool IsFedCmMultipleIdentityProvidersEnabled();
 
-// Whether IdpSigninStatus is enabled.
-bool IsFedCmIdpSigninStatusEnabled();
+// Returns the IdpSigninStatus API mode.
+FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusMode();
 
 // Whether metrics endpoint is enabled.
 bool IsFedCmMetricsEndpointEnabled();

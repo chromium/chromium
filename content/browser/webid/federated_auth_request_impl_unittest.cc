@@ -2395,6 +2395,72 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
+// Test that when IdpSigninStatus API is in the metrics-only mode, that an IDP
+// signed-out status stays signed-out regardless of what is returned by the
+// accounts endpoint.
+TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusMetricsModeStaysSignedout) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
+        "true"}});
+
+  EXPECT_CALL(*mock_sharing_permission_delegate_, GetIdpSigninStatus(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*mock_sharing_permission_delegate_, SetIdpSigninStatus(_, _))
+      .Times(0);
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+}
+
+// Test that when IdpSigninStatus API does not have any state for an IDP, that
+// the state transitions to sign-in if the accounts endpoint returns a
+// non-empty list of accounts.
+TEST_F(
+    FederatedAuthRequestImplTest,
+    IdpSigninStatusMetricsModeUndefinedTransitionsToSignedinWhenHaveAccounts) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
+        "true"}});
+
+  EXPECT_CALL(*mock_sharing_permission_delegate_, GetIdpSigninStatus(_))
+      .WillRepeatedly(Return(absl::nullopt));
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+}
+
+// Test that when IdpSigninStatus API is in metrics-only mode, that IDP sign-in
+// status transitions to signed-out if the accounts endpoint returns no
+// information.
+TEST_F(FederatedAuthRequestImplTest,
+       IdpSigninStatusMetricsModeTransitionsToSignedoutWhenNoAccounts) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
+        "true"}});
+
+  EXPECT_CALL(*mock_sharing_permission_delegate_, GetIdpSigninStatus(_))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), false));
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, absl::nullopt, absl::nullopt,
+      FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST |
+          FetchedEndpoint::MANIFEST_LIST};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
 // Tests that multiple IDPs provided results in an error if the
 // `kFedCmMultipleIdentityProviders` flag is disabled.
 TEST_F(FederatedAuthRequestImplTest, MultiIdpError) {
