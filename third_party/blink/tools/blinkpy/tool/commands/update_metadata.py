@@ -248,7 +248,7 @@ class UpdateMetadata(Command):
                 _log.info(
                     'Already deleted %s from the index '
                     'for all-pass tests.',
-                    grammar.pluralize('metadata file', len(all_pass)))
+                    grammar.pluralize('metadata file', all_pass))
             self.git.add_list(paths)
             _log.info('Staged %s.',
                       grammar.pluralize('metadata file', len(paths)))
