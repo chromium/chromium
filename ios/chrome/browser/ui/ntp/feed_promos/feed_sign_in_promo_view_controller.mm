@@ -12,6 +12,8 @@
 
 namespace {
 
+constexpr CGFloat customImageWidth = 60;
+constexpr CGFloat customImageHeight = 60;
 constexpr CGFloat customSpacingBeforeImageIfNoToolbar = 36;
 constexpr CGFloat customSpacingAfterImage = 24;
 
@@ -36,7 +38,7 @@ constexpr CGFloat customSpacingAfterImage = 24;
   self.primaryActionString = @"Continue";
   self.secondaryActionString = @"Cancel";
 
-  // TODO(crbug.com/1382615): Add image.
+  self.image = [self signInLogo];
 
   [super viewDidLoad];
 }
@@ -47,6 +49,19 @@ constexpr CGFloat customSpacingAfterImage = 24;
   secondaryTitleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   secondaryTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+}
+
+#pragma mark - Private
+
+// Creates and configures the logo image.
+- (UIImage*)signInLogo {
+  UIImage* logo = [UIImage imageNamed:@"sign_in_promo_logo"];
+  UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logo];
+  logoImageView.frame = CGRectMake(0, 0, customImageWidth, customImageHeight);
+  logoImageView.center = logoImageView.superview.center;
+  logoImageView.contentMode = UIViewContentModeScaleAspectFit;
+  logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  return logo;
 }
 
 @end
