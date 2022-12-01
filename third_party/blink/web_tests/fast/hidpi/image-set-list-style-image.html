@@ -1,11 +1,32 @@
 <!DOCTYPE html>
 <script src="resources/srcset-helper.js"></script>
+
 <style>
-    ul {
-        list-style-image: -webkit-image-set(url('resources/deleteButton.png') 1x, url('resources/deleteButton-2x.png') 2x);
-        list-style-position: inside;
-        padding: 0;
-        margin: 0;
-    }
+  ul {
+    list-style-position: inside;
+    padding: 0;
+    margin: 0;
+  }
+
+  #standard {
+    list-style-image: image-set(
+      url('resources/deleteButton.png') 1x,
+      url('resources/deleteButton-2x.png') 2x
+    );
+  }
+
+  #prefixed {
+    list-style-image: -webkit-image-set(
+      url('resources/deleteButton.png') 1x,
+      url('resources/deleteButton-2x.png') 2x
+    );
+  }
 </style>
-<ul><li></ul>
+
+<ul id="standard">
+  <li></li>
+</ul>
+
+<ul id="prefixed">
+  <li></li>
+</ul>

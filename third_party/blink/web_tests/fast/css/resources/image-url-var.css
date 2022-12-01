@@ -1,8 +1,16 @@
 .background.image-set.var {
   --test: url('test.png');
-  background: -webkit-image-set(var(--test) 1x);
+  background: image-set(var(--test) 1x);
 }
 .background.image-set.inline {
+  background: image-set(url('test.png') 1x);
+}
+
+.background.webkit-image-set.var {
+  --test: url('test.png');
+  background: -webkit-image-set(var(--test) 1x);
+}
+.background.webkit-image-set.inline {
   background: -webkit-image-set(url('test.png') 1x);
 }
 
@@ -16,9 +24,17 @@
 
 .background-image.image-set.var {
   --test: url('test.png');
-  background-image: -webkit-image-set(var(--test) 1x);
+  background-image: image-set(var(--test) 1x);
 }
 .background-image.image-set.inline {
+  background-image: image-set(url('test.png') 1x);
+}
+
+.background-image.webkit-image-set.var {
+  --test: url('test.png');
+  background-image: -webkit-image-set(var(--test) 1x);
+}
+.background-image.webkit-image-set.inline {
   background-image: -webkit-image-set(url('test.png') 1x);
 }
 

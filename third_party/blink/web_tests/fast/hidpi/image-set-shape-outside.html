@@ -1,11 +1,30 @@
 <!DOCTYPE html>
 <style>
-    .left {
-        -webkit-shape-outside: -webkit-image-set(url('resources/deleteButton.png') 1x, url('resources/deleteButton-2x.png') 2x);
-        float: left;
-        width: 60px;
-        height: 1em;
-    }
+  #standard {
+    shape-outside: image-set(
+      url('resources/deleteButton.png') 1x,
+      url('resources/deleteButton-2x.png') 2x
+    );
+  }
+
+  #prefixed {
+    -webkit-shape-outside: -webkit-image-set(
+      url('resources/deleteButton.png') 1x,
+      url('resources/deleteButton-2x.png') 2x
+    );
+  }
+
+  div {
+    width: 60px;
+    height: 1em;
+    float: left;
+  }
 </style>
-<div class="left"></div>
+
+<div id="standard"></div>
+<img width=30 src="resources/deleteButton.png">
+
+<br>
+
+<div id="prefixed"></div>
 <img width=30 src="resources/deleteButton.png">

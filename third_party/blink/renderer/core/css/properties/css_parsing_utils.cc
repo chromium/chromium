@@ -3087,9 +3087,25 @@ static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
     image_set->Append(*CSSNumericLiteralValue::Create(
         image_scale_factor, CSSPrimitiveValue::UnitType::kNumber));
   } while (ConsumeCommaIncludingWhitespace(args));
+
   if (!args.AtEnd())
     return nullptr;
-  context.Count(WebFeature::kWebkitImageSet);
+
+  switch (range.Peek().FunctionId()) {
+    case CSSValueID::kWebkitImageSet:
+      context.Count(WebFeature::kWebkitImageSet);
+      image_set->MarkWebkitPrefixed();
+      break;
+
+    case CSSValueID::kImageSet:
+      context.Count(WebFeature::kImageSet);
+      break;
+
+    default:
+      NOTREACHED();
+      break;
+  }
+
   range = range_copy;
   return image_set;
 }
@@ -3117,7 +3133,7 @@ CSSValue* ConsumeImage(CSSParserTokenRange& range,
     return CreateCSSImageValueWithReferrer(uri, context);
   if (range.Peek().GetType() == kFunctionToken) {
     CSSValueID id = range.Peek().FunctionId();
-    if (id == CSSValueID::kWebkitImageSet)
+    if (id == CSSValueID::kWebkitImageSet || id == CSSValueID::kImageSet)
       return ConsumeImageSet(range, context);
     if (generated_image == ConsumeGeneratedImagePolicy::kAllow &&
         IsGeneratedImage(id)) {

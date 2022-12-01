@@ -1,28 +1,42 @@
-description("Test the parsing of the -webkit-image-set function.");
+description('Test the parsing of the image-set functions.');
 
 // These have to be global for the test helpers to see them.
 var cssRule;
 
-function testInvalidImageSet(description, rule)
-{
-    debug("");
-    debug(description + " : " + rule);
+function testInvalidImageSet(description, rule, isPrefixed) {
+  rule = `${isPrefixed ? '-webkit-' : ''}image-set(${rule}`;
 
-    var div = document.createElement("div");
-    div.style.backgroundImage = "-webkit-image-set(" + rule + ")";
-    document.body.appendChild(div);
+  debug('');
+  debug(`${description} : ${rule}`);
 
-    cssRule = div.style.backgroundImage;
-    shouldBeEmptyString("cssRule");
+  var div = document.createElement('div');
+  div.style.backgroundImage = rule;
+  document.body.appendChild(div);
 
-    document.body.removeChild(div);
+  cssRule = div.style.backgroundImage;
+  shouldBeEmptyString('cssRule');
+
+  document.body.removeChild(div);
 }
 
-testInvalidImageSet("Too many url parameters", "url(#a #b)");
-testInvalidImageSet("No x", "url('#a') 1");
-testInvalidImageSet("No comma", "url('#a') 1x url('#b') 2x");
-testInvalidImageSet("Too many scale factor parameters", "url('#a') 1x 2x");
-testInvalidImageSet("Scale factor is 0", "url('#a') 0x");
-testInvalidImageSet("No url function", "'#a' 1x");
+function testInvalidImageSets(description, rule) {
+  // Test standard image-set
+  testInvalidImageSet(description, rule, false);
+
+  // Test '-webkit-' prefixed image set
+  testInvalidImageSet(description, rule, true);
+}
+
+testInvalidImageSets('Too many url parameters', 'url(#a #b)');
+
+testInvalidImageSets('No x', 'url(\'#a\') 1');
+
+testInvalidImageSets('No comma', 'url(\'#a\') 1x url(\'#b\') 2x');
+
+testInvalidImageSets('Too many scale factor parameters', 'url(\'#a\') 1x 2x');
+
+testInvalidImageSets('Scale factor is 0', 'url(\'#a\') 0x');
+
+testInvalidImageSets('No url function', '\'#a\' 1x');
 
 successfullyParsed = true;

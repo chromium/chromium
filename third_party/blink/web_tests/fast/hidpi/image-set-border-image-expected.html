@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="resources/srcset-helper.js"></script>
+<style>
+  .foo {
+    width: 100px;
+    height: 100px;
+    border-width: 10px;
+    -webkit-border-image:
+      url('resources/green-400-px-square.png') 10 10 10 10 stretch stretch;
+  }
+</style>
+
+<div>
+  This test passes if the div below is
+  a blue 100px square when the deviceScaleFactor is 1,
+  and if it is a 100px green square when the deviceScaleFactor is 2.
+</div>
+<br>
+<div class="foo"></div>
+<br>
+<div class="foo"></div>

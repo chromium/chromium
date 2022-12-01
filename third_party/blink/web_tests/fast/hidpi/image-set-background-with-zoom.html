@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<script src="resources/srcset-helper.js"></script>
 <style>
   #standard {
     background-image: image-set(
@@ -21,16 +20,13 @@
   }
 </style>
 
+<script>
+  if (window.testRunner)
+    testRunner.zoomPageIn();
+</script>
+
 <div>
-  This test passes if the divs below are
-  100px blue squares when the deviceScaleFactor is 1,
-  and 100px green squares when the deviceScaleFactor is 2.
-</div>
-<div>
-  When run in the test harness,
-  this test is distinct from image-set-background,
-  because it ensures that the green image loads dynamically
-  when the scale factor changes.
+  This test passes if the divs below are green squares.
 </div>
 <br>
 <div id="standard" class="foo"></div>

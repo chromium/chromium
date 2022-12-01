@@ -1,30 +1,54 @@
-Test the parsing of the -webkit-image-set function.
+Test the parsing of the image-set functions.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 
 
-Too many url parameters : url(#a #b)
+Too many url parameters : image-set(url(#a #b)
 PASS cssRule is ""
 
 
-No x : url('#a') 1
+Too many url parameters : -webkit-image-set(url(#a #b)
 PASS cssRule is ""
 
 
-No comma : url('#a') 1x url('#b') 2x
+No x : image-set(url('#a') 1
 PASS cssRule is ""
 
 
-Too many scale factor parameters : url('#a') 1x 2x
+No x : -webkit-image-set(url('#a') 1
 PASS cssRule is ""
 
 
-Scale factor is 0 : url('#a') 0x
+No comma : image-set(url('#a') 1x url('#b') 2x
 PASS cssRule is ""
 
 
-No url function : '#a' 1x
+No comma : -webkit-image-set(url('#a') 1x url('#b') 2x
+PASS cssRule is ""
+
+
+Too many scale factor parameters : image-set(url('#a') 1x 2x
+PASS cssRule is ""
+
+
+Too many scale factor parameters : -webkit-image-set(url('#a') 1x 2x
+PASS cssRule is ""
+
+
+Scale factor is 0 : image-set(url('#a') 0x
+PASS cssRule is ""
+
+
+Scale factor is 0 : -webkit-image-set(url('#a') 0x
+PASS cssRule is ""
+
+
+No url function : image-set('#a' 1x
+PASS cssRule is ""
+
+
+No url function : -webkit-image-set('#a' 1x
 PASS cssRule is ""
 PASS successfullyParsed is true
 

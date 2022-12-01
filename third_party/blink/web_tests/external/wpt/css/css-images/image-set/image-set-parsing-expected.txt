@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-Found 50 tests; 20 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL e.style['background-image'] = "image-set(url(example.png) 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""
+Found 50 tests; 22 PASS, 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS e.style['background-image'] = "image-set(url(example.png) 1x)" should set the property value
 FAIL e.style['background-image'] = "-webkit-image-set(url(example.png) 1x)" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"example.png\") 1x)" but got "-webkit-image-set(url(\"example.png\") 1x)"
-FAIL e.style['background-image'] = "image-set(url(\"example.png\") 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['background-image'] = "image-set(url(\"example.png\") 1x)" should set the property value
 FAIL e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 1x)" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"example.png\") 1x)" but got "-webkit-image-set(url(\"example.png\") 1x)"
 FAIL e.style['background-image'] = "image-set('example.jpg' 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "-webkit-image-set('example.jpg' 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""

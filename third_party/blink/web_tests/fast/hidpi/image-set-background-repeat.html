@@ -1,13 +1,33 @@
 <!DOCTYPE html>
 <script src="resources/srcset-helper.js"></script>
 <style>
-    #foo {
-        width:90px;
-        height:90px;
-        background-image: -webkit-image-set(url('resources/deleteButton.png') 1x, url('resources/deleteButton-2x.png') 2x);
-        background-repeat: repeat;
-        background-size: 30px 30px;
-    }
+  #standard {
+    background-image: image-set(
+      url('resources/deleteButton.png') 1x,
+      url('resources/deleteButton-2x.png') 2x
+    );
+  }
+
+  #prefixed {
+    background-image: -webkit-image-set(
+      url('resources/deleteButton.png') 1x,
+      url('resources/deleteButton-2x.png') 2x
+    );
+  }
+
+  .foo {
+    width: 90px;
+    height: 90px;
+    background-repeat: repeat;
+    background-size: 30px 30px;
+  }
 </style>
-<div>This test passes if the div below contains 9 evenly spaced delete buttons, and if the high resolution resource is used when the deviceScaleFactor is 2.</div>
-<div id=foo></div>
+
+<div>
+  This test passes if the divs below contains 9 evenly spaced delete buttons,
+  and if the high resolution resource is used when the deviceScaleFactor is 2.
+</div>
+<br>
+<div id="standard" class="foo"></div>
+<br>
+<div id="prefixed" class="foo"></div>

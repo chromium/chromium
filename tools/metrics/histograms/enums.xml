@@ -41704,6 +41704,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4410" label="ServiceWorkerBypassFetchHandlerForMainResource"/>
   <int value="4411" label="V8Document_HasPrivateStateToken_Method"/>
   <int value="4412" label="ServiceWorkerSkippedForEmptyFetchHandler"/>
+  <int value="4413" label="ImageSet"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

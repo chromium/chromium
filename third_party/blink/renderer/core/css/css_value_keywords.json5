@@ -1233,6 +1233,7 @@
     "-webkit-repeating-linear-gradient",
     "-webkit-repeating-radial-gradient",
     "-webkit-image-set",
+    "image-set",
 
     // deprecated gradients
     "from",

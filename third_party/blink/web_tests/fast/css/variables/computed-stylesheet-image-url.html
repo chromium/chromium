@@ -12,7 +12,7 @@
 
 <script>
 for (var property of ['background', 'background-image']) {
-  for (var value of ['image-set', 'url']) {
+  for (var value of ['image-set', 'webkit-image-set', 'url']) {
     test(() => {
       target.classList.remove(...target.classList);
       assert_equals(target.classList.length, 0);

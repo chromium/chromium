@@ -8,7 +8,7 @@
 <p><a href=https://bugs.webkit.org/show_bug.cgi?id=99493>Bug 99493</a></p>
 <div id="console"></div>
 <script>
-description("Test the parsing of the cursor property when used with -webkit-image-set.");
+description("Test the parsing of the cursor property when used with image-set and -webkit-image-set.");
 
 function makeCursorRule(rule)
 {
@@ -19,6 +19,12 @@ function testCursorRule(rule)
 {
     var cssText = makeCursorRule(rule);
     shouldBeEqualToString('roundtripCssRule(`' + cssText + '`)', cssText);
+}
+
+function testCursorRules(rule)
+{
+    testCursorRule(rule);
+    testCursorRule('-webkit-' + rule);
 }
 
 function roundtripCssRule(cssText)
@@ -36,10 +42,10 @@ function roundtripCssRule(cssText)
 // to avoid triggering any network activity.
 
 debug('Test a bunch of cursor rules which should round-trip exactly.');
-testCursorRule('-webkit-image-set(url("file:///foo.png") 1x), auto');
-testCursorRule('-webkit-image-set(url("file:///foo.png") 1x, url("file:///foo2x.png") 2x), auto');
-testCursorRule('-webkit-image-set(url("file:///foo.png") 1x, url("file:///foo2x.png") 2x) 2 3, auto');
-testCursorRule('-webkit-image-set(url("file:///foo03.png") 0.3x, url("file:///foo5x.png") 5x) 6 5, url("file:///foo.png") 12 3, pointer');
+testCursorRules('image-set(url("file:///foo.png") 1x), auto');
+testCursorRules('image-set(url("file:///foo.png") 1x, url("file:///foo2x.png") 2x), auto');
+testCursorRules('image-set(url("file:///foo.png") 1x, url("file:///foo2x.png") 2x) 2 3, auto');
+testCursorRules('image-set(url("file:///foo03.png") 0.3x, url("file:///foo5x.png") 5x) 6 5, url("file:///foo.png") 12 3, pointer');
 
 successfullyParsed = true;
 </script>

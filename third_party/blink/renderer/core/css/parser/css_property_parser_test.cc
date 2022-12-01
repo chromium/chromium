@@ -662,6 +662,16 @@ TEST_F(CSSPropertyUseCounterTest, CSSPropertyBackgroundImageWebkitImageSet) {
   EXPECT_TRUE(IsCounted(feature));
 }
 
+TEST_F(CSSPropertyUseCounterTest, CSSPropertyBackgroundImageImageSet) {
+  WebFeature feature = WebFeature::kImageSet;
+
+  ParseProperty(CSSPropertyID::kBackgroundImage, "none");
+  EXPECT_FALSE(IsCounted(feature));
+
+  ParseProperty(CSSPropertyID::kBackgroundImage, "image-set(url(foo) 2x)");
+  EXPECT_TRUE(IsCounted(feature));
+}
+
 TEST(CSSPropertyParserTest, InternalLightDarkAuthor) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
@@ -727,6 +737,7 @@ TEST(CSSPropertyParserTest, UAInternalLightDarkBackgroundImage) {
       {"-internal-light-dark(url(light.png), url(dark.png))", true},
       {"-internal-light-dark(url(light.png), none)", true},
       {"-internal-light-dark(none, -webkit-image-set(url(dark.png) 1x))", true},
+      {"-internal-light-dark(none, image-set(url(dark.png) 1x))", true},
       {"-internal-light-dark(  none  ,  none   )", true},
       {"-internal-light-dark(  url(light.png)  ,  url(dark.png)   )", true},
   };
@@ -770,6 +781,7 @@ TEST(CSSPropertyParserTest, UAInternalLightDarkBackgroundShorthand) {
       {"-internal-light-dark(url(light.png), url(dark.png))", true},
       {"-internal-light-dark(url(light.png), none)", true},
       {"-internal-light-dark(none, -webkit-image-set(url(dark.png) 1x))", true},
+      {"-internal-light-dark(none, image-set(url(dark.png) 1x))", true},
       {"-internal-light-dark(  none  ,  none   )", true},
       {"-internal-light-dark(  url(light.png)  ,  url(dark.png)   )", true},
   };

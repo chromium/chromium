@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!--
+  Tests that '-webkit-' prefixed image-set value is used
+  when standard image-set fails parsing.
+-->
+
+<script src="resources/srcset-helper.js"></script>
+<style>
+  #foo {
+    width: 100px;
+    height: 100px;
+    content: -webkit-image-set(
+      url('resources/red-100-px-square.png') 1x,
+      url('resources/red-100-px-square.png') 2x
+    );
+    content: image-set(
+      TYPO('resources/blue-100-px-square.png') 1x,
+      TYPO('resources/blue-100-px-square.png') 2x
+    );
+  }
+
+</style>
+
+<div>
+  This test passes if the div below is a 100px red square.
+</div>
+<br>
+<div id="foo"></div>

@@ -10,17 +10,79 @@
 <p id="description"></p>
 <p><a href=https://bugs.webkit.org/show_bug.cgi?id=99493>Bug 99493</a></p>
 <div id="test-container">
-  <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 1x), pointer'>25x25 image at 1x</div>
-  <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 2x), pointer'>25x25 image at 2x</div>
-  <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 1x, url(resources/greenbox30.png) 2x), pointer'>25x25 image at 1x, 30x30 image at 2x</div>
-  <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 1.5x, url(resources/greenbox30.png) 5x), pointer'>25x25 image at 1.5x, 30x30 image at 5x</div>
-  <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 0.0001x), pointer'>Invalid tiny scale with fallback to pointer</div>
-  <div style='cursor: -webkit-image-set(url(resources/greenbox200.png) 1x), pointer'>Over-large image with fallback to pointer</div>
-  <div style='cursor: -webkit-image-set(url(resources/greenbox200.png) 4x), pointer'>200x200 image at 4x (not over-large in UI pixels)</div>
-  <div style='cursor: -webkit-image-set(url(doesntexist.png) 1x), url(resources/greenbox.png), pointer'>Non-existent image in image-set with fallback to 25x25 image</div>
-  <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 1x, url(resources/greenbox30.png) 2x) 5 3, pointer'>Explicit hotspot at (5,3) logical in 1x and 2x</div>
-  <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 0.7x, url(resources/greenbox30.png) 1.4x) 7 3, pointer'>Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer</div>
-  <div style='cursor: -webkit-image-set(url(resources/greenbox-hotspot5-4.cur) 1x, url(resources/greenbox30-hotspot28-3.cur) 2x), pointer'>Implicit hot-spot at (5,4) physical for 1x and (28,3) physical for 2x</div>
+    <!--standard image-set -->
+    <div style='cursor: image-set(url(resources/greenbox.png) 1x), pointer'>
+        25x25 image at 1x
+    </div>
+    <div style='cursor: image-set(url(resources/greenbox.png) 2x), pointer'>
+        25x25 image at 2x
+    </div>
+    <div style='cursor: image-set(url(resources/greenbox.png) 1x, url(resources/greenbox30.png) 2x), pointer'>
+        25x25 image at 1x, 30x30 image at 2x
+    </div>
+    <div style='cursor: image-set(url(resources/greenbox.png) 1.5x, url(resources/greenbox30.png) 5x), pointer'>
+        25x25 image at 1.5x, 30x30 image at 5x
+    </div>
+    <div style='cursor: image-set(url(resources/greenbox.png) 0.0001x), pointer'>
+        Invalid tiny scale with fallback to pointer
+    </div>
+    <div style='cursor: image-set(url(resources/greenbox200.png) 1x), pointer'>
+        Over-large image with fallback to pointer
+    </div>
+    <div style='cursor: image-set(url(resources/greenbox200.png) 4x), pointer'>
+        200x200 image at 4x (not over-large in UI pixels)
+    </div>
+    <div style='cursor: image-set(url(doesntexist.png) 1x), url(resources/greenbox.png), pointer'>
+        Non-existent image in image-set with fallback to 25x25 image
+    </div>
+    <div style='cursor: image-set(url(resources/greenbox.png) 1x, url(resources/greenbox30.png) 2x) 5 3, pointer'>
+        Explicit hotspot at (5,3) logical in 1x and 2x
+    </div>
+    <div style='cursor: image-set(url(resources/greenbox.png) 0.7x, url(resources/greenbox30.png) 1.4x) 7 3, pointer'>
+        Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer
+    </div>
+    <div
+        style='cursor: image-set(url(resources/greenbox-hotspot5-4.cur) 1x, url(resources/greenbox30-hotspot28-3.cur) 2x), pointer'>
+        Implicit hot-spot at (5,4) physical for 1x and (28,3) physical for 2x
+    </div>
+
+    <!-- -webkit- prefixed image-set -->
+    <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 1x), pointer'>
+        [-webkit- prefixed] 25x25 image at 1x
+    </div>
+    <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 2x), pointer'>
+        [-webkit- prefixed] 25x25 image at 2x
+    </div>
+    <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 1x, url(resources/greenbox30.png) 2x), pointer'>
+        [-webkit- prefixed] 25x25 image at 1x, 30x30 image at 2x
+    </div>
+    <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 1.5x, url(resources/greenbox30.png) 5x), pointer'>
+        [-webkit- prefixed] 25x25 image at 1.5x, 30x30 image at 5x
+    </div>
+    <div style='cursor: -webkit-image-set(url(resources/greenbox.png) 0.0001x), pointer'>
+        [-webkit- prefixed] Invalid tiny scale with fallback to pointer
+    </div>
+    <div style='cursor: -webkit-image-set(url(resources/greenbox200.png) 1x), pointer'>
+        [-webkit- prefixed] Over-large image with fallback to pointer
+    </div>
+    <div style='cursor: -webkit-image-set(url(resources/greenbox200.png) 4x), pointer'>
+        [-webkit- prefixed] 200x200 image at 4x (not over-large in UI pixels)
+    </div>
+    <div style='cursor: -webkit-image-set(url(doesntexist.png) 1x), url(resources/greenbox.png), pointer'>
+        [-webkit- prefixed] Non-existent image in image-set with fallback to 25x25 image
+    </div>
+    <div
+        style='cursor: -webkit-image-set(url(resources/greenbox.png) 1x, url(resources/greenbox30.png) 2x) 5 3, pointer'>
+        [-webkit- prefixed] Explicit hotspot at (5,3) logical in 1x and 2x
+    </div>
+    <div
+        style='cursor: -webkit-image-set(url(resources/greenbox.png) 0.7x, url(resources/greenbox30.png) 1.4x) 7 3, pointer'>
+        [-webkit- prefixed] Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer
+    </div>
+    <div
+        style='cursor: -webkit-image-set(url(resources/greenbox-hotspot5-4.cur) 1x, url(resources/greenbox30-hotspot28-3.cur) 2x), pointer'>
+        [-webkit- prefixed] Implicit hot-spot at (5,4) physical for 1x and (28,3) physical for 2x
+    </div>
 </div>
 <br/>
 <div id="console"></div>
@@ -34,7 +96,7 @@ function checkCursors() {
     var nodesToTest = document.querySelectorAll('#test-container > div');
     for (var i = 0; i < nodesToTest.length; i++) {
         var node = nodesToTest[i];
-        debug('TEST CASE: ' + node.textContent);
+        debug('TEST CASE: ' + node.textContent.trim());
         // Make sure the node is visible and move the mouse over top of it.
         document.documentElement.scrollTop = node.offsetTop - 50;
         eventSender.mouseMoveTo(node.offsetLeft + 3, node.offsetTop - document.documentElement.scrollTop + 3);

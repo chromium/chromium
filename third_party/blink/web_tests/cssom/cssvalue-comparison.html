@@ -64,7 +64,8 @@ function run() {
                   {"-webkit-transition-timing-function" : ["cubic-bezier(0.25, 0.1, 0.25, 1)", "linear", "steps(3, end)"]}, // timing functions
                   {"-webkit-transform" : ["rotate(30deg)", "translate(50px,50px)", "scale(2,4)", "skew(30deg,20deg)", "matrix(0.4,0.5,-0.5,0.4,0,0)"]}, // transforms
                   {"-webkit-line-box-contain" : ["inline-box", "font", "glyphs", "replaced"]}, // line-box-contain
-                  {"background-image" : ["-webkit-image-set(url(dummy://test.png) 1x, url(dummy://test.png) 2x)", "-webkit-image-set(url(dummy://small.png) 2x, url(dummy://big.png) 3x)"]}, // image set
+                  {"background-image" : ["image-set(url(dummy://test.png) 1x, url(dummy://test.png) 2x)", "image-set(url(dummy://small.png) 2x, url(dummy://big.png) 3x)"]}, // image set
+                  {"background-image" : ["-webkit-image-set(url(dummy://test.png) 1x, url(dummy://test.png) 2x)", "-webkit-image-set(url(dummy://small.png) 2x, url(dummy://big.png) 3x)"]}, // '-webkit-' prefixed image set
                   {"-webkit-filter" : ["grayscale(100%) sepia(100%)", "sepia(10%) grayscale(50%)"]}, // filter
                   {"-webkit-dashboard-region" : ["dashboard-region(label circle)", "dashboard-region(label circle 1px 2px 3px 4px) dashboard-region(label rectangle 5px 6px 7px 8px)"]} // dashboard region
                 ];

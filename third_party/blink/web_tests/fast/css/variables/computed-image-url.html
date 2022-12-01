@@ -12,7 +12,7 @@ function testImageVar(property, value) {
     var actual = getComputedStyle(target)[property];
 
     target.style[property] = value;
-    assert_not_equals(target.style[property], '', value + ' must be valid for ' + property);
+    assert_equals(target.style[property], value, value + ' must be valid for ' + property);
     var expected = getComputedStyle(target)[property];
 
     assert_equals(actual, expected);
@@ -20,7 +20,10 @@ function testImageVar(property, value) {
 }
 
 testImageVar('background-image', 'url("image.png")');
+testImageVar('background-image', 'image-set(url("image.png") 1x)');
 testImageVar('background-image', '-webkit-image-set(url("image.png") 1x)');
+
 testImageVar('background', 'url("image.png")');
+testImageVar('background', 'image-set(url("image.png") 1x)');
 testImageVar('background', '-webkit-image-set(url("image.png") 1x)');
 </script>
