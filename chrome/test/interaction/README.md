@@ -96,9 +96,11 @@ Verbs fall into a number of different categories:
     - `AfterHide()`
     - `AfterActivated()`
     - `AfterEvent()`
-- **WithElement** gets the specified element and performs the specified action.
-  Unlike the above verbs, it will not wait; the element must exist when the step
+- **With** verbs get the specified element and perform the specified action.
+  Unlike the above verbs, they will not wait; the element must exist when the step
   triggers or the test will fail.
+    - `WithElement()`
+    - `WithView()` [Views]
 - **EnsureNotPresent** is the opposite of `WithElement`; if the element exists
   when the step is triggered, the test fails. There is also a version that looks
   for a DOM element in an

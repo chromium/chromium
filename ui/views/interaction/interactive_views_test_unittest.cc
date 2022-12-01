@@ -112,6 +112,16 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
   ButtonCallbackMock button2_callback_;
 };
 
+TEST_F(InteractiveViewsTestTest, WithView) {
+  RunTestSequence(WithView(kButton1Id, base::BindOnce([](LabelButton* button) {
+                             EXPECT_TRUE(button->GetVisible());
+                           })),
+                  // Check version with arbitrary return value and matcher.
+                  WithView(kTabbedPaneId, base::BindOnce([](TabbedPane* tabs) {
+                             EXPECT_EQ(3U, tabs->GetTabCount());
+                           })));
+}
+
 TEST_F(InteractiveViewsTestTest, CheckView) {
   RunTestSequence(
       // Check version with no matcher and only boolean return value.

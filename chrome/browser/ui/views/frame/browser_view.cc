@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -858,6 +859,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     SetCanMaximize(browser_->create_params().can_maximize);
     SetCanMinimize(true);
   }
+
+  SetProperty(views::kElementIdentifierKey, kBrowserViewElementId);
 
   // Create user education resources.
   UserEducationService* const user_education_service =

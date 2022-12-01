@@ -139,6 +139,12 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
                                                       base::StringPiece name,
                                                       ViewMatcher matcher);
 
+  // As WithElement, but `view` should resolve to a TrackedElementViews wrapping
+  // a view of type `V`.
+  template <template <typename...> typename C, typename V>
+  [[nodiscard]] static StepBuilder WithView(ElementSpecifier view,
+                                            C<void(V*)> function);
+
   // As CheckElement(), but `view` should resolve to a TrackedElementViews
   // wrapping a view of type `V`.
   template <typename V>
@@ -357,6 +363,21 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameViewRelative(
         seq->NameElement(target_element, name);
       },
       std::move(find_callback), std::string(name)));
+  return builder;
+}
+
+// static
+template <template <typename...> typename C, typename V>
+ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::WithView(
+    ElementSpecifier view,
+    C<void(V*)> function) {
+  StepBuilder builder;
+  ui::test::internal::SpecifyElement(builder, view);
+  builder.SetMustBeVisibleAtStart(true);
+  builder.SetStartCallback(base::BindOnce(
+      [](base::OnceCallback<void(V*)> function, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) { std::move(function).Run(AsView<V>(el)); },
+      base::OnceCallback<void(V*)>(std::move(function))));
   return builder;
 }
 

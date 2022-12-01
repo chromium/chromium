@@ -56,34 +56,36 @@ class HelpBubbleViewInteractiveTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
                        WidgetNotActivatedByDefault) {
-  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  HelpBubbleView* help_bubble = nullptr;
-
   RunTestSequence(
-      Check(base::BindLambdaForTesting(
-          [browser_view]() { return browser_view->GetWidget()->IsActive(); })),
-      Do(base::BindLambdaForTesting(
-          [browser_view]() { browser_view->FocusToolbar(); })),
-      CheckResult(base::BindLambdaForTesting([browser_view]() {
-                    return browser_view->GetFocusManager()->GetFocusedView();
-                  }),
-                  testing::Ne(nullptr)),
-      WithElement(kAppMenuButtonElementId,
-                  base::BindLambdaForTesting([&help_bubble,
-                                              this](ui::TrackedElement* el) {
-                    help_bubble = new HelpBubbleView(
-                        GetHelpBubbleDelegate(), AsView(el), GetBubbleParams());
-                  })),
+      CheckViewProperty(kBrowserViewElementId, &BrowserView::IsActive, true),
+      WithView(kBrowserViewElementId,
+               base::BindOnce([](BrowserView* view) { view->FocusToolbar(); })),
+      CheckView(kBrowserViewElementId, base::BindOnce([](BrowserView* view) {
+                  return view->GetFocusManager()->GetFocusedView();
+                }),
+                testing::Ne(nullptr)),
+      WithView(kAppMenuButtonElementId,
+               base::BindLambdaForTesting([this](views::View* button) {
+                 new HelpBubbleView(GetHelpBubbleDelegate(), button,
+                                    GetBubbleParams());
+               })),
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
-      FlushEvents(), Check(base::BindLambdaForTesting([&help_bubble]() {
-        return help_bubble->GetWidget()->IsVisible();
-      })),
-      Check(base::BindLambdaForTesting(
-          [browser_view]() { return browser_view->GetWidget()->IsActive(); })),
-      Check(base::BindLambdaForTesting(
-          [&help_bubble]() { return !help_bubble->GetWidget()->IsActive(); })),
-      Do(base::BindLambdaForTesting(
-          [&help_bubble]() { help_bubble->Close(); })));
+      FlushEvents(),
+      CheckView(HelpBubbleView::kHelpBubbleElementIdForTesting,
+                base::BindOnce([](HelpBubbleView* bubble) {
+                  return bubble->GetWidget()->IsVisible();
+                })),
+      CheckViewProperty(kBrowserViewElementId, &BrowserView::IsActive, true),
+      CheckView(HelpBubbleView::kHelpBubbleElementIdForTesting,
+                base::BindOnce([](HelpBubbleView* view) {
+                  return view->GetWidget()->IsActive();
+                }),
+                false),
+      WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
+               base::BindOnce([](HelpBubbleView* bubble) {
+                 bubble->GetWidget()->Close();
+               })),
+      WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
 // This is a regression test to ensure that help bubbles prevent other bubbles
@@ -94,7 +96,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
 // close it.
 IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
                        BubblePreventsCloseOnLossOfFocus) {
-  HelpBubbleView* help_bubble = nullptr;
   browser()->tab_strip_model()->AddToNewGroup({0});
 
   RunTestSequence(
@@ -107,22 +108,23 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
                       ui::MenuSourceType::MENU_SOURCE_KEYBOARD);
                 })),
       AfterShow(kTabGroupEditorBubbleId,
-                base::BindLambdaForTesting([&](ui::TrackedElement* element) {
+                base::BindOnce([](ui::TrackedElement* element) {
                   // Show a help bubble attached to the tab group editor
                   // bubble.
                   HelpBubbleParams params;
                   params.body_text = u"foo";
-                  help_bubble =
-                      new HelpBubbleView(GetHelpBubbleDelegate(),
-                                         AsView(element), std::move(params));
+                  new HelpBubbleView(GetHelpBubbleDelegate(), AsView(element),
+                                     std::move(params));
                 })),
       // Activate the help bubble. This should not cause the editor to close.
       ActivateWidgetContaining(HelpBubbleView::kHelpBubbleElementIdForTesting),
       // Re-Activate the dialog.
       ActivateWidgetContaining(kTabGroupEditorBubbleId),
       // Close the help bubble.
-      Do(base::BindLambdaForTesting(
-          [&]() { help_bubble->GetWidget()->Close(); })),
+      WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
+               base::BindOnce([](HelpBubbleView* bubble) {
+                 bubble->GetWidget()->Close();
+               })),
       WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting),
       // Delay this to prevent chaining off of the previous hidden step; we need
       // the help bubble to fully clean up (this wouldn't be an issue in an
@@ -155,14 +157,12 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
   button2.is_default = false;
   params.buttons.emplace_back(std::move(button2));
 
-  HelpBubbleView* help_bubble = nullptr;
-
   RunTestSequence(
-      WithElement(kAppMenuButtonElementId,
-                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
-                    help_bubble = new HelpBubbleView(
-                        GetHelpBubbleDelegate(), AsView(el), std::move(params));
-                  })),
+      WithView(kAppMenuButtonElementId,
+               base::BindLambdaForTesting([&](views::View* button) {
+                 new HelpBubbleView(GetHelpBubbleDelegate(), button,
+                                    std::move(params));
+               })),
       CheckViewProperty(HelpBubbleView::kDefaultButtonIdForTesting,
                         &views::LabelButton::GetText, kButton1Text),
       CheckViewProperty(HelpBubbleView::kFirstNonDefaultButtonIdForTesting,

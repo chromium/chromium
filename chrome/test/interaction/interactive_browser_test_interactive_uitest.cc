@@ -87,8 +87,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser());
   const char kWebContentsName[] = "WebContents";
   gfx::Point p1;
   gfx::Point p2;
@@ -100,24 +98,19 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
          gfx::Vector2d(5, 5);
     return p2;
   });
-  auto* const browser_el =
-      views::ElementTrackerViews::GetInstance()->GetElementForView(
-          browser_view, /* assign_temporary_id =*/true);
 
   RunTestSequence(
       // Name the browser's primary webview and calculate a point in its upper
       // left.
-      ui::InteractionSequence::WithInitialElement(
-          browser_el,
-          base::BindLambdaForTesting(
-              [&](ui::InteractionSequence* seq, ui::TrackedElement*) {
-                views::InteractionSequenceViews::NameView(
-                    seq, browser_view->contents_web_view(), kWebContentsName);
-                p1 = browser_view->contents_web_view()
-                         ->GetBoundsInScreen()
-                         .origin() +
-                     gfx::Vector2d(5, 5);
-              })),
+      NameViewRelative(
+          kBrowserViewElementId, kWebContentsName,
+          base::BindOnce([](BrowserView* browser_view) -> views::View* {
+            return browser_view->contents_web_view();
+          })),
+      WithView(kWebContentsName,
+               base::BindLambdaForTesting([&p1](views::View* view) {
+                 p1 = view->GetBoundsInScreen().origin() + gfx::Vector2d(5, 5);
+               })),
       // Move the mouse to the point. Use the gfx::Point* version so we can
       // dynamically receive the value calculated in the previous step.
       MoveMouseTo(&p1),
