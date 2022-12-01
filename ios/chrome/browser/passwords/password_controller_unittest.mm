@@ -215,14 +215,6 @@ struct TestPasswordFormData {
 
 }  // namespace
 
-@interface PasswordFormHelper (Testing)
-
-- (void)findPasswordFormsInFrame:(web::WebFrame*)frame
-               completionHandler:(void (^)(const std::vector<PasswordForm>&))
-                                     completionHandler;
-
-@end
-
 // Real FormSuggestionController is wrapped to register the addition of
 // suggestions.
 @interface PasswordsTestSuggestionController : FormSuggestionController
