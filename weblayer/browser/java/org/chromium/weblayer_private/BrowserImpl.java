@@ -60,10 +60,6 @@ public class BrowserImpl extends IBrowser.Stub {
     private final ProfileImpl mProfile;
     private Context mEmbedderActivityContext;
     private BrowserViewController mViewController;
-    // Used to save UI state between destroyAttachmentState() and createAttachmentState() calls so
-    // it can be preserved during device rotations or other events that cause the Fragment to be
-    // recreated.
-    private BrowserViewController.State mViewControllerState;
     private FragmentWindowAndroid mWindowAndroid;
     private IBrowserClient mClient;
     private LocaleChangedBroadcastReceiver mLocaleReceiver;
@@ -85,7 +81,6 @@ public class BrowserImpl extends IBrowser.Stub {
     private int mDarkModeStrategy = DarkModeStrategy.WEB_THEME_DARKENING_ONLY;
     private Float mFontScale;
     private boolean mViewAttachedToWindow;
-    private boolean mNotifyOnBrowserControlsOffsetsChanged;
 
     // Created in the constructor from saved state.
     private FullPersistenceInfo mFullPersistenceInfo;
@@ -169,8 +164,8 @@ public class BrowserImpl extends IBrowser.Stub {
         assert mEmbedderActivityContext == null;
         mWindowAndroid = windowAndroid;
         mEmbedderActivityContext = embedderAppContext;
-        mViewController = new BrowserViewController(
-                windowAndroid, mViewControllerState, mInConfigurationChangeAndWasAttached);
+        mViewController =
+                new BrowserViewController(windowAndroid, mInConfigurationChangeAndWasAttached);
         mLocaleReceiver = new LocaleChangedBroadcastReceiver(windowAndroid.getContext().get());
         mPasswordEchoEnabled = null;
         mViewAttachedToWindow = true;
@@ -454,21 +449,6 @@ public class BrowserImpl extends IBrowser.Stub {
     }
 
     @Override
-    public void setBrowserControlsOffsetsEnabled(boolean enable) {
-        mNotifyOnBrowserControlsOffsetsChanged = enable;
-    }
-
-    public void onBrowserControlsOffsetsChanged(TabImpl tab, boolean isTop, int controlsOffset) {
-        if (mNotifyOnBrowserControlsOffsetsChanged && tab == getActiveTab()) {
-            try {
-                mClient.onBrowserControlsOffsetsChanged(isTop, controlsOffset);
-            } catch (RemoteException e) {
-                throw new APICallException(e);
-            }
-        }
-    }
-
-    @Override
     public boolean isRestoringPreviousState() {
         // In the case of minimal restore, the C++ side will return true if actively restoring
         // minimal state. By returning true if mMinimalPersistenceInfo is non-null,
@@ -598,7 +578,6 @@ public class BrowserImpl extends IBrowser.Stub {
             mLocaleReceiver = null;
         }
         if (mViewController != null) {
-            mViewControllerState = mViewController.getState();
             mViewController.destroy();
             mViewController = null;
             mViewAttachedToWindow = false;

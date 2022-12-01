@@ -15,11 +15,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -48,21 +45,8 @@ import org.chromium.ui.util.TokenHolder;
  */
 @JNINamespace("weblayer")
 public final class BrowserViewController
-        implements BrowserControlsContainerView.Delegate,
-                   WebContentsGestureStateTracker.OnGestureStateChangedListener,
+        implements WebContentsGestureStateTracker.OnGestureStateChangedListener,
                    ModalDialogManager.ModalDialogManagerObserver {
-    /** Information needed to restore the UI state after recreating the BrowserViewController. */
-    /* package */ static class State {
-        private BrowserControlsContainerView.State mTopControlsState;
-        private BrowserControlsContainerView.State mBottomControlsState;
-
-        private State(BrowserControlsContainerView.State topControlsState,
-                BrowserControlsContainerView.State bottomControlsState) {
-            mTopControlsState = topControlsState;
-            mBottomControlsState = bottomControlsState;
-        }
-    }
-
     private final ContentViewRenderView mContentViewRenderView;
     // Child of mContentViewRenderView. Be very careful adding Views to this, as any Views are not
     // accessible (ContentView provides it's own accessible implementation that interacts with
@@ -70,10 +54,6 @@ public final class BrowserViewController
     private final ContentView mContentView;
     // Child of mContentViewRenderView, holds the SurfaceView for WebXR.
     private final FrameLayout mArViewHolder;
-    // Child of mContentViewRenderView, holds top-view from client.
-    private final BrowserControlsContainerView mTopControlsContainerView;
-    // Child of mContentViewRenderView, holds bottom-view from client.
-    private final BrowserControlsContainerView mBottomControlsContainerView;
     // Other child of mContentViewRenderView, which holds views that sit on top of the web contents,
     // such as tab modal dialogs.
     private final FrameLayout mWebContentsOverlayView;
@@ -93,35 +73,16 @@ public final class BrowserViewController
 
     private WebContentsGestureStateTracker mGestureStateTracker;
 
-    @BrowserControlsState
-    private int mBrowserControlsConstraint = BrowserControlsState.BOTH;
-
-    /**
-     * The value of mCachedDoBrowserControlsShrinkRendererSize is set when
-     * WebContentsGestureStateTracker begins a gesture. This is necessary as the values should only
-     * change once a gesture is no longer under way.
-     */
-    private boolean mCachedDoBrowserControlsShrinkRendererSize;
-
     private OnscreenContentProvider mOnscreenContentProvider;
 
-    public BrowserViewController(FragmentWindowAndroid windowAndroid, @Nullable State savedState,
-            boolean recreateForConfigurationChange) {
+    public BrowserViewController(
+            FragmentWindowAndroid windowAndroid, boolean recreateForConfigurationChange) {
         mWindowAndroid = windowAndroid;
         Context context = mWindowAndroid.getContext().get();
         mContentViewRenderView = new ContentViewRenderView(context, recreateForConfigurationChange);
 
         mContentViewRenderView.onNativeLibraryLoaded(mWindowAndroid);
-        mTopControlsContainerView =
-                new BrowserControlsContainerView(context, mContentViewRenderView, this, true,
-                        (savedState == null) ? null : savedState.mTopControlsState);
-        mTopControlsContainerView.setId(View.generateViewId());
-        mBottomControlsContainerView =
-                new BrowserControlsContainerView(context, mContentViewRenderView, this, false,
-                        (savedState == null) ? null : savedState.mBottomControlsState);
-        mBottomControlsContainerView.setId(View.generateViewId());
-        mContentView = ContentViewWithAutofill.createContentView(
-                context, mTopControlsContainerView.getEventOffsetHandler());
+        mContentView = ContentViewWithAutofill.createContentView(context, null);
         mContentViewRenderView.addView(mContentView,
                 new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -131,21 +92,9 @@ public final class BrowserViewController
         mContentViewRenderView.addView(mArViewHolder,
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-        mContentViewRenderView.addView(mTopControlsContainerView,
-                new RelativeLayout.LayoutParams(
-                        LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        RelativeLayout.LayoutParams bottomControlsContainerViewParams =
-                new RelativeLayout.LayoutParams(
-                        LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        bottomControlsContainerViewParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        mContentViewRenderView.addView(
-                mBottomControlsContainerView, bottomControlsContainerViewParams);
-
         mWebContentsOverlayView = new FrameLayout(context);
         RelativeLayout.LayoutParams overlayParams =
                 new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0);
-        overlayParams.addRule(RelativeLayout.BELOW, mTopControlsContainerView.getId());
-        overlayParams.addRule(RelativeLayout.ABOVE, mBottomControlsContainerView.getId());
         mContentViewRenderView.addView(mWebContentsOverlayView, overlayParams);
         mWindowAndroid.setAnimationPlaceholderView(mWebContentsOverlayView);
 
@@ -244,8 +193,6 @@ public final class BrowserViewController
         mWindowAndroid.setModalDialogManager(null);
         setActiveTab(null);
         if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();
-        mTopControlsContainerView.destroy();
-        mBottomControlsContainerView.destroy();
         mContentViewRenderView.destroy();
     }
 
@@ -292,8 +239,6 @@ public final class BrowserViewController
 
         if (mTab != null) {
             mTab.onDetachedFromViewController();
-            mTab.setBrowserControlsVisibilityConstraint(
-                    ImplControlsVisibilityReason.ANIMATION, BrowserControlsState.BOTH);
             // WebContentsGestureStateTracker is relatively cheap, easier to destroy rather than
             // update WebContents.
             mGestureStateTracker.destroy();
@@ -314,15 +259,8 @@ public final class BrowserViewController
         mContentView.setWebContents(webContents);
 
         mContentViewRenderView.setWebContents(webContents);
-        mTopControlsContainerView.setWebContents(webContents);
-        mBottomControlsContainerView.setWebContents(webContents);
         if (mTab != null) {
-            mTab.setBrowserControlsVisibilityConstraint(
-                    ImplControlsVisibilityReason.ANIMATION, mBrowserControlsConstraint);
-            mTab.setOnlyExpandTopControlsAtPageTop(
-                    mTopControlsContainerView.getOnlyExpandControlsAtPageTop());
-            mTab.onAttachedToViewController(mTopControlsContainerView.getNativeHandle(),
-                    mBottomControlsContainerView.getNativeHandle());
+            mTab.onAttachedToViewController();
             mContentView.requestFocus();
         }
 
@@ -338,34 +276,8 @@ public final class BrowserViewController
         return mTab;
     }
 
-    public void setTopView(View view) {
-        mTopControlsContainerView.setView(view);
-    }
-
-    public void setTopControlsMinHeight(int minHeight) {
-        mTopControlsContainerView.setMinHeight(minHeight);
-    }
-
-    public void setOnlyExpandTopControlsAtPageTop(boolean onlyExpandControlsAtPageTop) {
-        if (onlyExpandControlsAtPageTop
-                == mTopControlsContainerView.getOnlyExpandControlsAtPageTop()) {
-            return;
-        }
-        mTopControlsContainerView.setOnlyExpandControlsAtPageTop(onlyExpandControlsAtPageTop);
-        if (mTab == null) return;
-        mTab.setOnlyExpandTopControlsAtPageTop(onlyExpandControlsAtPageTop);
-    }
-
     public void addContentCaptureConsumerForTesting(ContentCaptureConsumer consumer) {
         mOnscreenContentProvider.addConsumer(consumer);
-    }
-
-    public void setTopControlsAnimationsEnabled(boolean animationsEnabled) {
-        mTopControlsContainerView.setAnimationsEnabled(animationsEnabled);
-    }
-
-    public int getBottomContentHeightDelta() {
-        return mBottomControlsContainerView.getContentHeightDelta();
     }
 
     public boolean compositorHasSurface() {
@@ -381,35 +293,7 @@ public final class BrowserViewController
     }
 
     @Override
-    public void refreshPageHeight() {
-        adjustWebContentsHeightIfNecessary();
-    }
-
-    @Override
-    public void setAnimationConstraint(@BrowserControlsState int constraint) {
-        mBrowserControlsConstraint = constraint;
-        if (mTab == null) return;
-        mTab.setBrowserControlsVisibilityConstraint(
-                ImplControlsVisibilityReason.ANIMATION, constraint);
-    }
-
-    @Override
-    public void onOffsetsChanged(boolean isTop, int controlsOffset) {
-        if (mTab == null) return;
-        mTab.getBrowser().onBrowserControlsOffsetsChanged(mTab, isTop, controlsOffset);
-    }
-
-    @Override
-    public void onGestureStateChanged() {
-        // This is called from |mGestureStateTracker|.
-        assert mGestureStateTracker != null;
-        if (mGestureStateTracker.isInGestureOrScroll()) {
-            mCachedDoBrowserControlsShrinkRendererSize =
-                    mTopControlsContainerView.isControlVisible()
-                    || mBottomControlsContainerView.isControlVisible();
-        }
-        adjustWebContentsHeightIfNecessary();
-    }
+    public void onGestureStateChanged() {}
 
     @Override
     public void onDialogAdded(PropertyModel model) {
@@ -419,11 +303,6 @@ public final class BrowserViewController
     @Override
     public void onLastDialogDismissed() {
         onDialogVisibilityChanged(false);
-    }
-
-    /* package */ State getState() {
-        return new State(
-                mTopControlsContainerView.getState(), mBottomControlsContainerView.getState());
     }
 
     private void onDialogVisibilityChanged(boolean showing) {
@@ -440,47 +319,8 @@ public final class BrowserViewController
         }
     }
 
-    private void adjustWebContentsHeightIfNecessary() {
-        if (mGestureStateTracker == null || mGestureStateTracker.isInGestureOrScroll()
-                || !mTopControlsContainerView.isCompletelyExpandedOrCollapsed()
-                || !mBottomControlsContainerView.isCompletelyExpandedOrCollapsed()) {
-            return;
-        }
-        mContentViewRenderView.setWebContentsHeightDelta(
-                mTopControlsContainerView.getContentHeightDelta()
-                + mBottomControlsContainerView.getContentHeightDelta());
-    }
-
     public void setMinimumSurfaceSize(int width, int height) {
         mContentViewRenderView.setMinimumSurfaceSize(width, height);
-    }
-
-    public void onTopControlsChanged(int topControlsOffsetY, int topContentOffsetY) {
-        mTopControlsContainerView.onOffsetsChanged(topControlsOffsetY, topContentOffsetY);
-    }
-
-    public void onBottomControlsChanged(int bottomControlsOffsetY) {
-        mBottomControlsContainerView.onOffsetsChanged(bottomControlsOffsetY, 0);
-    }
-
-    public boolean doBrowserControlsShrinkRendererSize() {
-        return mGestureStateTracker.isInGestureOrScroll()
-                ? mCachedDoBrowserControlsShrinkRendererSize
-                : (mTopControlsContainerView.isControlVisible()
-                        || mBottomControlsContainerView.isControlVisible());
-    }
-
-    public boolean shouldAnimateBrowserControlsHeightChanges() {
-        return mTopControlsContainerView.shouldAnimateBrowserControlsHeightChanges();
-    }
-
-    /**
-     * Causes the browser controls to be fully shown. Take care in calling this. Normally the
-     * renderer drives the offsets, but this method circumvents that.
-     */
-    public void showControls() {
-        mTopControlsContainerView.onOffsetsChanged(0, mTopControlsContainerView.getHeight());
-        mBottomControlsContainerView.onOffsetsChanged(0, 0);
     }
 
     /**

@@ -150,8 +150,6 @@ public final class TabImpl extends ITab.Stub {
     private boolean mPostContainerViewInitDone;
     private ActionModeCallback mActionModeCallback;
 
-    private WebLayerAccessibilityUtil.Observer mAccessibilityObserver;
-
     private Set<FaviconCallbackProxy> mFaviconCallbackProxies = new HashSet<>();
 
     // Only non-null if scroll offsets have been requested.
@@ -192,23 +190,6 @@ public final class TabImpl extends ITab.Stub {
          */
         public void setIgnoreRendererUpdates(boolean ignoreRenderer) {
             mIgnoreRenderer = ignoreRenderer;
-        }
-
-        @Override
-        public void onTopControlsChanged(
-                int topControlsOffsetY, int topContentOffsetY, int topControlsMinHeightOffsetY) {
-            BrowserViewController viewController = getViewController();
-            if (viewController != null && !mIgnoreRenderer) {
-                viewController.onTopControlsChanged(topControlsOffsetY, topContentOffsetY);
-            }
-        }
-        @Override
-        public void onBottomControlsChanged(
-                int bottomControlsOffsetY, int bottomControlsMinHeightOffsetY) {
-            BrowserViewController viewController = getViewController();
-            if (viewController != null && !mIgnoreRenderer) {
-                viewController.onBottomControlsChanged(bottomControlsOffsetY);
-            }
         }
 
         @Override
@@ -293,19 +274,6 @@ public final class TabImpl extends ITab.Stub {
 
         mMediaStreamManager = new MediaStreamManager(this);
 
-        mBrowserControlsDelegates = new ArrayList<BrowserControlsVisibilityDelegate>();
-        mComposedBrowserControlsVisibility = new ComposedBrowserControlsVisibilityDelegate();
-        for (int i = 0; i < ImplControlsVisibilityReason.REASON_COUNT; ++i) {
-            BrowserControlsVisibilityDelegate delegate =
-                    new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH);
-            mBrowserControlsDelegates.add(delegate);
-            mComposedBrowserControlsVisibility.addDelegate(delegate);
-        }
-        mConstraintsUpdatedCallback =
-                (constraint) -> onBrowserControlsConstraintUpdated(constraint);
-        mActiveBrowserControlsVisibilityDelegate = mComposedBrowserControlsVisibility;
-        mActiveBrowserControlsVisibilityDelegate.addObserver(mConstraintsUpdatedCallback);
-
         mInterceptNavigationDelegateClient = new InterceptNavigationDelegateClientImpl(this);
         mInterceptNavigationDelegate =
                 new InterceptNavigationDelegateImpl(mInterceptNavigationDelegateClient);
@@ -313,12 +281,6 @@ public final class TabImpl extends ITab.Stub {
         sTabMap.put(mId, this);
 
         mInfoBarContainer = new InfoBarContainer(this);
-        mAccessibilityObserver = (boolean enabled) -> {
-            setBrowserControlsVisibilityConstraint(ImplControlsVisibilityReason.ACCESSIBILITY,
-                    enabled ? BrowserControlsState.SHOWN : BrowserControlsState.BOTH);
-        };
-        // addObserver() calls to observer when added.
-        WebLayerAccessibilityUtil.get().addObserver(mAccessibilityObserver);
 
         mMediaSessionHelper = new MediaSessionHelper(
                 mWebContents, MediaSessionManager.createMediaSessionHelperDelegate(this));
@@ -453,11 +415,8 @@ public final class TabImpl extends ITab.Stub {
     /**
      * Called when this TabImpl is attached to the BrowserViewController.
      */
-    public void onAttachedToViewController(
-            long topControlsContainerViewHandle, long bottomControlsContainerViewHandle) {
+    public void onAttachedToViewController() {
         // attachToFragment() must be called before activate().
-        TabImplJni.get().setBrowserControlsContainerViews(
-                mNativeTab, topControlsContainerViewHandle, bottomControlsContainerViewHandle);
         mInfoBarContainer.onTabAttachedToViewController();
         updateWebContentsVisibility();
         updateDisplayCutoutController();
@@ -482,8 +441,6 @@ public final class TabImpl extends ITab.Stub {
         if (mInfoBarContainer != null) {
             mInfoBarContainer.onTabDetachedFromViewController();
         }
-
-        TabImplJni.get().setBrowserControlsContainerViews(mNativeTab, 0, 0);
     }
 
     /**
@@ -798,9 +755,6 @@ public final class TabImpl extends ITab.Stub {
             return false;
         }
 
-        setBrowserControlsVisibilityConstraint(
-                ImplControlsVisibilityReason.FIND_IN_PAGE, BrowserControlsState.SHOWN);
-
         mFindInPageCallbackClient = client;
         assert mFindInPageBridge == null;
         mFindInPageBridge = new FindInPageBridge(mWebContents);
@@ -831,9 +785,6 @@ public final class TabImpl extends ITab.Stub {
         mFindResultBar = null;
         mFindInPageBridge.destroy();
         mFindInPageBridge = null;
-
-        setBrowserControlsVisibilityConstraint(
-                ImplControlsVisibilityReason.FIND_IN_PAGE, BrowserControlsState.BOTH);
 
         try {
             if (mFindInPageCallbackClient != null) mFindInPageCallbackClient.onFindEnded();
@@ -1102,37 +1053,6 @@ public final class TabImpl extends ITab.Stub {
         mWebContents.removeObserver(mWebContentsObserver);
         TabImplJni.get().deleteTab(mNativeTab);
         mNativeTab = 0;
-
-        WebLayerAccessibilityUtil.get().removeObserver(mAccessibilityObserver);
-    }
-
-    @CalledByNative
-    private boolean doBrowserControlsShrinkRendererSize() {
-        BrowserViewController viewController = getViewController();
-        return viewController != null && viewController.doBrowserControlsShrinkRendererSize();
-    }
-
-    @CalledByNative
-    public void setBrowserControlsVisibilityConstraint(
-            @ImplControlsVisibilityReason int reason, @BrowserControlsState int constraint) {
-        mBrowserControlsDelegates.get(reason).set(constraint);
-    }
-
-    @BrowserControlsState
-    /* package */ int getBrowserControlsVisibilityConstraint(
-            @ImplControlsVisibilityReason int reason) {
-        return mBrowserControlsDelegates.get(reason).get();
-    }
-
-    public void setOnlyExpandTopControlsAtPageTop(boolean onlyExpandControlsAtPageTop) {
-        BrowserControlsVisibilityDelegate activeDelegate = onlyExpandControlsAtPageTop
-                ? mBrowserControlsDelegates.get(ImplControlsVisibilityReason.RENDERER_UNAVAILABLE)
-                : mComposedBrowserControlsVisibility;
-        if (activeDelegate == mActiveBrowserControlsVisibilityDelegate) return;
-
-        mActiveBrowserControlsVisibilityDelegate.removeObserver(mConstraintsUpdatedCallback);
-        mActiveBrowserControlsVisibilityDelegate = activeDelegate;
-        mActiveBrowserControlsVisibilityDelegate.addObserver(mConstraintsUpdatedCallback);
     }
 
     @CalledByNative
@@ -1209,37 +1129,6 @@ public final class TabImpl extends ITab.Stub {
     public boolean didShowFullscreenToast() {
         return mFullscreenCallbackProxy != null
                 && mFullscreenCallbackProxy.didShowFullscreenToast();
-    }
-
-    private void onBrowserControlsConstraintUpdated(int constraint) {
-        // If something has overridden the FIP's SHOWN constraint, cancel FIP. This causes FIP to
-        // dismiss when entering fullscreen.
-        if (constraint != BrowserControlsState.SHOWN) {
-            hideFindInPageUiAndNotifyClient();
-        }
-
-        // Don't animate when hiding the controls unless an animation was requested by
-        // BrowserControlsContainerView.
-        BrowserViewController viewController = getViewController();
-        boolean animate = constraint != BrowserControlsState.HIDDEN
-                || (viewController != null
-                        && viewController.shouldAnimateBrowserControlsHeightChanges());
-
-        // If the renderer is not controlling the offsets (possibly hung or crashed). Then this
-        // needs to force the controls to show (because notification from the renderer will not
-        // happen). For js dialogs, the renderer's update will come when the dialog is hidden, and
-        // since that animates from 0 height, it causes a flicker since the override is already set
-        // to fully show. Thus, disable animation.
-        if (constraint == BrowserControlsState.SHOWN && isActiveTab()
-                && !TabImplJni.get().isRendererControllingBrowserControlsOffsets(mNativeTab)) {
-            mViewAndroidDelegate.setIgnoreRendererUpdates(true);
-            if (viewController != null) viewController.showControls();
-            animate = false;
-        } else {
-            mViewAndroidDelegate.setIgnoreRendererUpdates(false);
-        }
-
-        TabImplJni.get().updateBrowserControlsConstraint(mNativeTab, constraint, animate);
     }
 
     private void ensureDisplayCutoutController() {
@@ -1327,20 +1216,14 @@ public final class TabImpl extends ITab.Stub {
         void deleteTab(long tab);
         void setJavaImpl(long nativeTabImpl, TabImpl impl);
         void initializeAutofillIfNecessary(long nativeTabImpl);
-        void setBrowserControlsContainerViews(long nativeTabImpl,
-                long nativeTopBrowserControlsContainerView,
-                long nativeBottomBrowserControlsContainerView);
         WebContents getWebContents(long nativeTabImpl);
         void executeScript(long nativeTabImpl, String script, boolean useSeparateIsolate,
                 Callback<String> callback);
-        void updateBrowserControlsConstraint(
-                long nativeTabImpl, int newConstraint, boolean animate);
         String getGuid(long nativeTabImpl);
         void captureScreenShot(long nativeTabImpl, float scale,
                 ValueCallback<Pair<Bitmap, Integer>> valueCallback);
         boolean setData(long nativeTabImpl, String[] data);
         String[] getData(long nativeTabImpl);
-        boolean isRendererControllingBrowserControlsOffsets(long nativeTabImpl);
         String registerWebMessageCallback(long nativeTabImpl, String jsObjectName,
                 String[] allowedOrigins, IWebMessageCallbackClient client);
         void unregisterWebMessageCallback(long nativeTabImpl, String jsObjectName);

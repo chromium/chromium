@@ -141,9 +141,7 @@ public class InfoBarContainerView extends SwipableOverlayView {
     // View implementation.
     @Override
     public void setTranslationY(float translationY) {
-        int contentHeightDelta = mTab != null
-                ? mTab.getBrowser().getViewController().getBottomContentHeightDelta()
-                : 0;
+        int contentHeightDelta = 0; // No bottom bar.
 
         // Push the infobar container up by any delta caused by the bottom toolbar while ensuring
         // that it does not ascend beyond the top of the bottom toolbar nor descend beyond its own

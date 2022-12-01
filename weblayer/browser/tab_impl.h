@@ -15,7 +15,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
-#include "cc/input/browser_controls_state.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -25,7 +24,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
-#include "weblayer/browser/browser_controls_navigation_state_handler_delegate.h"
 #endif
 
 namespace js_injection {
@@ -54,24 +52,15 @@ class SessionTabHelperDelegate;
 }
 
 namespace weblayer {
-class BrowserControlsNavigationStateHandler;
 class BrowserImpl;
 class FullscreenDelegate;
 class NavigationControllerImpl;
 class NewTabDelegate;
 class ProfileImpl;
 
-#if BUILDFLAG(IS_ANDROID)
-class BrowserControlsContainerView;
-enum class ControlsVisibilityReason;
-#endif
-
 class TabImpl : public Tab,
                 public content::WebContentsDelegate,
                 public content::WebContentsObserver,
-#if BUILDFLAG(IS_ANDROID)
-                public BrowserControlsNavigationStateHandlerDelegate,
-#endif
                 public find_in_page::FindResultObserver {
  public:
   enum class ScreenShotErrors {
@@ -151,10 +140,6 @@ class TabImpl : public Tab,
   static void DisableAutofillSystemIntegrationForTesting();
 
   base::android::ScopedJavaLocalRef<jobject> GetWebContents(JNIEnv* env);
-  void SetBrowserControlsContainerViews(
-      JNIEnv* env,
-      jlong native_top_browser_controls_container_view,
-      jlong native_bottom_browser_controls_container_view);
   void ExecuteScript(JNIEnv* env,
                      const base::android::JavaParamRef<jstring>& script,
                      bool use_separate_isolate,
@@ -166,9 +151,6 @@ class TabImpl : public Tab,
   // the native side autofill might have been initialized in the case that
   // Android context is switched.
   void InitializeAutofillIfNecessary(JNIEnv* env);
-  void UpdateBrowserControlsConstraint(JNIEnv* env,
-                                       jint constraint,
-                                       jboolean animate);
 
   base::android::ScopedJavaLocalRef<jstring> GetGuid(JNIEnv* env);
   void CaptureScreenShot(
@@ -179,7 +161,6 @@ class TabImpl : public Tab,
   jboolean SetData(JNIEnv* env,
                    const base::android::JavaParamRef<jobjectArray>& data);
   base::android::ScopedJavaLocalRef<jobjectArray> GetData(JNIEnv* env);
-  jboolean IsRendererControllingBrowserControlsOffsets(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> RegisterWebMessageCallback(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& js_object_name,
@@ -273,13 +254,6 @@ class TabImpl : public Tab,
                        const std::string& one_time_code,
                        base::OnceClosure on_confirm,
                        base::OnceClosure on_cancel) override;
-  int GetTopControlsHeight() override;
-  int GetTopControlsMinHeight() override;
-  int GetBottomControlsHeight() override;
-  bool DoBrowserControlsShrinkRendererSize(
-      content::WebContents* web_contents) override;
-  bool OnlyExpandTopControlsAtPageTop() override;
-  bool ShouldAnimateBrowserControlsHeightChanges() override;
   bool IsBackForwardCacheSupported() override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
@@ -324,9 +298,6 @@ class TabImpl : public Tab,
       content::RenderWidgetHostView** rwhv,
       gfx::Rect* src_rect,
       gfx::Size* output_size);
-
-  void UpdateBrowserControlsState(cc::BrowserControlsState new_state,
-                                  bool animate);
 #endif
 
   // content::WebContentsObserver:
@@ -336,15 +307,6 @@ class TabImpl : public Tab,
 
   // find_in_page::FindResultObserver:
   void OnFindResultAvailable(content::WebContents* web_contents) override;
-
-#if BUILDFLAG(IS_ANDROID)
-  // BrowserControlsNavigationStateHandlerDelegate:
-  void OnBrowserControlsStateStateChanged(
-      ControlsVisibilityReason reason,
-      cc::BrowserControlsState state) override;
-  void OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
-      bool did_commit) override;
-#endif
 
   // Called from closure supplied to delegate to exit fullscreen.
   void OnExitFullscreen();
@@ -359,8 +321,6 @@ class TabImpl : public Tab,
 
 #if BUILDFLAG(IS_ANDROID)
   void InitializeAutofillDriver();
-  void SetBrowserControlsConstraint(ControlsVisibilityReason reason,
-                                    cc::BrowserControlsState constraint);
 #endif
 
   void UpdateBrowserVisibleSecurityStateIfNecessary();
@@ -381,20 +341,7 @@ class TabImpl : public Tab,
   base::CallbackListSubscription locale_change_subscription_;
 
 #if BUILDFLAG(IS_ANDROID)
-  raw_ptr<BrowserControlsContainerView> top_controls_container_view_ = nullptr;
-  raw_ptr<BrowserControlsContainerView> bottom_controls_container_view_ =
-      nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
-  std::unique_ptr<BrowserControlsNavigationStateHandler>
-      browser_controls_navigation_state_handler_;
-
-  // Last value supplied to UpdateBrowserControlsConstraint(). This *constraint*
-  // can be SHOWN, if for example a modal dialog is forcing the controls to be
-  // visible, HIDDEN, if for example fullscreen is forcing the controls to be
-  // hidden, or BOTH, if either state is viable (e.g. during normal browsing).
-  // When BOTH, the actual current state could be showing or hidden.
-  cc::BrowserControlsState current_browser_controls_visibility_constraint_ =
-      cc::BrowserControlsState::kShown;
 
   bool desktop_user_agent_enabled_ = false;
 #endif

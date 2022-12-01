@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.browser_ui.modaldialog.R;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.content_public.browser.WebContents;
@@ -75,15 +74,8 @@ public class WebLayerTabModalPresenter extends TabModalPresenter {
         if (restricted) {
             if (webContents.isFullscreenForCurrentTab()) webContents.exitFullscreen();
 
-            if (webContents.getMainFrame().areInputEventsIgnored()) {
-                tab.setBrowserControlsVisibilityConstraint(
-                        ImplControlsVisibilityReason.TAB_MODAL_DIALOG, BrowserControlsState.SHOWN);
-            }
-
             saveOrRestoreTextSelection(webContents, true);
         } else {
-            tab.setBrowserControlsVisibilityConstraint(
-                    ImplControlsVisibilityReason.TAB_MODAL_DIALOG, BrowserControlsState.BOTH);
             saveOrRestoreTextSelection(webContents, false);
         }
     }

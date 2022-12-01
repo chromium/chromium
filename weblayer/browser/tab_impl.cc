@@ -123,9 +123,6 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/android/java_bitmap.h"
-#include "weblayer/browser/browser_controls_container_view.h"
-#include "weblayer/browser/browser_controls_navigation_state_handler.h"
-#include "weblayer/browser/controls_visibility_reason.h"
 #include "weblayer/browser/java/jni/TabImpl_jni.h"
 #include "weblayer/browser/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "weblayer/browser/js_communication/web_message_host_factory_proxy.h"
@@ -394,10 +391,6 @@ TabImpl::TabImpl(ProfileImpl* profile,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateAndroid>(
           web_contents_.get()));
 
-  browser_controls_navigation_state_handler_ =
-      std::make_unique<BrowserControlsNavigationStateHandler>(
-          web_contents_.get(), this);
-
   if (base::FeatureList::IsEnabled(
           features::kWebLayerClientSidePhishingDetection)) {
     safe_browsing::SafeBrowsingTabObserver::CreateForWebContents(
@@ -446,14 +439,6 @@ TabImpl::~TabImpl() {
 
   GetFindTabHelper()->RemoveObserver(this);
 
-  // Delete the WebContents and related objects that may be observing
-  // the WebContents now to avoid calling back when this object is partially
-  // deleted. DidFinishNavigation() may be called while deleting WebContents,
-  // so stop observing first. Similarly WebContents destructor can callback to
-  // delegate such as NavigationStateChanged, so clear its Delegate as well.
-#if BUILDFLAG(IS_ANDROID)
-  browser_controls_navigation_state_handler_.reset();
-#endif
   Observe(nullptr);
   web_contents_->SetDelegate(nullptr);
   if (navigation_controller_->should_delay_web_contents_deletion()) {
@@ -683,16 +668,10 @@ ScopedJavaLocalRef<jobject> TabImpl::GetWebContents(JNIEnv* env) {
   return web_contents_->GetJavaWebContents();
 }
 
-void TabImpl::SetBrowserControlsContainerViews(
-    JNIEnv* env,
-    jlong native_top_controls_container_view,
-    jlong native_bottom_controls_container_view) {
-  top_controls_container_view_ =
-      reinterpret_cast<BrowserControlsContainerView*>(
-          native_top_controls_container_view);
-  bottom_controls_container_view_ =
-      reinterpret_cast<BrowserControlsContainerView*>(
-          native_bottom_controls_container_view);
+void TabImpl::SetJavaImpl(JNIEnv* env, const JavaParamRef<jobject>& impl) {
+  // This should only be called early on and only once.
+  DCHECK(!java_impl_);
+  java_impl_ = impl;
 }
 
 void TabImpl::ExecuteScript(JNIEnv* env,
@@ -705,12 +684,6 @@ void TabImpl::ExecuteScript(JNIEnv* env,
                 base::BindOnce(&HandleJavaScriptResult, jcallback));
 }
 
-void TabImpl::SetJavaImpl(JNIEnv* env, const JavaParamRef<jobject>& impl) {
-  // This should only be called early on and only once.
-  DCHECK(!java_impl_);
-  java_impl_ = impl;
-}
-
 void TabImpl::InitializeAutofillIfNecessary(JNIEnv* env) {
   if (g_system_autofill_disabled_for_testing)
     return;
@@ -718,17 +691,6 @@ void TabImpl::InitializeAutofillIfNecessary(JNIEnv* env) {
           web_contents_.get())) {
     InitializeAutofillDriver();
   }
-}
-
-void TabImpl::UpdateBrowserControlsConstraint(JNIEnv* env,
-                                              jint constraint,
-                                              jboolean animate) {
-  current_browser_controls_visibility_constraint_ =
-      static_cast<cc::BrowserControlsState>(constraint);
-  // Passing BOTH here means that it doesn't matter what state the controls are
-  // currently in; don't change the current state unless it's incompatible with
-  // the new constraint.
-  UpdateBrowserControlsState(cc::BrowserControlsState::kBoth, animate);
 }
 
 ScopedJavaLocalRef<jstring> TabImpl::GetGuid(JNIEnv* env) {
@@ -765,28 +727,10 @@ TabImpl::ScreenShotErrors TabImpl::PrepareForCaptureScreenShot(
   if (src_rect->IsEmpty())
     return ScreenShotErrors::kEmptyViewport;
 
-  const int reduced_height =
-      src_rect->height() -
-      top_controls_container_view_->GetContentHeightDelta() -
-      bottom_controls_container_view_->GetContentHeightDelta();
-  if (reduced_height <= 0)
-    return ScreenShotErrors::kHiddenByControls;
-  src_rect->set_height(reduced_height);
-
   *output_size = gfx::ScaleToCeiledSize(src_rect->size(), scale, scale);
   if (output_size->IsEmpty())
     return ScreenShotErrors::kScaledToEmpty;
   return ScreenShotErrors::kNone;
-}
-
-void TabImpl::UpdateBrowserControlsState(cc::BrowserControlsState new_state,
-                                         bool animate) {
-  if (base::FeatureList::IsEnabled(kImmediatelyHideBrowserControlsForTest))
-    animate = false;
-  // The constraint is managed by Java code, so re-use the existing constraint
-  // and only update the desired state.
-  web_contents_->UpdateBrowserControlsState(
-      current_browser_controls_visibility_constraint_, new_state, animate);
 }
 
 void TabImpl::CaptureScreenShot(
@@ -830,11 +774,6 @@ base::android::ScopedJavaLocalRef<jobjectArray> TabImpl::GetData(JNIEnv* env) {
     flattened_map.push_back(kv.second);
   }
   return base::android::ToJavaArrayOfStrings(env, flattened_map);
-}
-
-jboolean TabImpl::IsRendererControllingBrowserControlsOffsets(JNIEnv* env) {
-  return browser_controls_navigation_state_handler_
-      ->IsRendererControllingOffsets();
 }
 
 base::android::ScopedJavaLocalRef<jstring> TabImpl::RegisterWebMessageCallback(
@@ -1051,68 +990,6 @@ void TabImpl::RunFileChooser(
                                    params);
 }
 
-int TabImpl::GetTopControlsHeight() {
-#if BUILDFLAG(IS_ANDROID)
-  return top_controls_container_view_
-             ? top_controls_container_view_->GetControlsHeight()
-             : 0;
-#else
-  return 0;
-#endif
-}
-
-int TabImpl::GetTopControlsMinHeight() {
-#if BUILDFLAG(IS_ANDROID)
-  return top_controls_container_view_
-             ? top_controls_container_view_->GetMinHeight()
-             : 0;
-#else
-  return 0;
-#endif
-}
-
-int TabImpl::GetBottomControlsHeight() {
-#if BUILDFLAG(IS_ANDROID)
-  return bottom_controls_container_view_
-             ? bottom_controls_container_view_->GetControlsHeight()
-             : 0;
-#else
-  return 0;
-#endif
-}
-
-bool TabImpl::DoBrowserControlsShrinkRendererSize(
-    content::WebContents* web_contents) {
-#if BUILDFLAG(IS_ANDROID)
-  TRACE_EVENT0("weblayer", "Java_TabImpl_doBrowserControlsShrinkRendererSize");
-  return Java_TabImpl_doBrowserControlsShrinkRendererSize(AttachCurrentThread(),
-                                                          java_impl_);
-#else
-  return false;
-#endif
-}
-
-bool TabImpl::ShouldAnimateBrowserControlsHeightChanges() {
-#if BUILDFLAG(IS_ANDROID)
-  return top_controls_container_view_
-             ? top_controls_container_view_
-                   ->ShouldAnimateBrowserControlsHeightChanges()
-             : false;
-#else
-  return false;
-#endif
-}
-
-bool TabImpl::OnlyExpandTopControlsAtPageTop() {
-#if BUILDFLAG(IS_ANDROID)
-  return top_controls_container_view_
-             ? top_controls_container_view_->OnlyExpandControlsAtPageTop()
-             : false;
-#else
-  return false;
-#endif
-}
-
 bool TabImpl::IsBackForwardCacheSupported() {
   return true;
 }
@@ -1184,11 +1061,6 @@ void TabImpl::ExitFullscreenModeForTab(content::WebContents* web_contents) {
     enter_fullscreen_on_gained_active_ = false;
   else
     fullscreen_delegate_->ExitFullscreen();
-#if BUILDFLAG(IS_ANDROID)
-  // Attempt to show browser controls when exiting fullscreen.
-  SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
-                               cc::BrowserControlsState::kBoth);
-#endif
 }
 
 bool TabImpl::IsFullscreenForTabOrPending(
@@ -1308,59 +1180,6 @@ void TabImpl::OnFindResultAvailable(content::WebContents* web_contents) {
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void TabImpl::OnBrowserControlsStateStateChanged(
-    ControlsVisibilityReason reason,
-    cc::BrowserControlsState state) {
-  SetBrowserControlsConstraint(reason, state);
-}
-
-void TabImpl::OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
-    bool did_commit) {
-  // This matches the logic of updateAfterRendererProcessSwitch() and
-  // updateEnabledState() in Chrome's TabBrowserControlsConstraintsHelper.
-  if (did_commit &&
-      current_browser_controls_visibility_constraint_ ==
-          cc::BrowserControlsState::kShown &&
-      top_controls_container_view_ &&
-      top_controls_container_view_->IsFullyVisible()) {
-    // The top-control is fully visible, don't animate this else the controls
-    // bounce around.
-    UpdateBrowserControlsState(cc::BrowserControlsState::kShown, false);
-  } else {
-    if (did_commit && current_browser_controls_visibility_constraint_ ==
-                          cc::BrowserControlsState::kBoth) {
-      // If the current state is kBoth, then
-      // TabImpl::UpdateBrowserControlsState() is going to call
-      // WebContents::UpdateBrowserControlsState() with both current and
-      // constraints set to kBoth. cc does
-      // nothing in this case. During a navigation the top-view needs to be
-      // shown. To force the top-view to show, supply
-      // kShown. This path is only hit if top-view
-      // is configured to only-expand-at-top, as in this case the top-view isn't
-      // forced shown during a page load.
-      //
-      // It's entirely possible the scroll offset is changed as part of the
-      // loading process (such as happens with back/forward navigation or
-      // links part way down a page). Trying to detect this and compensate
-      // here is likely to be racy, so the top-view is always shown.
-      const bool animate =
-          !base::FeatureList::IsEnabled(kImmediatelyHideBrowserControlsForTest);
-      web_contents_->UpdateBrowserControlsState(
-          cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kShown,
-          animate);
-      // This falls through to call UpdateBrowserControlsState() again to
-      // ensure the constraint is set back to BOTH.
-    }
-    UpdateBrowserControlsState(
-        cc::BrowserControlsState::kBoth,
-        current_browser_controls_visibility_constraint_ !=
-            cc::BrowserControlsState::kHidden);
-  }
-}
-
-#endif
-
 void TabImpl::DidChangeVisibleSecurityState() {
   UpdateBrowserVisibleSecurityStateIfNecessary();
 }
@@ -1388,13 +1207,6 @@ void TabImpl::UpdateRendererPrefs(bool should_sync_prefs) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void TabImpl::SetBrowserControlsConstraint(
-    ControlsVisibilityReason reason,
-    cc::BrowserControlsState constraint) {
-  Java_TabImpl_setBrowserControlsVisibilityConstraint(
-      base::android::AttachCurrentThread(), java_impl_,
-      static_cast<int>(reason), static_cast<int>(constraint));
-}
 
 void TabImpl::InitializeAutofillForTests() {
   InitializeAutofillDriver();
@@ -1451,11 +1263,6 @@ void TabImpl::EnterFullscreenImpl() {
                      weak_ptr_factory_for_fullscreen_exit_.GetWeakPtr());
   base::AutoReset<bool> reset(&processing_enter_fullscreen_, true);
   fullscreen_delegate_->EnterFullscreen(std::move(exit_fullscreen_closure));
-#if BUILDFLAG(IS_ANDROID)
-  // Make sure browser controls cannot show when the tab is fullscreen.
-  SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
-                               cc::BrowserControlsState::kHidden);
-#endif
 }
 
 }  // namespace weblayer

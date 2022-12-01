@@ -29,9 +29,6 @@ interface IBrowser {
 
   boolean isRestoringPreviousState() = 14;
 
-  // Added in 88.
-  void setBrowserControlsOffsetsEnabled(in boolean enable) = 13;
-
   // Added in 90.
   void setDarkModeStrategy(in int strategy) = 16;
 

@@ -222,7 +222,6 @@ test("weblayer_browsertests") {
       "../browser/android/metrics/metrics_test_helper.h",
       "../browser/android/metrics/ukm_browsertest.cc",
       "../browser/autofill_browsertest.cc",
-      "../browser/browser_controls_navigation_state_handler_browsertest.cc",
       "../browser/origin_trials_browsertest.cc",
       "../browser/safe_browsing/client_side_detection_service_browsertest.cc",
       "../browser/safe_browsing/client_side_detection_service_factory_browsertest.cc",

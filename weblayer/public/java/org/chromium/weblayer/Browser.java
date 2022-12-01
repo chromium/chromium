@@ -45,7 +45,6 @@ class Browser {
     private IBrowser mImpl;
     private final ObserverList<TabListCallback> mTabListCallbacks;
 
-    private final ObserverList<BrowserControlsOffsetCallback> mBrowserControlsOffsetCallbacks;
     private final ObserverList<BrowserRestoreCallback> mBrowserRestoreCallbacks;
 
     private static int sMaxNavigationsPerTabForInstanceState;
@@ -77,7 +76,6 @@ class Browser {
     protected Browser() {
         mImpl = null;
         mTabListCallbacks = null;
-        mBrowserControlsOffsetCallbacks = null;
         mBrowserRestoreCallbacks = null;
     }
 
@@ -88,7 +86,6 @@ class Browser {
         if (tabListCallback != null) {
             mTabListCallbacks.addObserver(tabListCallback);
         }
-        mBrowserControlsOffsetCallbacks = new ObserverList<BrowserControlsOffsetCallback>();
         mBrowserRestoreCallbacks = new ObserverList<BrowserRestoreCallback>();
 
         try {
@@ -337,55 +334,6 @@ class Browser {
     }
 
     /**
-     * Registers {@link callback} to be notified when the offset of the top or bottom view changes.
-     *
-     * @param callback The BrowserControlsOffsetCallback to notify
-     *
-     * @since 88
-     */
-    public void registerBrowserControlsOffsetCallback(
-            @NonNull BrowserControlsOffsetCallback callback) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
-            throw new UnsupportedOperationException();
-        }
-        if (mBrowserControlsOffsetCallbacks.isEmpty()) {
-            try {
-                mImpl.setBrowserControlsOffsetsEnabled(true);
-            } catch (RemoteException e) {
-                throw new APICallException(e);
-            }
-        }
-        mBrowserControlsOffsetCallbacks.addObserver(callback);
-    }
-
-    /**
-     * Removes a BrowserControlsOffsetCallback that was added using {@link
-     * registerBrowserControlsOffsetCallback}.
-     *
-     * @param callback The BrowserControlsOffsetCallback to remove.
-     *
-     * @since 88
-     */
-    public void unregisterBrowserControlsOffsetCallback(
-            @NonNull BrowserControlsOffsetCallback callback) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
-            throw new UnsupportedOperationException();
-        }
-        mBrowserControlsOffsetCallbacks.removeObserver(callback);
-        if (mBrowserControlsOffsetCallbacks.isEmpty()) {
-            try {
-                mImpl.setBrowserControlsOffsetsEnabled(false);
-            } catch (RemoteException e) {
-                throw new APICallException(e);
-            }
-        }
-    }
-
-    /**
      * Creates a new tab attached to this browser. This will call {@link TabListCallback#onTabAdded}
      * with the new tab.
      */
@@ -491,17 +439,6 @@ class Browser {
         public IRemoteFragment createMediaRouteDialogFragment() {
             StrictModeWorkaround.apply();
             return new MediaRouteDialogFragmentEventHandler().getRemoteFragment();
-        }
-
-        @Override
-        public void onBrowserControlsOffsetsChanged(boolean isTop, int offset) {
-            for (BrowserControlsOffsetCallback callback : mBrowserControlsOffsetCallbacks) {
-                if (isTop) {
-                    callback.onTopViewOffsetChanged(offset);
-                } else {
-                    callback.onBottomViewOffsetChanged(offset);
-                }
-            }
         }
 
         @Override

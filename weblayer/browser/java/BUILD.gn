@@ -82,7 +82,6 @@ java_strings_grd("weblayer_strings_grd") {
 
 java_cpp_enum("generated_enums") {
   sources = [
-    "//weblayer/browser/controls_visibility_reason.h",
     "//weblayer/public/download.h",
     "//weblayer/public/navigation.h",
     "//weblayer/public/new_tab_delegate.h",
@@ -117,7 +116,6 @@ android_library("java") {
   sources = [
     "org/chromium/weblayer_private/ActionModeCallback.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
-    "org/chromium/weblayer_private/BrowserControlsContainerView.java",
     "org/chromium/weblayer_private/BrowserFragmentImpl.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
     "org/chromium/weblayer_private/BrowserList.java",
@@ -475,7 +473,6 @@ generate_jni("jni") {
   sources = [
     "org/chromium/weblayer_private/ApplicationInfoHelper.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
-    "org/chromium/weblayer_private/BrowserControlsContainerView.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
     "org/chromium/weblayer_private/BrowserList.java",
     "org/chromium/weblayer_private/ContentViewRenderView.java",
