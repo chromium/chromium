@@ -38,12 +38,13 @@ interface UntrustedScriptLoader {
  * Creates JS module by given |scriptUrl| under untrusted context with given
  * origin and returns its proxy.
  *
- * @param untrustedRemote The Comlink remote endpoint for the untrusted iframe.
+ * @param untrustedIframe The untrusted iframe.
  * @param scriptUrl The URL of the script to load.
  */
 export async function injectUntrustedJSModule<T>(
-    {iframe, pageReadyEvent}: UntrustedIFrame,
+    untrustedIframe: UntrustedIFrame,
     scriptUrl: string): Promise<Comlink.Remote<T>> {
+  const {iframe, pageReadyEvent} = untrustedIframe;
   await pageReadyEvent.wait();
   assert(iframe.contentWindow !== null);
   const untrustedRemote = Comlink.wrap<UntrustedScriptLoader>(

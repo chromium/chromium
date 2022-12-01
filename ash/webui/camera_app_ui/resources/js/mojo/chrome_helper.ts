@@ -364,9 +364,9 @@ export class ChromeHelper {
   }
 
   /**
-   * Converts given |jpegData| to PDF format.
+   * Converts given |jpegBlobs| to PDF format.
    *
-   * @param jpegBlob Blob in JPEG format.
+   * @param jpegBlobs Blobs in JPEG format.
    * @return Blob in PDF format.
    */
   async convertToPdf(jpegBlobs: Blob[]): Promise<Blob> {
