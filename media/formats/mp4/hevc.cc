@@ -242,28 +242,31 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
         break;
       }
       case H265NALU::PREFIX_SEI_NUT: {
-        H265SEIMessage sei_msg;
-        result = parser.ParseSEI(&sei_msg);
+        H265SEI sei;
+        result = parser.ParseSEI(&sei);
         if (result != H265Parser::kOk) {
           DVLOG(1) << "Could not parse SEI for fetching HDR metadata";
           break;
         }
-        switch (sei_msg.type) {
-          case H265SEIMessage::kSEIContentLightLevelInfo:
-            sei_msg.content_light_level_info.PopulateHDRMetadata(hdr_metadata);
-            break;
-          case H265SEIMessage::kSEIMasteringDisplayInfo: {
-            sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
-                hdr_metadata.color_volume_metadata);
-            break;
+        for (auto& sei_msg : sei.msgs) {
+          switch (sei_msg.type) {
+            case H265SEIMessage::kSEIContentLightLevelInfo:
+              sei_msg.content_light_level_info.PopulateHDRMetadata(
+                  hdr_metadata);
+              break;
+            case H265SEIMessage::kSEIMasteringDisplayInfo:
+              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
+                  hdr_metadata.color_volume_metadata);
+              break;
+            case H265SEIMessage::kSEIAlphaChannelInfo:
+              alpha_mode =
+                  sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0
+                      ? VideoDecoderConfig::AlphaMode::kHasAlpha
+                      : VideoDecoderConfig::AlphaMode::kIsOpaque;
+              break;
+            default:
+              break;
           }
-          case H265SEIMessage::kSEIAlphaChannelInfo:
-            if (sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0) {
-              alpha_mode = VideoDecoderConfig::AlphaMode::kHasAlpha;
-            }
-            break;
-          default:
-            break;
         }
         break;
       }

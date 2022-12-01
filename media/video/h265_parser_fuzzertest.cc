@@ -19,7 +19,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // found.
   while (true) {
     media::H265NALU nalu;
-    media::H265SEIMessage sei_msg;
+    media::H265SEI sei;
     media::H265Parser::Result res = parser.AdvanceToNextNALU(&nalu);
     if (res != media::H265Parser::kOk)
       break;
@@ -40,7 +40,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         res = parser.ParsePPS(nalu, &pps_id);
         break;
       case media::H265NALU::PREFIX_SEI_NUT:
-        res = parser.ParseSEI(&sei_msg);
+        res = parser.ParseSEI(&sei);
         break;
       case media::H265NALU::TRAIL_N:
       case media::H265NALU::TRAIL_R:

@@ -1433,13 +1433,17 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
       }
 
       case H265NALU::PREFIX_SEI_NUT: {
-        H265SEIMessage sei_msg;
-        result = hevc_parser_.ParseSEI(&sei_msg);
-        if (result == H265Parser::kOk) {
+        nalus.push_back(nalu);
+        data_size += kNALUHeaderLength + nalu.size;
+        H265SEI sei;
+        result = hevc_parser_.ParseSEI(&sei);
+        if (result != H265Parser::kOk)
+          break;
+        for (auto& sei_msg : sei.msgs) {
           switch (sei_msg.type) {
             case H265SEIMessage::kSEIAlphaChannelInfo:
-              if (sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0)
-                has_alpha_ = true;
+              has_alpha_ =
+                  sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0;
               break;
             case H265SEIMessage::kSEIMasteringDisplayInfo:
               if (!config_.hdr_metadata)
@@ -1447,19 +1451,16 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
               sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
                   config_.hdr_metadata->color_volume_metadata);
               break;
-            case H265SEIMessage::kSEIContentLightLevelInfo: {
+            case H265SEIMessage::kSEIContentLightLevelInfo:
               if (!config_.hdr_metadata)
                 config_.hdr_metadata = gfx::HDRMetadata();
               sei_msg.content_light_level_info.PopulateHDRMetadata(
                   config_.hdr_metadata.value());
               break;
-            }
             default:
               break;
           }
         }
-        nalus.push_back(nalu);
-        data_size += kNALUHeaderLength + nalu.size;
         break;
       }
 

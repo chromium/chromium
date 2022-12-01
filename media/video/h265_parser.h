@@ -473,6 +473,13 @@ struct MEDIA_EXPORT H265SEIMessage {
   };
 };
 
+struct MEDIA_EXPORT H265SEI {
+  H265SEI();
+  ~H265SEI();
+
+  std::vector<H265SEIMessage> msgs;
+};
+
 // Class to parse an Annex-B H.265 stream.
 class MEDIA_EXPORT H265Parser : public H265NaluParser {
  public:
@@ -521,19 +528,20 @@ class MEDIA_EXPORT H265Parser : public H265NaluParser {
   Result ParseSliceHeaderForPictureParameterSets(const H265NALU& nalu,
                                                  int* pps_id);
 
-  // Parse a SEI message, returning it in |*sei_msg|, provided and managed
-  // by the caller.
-  Result ParseSEI(H265SEIMessage* sei_msg);
+  // Parse a SEI, returning it in |*sei|, provided and managed by the caller.
+  Result ParseSEI(H265SEI* sei);
 
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 
  private:
   // Exp-Golomb code parsing as specified in chapter 9.2 of the spec.
-  // Read one unsigned exp-Golomb code from the stream and return in |*val|.
-  Result ReadUE(int* val);
+  // Read one unsigned exp-Golomb code from the stream and return in |*val|
+  // with total bits read return in |*num_bits_read|.
+  Result ReadUE(int* val, int* num_bits_read);
 
-  // Read one signed exp-Golomb code from the stream and return in |*val|.
-  Result ReadSE(int* val);
+  // Read one signed exp-Golomb code from the stream and return in |*val|
+  // with total bits read return in |*num_bits_read|.
+  Result ReadSE(int* val, int* num_bits_read);
 
   Result ParseProfileTierLevel(bool profile_present,
                                int max_num_sub_layers_minus1,
