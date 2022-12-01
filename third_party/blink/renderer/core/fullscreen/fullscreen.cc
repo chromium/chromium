@@ -204,12 +204,12 @@ void GoFullscreen(Element& element,
   else
     DCHECK(!HasFullscreenFlag(element));
 
-  // If there are any open popovers, close them immediately.
+  // If there are any open popovers, close them.
   if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           document.GetExecutionContext())) {
     HTMLElement::HideAllPopoversUntil(
         nullptr, document, HidePopoverFocusBehavior::kNone,
-        HidePopoverForcingLevel::kHideImmediately);
+        HidePopoverForcingLevel::kHideAfterAnimations);
   }
 
   // To fullscreen an |element| within a |document|, set the |element|'s

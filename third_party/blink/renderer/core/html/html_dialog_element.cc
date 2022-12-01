@@ -52,13 +52,13 @@ void HTMLDialogElement::SetFocusForDialogLegacy(HTMLDialogElement* dialog) {
   if (!dialog->isConnected())
     return;
 
-  // Showing a <dialog> should hide all open popovers, immediately.
+  // Showing a <dialog> should hide all open popovers.
   auto& document = dialog->GetDocument();
   if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           document.GetExecutionContext())) {
     HTMLElement::HideAllPopoversUntil(
         nullptr, document, HidePopoverFocusBehavior::kNone,
-        HidePopoverForcingLevel::kHideImmediately);
+        HidePopoverForcingLevel::kHideAfterAnimations);
   }
 
   dialog->previously_focused_element_ = document.FocusedElement();
@@ -343,12 +343,12 @@ void HTMLDialogElement::CloseWatcherFiredClose() {
 void HTMLDialogElement::SetFocusForDialog() {
   previously_focused_element_ = GetDocument().FocusedElement();
 
-  // Showing a <dialog> should hide all open popovers, immediately.
+  // Showing a <dialog> should hide all open popovers.
   if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           GetDocument().GetExecutionContext())) {
-    HTMLElement::HideAllPopoversUntil(nullptr, GetDocument(),
-                                    HidePopoverFocusBehavior::kNone,
-                                    HidePopoverForcingLevel::kHideImmediately);
+    HTMLElement::HideAllPopoversUntil(
+        nullptr, GetDocument(), HidePopoverFocusBehavior::kNone,
+        HidePopoverForcingLevel::kHideAfterAnimations);
   }
 
   Element* control = GetFocusDelegate();
