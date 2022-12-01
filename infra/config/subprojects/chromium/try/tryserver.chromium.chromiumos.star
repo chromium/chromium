@@ -254,29 +254,6 @@ try_.compilator_builder(
     cores = "16|32",
 )
 
-try_.orchestrator_builder(
-    name = "linux-chromeos-rel-reclient",
-    builderless = True,
-    mirrors = [
-        "ci/linux-chromeos-rel",
-    ],
-    compilator = "linux-chromeos-rel-reclient-compilator",
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(
-        experiment_percentage = 3,
-    ),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-)
-
-try_.compilator_builder(
-    name = "linux-chromeos-rel-reclient-compilator",
-    builderless = True,
-    cores = 32,
-)
-
 try_.builder(
     name = "linux-lacros-dbg",
     # TODO(crbug.com/1233247) Adds the CI tester when it's available.
