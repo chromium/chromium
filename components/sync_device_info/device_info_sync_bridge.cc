@@ -148,12 +148,26 @@ bool IsChromeClient(const DeviceInfoSpecifics& specifics) {
 // Converts DeviceInfoSpecifics into a freshly allocated DeviceInfo.
 std::unique_ptr<DeviceInfo> SpecificsToModel(
     const DeviceInfoSpecifics& specifics) {
+  DeviceInfo::FormFactor device_form_factor;
+  if (specifics.has_device_form_factor()) {
+    device_form_factor = ToDeviceInfoFormFactor(specifics.device_form_factor());
+  } else {
+    // Fallback to derive from old device type enum.
+    device_form_factor =
+        DeriveFormFactorFromDeviceType(specifics.device_type());
+  }
+  DeviceInfo::OsType os_type;
+  if (specifics.has_os_type()) {
+    os_type = ToDeviceInfoOsType(specifics.os_type());
+  } else {
+    // Fallback to derive from old device type enum.
+    os_type = DeriveOsFromDeviceType(specifics.device_type(),
+                                     specifics.manufacturer());
+  }
   return std::make_unique<DeviceInfo>(
       specifics.cache_guid(), specifics.client_name(),
       GetVersionNumberFromSpecifics(specifics), specifics.sync_user_agent(),
-      specifics.device_type(),
-      DeriveOsFromDeviceType(specifics.device_type(), specifics.manufacturer()),
-      DeriveFormFactorFromDeviceType(specifics.device_type()),
+      specifics.device_type(), os_type, device_form_factor,
       specifics.signin_scoped_device_id(), specifics.manufacturer(),
       specifics.model(), specifics.full_hardware_class(),
       ProtoTimeToTime(specifics.last_updated_timestamp()),
@@ -199,6 +213,9 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
       info.chrome_version());
   specifics->set_sync_user_agent(info.sync_user_agent());
   specifics->set_device_type(info.device_type());
+  specifics->set_os_type(ToOsTypeProto(info.os_type()));
+  specifics->set_device_form_factor(
+      ToDeviceFormFactorProto(info.form_factor()));
   specifics->set_signin_scoped_device_id(info.signin_scoped_device_id());
   specifics->set_manufacturer(info.manufacturer_name());
   specifics->set_model(info.model_name());
@@ -290,6 +307,8 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
          current->chrome_version() == stored->chrome_version() &&
          current->sync_user_agent() == stored->sync_user_agent() &&
          current->device_type() == stored->device_type() &&
+         current->os_type() == stored->os_type() &&
+         current->form_factor() == stored->form_factor() &&
          current->signin_scoped_device_id() ==
              stored->signin_scoped_device_id() &&
          current->manufacturer_name() == stored->manufacturer_name() &&

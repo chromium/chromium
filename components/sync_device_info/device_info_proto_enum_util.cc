@@ -110,4 +110,28 @@ syncer::DeviceInfo::OsType ToDeviceInfoOsType(
   }
 }
 
+sync_pb::SyncEnums_OsType ToOsTypeProto(const DeviceInfo::OsType& os_type) {
+  switch (os_type) {
+    case DeviceInfo::OsType::kUnknown:
+      return sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_UNSPECIFIED;
+    case DeviceInfo::OsType::kWindows:
+      return sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_WINDOWS;
+    case DeviceInfo::OsType::kMac:
+      return sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_MAC;
+    case DeviceInfo::OsType::kLinux:
+      return sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_LINUX;
+    case DeviceInfo::OsType::kChromeOsAsh:
+      return sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_CHROME_OS_ASH;
+    case DeviceInfo::OsType::kAndroid:
+      return sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_ANDROID;
+    case DeviceInfo::OsType::kIOS:
+      return sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_IOS;
+    case DeviceInfo::OsType::kChromeOsLacros:
+      return sync_pb::SyncEnums::OsType::
+          SyncEnums_OsType_OS_TYPE_CHROME_OS_LACROS;
+    case DeviceInfo::OsType::kFuchsia:
+      return sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_FUCHSIA;
+  }
+}
+
 }  // namespace syncer
