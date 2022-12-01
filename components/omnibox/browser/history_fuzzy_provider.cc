@@ -470,6 +470,15 @@ void HistoryFuzzyProvider::RecordOpenMatchMetrics(
 
 HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
     : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client) {
+  // Cache tunable parameters so they don't need to be looked up when
+  // running search and calculating penalties.
+  min_input_length_ =
+      OmniboxFieldTrial::kFuzzyUrlSuggestionsMinInputLength.Get();
+  penalty_low_ = OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyLow.Get();
+  penalty_high_ = OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyHigh.Get();
+  penalty_taper_length_ =
+      OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyTaperLength.Get();
+
   if (ShouldBypassForLowEndDevice()) {
     // Note, this early return will prevent loading from database, which saves
     // memory and prevents this provider from working to find fuzzy matches.
@@ -551,7 +560,15 @@ void HistoryFuzzyProvider::DoAutocomplete() {
 
   const std::u16string& text =
       ReduceInputTextForMatching(autocomplete_input_.text());
-  if (text.length() == 0) {
+  const size_t input_length = text.length();
+  // Note: We can always return if `input_length` is zero, but
+  // `min_input_length_` is an experimental parameter for more control.
+  // So the second condition can be cleaned up if not needed, but
+  // the first condition should be kept regardless.
+  if (input_length == 0) {
+    return;
+  }
+  if (input_length < min_input_length_) {
     return;
   }
   std::vector<fuzzy::Correction> corrections;
@@ -560,6 +577,24 @@ void HistoryFuzzyProvider::DoAutocomplete() {
   const base::TimeTicks time_end = base::TimeTicks::Now();
   UMA_HISTOGRAM_TIMES(kMetricSearchDuration, time_end - time_start);
   if (!corrections.empty()) {
+    // Relevance ranges are nuanced enough that this should be kept reasonably
+    // simple, but the experience of the feature is sensitive to the penalty so
+    // we support a range from highest penalty on short inputs to lowest penalty
+    // on longer inputs, with a linear taper in between.
+    int penalty = penalty_low_;
+
+    // Compute additional penalty for very short inputs.
+    if (penalty_taper_length_ > 0) {
+      DCHECK_GE(input_length, min_input_length_);
+      const size_t extra_length = input_length - min_input_length_;
+      if (extra_length <= penalty_taper_length_) {
+        DCHECK_GE(penalty_high_, penalty_low_);
+        penalty += ((penalty_taper_length_ - extra_length) *
+                    (penalty_high_ - penalty_low_)) /
+                   penalty_taper_length_;
+      }
+    }
+
     // Use of `scoped_refptr` is required here because destructor is private.
     scoped_refptr<HistoryQuickProvider> history_quick_provider =
         new HistoryQuickProvider(client());
@@ -587,8 +622,9 @@ void HistoryFuzzyProvider::DoAutocomplete() {
       DCHECK(bookmark_provider->done());
 
       count_history_quick +=
-          AddConvertedMatches(history_quick_provider->matches());
-      count_bookmark += AddConvertedMatches(bookmark_provider->matches());
+          AddConvertedMatches(history_quick_provider->matches(), penalty);
+      count_bookmark +=
+          AddConvertedMatches(bookmark_provider->matches(), penalty);
     }
     if (matches_.size() > provider_max_matches_) {
       // When too many matches are generated, take only the most relevant
@@ -614,7 +650,8 @@ void HistoryFuzzyProvider::DoAutocomplete() {
   }
 }
 
-int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches) {
+int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
+                                              int penalty) {
   if (matches.empty()) {
     return 0;
   }
@@ -643,13 +680,9 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches) {
 
   // Apply relevance penalty; all corrections are equal and we only apply this
   // to the most relevant result, so edit distance isn't needed.
-  // Relevance range are nuanced enough that this should be kept simple.
-  // Using 9/10 reasonably took a 1334 relevance match down to 1200,
-  // but was harmful to HQP suggestions: as soon as a '.' was
-  // appended, a bunch of ~800 navsuggest results overtook a better
-  // HQP result that was bumped down to ~770. Using 95/100 lets this
-  // result compete in the navsuggest range.
-  match.relevance = match.relevance * 95 / 100;
+  DCHECK_GE(penalty, 0);
+  DCHECK_LE(penalty, 100);
+  match.relevance = match.relevance * (100 - penalty) / 100;
 
   return 1;
 }

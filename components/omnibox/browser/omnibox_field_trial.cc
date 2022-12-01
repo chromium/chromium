@@ -556,6 +556,39 @@ const base::FeatureParam<bool> OmniboxFieldTrial::kFuzzyUrlSuggestionsTranspose(
     "FuzzyUrlSuggestionsTranspose",
     true);
 
+const base::FeatureParam<int>
+    OmniboxFieldTrial::kFuzzyUrlSuggestionsMinInputLength(
+        &omnibox::kOmniboxFuzzyUrlSuggestions,
+        "FuzzyUrlSuggestionsMinInputLength",
+        2);
+
+// Note about this default, which produces good results for most inputs:
+// Using 10% reasonably took a 1334 relevance match down to 1200,
+// but was harmful to HQP suggestions: as soon as a '.' was
+// appended, a bunch of ~800 navsuggest results overtook a better
+// HQP result that was bumped down to ~770. Using 5% lets this
+// result compete in the navsuggest range.
+const base::FeatureParam<int> OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyLow(
+    &omnibox::kOmniboxFuzzyUrlSuggestions,
+    "FuzzyUrlSuggestionsPenaltyLow",
+    5);
+
+// Keeping the default for high penalty equal to preserve current behavior, but
+// this is the parameter most likely to need tuning for very short inputs.
+const base::FeatureParam<int>
+    OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyHigh(
+        &omnibox::kOmniboxFuzzyUrlSuggestions,
+        "FuzzyUrlSuggestionsPenaltyHigh",
+        5);
+
+// The default value of zero means "no taper", and only the lowest penalty
+// will be applied.
+const base::FeatureParam<int>
+    OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyTaperLength(
+        &omnibox::kOmniboxFuzzyUrlSuggestions,
+        "FuzzyUrlSuggestionsPenaltyTaperLength",
+        0);
+
 bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
 }

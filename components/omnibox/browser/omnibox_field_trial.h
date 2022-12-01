@@ -315,6 +315,26 @@ extern const base::FeatureParam<bool> kFuzzyUrlSuggestionsCounterfactual;
 extern const base::FeatureParam<bool> kFuzzyUrlSuggestionsLowEndBypass;
 // Indicates whether to support transpose edit operations in fuzzy search.
 extern const base::FeatureParam<bool> kFuzzyUrlSuggestionsTranspose;
+// The minimum length of input that will be checked for fuzzy URL
+// suggestions. Note, this is a threshold independent of the fuzzy
+// search tolerance schedule.
+extern const base::FeatureParam<int> kFuzzyUrlSuggestionsMinInputLength;
+
+// The *Penalty* parameters below provide control over how fuzzy matches
+// are penalized according to input length. The relevance from the source
+// match is reduced because the match is inexact (typo-corrected) but
+// when the input is very short, such corrections are more likely and
+// therefore confidence is lower. Hence the high penalty is applied
+// to the shortest inputs and the low is applied to longer inputs, with
+// a linear taper for input length to smooth the effect.
+
+// Highest penalty percentage that will be applied to fuzzy URL suggestions.
+extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyHigh;
+// Lowest penalty percentage that will be applied to fuzzy URL suggestions.
+extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyLow;
+// The number of input characters between where the high penalty will be
+// applied and where the low penalty will be applied.
+extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyTaperLength;
 
 // Returns true if the default browser pedal feature is enabled.
 bool IsDefaultBrowserPedalEnabled();

@@ -210,8 +210,10 @@ class HistoryFuzzyProvider : public HistoryProvider,
   void DoAutocomplete();
 
   // Add the best matches, converting them to fuzzy suggestions in the process.
+  // The given `penalty` is a percentage relevance penalty that will
+  // deduct from the relevance of each match.
   // Returns the number of matches actually added.
-  int AddConvertedMatches(const ACMatches& matches);
+  int AddConvertedMatches(const ACMatches& matches, int penalty);
 
   // Main thread callback to receive trie of URLs loaded from database.
   void OnUrlsLoaded(fuzzy::Node node);
@@ -247,6 +249,16 @@ class HistoryFuzzyProvider : public HistoryProvider,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  // This threshold determines the input length at which fuzzy suggestions
+  // will start being searched and generated. Shorter inputs won't be checked.
+  size_t min_input_length_;
+
+  // These are tunable parameters that affect the fuzzy suggestion
+  // relevance penalty.
+  int penalty_low_;
+  int penalty_high_;
+  size_t penalty_taper_length_;
 
   // Weak pointer factory for callback binding safety.
   base::WeakPtrFactory<HistoryFuzzyProvider> weak_ptr_factory_{this};
