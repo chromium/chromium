@@ -18,26 +18,22 @@ using media::cast::RtpPayloadType;
 
 namespace mirroring {
 
-namespace {
-
-// The maximum time since the last video frame was received from the video
-// source, before requesting refresh frames.
-constexpr base::TimeDelta kRefreshInterval = base::Milliseconds(250);
-
-}  // namespace
-
 VideoRtpStream::VideoRtpStream(
     std::unique_ptr<media::cast::VideoSender> video_sender,
-    base::WeakPtr<RtpStreamClient> client)
+    base::WeakPtr<RtpStreamClient> client,
+    base::TimeDelta refresh_interval)
     : video_sender_(std::move(video_sender)),
       client_(client),
-      expecting_a_refresh_frame_(false) {
+      refresh_interval_(refresh_interval) {
   DCHECK(video_sender_);
   DCHECK(client);
 
-  refresh_timer_.Start(FROM_HERE, kRefreshInterval,
-                       base::BindRepeating(&VideoRtpStream::OnRefreshTimerFired,
-                                           this->AsWeakPtr()));
+  if (refresh_interval_.is_positive()) {
+    refresh_timer_.Start(
+        FROM_HERE, refresh_interval_,
+        base::BindRepeating(&VideoRtpStream::OnRefreshTimerFired,
+                            this->AsWeakPtr()));
+  }
 }
 
 VideoRtpStream::~VideoRtpStream() {}
@@ -58,7 +54,7 @@ void VideoRtpStream::InsertVideoFrame(
     // follow, and before the refresh timer can fire again.  Thus, the
     // behavior resulting from this logic will be correct.
     expecting_a_refresh_frame_ = false;
-  } else {
+  } else if (refresh_interval_.is_positive()) {
     // The following re-starts the timer, scheduling it to fire at
     // kRefreshInterval from now.
     refresh_timer_.Reset();

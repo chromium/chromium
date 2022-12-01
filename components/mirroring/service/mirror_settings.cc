@@ -26,6 +26,10 @@ namespace {
 // TODO(openscreen/44): Re-enable in port to Open Screen.
 constexpr base::TimeDelta kDefaultPlayoutDelay = base::Milliseconds(400);
 
+// The interval since the last video frame was received from the video source,
+// before requesting a refresh frame.
+constexpr base::TimeDelta kDefaultRefreshInterval = base::Milliseconds(250);
+
 constexpr int kAudioTimebase = 48000;
 constexpr int kVidoTimebase = 90000;
 constexpr int kAudioChannels = 2;
@@ -78,7 +82,8 @@ MirrorSettings::MirrorSettings()
     : min_width_(kMinWidth),
       min_height_(kMinHeight),
       max_width_(kMaxWidth),
-      max_height_(kMaxHeight) {}
+      max_height_(kMaxHeight),
+      refresh_interval_(kDefaultRefreshInterval) {}
 
 MirrorSettings::~MirrorSettings() {}
 

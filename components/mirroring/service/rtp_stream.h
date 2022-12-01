@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/audio_bus.h"
 #include "media/cast/cast_config.h"
@@ -51,14 +52,15 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RtpStreamClient {
 // also includes a timer to request refresh frames when the source halts (e.g.,
 // a screen capturer stops delivering frames because the screen is not being
 // updated). When a halt is detected, refresh frames will be requested at
-// regular intervals for a short period of time. This provides the video
-// encoder, downstream, several copies of the last frame so that it may clear up
-// lossy encoding artifacts.
+// intervals `refresh_interval` apart for a short period of time. This provides
+// the video encoder, downstream, several copies of the last frame so that it
+// may clear up lossy encoding artifacts.
 class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
     : public base::SupportsWeakPtr<VideoRtpStream> {
  public:
   VideoRtpStream(std::unique_ptr<media::cast::VideoSender> video_sender,
-                 base::WeakPtr<RtpStreamClient> client);
+                 base::WeakPtr<RtpStreamClient> client,
+                 base::TimeDelta refresh_interval);
 
   VideoRtpStream(const VideoRtpStream&) = delete;
   VideoRtpStream& operator=(const VideoRtpStream&) = delete;
@@ -78,13 +80,19 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
   const std::unique_ptr<media::cast::VideoSender> video_sender_;
   const base::WeakPtr<RtpStreamClient> client_;
 
+  // The time between requests for refresh frames. If zero, no refresh frames
+  // will be requested.
+  base::TimeDelta refresh_interval_;
+
   // Requests refresh frames at a constant rate while the source is paused, up
   // to a consecutive maximum.
   base::RepeatingTimer refresh_timer_;
 
   // Set to true when a request for a refresh frame has been made.  This is
   // cleared once the next frame is received.
-  bool expecting_a_refresh_frame_;
+  bool expecting_a_refresh_frame_{false};
+
+  friend class RtpStreamTest;
 };
 
 // Receives audio data and submits the data to media::cast::AudioSender.

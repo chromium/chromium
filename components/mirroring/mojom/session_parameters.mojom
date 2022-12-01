@@ -43,5 +43,11 @@ struct SessionParameters {
   // video senders. Omission of this parameter instructs the session to use
   // the default configured value.
   mojo_base.mojom.TimeDelta? target_playout_delay;
-};
 
+  // The interval elapsed before the service requests a refresh frame from the
+  // video capture source.  Refresh frames help the video encoder converge to a
+  // quality image when the video source is static content.  Omission of this
+  // parameter uses the default value defined in mirror_settings.cc.  A value of
+  // zero disables refresh frame requests.
+  mojo_base.mojom.TimeDelta? refresh_interval;
+};

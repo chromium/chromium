@@ -237,6 +237,10 @@ OpenscreenSessionHost::OpenscreenSessionHost(
   mirror_settings_.SetResolutionConstraints(max_resolution.width(),
                                             max_resolution.height());
 
+  if (session_params_.refresh_interval) {
+    mirror_settings_.set_refresh_interval(*(session_params_.refresh_interval));
+  }
+
   resource_provider_->GetNetworkContext(
       network_context_.BindNewPipeAndPassReceiver());
 
@@ -443,7 +447,8 @@ void OpenscreenSessionHost::OnNegotiated(
         base::BindRepeating(&OpenscreenSessionHost::GetSuggestedVideoBitrate,
                             base::Unretained(this)));
     video_stream_ = std::make_unique<VideoRtpStream>(
-        std::move(video_sender), weak_factory_.GetWeakPtr());
+        std::move(video_sender), weak_factory_.GetWeakPtr(),
+        mirror_settings_.refresh_interval());
     if (!video_capture_client_) {
       mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
       resource_provider_->GetVideoCaptureHost(
