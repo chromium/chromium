@@ -28,7 +28,7 @@ export let LogMessage;
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * ash/components/phonehub/feature_status.h.
+ * chromeos/ash/components/phonehub/feature_status.h.
  * @enum{number}
  */
 export const FeatureStatus = {
@@ -44,7 +44,7 @@ export const FeatureStatus = {
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * MobileStatus in ash/components/phonehub/phone_status_model.h.
+ * MobileStatus in chromeos/ash/components/phonehub/phone_status_model.h.
  * @enum{number}
  */
 export const MobileStatus = {
@@ -55,7 +55,7 @@ export const MobileStatus = {
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * SignalStrength in ash/components/phonehub/phone_status_model.h.
+ * SignalStrength in chromeos/ash/components/phonehub/phone_status_model.h.
  * @enum{number}
  */
 export const SignalStrength = {
@@ -68,7 +68,7 @@ export const SignalStrength = {
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * ChargingState in ash/components/phonehub/phone_status_model.h.
+ * ChargingState in chromeos/ash/components/phonehub/phone_status_model.h.
  * @enum{number}
  */
 export const ChargingState = {
@@ -79,7 +79,7 @@ export const ChargingState = {
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * BatterySaverState in ash/components/phonehub/phone_status_model.h.
+ * BatterySaverState in chromeos/ash/components/phonehub/phone_status_model.h.
  * @enum{number}
  */
 export const BatterySaverState = {
@@ -149,7 +149,7 @@ export let BrowserTabsModel;
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * Importance in ash/components/phonehub/notification.h.
+ * Importance in chromeos/ash/components/phonehub/notification.h.
  * @enum{number}
  */
 export const Importance = {
@@ -185,7 +185,7 @@ export let AppMetadata;
 
 /**
  * With the exception of the sent property, values match with Notifications in
- * ash/components/phonehub/notification.h.
+ * chromeos/ash/components/phonehub/notification.h.
  * @typedef {{
  *   sent: boolean,
  *   id: number,
@@ -203,7 +203,8 @@ export let Notification;
 
 /**
  * Numerical values should not be changed because they must stay in sync with
- * TetherController::Status in ash/components/phonehub/tether_controller.h.
+ * TetherController::Status in
+ * chromeos/ash/components/phonehub/tether_controller.h.
  * @enum{number}
  */
 export const TetherStatus = {
@@ -231,7 +232,7 @@ export const tetherStatusToString = new Map([
 /**
  * Numerical values should not be changed because they must stay in sync with
  * FindMyDeviceController::Status (TBA) in
- * ash/components/phonehub/find_my_device_controller.h.
+ * chromeos/ash/components/phonehub/find_my_device_controller.h.
  * @enum{number}
  */
 export const FindMyDeviceStatus = {

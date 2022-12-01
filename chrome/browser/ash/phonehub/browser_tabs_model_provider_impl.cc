@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 
-#include "ash/components/phonehub/browser_tabs_metadata_fetcher.h"
-#include "ash/components/phonehub/browser_tabs_model.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
+#include "chromeos/ash/components/phonehub/browser_tabs_model.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"

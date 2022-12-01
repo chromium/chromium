@@ -5,8 +5,8 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_FAKE_APPS_ACCESS_MANAGER_H_
 #define ASH_WEBUI_ECHE_APP_UI_FAKE_APPS_ACCESS_MANAGER_H_
 
-#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
+#include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 
 namespace ash::settings {
 class MultideviceHandlerTest;

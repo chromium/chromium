@@ -4,14 +4,14 @@
 
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 
-#include "ash/components/phonehub/app_stream_launcher_data_model.h"
-#include "ash/components/phonehub/fake_phone_hub_manager.h"
-#include "ash/components/phonehub/fake_recent_apps_interaction_handler.h"
-#include "ash/components/phonehub/notification.h"
 #include "ash/constants/ash_features.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
+#include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/fake_recent_apps_interaction_handler.h"
+#include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image.h"
@@ -20,13 +20,13 @@
 
 namespace ash {
 
-const char16_t kAppName[] = u"Test App";
-const char kPackageName[] = "com.google.testapp";
-const int64_t kUserId = 0;
-
 namespace {
 
 using FeatureState = multidevice_setup::mojom::FeatureState;
+
+const char16_t kAppName[] = u"Test App";
+const char kPackageName[] = "com.google.testapp";
+const int64_t kUserId = 0;
 
 }  // namespace
 

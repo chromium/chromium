@@ -6,9 +6,6 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_TRAY_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/phonehub/app_stream_manager.h"
-#include "ash/components/phonehub/icon_decoder.h"
-#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
@@ -22,6 +19,9 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/phonehub/app_stream_manager.h"
+#include "chromeos/ash/components/phonehub/icon_decoder.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 

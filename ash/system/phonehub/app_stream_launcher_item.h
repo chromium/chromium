@@ -6,8 +6,8 @@
 #define ASH_SYSTEM_PHONEHUB_APP_STREAM_LAUNCHER_ITEM_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/phonehub/notification.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
+#include "chromeos/ash/components/phonehub/notification.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {

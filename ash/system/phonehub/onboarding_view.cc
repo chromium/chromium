@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/phonehub/onboarding_ui_tracker.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/root_window_controller.h"
@@ -27,6 +26,7 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
+#include "chromeos/ash/components/phonehub/onboarding_ui_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"

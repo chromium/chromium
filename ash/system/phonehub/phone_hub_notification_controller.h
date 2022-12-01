@@ -12,11 +12,11 @@
 #include <unordered_set>
 
 #include "ash/ash_export.h"
-#include "ash/components/phonehub/camera_roll_manager.h"
-#include "ash/components/phonehub/feature_status_provider.h"
-#include "ash/components/phonehub/notification_manager.h"
-#include "ash/components/phonehub/tether_controller.h"
 #include "base/gtest_prod_util.h"
+#include "chromeos/ash/components/phonehub/camera_roll_manager.h"
+#include "chromeos/ash/components/phonehub/feature_status_provider.h"
+#include "chromeos/ash/components/phonehub/notification_manager.h"
+#include "chromeos/ash/components/phonehub/tether_controller.h"
 
 namespace message_center {
 class MessageView;

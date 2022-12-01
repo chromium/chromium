@@ -4,13 +4,13 @@
 
 #include "ash/system/phonehub/camera_roll_view.h"
 
-#include "ash/components/phonehub/camera_roll_item.h"
-#include "ash/components/phonehub/fake_camera_roll_manager.h"
-#include "ash/components/phonehub/fake_user_action_recorder.h"
 #include "ash/system/phonehub/camera_roll_thumbnail.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "camera_roll_view.h"
+#include "chromeos/ash/components/phonehub/camera_roll_item.h"
+#include "chromeos/ash/components/phonehub/fake_camera_roll_manager.h"
+#include "chromeos/ash/components/phonehub/fake_user_action_recorder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/compositor/property_change_reason.h"
 #include "ui/gfx/image/image.h"

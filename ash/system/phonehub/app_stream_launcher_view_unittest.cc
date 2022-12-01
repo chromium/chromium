@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/app_stream_launcher_view.h"
-#include "ash/components/phonehub/app_stream_launcher_data_model.h"
-#include "ash/components/phonehub/fake_phone_hub_manager.h"
-#include "ash/components/phonehub/notification.h"
-#include "ash/components/phonehub/phone_hub_manager.h"
+
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/app_stream_launcher_item.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
+#include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/notification.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_
 #define CHROME_BROWSER_ASH_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_
 
-#include "ash/components/phonehub/browser_tabs_metadata_fetcher.h"
-#include "ash/components/phonehub/browser_tabs_model.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
+#include "chromeos/ash/components/phonehub/browser_tabs_model.h"
 
 namespace favicon_base {
 struct FaviconImageResult;

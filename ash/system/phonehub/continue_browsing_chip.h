@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_CONTINUE_BROWSING_CHIP_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/phonehub/browser_tabs_model.h"
+#include "chromeos/ash/components/phonehub/browser_tabs_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 

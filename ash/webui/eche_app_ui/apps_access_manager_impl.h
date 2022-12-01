@@ -7,12 +7,12 @@
 
 #include <ostream>
 
-#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver.h"
 #include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
+#include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 

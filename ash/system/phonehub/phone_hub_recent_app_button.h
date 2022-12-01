@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_RECENT_APP_BUTTON_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/phonehub/recent_apps_interaction_handler.h"
+#include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image.h"

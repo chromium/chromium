@@ -4,7 +4,6 @@
 
 #include "ash/webui/eche_app_ui/eche_tray_stream_status_observer.h"
 
-#include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -13,6 +12,7 @@
 #include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
@@ -21,6 +21,7 @@ namespace ash {
 namespace eche_app {
 
 namespace {
+
 bool is_web_content_unloaded_ = false;
 
 void GracefulCloseFunction() {
@@ -32,6 +33,7 @@ void ResetUnloadWebContent() {
 }
 
 void GracefulGoBackFunction() {}
+
 }  // namespace
 
 class EcheTrayStreamStatusObserverTest : public AshTestBase {

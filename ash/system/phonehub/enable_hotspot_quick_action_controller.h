@@ -5,8 +5,8 @@
 #ifndef ASH_SYSTEM_PHONEHUB_ENABLE_HOTSPOT_QUICK_ACTION_CONTROLLER_H_
 #define ASH_SYSTEM_PHONEHUB_ENABLE_HOTSPOT_QUICK_ACTION_CONTROLLER_H_
 
-#include "ash/components/phonehub/tether_controller.h"
 #include "ash/system/phonehub/quick_action_controller_base.h"
+#include "chromeos/ash/components/phonehub/tether_controller.h"
 
 namespace ash {
 

@@ -111,7 +111,7 @@ export const PhoneHubPermissionsSetupMode = {
 /**
  * Numerical values the screens for combined set up dialog only.
  * Update of this enum should be propagate to PermissionsOnboardingStep
- * in ash/components/phonehub/util/histogram_util.h
+ * in chromeos/ash/components/phonehub/util/histogram_util.h.
  * @enum {number}
  */
 export const PhoneHubPermissionsSetupFlowScreens = {
@@ -128,7 +128,7 @@ export const PhoneHubPermissionsSetupFlowScreens = {
 /**
  * Numerical values the screens for actions in combined set up dialog only.
  * Update of this enum should be propagate to PermissionsOnboardingScreenEvent
- * in ash/components/phonehub/util/histogram_util.h
+ * in chromeos/ash/components/phonehub/util/histogram_util.h.
  * @enum {number}
  */
 export const PhoneHubPermissionsSetupAction = {
@@ -143,7 +143,7 @@ export const PhoneHubPermissionsSetupAction = {
 /**
  * Numerical values the set up mode in combined set up dialog only.
  * Update of this enum should be propagate to PermissionsOnboardingSetUpMode in
- * ash/components/phonehub/util/histogram_util.h
+ * chromeos/ash/components/phonehub/util/histogram_util.h.
  * @enum {number}
  */
 export const PhoneHubPermissionsSetupFeatureCombination = {

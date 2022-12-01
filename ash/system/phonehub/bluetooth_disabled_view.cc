@@ -4,7 +4,6 @@
 
 #include "ash/system/phonehub/bluetooth_disabled_view.h"
 
-#include "ash/components/phonehub/url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/root_window_controller.h"
@@ -19,6 +18,7 @@
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/status_area_widget.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/phonehub/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"

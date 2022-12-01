@@ -1660,9 +1660,9 @@
                   '|permission_context',
     },
     'phonehub': {
-      'filepath': 'chrome/browser/ash/phonehub/'\
-                  '|ash/components/phonehub/'\
-                  '|ash/system/phonehub/',
+      'filepath': 'ash/system/phonehub/'\
+                  '|chrome/browser/ash/phonehub/'\
+                  '|chromeos/ash/components/phonehub/',
     },
     'picture_in_picture': {
       'filepath': 'third_party/blink/renderer/modules/picture_in_picture/'

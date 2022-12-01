@@ -4,10 +4,6 @@
 
 #include "ash/system/phonehub/phone_hub_tray.h"
 
-#include "ash/components/phonehub/fake_connection_scheduler.h"
-#include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
-#include "ash/components/phonehub/fake_phone_hub_manager.h"
-#include "ash/components/phonehub/phone_model_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
@@ -20,6 +16,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/phonehub/fake_connection_scheduler.h"
+#include "chromeos/ash/components/phonehub/fake_multidevice_feature_access_manager.h"
+#include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 
-#include "ash/components/phonehub/phone_hub_manager.h"
 #include "base/containers/contains.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/webui/settings/ash/privacy_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 #include "chrome/browser/ui/webui/settings/ash/search_section.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 
 namespace ash::settings {
 

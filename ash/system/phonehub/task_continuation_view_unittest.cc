@@ -4,14 +4,14 @@
 
 #include "ash/system/phonehub/task_continuation_view.h"
 
-#include "ash/components/phonehub/fake_user_action_recorder.h"
-#include "ash/components/phonehub/mutable_phone_model.h"
-#include "ash/components/phonehub/phone_model_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/system/phonehub/continue_browsing_chip.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/phonehub/fake_user_action_recorder.h"
+#include "chromeos/ash/components/phonehub/mutable_phone_model.h"
+#include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/test/button_test_api.h"

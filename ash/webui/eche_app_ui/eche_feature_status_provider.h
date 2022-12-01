@@ -5,9 +5,9 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_FEATURE_STATUS_PROVIDER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_FEATURE_STATUS_PROVIDER_H_
 
-#include "ash/components/phonehub/feature_status_provider.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/phonehub/feature_status_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 

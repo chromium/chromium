@@ -6,10 +6,6 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_UI_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/phonehub/app_stream_launcher_data_model.h"
-#include "ash/components/phonehub/feature_status_provider.h"
-#include "ash/components/phonehub/onboarding_ui_tracker.h"
-#include "ash/components/phonehub/phone_model.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
@@ -17,6 +13,10 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
+#include "chromeos/ash/components/phonehub/feature_status_provider.h"
+#include "chromeos/ash/components/phonehub/onboarding_ui_tracker.h"
+#include "chromeos/ash/components/phonehub/phone_model.h"
 
 namespace views {
 class View;

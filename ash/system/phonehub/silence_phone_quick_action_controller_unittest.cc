@@ -4,8 +4,8 @@
 
 #include "ash/system/phonehub/silence_phone_quick_action_controller.h"
 
-#include "ash/components/phonehub/fake_do_not_disturb_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "chromeos/ash/components/phonehub/fake_do_not_disturb_controller.h"
 
 namespace ash {
 

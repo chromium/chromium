@@ -4,9 +4,9 @@
 
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 
-#include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
+#include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"

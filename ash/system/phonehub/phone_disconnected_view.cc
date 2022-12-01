@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/phonehub/connection_scheduler.h"
-#include "ash/components/phonehub/url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,6 +16,8 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/phonehub/connection_scheduler.h"
+#include "chromeos/ash/components/phonehub/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"

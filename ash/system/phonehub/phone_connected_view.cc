@@ -6,10 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/phonehub/multidevice_feature_access_manager.h"
-#include "ash/components/phonehub/phone_hub_manager.h"
-#include "ash/components/phonehub/ping_manager.h"
-#include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/camera_roll_view.h"
@@ -21,6 +17,10 @@
 #include "ash/system/phonehub/task_continuation_view.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
+#include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/ping_manager.h"
+#include "chromeos/ash/components/phonehub/user_action_recorder.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"

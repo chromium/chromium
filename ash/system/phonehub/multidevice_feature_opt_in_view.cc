@@ -7,8 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/phonehub/multidevice_feature_access_manager.h"
-#include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/root_window_controller.h"
@@ -20,6 +18,8 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/status_area_widget.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {

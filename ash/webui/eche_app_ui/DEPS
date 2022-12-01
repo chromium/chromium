@@ -1,5 +1,6 @@
 include_rules = [
   # Do not add chrome here (use a delegate instead).
+  "+chromeos/ash/components/phonehub",
   "+chromeos/ash/services/device_sync/public/cpp",
   "+components/keyed_service/core/keyed_service.h",
   "+crypto/random.h",

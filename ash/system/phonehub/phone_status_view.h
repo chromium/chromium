@@ -6,10 +6,10 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_STATUS_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/phonehub/phone_model.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/gtest_prod_util.h"
+#include "chromeos/ash/components/phonehub/phone_model.h"
 
 namespace views {
 class ImageView;

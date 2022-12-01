@@ -8,8 +8,6 @@
 #include <numeric>
 #include <vector>
 
-#include "ash/components/phonehub/notification.h"
-#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -22,6 +20,8 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/ash/components/phonehub/notification.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"

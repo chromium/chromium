@@ -6,9 +6,6 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/components/phonehub/icon_decoder.h"
-#include "ash/components/phonehub/phone_hub_manager.h"
-#include "ash/components/phonehub/phone_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
@@ -38,6 +35,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/components/phonehub/icon_decoder.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/phone_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"

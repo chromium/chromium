@@ -1,0 +1,17 @@
+include_rules = [
+  "+ash/resources/vector_icons",
+  "+ash/webui/eche_app_ui",
+  "+chromeos/ash/components/multidevice",
+  "+components/keyed_service/core/keyed_service.h",
+  "+components/session_manager/core",
+  "+device/bluetooth",
+  "+services/data_decoder/public",
+  "+third_party/skia",
+  "+ui/gfx",
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+chromeos/ash/components/network",
+  ],
+}

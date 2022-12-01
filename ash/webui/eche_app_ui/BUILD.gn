@@ -83,7 +83,6 @@ static_library("eche_app_ui") {
   deps = [
     ":eche_app_ui_pref",
     "//ash",
-    "//ash/components/phonehub",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/eche_app_ui/mojom",
@@ -92,6 +91,7 @@ static_library("eche_app_ui") {
     "//ash/webui/resources:eche_bundle_resources",
     "//chromeos/ash/components/multidevice:multidevice",
     "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/components/phonehub",
     "//chromeos/ash/services/device_sync/public/cpp:cpp",
     "//chromeos/ash/services/multidevice_setup/public/cpp:cpp",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
@@ -127,8 +127,8 @@ static_library("test_support") {
   public_deps = [ ":eche_app_ui" ]
 
   deps = [
-    "//ash/components/phonehub:phonehub",
     "//base",
+    "//chromeos/ash/components/phonehub",
   ]
 }
 
@@ -158,8 +158,6 @@ source_set("unit_tests") {
     ":eche_app_ui_pref",
     ":test_support",
     "//ash:test_support",
-    "//ash/components/phonehub",
-    "//ash/components/phonehub:debug",
     "//ash/public/cpp",
     "//ash/webui/eche_app_ui/proto",
     "//base",
@@ -167,6 +165,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components:test_support",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice:test_support",
+    "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/components/phonehub:debug",
     "//chromeos/ash/services/device_sync/public/cpp",
     "//chromeos/ash/services/device_sync/public/cpp:test_support",
     "//chromeos/ash/services/multidevice_setup/public/cpp",

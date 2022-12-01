@@ -5,8 +5,8 @@
 #ifndef ASH_SYSTEM_PHONEHUB_LOCATE_PHONE_QUICK_ACTION_CONTROLLER_H_
 #define ASH_SYSTEM_PHONEHUB_LOCATE_PHONE_QUICK_ACTION_CONTROLLER_H_
 
-#include "ash/components/phonehub/find_my_device_controller.h"
 #include "ash/system/phonehub/quick_action_controller_base.h"
+#include "chromeos/ash/components/phonehub/find_my_device_controller.h"
 
 namespace base {
 class OneShotTimer;

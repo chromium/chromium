@@ -7,14 +7,14 @@
 #include <ostream>
 #include <string>
 
-#include "ash/components/phonehub/fake_phone_hub_manager.h"
-#include "ash/components/phonehub/screen_lock_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/screen_lock_manager.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

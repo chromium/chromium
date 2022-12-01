@@ -4,12 +4,12 @@
 
 #include "ash/system/phonehub/phone_status_view.h"
 
-#include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/image_view.h"

@@ -6,11 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/phonehub/browser_tabs_model_provider.h"
-#include "ash/components/phonehub/connection_scheduler.h"
-#include "ash/components/phonehub/phone_hub_manager.h"
-#include "ash/components/phonehub/tether_controller.h"
-#include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -29,6 +24,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/phonehub/browser_tabs_model_provider.h"
+#include "chromeos/ash/components/phonehub/connection_scheduler.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/tether_controller.h"
+#include "chromeos/ash/components/phonehub/user_action_recorder.h"
 
 namespace ash {
 

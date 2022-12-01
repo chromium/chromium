@@ -9,10 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/phonehub/camera_roll_item.h"
-#include "ash/components/phonehub/fake_phone_hub_manager.h"
-#include "ash/components/phonehub/notification.h"
-#include "ash/components/phonehub/pref_names.h"
 #include "ash/public/cpp/system_tray.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +16,10 @@
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/phonehub/camera_roll_item.h"
+#include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/notification.h"
+#include "chromeos/ash/components/phonehub/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"

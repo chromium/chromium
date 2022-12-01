@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/ash/multidevice_handler.h"
 
-#include "ash/components/phonehub/pref_names.h"
-#include "ash/components/phonehub/screen_lock_manager.h"
-#include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
@@ -26,6 +23,9 @@
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/phonehub/pref_names.h"
+#include "chromeos/ash/components/phonehub/screen_lock_manager.h"
+#include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"

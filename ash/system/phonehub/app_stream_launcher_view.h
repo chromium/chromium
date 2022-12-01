@@ -7,12 +7,13 @@
 
 #include <cstdint>
 #include <memory>
+
 #include "ash/ash_export.h"
-#include "ash/components/phonehub/app_stream_launcher_data_model.h"
-#include "ash/components/phonehub/notification.h"
-#include "ash/components/phonehub/recent_app_click_observer.h"
-#include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
+#include "chromeos/ash/components/phonehub/notification.h"
+#include "chromeos/ash/components/phonehub/recent_app_click_observer.h"
+#include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"

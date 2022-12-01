@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/ash/settings_user_action_tracker.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace ash::settings {

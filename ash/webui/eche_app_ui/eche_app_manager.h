@@ -6,9 +6,9 @@
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_APP_MANAGER_H_
 
 #include <stdint.h>
+
 #include <memory>
 
-#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/eche_notification_click_handler.h"
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
@@ -29,6 +29,10 @@ class DeviceSyncClient;
 
 namespace multidevice_setup {
 class MultiDeviceSetupClient;
+}
+
+namespace phonehub {
+class PhoneHubManager;
 }
 
 namespace secure_channel {

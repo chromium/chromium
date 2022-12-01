@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/ash/multidevice_section.h"
 
-#include "ash/components/phonehub/phone_hub_manager.h"
-#include "ash/components/phonehub/pref_names.h"
-#include "ash/components/phonehub/screen_lock_manager.h"
-#include "ash/components/phonehub/url_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
@@ -28,6 +24,10 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/pref_names.h"
+#include "chromeos/ash/components/phonehub/screen_lock_manager.h"
+#include "chromeos/ash/components/phonehub/url_constants.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/url_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"

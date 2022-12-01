@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/system/model/system_tray_model.h"
+
 #include <memory>
 
-#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/update_types.h"
 #include "ash/root_window_controller.h"
@@ -26,6 +26,7 @@
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 
 namespace ash {
 

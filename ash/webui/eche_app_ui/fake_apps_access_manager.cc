@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/fake_apps_access_manager.h"
-#include "ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 
 namespace ash {
 namespace eche_app {

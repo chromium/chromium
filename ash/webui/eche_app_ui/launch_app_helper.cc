@@ -4,8 +4,6 @@
 
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 
-#include "ash/components/phonehub/phone_hub_manager.h"
-#include "ash/components/phonehub/screen_lock_manager.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
@@ -13,6 +11,8 @@
 #include "ash/shell.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "base/check.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/screen_lock_manager.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {

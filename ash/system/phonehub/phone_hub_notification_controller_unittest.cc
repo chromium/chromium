@@ -4,11 +4,6 @@
 
 #include "ash/system/phonehub/phone_hub_notification_controller.h"
 
-#include "ash/components/phonehub/fake_feature_status_provider.h"
-#include "ash/components/phonehub/fake_notification_manager.h"
-#include "ash/components/phonehub/fake_phone_hub_manager.h"
-#include "ash/components/phonehub/mutable_phone_model.h"
-#include "ash/components/phonehub/notification.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
@@ -18,6 +13,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
+#include "chromeos/ash/components/phonehub/fake_notification_manager.h"
+#include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/mutable_phone_model.h"
+#include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

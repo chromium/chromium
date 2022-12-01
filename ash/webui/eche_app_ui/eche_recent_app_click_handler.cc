@@ -4,13 +4,13 @@
 
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
 
-#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 
 namespace ash {
 namespace eche_app {
