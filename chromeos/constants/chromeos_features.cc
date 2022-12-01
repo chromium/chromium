@@ -51,6 +51,12 @@ BASE_FEATURE(kDisableQuickAnswersV2Translation,
              "DisableQuickAnswersV2Translation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables system authentication on Ash for password manager, which uses
+// WebUI instead by default. Cleanup CL: https://crrev.com/c/4055733/2.
+BASE_FEATURE(kPasswordManagerSystemAuthentication,
+             "PasswordManagerSystemAuthentication",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",
@@ -75,6 +81,10 @@ bool IsDarkLightModeEnabled() {
 
 bool IsDemoModeSWAEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSWA);
+}
+
+bool IsPasswordManagerSystemAuthenticationEnabled() {
+  return base::FeatureList::IsEnabled(kPasswordManagerSystemAuthentication);
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {

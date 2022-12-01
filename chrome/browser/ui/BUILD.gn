@@ -3384,6 +3384,7 @@ static_library("ui") {
     deps += [
       "//chrome/app:generated_resources",
       "//chromeos/components/security_token_pin",
+      "//chromeos/constants",
       "//chromeos/dbus/power",
       "//chromeos/strings",
       "//components/account_manager_core:account_manager_core",

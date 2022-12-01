@@ -21,6 +21,10 @@ import './passwords_shared.css.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+// <if expr="is_chromeos">
+import {loadTimeData} from '../i18n_setup.js';
+// </if>
+
 import {PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener} from './password_manager_proxy.js';
 import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 import {getTemplate} from './passwords_export_dialog.html.js';
@@ -202,6 +206,10 @@ export class PasswordsExportDialogElement extends
 
   private onExportTap_() {
     // <if expr="is_chromeos">
+    if (loadTimeData.getBoolean('useSystemAuthenticationForPasswordManager')) {
+      this.exportPasswords_();
+      return;
+    }
     this.tokenRequestManager.request(() => this.exportPasswords_());
     // </if>
     // <if expr="not is_chromeos">

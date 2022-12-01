@@ -5788,6 +5788,8 @@ static_library("browser") {
       "notifications/passphrase_textfield.cc",
       "notifications/passphrase_textfield.h",
       "obsolete_system/obsolete_system_stub.cc",
+      "password_manager/password_manager_util_chromeos.cc",
+      "password_manager/password_manager_util_chromeos.h",
       "platform_keys/extension_key_permissions_service.cc",
       "platform_keys/extension_key_permissions_service.h",
       "platform_keys/extension_key_permissions_service_factory.cc",

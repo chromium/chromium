@@ -22,6 +22,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_manager_util_chromeos.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
@@ -522,11 +524,21 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
     std::move(callback).Run(result);
   }
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  bool result =
-      IsOsReauthAllowedAsh(profile_, GetAuthTokenLifetimeForPurpose(purpose));
-  std::move(callback).Run(result);
+  if (chromeos::features::IsPasswordManagerSystemAuthenticationEnabled()) {
+    password_manager_util_chromeos::AuthenticateUser(purpose,
+                                                     std::move(callback));
+  } else {
+    bool result =
+        IsOsReauthAllowedAsh(profile_, GetAuthTokenLifetimeForPurpose(purpose));
+    std::move(callback).Run(result);
+  }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  IsOsReauthAllowedLacrosAsync(purpose, std::move(callback));
+  if (chromeos::features::IsPasswordManagerSystemAuthenticationEnabled()) {
+    password_manager_util_chromeos::AuthenticateUser(purpose,
+                                                     std::move(callback));
+  } else {
+    IsOsReauthAllowedLacrosAsync(purpose, std::move(callback));
+  }
 #else
   std::move(callback).Run(true);
 #endif

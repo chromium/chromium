@@ -111,7 +111,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
-#include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
@@ -146,6 +145,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -325,6 +325,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // AccountHasUserFacingPassword().
   html_source->AddBoolean("userCannotManuallyEnterPassword", false);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddBoolean(
+      "useSystemAuthenticationForPasswordManager",
+      chromeos::features::IsPasswordManagerSystemAuthenticationEnabled());
+#endif
 
   bool show_privacy_guide =
       !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild();

@@ -60,6 +60,11 @@ export const PasswordRequestorMixin = dedupingMixin(
             reason: chrome.passwordsPrivate.PlaintextReason): Promise<string> {
           // <if expr="is_chromeos">
           // If no password was found, refresh auth token and retry.
+          if (loadTimeData.getBoolean(
+                  'useSystemAuthenticationForPasswordManager')) {
+            return PasswordManagerImpl.getInstance().requestPlaintextPassword(
+                id, reason);
+          }
           return new Promise(resolve => {
             PasswordManagerImpl.getInstance()
                 .requestPlaintextPassword(id, reason)
@@ -80,7 +85,12 @@ export const PasswordRequestorMixin = dedupingMixin(
             Promise<chrome.passwordsPrivate.PasswordUiEntry> {
           // <if expr="is_chromeos">
           // If no password was found, refresh auth token and retry.
-
+          if (loadTimeData.getBoolean(
+                  'useSystemAuthenticationForPasswordManager')) {
+            return PasswordManagerImpl.getInstance()
+                .requestCredentialsDetails([id])
+                .then(passwords => passwords[0]);
+          }
           return new Promise((resolve, reject) => {
             PasswordManagerImpl.getInstance()
                 .requestCredentialsDetails([id])
