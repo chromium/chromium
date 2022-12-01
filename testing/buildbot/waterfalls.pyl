@@ -5133,6 +5133,7 @@
         'args': [
           '--test-launcher-print-test-stdio=always',
           '--combine-ash-logs-on-bots',
+          '--asan-symbolize-output',
         ],
       },
       'linux-ubsan-vptr': {

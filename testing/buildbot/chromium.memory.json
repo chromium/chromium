@@ -17670,7 +17670,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17692,7 +17693,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17714,7 +17716,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17736,7 +17739,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17758,7 +17762,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17780,7 +17785,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17802,7 +17808,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17824,7 +17831,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17846,7 +17854,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17868,7 +17877,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17891,7 +17901,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17913,7 +17924,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17935,7 +17947,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17959,7 +17972,8 @@
         "args": [
           "--gtest_filter=-*UsingRealWebcam*",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -17981,7 +17995,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18003,7 +18018,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18025,7 +18041,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18047,7 +18064,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18069,7 +18087,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18091,7 +18110,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18113,7 +18133,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18135,7 +18156,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18157,7 +18179,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18179,7 +18202,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18202,7 +18226,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18224,7 +18249,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18246,7 +18272,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18268,7 +18295,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18290,7 +18318,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18312,7 +18341,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18334,7 +18364,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18357,6 +18388,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output",
           "--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied"
         ],
         "isolate_profile_data": true,
@@ -18380,6 +18412,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output",
           "--gtest_filter=-NativeExtensionBindingsSystemUnittest*:BluetoothSocketApiUnittest.CreateThenClose:FeatureProviderTest.PermissionFeatureAvailability"
         ],
         "isolate_profile_data": true,
@@ -18402,7 +18435,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18424,7 +18458,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18446,7 +18481,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18468,7 +18504,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18490,7 +18527,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18512,7 +18550,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18534,7 +18573,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18556,7 +18596,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18581,7 +18622,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v108.0.5359.58/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 108.0.5359.58",
         "isolate_profile_data": true,
@@ -18616,7 +18658,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v110.0.5449.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 110.0.5449.0",
         "isolate_profile_data": true,
@@ -18651,7 +18694,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v109.0.5414.7/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 109.0.5414.7",
         "isolate_profile_data": true,
@@ -18686,7 +18730,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v107.0.5304.110/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 107.0.5304.110",
         "isolate_profile_data": true,
@@ -18719,7 +18764,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18742,7 +18788,8 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18767,7 +18814,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v108.0.5359.58/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 108.0.5359.58",
         "isolate_profile_data": true,
@@ -18801,7 +18849,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v110.0.5449.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 110.0.5449.0",
         "isolate_profile_data": true,
@@ -18835,7 +18884,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v109.0.5414.7/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 109.0.5414.7",
         "isolate_profile_data": true,
@@ -18869,7 +18919,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v107.0.5304.110/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 107.0.5304.110",
         "isolate_profile_data": true,
@@ -18902,7 +18953,8 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18928,7 +18980,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v108.0.5359.58/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 108.0.5359.58",
         "isolate_profile_data": true,
@@ -18963,7 +19016,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v110.0.5449.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 110.0.5449.0",
         "isolate_profile_data": true,
@@ -18998,7 +19052,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v109.0.5414.7/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 109.0.5414.7",
         "isolate_profile_data": true,
@@ -19033,7 +19088,8 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
           "--ash-chrome-path-override=../../lacros_version_skew_tests_v107.0.5304.110/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "description": "Run with ash-chrome version 107.0.5304.110",
         "isolate_profile_data": true,
@@ -19066,7 +19122,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19088,7 +19145,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19110,7 +19168,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19132,7 +19191,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19154,7 +19214,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19176,7 +19237,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19198,7 +19260,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19220,7 +19283,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19242,7 +19306,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19264,7 +19329,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19286,7 +19352,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19308,7 +19375,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19330,7 +19398,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19352,7 +19421,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19374,7 +19444,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19396,7 +19467,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19418,7 +19490,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19440,7 +19513,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19462,7 +19536,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19484,7 +19559,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19506,7 +19582,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19528,7 +19605,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19550,7 +19628,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19572,7 +19651,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19594,7 +19674,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19616,7 +19697,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19638,7 +19720,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19660,7 +19743,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19682,7 +19766,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19704,7 +19789,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19726,7 +19812,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19749,6 +19836,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output",
           "--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:DesktopWidgetTest*:DesktopWindowTreeHostPlatformTest*:EditableComboboxTest*:MenuRunnerTest*:TextfieldTest*:TooltipControllerTest*:TooltipStateManagerTest*"
         ],
         "isolate_profile_data": true,
@@ -19771,7 +19859,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19793,7 +19882,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19815,7 +19905,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -19837,7 +19928,8 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots"
+          "--combine-ash-logs-on-bots",
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {
