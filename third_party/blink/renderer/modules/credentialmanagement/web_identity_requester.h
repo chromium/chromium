@@ -15,7 +15,7 @@
 
 namespace blink {
 
-class IdentityProvider;
+class IdentityProviderConfig;
 class WebIdentityWindowOnloadEventListener;
 
 // Helper class to handle FedCM token requests.
@@ -32,9 +32,10 @@ class WebIdentityRequester final
   // Invoked at most once per token request.
   void RequestToken();
   // Invoked at least once per token request, can be multiple times.
-  void AppendGetCall(ScriptPromiseResolver* resolver,
-                     const HeapVector<Member<IdentityProvider>>& providers,
-                     bool prefer_auto_sign_in);
+  void AppendGetCall(
+      ScriptPromiseResolver* resolver,
+      const HeapVector<Member<IdentityProviderConfig>>& providers,
+      bool prefer_auto_sign_in);
   void Trace(Visitor* visitor) const;
 
  private:

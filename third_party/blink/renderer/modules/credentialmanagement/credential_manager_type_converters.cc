@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_registration_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -691,8 +691,8 @@ TypeConverter<RemoteDesktopClientOverridePtr,
 
 // static
 IdentityProviderPtr
-TypeConverter<IdentityProviderPtr, blink::IdentityProvider>::Convert(
-    const blink::IdentityProvider& provider) {
+TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
+    const blink::IdentityProviderConfig& provider) {
   auto mojo_provider = IdentityProvider::New();
 
   mojo_provider->config_url = blink::KURL(provider.configURL());

@@ -76,7 +76,7 @@ void WebIdentityRequester::RequestToken() {
 
 void WebIdentityRequester::AppendGetCall(
     ScriptPromiseResolver* resolver,
-    const HeapVector<Member<IdentityProvider>>& providers,
+    const HeapVector<Member<IdentityProviderConfig>>& providers,
     bool prefer_auto_sign_in) {
   if (is_requesting_token_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
