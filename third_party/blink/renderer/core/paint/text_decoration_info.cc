@@ -175,8 +175,7 @@ gfx::RectF ComputeWavyPatternRect(const WavyParams& params,
   // Expand the stroke rect to integer y coordinates in both directions, to
   // avoid messing with the vertical antialiasing.
   gfx::RectF stroke_rect = stroke_path.StrokeBoundingRect(stroke_data);
-  DCHECK_LT(stroke_rect.y(), 0.f);
-  float top = -ceilf(fabsf(stroke_rect.y()));
+  float top = floorf(stroke_rect.y());
   float bottom = ceilf(stroke_rect.bottom());
   return {0.f, top, 2.f * WavyStep(params), bottom - top};
 }
