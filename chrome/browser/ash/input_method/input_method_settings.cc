@@ -7,6 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ash/input_method/autocorrect_enums.h"
+#include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/common/pref_names.h"
 
 namespace ash {
@@ -88,12 +90,12 @@ mojom::LatinSettingsPtr CreateLatinSettings(
     const PrefService& prefs,
     const std::string& engine_id) {
   auto settings = mojom::LatinSettings::New();
+  auto autocorrect_pref = GetPhysicalKeyboardAutocorrectPref(prefs, engine_id);
   settings->autocorrect =
       base::StartsWith(engine_id, "experimental_",
                        base::CompareCase::SENSITIVE) ||
       base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning) ||
-      input_method_specific_pref.FindInt("physicalKeyboardAutoCorrectionLevel")
-              .value_or(0) > 0;
+      autocorrect_pref == AutocorrectPreference::kEnabled;
   settings->predictive_writing =
       features::IsAssistiveMultiWordEnabled() &&
       prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&

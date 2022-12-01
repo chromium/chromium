@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
+#include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/browser/ash/input_method/diacritics_checker.h"
 #include "chrome/browser/ash/input_method/input_method_quick_settings_helpers.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
@@ -113,12 +114,8 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
     return true;
   }
 
-  const base::Value::Dict& input_method_settings =
-      prefs->GetDict(::prefs::kLanguageInputMethodSpecificSettings);
-  const base::Value* autocorrect_setting =
-      input_method_settings.FindByDottedPath(
-          engine_id + ".physicalKeyboardAutoCorrectionLevel");
-  return autocorrect_setting && autocorrect_setting->GetIfInt().value_or(0) > 0;
+  return GetPhysicalKeyboardAutocorrectPref(*(prefs), engine_id) ==
+         AutocorrectPreference::kEnabled;
 }
 
 bool IsPredictiveWritingEnabled(PrefService* pref_service,

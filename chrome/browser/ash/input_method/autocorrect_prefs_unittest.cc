@@ -1,0 +1,105 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/input_method/autocorrect_prefs.h"
+
+#include "base/strings/strcat.h"
+#include "base/values.h"
+#include "chrome/browser/ash/input_method/autocorrect_enums.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace ash::input_method {
+namespace {
+
+constexpr char kUsEnglish[] = "xkb:us::eng";
+constexpr char kBrazilPortugese[] = "xkb:br::por";
+
+void SetAutocorrectPreferenceTo(Profile& profile,
+                                const std::string& engine_id,
+                                int autocorrect_level) {
+  base::Value input_method_setting(base::Value::Type::DICTIONARY);
+  input_method_setting.SetPath(
+      engine_id + ".physicalKeyboardAutoCorrectionLevel",
+      base::Value(autocorrect_level));
+  profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
+                          input_method_setting);
+}
+
+class AutocorrectPrefsTest : public ::testing::Test {
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+};
+
+TEST_F(AutocorrectPrefsTest,
+       FetchesTheCorrectValueWhenAutocorrectLevelIsNotSet) {
+  EXPECT_EQ(
+      GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()), kUsEnglish),
+      AutocorrectPreference::kDefault);
+}
+
+struct AutocorrectPrefCase {
+  std::string test_name;
+  int autocorrect_level;
+  AutocorrectPreference autocorrect_pref;
+};
+
+class FetchesAutocorrectPreference
+    : public AutocorrectPrefsTest,
+      public testing::WithParamInterface<AutocorrectPrefCase> {};
+
+TEST_P(FetchesAutocorrectPreference, AndReturnsCorrectPref) {
+  const AutocorrectPrefCase& test_case = GetParam();
+  SetAutocorrectPreferenceTo(profile_,
+                             /*engine_id=*/kUsEnglish,
+                             /*autocorrect_level=*/test_case.autocorrect_level);
+
+  EXPECT_EQ(
+      GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()), kUsEnglish),
+      test_case.autocorrect_pref);
+}
+
+TEST_P(FetchesAutocorrectPreference, AndScopesReturnedPreferenceToEngineId) {
+  const AutocorrectPrefCase& test_case = GetParam();
+  SetAutocorrectPreferenceTo(profile_,
+                             /*engine_id=*/kUsEnglish,
+                             /*autocorrect_level=*/test_case.autocorrect_level);
+
+  // The above preference is set for the US English engine only. Queries for
+  // the autocorrect level on any other engine should return the default.
+  EXPECT_EQ(GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()),
+                                               kBrazilPortugese),
+            AutocorrectPreference::kDefault);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutocorrectPrefsTest,
+    FetchesAutocorrectPreference,
+    testing::ValuesIn<AutocorrectPrefCase>({
+        AutocorrectPrefCase{
+            "ForAutocorrectLevelZero",
+            /*autocorrect_level=*/0,
+            /*autocorrect_pref=*/AutocorrectPreference::kDisabled},
+        AutocorrectPrefCase{
+            "ForAutocorrectLevelNegativeOne",
+            /*autocorrect_level=*/-1,
+            /*autocorrect_pref=*/AutocorrectPreference::kDisabled},
+        AutocorrectPrefCase{
+            "ForAutocorrectLevelOne",
+            /*autocorrect_level=*/1,
+            /*autocorrect_pref=*/AutocorrectPreference::kEnabled},
+        AutocorrectPrefCase{
+            "ForAutocorrectLevelTwo",
+            /*autocorrect_level=*/1,
+            /*autocorrect_pref=*/AutocorrectPreference::kEnabled},
+    }),
+    [](const testing::TestParamInfo<AutocorrectPrefCase> info) {
+      return info.param.test_name;
+    });
+
+}  // namespace
+}  // namespace ash::input_method

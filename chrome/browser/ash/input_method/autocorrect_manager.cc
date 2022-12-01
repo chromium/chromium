@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
+#include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/browser/ash/input_method/ime_rules_config.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -56,24 +57,6 @@ bool IsCurrentInputMethodExperimentalMultilingual() {
 
 bool IsUsEnglishId(const std::string& engine_id) {
   return engine_id == "xkb:us::eng";
-}
-
-AutocorrectPreference GetPhysicalKeyboardAutocorrectPref(
-    PrefService* prefs,
-    const std::string& engine_id) {
-  const base::Value::Dict& input_method_settings =
-      prefs->GetDict(::prefs::kLanguageInputMethodSpecificSettings);
-  const base::Value* autocorrect_setting =
-      input_method_settings.FindByDottedPath(
-          engine_id + ".physicalKeyboardAutoCorrectionLevel");
-
-  if (!autocorrect_setting)
-    return AutocorrectPreference::kDefault;
-  if (!autocorrect_setting->GetIfInt().has_value())
-    return AutocorrectPreference::kDefault;
-  if (autocorrect_setting->GetIfInt().value() > 0)
-    return AutocorrectPreference::kEnabled;
-  return AutocorrectPreference::kDisabled;
 }
 
 AutocorrectCompatibilitySummary ConvertActionToCompatibilitySummary(
@@ -599,7 +582,7 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     const std::string& engine_id = pending_user_pref_metric_->engine_id;
     RecordPhysicalKeyboardAutocorrectPref(
         engine_id,
-        GetPhysicalKeyboardAutocorrectPref(profile_->GetPrefs(), engine_id));
+        GetPhysicalKeyboardAutocorrectPref(*(profile_->GetPrefs()), engine_id));
     pending_user_pref_metric_ = absl::nullopt;
   }
 

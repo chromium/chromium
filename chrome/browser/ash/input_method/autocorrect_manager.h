@@ -305,6 +305,7 @@ class AutocorrectManager {
 
   SuggestionHandlerInterface* suggestion_handler_;
   Profile* profile_;
+
   int context_id_ = 0;
 
   DiacriticsInsensitiveStringComparator
