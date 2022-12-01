@@ -48,8 +48,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
 
  private:
   display::ScopedDisplayObserver display_observer_{this};
-
-  // display::TabletState state_ = display::TabletState::kInClamshellMode;
 };
 
 }  // namespace chromeos
