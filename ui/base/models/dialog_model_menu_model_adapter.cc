@@ -48,7 +48,7 @@ MenuModel::ItemType DialogModelMenuModelAdapter::GetTypeAt(size_t index) const {
 
 MenuSeparatorType DialogModelMenuModelAdapter::GetSeparatorTypeAt(
     size_t index) const {
-  NOTREACHED();
+  DCHECK_EQ(GetField(index)->type(GetPassKey()), DialogModelField::kSeparator);
   return MenuSeparatorType::NORMAL_SEPARATOR;
 }
 
