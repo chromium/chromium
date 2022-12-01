@@ -186,6 +186,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private float mLastReorderX;
     private float mTabMarginWidth;
     private float mStripStartMarginForReorder;
+    private float mReorderExtraMinScrollOffset;
     private long mLastReorderScrollTime;
     private long mLastUpdateTime;
     private long mHoverStartTime;
@@ -1309,7 +1310,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     private void updateScrollOffsetPosition(float pos) {
         float oldScrollOffset = mScrollOffset;
-        mScrollOffset = MathUtils.clamp(pos, mMinScrollOffset, 0);
+        mScrollOffset = MathUtils.clamp(pos, mMinScrollOffset - mReorderExtraMinScrollOffset, 0);
 
         if (mInReorderMode && mScroller.isFinished()) {
             float delta = MathUtils.flipSignIf(
@@ -1870,7 +1871,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         float startValue = mScrollOffset - startMarginDelta;
         float endValue = startValue - delta;
 
-        if (startValue < mMinScrollOffset) return;
+        // If the current tab width is at its max, this means there are not enough tabs to fill the
+        // visible area on the tab strip. In this case, there is not enough room to auto-scroll for
+        // tab group margins. Allocate additional space to account for this. See
+        // http://crbug.com/1374918 for additional details.
+        if (mCachedTabWidth == mMaxTabWidth) {
+            mReorderExtraMinScrollOffset = mStripStartMarginForReorder + Math.abs(delta);
+        }
 
         if (animationList != null) {
             CompositorAnimator scrollAnimator =
@@ -1882,7 +1889,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
-    private AnimatorListener getTabGroupMarginAnimatorListener() {
+    private AnimatorListener getTabGroupMarginAnimatorListener(boolean resetExtraMinScrollOffset) {
         return new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -1892,6 +1899,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             @Override
             public void onAnimationEnd(Animator animation) {
                 mTabGroupMarginAnimRunning = false;
+                if (resetExtraMinScrollOffset) mReorderExtraMinScrollOffset = 0.f;
             }
         };
     }
@@ -1945,7 +1953,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 4. Begin slide-out and scroll animation. Update tab positions.
         if (animationList != null) {
-            startAnimationList(animationList, getTabGroupMarginAnimatorListener());
+            startAnimationList(animationList, getTabGroupMarginAnimatorListener(false));
         } else {
             computeTabInitialPositions();
         }
@@ -1974,7 +1982,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mStripStartMarginForReorder = 0f;
 
         // 3. Begin slide-out and scroll animation.
-        startAnimationList(animationList, getTabGroupMarginAnimatorListener());
+        startAnimationList(animationList, getTabGroupMarginAnimatorListener(true));
     }
 
     private void setCompositorButtonsVisible(boolean visible) {
@@ -2621,6 +2629,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @VisibleForTesting
     float getMinimumScrollOffset() {
         return mMinScrollOffset;
+    }
+
+    /**
+     * @return The strip's additional minimum scroll offset for reorder mode.
+     */
+    @VisibleForTesting
+    float getReorderExtraMinScrollOffset() {
+        return mReorderExtraMinScrollOffset;
     }
 
     /**
