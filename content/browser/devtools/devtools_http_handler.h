@@ -11,12 +11,13 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Thread;
-class Value;
 }
 
 namespace content {
@@ -84,7 +85,7 @@ class DevToolsHttpHandler {
 
   void SendJson(int connection_id,
                 net::HttpStatusCode status_code,
-                base::Value* value,
+                absl::optional<base::ValueView> value,
                 const std::string& message);
   void Send200(int connection_id,
                const std::string& data,
@@ -103,8 +104,9 @@ class DevToolsHttpHandler {
       const std::string& target_id,
       const std::string& host);
 
-  base::Value SerializeDescriptor(scoped_refptr<DevToolsAgentHost> agent_host,
-                                  const std::string& host);
+  base::Value::Dict SerializeDescriptor(
+      scoped_refptr<DevToolsAgentHost> agent_host,
+      const std::string& host);
 
   // The thread used by the devtools handler to run server socket.
   std::unique_ptr<base::Thread> thread_;
