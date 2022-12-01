@@ -49,7 +49,7 @@ using LoggingBlock = void (^)(const std::string& event);
 
 - (instancetype)initWithLoggingBlock:(LoggingBlock)loggingBlock {
   if (self = [super init]) {
-    _loggingBlock = [loggingBlock copy];
+    _loggingBlock = loggingBlock;
   }
   return self;
 }
@@ -73,20 +73,9 @@ BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(web::WebState* web_state)
           InfoBarManagerImpl::FromWebState(web_state)),
       web_state_(web_state) {
   web_state_->AddObserver(this);
-
-  scroll_observer_ = [[BreadcrumbScrollingObserver alloc]
-      initWithLoggingBlock:^(const std::string& event) {
-        if (event == breadcrumbs::kBreadcrumbScroll) {
-          sequentially_scrolled_++;
-          if (ShouldLogRepeatedEvent(sequentially_scrolled_)) {
-            LogEvent(base::StringPrintf("%s %d", breadcrumbs::kBreadcrumbScroll,
-                                        sequentially_scrolled_));
-          }
-        } else {
-          LogEvent(event);
-        }
-      }];
-  [[web_state->GetWebViewProxy() scrollViewProxy] addObserver:scroll_observer_];
+  if (web_state_->IsRealized()) {
+    CreateBreadcrumbScrollingObserver();
+  }
 }
 
 BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;
@@ -169,10 +158,41 @@ void BreadcrumbManagerTabHelper::RenderProcessGone(web::WebState* web_state) {
 void BreadcrumbManagerTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
 
-  [[web_state->GetWebViewProxy() scrollViewProxy]
-      removeObserver:scroll_observer_];
-  scroll_observer_ = nil;
+  if (scroll_observer_) {
+    [[web_state->GetWebViewProxy() scrollViewProxy]
+        removeObserver:scroll_observer_];
+    scroll_observer_ = nil;
+  }
   web_state_ = nil;
+}
+
+void BreadcrumbManagerTabHelper::WebStateRealized(web::WebState* web_state) {
+  CreateBreadcrumbScrollingObserver();
+}
+
+void BreadcrumbManagerTabHelper::CreateBreadcrumbScrollingObserver() {
+  base::RepeatingCallback callback =
+      base::BindRepeating(&BreadcrumbManagerTabHelper::OnScrollEvent,
+                          weak_ptr_factory_.GetWeakPtr());
+  DCHECK(!scroll_observer_);
+  scroll_observer_ = [[BreadcrumbScrollingObserver alloc]
+      initWithLoggingBlock:^(const std::string& event) {
+        callback.Run(event);
+      }];
+  [web_state_->GetWebViewProxy().scrollViewProxy addObserver:scroll_observer_];
+}
+
+void BreadcrumbManagerTabHelper::OnScrollEvent(const std::string& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (event == breadcrumbs::kBreadcrumbScroll) {
+    sequentially_scrolled_++;
+    if (ShouldLogRepeatedEvent(sequentially_scrolled_)) {
+      LogEvent(base::StringPrintf("%s %d", breadcrumbs::kBreadcrumbScroll,
+                                  sequentially_scrolled_));
+    }
+  } else {
+    LogEvent(event);
+  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(BreadcrumbManagerTabHelper)
