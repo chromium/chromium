@@ -428,6 +428,15 @@
     dispatch_after(timeOneSecondLater, dispatch_get_main_queue(), ^{
       [self.overlayCoordinator stop];
       self.navigationController.interactivePopGestureRecognizer.delegate = nil;
+
+      // Inform Voiceover users that their browsing data has
+      // been cleared. Otherwise, users only hear that the clear browsing data
+      // process was initiated, but not completed.
+      UIAccessibilityPostNotification(
+          UIAccessibilityAnnouncementNotification,
+          l10n_util::GetNSString(
+              IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE));
+
       if (completionBlock)
         completionBlock();
     });
