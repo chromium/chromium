@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.directwriting.IDirectWritingService;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 
@@ -31,7 +33,6 @@ import java.util.List;
 class DirectWritingServiceBinder {
     private static final String TAG = "DWServiceBinder";
     private IDirectWritingService mRemoteDwService;
-    private boolean mCallbackRegistered;
     private String mPackageName;
 
     private final ServiceConnection mConnection = new ServiceConnection() {
@@ -112,7 +113,18 @@ class DirectWritingServiceBinder {
         }
     }
 
-    private void handleWindowFocusLost(Context context) {
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setRemoteServiceForTest(IDirectWritingService remoteService) {
+        mRemoteDwService = remoteService;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setTriggerCallbackForTest(DirectWritingTriggerCallback callback) {
+        mTriggerCallback = callback;
+    }
+
+    @VisibleForTesting
+    void handleWindowFocusLost(Context context) {
         if (!context.getPackageName().equals(mPackageName)) {
             return;
         }
@@ -131,22 +143,20 @@ class DirectWritingServiceBinder {
         resetDwServiceConnection();
     }
 
-    private void registerCallback() {
-        if (mCallbackRegistered) return;
-        assert mTriggerCallback != null;
-        DirectWritingServiceCallback serviceCallback = mTriggerCallback.getServiceCallback();
-
+    @VisibleForTesting
+    void registerCallback() {
         // It would be nice to extract the pattern of "do something with a service, surround it in
         // a try catch" into a method, unfortunately that would increase the binary size too much,
         // see:
         // https://ci.chromium.org/ui/p/chromium/builders/try/android-binary-size/1175796/overview
         if (!isServiceConnected()) return;
+        assert mTriggerCallback != null;
+        DirectWritingServiceCallback serviceCallback = mTriggerCallback.getServiceCallback();
         try {
             String callbackPackage =
                     (mPackageName + IDirectWritingService.VALUE_SERVICE_HOST_SOURCE_WEBVIEW);
             mRemoteDwService.registerCallback(serviceCallback, callbackPackage);
             Log.d(TAG, "Service callback registered");
-            mCallbackRegistered = true;
         } catch (DeadObjectException e) {
             Log.e(TAG, "registerCallback failed due to DeadObjectException.", e);
             resetDwServiceConnection();
@@ -155,16 +165,14 @@ class DirectWritingServiceBinder {
         }
     }
 
-    private void unregisterCallback() {
-        if (!mCallbackRegistered) return;
+    @VisibleForTesting
+    void unregisterCallback() {
+        if (!isServiceConnected()) return;
         assert mTriggerCallback != null;
         DirectWritingServiceCallback serviceCallback = mTriggerCallback.getServiceCallback();
-
-        if (!isServiceConnected()) return;
         try {
             mRemoteDwService.unregisterCallback(serviceCallback);
             Log.d(TAG, "Service callback unregistered");
-            mCallbackRegistered = false;
         } catch (DeadObjectException e) {
             Log.e(TAG, "unregisterCallback failed due to DeadObjectException.", e);
             resetDwServiceConnection();
@@ -175,16 +183,19 @@ class DirectWritingServiceBinder {
 
     private void resetDwServiceConnection() {
         mRemoteDwService = null;
-        mCallbackRegistered = false;
         mPackageName = "";
     }
 
     void onWindowFocusChanged(Context context, boolean hasWindowFocus) {
-        if (hasWindowFocus && isServiceConnected()) {
+        if (hasWindowFocus) {
+            // Need to register DW service callback object again when window gets focus, so that
+            // commit happens in the intended Chrome instance and web input. This is required even
+            // though we haven't unregistered the callback. This is a limitation in DW service side.
+            // It is also intentional to not unregister this callback when window loses focus, as it
+            // affects the DW done in Chrome's omnibox (url bar).
             registerCallback();
         } else {
             handleWindowFocusLost(context);
-            unregisterCallback();
         }
     }
 
