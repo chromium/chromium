@@ -1034,8 +1034,7 @@ TEST_F(WindowCycleControllerTest, AltKeyRelease) {
   EXPECT_FALSE(base::Contains(currently_pressed_keys, ui::VKEY_MENU));
 }
 
-// Tests that system tray will be closed when alt-tab cycling starts. Also tests
-// releasing the alt key will end the alt-tab cycling successfully.
+// Tests if tray bubbles will be closed when alt-tab cycling starts.
 TEST_F(WindowCycleControllerTest, AltKeyReleaseOnSystemTrayOpen) {
   std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
   std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
@@ -1043,23 +1042,32 @@ TEST_F(WindowCycleControllerTest, AltKeyReleaseOnSystemTrayOpen) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
   ui::test::EventGenerator* event_generator = GetEventGenerator();
 
-  // Open system tray.
-  auto* system_tray = GetPrimaryUnifiedSystemTray();
-  event_generator->MoveMouseTo(system_tray->GetBoundsInScreen().CenterPoint());
-  event_generator->ClickLeftButton();
-  EXPECT_TRUE(system_tray->IsBubbleShown());
+  int count = 0;
 
-  // Start window cycling by press Alt + Tab key.
-  WindowState::Get(window0.get())->Activate();
-  event_generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
-  event_generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
-  EXPECT_TRUE(controller->IsCycling());
-  // Verify the system tray is closed after the alt-tab cycling starts.
-  EXPECT_FALSE(system_tray->IsBubbleShown());
+  // Open tray bubble if it can open otherwise continue to next tray bubble.
+  for (TrayBackgroundView* tray_button :
+       GetPrimaryShelf()->GetStatusAreaWidget()->tray_buttons()) {
+    LeftClickOn(tray_button);
+    if (!tray_button->is_active())
+      continue;
 
-  // Release Alt key, verify alt-tab cycling is ended.
-  event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
-  EXPECT_FALSE(controller->IsCycling());
+    count = count + 1;
+
+    // Start window cycling by press Alt + Tab key.
+    WindowState::Get(window0.get())->Activate();
+    event_generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+    event_generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+    EXPECT_TRUE(controller->IsCycling());
+    // Verify the system tray is closed after the alt-tab cycling starts.
+    EXPECT_FALSE(tray_button->is_active());
+
+    // Release Alt key, verify alt-tab cycling is ended.
+    event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+    EXPECT_FALSE(controller->IsCycling());
+  }
+
+  // Make sure Alt + Tab procedure above happened at least once.
+  EXPECT_GT(count, 0);
 }
 
 // Test alt-tab will be shown on the display where the cursor is located

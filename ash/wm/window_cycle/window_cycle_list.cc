@@ -13,7 +13,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
-#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -351,12 +351,13 @@ void WindowCycleList::InitWindowCycleView() {
     return;
   aura::Window* root_window = GetRootWindowForCycleView();
 
-  // Close the system quick settings tray before creating the cycle view.
-  UnifiedSystemTray* tray = RootWindowController::ForWindow(root_window)
-                                ->GetStatusAreaWidget()
-                                ->unified_system_tray();
-  if (tray->IsBubbleShown())
-    tray->CloseBubble();
+  // Close any tray bubbles that are opened before creating the cycle view.
+  StatusAreaWidget* status_area_widget =
+      RootWindowController::ForWindow(root_window)->GetStatusAreaWidget();
+  for (TrayBackgroundView* tray_button : status_area_widget->tray_buttons()) {
+    if (tray_button->is_active())
+      tray_button->CloseBubble();
+  }
 
   cycle_view_ = new WindowCycleView(root_window, windows_);
   const bool is_interactive_alt_tab_mode_allowed =
