@@ -2973,7 +2973,6 @@
                         "delay": "30s"
                     },
                     "enable_features": [
-                        "AlignWakeUps",
                         "AlwaysAbandonScheduledTask",
                         "CacheFeatureOverrideState",
                         "DelayFirstParkingOfStrings",
