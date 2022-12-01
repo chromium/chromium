@@ -8,7 +8,7 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.m.js';
-import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

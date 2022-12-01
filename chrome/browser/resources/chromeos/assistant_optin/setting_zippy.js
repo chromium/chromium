@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '../components/common_styles/common_styles.m.js';
+import '../components/common_styles/oobe_common_styles.m.js';
 import './assistant_common_styles.m.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

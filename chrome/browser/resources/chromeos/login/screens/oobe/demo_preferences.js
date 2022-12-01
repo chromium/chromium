@@ -8,7 +8,7 @@ import '../../components/oobe_icons.m.js';
 import '../../components/oobe_i18n_dropdown.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_text_button.js';
-import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 

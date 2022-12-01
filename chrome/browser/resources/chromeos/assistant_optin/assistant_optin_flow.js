@@ -8,7 +8,7 @@
  *
  */
 
-import '../components/common_styles/common_styles.m.js';
+import '../components/common_styles/oobe_common_styles.m.js';
 import './assistant_common_styles.m.js';
 import './assistant_icon.m.js';
 import './assistant_loading.js';
