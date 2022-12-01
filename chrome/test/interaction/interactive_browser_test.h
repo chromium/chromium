@@ -176,12 +176,20 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       StateChange state_change,
       bool expect_timeout = false);
 
-  // Required to keep from hiding inherited versions of this method.
+  // Required to keep from hiding inherited versions of these methods.
   using InteractiveViewsTestApi::EnsureNotPresent;
+  using InteractiveViewsTestApi::EnsurePresent;
+
+  // Ensures that there is an element at path `where` in `webcontents_id`.
+  // Unlike InteractiveTestApi::EnsurePresent, this verb can be inside an
+  // InAnyContext() block.
+  [[nodiscard]] static StepBuilder EnsurePresent(
+      ui::ElementIdentifier webcontents_id,
+      DeepQuery where);
 
   // Ensures that there is no element at path `where` in `webcontents_id`.
-  // Unlike InteractiveTestApi::EnsureNotPresent, you can use `InAnyContext`()`
-  // with this method; it will only be used to locate `webcontents_id`.
+  // Unlike InteractiveTestApi::EnsurePresent, this verb can be inside an
+  // InAnyContext() block.
   [[nodiscard]] static StepBuilder EnsureNotPresent(
       ui::ElementIdentifier webcontents_id,
       DeepQuery where);

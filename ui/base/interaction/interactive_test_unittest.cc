@@ -489,16 +489,12 @@ TEST_F(InteractiveTestTest, PresentOrNotPresentInAnyContext) {
   e1.Show();
   e2.Show();
 
-  UNCALLED_MOCK_CALLBACK(base::RepeatingCallback<void(TrackedElement*)>, found);
-
-  EXPECT_CALLS_IN_SCOPE_2(
-      found, Run(&e1), found, Run(&e2),
-      RunTestSequenceInContext(
-          kTestContext1, WithElement(kTestId1, found.Get()),
-          // Not present in the current context.
-          EnsureNotPresent(kTestId2),
-          EnsureNotPresent(kTestId3, /* in_any_context = */ true),
-          InAnyContext(WithElement(kTestId2, found.Get()))));
+  RunTestSequenceInContext(
+      kTestContext1, EnsurePresent(kTestId1),
+      // Not present in the current context.
+      EnsureNotPresent(kTestId2),
+      EnsureNotPresent(kTestId3, /* in_any_context = */ true),
+      EnsurePresent(kTestId2, /* in_any_context = */ true));
 }
 
 TEST_F(InteractiveTestTest, WithElementFails) {

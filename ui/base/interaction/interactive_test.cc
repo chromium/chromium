@@ -8,9 +8,11 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 
@@ -243,6 +245,19 @@ InteractiveTestApi::MultiStep InteractiveTestApi::EnsureNotPresent(
             }
           },
           element_to_check, in_any_context));
+}
+
+// static
+InteractiveTestApi::MultiStep InteractiveTestApi::EnsurePresent(
+    ElementSpecifier element_to_check,
+    bool in_any_context) {
+  return Steps(
+      FlushEvents(),
+      std::move(
+          WithElement(element_to_check, base::DoNothing())
+              .SetContext(in_any_context
+                              ? InteractionSequence::ContextMode::kAny
+                              : InteractionSequence::ContextMode::kInitial)));
 }
 
 // static

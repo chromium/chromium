@@ -274,6 +274,26 @@ InteractiveBrowserTestApi::WaitForStateChange(
 }
 
 // static
+ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::EnsurePresent(
+    ui::ElementIdentifier webcontents_id,
+    DeepQuery where) {
+  StepBuilder builder;
+  builder.SetElementID(webcontents_id);
+  builder.SetContext(kDefaultWebContentsContextMode);
+  builder.SetStartCallback(base::BindOnce(
+      [](DeepQuery where, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
+        if (!AsInstrumentedWebContents(el)->Exists(where)) {
+          LOG(ERROR) << "Expected DOM element to be present: \""
+                     << base::JoinString(where, "\", \"") << "\"";
+          seq->FailForTesting();
+        }
+      },
+      where));
+  return builder;
+}
+
+// static
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTestApi::EnsureNotPresent(
     ui::ElementIdentifier webcontents_id,

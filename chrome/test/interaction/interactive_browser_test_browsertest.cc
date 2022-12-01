@@ -41,10 +41,12 @@ class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, EnsureNotPresent) {
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       EnsurePresentNotPresent) {
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   RunTestSequence(InstrumentTab(kWebContentsId),
                   NavigateWebContents(kWebContentsId, url),
+                  EnsurePresent(kWebContentsId, DeepQuery({"#select"})),
                   EnsureNotPresent(kWebContentsId, DeepQuery{"#doesNotExist"}));
 }
 
@@ -59,6 +61,19 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
       RunTestSequence(InstrumentTab(kWebContentsId),
                       NavigateWebContents(kWebContentsId, url),
                       EnsureNotPresent(kWebContentsId, DeepQuery{"#select"})));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, EnsurePresent_Fails) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequence(
+          InstrumentTab(kWebContentsId),
+          NavigateWebContents(kWebContentsId, url),
+          EnsurePresent(kWebContentsId, DeepQuery{"#doesNotExist"})));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, ExecuteJs) {

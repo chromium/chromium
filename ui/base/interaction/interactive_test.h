@@ -189,6 +189,18 @@ class InteractiveTestApi {
       ElementIdentifier element_to_check,
       bool in_any_context = false);
 
+  // Opposite of EnsureNotPresent. Flushes the current message queue and then
+  // checks that the specified element is [still] present. Equivalent to:
+  //   FlushEvents(),
+  //   WithElement(element_to_check, base::DoNothing())
+  //
+  // Like EnsureNotPresent(), is not compatible with InAnyContext(); set
+  // `in_any_context` to true instead. Otherwise, you can still wrap this call
+  // in an InContext() or InSameContext().
+  [[nodiscard]] static MultiStep EnsurePresent(
+      ElementSpecifier element_to_check,
+      bool in_any_context = false);
+
   // Ensures that the next step does not piggyback on the previous step(s), but
   // rather, executes on a fresh message loop. Normally, steps will continue to
   // trigger on the same call stack until a start condition is not met.
