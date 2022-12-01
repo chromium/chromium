@@ -31,6 +31,8 @@ bool IsFloatWindowEnabled() {
 bool IsPartialSplitEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(kPartialSplit);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsPartialSplitEnabled();
 #else
   return false;
 #endif

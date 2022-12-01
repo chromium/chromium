@@ -125,6 +125,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   const crosapi::mojom::ExtensionKeepListPtr& ExtensionKeepList() const;
 
+  bool IsPartialSplitEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

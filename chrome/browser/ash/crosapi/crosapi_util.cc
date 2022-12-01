@@ -557,6 +557,8 @@ void InjectBrowserInitParams(
 
   params->enable_float_window =
       base::FeatureList::IsEnabled(chromeos::wm::features::kFloatWindow);
+  params->enable_partial_split =
+      base::FeatureList::IsEnabled(chromeos::wm::features::kPartialSplit);
 
   params->is_cloud_gaming_device =
       chromeos::features::IsCloudGamingDeviceEnabled();

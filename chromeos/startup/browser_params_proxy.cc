@@ -282,4 +282,8 @@ BrowserParamsProxy::ExtensionKeepList() const {
   return BrowserInitParams::Get()->extension_keep_list;
 }
 
+bool BrowserParamsProxy::IsPartialSplitEnabled() const {
+  return BrowserInitParams::Get()->enable_partial_split;
+}
+
 }  // namespace chromeos

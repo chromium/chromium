@@ -910,8 +910,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 55
-// Next id: 55
+// Next version: 56
+// Next id: 56
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1260,6 +1260,11 @@ struct BrowserInitParams {
   // Ash extension keep list.
   [MinVersion=54]
   ExtensionKeepList? extension_keep_list@54;
+
+  // When this flag is set to true, partial split through the multitask menu
+  // will be enabled.
+  [MinVersion=55]
+  bool enable_partial_split@55;
 
 };
 
