@@ -261,7 +261,8 @@ void DocumentSpeculationRules::DocumentBaseURLChanged() {
     // new errors.
     DCHECK(parse_error.empty());
   }
-  InvalidateAllLinks();
+  if (initialized_)
+    InvalidateAllLinks();
   QueueUpdateSpeculationCandidates();
 }
 
