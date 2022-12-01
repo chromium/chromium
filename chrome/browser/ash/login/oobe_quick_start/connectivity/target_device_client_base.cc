@@ -34,9 +34,4 @@ void TargetDeviceClientBase::SendPayload(
                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TargetDeviceClientBase::OnDataRead(
-    absl::optional<std::vector<uint8_t>> bytes) {
-  NOTIMPLEMENTED();
-}
-
 }  // namespace ash::quick_start

@@ -21,15 +21,16 @@ class TargetDeviceClientBase {
  public:
   TargetDeviceClientBase(const TargetDeviceClientBase&) = delete;
   TargetDeviceClientBase& operator=(const TargetDeviceClientBase&) = delete;
-  ~TargetDeviceClientBase();
+  virtual ~TargetDeviceClientBase();
 
  protected:
   TargetDeviceClientBase(NearbyConnection* nearby_connection,
                          QuickStartDecoder* quick_start_decoder);
   void SendPayload(const base::Value::Dict& message_payload);
 
-  // passed as a callback to nearby_connection_->Read();
-  void OnDataRead(absl::optional<std::vector<uint8_t>> bytes);
+  // OnDataRead() will be called when the remote end responds to the message
+  // sent with SendPayload().
+  virtual void OnDataRead(absl::optional<std::vector<uint8_t>> data) = 0;
 
   NearbyConnection* nearby_connection_;
   QuickStartDecoder* quick_start_decoder_;
