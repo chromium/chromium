@@ -65,10 +65,10 @@ class BASE_EXPORT ThreadController {
     kApplicationTask = 5,
     kIdleWork = 6,
     kNested = 7,
+    kLastPhase = kNested,
     // Reported as a kWorkItem but doesn't clear state relevant to the ongoing
     // work item as it isn't finished (will resume after nesting).
-    kWorkItemSuspendedOnNested = 8,
-    kMaxValue = kNested
+    kWorkItemSuspendedOnNested,
   };
 
   explicit ThreadController(const TickClock* time_source);
@@ -341,7 +341,7 @@ class BASE_EXPORT ThreadController {
       static const char* PhaseToEventName(Phase phase);
 
       // Cumulative time deltas for each phase, reported and reset when >=100ms.
-      std::array<TimeDelta, Phase::kMaxValue + 1> deltas_ = {};
+      std::array<TimeDelta, Phase::kLastPhase + 1> deltas_ = {};
       // Set at the start of the first work item out-of-idle. Consumed from the
       // first application task found in that work cycle
       // (in OnApplicationTaskSelected).

@@ -57,7 +57,7 @@ void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
   DCHECK(!histogram_);
   histogram_ = LinearHistogram::FactoryGet(
       JoinString({"Scheduling.MessagePumpTimeKeeper", thread_name}, "."), 1,
-      Phase::kMaxValue, Phase::kMaxValue + 1,
+      Phase::kLastPhase, Phase::kLastPhase + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
