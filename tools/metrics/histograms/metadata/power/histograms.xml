@@ -959,17 +959,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryMaxCapacity" units="MWh"
-    expires_after="2023-05-14">
-  <owner>fdoray@chromium.org</owner>
-  <owner>olivierli@chromium.org</owner>
-  <summary>
-    Battery max capacity as reported by the operating system. Reported every 2
-    minutes on Windows, when a single battery is installed and the operating
-    system says that the unit is MWh.
-  </summary>
-</histogram>
-
 <histogram name="Power.BatteryPercentDrop" units="%" expires_after="2023-04-23">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
