@@ -1110,6 +1110,9 @@ extern const char
 extern const char
     kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription[];
 
+extern const char kOmniboxMlLogUrlScoringSignalsName[];
+extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
+
 extern const char kOmniboxModernizeVisualUpdateName[];
 extern const char kOmniboxModernizeVisualUpdateDescription[];
 

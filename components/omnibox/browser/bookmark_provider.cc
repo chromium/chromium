@@ -100,11 +100,13 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
     }
     // Score the TitledUrlMatch. If its score is greater than 0 then the
     // AutocompleteMatch is created and added to matches_.
-    int relevance = CalculateBookmarkMatchRelevance(bookmark_match);
+    auto [relevance, bookmark_count] =
+        CalculateBookmarkMatchRelevance(bookmark_match);
     if (relevance > 0) {
       AutocompleteMatch match = TitledUrlMatchToAutocompleteMatch(
           bookmark_match, AutocompleteMatchType::BOOKMARK_TITLE, relevance,
-          this, client_->GetSchemeClassifier(), adjusted_input, fixed_up_input);
+          bookmark_count, this, client_->GetSchemeClassifier(), adjusted_input,
+          fixed_up_input);
       // If the input was in a starter pack keyword scope, set the `keyword` and
       // `transition` appropriately to avoid popping the user out of keyword
       // mode.
@@ -206,7 +208,7 @@ query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
   return query_parser::MatchingAlgorithm::DEFAULT;
 }
 
-int BookmarkProvider::CalculateBookmarkMatchRelevance(
+std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
     const TitledUrlMatch& bookmark_match) const {
   // Summary on how a relevance score is determined for the match:
   //
@@ -285,10 +287,16 @@ int BookmarkProvider::CalculateBookmarkMatchRelevance(
       static_cast<double>(kMaxBookmarkScore - kBaseBookmarkScore);
   int relevance = static_cast<int>(normalized_sum * kBookmarkScoreRange) +
                   kBaseBookmarkScore;
-  // Don't waste any time searching for additional referenced URLs if we
-  // already have a perfect title match.
-  if (relevance >= kMaxBookmarkScore)
-    return relevance;
+
+  // If scoring signal logging is disabled, skip counting bookmarks if relevance
+  // is above max score. Don't waste any time searching for additional
+  // referenced URLs if we already have a perfect title match. Returns a pair of
+  // the relevance score and -1 as a dummy bookmark count.
+  if (!OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+      relevance >= kMaxBookmarkScore) {
+    return {relevance, /*bookmark_count=*/-1};
+  }
+
   // Boost the score if the bookmark's URL is referenced by other bookmarks.
   const int kURLCountBoost[4] = {0, 75, 125, 150};
   std::vector<const BookmarkNode*> nodes;
@@ -297,7 +305,7 @@ int BookmarkProvider::CalculateBookmarkMatchRelevance(
   relevance +=
       kURLCountBoost[std::min(std::size(kURLCountBoost), nodes.size()) - 1];
   relevance = std::min(kMaxBookmarkScore, relevance);
-  return relevance;
+  return {relevance, nodes.size()};
 }
 
 void BookmarkProvider::RemoveQueryParamKeyMatches(TitledUrlMatch& match) {

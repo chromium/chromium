@@ -2093,6 +2093,11 @@ const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[] =
     "current URL. Will only work if user is signed-in and syncing, or is "
     "otherwise eligible to send the current page URL to the suggest server.";
 
+const char kOmniboxMlLogUrlScoringSignalsName[] =
+    "Log Omnibox URL Scoring Signals";
+const char kOmniboxMlLogUrlScoringSignalsDescription[] =
+    "Enables Omnibox to log scoring signals of URL suggestions.";
+
 const char kOmniboxMostVisitedTilesFadingOnTabletName[] =
     "Omnibox Most Visited Tiles fading on tablet";
 const char kOmniboxMostVisitedTilesFadingOnTabletDescription[] =

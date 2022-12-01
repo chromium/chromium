@@ -1006,6 +1006,12 @@ const base::FeatureParam<double> kDomainSuggestionsScoreFactor(
     "DomainSuggestionsScoreFactor",
     1);
 
+bool IsLogUrlScoringSignalsEnabled() {
+  static bool enabled =
+      base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
+  return enabled;
+}
+
 }  // namespace OmniboxFieldTrial
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(

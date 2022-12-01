@@ -5394,6 +5394,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-blur-with-escape", flag_descriptions::kOmniboxBlurWithEscapeName,
      flag_descriptions::kOmniboxBlurWithEscapeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kBlurWithEscape)},
+    {"omnibox-ml-log-url-scoring-signals",
+     flag_descriptions::kOmniboxMlLogUrlScoringSignalsName,
+     flag_descriptions::kOmniboxMlLogUrlScoringSignalsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kLogUrlScoringSignals)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(IS_WIN)

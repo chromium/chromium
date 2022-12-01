@@ -76,7 +76,8 @@ class BookmarkProvider : public AutocompleteProvider {
   query_parser::MatchingAlgorithm GetMatchingAlgorithm(AutocompleteInput input);
 
   // Calculates the relevance score for |match|.
-  int CalculateBookmarkMatchRelevance(
+  // Also returns the number of bookmarks containing the destination URL.
+  std::pair<int, int> CalculateBookmarkMatchRelevance(
       const bookmarks::TitledUrlMatch& match) const;
 
   // Removes any URL matches for query parameter keys (if the matching word

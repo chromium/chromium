@@ -607,6 +607,10 @@ extern const base::FeatureParam<int> kDomainSuggestionsMaxMatchesPerDomain;
 // necessarily double them due to how HQP maps the factors to actual scores.
 extern const base::FeatureParam<double> kDomainSuggestionsScoreFactor;
 
+// ---------------------------------------------------------
+// For logging Omnibox scoring signals for training machine learning models.
+bool IsLogUrlScoringSignalsEnabled();
+
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:
 // - Short comment categorizing the relevant features & params.

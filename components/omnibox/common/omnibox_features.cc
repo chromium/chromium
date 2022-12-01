@@ -513,4 +513,9 @@ BASE_FEATURE(kRetainSuggestionsWithHeaders,
              "OmniboxRetainSuggestionsWithHeaders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, logs Omnibox URL scoring signals to OmniboxEventProto in UMA.
+BASE_FEATURE(kLogUrlScoringSignals,
+             "LogUrlScoringSignals",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox

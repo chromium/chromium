@@ -26,6 +26,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     const TitledUrlMatch& match,
     AutocompleteMatchType::Type type,
     int relevance,
+    int bookmark_count,
     AutocompleteProvider* provider,
     const AutocompleteSchemeClassifier& scheme_classifier,
     const AutocompleteInput& input,

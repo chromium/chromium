@@ -130,6 +130,9 @@ extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];
 BASE_DECLARE_FEATURE(kReportAssistedQueryStats);
 BASE_DECLARE_FEATURE(kReportSearchboxStats);
 
+// Omnibox ML scoring.
+BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

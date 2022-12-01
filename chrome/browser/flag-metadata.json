@@ -5048,6 +5048,11 @@
     "expiry_milestone" : 113
   },
   {
+    "name": "omnibox-ml-log-url-scoring-signals",
+    "owners": [ "junzou", "manukh", "yoangela", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-modernize-visual-update",
     "owners": [ "gangwu", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120

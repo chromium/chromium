@@ -74,6 +74,7 @@ TEST(TitledUrlMatchUtilsTest, TitledUrlMatchToAutocompleteMatch) {
   GURL match_url("https://www.google.com/");
   AutocompleteMatchType::Type type = AutocompleteMatchType::BOOKMARK_TITLE;
   int relevance = 123;
+  int bookmark_count = 3;
 
   MockTitledUrlNode node(match_title, match_url);
   bookmarks::TitledUrlMatch titled_url_match;
@@ -89,8 +90,8 @@ TEST(TitledUrlMatchUtilsTest, TitledUrlMatchToAutocompleteMatch) {
   const std::u16string fixed_up_input(input_text);
 
   AutocompleteMatch autocomplete_match = TitledUrlMatchToAutocompleteMatch(
-      titled_url_match, type, relevance, provider.get(), classifier, input,
-      fixed_up_input);
+      titled_url_match, type, relevance, bookmark_count, provider.get(),
+      classifier, input, fixed_up_input);
 
   ACMatchClassifications expected_contents_class = {
       {0, ACMatchClassification::URL | ACMatchClassification::MATCH},
@@ -128,6 +129,7 @@ AutocompleteMatch BuildTestAutocompleteMatch(
   std::u16string match_title(u"The Facebook");
   AutocompleteMatchType::Type type = AutocompleteMatchType::BOOKMARK_TITLE;
   int relevance = 123;
+  int bookmark_count = 3;
 
   MockTitledUrlNode node(match_title, match_url);
   bookmarks::TitledUrlMatch titled_url_match;
@@ -144,8 +146,8 @@ AutocompleteMatch BuildTestAutocompleteMatch(
   const std::u16string fixed_up_input(input_text);
 
   return TitledUrlMatchToAutocompleteMatch(titled_url_match, type, relevance,
-                                           provider.get(), classifier, input,
-                                           fixed_up_input);
+                                           bookmark_count, provider.get(),
+                                           classifier, input, fixed_up_input);
 }
 
 TEST(TitledUrlMatchUtilsTest, DoTrimHttpScheme) {
@@ -248,6 +250,7 @@ TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   GURL match_url("http://www.gmail.com/");
   AutocompleteMatchType::Type type = AutocompleteMatchType::BOOKMARK_TITLE;
   int relevance = 123;
+  int bookmark_count = 3;
 
   MockTitledUrlNode node(match_title, match_url);
   bookmarks::TitledUrlMatch titled_url_match;
@@ -263,8 +266,8 @@ TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   const std::u16string fixed_up_input(input_text);
 
   AutocompleteMatch autocomplete_match = TitledUrlMatchToAutocompleteMatch(
-      titled_url_match, type, relevance, provider.get(), classifier, input,
-      fixed_up_input);
+      titled_url_match, type, relevance, bookmark_count, provider.get(),
+      classifier, input, fixed_up_input);
 
   ACMatchClassifications expected_contents_class = {
       {0, ACMatchClassification::URL},
@@ -319,7 +322,8 @@ TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
                             classifier);
     AutocompleteMatch autocomplete_match = TitledUrlMatchToAutocompleteMatch(
         titled_url_match, AutocompleteMatchType::BOOKMARK_TITLE, 1,
-        provider.get(), classifier, input, std::u16string());
+        /*bookmark_count=*/3, provider.get(), classifier, input,
+        std::u16string());
     EXPECT_EQ(base::UTF16ToUTF8(autocomplete_match.contents),
               expected_contents);
     EXPECT_EQ(base::UTF16ToUTF8(autocomplete_match.description),

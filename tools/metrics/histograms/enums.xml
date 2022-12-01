@@ -58234,6 +58234,7 @@ from previous Chrome versions.
   <int value="-1464832541" label="EnableFuzzyAppSearch:disabled"/>
   <int value="-1463489219" label="OfflinePagesCTSuppressNotifications:enabled"/>
   <int value="-1463410070" label="IPH_DemoMode:enabled"/>
+  <int value="-1463286459" label="LogUrlScoringSignals:enabled"/>
   <int value="-1462980793"
       label="SupportSearchSuggestionForPrerender2:disabled"/>
   <int value="-1461261930" label="OutOfBlinkCORS:disabled"/>
@@ -60011,6 +60012,7 @@ from previous Chrome versions.
   <int value="-444867364" label="Metal:enabled"/>
   <int value="-442352394" label="IframeOneGoogleBar:disabled"/>
   <int value="-438379844" label="SwapSideVolumeButtonsForOrientation:enabled"/>
+  <int value="-438348502" label="LogUrlScoringSignals:disabled"/>
   <int value="-438029951" label="RegionCaptureExperimentalSubtypes:enabled"/>
   <int value="-437292646" label="DeferBeginMainFrameDuringLoading:enabled"/>
   <int value="-436470115" label="TouchpadAndWheelScrollLatching:enabled"/>
