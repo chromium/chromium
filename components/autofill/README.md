@@ -62,13 +62,13 @@ with `AutofillAgent` extracting a form from the DOM.
 │ContentAutofillDriverFactory├────────►ContentAutofillDriver◄────────►ContentAutofillRouter│
 │1 per WebContents           │owns N  │1 per RenderFrameHost│ events │1 per WebContents    │
 └────────────────────────────┘        └─▲─────────┬─────────┘        └─────────────────────┘
-                                        │         │
-Browser                                 │         │fill form and
-1 process                               │         │other events
+                                        │         │fill form and
+Browser                                 │         │other events
+1 process                               │         │
 ────────────────────────────────────────┼─────────┼─────────────────────────────────────────
-Renderer              events, often with│         │
-N processes           FormData objects  │         │
-                                        │         │
+Renderer                                │         │
+N processes           events, often with│         │
+                      FormData objects  │         │
                                       ┌─┴─────────▼─────┐       ┌─────────────────────┐
                                       │AutofillAgent    ├───────►form_autofill_util.cc│
                                       │1 per RenderFrame│calls  └─────────────────────┘
@@ -80,7 +80,7 @@ A [`WebContents`](https://source.chromium.org/chromium/chromium/src/+/main:conte
 corresponds to a tab. A [`RenderFrameHost`](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/render_frame_host.h)
 roughly corresponds to a frame or a document (but to neither exactly; they
 differ in whether or not they survive navigations; details are [here](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/render_document.md)
-and [details](https://docs.google.com/document/d/1C2VKkFRSc0kdmqjKan1G4NlNlxWZqE4Wam41FNMgnmA/edit#)).
+and [here](https://docs.google.com/document/d/1C2VKkFRSc0kdmqjKan1G4NlNlxWZqE4Wam41FNMgnmA/edit#)).
 A [`BrowserContext`](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/browser_context.h)
 corresponds to a [`Profile`](https://www.chromium.org/developers/design-documents/profile-architecture/).
 
