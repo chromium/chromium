@@ -63,24 +63,11 @@ public class PrivacySandboxDialogController {
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.NOTICE:
-                boolean newNotice = showNewNotice();
-                if (launchContext == PrivacySandboxDialogLaunchContext.NEW_TAB_PAGE && newNotice) {
-                    // Invoked in the NTP context and the new notice should be shown; show it.
-                    if (bottomSheetController == null) return false;
-                    new PrivacySandboxBottomSheetNotice(
-                            context, bottomSheetController, settingsLauncher)
-                            .showNotice(/*animate=*/!sDisableAnimations);
-                    sNewNoticeShownInCurrentSession = true;
-                } else if (launchContext == PrivacySandboxDialogLaunchContext.BROWSER_START
-                        && !newNotice) {
-                    // Invoked at browser start without the new notice; show it.
-                    dialog = new PrivacySandboxDialogNotice(context, settingsLauncher);
-                    dialog.show();
-                    sDialog = new WeakReference<>(dialog);
-                } else {
-                    // The launch context doesn't match the notice type; do not show anything.
-                    return false;
-                }
+                if (bottomSheetController == null || !showNewNotice()) return false;
+                new PrivacySandboxBottomSheetNotice(
+                        context, bottomSheetController, settingsLauncher)
+                        .showNotice(/*animate=*/!sDisableAnimations);
+                sNewNoticeShownInCurrentSession = true;
                 return true;
             case PromptType.CONSENT:
                 dialog = new PrivacySandboxDialogConsent(context);
