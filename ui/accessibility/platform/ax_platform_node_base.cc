@@ -1925,6 +1925,12 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
   DCHECK_GE(hypertext_offset, 0);
   DCHECK_LT(hypertext_offset, static_cast<int>(GetHypertext().size()));
 
+  if (IsLeaf()) {
+    if (IsText())
+      return GetDelegate()->CreateTextPositionAt(hypertext_offset);
+    return GetDelegate()->CreatePositionAt(hypertext_offset);
+  }
+
   int current_hypertext_offset = hypertext_offset;
   for (auto child_iter = AXPlatformNodeChildrenBegin();
        child_iter != AXPlatformNodeChildrenEnd() &&
@@ -1937,9 +1943,8 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
 
     if (current_hypertext_offset < child_text_len) {
       int endpoint_offset = child_text_len - current_hypertext_offset;
-      if (child_iter->IsText()) {
+      if (child_iter->IsText())
         return child_iter->GetDelegate()->CreateTextPositionAt(endpoint_offset);
-      }
       return child_iter->GetDelegate()->CreatePositionAt(endpoint_offset);
     }
     current_hypertext_offset -= child_text_len;
