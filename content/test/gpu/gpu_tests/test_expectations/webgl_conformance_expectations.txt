@@ -323,7 +323,6 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 # Bug where RelaxedPrecision applied to normalize() produces 0
 
 # Flaky timeouts on multiple platforms - at least Linux/Mac/Win
-crbug.com/1254497 conformance/misc/type-conversion-test.html [ RetryOnFailure ]
 
 ####################
 # Fuchsia failures #
