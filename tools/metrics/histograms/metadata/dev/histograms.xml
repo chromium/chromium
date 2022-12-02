@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.CDPCommandFrom{ClientType}" enum="CDPCommands"
-    expires_after="2022-12-16">
+    expires_after="2023-12-16">
   <owner>wolfi@chromium.org</owner>
   <owner>dsv@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
