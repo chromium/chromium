@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_DATA_WEBUI_METRICS_INTERNALS_METRICS_INTERNALS_UI_BROWSERTEST_H_
 #define CHROME_TEST_DATA_WEBUI_METRICS_INTERNALS_METRICS_INTERNALS_UI_BROWSERTEST_H_
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,6 +27,8 @@ class MetricsInternalsUIBrowserTest : public WebUIBrowserTest,
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
 
   bool metrics_enabled_ = true;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #endif  // CHROME_TEST_DATA_WEBUI_METRICS_INTERNALS_METRICS_INTERNALS_UI_BROWSERTEST_H_

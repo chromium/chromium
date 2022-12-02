@@ -6,6 +6,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -20,6 +21,11 @@ void MetricsInternalsUIBrowserTest::SetUp() {
       true);
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
       &metrics_enabled_);
+
+  // Simulate being sampled in so that metrics reporting is not disabled due to
+  // being sampled out.
+  feature_list_.InitAndEnableFeature(
+      metrics::internal::kMetricsReportingFeature);
 
   WebUIBrowserTest::SetUp();
 }
