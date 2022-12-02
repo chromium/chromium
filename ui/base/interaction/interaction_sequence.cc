@@ -882,7 +882,8 @@ void InteractionSequence::Abort(AbortedReason reason) {
   // The element could go away independently of the sequence.
   SafeElementReference target_element;
   if (reason == AbortedReason::kElementNotVisibleAtStartOfStep ||
-      reason == AbortedReason::kElementHiddenBeforeSequenceStart) {
+      reason == AbortedReason::kElementHiddenBeforeSequenceStart ||
+      reason == AbortedReason::kSequenceDestroyed) {
     ++active_step_index;
     if (next_step()) {
       target_step_type = next_step()->type;

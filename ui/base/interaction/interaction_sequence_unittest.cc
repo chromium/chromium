@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -1700,8 +1701,8 @@ TEST(InteractionSequenceTest, ElementHiddenDuringStepEndDuringAbort) {
   // called.
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(2, nullptr, element2.identifier(),
-          InteractionSequence::StepType::kShown,
+      Run(3, nullptr, element2.identifier(),
+          InteractionSequence::StepType::kActivated,
           InteractionSequence::AbortedReason::kSequenceDestroyed),
       sequence.reset());
 }
@@ -1981,6 +1982,43 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringCompleted) {
   EXPECT_CALLS_IN_SCOPE_3(step1_end, Run, step2_start, Run, step2_end, Run,
                           element2.Activate());
   EXPECT_FALSE(sequence);
+}
+
+TEST(InteractionSequenceTest, SimulateTestTimeout) {
+  base::test::TaskEnvironment task_environment;
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner({});
+
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+
+  std::unique_ptr<InteractionSequence> sequence;
+  auto delete_sequence =
+      base::BindLambdaForTesting([&]() { sequence.reset(); });
+
+  sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(kTestContext1)
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindOnce(
+                           [](base::OnceClosure cb) {
+                             base::ThreadTaskRunnerHandle::Get()->PostTask(
+                                 FROM_HERE, std::move(cb));
+                           },
+                           std::move(delete_sequence))))
+          .AddStep(
+              InteractionSequence::StepBuilder().SetElementID(kTestIdentifier2))
+          .Build();
+
+  // Should indicate step that was queued and waiting, not the step that
+  // succeeded.
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(2, nullptr, kTestIdentifier2, InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kSequenceDestroyed),
+      sequence->RunSynchronouslyForTesting());
 }
 
 // Transition during step callback tests for show and hide events.
