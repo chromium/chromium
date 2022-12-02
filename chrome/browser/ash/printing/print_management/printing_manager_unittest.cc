@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 
-#include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -30,7 +30,7 @@ namespace printing {
 namespace print_management {
 namespace {
 
-using printing_manager::mojom::PrintJobInfoPtr;
+using ::chromeos::printing::printing_manager::mojom::PrintJobInfoPtr;
 
 constexpr char kTitle[] = "title";
 const int kPagesNumber = 3;
@@ -306,7 +306,9 @@ TEST_F(PrintingManagerTest, ResetReceiverOnBindInterface) {
   // This test simulates a user refreshing the WebUI page. The receiver should
   // be reset before binding the new receiver. Otherwise we would get a DCHECK
   // error from mojo::Receiver
-  mojo::Remote<printing_manager::mojom::PrintingMetadataProvider> remote;
+  mojo::Remote<
+      chromeos::printing::printing_manager::mojom::PrintingMetadataProvider>
+      remote;
   printing_manager_->BindInterface(remote.BindNewPipeAndPassReceiver());
   base::RunLoop().RunUntilIdle();
 

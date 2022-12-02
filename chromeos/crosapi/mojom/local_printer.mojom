@@ -319,7 +319,7 @@ interface LocalPrinter {
   CreatePrintJob@5(PrintJob job) => ();
 
   // Cancels a print job. Forwards to CancelPrintJob() in
-  // ash/webui/print_management/mojom/printing_manager.mojom.
+  // chromeos/components/print_management/mojom/printing_manager.mojom.
   [MinVersion=3]
   CancelPrintJob@12(string printer_id, uint32 job_id) => (bool attempted);
 

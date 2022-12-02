@@ -18,7 +18,7 @@ namespace printing {
 namespace print_management {
 namespace {
 
-namespace mojom = printing_manager::mojom;
+namespace mojom = ::chromeos::printing::printing_manager::mojom;
 
 using ::chromeos::PrinterErrorCode;
 

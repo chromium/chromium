@@ -6,8 +6,8 @@
 
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "ash/webui/grit/ash_print_management_resources_map.h"
-#include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "ash/webui/print_management/url_constants.h"
+#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -135,7 +135,9 @@ PrintManagementUI::PrintManagementUI(
 PrintManagementUI::~PrintManagementUI() = default;
 
 void PrintManagementUI::BindInterface(
-    mojo::PendingReceiver<mojom::PrintingMetadataProvider> receiver) {
+    mojo::PendingReceiver<
+        chromeos::printing::printing_manager::mojom::PrintingMetadataProvider>
+        receiver) {
   bind_pending_receiver_callback_.Run(std::move(receiver));
 }
 

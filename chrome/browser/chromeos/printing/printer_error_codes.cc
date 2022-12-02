@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 
-#include "ash/webui/print_management/mojom/printing_manager.mojom.h"
+#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "printing/backend/cups_jobs.h"
 #include "printing/printer_status.h"
 
@@ -20,40 +20,40 @@ namespace {
 
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::NO_ERROR,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kNoError);
+    printing::printing_manager::mojom::PrinterErrorCode::kNoError);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::PAPER_JAM,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kPaperJam);
+    printing::printing_manager::mojom::PrinterErrorCode::kPaperJam);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::OUT_OF_PAPER,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kOutOfPaper);
+    printing::printing_manager::mojom::PrinterErrorCode::kOutOfPaper);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::OUT_OF_INK,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kOutOfInk);
+    printing::printing_manager::mojom::PrinterErrorCode::kOutOfInk);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::DOOR_OPEN,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kDoorOpen);
-STATIC_ASSERT_ENUM(PrinterErrorCode::PRINTER_UNREACHABLE,
-                   ash::printing::printing_manager::mojom::PrinterErrorCode::
-                       kPrinterUnreachable);
+    printing::printing_manager::mojom::PrinterErrorCode::kDoorOpen);
+STATIC_ASSERT_ENUM(
+    PrinterErrorCode::PRINTER_UNREACHABLE,
+    printing::printing_manager::mojom::PrinterErrorCode::kPrinterUnreachable);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::TRAY_MISSING,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kTrayMissing);
+    printing::printing_manager::mojom::PrinterErrorCode::kTrayMissing);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::OUTPUT_FULL,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kOutputFull);
+    printing::printing_manager::mojom::PrinterErrorCode::kOutputFull);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::STOPPED,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kStopped);
+    printing::printing_manager::mojom::PrinterErrorCode::kStopped);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::FILTER_FAILED,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kFilterFailed);
+    printing::printing_manager::mojom::PrinterErrorCode::kFilterFailed);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::UNKNOWN_ERROR,
-    ash::printing::printing_manager::mojom::PrinterErrorCode::kUnknownError);
-STATIC_ASSERT_ENUM(PrinterErrorCode::CLIENT_UNAUTHORIZED,
-                   ash::printing::printing_manager::mojom::PrinterErrorCode::
-                       kClientUnauthorized);
+    printing::printing_manager::mojom::PrinterErrorCode::kUnknownError);
+STATIC_ASSERT_ENUM(
+    PrinterErrorCode::CLIENT_UNAUTHORIZED,
+    printing::printing_manager::mojom::PrinterErrorCode::kClientUnauthorized);
 }  // namespace
 
 using PrinterReason = ::printing::PrinterStatus::PrinterReason;

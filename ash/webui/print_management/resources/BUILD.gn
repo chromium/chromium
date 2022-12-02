@@ -36,8 +36,9 @@ build_webui("build") {
     "print_management_shared.css",
   ]
 
-  mojo_files_deps = [ "../mojom:mojom_webui_js" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/ash/webui/print_management/mojom/printing_manager.mojom-webui.js" ]
+  mojo_files_deps =
+      [ "//chromeos/components/print_management/mojom:mojom_webui_js" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/chromeos/components/print_management/mojom/printing_manager.mojom-webui.js" ]
 
   ts_composite = true
   ts_deps = [

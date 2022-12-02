@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINTING_MANAGER_H_
 #define CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINTING_MANAGER_H_
 
-#include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
+#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,11 +32,11 @@ class PrintJobHistoryService;
 namespace printing {
 namespace print_management {
 
-class PrintingManager
-    : public printing_manager::mojom::PrintingMetadataProvider,
-      public KeyedService,
-      public history::HistoryServiceObserver,
-      public CupsPrintJobManager::Observer {
+class PrintingManager : public chromeos::printing::printing_manager::mojom::
+                            PrintingMetadataProvider,
+                        public KeyedService,
+                        public history::HistoryServiceObserver,
+                        public CupsPrintJobManager::Observer {
  public:
   PrintingManager(PrintJobHistoryService* print_job_history_service,
                   history::HistoryService* history_service,
@@ -48,13 +48,15 @@ class PrintingManager
   PrintingManager(const PrintingManager&) = delete;
   PrintingManager& operator=(const PrintingManager&) = delete;
 
-  // printing_manager::mojom::PrintingMetadataProvider:
+  // printing_chromeos::printing::manager::mojom::PrintingMetadataProvider:
   void GetPrintJobs(GetPrintJobsCallback callback) override;
   void GetPrintJobHistoryExpirationPeriod(
       GetPrintJobHistoryExpirationPeriodCallback callback) override;
   void DeleteAllPrintJobs(DeleteAllPrintJobsCallback callback) override;
   void ObservePrintJobs(
-      mojo::PendingRemote<printing_manager::mojom::PrintJobsObserver> observer,
+      mojo::PendingRemote<
+          chromeos::printing::printing_manager::mojom::PrintJobsObserver>
+          observer,
       ObservePrintJobsCallback callback) override;
   void CancelPrintJob(const std::string& id,
                       CancelPrintJobCallback callback) override;
@@ -62,7 +64,8 @@ class PrintingManager
       GetDeletePrintJobHistoryAllowedByPolicyCallback callback) override;
 
   void BindInterface(
-      mojo::PendingReceiver<printing_manager::mojom::PrintingMetadataProvider>
+      mojo::PendingReceiver<
+          chromeos::printing::printing_manager::mojom::PrintingMetadataProvider>
           pending_receiver);
 
  private:
@@ -113,11 +116,13 @@ class PrintingManager
   // Set of PrintJobsObserver mojom::remotes, each remote is bound to a
   // renderer process receiver. Automatically handles removing disconnected
   // receivers.
-  mojo::RemoteSet<printing_manager::mojom::PrintJobsObserver>
+  mojo::RemoteSet<
+      chromeos::printing::printing_manager::mojom::PrintJobsObserver>
       print_job_observers_;
 
-  mojo::Receiver<printing_manager::mojom::PrintingMetadataProvider> receiver_{
-      this};
+  mojo::Receiver<
+      chromeos::printing::printing_manager::mojom::PrintingMetadataProvider>
+      receiver_{this};
 
   // Policy-controlled pref that determines whether print job history can be
   // deleted.

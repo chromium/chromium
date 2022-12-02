@@ -5140,7 +5140,6 @@ static_library("browser") {
       "//ash/webui/personalization_app/mojom",
       "//ash/webui/personalization_app/search:mojo_bindings",
       "//ash/webui/print_management",
-      "//ash/webui/print_management/mojom",
       "//ash/webui/projector_app",
       "//ash/webui/scanning",
       "//ash/webui/scanning/mojom",
@@ -5255,6 +5254,7 @@ static_library("browser") {
       "//chromeos/ash/services/nearby/public/mojom",
       "//chromeos/ash/services/secure_channel/public/mojom",
       "//chromeos/components/onc",
+      "//chromeos/components/print_management/mojom",
       "//chromeos/components/quick_answers",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",
@@ -7808,7 +7808,7 @@ static_library("browser") {
         "chromeos/printing/printer_error_codes.cc",
         "chromeos/printing/printer_error_codes.h",
       ]
-      deps += [ "//ash/webui/print_management/mojom" ]
+      deps += [ "//chromeos/components/print_management/mojom" ]
     }
     if (is_chromeos_ash) {
       deps += [

@@ -1,0 +1,3 @@
+include_rules = [
+  "+chromeos/components/print_management/mojom",
+]

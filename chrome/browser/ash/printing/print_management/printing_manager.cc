@@ -25,6 +25,7 @@ namespace print_management {
 using ::history::DeletionInfo;
 using ::history::HistoryService;
 using proto::PrintJobInfo;
+namespace mojom = ::chromeos::printing::printing_manager::mojom;
 
 PrintingManager::PrintingManager(
     PrintJobHistoryService* print_job_history_service,
@@ -87,7 +88,7 @@ void PrintingManager::CancelPrintJob(const std::string& id,
 }
 
 void PrintingManager::ObservePrintJobs(
-    mojo::PendingRemote<printing_manager::mojom::PrintJobsObserver> observer,
+    mojo::PendingRemote<mojom::PrintJobsObserver> observer,
     ObservePrintJobsCallback callback) {
   print_job_observers_.Add(std::move(observer));
   std::move(callback).Run();
@@ -153,7 +154,7 @@ void PrintingManager::OnPrintJobsRetrieved(
     GetPrintJobsCallback callback,
     bool success,
     std::vector<PrintJobInfo> print_job_info_protos) {
-  std::vector<printing_manager::mojom::PrintJobInfoPtr> print_job_infos;
+  std::vector<mojom::PrintJobInfoPtr> print_job_infos;
   print_job_infos.reserve(print_job_info_protos.size() +
                           active_print_jobs_.size());
 
@@ -200,8 +201,7 @@ void PrintingManager::NotifyPrintJobObservers(base::WeakPtr<CupsPrintJob> job) {
 }
 
 void PrintingManager::BindInterface(
-    mojo::PendingReceiver<printing_manager::mojom::PrintingMetadataProvider>
-        pending_receiver) {
+    mojo::PendingReceiver<mojom::PrintingMetadataProvider> pending_receiver) {
   receiver_.reset();
   receiver_.Bind(std::move(pending_receiver));
 }

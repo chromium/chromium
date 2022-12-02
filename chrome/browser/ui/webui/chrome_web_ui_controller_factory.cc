@@ -501,7 +501,7 @@ WebUIController* NewWebUI<ash::TrustedProjectorAnnotatorUI>(WebUI* web_ui,
 void BindPrintManagement(
     Profile* profile,
     mojo::PendingReceiver<
-        ash::printing::printing_manager::mojom::PrintingMetadataProvider>
+        chromeos::printing::printing_manager::mojom::PrintingMetadataProvider>
         receiver) {
   ash::printing::print_management::PrintingManager* handler =
       ash::printing::print_management::PrintingManagerFactory::GetForProfile(

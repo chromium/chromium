@@ -1,7 +1,7 @@
 specific_include_rules = {
   # Used to assert equality between chromeos::PrinterErrorCode and
-  # ash.printing.printing_manager.mojom.PrinterErrorCode values.
+  # chromeos.printing.printing_manager.mojom.PrinterErrorCode values.
   "printer_error_codes\.cc": [
-    "+ash/webui/print_management/mojom/printing_manager.mojom.h",
+    "+chromeos/components/print_management/mojom/printing_manager.mojom.h",
   ],
 }
