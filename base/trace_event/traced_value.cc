@@ -342,9 +342,10 @@ class PickleWriter final : public TracedValue::Writer {
           base::Value new_dict(base::Value::Type::DICTIONARY);
           if (cur_dict) {
             stack.push_back(cur_dict);
-            cur_dict = cur_dict->SetKey(ReadKeyName(it), std::move(new_dict));
+            cur_dict =
+                cur_dict->GetDict().Set(ReadKeyName(it), std::move(new_dict));
           } else {
-            cur_list->Append(std::move(new_dict));
+            cur_list->GetList().Append(std::move(new_dict));
             // |new_dict| is invalidated at this point, so |cur_dict| needs to
             // be reset.
             cur_dict = &cur_list->GetList().back();
@@ -369,10 +370,11 @@ class PickleWriter final : public TracedValue::Writer {
           base::Value new_list(base::Value::Type::LIST);
           if (cur_dict) {
             stack.push_back(cur_dict);
-            cur_list = cur_dict->SetKey(ReadKeyName(it), std::move(new_list));
+            cur_list =
+                cur_dict->GetDict().Set(ReadKeyName(it), std::move(new_list));
             cur_dict = nullptr;
           } else {
-            cur_list->Append(std::move(new_list));
+            cur_list->GetList().Append(std::move(new_list));
             stack.push_back(cur_list);
             // |cur_list| is invalidated at this point by the Append, so it
             // needs to be reset.
@@ -384,9 +386,9 @@ class PickleWriter final : public TracedValue::Writer {
           bool value;
           CHECK(it.ReadBool(&value));
           if (cur_dict) {
-            cur_dict->SetBoolKey(ReadKeyName(it), value);
+            cur_dict->GetDict().Set(ReadKeyName(it), value);
           } else {
-            cur_list->Append(value);
+            cur_list->GetList().Append(value);
           }
         } break;
 
@@ -394,9 +396,9 @@ class PickleWriter final : public TracedValue::Writer {
           int value;
           CHECK(it.ReadInt(&value));
           if (cur_dict) {
-            cur_dict->SetIntKey(ReadKeyName(it), value);
+            cur_dict->GetDict().Set(ReadKeyName(it), value);
           } else {
-            cur_list->Append(value);
+            cur_list->GetList().Append(value);
           }
         } break;
 
@@ -415,9 +417,9 @@ class PickleWriter final : public TracedValue::Writer {
             base_value = Value(trace_value.as_double);
           }
           if (cur_dict) {
-            cur_dict->SetKey(ReadKeyName(it), std::move(base_value));
+            cur_dict->GetDict().Set(ReadKeyName(it), std::move(base_value));
           } else {
-            cur_list->Append(std::move(base_value));
+            cur_list->GetList().Append(std::move(base_value));
           }
         } break;
 
@@ -425,9 +427,9 @@ class PickleWriter final : public TracedValue::Writer {
           std::string value;
           CHECK(it.ReadString(&value));
           if (cur_dict) {
-            cur_dict->SetStringKey(ReadKeyName(it), std::move(value));
+            cur_dict->GetDict().Set(ReadKeyName(it), std::move(value));
           } else {
-            cur_list->Append(std::move(value));
+            cur_list->GetList().Append(std::move(value));
           }
         } break;
 
