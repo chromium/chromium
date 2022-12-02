@@ -36,6 +36,21 @@
   <message name="IDS_SITE_DATA_PAGE_TITLE" desc="The label used for the site data settings controls." translateable="false">
     On-device site data
   </message>
+  <message name="IDS_SITE_SETTINGS_PAGE_SITE_DATA_ALLOWED_SUB_LABEL" desc="" translateable="false">
+    Sites can save data on your device
+  </message>
+  <message name="IDS_SITE_SETTINGS_PAGE_SITE_DATA_BLOCKED_SUB_LABEL" desc="" translateable="false">
+    Sites can not save data on your device
+  </message>
+  <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_ENABLED" desc="" translateable="false">
+    Allowed
+  </message>
+  <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED_INCOGNITO" desc="" translateable="false">
+    Blocked in incognito
+  </message>
+  <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="" translateable="false">
+    Blocked
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_IDLE_DETECTION" desc="Title of the permission to detect user activity [CHAR_LIMIT=32]">
     Your device use
   </message>

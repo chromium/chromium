@@ -110,6 +110,11 @@ public class SiteSettings
             } else if (Type.COOKIES == prefCategory && checked
                     && cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY) {
                 p.setSummary(ContentSettingsResources.getCookieAllowedExceptThirdPartySummary());
+            } else if (Type.SITE_DATA == prefCategory) {
+                p.setSummary(ContentSettingsResources.getSiteDataListSummary(checked));
+            } else if (Type.THIRD_PARTY_COOKIES == prefCategory) {
+                p.setSummary(ContentSettingsResources.getThirdPartyCookieListSummary(
+                        cookieControlsMode));
             } else if (Type.DEVICE_LOCATION == prefCategory && checked
                     && WebsitePreferenceBridge.isLocationAllowedByPolicy(browserContextHandle)) {
                 p.setSummary(ContentSettingsResources.getGeolocationAllowedSummary());

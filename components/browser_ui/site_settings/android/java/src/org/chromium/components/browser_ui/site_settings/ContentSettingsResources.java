@@ -24,6 +24,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.device.DeviceFeatureList;
 
 /**
@@ -536,6 +537,32 @@ public class ContentSettingsResources {
      */
     public static int getAutoDarkWebContentListSummary(boolean enabled) {
         return enabled ? R.string.text_on : R.string.text_off;
+    }
+
+    /**
+     * Returns the summary for the site data content setting which should be used for display in the
+     * site settings list only.
+     */
+    public static int getSiteDataListSummary(boolean enabled) {
+        return enabled ? R.string.site_settings_page_site_data_allowed_sub_label
+                       : R.string.site_settings_page_site_data_blocked_sub_label;
+    }
+
+    /**
+     * Returns the summary for the third-party cookie content setting which should be used for
+     * display in the site settings list only.
+     */
+    public static int getThirdPartyCookieListSummary(@CookieControlsMode int cookieControlsMode) {
+        switch (cookieControlsMode) {
+            case CookieControlsMode.BLOCK_THIRD_PARTY:
+                return R.string.third_party_cookies_link_row_sub_label_disabled;
+            case CookieControlsMode.INCOGNITO_ONLY:
+                return R.string.third_party_cookies_link_row_sub_label_disabled_incognito;
+            case CookieControlsMode.OFF:
+                return R.string.third_party_cookies_link_row_sub_label_enabled;
+        }
+        assert false;
+        return 0;
     }
 
     /**
