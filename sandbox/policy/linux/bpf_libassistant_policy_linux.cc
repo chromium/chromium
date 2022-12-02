@@ -60,6 +60,7 @@ ResultExpr LibassistantProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_connect:
     // Needed by arm devices.
     case __NR_getcpu:
+    case __NR_getpeername:
     case __NR_getsockname:
     case __NR_listen:
       return Allow();
