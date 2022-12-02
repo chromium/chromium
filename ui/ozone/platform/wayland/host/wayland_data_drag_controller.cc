@@ -265,7 +265,7 @@ void WaylandDataDragController::DrawIconInternal() {
   DVLOG(3) << "Drawing drag icon. size=" << size.ToString();
   wl::DrawBitmap(*icon_bitmap_, icon_buffer_.get());
   auto* const surface = icon_surface_->surface();
-  if (connection_->compositor_version() < WL_SURFACE_OFFSET_SINCE_VERSION) {
+  if (wl::get_version_of_object(surface) < WL_SURFACE_OFFSET_SINCE_VERSION) {
     wl_surface_attach(surface, icon_buffer_->get(), icon_offset_.x(),
                       icon_offset_.y());
   } else {

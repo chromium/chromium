@@ -669,7 +669,7 @@ void WaylandSurface::ApplyPendingState() {
   }
 
   DCHECK(pending_state_.buffer);
-  if (connection_->compositor_version() >=
+  if (wl::get_version_of_object(surface_.get()) >=
       WL_SURFACE_DAMAGE_BUFFER_SINCE_VERSION) {
     // wl_surface_damage_buffer relies on compositor API version 4. See
     // https://bit.ly/2u00lv6 for details.
