@@ -8153,9 +8153,6 @@ crbug.com/1394361 http/tests/inspector-protocol/tracing/interactions.js [ Failur
 # Sheriff 2022-11-29
 crbug.com/1394524 external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-form-state-restore.tentative.html [ Failure Pass Timeout ]
 
-# Temporarily disable for crbug.com/1394898
-crbug.com/1394898 http/tests/devtools/unit/soft-context-menu.js [ Failure Skip ]
-
 # Sheriff 2022-12-1
 # Temporarily disable tests to land Shared Storage element in Application Panel.
 crbug.com/1372007 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]

@@ -1,9 +1,9 @@
 Initial focused element has focus
-[null]
-ArrowDown
 [First]
 ArrowDown
 [Second]
+ArrowDown
+[Third]
 ArrowDown
 [Third]
 ArrowUp
