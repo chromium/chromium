@@ -743,13 +743,18 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
 
+  // This button is in a container view that itself is in FeedHeaderVC's main
+  // view. In order to anchor the alert view correctly, we need to provide the
+  // button's frame as well as its superview which is the coordinate system
+  // for the frame.
+  UIButton* menuButton = self.feedHeaderViewController.menuButton;
   self.alertCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.ntpViewController
                          browser:self.browser
                            title:nil
                          message:nil
-                            rect:self.feedHeaderViewController.menuButton.frame
-                            view:self.feedHeaderViewController.view];
+                            rect:menuButton.frame
+                            view:menuButton.superview];
   __weak NewTabPageCoordinator* weakSelf = self;
 
   // Item for toggling the feed on/off.
