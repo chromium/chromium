@@ -1358,7 +1358,7 @@ void HTMLDocumentParser::ProcessPreloadData(
 
 void HTMLDocumentParser::FetchQueuedPreloads() {
   DCHECK(preloader_);
-  TRACE_EVENT0("blink", "HTMLDocumentParser::FetchQueuedPreloads");
+  TRACE_EVENT0("blink,devtools.timeline", "HTMLDocumentParser::FetchQueuedPreloads");
 
   if (!queued_preloads_.empty()) {
     base::ElapsedTimer timer;
