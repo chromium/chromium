@@ -10,12 +10,15 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/debug/stack_trace.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/metrics/custom_metrics_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
@@ -26,6 +29,7 @@
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher_observer.h"
+#include "ui/aura/window_observer.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
@@ -45,6 +49,41 @@ typedef ui::EventDispatchDetails DispatchDetails;
 namespace aura {
 
 namespace {
+
+// TODO(crbug/1392491): Remove.
+// Helper to DumpWithoutCrashing on window destroying to catch the case when
+// the target window is destroyed during event dispatching.
+constexpr size_t kMaxStackDepth = 150u;
+class WindowDestroyStackCapturer : public WindowObserver {
+ public:
+  explicit WindowDestroyStackCapturer(Window* window) : window_(window) {
+    DCHECK_NE(window_, nullptr);
+    window_->AddObserver(this);
+  }
+  ~WindowDestroyStackCapturer() override {
+    if (window_)
+      window_->RemoveObserver(this);
+  }
+
+  // WindowObserver:
+  void OnWindowDestroying(Window* window) override {
+    DCHECK_EQ(window_, window);
+    DCHECK(!stack_trace_.has_value());
+
+    stack_trace_.emplace(kMaxStackDepth);
+
+    window_->RemoveObserver(this);
+    window_ = nullptr;
+  }
+
+  const absl::optional<base::debug::StackTrace>& stack_trace() const {
+    return stack_trace_;
+  }
+
+ private:
+  raw_ptr<Window> window_ = nullptr;
+  absl::optional<base::debug::StackTrace> stack_trace_;
+};
 
 // Returns true if |target| has a non-client (frame) component at |location|,
 // in window coordinates.
@@ -576,6 +615,18 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
     return details;
   }
 
+  // TODO(crbug/1392491): Remove.
+  // Catch unexpected target window destroy and dump once per chrome run
+  // and only when UI event latency reporting is enabled (i.e. on ChromeOS).
+  static bool has_dumped = false;
+  absl::optional<WindowDestroyStackCapturer> window_destroy_stack_capturer;
+  if (!has_dumped && cc::CustomMetricRecorder::Get()) {
+#if defined(ARCH_CPU_X86_FAMILY)
+    // Only capture stack on x86 where it is cheap.
+    window_destroy_stack_capturer.emplace(target_window);
+#endif  // defined(ARCH_CPU_X86_FAMILY)
+  }
+
   DispatchDetails details;
   if (event->IsMouseEvent()) {
     details = PreDispatchMouseEvent(target_window, event->AsMouseEvent());
@@ -591,14 +642,26 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
   if (details.dispatcher_destroyed || details.target_destroyed)
     return details;
 
-  // TODO(crbug/1381787): Remove.
+  // TODO(crbug/1392491): Remove.
   // Suspect there is a code path that "target_destroyed" is not reported.
   if (target_window_tracker.windows().empty()) {
-    // Dump once per chrome run.
-    static bool has_dumped = false;
-    if (!has_dumped) {
-      LOG(ERROR) << "Target destroyed not reported"
-                 << ", event=" << event->ToString();
+    if (window_destroy_stack_capturer->stack_trace().has_value()) {
+      const uint32_t marker_start = 0xabababab;
+      size_t stack_frame_count = 0;
+      const void* stack_frame_copy[kMaxStackDepth] = {nullptr};
+      const uint32_t marker_end = 0xcdcdcdcd;
+
+      const void* const* stack_frames =
+          window_destroy_stack_capturer->stack_trace()->Addresses(
+              &stack_frame_count);
+      std::copy(stack_frames, stack_frames + stack_frame_count,
+                stack_frame_copy);
+
+      base::debug::Alias(&marker_start);
+      base::debug::Alias(&stack_frame_count);
+      base::debug::Alias(stack_frame_copy);
+      base::debug::Alias(&marker_end);
+
       has_dumped = base::debug::DumpWithoutCrashing();
     }
 
