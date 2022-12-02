@@ -6978,8 +6978,6 @@ crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/netw
 # Sheriff 2022-01-12
 crbug.com/1286619 [ Mac ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
 
-crbug.com/1225606 virtual/sanitizer-api-namespaces/external/wpt/sanitizer-api/sanitizer-names.https.tentative.html [ Failure ]
-
 # Temporarily disabled to unblock https://crrev.com/c/3657449
 crbug.com/1183990 http/tests/devtools/bindings/bindings-frame-attach-detach.js [ Failure Pass ]
 crbug.com/1183990 http/tests/devtools/bindings/bindings-frame-navigate.js [ Failure Pass ]

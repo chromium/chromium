@@ -90,60 +90,23 @@ const SanitizerConfigImpl::AttributeList& GetKnownAttributes() {
 
 }  // namespace default_config_names
 
-namespace with_namespace_names {
-
-const SanitizerConfigImpl& GetDefaultConfig() {
-  DEFINE_STATIC_LOCAL(
-      SanitizerConfigImpl, config_,
-      (BuildDefaultConfigImpl(kDefaultElements, kDefaultAttributes)));
-  return config_;
-}
-
-const SanitizerConfigImpl::ElementList& GetBaselineAllowElements() {
-  DEFINE_STATIC_LOCAL(SanitizerConfigImpl::ElementList, elements_,
-                      (ElementsFromAPI(kBaselineElements)));
-  return elements_;
-}
-
-const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
-  DEFINE_STATIC_LOCAL(SanitizerConfigImpl::AttributeList, attributes_,
-                      (AttributesFromAPI(kBaselineAttributes)));
-  return attributes_;
-}
-
-const SanitizerConfigImpl::AttributeList& GetKnownAttributes() {
-  DEFINE_STATIC_LOCAL(SanitizerConfigImpl::AttributeList, attributes_,
-                      (AttributesFromAPI(kKnownAttributes)));
-  return attributes_;
-}
-
-}  // namespace with_namespace_names
-
-bool WithNamespaces() {
-  return base::FeatureList::IsEnabled(blink::features::kSanitizerAPINamespaces);
-}
-
 // Now we'll implement the API functions, by "bouncing" to the corresponding
-// namespaces version.
+// C++ namespaced version.
 
 const SanitizerConfigImpl& GetDefaultConfig() {
-  return WithNamespaces() ? with_namespace_names::GetDefaultConfig()
-                          : default_config_names::GetDefaultConfig();
+  return default_config_names::GetDefaultConfig();
 }
 
 const SanitizerConfigImpl::ElementList& GetBaselineAllowElements() {
-  return WithNamespaces() ? with_namespace_names::GetBaselineAllowElements()
-                          : default_config_names::GetBaselineAllowElements();
+  return default_config_names::GetBaselineAllowElements();
 }
 
 const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
-  return WithNamespaces() ? with_namespace_names::GetBaselineAllowAttributes()
-                          : default_config_names::GetBaselineAllowAttributes();
+  return default_config_names::GetBaselineAllowAttributes();
 }
 
 const SanitizerConfigImpl::AttributeList& GetKnownAttributes() {
-  return WithNamespaces() ? with_namespace_names::GetKnownAttributes()
-                          : default_config_names::GetKnownAttributes();
+  return default_config_names::GetKnownAttributes();
 }
 
 }  // namespace blink

@@ -908,14 +908,6 @@ const base::FeatureParam<std::string>
     kBackgroundTracingPerformanceMark_AllowList{
         &kBackgroundTracingPerformanceMark, "allow_list", ""};
 
-// Controls whether the Sanitizer API allows namespaced content (SVG + MathML).
-//
-// This feature is unlikely to be launched as-is. The primary purpose is to
-// allow testing of different non-standard configurations.
-BASE_FEATURE(kSanitizerAPINamespaces,
-             "SanitizerAPINamespacesForTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch for the Interest Group API, i.e. if disabled, the
 // API exposure will be disabled regardless of the OT config.
 BASE_FEATURE(kInterestGroupStorage,

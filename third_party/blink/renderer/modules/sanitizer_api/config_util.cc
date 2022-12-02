@@ -93,7 +93,7 @@ bool IsValidCharacter(UChar ch) {
   //     variant. May it's too restrictive, though.
   // TODO(vogelheim): "HTML parser allows only ascii" is no longer true.
   return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ||
-         (ch >= '0' && ch <= '9') || ch == ':' || ch == '-' || ch == '_';
+         (ch >= '0' && ch <= '9') || ch == '-' || ch == '_';
 }
 
 bool AllValidCharacters(const String& name) {
@@ -113,35 +113,15 @@ bool IsValidName(const String& name) {
 }
 
 String ElementFromAPI(const String& name) {
-  // Check well-formed-ness.
   if (!IsValidName(name))
     return Invalid();
-
-  // Handle namespace prefixes:
-  wtf_size_t pos = name.find(':');
-  // Two (or more) colons => invalid.
-  if (pos != WTF::kNotFound && name.find(':', pos + 1) != WTF::kNotFound)
-    return Invalid();
-  // No prefix, or the ones explicitly allowed by the spec: okay.
-  if (pos == WTF::kNotFound || name.StartsWith("svg:") ||
-      name.StartsWith("math:")) {
-    return name;
-  }
-  // All else: invalid.
-  return Invalid();
+  return name;
 }
 
 String AttributeFromAPI(const String& name) {
   if (!IsValidName(name))
     return Invalid();
-
-  // The spec allows only a specific list of prefixed attributes. Use the
-  // GetBaselineAllowAttributes() table to check for those. All other uses
-  // of colon are invalid.
-  if (name.find(':') == WTF::kNotFound ||
-      GetBaselineAllowAttributes().Contains(name))
-    return name;
-  return Invalid();
+  return name;
 }
 
 String AttributeOrWildcardFromAPI(const String& name) {

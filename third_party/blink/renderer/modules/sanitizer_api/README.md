@@ -43,13 +43,6 @@ The current implementation matches the specification as of 04/2022 and will be
 updated as the specification develops. Known omissions relative to the
 current spec are:
 
-* Namespace support: Support for namespaced elements and attributes is
-  presently behind a separate flag,
-  `--enable-blink-features=SanitizerAPINamespacesForTesting`. The current
-  spec draft specifies the mechanism, but neither a default nor a baseline
-  configurations. The flag uses a temporary baseline list which has not yet
-  been vetted.
-
 * Secure context: The current spec draft requires a secure context. This
   might change. Our implementation presently follows the draft.
 
