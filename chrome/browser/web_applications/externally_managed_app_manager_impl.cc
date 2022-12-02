@@ -95,6 +95,7 @@ void ExternallyManagedAppManagerImpl::UninstallApps(
 }
 
 void ExternallyManagedAppManagerImpl::Shutdown() {
+  is_in_shutdown_ = true;
   pending_registrations_.clear();
   current_registration_.reset();
   pending_installs_.clear();
@@ -155,7 +156,7 @@ void ExternallyManagedAppManagerImpl::PostMaybeStartNext() {
 }
 
 void ExternallyManagedAppManagerImpl::MaybeStartNext() {
-  if (current_install_)
+  if (current_install_ || is_in_shutdown_)
     return;
 
   while (!pending_installs_.empty()) {
@@ -244,6 +245,7 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
 void ExternallyManagedAppManagerImpl::StartInstallationTask(
     std::unique_ptr<TaskAndCallback> task) {
   DCHECK(!current_install_);
+  DCHECK(!is_in_shutdown_);
   if (current_registration_) {
     // Preempt current registration.
     pending_registrations_.push_front(current_registration_->install_url());
@@ -272,6 +274,7 @@ bool ExternallyManagedAppManagerImpl::RunNextRegistration() {
 }
 
 void ExternallyManagedAppManagerImpl::CreateWebContentsIfNecessary() {
+  DCHECK(!is_in_shutdown_);
   if (web_contents_)
     return;
 
