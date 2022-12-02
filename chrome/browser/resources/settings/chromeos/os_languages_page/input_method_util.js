@@ -75,8 +75,6 @@ export const OptionType = {
   JAPANESE_USE_SYSTEM_DICTIONARY: 'UseSystemDictionary',
   JAPANESE_NUMBER_OF_SUGGESTIONS: 'numberOfSuggestions',
   JAPANESE_INPUT_MODE: 'JapaneseInputMode',
-  JAPANESE_INPUT_MODE_KANA: 'JapaneseInputModeKana',
-  JAPANESE_INPUT_MODE_ROMAJI: 'JapaneseInputModeRomaji',
   JAPANESE_PUNCTUATION_STYLE: 'JapanesePunctuationStyle',
   JAPANESE_SYMBOL_STYLE: 'JapaneseSymbolStyle',
   JAPANESE_SPACE_INPUT_STYLE: 'JapaneseSpaceInputStyle',
@@ -602,10 +600,6 @@ export function getOptionLabelName(option) {
       return 'inputMethodOptionsJapaneseSectionShortcut';
     case OptionType.JAPANESE_KEYMAP_STYLE:
       return 'inputMethodOptionsJapaneseKeymapStyle';
-    case OptionType.JAPANESE_INPUT_MODE_KANA:
-      return 'inputMethodOptionsJapaneseInputModeKana';
-    case OptionType.JAPANESE_INPUT_MODE_ROMAJI:
-      return 'inputMethodOptionsJapaneseInputModeRomaji';
     case OptionType.JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH:
       return 'inputMethodOptionsJapaneseAutomaticallySwitchToHalfwidth';
     case OptionType.JAPANESE_SHIFT_KEY_MODE_STYLE:
