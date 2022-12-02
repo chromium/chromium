@@ -198,6 +198,9 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   } else if (GetParam() == ProcessingLocation::kAudioServiceAvoidResampling) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         media::kChromeWideEchoCancellation, {{"minimize_resampling", "true"}});
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        media::kChromeWideEchoCancellation);
   }
 #endif
 
