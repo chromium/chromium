@@ -244,7 +244,8 @@ npm run server
 After running server, examples can be simply run:
 
 ```sh
-python3 examples/cross-browser.py
+python3 examples/console_log_example.py
+python3 examples/script_example.py
 ```
 
 ## WPT

@@ -19,67 +19,14 @@
 # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js
 
 import asyncio
-import json
 import logging
-import os
 from pathlib import Path
-
-import requests
-import websockets
+from _helpers import *
 
 logging.basicConfig(
     format="%(message)s",
     level=logging.DEBUG,
 )
-
-
-async def get_websocket():
-    port = os.getenv('PORT', 8080)
-
-    # Try to connect directly via WebSocket. If not available, connect via
-    # WebDriver Classic with BiDi capabilities.
-    try:
-        websocket = await websockets.connect(f'ws://localhost:{port}/session')
-        # Init BiDi session.
-        await run_and_wait_command({
-            "id": 0,
-            "method": "session.new",
-            "params": {}}, websocket)
-        return websocket
-    except websockets.exceptions.InvalidStatusCode:
-        # Fall back. Try to connect via WebDriver Classic, and upgrade to BiDi.
-        # Create a WebDriver Classic session with BiDi capabilities.
-        new_session = requests.post(
-            f'http://localhost:{port}/session',
-            json={
-                "capabilities": {
-                    "alwaysMatch": {
-                        "acceptInsecureCerts": True,
-                        "webSocketUrl": True}}}
-        ).json()
-
-        # Get BiDi websocket URL.
-        ws_url = new_session["value"]["capabilities"]["webSocketUrl"]
-        return await websockets.connect(ws_url)
-
-
-async def send_JSON_command(command, websocket):
-    await websocket.send(json.dumps(command))
-
-
-async def read_JSON_message(websocket):
-    return json.loads(await websocket.recv())
-
-
-async def run_and_wait_command(command, websocket):
-    command_id = command["id"]
-    await send_JSON_command(command, websocket)
-
-    # Read messages until the sent command is done.
-    while True:
-        message = await read_JSON_message(websocket)
-        if "id" in message and message["id"] == command_id:
-            return message
 
 
 async def main():

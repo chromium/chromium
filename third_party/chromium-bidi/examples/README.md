@@ -38,5 +38,6 @@ $FIREFOX_BINARY_PATH [--remote-debugging-port=8080]
 After running BiDi server, examples can be simply run, for example:
 
 ```sh
-python cross-browser.py
+python3 console_log_example.py
+python3 script_example.py
 ```
