@@ -21,10 +21,6 @@ buildflag_header("buildflags") {
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
     "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$enable_backup_ref_ptr_support",
 
-    # Not to be used by itself - use in combination with
-    # defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-    "USE_MTE_CHECKED_PTR=$enable_mte_checked_ptr_support",
-
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
   ]
 }

@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/augmentations/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/memory/raw_ptr.h"
 
 namespace base {
@@ -61,11 +62,11 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   // and aborts. Failure to clear would be indicated by the related death tests
   // not CHECKing appropriately.
   static constexpr bool need_clear_after_move =
-#if defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
       std::is_same_v<Impl,
                      internal::MTECheckedPtrImpl<
                          internal::MTECheckedPtrImplPartitionAllocSupport>> ||
-#endif  // defined(RAW_PTR_USE_MTE_CHECKED_PTR)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
       std::is_same_v<Impl, internal::AsanBackupRefPtrImpl> ||
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
