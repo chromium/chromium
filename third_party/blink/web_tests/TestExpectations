@@ -8172,3 +8172,4 @@ crbug.com/1394927 virtual/pending-beacon/external/wpt/pending-beacon/pending_bea
 
 # Sheriff 2022-12-2
 crbug.com/1395255 [ Win11 ] external/wpt/css/css-values/round-mod-rem-computed.html [ Failure ]
+crbug.com/1325514 http/tests/inspector-protocol/network/cookies-protocol-test.js [ Failure Pass ]
