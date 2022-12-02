@@ -1590,6 +1590,10 @@
     "self-block",
     "self-inline",
 
+    // anchor-scroll
+    "implicit",
+    // none,
+
     // animation-[end-]delay
     // contain
     // cover

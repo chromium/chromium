@@ -2958,13 +2958,13 @@ TEST_F(StyleResolverTest, ScopedAnchorScroll) {
   Element* inner_anchor = shadow->getElementById("inner-anchor");
 
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--outer", &GetDocument()),
-            *outer_anchor->ComputedStyleRef().AnchorScroll());
+            outer_anchor->ComputedStyleRef().AnchorScroll()->GetName());
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--host", shadow),
-            *host->ComputedStyleRef().AnchorScroll());
+            host->ComputedStyleRef().AnchorScroll()->GetName());
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--part", &GetDocument()),
-            *part->ComputedStyleRef().AnchorScroll());
+            part->ComputedStyleRef().AnchorScroll()->GetName());
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--inner", shadow),
-            *inner_anchor->ComputedStyleRef().AnchorScroll());
+            inner_anchor->ComputedStyleRef().AnchorScroll()->GetName());
 }
 
 // |length| must be a calculated value of a single anchor query node.

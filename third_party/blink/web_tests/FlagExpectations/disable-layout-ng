@@ -3398,6 +3398,7 @@ external/wpt/html/semantics/popovers/popover-anchor-change-display.tentative.htm
 external/wpt/html/semantics/popovers/popover-anchor-display-none.tentative.html [ Skip ]
 external/wpt/html/semantics/popovers/popover-anchor-display.tentative.html [ Skip ]
 external/wpt/html/semantics/popovers/popover-anchor-multicol-display.tentative.html [ Skip ]
+external/wpt/html/semantics/popovers/popover-anchor-scroll-display.tentative.html [ Skip ]
 
 crbug.com/1303102 external/wpt/css/css-images/object-view-box* [ Skip ]
 

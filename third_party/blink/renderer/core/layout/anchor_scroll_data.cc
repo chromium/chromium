@@ -20,7 +20,8 @@ namespace {
 const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!layout_object || !layout_object->IsOutOfFlowPositioned())
     return nullptr;
-  if (!layout_object->StyleRef().AnchorScroll())
+  const AnchorScrollValue* value = layout_object->StyleRef().AnchorScroll();
+  if (!value)
     return nullptr;
 
   LayoutBox::NGPhysicalFragmentList containing_block_fragments =
@@ -35,12 +36,20 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!anchor_query)
     return nullptr;
 
-  // TODO(xiaochengh): Also check implicit anchor.
-  if (const NGPhysicalFragment* fragment =
-          anchor_query->Fragment(layout_object->StyleRef().AnchorScroll())) {
-    return fragment->GetLayoutObject();
+  const NGPhysicalFragment* fragment = nullptr;
+  if (value->IsImplicit()) {
+    Element* element = DynamicTo<Element>(layout_object->GetNode());
+    Element* anchor = element ? element->ImplicitAnchorElement() : nullptr;
+    LayoutObject* anchor_layout_object =
+        anchor ? anchor->GetLayoutObject() : nullptr;
+    if (anchor_layout_object)
+      fragment = anchor_query->Fragment(anchor_layout_object);
+  } else {
+    DCHECK(value->IsNamed());
+    fragment = anchor_query->Fragment(&value->GetName());
   }
-  return nullptr;
+
+  return fragment ? fragment->GetLayoutObject() : nullptr;
 }
 
 // Returns the PaintLayer of the scroll container of an anchor-positioned |box|.
