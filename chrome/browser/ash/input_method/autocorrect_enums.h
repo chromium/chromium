@@ -19,6 +19,24 @@ enum class AutocorrectPreference {
   kMaxValue = kDisabled,
 };
 
+// Must match with IMEAutocorrectPrefStateTransition in enums.xml
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutocorrectPrefStateTransition {
+  // General setting transitions.
+  kUnchanged = 0,
+  kDefaultToDisabled = 1,
+  kDefaultToEnabled = 2,
+  kDisabledToEnabled = 3,
+  kEnabledToDisabled = 4,
+  // Interesting transitions for the enabled by default experiment.
+  kDefaultToForceEnabled = 5,
+  kForceEnabledToDisabled = 6,
+  kForceEnabledToDefault = 7,
+  kMaxValue = kForceEnabledToDefault,
+};
+
 // Must match with IMEAutocorrectCompatibilitySummary in enums.xml
 //
 // These values are persisted to logs. Entries should not be renumbered and

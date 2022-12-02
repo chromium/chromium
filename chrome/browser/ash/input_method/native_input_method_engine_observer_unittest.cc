@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,7 +16,7 @@ namespace {
 class NativeInputMethodEngineObserverTest : public ::testing::Test {
  public:
   NativeInputMethodEngineObserverTest()
-      : observer_(/*prefs=*/nullptr,
+      : observer_(/*prefs=*/profile_.GetPrefs(),
                   /*ime_base_observer=*/nullptr,
                   /*assistive_suggester=*/nullptr,
                   /*autocorrect_manager=*/nullptr,
@@ -23,6 +25,8 @@ class NativeInputMethodEngineObserverTest : public ::testing::Test {
                   /*use_ime_service=*/false) {}
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
   NativeInputMethodEngineObserver observer_;
 };
 

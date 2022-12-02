@@ -313,6 +313,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Type}.{Language}"
+    enum="IMEAutocorrectPrefStateTransition" expires_after="2023-06-01">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This histogram is recorded whenever the user changes their preference for
+    the autocorrect level enabled. Metrics are split between VK and PK, and
+    English versus non English languages.
+  </summary>
+  <token key="Type">
+    <variant name="PK" summary="Physical Keyboard"/>
+    <variant name="VK" summary="Virtual Keyboard"/>
+  </token>
+  <token key="Language">
+    <variant name="All" summary="All languages"/>
+    <variant name="English" summary="English language only"/>
+  </token>
+</histogram>
+
 <histogram name="InputMethod.Assistive.CandidateGenerationTime.MultiWord"
     units="ms" expires_after="2023-05-01">
   <owner>curtismcmullan@google.com</owner>

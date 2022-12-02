@@ -18,15 +18,33 @@ namespace {
 constexpr char kUsEnglish[] = "xkb:us::eng";
 constexpr char kBrazilPortugese[] = "xkb:br::por";
 
-void SetAutocorrectPreferenceTo(Profile& profile,
-                                const std::string& engine_id,
-                                int autocorrect_level) {
+void SetAutocorrectLevelTo(Profile& profile,
+                           const std::string& pref_name,
+                           const std::string& engine_id,
+                           int autocorrect_level) {
   base::Value input_method_setting(base::Value::Type::DICTIONARY);
-  input_method_setting.SetPath(
-      engine_id + ".physicalKeyboardAutoCorrectionLevel",
-      base::Value(autocorrect_level));
+  input_method_setting.SetPath(base::StrCat({engine_id, ".", pref_name}),
+                               base::Value(autocorrect_level));
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
                           input_method_setting);
+}
+
+void SetPkAutocorrectLevelTo(Profile& profile,
+                             const std::string& engine_id,
+                             int autocorrect_level) {
+  SetAutocorrectLevelTo(/*profile=*/profile,
+                        /*pref_name=*/"physicalKeyboardAutoCorrectionLevel",
+                        /*engine_id=*/engine_id,
+                        /*autocorrect_level=*/autocorrect_level);
+}
+
+void SetVkAutocorrectLevelTo(Profile& profile,
+                             const std::string& engine_id,
+                             int autocorrect_level) {
+  SetAutocorrectLevelTo(/*profile=*/profile,
+                        /*pref_name=*/"virtualKeyboardAutoCorrectionLevel",
+                        /*engine_id=*/engine_id,
+                        /*autocorrect_level=*/autocorrect_level);
 }
 
 class AutocorrectPrefsTest : public ::testing::Test {
@@ -36,9 +54,16 @@ class AutocorrectPrefsTest : public ::testing::Test {
 };
 
 TEST_F(AutocorrectPrefsTest,
-       FetchesTheCorrectValueWhenAutocorrectLevelIsNotSet) {
+       FetchesTheCorrectPkValueWhenAutocorrectLevelIsNotSet) {
   EXPECT_EQ(
       GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()), kUsEnglish),
+      AutocorrectPreference::kDefault);
+}
+
+TEST_F(AutocorrectPrefsTest,
+       FetchesTheCorrectVkValueWhenAutocorrectLevelIsNotSet) {
+  EXPECT_EQ(
+      GetVirtualKeyboardAutocorrectPref(*(profile_.GetPrefs()), kUsEnglish),
       AutocorrectPreference::kDefault);
 }
 
@@ -52,27 +77,51 @@ class FetchesAutocorrectPreference
     : public AutocorrectPrefsTest,
       public testing::WithParamInterface<AutocorrectPrefCase> {};
 
-TEST_P(FetchesAutocorrectPreference, AndReturnsCorrectPref) {
+TEST_P(FetchesAutocorrectPreference, AndReturnsCorrectPkPref) {
   const AutocorrectPrefCase& test_case = GetParam();
-  SetAutocorrectPreferenceTo(profile_,
-                             /*engine_id=*/kUsEnglish,
-                             /*autocorrect_level=*/test_case.autocorrect_level);
+  SetPkAutocorrectLevelTo(profile_,
+                          /*engine_id=*/kUsEnglish,
+                          /*autocorrect_level=*/test_case.autocorrect_level);
 
   EXPECT_EQ(
       GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()), kUsEnglish),
       test_case.autocorrect_pref);
 }
 
-TEST_P(FetchesAutocorrectPreference, AndScopesReturnedPreferenceToEngineId) {
+TEST_P(FetchesAutocorrectPreference, AndScopesReturnedPkPreferenceToEngineId) {
   const AutocorrectPrefCase& test_case = GetParam();
-  SetAutocorrectPreferenceTo(profile_,
-                             /*engine_id=*/kUsEnglish,
-                             /*autocorrect_level=*/test_case.autocorrect_level);
+  SetPkAutocorrectLevelTo(profile_,
+                          /*engine_id=*/kUsEnglish,
+                          /*autocorrect_level=*/test_case.autocorrect_level);
 
   // The above preference is set for the US English engine only. Queries for
   // the autocorrect level on any other engine should return the default.
   EXPECT_EQ(GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()),
                                                kBrazilPortugese),
+            AutocorrectPreference::kDefault);
+}
+
+TEST_P(FetchesAutocorrectPreference, AndReturnsCorrectVkPref) {
+  const AutocorrectPrefCase& test_case = GetParam();
+  SetVkAutocorrectLevelTo(profile_,
+                          /*engine_id=*/kUsEnglish,
+                          /*autocorrect_level=*/test_case.autocorrect_level);
+
+  EXPECT_EQ(
+      GetVirtualKeyboardAutocorrectPref(*(profile_.GetPrefs()), kUsEnglish),
+      test_case.autocorrect_pref);
+}
+
+TEST_P(FetchesAutocorrectPreference, AndScopesReturnedVkPreferenceToEngineId) {
+  const AutocorrectPrefCase& test_case = GetParam();
+  SetVkAutocorrectLevelTo(profile_,
+                          /*engine_id=*/kUsEnglish,
+                          /*autocorrect_level=*/test_case.autocorrect_level);
+
+  // The above preference is set for the US English engine only. Queries for
+  // the autocorrect level on any other engine should return the default.
+  EXPECT_EQ(GetVirtualKeyboardAutocorrectPref(*(profile_.GetPrefs()),
+                                              kBrazilPortugese),
             AutocorrectPreference::kDefault);
 }
 

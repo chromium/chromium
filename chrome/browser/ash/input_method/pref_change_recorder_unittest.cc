@@ -1,0 +1,244 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/input_method/pref_change_recorder.h"
+
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/input_method/autocorrect_enums.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace ash::input_method {
+namespace {
+
+constexpr char kUsEnglish[] = "xkb:us::eng";
+constexpr char kBrazilPortugese[] = "xkb:br::por";
+
+class FakeInputMethodOptions {
+ public:
+  FakeInputMethodOptions(PrefService* pref_service,
+                         const std::string& engine_id)
+      : pref_service_(pref_service), engine_id_(engine_id) {}
+
+  void SetPkAutocorrectLevel(int autocorrect_level) {
+    ScopedDictPrefUpdate(pref_service_,
+                         prefs::kLanguageInputMethodSpecificSettings)
+        ->SetByDottedPath(engine_id_ + ".physicalKeyboardAutoCorrectionLevel",
+                          base::Value(autocorrect_level));
+  }
+
+  void SetVkAutocorrectLevel(int autocorrect_level) {
+    ScopedDictPrefUpdate(pref_service_,
+                         prefs::kLanguageInputMethodSpecificSettings)
+        ->SetByDottedPath(engine_id_ + ".virtualKeyboardAutoCorrectionLevel",
+                          base::Value(autocorrect_level));
+  }
+
+ private:
+  PrefService* pref_service_;
+  const std::string engine_id_;
+};
+
+class PrefChangeRecorderTest : public testing::Test {
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+};
+
+struct AutocorrectPrefChangeCase {
+  std::string test_name;
+  absl::optional<int> autocorrect_level_from;
+  int autocorrect_level_to;
+  AutocorrectPrefStateTransition expected_metric;
+};
+
+class UserChangesAutocorrectPrefMetric
+    : public PrefChangeRecorderTest,
+      public testing::WithParamInterface<AutocorrectPrefChangeCase> {};
+
+TEST_P(UserChangesAutocorrectPrefMetric,
+       RecordsTheCorrectValueForPkAndEnglish) {
+  const AutocorrectPrefChangeCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  FakeInputMethodOptions options(profile_.GetPrefs(), kUsEnglish);
+
+  // Set the initial autocorrect level (simulating previous values set by user).
+  if (test_case.autocorrect_level_from)
+    options.SetPkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  // Start observing for changes.
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  options.SetPkAutocorrectLevel(test_case.autocorrect_level_to);
+
+  // Remember that English is a subset of All, so we must record both a metric
+  // for English and All.
+  histograms_.ExpectTotalCount(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.English.PK", 1);
+  histograms_.ExpectUniqueSample(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.English.PK",
+      /*sample=*/test_case.expected_metric, /*expected_bucket_count=*/1);
+  histograms_.ExpectTotalCount(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.PK", 1);
+  histograms_.ExpectUniqueSample(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.PK",
+      /*sample=*/test_case.expected_metric, /*expected_bucket_count=*/1);
+}
+
+TEST_P(UserChangesAutocorrectPrefMetric,
+       RecordsTheCorrectValueForVkAndEnglish) {
+  const AutocorrectPrefChangeCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  FakeInputMethodOptions options(profile_.GetPrefs(), kUsEnglish);
+
+  // Set the initial autocorrect level (simulating previous values set by user).
+  if (test_case.autocorrect_level_from)
+    options.SetVkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  // Start observing for changes.
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  options.SetVkAutocorrectLevel(test_case.autocorrect_level_to);
+
+  // Remember that English is a subset of All, so we must record both a metric
+  // for English and All.
+  histograms_.ExpectTotalCount(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.English.VK", 1);
+  histograms_.ExpectUniqueSample(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.English.VK",
+      /*sample=*/test_case.expected_metric, /*expected_bucket_count=*/1);
+  histograms_.ExpectTotalCount(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.VK", 1);
+  histograms_.ExpectUniqueSample(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.VK",
+      /*sample=*/test_case.expected_metric, /*expected_bucket_count=*/1);
+}
+
+TEST_P(UserChangesAutocorrectPrefMetric,
+       RecordsTheCorrectValueForPkAndBucketsToLangOtherThenEnglish) {
+  const AutocorrectPrefChangeCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  FakeInputMethodOptions options(profile_.GetPrefs(), kBrazilPortugese);
+
+  // Set the initial autocorrect level (simulating previous values set by user).
+  if (test_case.autocorrect_level_from)
+    options.SetPkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  // Start observing for changes.
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  options.SetPkAutocorrectLevel(test_case.autocorrect_level_to);
+
+  histograms_.ExpectTotalCount(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.PK", 1);
+  histograms_.ExpectUniqueSample(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.PK",
+      /*sample=*/test_case.expected_metric, /*expected_bucket_count=*/1);
+}
+
+TEST_P(UserChangesAutocorrectPrefMetric,
+       RecordsTheCorrectValueForVkAndBucketsToLangOtherThenEnglish) {
+  const AutocorrectPrefChangeCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  FakeInputMethodOptions options(profile_.GetPrefs(), kBrazilPortugese);
+
+  // Set the initial autocorrect level (simulating previous values set by user).
+  if (test_case.autocorrect_level_from)
+    options.SetVkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  // Start observing for changes.
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  options.SetVkAutocorrectLevel(test_case.autocorrect_level_to);
+
+  histograms_.ExpectTotalCount(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.VK", 1);
+  histograms_.ExpectUniqueSample(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.VK",
+      /*sample=*/test_case.expected_metric, /*expected_bucket_count=*/1);
+}
+
+TEST_P(UserChangesAutocorrectPrefMetric,
+       DoesNotRecordChangeForPKIfValueDoesntChange) {
+  const AutocorrectPrefChangeCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  FakeInputMethodOptions options(profile_.GetPrefs(), kUsEnglish);
+
+  // Set the initial autocorrect level (simulating previous values set by user).
+  if (test_case.autocorrect_level_from)
+    options.SetPkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  // Start observing for changes.
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  options.SetPkAutocorrectLevel(test_case.autocorrect_level_to);
+  options.SetPkAutocorrectLevel(test_case.autocorrect_level_to);
+  options.SetPkAutocorrectLevel(test_case.autocorrect_level_to);
+
+  // Records the first change only.
+  histograms_.ExpectTotalCount(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.English.PK", 1);
+}
+
+TEST_P(UserChangesAutocorrectPrefMetric,
+       DoesNotRecordChangeForVKIfValueDoesntChange) {
+  const AutocorrectPrefChangeCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  FakeInputMethodOptions options(profile_.GetPrefs(), kUsEnglish);
+
+  // Set the initial autocorrect level (simulating previous values set by user).
+  if (test_case.autocorrect_level_from)
+    options.SetVkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  // Start observing for changes.
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  options.SetVkAutocorrectLevel(test_case.autocorrect_level_to);
+  options.SetVkAutocorrectLevel(test_case.autocorrect_level_to);
+  options.SetVkAutocorrectLevel(test_case.autocorrect_level_to);
+
+  // Records the first change only.
+  histograms_.ExpectTotalCount(
+      "InputMethod.Assistive.AutocorrectV2.UserPrefChange.English.VK", 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrefChangeRecorderTest,
+    UserChangesAutocorrectPrefMetric,
+    testing::ValuesIn<AutocorrectPrefChangeCase>({
+        AutocorrectPrefChangeCase{
+            "DefaultToEnabled",
+            /*autocorrect_level_from=*/absl::nullopt,
+            /*autocorrect_level_to=*/1,
+            /*expected_change=*/
+            AutocorrectPrefStateTransition::kDefaultToEnabled},
+        AutocorrectPrefChangeCase{
+            "DefaultToAggressive",
+            /*autocorrect_level_from=*/absl::nullopt,
+            /*autocorrect_level_to=*/2,
+            /*expected_change=*/
+            AutocorrectPrefStateTransition::kDefaultToEnabled},
+        AutocorrectPrefChangeCase{
+            "EnabledToDisabled",
+            /*autocorrect_level_from=*/1,
+            /*autocorrect_level_to=*/0,
+            /*expected_change=*/
+            AutocorrectPrefStateTransition::kEnabledToDisabled},
+        AutocorrectPrefChangeCase{
+            "AggressiveToDisabled",
+            /*autocorrect_level_from=*/2,
+            /*autocorrect_level_to=*/0,
+            /*expected_change=*/
+            AutocorrectPrefStateTransition::kEnabledToDisabled},
+        AutocorrectPrefChangeCase{
+            "DisabledToEnabled",
+            /*autocorrect_level_from=*/0,
+            /*autocorrect_level_to=*/1,
+            /*expected_change=*/
+            AutocorrectPrefStateTransition::kDisabledToEnabled},
+        AutocorrectPrefChangeCase{
+            "DisabledToAggressive",
+            /*autocorrect_level_from=*/0,
+            /*autocorrect_level_to=*/2,
+            /*expected_change=*/
+            AutocorrectPrefStateTransition::kDisabledToEnabled},
+    }),
+    [](const testing::TestParamInfo<AutocorrectPrefChangeCase>& info) {
+      return info.param.test_name;
+    });
+
+}  // namespace
+}  // namespace ash::input_method

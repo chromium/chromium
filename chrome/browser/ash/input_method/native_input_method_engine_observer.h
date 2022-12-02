@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/grammar_manager.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
+#include "chrome/browser/ash/input_method/pref_change_recorder.h"
 #include "chrome/browser/ash/input_method/suggestions_collector.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
@@ -183,6 +184,8 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   std::unique_ptr<AutocorrectManager> autocorrect_manager_;
   std::unique_ptr<SuggestionsCollector> suggestions_collector_;
   std::unique_ptr<GrammarManager> grammar_manager_;
+
+  PrefChangeRecorder pref_change_recorder_;
 
   ui::CharacterComposer character_composer_;
 

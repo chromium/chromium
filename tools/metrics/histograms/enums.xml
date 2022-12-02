@@ -50951,6 +50951,17 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="DISABLED"/>
 </enum>
 
+<enum name="IMEAutocorrectPrefStateTransition">
+  <int value="0" label="UNCHANGED"/>
+  <int value="1" label="DEFAULT_TO_DISABLED"/>
+  <int value="2" label="DEFAULT_TO_ENABLED"/>
+  <int value="3" label="DISABLED_TO_ENABLED"/>
+  <int value="4" label="ENABLED_TO_DISABLED"/>
+  <int value="5" label="DEFAULT_TO_FORCE_ENABLED"/>
+  <int value="6" label="FORCE_ENABLED_TO_DISABLED"/>
+  <int value="7" label="FORCE_ENABLED_TO_DEFAULT"/>
+</enum>
+
 <enum name="IMEAutocorrectQualityBreakdown">
   <int value="0" label="SUGGESTION_RESOLVED"/>
   <int value="1" label="ORIGINAL_TEXT_IS_ASCII"/>

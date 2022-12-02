@@ -12,9 +12,13 @@
 
 namespace ash::input_method {
 
-// Returns the current user's preference for the autocorrect feature on the
-// physical keyboard.
+// Returns the user's autocorrect preference for the physical keyboard.
 AutocorrectPreference GetPhysicalKeyboardAutocorrectPref(
+    const PrefService& pref_service,
+    const std::string& engine_id);
+
+// Returns the user's autocorrect preference for the virtual keyboard.
+AutocorrectPreference GetVirtualKeyboardAutocorrectPref(
     const PrefService& pref_service,
     const std::string& engine_id);
 

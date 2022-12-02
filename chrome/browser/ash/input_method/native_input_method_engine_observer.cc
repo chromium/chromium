@@ -591,6 +591,7 @@ NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
       autocorrect_manager_(std::move(autocorrect_manager)),
       suggestions_collector_(std::move(suggestions_collector)),
       grammar_manager_(std::move(grammar_manager)),
+      pref_change_recorder_(prefs),
       use_ime_service_(use_ime_service) {}
 
 NativeInputMethodEngineObserver::~NativeInputMethodEngineObserver() = default;
