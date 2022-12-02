@@ -9,6 +9,7 @@ import os
 import json
 import random
 import subprocess
+import sys
 import tempfile
 
 from contextlib import AbstractContextManager
@@ -314,6 +315,12 @@ class FfxTestRunner(AbstractContextManager):
                 self._debug_data_directory = os.path.join(
                     self._results_dir, run_artifact_dir, artifact_path)
                 break
+
+        if run_summary['data']['outcome'] == "NOT_STARTED":
+            logging.critical('Test execution was interrupted. Either the '
+                             'emulator crashed while the tests were still '
+                             'running or connection to the device was lost.')
+            sys.exit(1)
 
         # There should be precisely one suite for the test that ran.
         suite_summary = run_summary.get('data', {}).get('suites', [{}])[0]
