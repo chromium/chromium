@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util_ts.js';
 
-import './strings.js';
+import './strings.m.js';
 import {BrowserBridge} from './browser_bridge.js';
 import {addNode, addNodeWithText, addTextNode} from './util.js';
 import {DivView} from './view.js';

@@ -4,7 +4,7 @@
 
 // strings.m.js is generated when we enable it via UseStringsJs() in webUI
 // controller. When loading it, it will populate data such as localized strings
-// into |window.loadTimeData|.
+// into |loadTimeData|.
 import './strings.m.js';
 import './parent_access_after.js';
 import './parent_access_error.js';

@@ -13,9 +13,9 @@ import './certificate_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertNotReached} from '../../js/assert_ts.js';
 import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
-import {loadTimeData} from '../../js/load_time_data.m.js';
+import {assertNotReached} from '../../js/assert_ts.js';
+import {loadTimeData} from '../../js/load_time_data.js';
 
 import {getTemplate} from './certificate_list.html.js';
 import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';

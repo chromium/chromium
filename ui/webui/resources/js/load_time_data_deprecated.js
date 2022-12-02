@@ -6,7 +6,7 @@
  * @fileoverview
  * NOTE: This file is deprecated, and provides only the minimal LoadTimeData
  * functions for places in the code still not using JS modules. Use
- * load_time_data.m.js in all new code.
+ * load_time_data.ts in all new code.
  *
  * This file defines a singleton which provides access to all data
  * that is available as soon as the page's resources are loaded (before DOM

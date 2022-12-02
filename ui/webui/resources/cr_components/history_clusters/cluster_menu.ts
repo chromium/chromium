@@ -12,7 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {loadTimeData} from '../../js/load_time_data.m.js';
+import {loadTimeData} from '../../js/load_time_data.js';
 
 import {getTemplate} from './cluster_menu.html.js';
 import {URLVisit} from './history_clusters.mojom-webui.js';

@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {CrCheckboxElement} from '../../cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
-import {loadTimeData} from '../../js/load_time_data.m.js';
+import {loadTimeData} from '../../js/load_time_data.js';
 
 import {getTemplate} from './ca_trust_edit_dialog.html.js';
 import {CaTrustInfo, CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificateSubnode, NewCertificateSubNode} from './certificates_browser_proxy.js';

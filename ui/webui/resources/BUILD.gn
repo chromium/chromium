@@ -141,7 +141,10 @@ group("closure_compile") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
-checked_in_dts_files = [ "js/cr.m.d.ts" ]
+checked_in_dts_files = [
+  "js/cr.m.d.ts",
+  "js/load_time_data.m.d.ts",
+]
 
 # Copies checked-in .d.ts files to the preprocess folder so that they are
 # discovered by TSC the same way generated .d.ts files are.
@@ -151,10 +154,7 @@ copy("copy_checked_in_dts_files") {
 }
 
 # Files for which .d.ts files will be auto-generated with ts_definitions().
-generate_definitions_js_files = [
-  "js/assert.js",
-  "js/load_time_data.m.js",
-]
+generate_definitions_js_files = [ "js/assert.js" ]
 
 if (is_ios) {
   generate_definitions_js_files += [ "js/ios/web_ui.js" ]
@@ -180,6 +180,7 @@ ts_library("library") {
                "js/focus_outline_manager.ts",
                "js/icon.ts",
                "js/keyboard_shortcut_list.ts",
+               "js/load_time_data.ts",
                "js/parse_html_subset.ts",
                "js/promise_resolver.ts",
                "js/platform.ts",

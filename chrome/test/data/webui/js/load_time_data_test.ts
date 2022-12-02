@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('LoadTimeDataModuleTest', function() {
@@ -73,21 +73,20 @@ suite('LoadTimeDataModuleTest', function() {
   });
 
   test('unescapedDollarSign', function() {
-    const error = 'Unexpected condition on ' + window.location.href +
-        ': Unescaped $ found in localized string.';
+    const error = 'Assertion failed: Unescaped $ found in localized string.';
 
-    function assertSubstitutionThrows(label: string) {
+    function assertSubstitutionThrows(label: string, ...args: string[]) {
       assertThrows(() => {
-        loadTimeData.getSubstitutedStringPieces(label);
+        loadTimeData.getSubstitutedStringPieces(label, ...args);
       }, error);
 
       assertThrows(() => {
-        loadTimeData.substituteString(label);
+        loadTimeData.substituteString(label, ...args);
       }, error);
     }
 
     assertSubstitutionThrows('$');
-    assertSubstitutionThrows('$1$$$a2');
+    assertSubstitutionThrows('$1$$$a2', 'foo');
     assertSubstitutionThrows('$$$');
     assertSubstitutionThrows('a$');
     assertSubstitutionThrows('a$\n');

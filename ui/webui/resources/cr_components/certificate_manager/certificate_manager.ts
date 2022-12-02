@@ -21,10 +21,10 @@ import './certificate_provisioning_list.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {focusWithoutInk} from '../../js/focus_without_ink.js';
 import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
-import {loadTimeData} from '../../js/load_time_data.m.js';
 import {WebUiListenerMixin} from '../../cr_elements/web_ui_listener_mixin.js';
+import {focusWithoutInk} from '../../js/focus_without_ink.js';
+import {loadTimeData} from '../../js/load_time_data.js';
 
 import {getTemplate} from './certificate_manager.html.js';
 import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
