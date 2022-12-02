@@ -11,6 +11,7 @@
 #include <unordered_set>
 
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -104,6 +105,28 @@ struct CONTENT_EXPORT BackForwardCacheCanStoreDocumentResultWithTree {
 // frozen state and is kept in this object. They can potentially be reused
 // after an history navigation. Reusing a document means swapping it back with
 // the current_frame_host.
+//
+//
+// BackForwardCache Size & Pruning Logic:
+//
+// 1. `EnforceCacheSizeLimit()` is called to prune the cache size down on
+//    storing a new cache entry, or when the renderer process's
+//    `IsProcessBackgrounded()` state changes.
+//    A. [Android-only] The number of entries where `HasForegroundedProcess()`
+//       is true is pruned to `GetForegroundedEntriesCacheSize()`.
+//    B. Prunes to `GetCacheSize()` entries no matter what kinds of tabs
+//       BackForwardCache is in.
+//    C. When a `RenderFrameHost` enters BackForwardCache, it schedules a task
+//       in `RenderFrameHostImpl::StartBackForwardCacheEvictionTimer()` to
+//       evicts the outermost frame after
+//       `kDefaultTimeToLiveInBackForwardCacheInSeconds` seconds.
+// 2. In `performance_manager::policies::BFCachePolicy`:
+//    A. (To Launch) [Desktop-only] On moderate memory pressure, the number of
+//       entries in a visible tab's cache is pruned to
+//       `ForegroundCacheSizeOnModeratePressure()`. The number in a non-visible
+//       tab is pruned to `BackgroundCacheSizeOnModeratePressure()`.
+//    B. (To Launch) [Desktop-only] On critical memory pressure, the cache is
+//       cleared.
 class CONTENT_EXPORT BackForwardCacheImpl
     : public BackForwardCache,
       public RenderProcessHostInternalObserver,
@@ -362,8 +385,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
       BackForwardCacheCanStoreDocumentResult& eviction_reason);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheMetricsTest, AllFeaturesCovered);
-
   // Destroys all evicted frames in the BackForwardCache.
   void DestroyEvictedFrames();
 
@@ -552,6 +573,13 @@ class CONTENT_EXPORT BackForwardCacheImpl
   };
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
+
+  // For testing:
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheMetricsTest, AllFeaturesCovered);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheActiveSizeTest, ActiveCacheSize);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheOverwriteSizeTest,
+                           OverwrittenCacheSize);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheDefaultSizeTest, DefaultCacheSize);
 };
 
 // Allow external code to be notified when back-forward cache is disabled for a

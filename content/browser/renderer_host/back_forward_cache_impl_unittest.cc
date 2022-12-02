@@ -3,7 +3,13 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+
+#include "base/test/scoped_feature_list.h"
+#include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace content {
 
@@ -81,6 +87,76 @@ TEST_F(BackForwardCacheImplTest, SecondCrossOriginReachable) {
                 ->same_origin_details->children[0]
                 ->blocked,
             blink::mojom::BFCacheBlocked::kNo);
+}
+
+// Covers BackForwardCache's cache size-related values used in Stable.
+// See docs/back_forward_cache_size.md for more details.
+class BackForwardCacheActiveSizeTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"cache_size", "6"}, {"foreground_cache_size", "2"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BackForwardCacheActiveSizeTest, ActiveCacheSize) {
+  EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 6u);
+  EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 2u);
+  EXPECT_TRUE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
+}
+
+// Covers overwriting BackForwardCache's cache size-related values.
+// When "cache_size" or "foreground_cache_size" presents in both
+// `kBackForwardCacheSize` and `features::kBackForwardCache`, the former should
+// take precedence.
+class BackForwardCacheOverwriteSizeTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kBackForwardCacheSize,
+          {{"cache_size", "8"}, {"foreground_cache_size", "4"}}},
+         {features::kBackForwardCache,
+          {{"cache_size", "6"}, {"foreground_cache_size", "2"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BackForwardCacheOverwriteSizeTest, OverwrittenCacheSize) {
+  EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 8u);
+  EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 4u);
+  EXPECT_TRUE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
+}
+
+// Covers BackForwardCache's default cache size-related values.
+// Note that these tests don't cover the values configured from Finch.
+class BackForwardCacheDefaultSizeTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        // Ensure BackForwardCache is enabled.
+        {{features::kBackForwardCache, {}}},
+        /*disabled_features=*/
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {{features::kBackForwardCacheMemoryControls}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BackForwardCacheDefaultSizeTest, DefaultCacheSize) {
+  EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 1u);
+  EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_FALSE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
 }
 
 }  // namespace content
