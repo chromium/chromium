@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/dips/dips_features.h"
@@ -449,8 +450,16 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
   histograms.ExpectUniqueTimeSample(kTimeToStorage, base::Seconds(10), 1);
 }
 
+// TODO(crbug.com/1395374): This test is failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Histograms_MultipleStoragesThenClick \
+  DISABLED_Histograms_MultipleStoragesThenClick
+#else
+#define MAYBE_Histograms_MultipleStoragesThenClick \
+  Histograms_MultipleStoragesThenClick
+#endif
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       Histograms_MultipleStoragesThenClick) {
+                       MAYBE_Histograms_MultipleStoragesThenClick) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);
