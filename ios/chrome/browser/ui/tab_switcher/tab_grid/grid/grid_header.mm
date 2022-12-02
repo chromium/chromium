@@ -53,7 +53,6 @@
     UIStackView* containerView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _titleLabel, _valueLabel ]];
     containerView.axis = UILayoutConstraintAxisHorizontal;
-    containerView.alignment = UIStackViewAlignmentCenter;
     containerView.translatesAutoresizingMaskIntoConstraints = NO;
     containerView.spacing = kGridHeaderContentSpacing;
     containerView.layoutMarginsRelativeArrangement = YES;
@@ -68,6 +67,10 @@
       [containerView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
       [containerView.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
+      [valueLabel.heightAnchor
+          constraintEqualToAnchor:containerView.heightAnchor],
+      [titleLabel.heightAnchor
+          constraintEqualToAnchor:containerView.heightAnchor],
     ]];
     [NSLayoutConstraint activateConstraints:constraints];
   }
@@ -142,7 +145,8 @@
   } else {
     contentInsets = kGridLayoutInsetsRegularRegular;
   }
-  self.containerView.layoutMargins = contentInsets;
+  self.containerView.layoutMargins =
+      UIEdgeInsetsMake(0, contentInsets.left, 0, contentInsets.right);
   [self layoutIfNeeded];
 }
 
