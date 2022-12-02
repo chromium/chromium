@@ -218,6 +218,49 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             'INFO: Staged 0 metadata files.\n',
         ])
 
+    def test_execute_exclude_patterns(self):
+        url = 'https://cr.dev/123/wptreport.json?token=abc'
+        self.tool.web.urls[url] = json.dumps({
+            'run_info': {
+                'os': 'mac'
+            },
+            'results': [{
+                'test': '/variant.html?foo=bar/abc',
+                'subtests': [],
+                'expected': 'PASS',
+                'status': 'FAIL',
+            }, {
+                'test': '/variant.html?foo=baz',
+                'subtests': [],
+                'expected': 'PASS',
+                'status': 'FAIL',
+            }],
+        }).encode()
+        with self._patch_builtins() as stack:
+            stack.enter_context(self._unstaged_changes())
+            exit_code = self.command.main([
+                '--exclude=wpt_internal',
+                '--exclude=variant.html?foo=baz',
+                '--exclude=crash.html',
+            ])
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Processing wptrunner report (1/1)\n',
+            'INFO: Updating expectations for up to 3 test files.\n',
+            "INFO: Updated 'variant.html'\n",
+            'INFO: Staged 1 metadata file.\n',
+        ])
+        # The other variant is not updated.
+        self.assertEqual(
+            self.tool.filesystem.read_text_file(
+                self.finder.path_from_web_tests('external', 'wpt',
+                                                'variant.html.ini')),
+            textwrap.dedent("""\
+                [variant.html?foo=bar/abc]
+                  expected: FAIL
+                """))
+
     def test_execute_with_no_issue_number_aborts(self):
         self.command.git_cl = MockGitCL(self.tool, issue_number='None')
         with self._patch_builtins():

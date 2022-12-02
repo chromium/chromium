@@ -106,6 +106,10 @@ class UpdateMetadata(Command):
             optparse.make_option('--keep-statuses',
                                  action='store_true',
                                  help='Keep all existing statuses.'),
+            optparse.make_option('--exclude',
+                                 action='append',
+                                 help='URL prefix of tests to exclude. '
+                                 'May specify multiple times.'),
             # TODO(crbug.com/1299650): Support nargs='*' after migrating to
             # argparse to allow usage with shell glob expansion. Example:
             #   --report out/*/wpt_reports*android*.json
@@ -148,6 +152,7 @@ class UpdateMetadata(Command):
         updater = MetadataUpdater.from_manifests(
             manifests,
             self._explicit_include_patterns(options, args),
+            options.exclude,
             overwrite_conditions=options.overwrite_conditions,
             disable_intermittent=options.disable_intermittent,
             keep_statuses=options.keep_statuses,
@@ -473,6 +478,7 @@ class MetadataUpdater:
     def from_manifests(cls,
                        manifests: ManifestMap,
                        include: Optional[List[str]] = None,
+                       exclude: Optional[List[str]] = None,
                        **options) -> 'MetadataUpdater':
         """Construct a metadata updater from WPT manifests.
 
@@ -486,7 +492,9 @@ class MetadataUpdater:
         """
         # TODO(crbug.com/1299650): Validate the include list instead of silently
         # ignoring the bad test pattern.
-        test_filter = testloader.TestFilter(manifests, include=include)
+        test_filter = testloader.TestFilter(manifests,
+                                            include=include,
+                                            exclude=exclude)
         test_files = {}
         for manifest, paths in manifests.items():
             # Unfortunately, test filtering is tightly coupled to the
