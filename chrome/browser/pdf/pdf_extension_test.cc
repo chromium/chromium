@@ -1711,13 +1711,18 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionScrollTest, WithSpace) {
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  SetInputFocusOnPlugin(guest_contents);
-  ASSERT_EQ(0, GetViewportScrollPositionY(guest_contents));
+  ASSERT_TRUE(guest);
+
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
+
+  SetInputFocusOnPlugin(guest);
+  ASSERT_EQ(0, GetViewportScrollPositionY(guest_mainframe));
 
   // Get the viewport height, since the scroll distance is based on it.
-  const int viewport_height = GetViewportHeight(guest_contents);
+  const int viewport_height = GetViewportHeight(guest_mainframe);
   ASSERT_GT(viewport_height, 0);
 
   // For web content, page down / page up scrolling only scrolls by a fraction
@@ -1726,33 +1731,36 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionScrollTest, WithSpace) {
       viewport_height * cc::kMinFractionToStepWhenPaging;
 
   // Press Space to scroll down.
-  ScrollEventWaiter scroll_waiter(guest_contents);
-  content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
-                            ui::DomCode::SPACE, ui::VKEY_SPACE,
+  ScrollEventWaiter scroll_waiter(guest_mainframe);
+  content::SimulateKeyPress(GetActiveWebContents(),
+                            ui::DomKey::FromCharacter(' '), ui::DomCode::SPACE,
+                            ui::VKEY_SPACE,
                             /*control=*/false, /*shift=*/false, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_contents),
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_mainframe),
               kScrollPositionEpsilon);
 
   // Press Space to scroll down again.
   scroll_waiter.Reset();
-  content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
-                            ui::DomCode::SPACE, ui::VKEY_SPACE,
+  content::SimulateKeyPress(GetActiveWebContents(),
+                            ui::DomKey::FromCharacter(' '), ui::DomCode::SPACE,
+                            ui::VKEY_SPACE,
                             /*control=*/false, /*shift=*/false, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_NEAR(scroll_height * 2, GetViewportScrollPositionY(guest_contents),
+  EXPECT_NEAR(scroll_height * 2, GetViewportScrollPositionY(guest_mainframe),
               kScrollPositionEpsilon);
 
   // Press Shift+Space to scroll up.
   scroll_waiter.Reset();
-  content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
-                            ui::DomCode::SPACE, ui::VKEY_SPACE,
+  content::SimulateKeyPress(GetActiveWebContents(),
+                            ui::DomKey::FromCharacter(' '), ui::DomCode::SPACE,
+                            ui::VKEY_SPACE,
                             /*control=*/false, /*shift=*/true, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_contents),
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_mainframe),
               kScrollPositionEpsilon);
 }
 
