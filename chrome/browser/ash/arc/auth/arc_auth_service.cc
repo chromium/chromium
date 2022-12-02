@@ -12,9 +12,11 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "ash/components/arc/mojom/auth.mojom-shared.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -85,6 +87,13 @@ class ArcAuthServiceFactory
 };
 
 mojom::ChromeAccountType GetAccountType(const Profile* profile) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  DCHECK(command_line);
+  if (command_line->HasSwitch(
+          ash::switches::kDemoModeForceArcOfflineProvision)) {
+    return mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT;
+  }
+
   if (profile->IsChild())
     return mojom::ChromeAccountType::CHILD_ACCOUNT;
 

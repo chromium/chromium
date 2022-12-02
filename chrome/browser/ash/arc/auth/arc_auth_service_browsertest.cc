@@ -16,6 +16,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -26,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_context.h"
@@ -1202,6 +1204,36 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         test_url_loader_factory()->AddResponse(
             request.url.spec(), std::string(), net::HTTP_NOT_FOUND);
+      }));
+
+  base::RunLoop run_loop;
+  auth_instance().RequestPrimaryAccountInfo(run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_TRUE(auth_instance().account_info());
+  EXPECT_TRUE(auth_instance().account_info()->account_name.value().empty());
+  EXPECT_TRUE(auth_instance().account_info()->auth_code.value().empty());
+  EXPECT_EQ(mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT,
+            auth_instance().account_info()->account_type);
+  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
+  EXPECT_TRUE(auth_instance().account_info()->is_managed);
+}
+
+IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
+                       GetDemoAccountWithOfflineFlag) {
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDemoModeForceArcOfflineProvision);
+
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kOnline);
+  ash::DemoSession::StartIfInDemoMode();
+
+  SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+
+  test_url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ResponseJob(request, test_url_loader_factory());
       }));
 
   base::RunLoop run_loop;

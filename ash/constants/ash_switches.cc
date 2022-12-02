@@ -318,6 +318,10 @@ const char kDefaultWallpaperSmall[] = "default-wallpaper-small";
 // before "@cros-demo-mode.com".
 const char kDemoModeEnrollingUsername[] = "demo-mode-enrolling-username";
 
+// Force ARC provision to take code path for offline demo mode.
+const char kDemoModeForceArcOfflineProvision[] =
+    "demo-mode-force-arc-offline-provision";
+
 // App ID to use for highlights app in demo mode.
 const char kDemoModeHighlightsApp[] = "demo-mode-highlights-extension";
 
