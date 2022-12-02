@@ -735,7 +735,7 @@ class ExtensionActionRunnerWithUserHostControlsBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<PermissionsManager> permissions_manager_;
+  raw_ptr<PermissionsManager, DanglingUntriaged> permissions_manager_;
 };
 
 // Tests changing user site settings when the extension has site access (which

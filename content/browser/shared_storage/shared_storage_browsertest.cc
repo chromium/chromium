@@ -3915,7 +3915,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
   url::Origin a_test_origin_;
 
  private:
-  raw_ptr<PrivateAggregationHost> private_aggregation_host_;
+  raw_ptr<PrivateAggregationHost, DanglingUntriaged> private_aggregation_host_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

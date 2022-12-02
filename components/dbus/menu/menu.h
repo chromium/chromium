@@ -154,7 +154,7 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
 
   void SendLayoutChangedSignal(int32_t id);
 
-  raw_ptr<dbus::ExportedObject> menu_ = nullptr;
+  raw_ptr<dbus::ExportedObject, DanglingUntriaged> menu_ = nullptr;
 
   base::RepeatingCallback<void(bool)> barrier_;
 

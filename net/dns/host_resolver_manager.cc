@@ -799,7 +799,7 @@ class HostResolverManager::RequestImpl
   const NetworkAnonymizationKey network_anonymization_key_;
   ResolveHostParameters parameters_;
   base::WeakPtr<ResolveContext> resolve_context_;
-  const raw_ptr<HostCache> host_cache_;
+  const raw_ptr<HostCache, DanglingUntriaged> host_cache_;
   const HostResolverFlags host_resolver_flags_;
 
   RequestPriority priority_;

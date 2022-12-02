@@ -170,7 +170,7 @@ class WebAppNavigatePrerenderingBrowserTest : public WebAppNavigateBrowserTest {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   base::HistogramTester histogram_tester_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;

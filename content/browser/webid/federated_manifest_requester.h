@@ -106,7 +106,7 @@ class FederatedManifestRequester {
   std::vector<FetchResult> fetch_results_;
 
   // Fetches the manifest and manifest list.
-  base::raw_ptr<IdpNetworkRequestManager> network_manager_;
+  base::raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> network_manager_;
 
   base::WeakPtrFactory<FederatedManifestRequester> weak_ptr_factory_{this};
 };

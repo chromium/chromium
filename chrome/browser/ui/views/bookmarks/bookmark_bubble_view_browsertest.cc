@@ -91,7 +91,8 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
   }
 
  private:
-  raw_ptr<commerce::MockShoppingService> mock_shopping_service_;
+  raw_ptr<commerce::MockShoppingService, DanglingUntriaged>
+      mock_shopping_service_;
   base::test::ScopedFeatureList test_features_;
 };
 

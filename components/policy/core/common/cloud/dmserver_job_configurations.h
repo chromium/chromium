@@ -30,7 +30,7 @@ class CloudPolicyClient;
 // Struct containing the result data for a given job.
 struct DMServerJobResult {
   // Unowned pointer the return value of `DeviceManagementService::CreateJob`.
-  raw_ptr<const DeviceManagementService::Job> job = nullptr;
+  raw_ptr<const DeviceManagementService::Job, DanglingUntriaged> job = nullptr;
 
   // net::Error value cast to int.
   int net_error = 0;

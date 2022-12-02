@@ -247,7 +247,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   raw_ptr<views::View, DanglingUntriaged> advanced_view_source_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> advanced_view_target_ = nullptr;
 
-  raw_ptr<views::Throbber> throbber_;
+  raw_ptr<views::Throbber, DanglingUntriaged> throbber_;
 
   raw_ptr<views::Combobox, DanglingUntriaged> source_language_combobox_ =
       nullptr;

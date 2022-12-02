@@ -489,7 +489,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   class ReadBuffer;
 
   const bool is_for_ipcz_;
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
   HandlePolicy handle_policy_;
   const std::unique_ptr<ReadBuffer> read_buffer_;
 

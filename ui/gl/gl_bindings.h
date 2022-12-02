@@ -531,9 +531,9 @@ struct GL_EXPORT DriverGL {
 };
 
 struct GL_EXPORT CurrentGL {
-  raw_ptr<GLApi> Api = nullptr;
-  raw_ptr<DriverGL> Driver = nullptr;
-  raw_ptr<const GLVersionInfo> Version = nullptr;
+  raw_ptr<GLApi, DanglingUntriaged> Api = nullptr;
+  raw_ptr<DriverGL, DanglingUntriaged> Driver = nullptr;
+  raw_ptr<const GLVersionInfo, DanglingUntriaged> Version = nullptr;
 };
 
 #if defined(USE_EGL)

@@ -145,7 +145,7 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
 
   // |container_host_| is valid throughout lifetime of |this| because it owns
   // |this|.
-  raw_ptr<ServiceWorkerContainerHost> container_host_;
+  raw_ptr<ServiceWorkerContainerHost, DanglingUntriaged> container_host_;
   base::WeakPtr<ServiceWorkerContextCore> context_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
 
