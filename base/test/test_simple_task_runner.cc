@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -86,9 +86,10 @@ void TestSimpleTaskRunner::RunPendingTasks() {
 
   // Multiple test task runners can share the same thread for determinism in
   // unit tests. Make sure this TestSimpleTaskRunner's tasks run in its scope.
-  absl::optional<ThreadTaskRunnerHandleOverrideForTesting> ttrh_override;
-  if (!ThreadTaskRunnerHandle::IsSet() ||
-      ThreadTaskRunnerHandle::Get() != this) {
+  absl::optional<SingleThreadTaskRunner::CurrentHandleOverrideForTesting>
+      ttrh_override;
+  if (!SingleThreadTaskRunner::HasCurrentDefault() ||
+      SingleThreadTaskRunner::GetCurrentDefault() != this) {
     ttrh_override.emplace(this);
   }
 
