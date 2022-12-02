@@ -238,7 +238,8 @@ void MediaCaptureDevicesDispatcher::GetDefaultDevicesForBrowserContext(
       devices.audio_device = *device;
     } else {
       const blink::MediaStreamDevices& audio_devices = GetAudioCaptureDevices();
-      devices.audio_device = audio_devices.front();
+      if (!audio_devices.empty())
+        devices.audio_device = audio_devices.front();
     }
   }
 
