@@ -169,6 +169,11 @@ courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expe
 # as a pointer to PA memory
 sandbox::TargetProcess::base_address_ # https://crbug.com/1173374
 
+# Populated manually - pointers that kernel sees as raw pointers
+# https://crbug.com/1395075
+base::(anonymous namespace)::kernel_sigaction::k_sa_handler
+base::(anonymous namespace)::kernel_sigaction::k_sa_restorer
+
 # Populated manually - uninitialized memory reinterpret_cast to raw_ptr<T>
 # causing AddRef/Deref mismatch.
 sandbox::(anonymous namespace)::_HEAP_32::Heap
