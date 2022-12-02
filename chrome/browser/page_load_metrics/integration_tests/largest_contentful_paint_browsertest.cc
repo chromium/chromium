@@ -378,9 +378,9 @@ class MouseoverLCPTest : public MetricIntegrationTest,
 
     std::string get_timestamp = R"(
       (async () => {
-        await new Promise(r => setTimeout(r, 200));
+        await new Promise(r => setTimeout(r, 100));
         const timestamp = performance.now();
-        await new Promise(r => setTimeout(r, 200));
+        await new Promise(r => setTimeout(r, 100));
         return timestamp;
       })())";
     double timestamp =

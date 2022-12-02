@@ -105,7 +105,7 @@ const run_mouseover_test = background => {
     // There's only a single LCP entry, because the zoom was skipped.
     await wait_for_lcp_entries(1);
 
-    // Wait 600 ms as the heuristic in 500 ms.
+    // Wait 600 ms as the heuristic is 500 ms.
     // This will no longer be necessary once the heuristic relies on Task
     // Attribution.
     await new Promise(r => step_timeout(r, 600));
