@@ -993,7 +993,9 @@ std::unique_ptr<TextCodec> TextCodecCJK::Create(const TextEncoding& encoding,
                                                 const void*) {
   const char* name = encoding.GetName();
 
-  // TODO(1378183): rewrite with std::make_unique.
+  // To keep the `TextCodecCJK` constructor private, we intend to `new`
+  // it and use `base::WrapUnique`. Note that we cannot use `std::make_unique`
+  // for a private constructor.
   if (!strcmp(name, kCanonicalNameEucJp)) {
     return base::WrapUnique(new TextCodecCJK(Encoding::kEucJp));
   }
