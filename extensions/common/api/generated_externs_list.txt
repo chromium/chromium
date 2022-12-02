@@ -16,4 +16,5 @@ mojo_private.idl
 networking_private.idl
 runtime.json
 system_display.idl
+test.json
 virtual_keyboard_private.json
