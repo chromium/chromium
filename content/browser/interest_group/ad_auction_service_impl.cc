@@ -603,7 +603,14 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     std::map<url::Origin,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests,
+    absl::optional<GURL> render_url_without_kanon_enforced,
+    std::vector<GURL> ad_component_urls_without_kanon_enforced,
+    absl::optional<GURL> render_url_with_kanon_simulated,
+    std::vector<GURL> ad_component_urls_with_kanon_simulated,
     std::vector<std::string> errors) {
+  // TODO(https://crbug.com/1234419): Use the various ..._kanon_... URLs as
+  // appropriate (to update k-anon info, metrics?)
+
   // Delete the AuctionRunner. Since all arguments are passed by value, they're
   // all safe to used after this has been done.
   auto auction_it = auctions_.find(auction);

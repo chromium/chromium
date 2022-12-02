@@ -37,5 +37,9 @@ group("for_content_tests") {
   visibility = [ "//content/test/*" ]
   if (!is_component_build) {
     public_deps = [ ":mojom" ]
+  } else {
+    # Normally this won't happen for component builds, but mojo shared gets its
+    # own component, so the usual "it's all content/" logic doesn't apply.
+    public_deps = [ ":mojom_shared" ]
   }
 }

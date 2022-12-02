@@ -22,6 +22,13 @@ std::string KAnonKeyForAdBid(const blink::InterestGroup& group,
          ad.render_url.spec();
 }
 
+GURL RenderUrlFromKAnonKeyForAdBid(const std::string& key) {
+  size_t pos = key.find_last_of('\n');
+  if (pos == std::string::npos)
+    return GURL();
+  return GURL(key.substr(pos + 1));
+}
+
 std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
                                        const blink::InterestGroup::Ad& ad) {
   DCHECK(group.ads);

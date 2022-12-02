@@ -12,6 +12,8 @@
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
+class GURL;
+
 namespace content {
 class InterestGroupManagerImpl;
 
@@ -22,6 +24,11 @@ std::string CONTENT_EXPORT KAnonKeyFor(const url::Origin& owner,
 // Calculates the k-anonymity key for an Ad that is used for bidding.
 std::string CONTENT_EXPORT KAnonKeyForAdBid(const blink::InterestGroup& group,
                                             const blink::InterestGroup::Ad& ad);
+
+// Given a key computed by KAnonKeyForAdBid, returns the `render_url` of the
+// ad that was used to produce it.
+GURL CONTENT_EXPORT RenderUrlFromKAnonKeyForAdBid(const std::string& key);
+
 // Calculates the k-anonymity key for an Ad that is used for reporting the
 // interest group name.
 std::string CONTENT_EXPORT

@@ -130,6 +130,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
           url::Origin,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
           private_aggregation_requests,
+      absl::optional<GURL> render_url_without_kanon_enforced,
+      std::vector<GURL> ad_component_urls_without_kanon_enforced,
+      absl::optional<GURL> render_url_with_kanon_simulated,
+      std::vector<GURL> ad_component_urls_with_kanon_simulated,
       std::vector<std::string> errors);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;

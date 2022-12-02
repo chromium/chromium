@@ -109,8 +109,9 @@ struct BidderWorklerKAnonBidSameAsNonEnforced {};
 
 // Represents result of applying k-anonymity enforcement to a bidder worklet.
 // The resulting bid can be the same as without enforcement, or a different one.
-// Using BidderWorklerKAnonBidSameAsNonEnforced is a performance optimization;
-// it's semantically correct (but wasteful) to use a BidderWorkletBid instead.
+//
+// You must use BidderWorklerKAnonBidSameAsNonEnforced when the bids match,
+// to make it easier to sanity-check the result at IPC boundary.
 union BidderWorkletKAnonEnforcedBid {
   BidderWorklerKAnonBidSameAsNonEnforced? same_as_non_enforced; // value unused.
   BidderWorkletBid bid;

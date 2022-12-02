@@ -2695,6 +2695,7 @@ test("content_unittests") {
     "//content/public/renderer",
     "//content/renderer:for_content_tests",
     "//content/services/auction_worklet:tests",
+    "//content/services/auction_worklet/public/mojom:for_content_tests",
     "//content/services/shared_storage_worklet:for_content_tests",
     "//crypto",
     "//device/bluetooth",

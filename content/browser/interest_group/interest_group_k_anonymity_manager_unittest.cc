@@ -272,6 +272,18 @@ TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
   // maybe_group->bidding_ads_kanon[0].last_updated);
 }
 
+TEST_F(InterestGroupKAnonymityManagerTest, RenderUrlFromKAnonKeyForAdBid) {
+  const GURL top_frame = GURL("https://www.example.com/foo");
+  const url::Origin owner = url::Origin::Create(top_frame);
+  blink::InterestGroup group = MakeInterestGroup(owner, "foo");
+  group.bidding_url = GURL("https://www.example.com/bidding.js");
+
+  const blink::InterestGroup::Ad& ad = group.ads.value()[0];
+
+  EXPECT_EQ(ad.render_url,
+            RenderUrlFromKAnonKeyForAdBid(KAnonKeyForAdBid(group, ad)));
+}
+
 class MockAnonymityServiceDelegate : public KAnonymityServiceDelegate {
  public:
   void JoinSet(std::string id,

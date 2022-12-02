@@ -173,7 +173,18 @@ class CONTENT_EXPORT InterestGroupAuction
     // on destruction so trace events are all closed if an auction is cancelled.
     void EndTracing();
 
+    // Like above but for `trace_id_for_kanon_scoring`, and used specifically
+    // for scoring of auction entries that were re-run due to k-anonymity
+    // enforcement.
+    void BeginTracingKAnonScoring();
+    void EndTracingKAnonScoring();
+
     StorageInterestGroup bidder;
+
+    // Set of render URLs that are k-anonymous for use as ad or ad component
+    // render URLs for this interest group.
+    // (Not set if we are not configured to care).
+    base::flat_map<GURL, bool> kanon_render_urls;
 
     // This starts off as the base priority of the interest group, but is
     // updated by sparse vector multiplications using first the priority vector
@@ -186,7 +197,7 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // Tracing ID associated with the BidState. A nestable async "Bid" trace
     // event is started for a bid state during the generate and score bid phase
-    // when the worklet is requested, and ended once the bid is score, or the
+    // when the worklet is requested, and ended once the bid is scored, or the
     // bidder worklet fails to bid.
     //
     // Additionally, if the BidState is a winner of a component auction, another
@@ -199,6 +210,10 @@ class CONTENT_EXPORT InterestGroupAuction
     // absl::nullopt means no ID is currently assigned, and there's no pending
     // event.
     absl::optional<uint64_t> trace_id;
+
+    // Since the k-anon-enforced scoring creates events that don't nest neatly
+    // with the regular run, it gets its own id.
+    absl::optional<uint64_t> trace_id_for_kanon_scoring;
 
     // ReceiverId for use as a GenerateBidClient. Only populated while
     // generateBid() is running.
@@ -255,7 +270,12 @@ class CONTENT_EXPORT InterestGroupAuction
   // duplicates auction_worklet::mojom::BidderWorkletBid, with additional
   // information about the bidder.
   struct Bid {
-    Bid(std::string ad_metadata,
+    // Which auctions the bid is appropriate for, based on whether the auction
+    // enforces k-anonymity or not.
+    enum class BidRole { kUnenforcedKAnon, kEnforcedKAnon, kBothKAnonModes };
+
+    Bid(BidRole bid_role,
+        std::string ad_metadata,
         double bid,
         GURL render_url,
         std::vector<GURL> ad_components,
@@ -268,6 +288,16 @@ class CONTENT_EXPORT InterestGroupAuction
     Bid(Bid&);
 
     ~Bid();
+
+    // This considers the bid_role to pick proper trace id.
+    uint64_t TraceId() {
+      return (bid_role == BidRole::kEnforcedKAnon)
+                 ? *bid_state->trace_id_for_kanon_scoring
+                 : *bid_state->trace_id;
+    }
+
+    // Which auctions the bid participates in.
+    BidRole bid_role;
 
     // These are taken directly from the
     // auction_worklet::mojom::BidderWorkletBid.
@@ -333,7 +363,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // is destroyed. `config` is typically owned by the AuctionRunner's
   // `owned_auction_config_` field. `parent` should be the parent
   // InterestGroupAuction if this is a component auction, and null, otherwise.
-  InterestGroupAuction(const blink::AuctionConfig* config,
+  InterestGroupAuction(auction_worklet::mojom::KAnonymityBidMode kanon_mode,
+                       const blink::AuctionConfig* config,
                        const InterestGroupAuction* parent,
                        AuctionWorkletManager* auction_worklet_manager,
                        InterestGroupManagerImpl* interest_group_manager,
@@ -440,9 +471,32 @@ class CONTENT_EXPORT InterestGroupAuction
   // only be called once, since it moves the stored origins.
   void TakePostAuctionUpdateOwners(std::vector<url::Origin>& owners);
 
-  // Returns the top bid of the auction. May only be invoked after the
-  // bidding and scoring phase has completed successfully.
-  ScoredBid* top_bid();
+  // For an auction in k-anon enforcement mode (a precondition for making this
+  // call), retrieves what the winner would be if enforcement were off.
+  //
+  // May only be called after the auction has completed, for either success or
+  // failure. May only be called once, since it moves the stored URLs.
+  absl::optional<GURL> TakeRenderUrlWithoutKAnonEnforced();
+  std::vector<GURL> TakeComponentUrlsWithoutKAnonEnforced();
+
+  // For an auction in k-anon simulation mode (a precondition for making this
+  // call), retrieves what the winner would be if k-anon enforcement were on.
+  //
+  // May only be called after the auction has completed, for either success or
+  // failure. May only be called once, since it moves the stored URLs.
+  absl::optional<GURL> TakeSimulatedKAnonRenderUrl();
+  std::vector<GURL> TakeSimulatedKAnonComponentUrls();
+
+  // Returns the top bid of whichever auction (k-anon or not, depending on the
+  // configuration) is actually to be used for the user-facing results. May only
+  // be invoked after the bidding and scoring phase has completed. Will be null
+  // if there is no winner.
+  ScoredBid* top_bid() const { return leader_info().top_bid.get(); }
+
+  // Final result of the auction, once completed. Null before completion.
+  absl::optional<AuctionResult> final_auction_result() const {
+    return final_auction_result_;
+  }
 
   // Gets the buyer experiment ID in `config` for buyer. Public so that
   // InterestGroupAuctionReporter can use it.
@@ -574,6 +628,10 @@ class CONTENT_EXPORT InterestGroupAuction
   void OnComponentAuctionComplete(InterestGroupAuction* component_auction,
                                   bool success);
 
+  static std::unique_ptr<Bid> CreateBidFromComponentAuctionWinner(
+      const ScoredBid* scored_bid,
+      Bid::BidRole bid_role);
+
   // Called when a potential source of bids has finished generating bids. This
   // could be either a component auction completing (with or without generating
   // a bid) or a BuyerHelper that has finished generating bids. Must be called
@@ -642,6 +700,14 @@ class CONTENT_EXPORT InterestGroupAuction
   void OnBiddingAndScoringComplete(AuctionResult auction_result,
                                    const std::vector<std::string>& errors = {});
 
+  // Like top_bid() but returns all leader information.
+  const LeaderInfo& leader_info() const;
+
+  // These may be null. They should only be invoked after the bidding and
+  // scoring phase has completed.
+  ScoredBid* top_kanon_enforced_bid();
+  ScoredBid* top_non_kanon_enforced_bid();
+
   // -----------------------
   // Reporting phase methods
   // -----------------------
@@ -683,12 +749,20 @@ class CONTENT_EXPORT InterestGroupAuction
       const absl::optional<auction_worklet::mojom::RejectReason> reject_reason =
           absl::nullopt);
 
+  // Returns how and whether k-anonymity is being handled.
+  auction_worklet::mojom::KAnonymityBidMode kanon_mode() const {
+    return kanon_mode_;
+  }
+
   // Tracing ID associated with the Auction. A nestable
   // async "Auction" trace
   // event lasts for the lifetime of `this`. Sequential events that apply to
   // the entire auction are logged using this ID, including potentially
   // out-of-process events by bidder and seller worklet reporting methods.
   const uint64_t trace_id_;
+
+  // Whether k-anonymity enforcement or simulation (or none) are performed.
+  const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
 
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
@@ -793,7 +867,8 @@ class CONTENT_EXPORT InterestGroupAuction
   std::vector<std::pair<blink::InterestGroupKey, double>>
       post_auction_priority_updates_;
 
-  LeaderInfo auction_leader_;
+  LeaderInfo non_kanon_enforced_auction_leader_;
+  LeaderInfo kanon_enforced_auction_leader_;
 
   // Holds a reference to the SellerWorklet used by the auction.
   std::unique_ptr<AuctionWorkletManager::WorkletHandle> seller_worklet_handle_;

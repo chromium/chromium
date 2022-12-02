@@ -70,6 +70,16 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //
   // `manually_aborted` is true only if the auction was successfully interrupted
   // by the call to Abort().
+  //
+  // If k-anonymity enforcement is on, `render_url_without_kanon_enforced`
+  // and `ad_component_urls_without_kanon_enforced` would be set to what the
+  // winner would be without the enforcement. This may be identical to
+  // `render_url` and `ad_component_urls`.
+  //
+  // If k-anonymity simulation is on, `render_url_with_kanon_simulated` and
+  // `ad_component_urls_with_kanon_simulated` are what the winner would be if
+  // k-anonymity was being enforced. This may be identical to `render_url` and
+  // `ad_component_urls`.
   using RunAuctionCallback = base::OnceCallback<void(
       AuctionRunner* auction_runner,
       bool manually_aborted,
@@ -82,6 +92,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       ReportingMetadata ad_beacon_map,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
+      absl::optional<GURL> render_url_without_kanon_enforced,
+      std::vector<GURL> ad_component_urls_without_kanon_enforced,
+      absl::optional<GURL> render_url_with_kanon_simulated,
+      std::vector<GURL> ad_component_urls_with_kanon_simulated,
       std::vector<std::string> errors)>;
 
   // Returns true if `origin` is allowed to use the interest group API. Will be
@@ -148,6 +162,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   AuctionRunner(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
+      auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const blink::AuctionConfig& auction_config,
       network::mojom::ClientSecurityStatePtr client_security_state,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
@@ -195,6 +210,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   mojo::Receiver<blink::mojom::AbortableAdAuction> abort_receiver_;
 
   // Configuration.
+
+  // Whether k-anonymity enforcement or simulation (or none) are performed.
+  const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;
   blink::AuctionConfig owned_auction_config_;
   RunAuctionCallback callback_;
 
