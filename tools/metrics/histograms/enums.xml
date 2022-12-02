@@ -35266,7 +35266,7 @@ Called by update_extension_histograms.py.-->
   <int value="1299" label="AUTOFILLPRIVATE_SERVERCARDLINKCLICKED"/>
   <int value="1300" label="AUTOTESTPRIVATE_GETARCAPP"/>
   <int value="1301" label="AUTOTESTPRIVATE_GETARCPACKAGE"/>
-  <int value="1302" label="AUTOTESTPRIVATE_LAUNCHARCAPP"/>
+  <int value="1302" label="DELETED_AUTOTESTPRIVATE_LAUNCHARCAPP"/>
   <int value="1303" label="AUTOTESTPRIVATE_CLOSEAPP"/>
   <int value="1304"
       label="DELETED_ACCESSIBILITY_PRIVATE_SETSWITCHACCESSMENUSTATE"/>
