@@ -17,104 +17,79 @@
 namespace media {
 namespace {
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-constexpr bool kUseHybridAgc = true;
-#else
-constexpr bool kUseHybridAgc = false;
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-constexpr bool kUseClippingController = true;
-#else
-constexpr bool kUseClippingController = false;
-#endif
-
-// The analog gain controller is not supported on mobile - i.e., Android, iOS.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-constexpr bool kAnalogAgcSupported = false;
-#else
-constexpr bool kAnalogAgcSupported = true;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-// The analog gain controller can only be disabled on Chromecast.
-//
-// TODO(crbug.com/1336055): kAllowToDisableAnalogAgc should be removed once AGC2
-// is fully launched.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-constexpr bool kAllowToDisableAnalogAgc = true;
-#else
-constexpr bool kAllowToDisableAnalogAgc = false;
-#endif
-
-// AGC1 mode.
 using Agc1Mode = webrtc::AudioProcessing::Config::GainController1::Mode;
-// TODO(bugs.webrtc.org/7909): Maybe set mode to kFixedDigital also for IOS.
-#if BUILDFLAG(IS_ANDROID)
-constexpr Agc1Mode kAgc1Mode = Agc1Mode::kFixedDigital;
-#else
-constexpr Agc1Mode kAgc1Mode = Agc1Mode::kAdaptiveAnalog;
-#endif
 
-bool DisallowInputVolumeAdjustment() {
-  return !base::FeatureList::IsEnabled(
-      ::features::kWebRtcAllowInputVolumeAdjustment);
-}
-
-// Configures automatic gain control in `apm_config`.
-// TODO(bugs.webrtc.org/7494): Clean up once hybrid AGC experiment finalized.
-// TODO(bugs.webrtc.org/7494): Remove unused cases, simplify decision logic.
 void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
                                 webrtc::AudioProcessing::Config& apm_config) {
-  // Configure AGC1.
-  if (settings.automatic_gain_control) {
-    apm_config.gain_controller1.enabled = true;
-    apm_config.gain_controller1.mode = kAgc1Mode;
-  }
-  auto& agc1_analog_config = apm_config.gain_controller1.analog_gain_controller;
-  // Enable and configure AGC1 Analog if needed.
-  if (kAnalogAgcSupported && settings.experimental_automatic_gain_control) {
-    agc1_analog_config.enabled = true;
-  }
-  // Disable AGC1 Analog.
-  if (kAllowToDisableAnalogAgc &&
-      !settings.experimental_automatic_gain_control) {
-    // This should likely be done on non-Chromecast platforms as well, but care
-    // is needed since users may be relying on the current behavior.
-    // https://crbug.com/918677#c4
-    agc1_analog_config.enabled = false;
-  }
-
-  // TODO(bugs.webrtc.org/7909): Consider returning if `kAnalogAgcSupported` is
-  // false since the AGC clipping controller and the Hybrid AGC experiments are
-  // meant to run when AGC1 Analog is used.
-  if (!settings.automatic_gain_control ||
-      !settings.experimental_automatic_gain_control ||
-      !agc1_analog_config.enabled) {
-    // The settings below only apply when AGC is enabled and when the analog
-    // controller is supported and enabled.
+  if (!settings.automatic_gain_control) {
+    // Disable AGC.
+    apm_config.gain_controller1.enabled = false;
+    apm_config.gain_controller2.enabled = false;
     return;
   }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Use the Hybrid AGC setup, which combines the AGC1 input volume controller
+  // and the AGC2 digital adaptive controller.
 
-  // AGC1 Analog Clipping Controller experiment.
-  agc1_analog_config.clipping_predictor.enabled = kUseClippingController;
-
-  // Use either the AGC1 or the AGC2 adapative digital gain controller.
-  agc1_analog_config.enable_digital_adaptive = !kUseHybridAgc;
-  auto& agc2_config = apm_config.gain_controller2;
-  agc2_config.enabled = kUseHybridAgc;
-  agc2_config.fixed_digital.gain_db = 0.0f;
-  agc2_config.adaptive_digital.enabled = kUseHybridAgc;
-
-  if (DisallowInputVolumeAdjustment()) {
-    if (agc2_config.enabled) {
-      // Completely disable AGC1, which is only used as input volume controller.
-      apm_config.gain_controller1.enabled = false;
-    } else {
-      LOG(WARNING) << "Cannot disable input volume adjustment when AGC2 is "
-                      "disabled (not implemented).";
-    }
+  // TODO(crbug.com/1375239): Remove `kWebRtcAllowInputVolumeAdjustment` safely.
+  if (!base::FeatureList::IsEnabled(
+          ::features::kWebRtcAllowInputVolumeAdjustment)) {
+    // Entirely disable AGC1 to disable input volume adjustment.
+    apm_config.gain_controller1.enabled = false;
+  } else {
+    // Enable the AGC1 input volume controller.
+    apm_config.gain_controller1.enabled = true;
+    // TODO(bugs.webrtc.org/14685): Remove next line once `.mode` gets
+    // deprecated.
+    apm_config.gain_controller1.mode = Agc1Mode::kAdaptiveAnalog;
+    apm_config.gain_controller1.analog_gain_controller.enabled = true;
+    apm_config.gain_controller1.analog_gain_controller.clipping_predictor
+        .enabled = true;
+    apm_config.gain_controller1.analog_gain_controller.enable_digital_adaptive =
+        false;
   }
+
+  apm_config.gain_controller2.enabled = true;
+  apm_config.gain_controller2.fixed_digital.gain_db = 0.0f;
+  apm_config.gain_controller2.adaptive_digital.enabled = true;
+  apm_config.gain_controller2.input_volume_controller.enabled = false;
+
+  return;
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  // Use AGC1 both as input volume and adaptive digital controller.
+
+  // When AGC1 is used both as input volume and digital gain controller, it is
+  // not possible to disable the input volume controller since the digital
+  // controller also gets disabled. Hence, `kWebRtcAllowInputVolumeAdjustment`
+  // is ignored in this case.
+  apm_config.gain_controller1.enabled = true;
+  // TODO(bugs.webrtc.org/14685): Remove next line once `.mode` gets deprecated.
+  apm_config.gain_controller1.mode = Agc1Mode::kAdaptiveAnalog;
+  apm_config.gain_controller1.analog_gain_controller.enabled = true;
+  apm_config.gain_controller1.analog_gain_controller.clipping_predictor
+      .enabled = true;
+  apm_config.gain_controller1.analog_gain_controller.enable_digital_adaptive =
+      true;
+  apm_config.gain_controller2.enabled = false;
+  return;
+#elif BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+  // Configure AGC for CAST.
+  apm_config.gain_controller1.enabled = true;
+  // TODO(bugs.webrtc.org/7494): Switch to AGC2 once APM runtime settings ready.
+  apm_config.gain_controller1.mode = Agc1Mode::kFixedDigital;
+  apm_config.gain_controller1.analog_gain_controller.enabled = false;
+  apm_config.gain_controller2.enabled = false;
+  return;
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Configure AGC for mobile.
+  apm_config.gain_controller1.enabled = false;
+  apm_config.gain_controller2.enabled = true;
+  apm_config.gain_controller2.fixed_digital.gain_db = 6.0f;
+  apm_config.gain_controller2.adaptive_digital.enabled = false;
+  return;
+#else
+#error Undefined AGC configuration. Add a case above for the current platform.
+#endif
 }
 
 }  // namespace

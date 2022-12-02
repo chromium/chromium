@@ -138,31 +138,45 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     }
   }
 
+  // TODO(bugs.webrtc.org/7494): Remove/reduce duplication with
+  // `CreateWebRtcAudioProcessingModuleTest.CheckDefaultAudioProcessingConfig`.
   void VerifyDefaultComponents(MediaStreamAudioProcessor& audio_processor) {
-    EXPECT_TRUE(audio_processor.has_webrtc_audio_processing());
+    ASSERT_TRUE(audio_processor.has_webrtc_audio_processing());
     const webrtc::AudioProcessing::Config config =
         *audio_processor.GetAudioProcessingModuleConfigForTesting();
-    EXPECT_TRUE(config.echo_canceller.enabled);
-    EXPECT_TRUE(config.gain_controller1.enabled);
+
     EXPECT_TRUE(config.high_pass_filter.enabled);
-    EXPECT_TRUE(config.noise_suppression.enabled);
-    EXPECT_EQ(config.noise_suppression.level, config.noise_suppression.kHigh);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    EXPECT_TRUE(config.gain_controller1.analog_gain_controller
-                    .clipping_predictor.enabled);
+    EXPECT_FALSE(config.pre_amplifier.enabled);
+    EXPECT_TRUE(config.echo_canceller.enabled);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    EXPECT_TRUE(config.gain_controller1.enabled);
+    EXPECT_TRUE(config.gain_controller2.enabled);
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+    EXPECT_TRUE(config.gain_controller1.enabled);
+    EXPECT_FALSE(config.gain_controller2.enabled);
+#elif BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+    EXPECT_TRUE(config.gain_controller1.enabled);
+    EXPECT_FALSE(config.gain_controller2.enabled);
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    EXPECT_FALSE(config.gain_controller1.enabled);
+    EXPECT_TRUE(config.gain_controller2.enabled);
 #else
-    EXPECT_FALSE(config.gain_controller1.analog_gain_controller
-                     .clipping_predictor.enabled);
+    GTEST_FAIL() << "Undefined expectation.";
 #endif
+
+    EXPECT_TRUE(config.noise_suppression.enabled);
+    EXPECT_EQ(config.noise_suppression.level,
+              webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
+
 #if BUILDFLAG(IS_ANDROID)
+    // Android uses echo cancellation optimized for mobiles, and does not
+    // support keytap suppression.
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
-    EXPECT_EQ(config.gain_controller1.mode,
-              config.gain_controller1.kFixedDigital);
+    EXPECT_FALSE(config.transient_suppression.enabled);
 #else
     EXPECT_FALSE(config.echo_canceller.mobile_mode);
-    EXPECT_EQ(config.gain_controller1.mode,
-              config.gain_controller1.kAdaptiveAnalog);
+    EXPECT_TRUE(config.transient_suppression.enabled);
 #endif
   }
 

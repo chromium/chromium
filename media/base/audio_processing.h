@@ -22,8 +22,8 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   // Keytap removal, sometimes called "experimental noise suppression".
   bool transient_noise_suppression = true;
   bool automatic_gain_control = true;
-  // TODO(bugs.webrtc.org/7494): Remove since it is unused. On non-Chromecast
-  // platforms, it has no effect.
+  // TODO(bugs.webrtc.org/7494): Remove.
+  // Deprecated. Has no effect.
   bool experimental_automatic_gain_control = true;
   bool high_pass_filter = true;
   // Multi-channel is not an individual audio effect, but determines whether the

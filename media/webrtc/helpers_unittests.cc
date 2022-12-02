@@ -24,6 +24,9 @@ webrtc::AudioProcessing::Config CreateApmGetConfig(
   return apm->GetConfig();
 }
 
+// TOOD(b/260315490): Add missing tests with different `AudioProcessingSettings`
+// values.
+
 // Verify that the default settings in AudioProcessingSettings are applied
 // correctly by `CreateWebRtcAudioProcessingModule()`.
 TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
@@ -35,12 +38,23 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_TRUE(config.high_pass_filter.enabled);
   EXPECT_FALSE(config.pre_amplifier.enabled);
   EXPECT_TRUE(config.echo_canceller.enabled);
-  EXPECT_TRUE(config.gain_controller1.enabled);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  EXPECT_TRUE(config.gain_controller1.enabled);
+  EXPECT_TRUE(config.gain_controller2.enabled);
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  EXPECT_TRUE(config.gain_controller1.enabled);
+  EXPECT_FALSE(config.gain_controller2.enabled);
+#elif BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+  EXPECT_TRUE(config.gain_controller1.enabled);
+  EXPECT_FALSE(config.gain_controller2.enabled);
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(config.gain_controller1.enabled);
   EXPECT_TRUE(config.gain_controller2.enabled);
 #else
-  EXPECT_FALSE(config.gain_controller2.enabled);
+  GTEST_FAIL() << "Undefined expectation.";
 #endif
+
   EXPECT_TRUE(config.noise_suppression.enabled);
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
@@ -56,118 +70,12 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
 #endif
 }
 
-TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAgcConfig) {
-  auto config = CreateApmGetConfig(/*settings=*/{});
-  EXPECT_TRUE(config.gain_controller1.enabled);
-  using Mode = webrtc::AudioProcessing::Config::GainController1::Mode;
-  // TODO(bugs.webrtc.org/7909): Add OS_IOS once bug fixed.
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(config.gain_controller1.mode, Mode::kFixedDigital);
-#else
-  EXPECT_EQ(config.gain_controller1.mode, Mode::kAdaptiveAnalog);
-#endif
-
-  const auto& agc1_analog_config =
-      config.gain_controller1.analog_gain_controller;
-  // TODO(bugs.webrtc.org/7909): Uncomment below once fixed.
-  // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  //   // No analog controller available on mobile.
-  //   EXPECT_FALSE(agc1_analog_config.enabled);
-  // #else
-  EXPECT_TRUE(agc1_analog_config.enabled);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Leaving `agc_startup_min_volume` unspecified on mobile does not override
-  // `startup_min_volume`.
-  EXPECT_EQ(agc1_analog_config.startup_min_volume,
-            kDefaultApmConfig.gain_controller1.analog_gain_controller
-                .startup_min_volume);
-#else
-  // TODO(bugs.webrtc.org/7494): Check if the following is unwanted, fix if so.
-  // Leaving `agc_startup_min_volume` overrides the default WebRTC value with
-  // zero.
-  EXPECT_EQ(agc1_analog_config.startup_min_volume, 0);
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(agc1_analog_config.clipping_predictor.enabled);
-#else
-  EXPECT_FALSE(agc1_analog_config.clipping_predictor.enabled);
-#endif
-  // TODO(bugs.webrtc.org/7909): Uncomment below once fixed.
-  // #endif
-
-  // Check that either AGC1 digital or AGC2 digital is used based on the
-  // platforms where the Hybrid AGC is enabled by default.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  EXPECT_FALSE(agc1_analog_config.enable_digital_adaptive);
-  EXPECT_TRUE(config.gain_controller2.enabled);
-  EXPECT_TRUE(config.gain_controller2.adaptive_digital.enabled);
-#else
-  // AGC1 Digital.
-  EXPECT_TRUE(agc1_analog_config.enable_digital_adaptive);
-  EXPECT_FALSE(config.gain_controller2.enabled);
-#endif
-}
-
-// When `automatic_gain_control` and `experimental_automatic_gain_control` are
-// false, the default AGC1 configuration is used, but on Chromecast AGC1 Analog
-// is explicitly disabled.
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     Agc1ConfigUnchangedIfAgcSettingsDisabled) {
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = false,
-                    .experimental_automatic_gain_control = false});
-
-// TODO(crbug.com/1336055): Make this check non-conditional following the launch
-// of AGC2.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  // Override the default config since on Chromecast AGC1 is explicitly
-  // disabled.
-  auto expected_config = kDefaultApmConfig.gain_controller1;
-  expected_config.analog_gain_controller.enabled = false;
-  EXPECT_EQ(config.gain_controller1, expected_config);
-#else
-  EXPECT_EQ(config.gain_controller1, kDefaultApmConfig.gain_controller1);
-#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-}
-
 TEST(CreateWebRtcAudioProcessingModuleTest,
      Agc2ConfigUnchangedIfAgcSettingsDisabled) {
   auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = false,
-                    .experimental_automatic_gain_control = false});
+      /*settings=*/{.automatic_gain_control = false});
   EXPECT_EQ(config.gain_controller2, kDefaultApmConfig.gain_controller2);
 }
-
-TEST(CreateWebRtcAudioProcessingModuleTest, DisableAgcEnableExperimentalAgc) {
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = false,
-                    .experimental_automatic_gain_control = true});
-  EXPECT_FALSE(config.gain_controller1.enabled);
-  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
-}
-
-// TODO(bugs.webrtc.org/7909): Remove #IF once fixed.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-TEST(CreateWebRtcAudioProcessingModuleTest, DisableAnalogAgc) {
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = false});
-  EXPECT_TRUE(config.gain_controller1.enabled);
-  EXPECT_FALSE(config.gain_controller1.analog_gain_controller.enabled);
-}
-#else
-// Checks that setting `experimental_automatic_gain_control` to false does not
-// disable the analog controller.
-// TODO(bugs.webrtc.org/7909): Remove once fixed.
-TEST(CreateWebRtcAudioProcessingModuleTest, CannotDisableAnalogAgc) {
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = false});
-  EXPECT_TRUE(config.gain_controller1.enabled);
-  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
-}
-#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST(CreateWebRtcAudioProcessingModuleTest,
@@ -176,51 +84,64 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   feature_list.InitAndEnableFeature(
       features::kWebRtcAllowInputVolumeAdjustment);
   auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
+      /*settings=*/{.automatic_gain_control = true});
   EXPECT_TRUE(config.gain_controller1.enabled);
   EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
 }
-#else
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     InputVolumeAdjustmentEnabledWithAgc1) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kWebRtcAllowInputVolumeAdjustment);
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-  EXPECT_TRUE(config.gain_controller1.enabled);
-  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST(CreateWebRtcAudioProcessingModuleTest,
      CanDisableInputVolumeAdjustmentWithHybridAgc) {
   ::base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kWebRtcAllowInputVolumeAdjustment);
   auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
+      /*settings=*/{.automatic_gain_control = true});
   // Check that AGC1 is entirely disabled since, in the Hybrid AGC setup, AGC1
   // is only used for input volume adaptations.
   EXPECT_FALSE(config.gain_controller1.enabled);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+TEST(CreateWebRtcAudioProcessingModuleTest,
+     OnlyOneInputVolumeControllerEnabledOnDesktopPlatforms) {
+  auto config = CreateApmGetConfig(
+      /*settings=*/{.automatic_gain_control = true});
+  if (!config.gain_controller1.enabled && !config.gain_controller2.enabled) {
+    GTEST_SUCCEED() << "AGC is altogether disabled.";
+    return;
+  }
+  // Enabled state for the input volume controller in AGC1 and AGC2
+  // respectively.
+  bool agc1_enabled = config.gain_controller1.enabled &&
+                      config.gain_controller1.analog_gain_controller.enabled;
+  bool agc2_enabled = config.gain_controller2.enabled &&
+                      config.gain_controller2.input_volume_controller.enabled;
+  if (!agc1_enabled && !agc2_enabled) {
+    GTEST_SUCCEED() << "No input volume controller is enabled.";
+  }
+  EXPECT_NE(agc1_enabled, agc2_enabled);
+}
 #else
 TEST(CreateWebRtcAudioProcessingModuleTest,
-     CannotDisableInputVolumeAdjustmentWithAgc1) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kWebRtcAllowInputVolumeAdjustment);
+     InputVolumeControllerDisabledOnNonDesktopPlatforms) {
   auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-  EXPECT_TRUE(config.gain_controller1.enabled);
-  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
+      /*settings=*/{.automatic_gain_control = true});
+  if (!config.gain_controller1.enabled && !config.gain_controller2.enabled) {
+    GTEST_SUCCEED() << "AGC is altogether disabled.";
+  }
+  if (config.gain_controller1.enabled) {
+    EXPECT_NE(config.gain_controller1.mode,
+              webrtc::AudioProcessing::Config::GainController1::Mode::
+                  kAdaptiveAnalog);
+    EXPECT_FALSE(config.gain_controller1.analog_gain_controller.enabled);
+  }
+  if (config.gain_controller2.enabled) {
+    EXPECT_FALSE(config.gain_controller2.input_volume_controller.enabled);
+  }
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif
 
 TEST(CreateWebRtcAudioProcessingModuleTest, VerifyNoiseSuppressionSettings) {
   for (bool noise_suppressor_enabled : {true, false}) {
