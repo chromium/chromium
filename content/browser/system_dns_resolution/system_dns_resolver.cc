@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
-#include "net/dns/dns_util.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/host_resolver_system_task.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
@@ -41,7 +41,7 @@ void SystemDnsResolverMojoImpl::Resolve(
     int32_t flags,
     uint64_t network,
     ResolveCallback callback) {
-  if (hostname && !net::IsValidDnsName(*hostname)) {
+  if (hostname && !net::dns_names_util::IsValidDnsName(*hostname)) {
     std::move(callback).Run(net::AddressList(), 0, net::ERR_NAME_NOT_RESOLVED);
     return;
   }

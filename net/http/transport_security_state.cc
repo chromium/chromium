@@ -38,7 +38,7 @@
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/symantec_certs.h"
 #include "net/cert/x509_certificate.h"
-#include "net/dns/dns_util.h"
+#include "net/dns/dns_names_util.h"
 #include "net/extras/preload_data/decoder.h"
 #include "net/http/http_security_headers.h"
 #include "net/net_buildflags.h"
@@ -228,7 +228,9 @@ std::vector<uint8_t> CanonicalizeHost(const std::string& host) {
   std::string lowered_host = base::ToLowerASCII(host);
 
   absl::optional<std::vector<uint8_t>> new_host =
-      DNSDomainFromDot(lowered_host);
+      dns_names_util::DottedNameToNetwork(
+          lowered_host,
+          /*require_valid_internet_hostname=*/true);
   if (!new_host.has_value()) {
     // DNSDomainFromDot can fail if any label is > 63 bytes or if the whole
     // name is >255 bytes. However, search terms can have those properties.
@@ -1274,7 +1276,7 @@ bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
     // match and the includeSubDomains directive was included.
     if (i == 0 || j->second.include_subdomains) {
       absl::optional<std::string> dotted_name =
-          DnsDomainToString(host_sub_chunk);
+          dns_names_util::NetworkToDottedName(host_sub_chunk);
       if (!dotted_name)
         return false;
 
@@ -1320,7 +1322,7 @@ bool TransportSecurityState::GetDynamicPKPState(const std::string& host,
     // Cronet.
     if (i == 0 || j->second.include_subdomains) {
       absl::optional<std::string> dotted_name =
-          DnsDomainToString(host_sub_chunk);
+          dns_names_util::NetworkToDottedName(host_sub_chunk);
       if (!dotted_name)
         return false;
 

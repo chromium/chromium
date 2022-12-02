@@ -12,7 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
-#include "net/dns/dns_util.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
@@ -107,7 +107,8 @@ DnsQuery::DnsQuery(uint16_t id,
                    PaddingStrategy padding_strategy)
     : qname_size_(qname.size()) {
 #if DCHECK_IS_ON()
-  absl::optional<std::string> dotted_name = DnsDomainToString(qname);
+  absl::optional<std::string> dotted_name =
+      dns_names_util::NetworkToDottedName(qname);
   DCHECK(dotted_name && !dotted_name.value().empty());
 #endif  // DCHECK_IS_ON()
 

@@ -14,22 +14,20 @@
 #include <vector>
 
 #include "base/big_endian.h"
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
-#include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/util.h"
 #include "net/third_party/uri_template/uri_template.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <net/if.h>
@@ -45,78 +43,6 @@
 
 namespace net {
 namespace {
-
-// Based on DJB's public domain code.
-absl::optional<std::vector<uint8_t>> DNSDomainFromDot(base::StringPiece dotted,
-                                                      bool is_unrestricted) {
-  // Use full IsCanonicalizedHostCompliant() validation if not
-  // `is_unrestricted`. All subsequent validity checks should not apply unless
-  // `is_unrestricted` because IsCanonicalizedHostCompliant() is expected to be
-  // more strict than any validation here.
-  if (!is_unrestricted && !IsCanonicalizedHostCompliant(dotted))
-    return absl::nullopt;
-
-  const char* buf = dotted.data();
-  size_t n = dotted.size();
-  uint8_t label[dns_protocol::kMaxLabelLength];
-  size_t labellen = 0; /* <= sizeof label */
-  std::vector<uint8_t> name(dns_protocol::kMaxNameLength, 0);
-  size_t namelen = 0; /* <= sizeof name */
-  char ch;
-
-  for (;;) {
-    if (!n)
-      break;
-    ch = *buf++;
-    --n;
-    if (ch == '.') {
-      // Don't allow empty labels per http://crbug.com/456391.
-      if (!labellen) {
-        DCHECK(is_unrestricted);
-        return absl::nullopt;
-      }
-      if (namelen + labellen + 1 > name.size()) {
-        DCHECK(is_unrestricted);
-        return absl::nullopt;
-      }
-      name[namelen++] = static_cast<uint8_t>(labellen);
-      memcpy(name.data() + namelen, label, labellen);
-      namelen += labellen;
-      labellen = 0;
-      continue;
-    }
-    if (labellen >= sizeof(label)) {
-      DCHECK(is_unrestricted);
-      return absl::nullopt;
-    }
-    label[labellen++] = ch;
-  }
-
-  // Allow empty label at end of name to disable suffix search.
-  if (labellen) {
-    if (namelen + labellen + 1 > name.size()) {
-      DCHECK(is_unrestricted);
-      return absl::nullopt;
-    }
-    name[namelen++] = static_cast<uint8_t>(labellen);
-    memcpy(name.data() + namelen, label, labellen);
-    namelen += labellen;
-    labellen = 0;
-  }
-
-  if (namelen + 1 > name.size()) {
-    DCHECK(is_unrestricted);
-    return absl::nullopt;
-  }
-  if (namelen == 0) {  // Empty names e.g. "", "." are not valid.
-    DCHECK(is_unrestricted);
-    return absl::nullopt;
-  }
-  name[namelen++] = 0;  // This is the root label (of length 0).
-
-  name.resize(namelen);
-  return name;
-}
 
 DohProviderEntry::List GetDohProviderEntriesFromNameservers(
     const std::vector<IPEndPoint>& dns_servers) {
@@ -137,76 +63,6 @@ DohProviderEntry::List GetDohProviderEntriesFromNameservers(
 }
 
 }  // namespace
-
-absl::optional<std::vector<uint8_t>> DNSDomainFromDot(
-    base::StringPiece dotted) {
-  return DNSDomainFromDot(dotted, /*is_unrestricted=*/false);
-}
-
-absl::optional<std::vector<uint8_t>> DNSDomainFromUnrestrictedDot(
-    base::StringPiece dotted) {
-  return DNSDomainFromDot(dotted, /*is_unrestricted=*/true);
-}
-
-bool IsValidDnsName(base::StringPiece dotted) {
-  return DNSDomainFromUnrestrictedDot(dotted).has_value();
-}
-
-absl::optional<std::string> DnsDomainToString(
-    base::span<const uint8_t> dns_name,
-    bool require_complete) {
-  base::BigEndianReader reader(dns_name.data(), dns_name.size());
-  return DnsDomainToString(reader, require_complete);
-}
-
-absl::optional<std::string> DnsDomainToString(base::StringPiece dns_name,
-                                              bool require_complete) {
-  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
-  return DnsDomainToString(reader, require_complete);
-}
-
-absl::optional<std::string> DnsDomainToString(base::BigEndianReader& reader,
-                                              bool require_complete) {
-  std::string ret;
-  size_t octets_read = 0;
-  while (reader.remaining() > 0) {
-    // DNS name compression not allowed because it does not make sense without
-    // the context of a full DNS message.
-    if ((*reader.ptr() & dns_protocol::kLabelMask) ==
-        dns_protocol::kLabelPointer)
-      return absl::nullopt;
-
-    base::StringPiece label;
-    if (!reader.ReadU8LengthPrefixed(&label))
-      return absl::nullopt;
-
-    // Final zero-length label not included in size enforcement.
-    if (label.size() != 0)
-      octets_read += label.size() + 1;
-
-    if (label.size() > dns_protocol::kMaxLabelLength)
-      return absl::nullopt;
-    if (octets_read > dns_protocol::kMaxNameLength)
-      return absl::nullopt;
-
-    if (label.size() == 0)
-      return ret;
-
-    if (!ret.empty())
-      ret.append(".");
-
-    ret.append(label.data(), label.size());
-  }
-
-  if (require_complete)
-    return absl::nullopt;
-
-  // If terminating zero-length label was not included in the input, no need to
-  // recheck against max name length because terminating zero-length label does
-  // not count against the limit.
-
-  return ret;
-}
 
 std::string GetURLFromTemplateWithoutParameters(const string& server_template) {
   std::string url_string;

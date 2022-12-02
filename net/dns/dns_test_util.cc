@@ -26,9 +26,9 @@
 #include "net/base/net_errors.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_hosts.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_session.h"
-#include "net/dns/dns_util.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/resolve_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -52,7 +52,8 @@ const uint8_t kMalformedResponseHeader[] = {
 // Create a response containing a valid question (as would normally be validated
 // in DnsTransaction) but completely missing a header-declared answer.
 DnsResponse CreateMalformedResponse(std::string hostname, uint16_t type) {
-  absl::optional<std::vector<uint8_t>> dns_name = DNSDomainFromDot(hostname);
+  absl::optional<std::vector<uint8_t>> dns_name =
+      dns_names_util::DottedNameToNetwork(hostname);
   CHECK(dns_name.has_value());
   DnsQuery query(/*id=*/0x14, dns_name.value(), type);
 
@@ -107,7 +108,8 @@ DnsResourceRecord BuildTestCnameRecord(std::string name,
   DCHECK(!name.empty());
   DCHECK(!canonical_name.empty());
 
-  absl::optional<std::vector<uint8_t>> rdata = DNSDomainFromDot(canonical_name);
+  absl::optional<std::vector<uint8_t>> rdata =
+      dns_names_util::DottedNameToNetwork(canonical_name);
   CHECK(rdata.has_value());
 
   return BuildTestDnsRecord(
@@ -154,7 +156,7 @@ DnsResourceRecord BuildTestHttpsAliasRecord(std::string name,
   std::string rdata("\000\000", 2);
 
   absl::optional<std::vector<uint8_t>> alias_domain =
-      DNSDomainFromDot(alias_name);
+      dns_names_util::DottedNameToNetwork(alias_name);
   CHECK(alias_domain.has_value());
   rdata.append(reinterpret_cast<char*>(alias_domain.value().data()),
                alias_domain.value().size());
@@ -232,7 +234,7 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
     // Chrome-encoded DNS names.
     service_domain = std::vector<uint8_t>{0};
   } else {
-    service_domain = DNSDomainFromDot(service_name);
+    service_domain = dns_names_util::DottedNameToNetwork(service_name);
   }
   CHECK(service_domain.has_value());
   rdata.append(reinterpret_cast<char*>(service_domain.value().data()),
@@ -262,7 +264,8 @@ DnsResponse BuildTestDnsResponse(
     uint8_t rcode) {
   DCHECK(!name.empty());
 
-  absl::optional<std::vector<uint8_t>> dns_name = DNSDomainFromDot(name);
+  absl::optional<std::vector<uint8_t>> dns_name =
+      dns_names_util::DottedNameToNetwork(name);
   CHECK(dns_name.has_value());
 
   absl::optional<DnsQuery> query(absl::in_place, 0, dns_name.value(), type);
@@ -299,7 +302,7 @@ DnsResponse BuildTestDnsAddressResponseWithCname(std::string name,
     answer_name = name;
 
   absl::optional<std::vector<uint8_t>> cname_rdata =
-      DNSDomainFromDot(cannonname);
+      dns_names_util::DottedNameToNetwork(cannonname);
   CHECK(cname_rdata.has_value());
 
   std::vector<DnsResourceRecord> answers = {
@@ -337,7 +340,8 @@ DnsResponse BuildTestDnsPointerResponse(std::string name,
 
   std::vector<DnsResourceRecord> answers;
   for (std::string& pointer_name : pointer_names) {
-    absl::optional<std::vector<uint8_t>> rdata = DNSDomainFromDot(pointer_name);
+    absl::optional<std::vector<uint8_t>> rdata =
+        dns_names_util::DottedNameToNetwork(pointer_name);
     CHECK(rdata.has_value());
 
     answers.push_back(BuildTestDnsRecord(
@@ -368,7 +372,7 @@ DnsResponse BuildTestDnsServiceResponse(
     rdata.append(num_buffer, 2);
 
     absl::optional<std::vector<uint8_t>> dns_name =
-        DNSDomainFromDot(service_record.target);
+        dns_names_util::DottedNameToNetwork(service_record.target);
     CHECK(dns_name.has_value());
     rdata.append(reinterpret_cast<char*>(dns_name.value().data()),
                  dns_name.value().size());
@@ -449,7 +453,7 @@ class MockDnsTransactionFactory::MockTransaction
           // Generate a DnsResponse when not provided with the rule.
           std::vector<DnsResourceRecord> authority_records;
           absl::optional<std::vector<uint8_t>> dns_name =
-              DNSDomainFromDot(hostname_);
+              dns_names_util::DottedNameToNetwork(hostname_);
           CHECK(dns_name.has_value());
           absl::optional<DnsQuery> query(absl::in_place, /*id=*/22,
                                          dns_name.value(), qtype_);

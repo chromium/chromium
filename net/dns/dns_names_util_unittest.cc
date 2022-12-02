@@ -1,0 +1,661 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "net/dns/dns_names_util.h"
+
+#include <climits>
+#include <cstdint>
+#include <cstring>
+#include <string>
+#include <vector>
+
+#include "base/big_endian.h"
+#include "base/numerics/safe_conversions.h"
+#include "net/dns/dns_util.h"
+#include "net/dns/public/dns_protocol.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace net::dns_names_util {
+namespace {
+
+using ::testing::Eq;
+using ::testing::Optional;
+
+// ToBytes converts a char* to a std::vector<uint8_t> and includes the
+// terminating NUL in the result.
+std::vector<uint8_t> ToBytes(const char* in) {
+  size_t size = strlen(in) + 1;
+  std::vector<uint8_t> out(size, 0);
+  memcpy(out.data(), in, size);
+  return out;
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetworkWithValidation) {
+  EXPECT_THAT(
+      DottedNameToNetwork("com", /*require_valid_internet_hostname=*/true),
+      Optional(ToBytes("\003com")));
+  EXPECT_THAT(DottedNameToNetwork("google.com",
+                                  /*require_valid_internet_hostname=*/true),
+              Optional(ToBytes("\x006google\003com")));
+  EXPECT_THAT(DottedNameToNetwork("www.google.com",
+                                  /*require_valid_internet_hostname=*/true),
+              Optional(ToBytes("\003www\006google\003com")));
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetwork) {
+  EXPECT_THAT(
+      DottedNameToNetwork("com", /*require_valid_internet_hostname=*/false),
+      Optional(ToBytes("\003com")));
+  EXPECT_THAT(DottedNameToNetwork("google.com",
+                                  /*require_valid_internet_hostname=*/false),
+              Optional(ToBytes("\x006google\003com")));
+  EXPECT_THAT(DottedNameToNetwork("www.google.com",
+                                  /*require_valid_internet_hostname=*/false),
+              Optional(ToBytes("\003www\006google\003com")));
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetworkWithValidationRejectsEmptyLabels) {
+  EXPECT_FALSE(DottedNameToNetwork("", /*require_valid_internet_hostname=*/true)
+                   .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork(".", /*require_valid_internet_hostname=*/true)
+          .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork("..", /*require_valid_internet_hostname=*/true)
+          .has_value());
+  EXPECT_FALSE(DottedNameToNetwork(".google.com",
+                                   /*require_valid_internet_hostname=*/true)
+                   .has_value());
+  EXPECT_FALSE(DottedNameToNetwork("www..google.com",
+                                   /*require_valid_internet_hostname=*/true)
+                   .has_value());
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetworkRejectsEmptyLabels) {
+  EXPECT_FALSE(
+      DottedNameToNetwork("", /*require_valid_internet_hostname=*/false)
+          .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork(".", /*require_valid_internet_hostname=*/false)
+          .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork("..", /*require_valid_internet_hostname=*/false)
+          .has_value());
+  EXPECT_FALSE(DottedNameToNetwork(".google.com",
+                                   /*require_valid_internet_hostname=*/false)
+                   .has_value());
+  EXPECT_FALSE(DottedNameToNetwork("www..google.com",
+                                   /*require_valid_internet_hostname=*/false)
+                   .has_value());
+}
+
+TEST(DnsNamesUtilTest,
+     DottedNameToNetworkWithValidationAcceptsEmptyLabelAtEnd) {
+  EXPECT_THAT(DottedNameToNetwork("www.google.com.",
+                                  /*require_valid_internet_hostname=*/true),
+              Optional(ToBytes("\003www\006google\003com")));
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetworkAcceptsEmptyLabelAtEnd) {
+  EXPECT_THAT(DottedNameToNetwork("www.google.com.",
+                                  /*require_valid_internet_hostname=*/false),
+              Optional(ToBytes("\003www\006google\003com")));
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetworkWithValidationAllowsLongNames) {
+  // Label is 63 chars: still valid
+  EXPECT_THAT(
+      DottedNameToNetwork(
+          "z23456789a123456789a123456789a123456789a123456789a123456789a123",
+          /*require_valid_internet_hostname=*/true),
+      Optional(ToBytes("\077z23456789a123456789a123456789a123456789a123456"
+                       "789a123456789a123")));
+  EXPECT_THAT(
+      DottedNameToNetwork(
+          "z23456789a123456789a123456789a123456789a123456789a123456789a123.",
+          /*require_valid_internet_hostname=*/true),
+      Optional(ToBytes("\077z23456789a123456789a123456789a123456789a123456"
+                       "789a123456789a123")));
+
+  // 253 characters in the name: still valid
+  EXPECT_THAT(
+      DottedNameToNetwork(
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abc",
+          /*require_valid_internet_hostname=*/true),
+      Optional(ToBytes("\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\003abc")));
+
+  // 253 characters in the name plus final dot: still valid
+  EXPECT_THAT(
+      DottedNameToNetwork(
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abc.",
+          /*require_valid_internet_hostname=*/true),
+      Optional(ToBytes("\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\003abc")));
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetworkAllowsLongNames) {
+  // Label is 63 chars: still valid
+  EXPECT_THAT(
+      DottedNameToNetwork(
+          "z23456789a123456789a123456789a123456789a123456789a123456789a123",
+          /*require_valid_internet_hostname=*/false),
+      Optional(ToBytes("\077z23456789a123456789a123456789a123456789a123456"
+                       "789a123456789a123")));
+  // Label is 63 chars: still valid
+  EXPECT_THAT(
+      DottedNameToNetwork(
+          "z23456789a123456789a123456789a123456789a123456789a123456789a123.",
+          /*require_valid_internet_hostname=*/false),
+      Optional(ToBytes("\077z23456789a123456789a123456789a123456789a123456"
+                       "789a123456789a123")));
+
+  // 253 characters in the name: still valid
+  EXPECT_THAT(
+      DottedNameToNetwork(
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abc",
+          /*require_valid_internet_hostname=*/false),
+      Optional(ToBytes("\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\003abc")));
+
+  // 253 characters in the name plus final dot: still valid
+  EXPECT_THAT(
+      DottedNameToNetwork(
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+          "abcdefghi.abc.",
+          /*require_valid_internet_hostname=*/false),
+      Optional(ToBytes("\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\011abcdefghi\011abcdefghi\011abcdefghi"
+                       "\011abcdefghi\003abc")));
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetworkWithValidationRejectsTooLongNames) {
+  // Label is too long: invalid
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789a123456789a123456789a123456789a123456789a123456789a1234",
+          /*require_valid_internet_hostname=*/true)
+          .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789a123456789a123456789a123456789a123456789a123456789a1234.",
+          /*require_valid_internet_hostname=*/true)
+          .has_value());
+
+  // 254 characters in the name: invalid
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.1234",
+          /*require_valid_internet_hostname=*/true)
+          .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.1234.",
+          /*require_valid_internet_hostname=*/true)
+          .has_value());
+
+  // 255 characters in the name: invalid before even trying to add a final
+  // zero-length termination
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.12345",
+          /*require_valid_internet_hostname=*/true)
+          .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.12345.",
+          /*require_valid_internet_hostname=*/true)
+          .has_value());
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetworkRejectsTooLongNames) {
+  // Label is too long: invalid
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789a123456789a123456789a123456789a123456789a123456789a1234",
+          /*require_valid_internet_hostname=*/false)
+          .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789a123456789a123456789a123456789a123456789a123456789a1234.",
+          /*require_valid_internet_hostname=*/false)
+          .has_value());
+
+  // 254 characters in the name: invalid
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.1234",
+          /*require_valid_internet_hostname=*/false)
+          .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.1234.",
+          /*require_valid_internet_hostname=*/false)
+          .has_value());
+
+  // 255 characters in the name: invalid before even trying to add a final
+  // zero-length termination
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.12345",
+          /*require_valid_internet_hostname=*/false)
+          .has_value());
+  EXPECT_FALSE(
+      DottedNameToNetwork(
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.123456789.123456789.123456789.123456789.123456789."
+          "123456789.12345.",
+          /*require_valid_internet_hostname=*/false)
+          .has_value());
+}
+
+TEST(DnsNamesUtilTest,
+     DottedNameToNetworkWithValidationRejectsRestrictedCharacters) {
+  EXPECT_FALSE(DottedNameToNetwork("foo,bar.com",
+                                   /*require_valid_internet_hostname=*/true)
+                   .has_value());
+  EXPECT_FALSE(DottedNameToNetwork("_ipp._tcp.local.foo printer (bar)",
+                                   /*require_valid_internet_hostname=*/true)
+                   .has_value());
+}
+
+TEST(DnsNamesUtilTest, DottedNameToNetworkAcceptsRestrictedCharacters) {
+  EXPECT_THAT(DottedNameToNetwork("foo,bar.com",
+                                  /*require_valid_internet_hostname=*/false),
+              Optional(ToBytes("\007foo,bar\003com")));
+
+  EXPECT_THAT(
+      DottedNameToNetwork("_ipp._tcp.local.foo printer (bar)",
+                          /*require_valid_internet_hostname=*/false),
+      Optional(ToBytes("\004_ipp\004_tcp\005local\021foo printer (bar)")));
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldHandleSimpleNames) {
+  std::string dns_name = "\003foo";
+  EXPECT_THAT(NetworkToDottedName(dns_name), Optional(Eq("foo")));
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader), Optional(Eq("foo")));
+
+  dns_name += "\003bar";
+  EXPECT_THAT(NetworkToDottedName(dns_name), Optional(Eq("foo.bar")));
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader1), Optional(Eq("foo.bar")));
+
+  dns_name += "\002uk";
+  EXPECT_THAT(NetworkToDottedName(dns_name), Optional(Eq("foo.bar.uk")));
+  auto reader2 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader2), Optional(Eq("foo.bar.uk")));
+
+  dns_name += '\0';
+  EXPECT_THAT(NetworkToDottedName(dns_name), Optional(Eq("foo.bar.uk")));
+  auto reader3 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader3), Optional(Eq("foo.bar.uk")));
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldHandleEmpty) {
+  std::string dns_name;
+
+  EXPECT_THAT(NetworkToDottedName(dns_name), Optional(Eq("")));
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader), Optional(Eq("")));
+
+  dns_name += '\0';
+
+  EXPECT_THAT(NetworkToDottedName(dns_name), Optional(Eq("")));
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader1), Optional(Eq("")));
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectEmptyIncomplete) {
+  std::string dns_name;
+
+  EXPECT_THAT(NetworkToDottedName(dns_name, false /* require_complete */),
+              Optional(Eq("")));
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader, false /* require_complete */),
+              Optional(Eq("")));
+
+  EXPECT_EQ(NetworkToDottedName(dns_name, true /* require_complete */),
+            absl::nullopt);
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader1, true /* require_complete */),
+            absl::nullopt);
+}
+
+// Test `require_complete` functionality given an input with terminating zero-
+// length label.
+TEST(DnsNamesUtilTest, NetworkToDottedNameComplete) {
+  std::string dns_name("\003foo\004test");
+  dns_name += '\0';
+
+  EXPECT_THAT(NetworkToDottedName(dns_name, false /* require_complete */),
+              Optional(Eq("foo.test")));
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader, false /* require_complete */),
+              Optional(Eq("foo.test")));
+
+  EXPECT_THAT(NetworkToDottedName(dns_name, true /* require_complete */),
+              Optional(Eq("foo.test")));
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader1, true /* require_complete */),
+              Optional(Eq("foo.test")));
+}
+
+// Test `require_complete` functionality given an input without terminating
+// zero-length label.
+TEST(DnsNamesUtilTest, NetworkToDottedNameNotComplete) {
+  std::string dns_name("\003boo\004test");
+
+  EXPECT_THAT(NetworkToDottedName(dns_name, false /* require_complete */),
+              Optional(Eq("boo.test")));
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader, false /* require_complete */),
+              Optional(Eq("boo.test")));
+
+  EXPECT_EQ(NetworkToDottedName(dns_name, true /* require_complete */),
+            absl::nullopt);
+  auto reader2 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader2, true /* require_complete */),
+            absl::nullopt);
+}
+
+TEST(DnsNamesUtilTest,
+     NetworkToDottedNameShouldRejectEmptyWhenRequiringComplete) {
+  std::string dns_name;
+
+  EXPECT_THAT(NetworkToDottedName(dns_name, false /* require_complete */),
+              Optional(Eq("")));
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader, false /* require_complete */),
+              Optional(Eq("")));
+
+  EXPECT_EQ(NetworkToDottedName(dns_name, true /* require_complete */),
+            absl::nullopt);
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader1, true /* require_complete */),
+            absl::nullopt);
+
+  dns_name += '\0';
+
+  EXPECT_THAT(NetworkToDottedName(dns_name, true /* require_complete */),
+              Optional(Eq("")));
+  auto reader2 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader2, true /* require_complete */),
+              Optional(Eq("")));
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectCompression) {
+  std::string dns_name = CreateNamePointer(152);
+
+  EXPECT_EQ(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader), absl::nullopt);
+
+  dns_name = "\005hello";
+  dns_name += CreateNamePointer(152);
+
+  EXPECT_EQ(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader1), absl::nullopt);
+}
+
+// Test that extra input past the terminating zero-length label are ignored.
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldHandleExcessInput) {
+  std::string dns_name("\004cool\004name\004test");
+  dns_name += '\0';
+  dns_name += "blargh!";
+
+  EXPECT_THAT(NetworkToDottedName(dns_name), Optional(Eq("cool.name.test")));
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader), Optional(Eq("cool.name.test")));
+
+  dns_name = "\002hi";
+  dns_name += '\0';
+  dns_name += "goodbye";
+
+  EXPECT_THAT(NetworkToDottedName(dns_name), Optional(Eq("hi")));
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_THAT(NetworkToDottedName(reader1), Optional(Eq("hi")));
+}
+
+// Test that input is malformed if it ends mid label.
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectTruncatedNames) {
+  std::string dns_name = "\07cheese";
+
+  EXPECT_EQ(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader), absl::nullopt);
+
+  dns_name = "\006cheesy\05test";
+
+  EXPECT_EQ(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader1), absl::nullopt);
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldHandleLongSingleLabel) {
+  std::string dns_name(1, static_cast<char>(dns_protocol::kMaxLabelLength));
+  for (int i = 0; i < dns_protocol::kMaxLabelLength; ++i) {
+    dns_name += 'a';
+  }
+
+  EXPECT_NE(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_NE(NetworkToDottedName(reader), absl::nullopt);
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldHandleLongSecondLabel) {
+  std::string dns_name("\003foo");
+  dns_name += static_cast<char>(dns_protocol::kMaxLabelLength);
+  for (int i = 0; i < dns_protocol::kMaxLabelLength; ++i) {
+    dns_name += 'a';
+  }
+
+  EXPECT_NE(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_NE(NetworkToDottedName(reader), absl::nullopt);
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectTooLongSingleLabel) {
+  std::string dns_name(1, static_cast<char>(dns_protocol::kMaxLabelLength));
+  for (int i = 0; i < dns_protocol::kMaxLabelLength + 1; ++i) {
+    dns_name += 'a';
+  }
+
+  EXPECT_EQ(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader), absl::nullopt);
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectTooLongSecondLabel) {
+  std::string dns_name("\003foo");
+  dns_name += static_cast<char>(dns_protocol::kMaxLabelLength);
+  for (int i = 0; i < dns_protocol::kMaxLabelLength + 1; ++i) {
+    dns_name += 'a';
+  }
+
+  EXPECT_EQ(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader), absl::nullopt);
+}
+
+#if CHAR_MIN < 0
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectCharMinLabels) {
+  ASSERT_GT(static_cast<uint8_t>(CHAR_MIN), dns_protocol::kMaxLabelLength);
+
+  std::string dns_name;
+  dns_name += base::checked_cast<char>(CHAR_MIN);
+
+  // Wherever possible, make the name otherwise valid.
+  if (static_cast<uint8_t>(CHAR_MIN) < UINT8_MAX) {
+    for (uint8_t i = 0; i < static_cast<uint8_t>(CHAR_MIN); ++i) {
+      dns_name += 'a';
+    }
+  }
+
+  EXPECT_EQ(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader), absl::nullopt);
+}
+#endif  // if CHAR_MIN < 0
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldHandleLongName) {
+  std::string dns_name;
+  for (int i = 0; i < dns_protocol::kMaxNameLength;
+       i += (dns_protocol::kMaxLabelLength + 1)) {
+    int label_size = std::min(dns_protocol::kMaxNameLength - 1 - i,
+                              dns_protocol::kMaxLabelLength);
+    dns_name += static_cast<char>(label_size);
+    for (int j = 0; j < label_size; ++j) {
+      dns_name += 'a';
+    }
+  }
+  ASSERT_EQ(dns_name.size(), static_cast<size_t>(dns_protocol::kMaxNameLength));
+
+  EXPECT_NE(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_NE(NetworkToDottedName(reader), absl::nullopt);
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectTooLongName) {
+  std::string dns_name;
+  for (int i = 0; i < dns_protocol::kMaxNameLength + 1;
+       i += (dns_protocol::kMaxLabelLength + 1)) {
+    int label_size = std::min(dns_protocol::kMaxNameLength - i,
+                              dns_protocol::kMaxLabelLength);
+    dns_name += static_cast<char>(label_size);
+    for (int j = 0; j < label_size; ++j) {
+      dns_name += 'a';
+    }
+  }
+  ASSERT_EQ(dns_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength + 1));
+
+  EXPECT_EQ(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader), absl::nullopt);
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldHandleLongCompleteName) {
+  std::string dns_name;
+  for (int i = 0; i < dns_protocol::kMaxNameLength;
+       i += (dns_protocol::kMaxLabelLength + 1)) {
+    int label_size = std::min(dns_protocol::kMaxNameLength - 1 - i,
+                              dns_protocol::kMaxLabelLength);
+    dns_name += static_cast<char>(label_size);
+    for (int j = 0; j < label_size; ++j) {
+      dns_name += 'a';
+    }
+  }
+  dns_name += '\0';
+  ASSERT_EQ(dns_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength + 1));
+
+  EXPECT_NE(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_NE(NetworkToDottedName(reader), absl::nullopt);
+}
+
+TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectTooLongCompleteName) {
+  std::string dns_name;
+  for (int i = 0; i < dns_protocol::kMaxNameLength + 1;
+       i += (dns_protocol::kMaxLabelLength + 1)) {
+    int label_size = std::min(dns_protocol::kMaxNameLength - i,
+                              dns_protocol::kMaxLabelLength);
+    dns_name += static_cast<char>(label_size);
+    for (int j = 0; j < label_size; ++j) {
+      dns_name += 'a';
+    }
+  }
+  dns_name += '\0';
+  ASSERT_EQ(dns_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength + 2));
+
+  EXPECT_EQ(NetworkToDottedName(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(NetworkToDottedName(reader), absl::nullopt);
+}
+
+TEST(DnsNamesUtilTest, IsValidDnsName) {
+  constexpr base::StringPiece kGoodHostnames[] = {
+      "www.noodles.blorg",   "1www.noodles.blorg",    "www.2noodles.blorg",
+      "www.n--oodles.blorg", "www.noodl_es.blorg",    "www.no-_odles.blorg",
+      "www_.noodles.blorg",  "www.noodles.blorg.",    "_privet._tcp.local",
+      "%20%20noodles.blorg", "noo dles.blorg ",       "noo dles_ipp._tcp.local",
+      "www.nood(les).blorg", "noo dl(es)._tcp.local",
+  };
+
+  for (base::StringPiece good_hostname : kGoodHostnames) {
+    EXPECT_TRUE(IsValidDnsName(good_hostname));
+  }
+}
+
+}  // namespace
+}  // namespace net::dns_names_util

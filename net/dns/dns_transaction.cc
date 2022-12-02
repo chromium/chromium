@@ -48,6 +48,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/dns/dns_config.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_response_result_extractor.h"
@@ -942,7 +943,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
     DCHECK(context_);
 
     absl::optional<std::vector<uint8_t>> qname =
-        DNSDomainFromDot(kDohProbeHostname);
+        dns_names_util::DottedNameToNetwork(kDohProbeHostname);
     DCHECK(qname.has_value());
     formatted_probe_qname_ = std::move(qname).value();
 
@@ -1217,7 +1218,9 @@ class DnsTransactionImpl : public DnsTransaction,
     const DnsConfig& config = session_->config();
 
     absl::optional<std::vector<uint8_t>> labeled_qname =
-        DNSDomainFromDot(hostname_);
+        dns_names_util::DottedNameToNetwork(
+            hostname_,
+            /*require_valid_internet_hostname=*/true);
     if (!labeled_qname.has_value())
       return ERR_INVALID_ARGUMENT;
 
@@ -1244,7 +1247,9 @@ class DnsTransactionImpl : public DnsTransaction,
 
     for (const auto& suffix : config.search) {
       absl::optional<std::vector<uint8_t>> qname =
-          DNSDomainFromDot(hostname_ + "." + suffix);
+          dns_names_util::DottedNameToNetwork(
+              hostname_ + "." + suffix,
+              /*require_valid_internet_hostname=*/true);
       // Ignore invalid (too long) combinations.
       if (!qname.has_value())
         continue;
@@ -1458,7 +1463,7 @@ class DnsTransactionImpl : public DnsTransaction,
   // Begins query for the current name. Makes the first attempt.
   AttemptResult StartQuery() {
     absl::optional<std::string> dotted_qname =
-        DnsDomainToString(qnames_.front());
+        dns_names_util::NetworkToDottedName(qnames_.front());
     net_log_.BeginEventWithStringParams(
         NetLogEventType::DNS_TRANSACTION_QUERY, "qname",
         dotted_qname.value_or("???MALFORMED_NAME???"));

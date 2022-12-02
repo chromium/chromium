@@ -42,6 +42,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/dns_alias_utility.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
@@ -774,7 +775,7 @@ int MockHostResolverBase::LoadIntoCache(
 
   // Just like the real resolver, refuse to do anything with invalid
   // hostnames.
-  if (!IsValidDnsName(endpoint.GetHostnameWithoutBrackets()))
+  if (!dns_names_util::IsValidDnsName(endpoint.GetHostnameWithoutBrackets()))
     return ERR_NAME_NOT_RESOLVED;
 
   RequestImpl request(endpoint, network_anonymization_key, optional_parameters,
@@ -933,7 +934,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
 
   // Just like the real resolver, refuse to do anything with invalid
   // hostnames.
-  if (!IsValidDnsName(
+  if (!dns_names_util::IsValidDnsName(
           request->request_endpoint().GetHostnameWithoutBrackets())) {
     request->SetError(ERR_NAME_NOT_RESOLVED);
     return ERR_NAME_NOT_RESOLVED;
@@ -1381,7 +1382,7 @@ void RuleBasedHostResolverProc::AddRuleInternal(const Rule& rule) {
   // * If the replacement is an IP address, switch to an IP literal rule.
   if (fixed_rule.resolver_type == Rule::kResolverTypeSystem) {
     CHECK(fixed_rule.replacement.empty() ||
-          IsValidDnsName(fixed_rule.replacement));
+          dns_names_util::IsValidDnsName(fixed_rule.replacement));
 
     IPAddress ip_address;
     bool valid_address = ip_address.AssignFromIPLiteral(fixed_rule.replacement);

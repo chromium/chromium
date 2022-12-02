@@ -15,9 +15,9 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_test_util.h"
-#include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -584,7 +584,7 @@ TEST(DnsResponseTest, InitParse) {
 
   // Check question access.
   absl::optional<std::vector<uint8_t>> response_qname =
-      DNSDomainFromDot(resp.GetSingleDottedName());
+      dns_names_util::DottedNameToNetwork(resp.GetSingleDottedName());
   ASSERT_TRUE(response_qname.has_value());
   EXPECT_THAT(query->qname(),
               testing::ElementsAreArray(response_qname.value()));
@@ -1322,7 +1322,8 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
       0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
   };
   std::string dotted_name("www.example.com");
-  absl::optional<std::vector<uint8_t>> dns_name = DNSDomainFromDot(dotted_name);
+  absl::optional<std::vector<uint8_t>> dns_name =
+      dns_names_util::DottedNameToNetwork(dotted_name);
   ASSERT_TRUE(dns_name.has_value());
 
   OptRecordRdata opt_rdata;
@@ -1375,7 +1376,8 @@ TEST(DnsResponseWriteTest,
       0xc0, 0xa8, 0x00, 0x01,  // 192.168.0.1
   };
   std::string dotted_name("www.example.com");
-  absl::optional<std::vector<uint8_t>> dns_name = DNSDomainFromDot(dotted_name);
+  absl::optional<std::vector<uint8_t>> dns_name =
+      dns_names_util::DottedNameToNetwork(dotted_name);
   ASSERT_TRUE(dns_name.has_value());
   size_t buf_size =
       sizeof(dns_protocol::Header) + dns_name.value().size() + 2 /* qtype */ +
@@ -1488,7 +1490,8 @@ TEST(DnsResponseWriteTest,
                                // length 1, bitmap with bit 1 set
   };
   std::string dotted_name("www.example.com");
-  absl::optional<std::vector<uint8_t>> dns_name = DNSDomainFromDot(dotted_name);
+  absl::optional<std::vector<uint8_t>> dns_name =
+      dns_names_util::DottedNameToNetwork(dotted_name);
   ASSERT_TRUE(dns_name.has_value());
   absl::optional<DnsQuery> query;
   query.emplace(0x1234 /* id */, dns_name.value(), dns_protocol::kTypeA);
@@ -1633,7 +1636,8 @@ TEST(DnsResponseWriteTest, AnswerWithRcode) {
 // CNAME answers are always allowed for any question.
 TEST(DnsResponseWriteTest, AAAAQuestionAndCnameAnswer) {
   const std::string kName = "www.example.com";
-  absl::optional<std::vector<uint8_t>> dns_name = DNSDomainFromDot(kName);
+  absl::optional<std::vector<uint8_t>> dns_name =
+      dns_names_util::DottedNameToNetwork(kName);
   ASSERT_TRUE(dns_name.has_value());
 
   DnsResourceRecord answer;

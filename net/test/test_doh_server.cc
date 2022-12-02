@@ -18,10 +18,10 @@
 #include "base/synchronization/lock.h"
 #include "net/base/io_buffer.h"
 #include "net/base/url_util.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_test_util.h"
-#include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -180,8 +180,8 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
     return MakeHttpErrorResponse(HTTP_BAD_REQUEST, "invalid DNS query");
   }
 
-  absl::optional<std::string> name =
-      DnsDomainToString(dns_query.qname(), /*require_complete=*/true);
+  absl::optional<std::string> name = dns_names_util::NetworkToDottedName(
+      dns_query.qname(), /*require_complete=*/true);
   if (!name) {
     DnsResponse response(dns_query.id(), /*is_authoritative=*/false,
                          /*answers=*/{}, /*authority_records=*/{},

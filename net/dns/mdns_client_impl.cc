@@ -21,7 +21,7 @@
 #include "base/timer/timer.h"
 #include "net/base/net_errors.h"
 #include "net/base/rand_callback.h"
-#include "net/dns/dns_util.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/util.h"
 #include "net/dns/record_rdata.h"
@@ -221,7 +221,7 @@ int MDnsClientImpl::Core::Init(MDnsSocketFactory* socket_factory) {
 
 bool MDnsClientImpl::Core::SendQuery(uint16_t rrtype, const std::string& name) {
   absl::optional<std::vector<uint8_t>> name_dns =
-      DNSDomainFromUnrestrictedDot(name);
+      dns_names_util::DottedNameToNetwork(name);
   if (!name_dns.has_value())
     return false;
 

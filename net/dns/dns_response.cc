@@ -19,6 +19,7 @@
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/dns_util.h"
@@ -426,7 +427,8 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
     return false;
   }
 
-  absl::optional<std::string> dotted_qname = DnsDomainToString(query.qname());
+  absl::optional<std::string> dotted_qname =
+      dns_names_util::NetworkToDottedName(query.qname());
   if (!dotted_qname.has_value())
     return false;
   dotted_qnames_.push_back(std::move(dotted_qname).value());
@@ -567,19 +569,14 @@ bool DnsResponse::WriteRecord(base::BigEndianWriter* writer,
     return false;
   }
 
-  absl::optional<std::vector<uint8_t>> domain_name;
-  if (validate_name_as_internet_hostname) {
-    domain_name = DNSDomainFromDot(record.name);
-    if (!domain_name.has_value()) {
-      VLOG(1) << "Invalid dotted name (as Internet hostname).";
-      return false;
-    }
-  } else {
-    domain_name = DNSDomainFromUnrestrictedDot(record.name);
-    if (!domain_name.has_value()) {
-      VLOG(1) << "Invalid dotted name (as DNS name).";
-      return false;
-    }
+  absl::optional<std::vector<uint8_t>> domain_name =
+      dns_names_util::DottedNameToNetwork(record.name,
+                                          validate_name_as_internet_hostname);
+  if (!domain_name.has_value()) {
+    VLOG(1) << "Invalid dotted name (as "
+            << (validate_name_as_internet_hostname ? "Internet hostname)."
+                                                   : "DNS name).");
+    return false;
   }
 
   return writer->WriteBytes(domain_name.value().data(),

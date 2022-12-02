@@ -35,6 +35,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_alias_utility.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
@@ -49,7 +50,8 @@ namespace net {
 
 namespace {
 
-using AliasMap = std::map<std::string, std::string, DomainNameComparator>;
+using AliasMap =
+    std::map<std::string, std::string, dns_names_util::DomainNameComparator>;
 using ExtractionError = DnsResponseResultExtractor::ExtractionError;
 
 void SaveMetricsForAdditionalHttpsRecord(const RecordParsed& record,

@@ -24,9 +24,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
-#include "net/dns/dns_util.h"
 #include "net/dns/mock_mdns_socket_factory.h"
 #include "net/dns/public/dns_protocol.h"
 #include "services/network/public/cpp/features.h"
@@ -71,7 +71,7 @@ std::string CreateMdnsQuery(uint16_t query_id,
                             const std::string& dotted_name,
                             uint16_t qtype = net::dns_protocol::kTypeA) {
   absl::optional<std::vector<uint8_t>> qname =
-      net::DNSDomainFromUnrestrictedDot(dotted_name);
+      net::dns_names_util::DottedNameToNetwork(dotted_name);
   CHECK(qname.has_value());
   net::DnsQuery query(query_id, qname.value(), qtype);
   return std::string(query.io_buffer()->data(), query.io_buffer()->size());

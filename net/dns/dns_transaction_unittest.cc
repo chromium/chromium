@@ -35,12 +35,12 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
 #include "net/dns/dns_config.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_server_iterator.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_test_util.h"
-#include "net/dns/dns_util.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
@@ -77,7 +77,7 @@ const char kMockHostname[] = "mock.http";
 
 std::vector<uint8_t> DomainFromDot(base::StringPiece dotted_name) {
   absl::optional<std::vector<uint8_t>> dns_name =
-      DNSDomainFromUnrestrictedDot(dotted_name);
+      dns_names_util::DottedNameToNetwork(dotted_name);
   CHECK(dns_name.has_value());
   return dns_name.value();
 }

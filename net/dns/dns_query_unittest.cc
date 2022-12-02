@@ -13,7 +13,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
-#include "net/dns/dns_util.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
@@ -153,9 +153,11 @@ TEST(DnsQueryTest, Block128Padding) {
 }
 
 TEST(DnsQueryTest, Block128Padding_LongName) {
-  absl::optional<std::vector<uint8_t>> qname = DNSDomainFromDot(
-      "really.long.domain.name.that.will.push.us.past.the.128.byte.block.size."
-      "because.it.would.be.nice.to.test.something.realy.long.like.that.com");
+  absl::optional<std::vector<uint8_t>> qname =
+      dns_names_util::DottedNameToNetwork(
+          "really.long.domain.name.that.will.push.us.past.the.128.byte.block."
+          "size.because.it.would.be.nice.to.test.something.realy.long.like."
+          "that.com");
   ASSERT_TRUE(qname.has_value());
   DnsQuery query(112 /* id */, qname.value(), dns_protocol::kTypeAAAA,
                  nullptr /* opt_rdata */,

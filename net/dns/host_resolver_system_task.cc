@@ -25,7 +25,7 @@
 #include "net/base/sys_addrinfo.h"
 #include "net/base/trace_constants.h"
 #include "net/dns/address_info.h"
-#include "net/dns/dns_util.h"
+#include "net/dns/dns_names_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "net/base/winsock_init.h"
@@ -237,7 +237,8 @@ HostResolverSystemTask::HostResolverSystemTask(
   if (hostname_) {
     // |host| should be a valid domain name. HostResolverManager has checks to
     // fail early if this is not the case.
-    DCHECK(IsValidDnsName(*hostname_)) << "Invalid hostname: " << *hostname_;
+    DCHECK(dns_names_util::IsValidDnsName(*hostname_))
+        << "Invalid hostname: " << *hostname_;
   }
   // If a resolver_proc has not been specified, try to use a default if one is
   // set, as it may be in tests.

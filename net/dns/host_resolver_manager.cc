@@ -79,6 +79,7 @@
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/dns_client.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/dns_transaction.h"
@@ -470,7 +471,9 @@ absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
 
 DnsResponse CreateFakeEmptyResponse(base::StringPiece hostname,
                                     DnsQueryType query_type) {
-  absl::optional<std::vector<uint8_t>> qname = DNSDomainFromDot(hostname);
+  absl::optional<std::vector<uint8_t>> qname =
+      dns_names_util::DottedNameToNetwork(
+          hostname, /*require_valid_internet_hostname=*/true);
   CHECK(qname.has_value());
   return DnsResponse::CreateEmptyNoDataResponse(
       /*id=*/0u, /*is_authoritative=*/true, qname.value(),
@@ -3130,7 +3133,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     // than implicitly based on |source|.
     const bool is_valid_hostname =
         job_key.source == HostResolverSource::MULTICAST_DNS
-            ? IsValidDnsName(GetHostname(job_key.host))
+            ? dns_names_util::IsValidDnsName(GetHostname(job_key.host))
             : IsCanonicalizedHostCompliant(GetHostname(job_key.host));
     if (!is_valid_hostname) {
       return HostCache::Entry(ERR_NAME_NOT_RESOLVED,

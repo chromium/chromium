@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_util.h"
@@ -64,7 +65,8 @@ void ValidateParsedResponse(
       CHECK_EQ(response.question_count(), 1u);
       CHECK_EQ(response.id().value(), query->id());
       absl::optional<std::string> dotted_qname =
-          net::DnsDomainToString(query->qname(), /*require_complete=*/true);
+          net::dns_names_util::NetworkToDottedName(query->qname(),
+                                                   /*require_complete=*/true);
       CHECK(dotted_qname.has_value());
       CHECK_EQ(response.GetSingleDottedName(), dotted_qname.value());
       CHECK_EQ(response.GetSingleQType(), query->qtype());

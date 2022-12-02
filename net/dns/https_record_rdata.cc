@@ -21,7 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
-#include "net/dns/dns_util.h"
+#include "net/dns/dns_names_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -188,7 +188,7 @@ std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
     return nullptr;
 
   absl::optional<std::string> alias_name =
-      DnsDomainToString(reader, true /* require_complete */);
+      dns_names_util::NetworkToDottedName(reader, true /* require_complete */);
   if (!alias_name.has_value())
     return nullptr;
 
@@ -296,7 +296,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     return nullptr;
 
   absl::optional<std::string> service_name =
-      DnsDomainToString(reader, true /* require_complete */);
+      dns_names_util::NetworkToDottedName(reader, true /* require_complete */);
   if (!service_name.has_value())
     return nullptr;
 
