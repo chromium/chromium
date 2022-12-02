@@ -27,27 +27,26 @@ MATCHER_P2(MatchesRecoveryMethod, public_key, type, "") {
   return arg.public_key == public_key && arg.type_hint == type;
 }
 
-base::DictionaryValue MakeKeyValueWithoutVersion(
+base::Value::Dict MakeKeyValueWithoutVersion(
     const std::vector<uint8_t>& key_material) {
-  base::DictionaryValue key_value;
-  key_value.SetKey("keyMaterial", base::Value(key_material));
-  return key_value;
+  base::Value::Dict key_dict;
+  key_dict.Set("keyMaterial", base::Value(key_material));
+  return key_dict;
 }
 
-base::DictionaryValue MakeKeyValue(const std::vector<uint8_t>& key_material,
-                                   int version) {
-  base::DictionaryValue key_value = MakeKeyValueWithoutVersion(key_material);
-  key_value.SetIntKey("version", version);
-  return key_value;
+base::Value::Dict MakeKeyValue(const std::vector<uint8_t>& key_material,
+                               int version) {
+  base::Value::Dict key_dict = MakeKeyValueWithoutVersion(key_material);
+  key_dict.Set("version", version);
+  return key_dict;
 }
 
-base::DictionaryValue MakePublicKeyAndType(
-    const std::vector<uint8_t>& public_key,
-    int type) {
-  base::DictionaryValue key_value;
-  key_value.SetKey("publicKey", base::Value(public_key));
-  key_value.SetIntKey("type", type);
-  return key_value;
+base::Value::Dict MakePublicKeyAndType(const std::vector<uint8_t>& public_key,
+                                       int type) {
+  base::Value::Dict key_dict;
+  key_dict.Set("publicKey", base::Value(public_key));
+  key_dict.Set("type", type);
+  return key_dict;
 }
 
 }  // namespace
