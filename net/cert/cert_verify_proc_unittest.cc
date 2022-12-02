@@ -4854,6 +4854,17 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsMissing) {
   }
 }
 
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, NameConstraintsNotMatching) {
+  chain_[0]->SetNameConstraintsDnsNames(/*permitted_dns_names=*/{"example.org"},
+                                        /*excluded_dns_names=*/{});
+
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
 // A set of tests that check how various constraints are enforced when they
 // are applied to a directly trusted self-signed leaf certificate.
 class CertVerifyProcConstraintsTrustedSelfSignedTest
@@ -4924,6 +4935,14 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
 TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
        BasicConstraintsMissing) {
   cert_->EraseExtension(der::Input(kBasicConstraintsOid));
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
+       NameConstraintsNotMatching) {
+  cert_->SetNameConstraintsDnsNames(/*permitted_dns_names=*/{"example.org"},
+                                    /*excluded_dns_names=*/{});
 
   EXPECT_THAT(Verify(), IsOk());
 }
