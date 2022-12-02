@@ -252,7 +252,8 @@ static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
 // (https://html.spec.whatwg.org/C/#phrasing-content-3)
 // The <a> behavior is non-standard.
 static bool OverridesTextDecorationColors(const Element* element) {
-  return element &&
+  return !RuntimeEnabledFeatures::DisableTextDecorationColorOverrideEnabled() &&
+         element &&
          (IsA<HTMLFontElement>(element) || IsA<HTMLAnchorElement>(element));
 }
 

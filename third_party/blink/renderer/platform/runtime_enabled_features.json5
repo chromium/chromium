@@ -1025,6 +1025,11 @@
       status: "experimental",
     },
     {
+      name: "DisableTextDecorationColorOverride",
+      status: "stable",
+      base_feature: "DisableTextDecorationColorOverride",
+    },
+    {
       name: "DisplayCutoutAPI",
       public: true,
       settable_from_internals: true,
