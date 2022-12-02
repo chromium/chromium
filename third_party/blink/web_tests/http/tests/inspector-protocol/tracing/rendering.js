@@ -4,6 +4,7 @@
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
+  const Phase = TracingHelper.Phase;
   const tracingHelper = new TracingHelper(testRunner, session);
   await dp.Page.enable();
   await tracingHelper.startTracing(
@@ -36,25 +37,25 @@
   await tracingHelper.stopTracing(
       /(disabled-by-default-)?devtools\.timeline|v8.execute/);
 
-  const animationEventBegin = tracingHelper.findEvent('Animation', 'b');
-  const hitTest = tracingHelper.findEvent('HitTest', 'X');
+  const animationEventBegin = tracingHelper.findEvent('Animation', Phase.NESTABLE_ASYNC_BEGIN);
+  const hitTest = tracingHelper.findEvent('HitTest', Phase.COMPLETE);
   const scheduleStyleRecalculation =
-      tracingHelper.findEvent('ScheduleStyleRecalculation', 'I');
-  const updateLayoutTree = tracingHelper.findEvent('UpdateLayoutTree', 'X');
-  const invalidateLayout = tracingHelper.findEvent('InvalidateLayout', 'I');
-  const updateLayer = tracingHelper.findEvent('UpdateLayer', 'X');
-  const paintImage = tracingHelper.findEvent('PaintImage', 'X');
-  const prePaint = tracingHelper.findEvent('PrePaint', 'X');
-  const rasterTask = tracingHelper.findEvent('RasterTask', 'X');
-  const scrollLayer = tracingHelper.findEvent('ScrollLayer', 'X');
+      tracingHelper.findEvent('ScheduleStyleRecalculation', Phase.INSTANT);
+  const updateLayoutTree = tracingHelper.findEvent('UpdateLayoutTree', Phase.COMPLETE);
+  const invalidateLayout = tracingHelper.findEvent('InvalidateLayout', Phase.INSTANT);
+  const updateLayer = tracingHelper.findEvent('UpdateLayer', Phase.COMPLETE);
+  const paintImage = tracingHelper.findEvent('PaintImage', Phase.COMPLETE);
+  const prePaint = tracingHelper.findEvent('PrePaint', Phase.COMPLETE);
+  const rasterTask = tracingHelper.findEvent('RasterTask', Phase.COMPLETE);
+  const scrollLayer = tracingHelper.findEvent('ScrollLayer', Phase.COMPLETE);
   const computeIntersections = tracingHelper.findEvent(
-      'IntersectionObserverController::computeIntersections', 'X');
-  const parseHTML = tracingHelper.findEvent('ParseHTML', 'X');
+      'IntersectionObserverController::computeIntersections', Phase.COMPLETE);
+  const parseHTML = tracingHelper.findEvent('ParseHTML', Phase.COMPLETE);
   const parseAuthorStyleSheet =
-      tracingHelper.findEvent('ParseAuthorStyleSheet', 'X');
-  const layout = tracingHelper.findEvent('Layout', 'X');
-  const runMicrotasks = tracingHelper.findEvent('RunMicrotasks', 'X');
-  const functionCall = tracingHelper.findEvent('FunctionCall', 'X');
+      tracingHelper.findEvent('ParseAuthorStyleSheet', Phase.COMPLETE);
+  const layout = tracingHelper.findEvent('Layout', Phase.COMPLETE);
+  const runMicrotasks = tracingHelper.findEvent('RunMicrotasks', Phase.COMPLETE);
+  const functionCall = tracingHelper.findEvent('FunctionCall', Phase.COMPLETE);
 
   testRunner.log('Got a HitTest event:');
   tracingHelper.logEventShape(hitTest, ['move']);

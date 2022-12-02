@@ -4,6 +4,7 @@
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
+  const Phase = TracingHelper.Phase;
   const tracingHelper = new TracingHelper(testRunner, session);
   await tracingHelper.startTracing(
       'disabled-by-default-devtools.timeline,devtools.timeline,loading');
@@ -22,10 +23,10 @@
 
   // Web vitals
   const firstContentfulPaint =
-      tracingHelper.findEvent('firstContentfulPaint', 'R');
+      tracingHelper.findEvent('firstContentfulPaint', Phase.MARK);
   const largestContentfulPaintCandidates =
-      tracingHelper.findEvents('largestContentfulPaint::Candidate', 'R');
-  const layoutShift = tracingHelper.findEvent('LayoutShift', 'I');
+      tracingHelper.findEvents('largestContentfulPaint::Candidate', Phase.MARK);
+  const layoutShift = tracingHelper.findEvent('LayoutShift', Phase.INSTANT);
 
   testRunner.log('\nGot FCP event:');
   tracingHelper.logEventShape(firstContentfulPaint);
@@ -37,9 +38,9 @@
   tracingHelper.logEventShape(layoutShift);
 
   // "Marker" events
-  const firstPaint = tracingHelper.findEvent('firstPaint', 'R');
-  const markDOMContent = tracingHelper.findEvent('MarkDOMContent', 'I');
-  const markLoad = tracingHelper.findEvent('MarkLoad', 'I');
+  const firstPaint = tracingHelper.findEvent('firstPaint', Phase.MARK);
+  const markDOMContent = tracingHelper.findEvent('MarkDOMContent', Phase.INSTANT);
+  const markLoad = tracingHelper.findEvent('MarkLoad', Phase.INSTANT);
 
   testRunner.log('\nGot firstPaint event:');
   tracingHelper.logEventShape(firstPaint);
@@ -51,12 +52,12 @@
   tracingHelper.logEventShape(markLoad)
 
   // Long tasks
-  const runTask = tracingHelper.findEvent('RunTask', 'X');
+  const runTask = tracingHelper.findEvent('RunTask', Phase.COMPLETE);
 
   testRunner.log('\nGot RunTask event:');
   tracingHelper.logEventShape(runTask)
 
-  const networkRequest = tracingHelper.findEvent('ResourceSendRequest', 'I');
+  const networkRequest = tracingHelper.findEvent('ResourceSendRequest', Phase.INSTANT);
   const navigationId = networkRequest.args.data.requestId;
 
   const allRequestIds = [

@@ -4,6 +4,7 @@
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
+  const Phase = TracingHelper.Phase;
   const tracingHelper = new TracingHelper(testRunner, session);
 
   await tracingHelper.startTracing(
@@ -23,8 +24,8 @@
       /__metadata|loading|blink.user_timing|(disabled-by-default-)?devtools.timeline/);
 
   // Processes and threads
-  const processNames = tracingHelper.findEvents('process_name', 'M');
-  const threadNames = tracingHelper.findEvents('thread_name', 'M');
+  const processNames = tracingHelper.findEvents('process_name', Phase.METADATA);
+  const threadNames = tracingHelper.findEvents('thread_name', Phase.METADATA);
 
   const browserProcessName =
       processNames.find(event => event.args.name === 'Browser');
@@ -38,15 +39,15 @@
 
   // Frames in trace
   const tracingStartedInBrowser =
-      tracingHelper.findEvent('TracingStartedInBrowser', 'I');
+      tracingHelper.findEvent('TracingStartedInBrowser', Phase.INSTANT);
   const frameCommittedInBrowserEvents =
-      tracingHelper.findEvents('FrameCommittedInBrowser', 'I');
-  const commitLoadEvents = tracingHelper.findEvents('CommitLoad', 'X');
+      tracingHelper.findEvents('FrameCommittedInBrowser', Phase.INSTANT);
+  const commitLoadEvents = tracingHelper.findEvents('CommitLoad', Phase.COMPLETE);
 
   // Other
-  const navigarionStart = tracingHelper.findEvent('navigationStart', 'R');
+  const navigarionStart = tracingHelper.findEvent('navigationStart', Phase.MARK);
   const viewPort =
-      tracingHelper.findEvent('PaintTimingVisualizer::Viewport', 'I');
+      tracingHelper.findEvent('PaintTimingVisualizer::Viewport', Phase.INSTANT);
 
   // Extract all frames in target from trace.
   const initialFrames =

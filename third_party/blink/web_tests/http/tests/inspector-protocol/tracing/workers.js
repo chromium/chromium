@@ -4,6 +4,7 @@
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
+  const Phase = TracingHelper.Phase;
   const tracingHelper = new TracingHelper(testRunner, session);
 
   await tracingHelper.startTracing(
@@ -24,12 +25,12 @@
       /__metadata|disabled-by-default-devtools.timeline/);
 
   const tracingSessionIdForWorker =
-      tracingHelper.findEvent('TracingSessionIdForWorker', 'I');
+      tracingHelper.findEvent('TracingSessionIdForWorker', Phase.INSTANT);
 
   testRunner.log('Got TracingSessionIdForWorker event:');
   tracingHelper.logEventShape(tracingSessionIdForWorker);
 
-  const threadNames = tracingHelper.findEvents('thread_name', 'M');
+  const threadNames = tracingHelper.findEvents('thread_name', Phase.METADATA);
 
   const workerThread =
       threadNames.find(event => event.args.name === 'DedicatedWorker thread');

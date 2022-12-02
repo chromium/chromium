@@ -3,6 +3,31 @@
 // found in the LICENSE file.
 
 (class TracingHelper {
+  static Phase = {
+    BEGIN: 'B',
+    END: 'E',
+    COMPLETE: 'X',
+    INSTANT: 'I',
+    ASYNC_BEGIN: 'S',
+    ASYNC_STEP_INTO: 'T',
+    ASYNC_STEP_PAST: 'p',
+    ASYNC_END: 'F',
+    NESTABLE_ASYNC_BEGIN: 'b',
+    NESTABLE_ASYNC_END: 'e',
+    NESTABLE_ASYNC_INSTANT: 'n',
+    FLOW_BEGIN: 's',
+    FLOW_STEP: 't',
+    FLOW_END: 'f',
+    METADATA: 'M',
+    COUNTER: 'C',
+    SAMPLE: 'P',
+    CREATE_OBJECT: 'N',
+    SNAPSHOT_OBJECT: 'O',
+    DELETE_OBJECT: 'D',
+    MEMORY_DUMP: 'v',
+    MARK: 'R',
+    CLOCK_SYNC: 'c',
+  }
   constructor(testRunner, session) {
     this._testRunner = testRunner;
     this._session = session;

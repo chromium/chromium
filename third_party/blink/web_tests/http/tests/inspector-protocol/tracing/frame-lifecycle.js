@@ -4,6 +4,7 @@
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
+  const Phase = TracingHelper.Phase;
   const tracingHelper = new TracingHelper(testRunner, session);
   await tracingHelper.startTracing(
       'disabled-by-default-devtools.timeline,disabled-by-default-devtools.timeline.frame,devtools.timeline,loading');
@@ -46,21 +47,21 @@
   // of that frame's life cycle.
 
   const beginFrame =
-      tracingHelper.findEvent('BeginFrame', 'I', hasExpectedFrameSeqId);
+      tracingHelper.findEvent('BeginFrame', Phase.INSTANT, hasExpectedFrameSeqId);
   const compositeLayers =
-      tracingHelper.findEvent('CompositeLayers', 'X', hasExpectedFrameSeqId);
+      tracingHelper.findEvent('CompositeLayers', Phase.COMPLETE, hasExpectedFrameSeqId);
   const activateLayerTree =
-      tracingHelper.findEvent('ActivateLayerTree', 'I', hasExpectedLayerTreeId);
+      tracingHelper.findEvent('ActivateLayerTree', Phase.INSTANT, hasExpectedLayerTreeId);
   const needsBeginFrameChanged = tracingHelper.findEvent(
-      'NeedsBeginFrameChanged', 'I', hasExpectedLayerTreeId);
+      'NeedsBeginFrameChanged', Phase.INSTANT, hasExpectedLayerTreeId);
   const beginMainThreadFrame = tracingHelper.findEvent(
-      'BeginMainThreadFrame', 'I', hasExpectedLayerTreeId);
+      'BeginMainThreadFrame', Phase.INSTANT, hasExpectedLayerTreeId);
 
   // Other trace events in the frame domain that do not necessarily
   // belong to the life cycle of the DrawFrame event used above.
- const setLayerTreeId = tracingHelper.findEvent('SetLayerTreeId', 'I');
-  const paint = tracingHelper.findEvent('Paint', 'X');
-  const screenshots = tracingHelper.findEvents('Screenshot', 'O');
+ const setLayerTreeId = tracingHelper.findEvent('SetLayerTreeId', Phase.INSTANT);
+  const paint = tracingHelper.findEvent('Paint', Phase.COMPLETE);
+  const screenshots = tracingHelper.findEvents('Screenshot', Phase.SNAPSHOT_OBJECT);
 
   testRunner.log('Got SetLayerTreeId event:');
   tracingHelper.logEventShape(setLayerTreeId)

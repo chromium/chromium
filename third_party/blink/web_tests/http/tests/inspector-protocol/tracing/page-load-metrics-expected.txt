@@ -178,7 +178,6 @@ Object: {
 	name: string
 	ph: string
 	pid: number
-	tdur: number
 	tid: number
 	ts: number
 }
