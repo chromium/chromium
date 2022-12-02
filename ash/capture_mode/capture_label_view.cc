@@ -4,19 +4,18 @@
 
 #include "ash/capture_mode/capture_label_view.h"
 
-#include "ash/capture_mode/capture_mode_constants.h"
+#include "ash/capture_mode/capture_button_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/style_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
@@ -25,10 +24,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -148,7 +144,7 @@ class DropToStopRecordingButtonAnimation : public gfx::LinearAnimation {
 
 CaptureLabelView::CaptureLabelView(
     CaptureModeSession* capture_mode_session,
-    base::RepeatingClosure on_capture_button_pressed)
+    base::RepeatingClosure on_capture_button_container_pressed)
     : capture_mode_session_(capture_mode_session) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -158,18 +154,11 @@ CaptureLabelView::CaptureLabelView(
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
-  label_button_ = AddChildView(std::make_unique<views::LabelButton>(
-      std::move(on_capture_button_pressed), std::u16string()));
-  label_button_->SetPaintToLayer();
-  label_button_->layer()->SetFillsBoundsOpaquely(false);
-  label_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  label_button_->SetNotifyEnterExitOnChild(true);
-
-  views::InkDrop::Get(label_button_)
-      ->SetMode(views::InkDropHost::InkDropMode::ON);
-  StyleUtil::ConfigureInkDropAttributes(
-      label_button_, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
-  label_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  capture_button_container_ = AddChildView(std::make_unique<CaptureButtonView>(
+      std::move(on_capture_button_container_pressed), base::DoNothing()));
+  capture_button_container_->SetPaintToLayer();
+  capture_button_container_->layer()->SetFillsBoundsOpaquely(false);
+  capture_button_container_->SetNotifyEnterExitOnChild(true);
 
   label_ = AddChildView(std::make_unique<views::Label>(std::u16string()));
   label_->SetPaintToLayer();
@@ -186,15 +175,22 @@ CaptureLabelView::CaptureLabelView(
 
 CaptureLabelView::~CaptureLabelView() = default;
 
+bool CaptureLabelView::IsViewInteractable() const {
+  return capture_button_container_->GetVisible();
+}
+
 void CaptureLabelView::UpdateIconAndText() {
   CaptureModeController* controller = CaptureModeController::Get();
   const CaptureModeSource source = controller->source();
   const bool is_capturing_image = controller->type() == CaptureModeType::kImage;
   const bool in_tablet_mode = TabletModeController::Get()->InTabletMode();
-  const SkColor icon_color =
-      GetColorProvider()->GetColor(kColorAshIconColorPrimary);
 
-  gfx::ImageSkia icon;
+  // Depending on the current state, only one of the two views
+  // `capture_button_container_` or `label_` can be visible at a time.
+  // Note that they can both be hidden in the case of `kWindow` source in
+  // clamshell mode.
+  bool capture_button_visibility = false;
+
   std::u16string text;
   switch (source) {
     case CaptureModeSource::kFullscreen:
@@ -225,54 +221,39 @@ void CaptureLabelView::UpdateIconAndText() {
                   ? IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE
                   : IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD);
         } else {
-          // We're now in fine-tuning phase.
-          icon = is_capturing_image
-                     ? gfx::CreateVectorIcon(kCaptureModeImageIcon, icon_color)
-                     : gfx::CreateVectorIcon(kCaptureModeVideoIcon, icon_color);
-          text = l10n_util::GetStringUTF16(
-              is_capturing_image ? IDS_ASH_SCREEN_CAPTURE_LABEL_IMAGE_CAPTURE
-                                 : IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD);
+          // We're now in fine-tuning phase (i.e. there's a valid region, and
+          // therefore we can show the capture button).
+          capture_button_visibility = true;
         }
       }
       break;
     }
   }
 
-  if (!icon.isNull()) {
-    label_->SetVisible(false);
-    label_button_->SetVisible(true);
-    // Update the icon only if one is not already present or it has changed to
-    // reduce repainting.
-    if (!label_button_->HasImage(views::Button::STATE_NORMAL) ||
-        !icon.BackedBySameObjectAs(
-            label_button_->GetImage(views::Button::STATE_NORMAL))) {
-      label_button_->SetImage(views::Button::STATE_NORMAL, icon);
-    }
-    label_button_->SetText(text);
-  } else if (!text.empty()) {
-    label_button_->SetVisible(false);
-    label_->SetVisible(true);
+  capture_button_container_->SetVisible(capture_button_visibility);
+  if (capture_button_visibility)
+    capture_button_container_->UpdateViewVisuals();
+
+  const bool label_visibility = !text.empty();
+  label_->SetVisible(label_visibility);
+  if (label_visibility)
     label_->SetText(text);
-  } else {
-    label_button_->SetVisible(false);
-    label_->SetVisible(false);
-  }
 }
 
 bool CaptureLabelView::ShouldHandleEvent() {
-  return label_button_->GetVisible() && !IsInCountDownAnimation();
+  return IsViewInteractable() && !IsInCountDownAnimation();
 }
 
 void CaptureLabelView::StartCountDown(
     base::OnceClosure countdown_finished_callback) {
   countdown_finished_callback_ = std::move(countdown_finished_callback);
 
-  // Depending on the visibility of |label_button_| and |label_|, decide which
-  // view needs to fade out.
+  // The view that needs to fade out will be decided depending on the visibility
+  // of `capture_button_container_` and `label_`.
   ui::Layer* animation_layer = nullptr;
-  if (label_button_->GetVisible())
-    animation_layer = label_button_->layer();
-  if (label_->GetVisible())
+  if (capture_button_container_->GetVisible())
+    animation_layer = capture_button_container_->layer();
+  else if (label_->GetVisible())
     animation_layer = label_->layer();
 
   if (animation_layer) {
@@ -299,7 +280,7 @@ bool CaptureLabelView::IsInCountDownAnimation() const {
 
 void CaptureLabelView::Layout() {
   gfx::Rect label_bounds = GetLocalBounds();
-  label_button_->SetBoundsRect(label_bounds);
+  capture_button_container_->SetBoundsRect(label_bounds);
 
   label_bounds.ClampToCenteredSize(label_->GetPreferredSize());
   label_->SetBoundsRect(label_bounds);
@@ -313,7 +294,7 @@ gfx::Size CaptureLabelView::CalculatePreferredSize() const {
   if (countdown_finished_callback_)
     return gfx::Size(kCaptureLabelRadius * 2, kCaptureLabelRadius * 2);
 
-  const bool is_label_button_visible = label_button_->GetVisible();
+  const bool is_label_button_visible = capture_button_container_->GetVisible();
   const bool is_label_visible = label_->GetVisible();
 
   if (!is_label_button_visible && !is_label_visible)
@@ -321,9 +302,8 @@ gfx::Size CaptureLabelView::CalculatePreferredSize() const {
 
   if (is_label_button_visible) {
     DCHECK(!is_label_visible);
-    return gfx::Size(
-        label_button_->GetPreferredSize().width() + kCaptureLabelRadius * 2,
-        kCaptureLabelRadius * 2);
+    return gfx::Size(capture_button_container_->GetPreferredSize().width(),
+                     kCaptureLabelRadius * 2);
   }
 
   DCHECK(is_label_visible && !is_label_button_visible);
@@ -335,12 +315,10 @@ void CaptureLabelView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   UpdateIconAndText();
-  label_button_->SetEnabledTextColors(
-      GetColorProvider()->GetColor(kColorAshTextColorPrimary));
 }
 
 views::View* CaptureLabelView::GetView() {
-  return label_button_;
+  return capture_button_container_->capture_button();
 }
 
 std::unique_ptr<views::HighlightPathGenerator>

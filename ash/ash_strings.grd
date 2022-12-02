@@ -4715,6 +4715,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE" desc="The delete button label for the screen capture notification.">
         Delete
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_RECORDING_TYPE_BUTTON_TOOLTIP" desc="The tooltip of the recording type drop down button.">
+        Select recording format
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_IMAGE_CAPTURE_CLAMSHELL" desc="The capture label message which shows in the middle of the screen when in fullscreen image capture mode in clamshell mode.">
         Click anywhere to capture full screen
       </message>

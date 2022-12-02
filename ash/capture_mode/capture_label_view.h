@@ -15,12 +15,12 @@
 #include "ui/views/view.h"
 
 namespace views {
-class LabelButton;
 class Label;
 }  // namespace views
 
 namespace ash {
 
+class CaptureButtonView;
 class CaptureModeSession;
 class DropToStopRecordingButtonAnimation;
 
@@ -35,19 +35,22 @@ class ASH_EXPORT CaptureLabelView
   METADATA_HEADER(CaptureLabelView);
 
   CaptureLabelView(CaptureModeSession* capture_mode_session,
-                   base::RepeatingClosure on_capture_button_pressed);
+                   base::RepeatingClosure on_capture_button_container_pressed);
   CaptureLabelView(const CaptureLabelView&) = delete;
   CaptureLabelView& operator=(const CaptureLabelView&) = delete;
   ~CaptureLabelView() override;
 
-  views::LabelButton* label_button() { return label_button_; }
+  // Returns true if this view is hosting the capture button instead of just a
+  // label, and can be interacted with by the user. In this case, this view has
+  // views that are a11y highlightable.
+  bool IsViewInteractable() const;
 
   // Update icon and text according to current capture source and type.
   void UpdateIconAndText();
 
   // Returns true if CaptureLabelView should handle event that falls in the
-  // bounds of this view. This should only return true when |label_button_| is
-  // visible.
+  // bounds of this view. This should only return true when the view is
+  // interactable before the count down animation starts.
   bool ShouldHandleEvent();
 
   // Called when starting 3-seconds count down before recording video.
@@ -87,10 +90,11 @@ class ASH_EXPORT CaptureLabelView
   // Called once the entire count down animation finishes.
   void OnCountDownAnimationFinished();
 
-  // The label button that displays an icon and a text message. Can be user
-  // interactable. When clicking/tapping on the button, start perform image or
-  // video capture.
-  views::LabelButton* label_button_ = nullptr;
+  // The view that contains the button that when pressed, capture will be
+  // performed. If we are in video recording mode, and GIF recording is enabled,
+  // this view will also host a drop down button to allow the user to choose the
+  // type of the recording format.
+  CaptureButtonView* capture_button_container_ = nullptr;
 
   // The label that displays a text message. Not user interactable.
   views::Label* label_ = nullptr;

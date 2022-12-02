@@ -695,7 +695,7 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
         return false;
       auto* capture_label_view =
           static_cast<CaptureLabelView*>(widget->GetContentsView());
-      return capture_label_view->label_button()->GetVisible();
+      return capture_label_view->IsViewInteractable();
     }
     case FocusGroup::kCaptureWindow:
       return session_->controller_->source() == CaptureModeSource::kWindow &&
@@ -858,8 +858,7 @@ void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
   views::Widget* label_widget = session_->capture_label_widget_.get();
   if (label_widget &&
       static_cast<CaptureLabelView*>(label_widget->GetContentsView())
-          ->label_button()
-          ->GetVisible()) {
+          ->IsViewInteractable()) {
     a11y_widgets.push_back(label_widget);
   }
 

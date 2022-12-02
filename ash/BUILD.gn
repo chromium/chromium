@@ -284,6 +284,8 @@ component("ash") {
     "capture_mode/camera_video_frame_handler.h",
     "capture_mode/camera_video_frame_renderer.cc",
     "capture_mode/camera_video_frame_renderer.h",
+    "capture_mode/capture_button_view.cc",
+    "capture_mode/capture_button_view.h",
     "capture_mode/capture_label_view.cc",
     "capture_mode/capture_label_view.h",
     "capture_mode/capture_mode_api.cc",
