@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view_interface.h"
 #include "components/image_fetcher/core/image_fetcher.h"
+#include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/metadata/metadata_header_macros.h"

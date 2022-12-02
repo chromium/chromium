@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 
 class IdentityProviderDisplayData {

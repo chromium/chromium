@@ -206,6 +206,8 @@ source_set("browser_sources") {
     "hid_delegate.h",
     "histogram_fetcher.h",
     "host_zoom_map.h",
+    "identity_request_account.cc",
+    "identity_request_account.h",
     "identity_request_dialog_controller.cc",
     "identity_request_dialog_controller.h",
     "installability_error.cc",
