@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
       absl::optional<media::cast::FrameSenderConfig> video_config);
 
   // Called when a mirroring session is successfully resumed.
-  void OnMirroringResumed();
+  void OnMirroringResumed(bool is_tab_switching = false);
 
   // Error occurred either during the start of remoting or in the middle of
   // remoting. In either case, this call fallbacks to mirroring, and prevents

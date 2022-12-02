@@ -99,11 +99,22 @@ void MediaRemoter::StartRpcMessagingInternal(
   remoting_source_->OnStarted();
 }
 
-void MediaRemoter::OnMirroringResumed() {
+void MediaRemoter::OnMirroringResumed(bool is_tab_switching) {
   if (state_ == REMOTING_DISABLED)
     return;
-  DCHECK_EQ(STOPPING_REMOTING, state_);
+  DCHECK(state_ == STOPPING_REMOTING ||
+         (state_ == MIRRORING && is_tab_switching));
+
   state_ = MIRRORING;
+
+  if (is_tab_switching) {
+    receiver_.reset();
+    remoting_source_.reset();
+    client_->ConnectToRemotingSource(
+        receiver_.BindNewPipeAndPassRemote(),
+        remoting_source_.BindNewPipeAndPassReceiver());
+  }
+
   // Notify the remoting source to enable starting media remoting again.
   remoting_source_->OnSinkAvailable(sink_metadata_.Clone());
 }

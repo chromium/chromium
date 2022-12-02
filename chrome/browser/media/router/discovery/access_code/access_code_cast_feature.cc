@@ -24,6 +24,13 @@ namespace features {
 BASE_FEATURE(kAccessCodeCastRememberDevices,
              "AccessCodeCastRememberDevices",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Provide a tab switching UI bar while casting (mirroring) when AccessCodeCast
+// is enabled.
+BASE_FEATURE(kAccessCodeCastTabSwitchingUI,
+             "AccessCodeCastTabSwitchingUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace media_router {
@@ -53,6 +60,11 @@ base::TimeDelta GetAccessCodeDeviceDurationPref(Profile* profile) {
   // Return the value set by the policy pref.
   return base::Seconds(
       profile->GetPrefs()->GetInteger(prefs::kAccessCodeCastDeviceDuration));
+}
+
+bool IsAccessCodeCastTabSwitchingUiEnabled(Profile* profile) {
+  return profile && GetAccessCodeCastEnabledPref(profile) &&
+         base::FeatureList::IsEnabled(features::kAccessCodeCastTabSwitchingUI);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -86,6 +86,13 @@ class MockRemotingSource : public media::mojom::RemotingSource {
     receiver_.Bind(std::move(receiver));
   }
 
+  void reset_on_disconnect() {
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&MockRemotingSource::reset, weak_factory_.GetWeakPtr()));
+  }
+
+  void reset() { receiver_.reset(); }
+
   MOCK_METHOD0(OnSinkGone, void());
   MOCK_METHOD0(OnStarted, void());
   MOCK_METHOD1(OnStartFailed, void(RemotingStartFailReason));
@@ -98,6 +105,7 @@ class MockRemotingSource : public media::mojom::RemotingSource {
 
  private:
   mojo::Receiver<media::mojom::RemotingSource> receiver_{this};
+  base::WeakPtrFactory<MockRemotingSource> weak_factory_{this};
 };
 
 }  // namespace
@@ -185,7 +193,9 @@ class SessionTest : public mojom::ResourceProvider,
       mojo::PendingRemote<media::mojom::Remoter> remoter,
       mojo::PendingReceiver<media::mojom::RemotingSource> receiver) override {
     remoter_.Bind(std::move(remoter));
+    remoter_.reset_on_disconnect();
     remoting_source_.Bind(std::move(receiver));
+    remoting_source_.reset_on_disconnect();
     OnConnectToRemotingSource();
   }
 
@@ -395,6 +405,43 @@ class SessionTest : public mojom::ResourceProvider,
     Mock::VerifyAndClear(&remoting_source_);
   }
 
+  void SwitchSourceTab() {
+    const int get_video_host_call_count =
+        session_type_ == SessionType::AUDIO_ONLY ? 0 : 1;
+    const int create_audio_stream_call_count =
+        session_type_ == SessionType::VIDEO_ONLY ? 0 : 1;
+    EXPECT_CALL(*video_host_, OnStopped());
+    EXPECT_CALL(*this, OnGetVideoCaptureHost())
+        .Times(get_video_host_call_count);
+    EXPECT_CALL(*this, OnCreateAudioStream())
+        .Times(create_audio_stream_call_count);
+    EXPECT_CALL(*this, OnConnectToRemotingSource);
+
+    if (cast_mode_ == "remoting") {
+      EXPECT_CALL(*this, OnOutboundMessage("OFFER"));
+      EXPECT_CALL(*this, OnError(_)).Times(0);
+      // GET_CAPABILITIES is only sent once at the start of mirroring.
+      EXPECT_CALL(*this, OnOutboundMessage("GET_CAPABILITIES")).Times(0);
+      const RemotingStopReason reason = RemotingStopReason::LOCAL_PLAYBACK;
+      EXPECT_CALL(remoting_source_, OnStopped(reason));
+    }
+
+    ASSERT_TRUE(session_);
+    session_->SwitchSourceTab();
+    task_environment_.RunUntilIdle();
+
+    // Offer/Answer calls are unnecessary when switching from mirroring to
+    // mirroring.
+    if (cast_mode_ != "mirroring") {
+      cast_mode_ = "mirroring";
+      SendAnswer();
+      task_environment_.RunUntilIdle();
+    }
+
+    Mock::VerifyAndClear(this);
+    Mock::VerifyAndClear(&remoting_source_);
+  }
+
   void SetTargetPlayoutDelay(int target_playout_delay_ms) {
     target_playout_delay_ms_ = target_playout_delay_ms;
   }
@@ -512,6 +559,26 @@ TEST_F(SessionTest, StartRemotingFailed) {
   // Resume mirroring.
   SendAnswer();
   CaptureOneVideoFrame();
+  StopSession();
+}
+
+TEST_F(SessionTest, SwitchSourceTabFromMirroring) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  SwitchSourceTab();
+  StartRemoting();
+  RemotingStarted();
+  StopSession();
+}
+
+TEST_F(SessionTest, SwitchSourceTabFromRemoting) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  StartRemoting();
+  RemotingStarted();
+  SwitchSourceTab();
   StopSession();
 }
 

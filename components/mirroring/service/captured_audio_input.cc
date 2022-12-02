@@ -51,6 +51,7 @@ void CapturedAudioInput::CloseStream() {
   delegate_ = nullptr;
   stream_client_receiver_.reset();
   stream_.reset();
+  stream_creator_client_receiver_.reset();
 }
 
 void CapturedAudioInput::SetOutputDeviceForAec(

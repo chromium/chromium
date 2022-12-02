@@ -58,6 +58,14 @@ void MirroringService::Start(
   }
 }
 
+void MirroringService::SwitchMirroringSourceTab() {
+  if (session_) {
+    session_->SwitchSourceTab();
+  } else if (session_host_) {
+    session_host_->SwitchSourceTab();
+  }
+}
+
 void MirroringService::OnDisconnect() {
   session_.reset();
   session_host_.reset();

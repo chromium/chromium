@@ -463,8 +463,10 @@ void OpenscreenSessionHost::OnNegotiated(
   }
 
   if (media_remoter_) {
-    media_remoter_->OnMirroringResumed();
+    media_remoter_->OnMirroringResumed(switching_tab_source_);
   }
+
+  switching_tab_source_ = false;
 
   if (initially_starting_session) {
     // We should only request capabilities once, in order to avoid instantiating
@@ -610,6 +612,34 @@ void OpenscreenSessionHost::RestartMirroringStreaming() {
   StopStreaming();
   state_ = State::kMirroring;
   Negotiate();
+}
+
+void OpenscreenSessionHost::SwitchSourceTab() {
+  if (state_ == State::kRemoting) {
+    switching_tab_source_ = true;
+    video_capture_client_.reset();
+    media_remoter_->Stop(media::mojom::RemotingStopReason::LOCAL_PLAYBACK);
+    return;
+  }
+
+  DCHECK_EQ(state_, State::kMirroring);
+
+  // Switch video source tab.
+  if (video_capture_client_) {
+    mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
+    resource_provider_->GetVideoCaptureHost(
+        video_host.InitWithNewPipeAndPassReceiver());
+    video_capture_client_->SwitchVideoCaptureHost(std::move(video_host));
+  }
+
+  // Switch audio source tab.
+  if (audio_input_device_) {
+    audio_input_device_->Stop();
+    audio_input_device_->Start();
+  }
+
+  if (media_remoter_)
+    media_remoter_->OnMirroringResumed(true);
 }
 
 void OpenscreenSessionHost::OnAsyncInitialized(

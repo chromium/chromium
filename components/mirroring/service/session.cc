@@ -762,7 +762,9 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
       }
     }
     if (media_remoter_)
-      media_remoter_->OnMirroringResumed();
+      media_remoter_->OnMirroringResumed(switching_tab_source_);
+
+    switching_tab_source_ = false;
   }
 
   if (initially_starting_session) {
@@ -958,6 +960,34 @@ void Session::RestartMirroringStreaming() {
   StopStreaming();
   state_ = MIRRORING;
   CreateAndSendOffer();
+}
+
+void Session::SwitchSourceTab() {
+  if (state_ == REMOTING) {
+    switching_tab_source_ = true;
+    video_capture_client_.reset();
+    media_remoter_->Stop(media::mojom::RemotingStopReason::LOCAL_PLAYBACK);
+    return;
+  }
+
+  DCHECK_EQ(state_, MIRRORING);
+
+  // Switch video source tab.
+  if (video_capture_client_) {
+    mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
+    resource_provider_->GetVideoCaptureHost(
+        video_host.InitWithNewPipeAndPassReceiver());
+    video_capture_client_->SwitchVideoCaptureHost(std::move(video_host));
+  }
+
+  // Switch audio source tab.
+  if (audio_input_device_) {
+    audio_input_device_->Stop();
+    audio_input_device_->Start();
+  }
+
+  if (media_remoter_)
+    media_remoter_->OnMirroringResumed(true);
 }
 
 void Session::QueryCapabilitiesForRemoting() {

@@ -111,6 +111,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   // Callback for CAPABILITIES_RESPONSE.
   void OnCapabilitiesResponse(const ReceiverResponse& response);
 
+  void SwitchSourceTab();
+
  private:
   class AudioCapturingCallback;
   using SupportedProfiles = media::VideoEncodeAccelerator::SupportedProfiles;
@@ -200,6 +202,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
 
   // A callback to call after initialization is completed
   AsyncInitializeDoneCB init_done_cb_;
+
+  // Indicates whether we're in the middle of switching tab sources.
+  bool switching_tab_source_ = false;
 
   base::WeakPtrFactory<Session> weak_factory_{this};
 };

@@ -21,7 +21,10 @@ constexpr bool kNotPremapped = false;
 FakeVideoCaptureHost::FakeVideoCaptureHost(
     mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver)
     : receiver_(this, std::move(receiver)) {}
-FakeVideoCaptureHost::~FakeVideoCaptureHost() {}
+
+FakeVideoCaptureHost::~FakeVideoCaptureHost() {
+  Stop(base::UnguessableToken());
+}
 
 void FakeVideoCaptureHost::Start(
     const base::UnguessableToken& device_id,

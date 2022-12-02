@@ -91,6 +91,16 @@ void VideoCaptureClient::RequestRefreshFrame() {
   video_capture_host_->RequestRefreshFrame(DeviceId());
 }
 
+void VideoCaptureClient::SwitchVideoCaptureHost(
+    mojo::PendingRemote<media::mojom::VideoCaptureHost> host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(2) << __func__;
+  switching_video_capture_host_ = true;
+  video_capture_host_.reset();
+  video_capture_host_.Bind(std::move(host));
+  DCHECK(video_capture_host_);
+}
+
 void VideoCaptureClient::OnStateChanged(
     media::mojom::VideoCaptureResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -108,9 +118,16 @@ void VideoCaptureClient::OnStateChanged(
       case media::mojom::VideoCaptureState::ENDED:
         client_buffers_.clear();
         weak_factory_.InvalidateWeakPtrs();
-        error_callback_.Reset();
-        frame_deliver_callback_.Reset();
         receiver_.reset();
+        if (switching_video_capture_host_) {
+          switching_video_capture_host_ = false;
+          first_frame_ref_time_ = base::TimeTicks();
+          accumulated_time_ = last_timestamp_;
+          Start(std::move(frame_deliver_callback_), std::move(error_callback_));
+        } else {
+          error_callback_.Reset();
+          frame_deliver_callback_.Reset();
+        }
         break;
     }
   } else {
@@ -277,6 +294,9 @@ void VideoCaptureClient::OnBufferReady(
   frame->set_metadata(buffer->info->metadata);
   if (buffer->info->color_space)
     frame->set_color_space(*buffer->info->color_space);
+
+  frame->set_timestamp(frame->timestamp() + accumulated_time_);
+  last_timestamp_ = frame->timestamp();
 
   frame_deliver_callback_.Run(frame);
 }

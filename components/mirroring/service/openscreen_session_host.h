@@ -121,6 +121,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   void RequestRemotingStreaming() override;
   void RestartMirroringStreaming() override;
 
+  void SwitchSourceTab();
+
   // Callback by media::cast::VideoSender to set a new target playout delay.
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
 
@@ -304,6 +306,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // positive  value causes the session's bandwidth estimation to not be called.
   int forced_bandwidth_estimate_ = 0;
   int bandwidth_being_utilized_ = kDefaultBitrate;
+
+  // Indicate whether we're in the middle of switching tab sources.
+  bool switching_tab_source_ = false;
 
   // Used in callbacks executed on task runners, such as by RtpStream.
   // TODO(https://crbug.com/1363503): determine if weak pointers can be removed.

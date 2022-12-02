@@ -17,6 +17,7 @@ class TimeDelta;
 
 namespace features {
 BASE_DECLARE_FEATURE(kAccessCodeCastRememberDevices);
+BASE_DECLARE_FEATURE(kAccessCodeCastTabSwitchingUI);
 }
 
 namespace media_router {
@@ -61,6 +62,10 @@ bool GetAccessCodeCastEnabledPref(Profile* profile);
 // Returns the duration that a scanned cast device is allowed to remain
 // in the cast list.
 base::TimeDelta GetAccessCodeDeviceDurationPref(Profile* profile);
+
+// Returns true if this user is allowed to use Access Codes & QR codes to
+// discover cast devices, and AccessCodeCastTabSwitchingUI flag is enabled.
+bool IsAccessCodeCastTabSwitchingUiEnabled(Profile* profile);
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

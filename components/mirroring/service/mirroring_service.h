@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
              mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
              mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel)
       override;
+  void SwitchMirroringSourceTab() override;
 
   void OnDisconnect();
 

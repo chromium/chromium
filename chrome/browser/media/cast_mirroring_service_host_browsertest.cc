@@ -10,19 +10,24 @@
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "media/base/media_switches.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -170,9 +175,31 @@ class CastMirroringServiceHostBrowserTest
     mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel;
     outbound_channel_receiver_.Bind(
         outbound_channel.InitWithNewPipeAndPassReceiver());
-    host_->Start(mojom::SessionParameters::New(), std::move(observer),
+    auto session_params = mojom::SessionParameters::New();
+    session_params->source_id = "SourceID";
+    host_->Start(std::move(session_params), std::move(observer),
                  std::move(outbound_channel),
                  inbound_channel_.BindNewPipeAndPassReceiver());
+  }
+
+  void EnableAccessCodeCast() {
+    ASSERT_FALSE(media_router::GetAccessCodeCastEnabledPref(
+        browser()->tab_strip_model()->profile()));
+    browser()->tab_strip_model()->profile()->GetPrefs()->SetBoolean(
+        media_router::prefs::kAccessCodeCastEnabled, true);
+    ASSERT_TRUE(media_router::GetAccessCodeCastEnabledPref(
+        browser()->tab_strip_model()->profile()));
+  }
+
+  void SwitchTabSource() {
+    ASSERT_TRUE(host_->tab_switching_ui_enabled_);
+    browser()->tab_strip_model()->delegate()->AddTabAt(GURL(), -1, true);
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    ASSERT_NE(host_->web_contents(), web_contents);
+    host_->SwitchMirroringSourceTab(BuildMediaIdForTabMirroring(web_contents));
+    ASSERT_EQ(host_->web_contents(), web_contents);
   }
 
   void GetVideoCaptureHost() {
@@ -326,6 +353,65 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
     }
     observer.WaitForTabChange();
   }
+  StopMirroring();
+}
+
+class CastMirroringServiceHostBrowserTestTabSwitcher
+    : public CastMirroringServiceHostBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  CastMirroringServiceHostBrowserTestTabSwitcher()
+      : enable_openscreen_session_(GetParam()) {
+    if (enable_openscreen_session_) {
+      feature_list_.InitWithFeatures({features::kAccessCodeCastTabSwitchingUI,
+                                      media::kOpenscreenCastStreamingSession},
+                                     {});
+    } else {
+      feature_list_.InitAndEnableFeature(
+          features::kAccessCodeCastTabSwitchingUI);
+    }
+  }
+
+  CastMirroringServiceHostBrowserTestTabSwitcher(
+      const CastMirroringServiceHostBrowserTestTabSwitcher&) = delete;
+  CastMirroringServiceHostBrowserTestTabSwitcher& operator=(
+      const CastMirroringServiceHostBrowserTestTabSwitcher&) = delete;
+
+  ~CastMirroringServiceHostBrowserTestTabSwitcher() override = default;
+
+  void VerifyEnabledFeatures() {
+    ASSERT_TRUE(
+        base::FeatureList::IsEnabled(features::kAccessCodeCastTabSwitchingUI));
+
+    if (enable_openscreen_session_) {
+      ASSERT_TRUE(
+          base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession));
+    } else {
+      ASSERT_FALSE(
+          base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  const bool enable_openscreen_session_;
+};
+
+// Templatize test on whether OpenscreenCastStreamingSession is enabled or not.
+INSTANTIATE_TEST_SUITE_P(All,
+                         CastMirroringServiceHostBrowserTestTabSwitcher,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(CastMirroringServiceHostBrowserTestTabSwitcher,
+                       SwitchTabSource) {
+  VerifyEnabledFeatures();
+  EnableAccessCodeCast();
+  StartTabMirroring();
+  GetVideoCaptureHost();
+  StartVideoCapturing();
+  SwitchTabSource();
+  GetVideoCaptureHost();
+  StartVideoCapturing();
   StopMirroring();
 }
 

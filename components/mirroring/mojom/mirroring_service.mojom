@@ -34,4 +34,7 @@ interface MirroringService {
         pending_remote<ResourceProvider> resource_provider,
         pending_remote<CastMessageChannel> outbound_channel,
         pending_receiver<CastMessageChannel> inbound_channel);
+
+  // Switch the source tab of the current mirroring session.
+  SwitchMirroringSourceTab();
 };
