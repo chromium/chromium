@@ -27,7 +27,11 @@
 #include "third_party/blink/renderer/core/xml/xpath_evaluator.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/character_data.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/xml/native_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/xml/xpath_expression.h"
 #include "third_party/blink/renderer/core/xml/xpath_result.h"
@@ -35,6 +39,23 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+
+namespace {
+
+void CountNodeResolver(const Node* node) {
+  if (!node || !node->IsElementNode())
+    return;
+  if (const auto* attr = DynamicTo<Attr>(node)) {
+    if (attr->ownerElement())
+      return;
+  } else if (const auto* char_data = DynamicTo<CharacterData>(node)) {
+    if (char_data->parentElement())
+      return;
+  }
+  node->GetDocument().CountUse(WebFeature::kCreateNSResolverWithNonElements);
+}
+
+}  // namespace
 
 XPathExpression* XPathEvaluator::createExpression(
     const String& expression,
@@ -45,6 +66,7 @@ XPathExpression* XPathEvaluator::createExpression(
 }
 
 XPathNSResolver* XPathEvaluator::createNSResolver(Node* node_resolver) {
+  CountNodeResolver(node_resolver);
   return MakeGarbageCollected<NativeXPathNSResolver>(node_resolver);
 }
 

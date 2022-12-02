@@ -41738,6 +41738,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4412" label="ServiceWorkerSkippedForEmptyFetchHandler"/>
   <int value="4413" label="ImageSet"/>
   <int value="4414" label="WindowCloseHistoryLengthOne"/>
+  <int value="4415" label="CreateNSResolverWithNonElements"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
