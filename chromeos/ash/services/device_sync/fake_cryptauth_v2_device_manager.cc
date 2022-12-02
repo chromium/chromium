@@ -44,6 +44,19 @@ bool FakeCryptAuthV2DeviceManager::IsRecoveringFromFailure() const {
   return is_recovering_from_failure_;
 }
 
+CryptAuthDeviceSyncer::BetterTogetherMetadataStatus
+FakeCryptAuthV2DeviceManager::GetDeviceSyncerBetterTogetherMetadataStatus()
+    const {
+  return CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
+      kWaitingToProcessDeviceMetadata;
+}
+
+CryptAuthDeviceSyncer::GroupPrivateKeyStatus
+FakeCryptAuthV2DeviceManager::GetDeviceSyncerGroupPrivateKeyStatus() const {
+  return CryptAuthDeviceSyncer::GroupPrivateKeyStatus::
+      kWaitingForGroupPrivateKey;
+}
+
 absl::optional<base::Time> FakeCryptAuthV2DeviceManager::GetLastDeviceSyncTime()
     const {
   return last_device_sync_time_;

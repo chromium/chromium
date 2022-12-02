@@ -490,6 +490,8 @@ void CryptAuthDeviceSyncerImpl::ProcessEncryptedGroupPrivateKey() {
   // response if the key has not been uploaded by another user device or
   // possibly if we already own the group private key.
   if (!encrypted_group_private_key_) {
+    group_private_key_status_ =
+        GroupPrivateKeyStatus::kNoEncryptedGroupPrivateKeyReceived;
     AttemptNextStep();
     return;
   }
@@ -498,6 +500,8 @@ void CryptAuthDeviceSyncerImpl::ProcessEncryptedGroupPrivateKey() {
     // TODO(https://crbug.com/936273): Log metrics for empty private key.
     PA_LOG(ERROR) << "Group private key from CryptAuth unexpectedly empty.";
     did_non_fatal_error_occur_ = true;
+    group_private_key_status_ =
+        GroupPrivateKeyStatus::kEncryptedGroupPrivateKeyEmpty;
     AttemptNextStep();
     return;
   }
@@ -507,6 +511,8 @@ void CryptAuthDeviceSyncerImpl::ProcessEncryptedGroupPrivateKey() {
           CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether);
   if (!device_sync_better_together_key ||
       device_sync_better_together_key->private_key().empty()) {
+    group_private_key_status_ =
+        GroupPrivateKeyStatus::kLocalDeviceSyncBetterTogetherKeyMissing;
     FinishAttempt(CryptAuthDeviceSyncResult::ResultCode::
                       kErrorMissingLocalDeviceSyncBetterTogetherKey);
     return;
@@ -531,10 +537,14 @@ void CryptAuthDeviceSyncerImpl::OnGroupPrivateKeyDecrypted(
               : CryptAuthAsyncTaskResult::kError);
 
   if (!success) {
+    group_private_key_status_ =
+        GroupPrivateKeyStatus::kGroupPrivateKeyDecryptionFailed;
     FinishAttempt(
         CryptAuthDeviceSyncResult::ResultCode::kErrorDecryptingGroupPrivateKey);
     return;
   }
+  group_private_key_status_ =
+      GroupPrivateKeyStatus::kGroupPrivateKeySuccessfullyDecrypted;
 
   const CryptAuthKey* group_key = key_registry_->GetActiveKey(
       CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey);
@@ -580,6 +590,8 @@ void CryptAuthDeviceSyncerImpl::ProcessEncryptedDeviceMetadata() {
         << ": Missing group private key needed to decrypt device metadata. "
         << "Finishing DeviceSync attempt and waiting for GCM message from "
         << "CryptAuth when the group private key becomes available.";
+    better_together_metadata_status_ =
+        BetterTogetherMetadataStatus::kGroupPrivateKeyMissing;
     CryptAuthDeviceSyncResult::ResultCode result_code =
         did_non_fatal_error_occur_
             ? CryptAuthDeviceSyncResult::ResultCode::kFinishedWithNonFatalErrors
@@ -609,6 +621,8 @@ void CryptAuthDeviceSyncerImpl::ProcessEncryptedDeviceMetadata() {
   if (id_to_encrypted_metadata_map.empty()) {
     PA_LOG(ERROR) << "No encrypted metadata sent by CryptAuth. We expect the "
                   << "local device's encrypted metadata, at a minimum.";
+    better_together_metadata_status_ =
+        BetterTogetherMetadataStatus::kEncryptedMetadataEmpty;
     did_non_fatal_error_occur_ = true;
     AttemptNextStep();
     return;
@@ -631,6 +645,8 @@ void CryptAuthDeviceSyncerImpl::OnDeviceMetadataDecrypted(
   RecordDeviceMetadataDecryptionMetrics(
       base::TimeTicks::Now() - last_state_change_timestamp_,
       CryptAuthAsyncTaskResult::kSuccess);
+  better_together_metadata_status_ =
+      BetterTogetherMetadataStatus::kMetadataDecrypted;
 
   AddDecryptedMetadataToNewDeviceRegistry(id_to_decrypted_metadata_map);
 

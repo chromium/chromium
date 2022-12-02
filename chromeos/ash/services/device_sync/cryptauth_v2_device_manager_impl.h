@@ -104,6 +104,10 @@ class CryptAuthV2DeviceManagerImpl
       const absl::optional<std::string>& session_id) override;
   bool IsDeviceSyncInProgress() const override;
   bool IsRecoveringFromFailure() const override;
+  CryptAuthDeviceSyncer::BetterTogetherMetadataStatus
+  GetDeviceSyncerBetterTogetherMetadataStatus() const override;
+  CryptAuthDeviceSyncer::GroupPrivateKeyStatus
+  GetDeviceSyncerGroupPrivateKeyStatus() const override;
   absl::optional<base::Time> GetLastDeviceSyncTime() const override;
   absl::optional<base::TimeDelta> GetTimeToNextAttempt() const override;
 
