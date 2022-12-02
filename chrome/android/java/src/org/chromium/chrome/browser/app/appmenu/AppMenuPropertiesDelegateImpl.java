@@ -502,8 +502,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 .setVisible(isCurrentTabNotNull
                         && shouldShowPaintPreview(isChromeScheme, currentTab, isIncognito));
 
-        // Enable image descriptions if touch exploration is currently enabled.
-        if (ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem()) {
+        // Enable image descriptions if touch exploration is currently enabled, but not on the
+        // native NTP or Start surface.
+        if (isCurrentTabNotNull && shouldShowWebContentsDependentMenuItem(currentTab)
+                && ImageDescriptionsController.getInstance()
+                           .shouldShowImageDescriptionsMenuItem()) {
             menu.findItem(R.id.get_image_descriptions_id).setVisible(true);
 
             int titleId = R.string.menu_stop_image_descriptions;
@@ -524,12 +527,16 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             menu.findItem(R.id.get_image_descriptions_id).setVisible(false);
         }
 
-        // Conditionally add the Zoom menu item.
-        menu.findItem(R.id.page_zoom_id).setVisible(PageZoomCoordinator.shouldShowMenuItem());
+        // Conditionally add the Zoom menu item, but not on the native NTP or on Start surface.
+        menu.findItem(R.id.page_zoom_id)
+                .setVisible(isCurrentTabNotNull
+                        && shouldShowWebContentsDependentMenuItem(currentTab)
+                        && PageZoomCoordinator.shouldShowMenuItem());
 
         // Disable find in page on the native NTP or on Start surface.
         menu.findItem(R.id.find_in_page_id)
-                .setVisible(isCurrentTabNotNull && shouldShowFindInPage(currentTab));
+                .setVisible(
+                        isCurrentTabNotNull && shouldShowWebContentsDependentMenuItem(currentTab));
 
         // Prepare translate menu button.
         prepareTranslateMenuItem(menu, currentTab);
@@ -826,9 +833,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     /**
      * @param currentTab The currentTab for which the app menu is showing.
-     * @return Whether the find in page menu item should be displayed.
+     * @return Whether the currentTab should show an app menu item that requires a webContents.
+     *         This will return false for the Start service or native NTP, and true otherwise.
      */
-    protected boolean shouldShowFindInPage(@NonNull Tab currentTab) {
+    protected boolean shouldShowWebContentsDependentMenuItem(@NonNull Tab currentTab) {
         return !currentTab.isNativePage() && currentTab.getWebContents() != null;
     }
 
