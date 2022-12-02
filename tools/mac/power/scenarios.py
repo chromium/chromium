@@ -267,6 +267,9 @@ def MakeScenarioDriver(scenario_name,
     return IdleScenario(datetime.timedelta(minutes=60))
   if not browser_driver:
     return None
+  if "prep" == scenario_name:
+    return IdleOnSiteScenario.Wiki(browser_driver,
+                                   datetime.timedelta(minutes=1))
   if "meet" == scenario_name:
     return MeetScenario(browser_driver,
                         datetime.timedelta(minutes=60),
