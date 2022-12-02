@@ -12,7 +12,7 @@ from contextlib import ExitStack
 from typing import List
 
 from common import register_common_args, register_device_args, \
-                   register_log_args, resolve_packages, resolve_v1_packages, \
+                   register_log_args, resolve_packages, \
                    set_ffx_isolate_dir
 from compatible_utils import running_unattended
 from ffx_integration import ScopedFfxConfig, test_connection
@@ -113,11 +113,7 @@ def main():
         if ermine.exists:
             ermine.take_to_shell()
 
-        if test_runner.is_cfv2():
-            resolve_packages(package_deps.keys(), runner_args.target_id)
-        else:
-            # TODO(crbug.com/1256503): Remove when all packages are CFv2.
-            resolve_v1_packages(package_deps.keys(), runner_args.target_id)
+        resolve_packages(package_deps.keys(), runner_args.target_id)
         return test_runner.run_test().returncode
 
 
