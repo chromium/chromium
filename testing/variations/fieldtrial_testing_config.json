@@ -337,6 +337,22 @@
                         "RequestDesktopSiteDefaultsControl",
                         "RequestDesktopSiteDefaultsDowngrade"
                     ]
+                },
+                {
+                    "name": "Enabled_SubDomain_With_Zoom_20221114",
+                    "params": {
+                        "SubdomainSettings": "true"
+                    },
+                    "enable_features": [
+                        "RequestDesktopSiteExceptions",
+                        "RequestDesktopSiteExceptionsDowngrade",
+                        "RequestDesktopSiteZoom"
+                    ],
+                    "disable_features": [
+                        "RequestDesktopSiteDefaults",
+                        "RequestDesktopSiteDefaultsControl",
+                        "RequestDesktopSiteDefaultsDowngrade"
+                    ]
                 }
             ]
         }
