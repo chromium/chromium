@@ -52,7 +52,9 @@ function createSelectableButton(
 }
 
 function selectSelectableButton(id) {
-  var element = $(id);
+  // |id| is usually not a valid selector for querySelector so we cannot use $
+  // here.
+  var element = document.getElementById(id);
   if (!element) {
     console.error('failed to select button with id: ' + id);
     return;
