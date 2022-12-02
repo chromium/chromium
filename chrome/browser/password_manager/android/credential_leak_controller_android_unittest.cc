@@ -11,8 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
-#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -28,8 +26,6 @@ using password_manager::HasChangeScript;
 using password_manager::IsReused;
 using password_manager::IsSaved;
 using password_manager::IsSyncing;
-using password_manager::MockPasswordChangeSuccessTracker;
-using password_manager::PasswordChangeSuccessTracker;
 using password_manager::metrics_util::LeakDialogDismissalReason;
 using password_manager::metrics_util::LeakDialogMetricsRecorder;
 using password_manager::metrics_util::LeakDialogType;
@@ -46,8 +42,7 @@ CredentialLeakControllerAndroid* MakeController(
     IsSaved is_saved,
     IsReused is_reused,
     IsSyncing is_syncing,
-    HasChangeScript has_change_script,
-    PasswordChangeSuccessTracker* password_change_success_tracker = nullptr) {
+    HasChangeScript has_change_script) {
   password_manager::CredentialLeakType leak_type =
       CreateLeakType(is_saved, is_reused, is_syncing, has_change_script);
   auto recorder = std::make_unique<LeakDialogMetricsRecorder>(
@@ -55,7 +50,7 @@ CredentialLeakControllerAndroid* MakeController(
   // Set sampling rate to 100% to avoid flakiness.
   recorder->SetSamplingRateForTesting(1.0);
   return new CredentialLeakControllerAndroid(
-      leak_type, GURL(kOrigin), kUsername, password_change_success_tracker,
+      leak_type, GURL(kOrigin), kUsername,
       /*window_android=*/nullptr, std::move(recorder));
 }
 

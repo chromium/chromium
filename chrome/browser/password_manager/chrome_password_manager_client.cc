@@ -688,8 +688,8 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
       password_manager::GetLeakDialogType(leak_type));
   (new CredentialLeakControllerAndroid(
-       leak_type, url, username, GetPasswordChangeSuccessTracker(),
-       web_contents()->GetTopLevelNativeWindow(), std::move(metrics_recorder)))
+       leak_type, url, username, web_contents()->GetTopLevelNativeWindow(),
+       std::move(metrics_recorder)))
       ->ShowDialog();
 #else   // !BUILDFLAG(IS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =

@@ -12,12 +12,10 @@
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/ui/android/passwords/credential_leak_dialog_view_android.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
 
 using password_manager::CreateDialogTraits;
-using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordCheckReferrerAndroid;
 using password_manager::metrics_util::LeakDialogDismissalReason;
 using password_manager::metrics_util::LeakDialogMetricsRecorder;
@@ -27,13 +25,11 @@ CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
     const std::u16string& username,
-    PasswordChangeSuccessTracker* password_change_success_tracker,
     ui::WindowAndroid* window_android,
     std::unique_ptr<LeakDialogMetricsRecorder> metrics_recorder)
     : leak_type_(leak_type),
       origin_(origin),
       username_(username),
-      password_change_success_tracker_(password_change_success_tracker),
       window_android_(window_android),
       leak_dialog_traits_(CreateDialogTraits(leak_type)),
       metrics_recorder_(std::move(metrics_recorder)) {}
