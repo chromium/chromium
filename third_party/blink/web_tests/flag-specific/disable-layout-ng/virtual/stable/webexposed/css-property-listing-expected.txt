@@ -213,7 +213,6 @@ All changes to this list should go through Blink's feature review process: http:
     hyphens
     image-orientation
     image-rendering
-    initial-letter
     inline-size
     inset-block-end
     inset-block-start

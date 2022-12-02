@@ -712,7 +712,8 @@
         // http://crbug.com/1276900
         name: "CSSInitialLetter",
         depends_on: ["LayoutNG"],
-        status: "experimental",
+        status: "stable",
+        base_feature: "CSSInitialLetter",
     },
     {
       name: "CSSLastBaseline",
