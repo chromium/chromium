@@ -284,7 +284,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (self.preventUpdates || self.searchTerms.length ||
+  if (self.preventUpdates ||
       ![self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierOtherDevices]) {
     return;
@@ -292,7 +292,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   [self.tableView
       performBatchUpdates:^{
-        [self updateOtherDevicesSectionForState:self.sessionState];
+        if (self.searchTerms.length)
+          [self updateSessionSections];
+        else
+          [self updateOtherDevicesSectionForState:self.sessionState];
       }
                completion:nil];
 }
