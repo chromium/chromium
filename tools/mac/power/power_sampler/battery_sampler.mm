@@ -75,7 +75,10 @@ Sampler::DatumNameUnits BatterySampler::GetDatumNameUnits() {
   ret.emplace("voltage", "V");
   ret.emplace("current_capacity", "Ah");
   ret.emplace("max_capacity", "Ah");
+  // https://en.wikipedia.org/wiki/Power_(physics)
   ret.emplace("avg_power", "W");
+  // https://en.wikipedia.org/wiki/Electric_charge
+  ret.emplace("electric_charge_delta", "mAh");
   ret.emplace("sample_age", "s");
 
   return ret;
@@ -94,12 +97,13 @@ Sampler::Sample BatterySampler::GetSample(base::TimeTicks sample_time) {
     // there's been any reported current consumption since that sample.
     // Note that the current consumption is reported in integral units of mAh,
     // and that the underlying sampling when on battery is once a minute.
-    auto avg_power =
-        MaybeComputeAvgPowerConsumption(sample_time - prev_battery_sample_time_,
-                                        prev_battery_data_.value(), new_data);
+    auto avg_consumption =
+        MaybeComputeAvgConsumption(sample_time - prev_battery_sample_time_,
+                                   prev_battery_data_.value(), new_data);
 
-    if (avg_power.has_value()) {
-      sample.emplace("avg_power", avg_power.value());
+    if (avg_consumption.has_value()) {
+      sample.emplace("avg_power", avg_consumption->watts);
+      sample.emplace("electric_charge_delta", avg_consumption->mah);
 
       // The previous sample is consumed, store the new one.
       StoreBatteryData(sample_time, new_data);
@@ -158,10 +162,10 @@ absl::optional<BatterySampler::BatteryData> BatterySampler::MaybeGetBatteryData(
 }
 
 //  static
-absl::optional<double> BatterySampler::MaybeComputeAvgPowerConsumption(
-    base::TimeDelta duration,
-    const BatteryData& prev_data,
-    const BatteryData& new_data) {
+absl::optional<BatterySampler::AvgConsumption>
+BatterySampler::MaybeComputeAvgConsumption(base::TimeDelta duration,
+                                           const BatteryData& prev_data,
+                                           const BatteryData& new_data) {
   // The gauging hardware measures current consumed (or charged), but reports
   // the remaining capacity with respect to a load-dependent max capacity.
   // Here, however, we care about the delta capacity consumed rather than the
@@ -188,10 +192,10 @@ absl::optional<double> BatterySampler::MaybeComputeAvgPowerConsumption(
   double avg_current_a =
       delta_current_consumed_mah * kAsPerMAh / duration.InSecondsF();
 
-  // This is arbitrarily defined as "power consumed" positive by flipping
-  // the sign on the average current consumed. This means current stored
-  // (charging) will be reported as negative power.
-  return avg_voltage_v * -avg_current_a;
+  // Arbitrarily use positive values to represent energy being consumed
+  // (charging the battery will produce negative values).
+  return AvgConsumption{.watts = avg_voltage_v * -avg_current_a,
+                        .mah = -delta_current_consumed_mah};
 }
 
 // static

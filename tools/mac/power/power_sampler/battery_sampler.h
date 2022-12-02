@@ -80,9 +80,14 @@ class BatterySampler : public Sampler {
   static absl::optional<BatteryData> MaybeGetBatteryData(
       io_service_t power_source);
 
-  // Yields average power consumption for |prev_data|, |new_data| and |duration|
-  // if the current capacity has changed between |prev_data| and |new_data|.
-  static absl::optional<double> MaybeComputeAvgPowerConsumption(
+  struct AvgConsumption {
+    double watts;
+    int64_t mah;
+  };
+
+  // Yields average for |prev_data|, |new_data| and |duration| if the current
+  // capacity has changed between |prev_data| and |new_data|.
+  static absl::optional<AvgConsumption> MaybeComputeAvgConsumption(
       base::TimeDelta duration,
       const BatteryData& prev_data,
       const BatteryData& new_data);

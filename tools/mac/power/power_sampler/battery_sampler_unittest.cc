@@ -23,7 +23,7 @@ class TestBatterySampler : public BatterySampler {
  public:
   // Make public for testing.
   using BatterySampler::BatteryData;
-  using BatterySampler::MaybeComputeAvgPowerConsumption;
+  using BatterySampler::MaybeComputeAvgConsumption;
   static std::unique_ptr<BatterySampler> CreateForTesting();
 };
 
@@ -105,16 +105,18 @@ TEST_F(BatterySamplerTest, NameAndGetDatumNameUnits) {
   EXPECT_EQ("battery", sampler->GetName());
 
   auto datum_name_units = sampler->GetDatumNameUnits();
-  EXPECT_THAT(datum_name_units,
-              UnorderedElementsAre(std::make_pair("external_connected", "bool"),
-                                   std::make_pair("voltage", "V"),
-                                   std::make_pair("current_capacity", "Ah"),
-                                   std::make_pair("max_capacity", "Ah"),
-                                   std::make_pair("avg_power", "W"),
-                                   std::make_pair("sample_age", "s")));
+  EXPECT_THAT(
+      datum_name_units,
+      UnorderedElementsAre(std::make_pair("external_connected", "bool"),
+                           std::make_pair("voltage", "V"),
+                           std::make_pair("current_capacity", "Ah"),
+                           std::make_pair("max_capacity", "Ah"),
+                           std::make_pair("avg_power", "W"),
+                           std::make_pair("electric_charge_delta", "mAh"),
+                           std::make_pair("sample_age", "s")));
 }
 
-TEST_F(BatterySamplerTest, MaybeComputeAvgPowerConsumption) {
+TEST_F(BatterySamplerTest, MaybeComputeAvgConsumption) {
   TestBatterySampler::BatteryData prev_data{
       .voltage_mv = 11100,           // 11.1V.
       .current_capacity_mah = 2001,  // 2.001 Ah remaining.
@@ -124,39 +126,42 @@ TEST_F(BatterySamplerTest, MaybeComputeAvgPowerConsumption) {
 
   base::TimeDelta delta = base::Minutes(1);
   // No power if the data is identical.
-  auto power = TestBatterySampler::MaybeComputeAvgPowerConsumption(
+  auto consumption = TestBatterySampler::MaybeComputeAvgConsumption(
       delta, prev_data, new_data);
-  EXPECT_FALSE(power.has_value());
+  EXPECT_FALSE(consumption.has_value());
 
   // Adjust current capacity and max capacity by the same value, which means
   // net zero consumption.
   new_data.current_capacity_mah -= 51;
   new_data.max_capacity_mah -= 51;
-  power = TestBatterySampler::MaybeComputeAvgPowerConsumption(delta, prev_data,
-                                                              new_data);
-  EXPECT_FALSE(power.has_value());
+  consumption = TestBatterySampler::MaybeComputeAvgConsumption(delta, prev_data,
+                                                               new_data);
+  EXPECT_FALSE(consumption.has_value());
 
   // Consume 1mAh.
   new_data.current_capacity_mah -= 1;
-  power = TestBatterySampler::MaybeComputeAvgPowerConsumption(delta, prev_data,
-                                                              new_data);
-  ASSERT_TRUE(power.has_value());
+  consumption = TestBatterySampler::MaybeComputeAvgConsumption(delta, prev_data,
+                                                               new_data);
+  ASSERT_TRUE(consumption.has_value());
   double expected_power_w =
       (11.1 + 11.1) / 2.0 *      // Average voltage (V).
       (1.0 * 3600.0 / 1000.0) /  // Current consumption (As).
       60.0;                      // 1 minute (s).
-  EXPECT_DOUBLE_EQ(expected_power_w, power.value());
+  EXPECT_DOUBLE_EQ(expected_power_w, consumption->watts);
+  EXPECT_DOUBLE_EQ(1, consumption->mah);
 
   // Try a voltage change.
   new_data.voltage_mv = 11200;  // 11.2V.
 
   // And compute the consumption over two minutes.
-  power = TestBatterySampler::MaybeComputeAvgPowerConsumption(
+  consumption = TestBatterySampler::MaybeComputeAvgConsumption(
       2 * delta, prev_data, new_data);
-  ASSERT_TRUE(power.has_value());
+  ASSERT_TRUE(consumption.has_value());
   expected_power_w = (11.1 + 11.2) / 2.0 *      // Average voltage (V).
                      (1.0 * 3600.0 / 1000.0) /  // Current consumption (As).
                      120.0;                     // 2 minutes (s).
+  EXPECT_DOUBLE_EQ(expected_power_w, consumption->watts);
+  EXPECT_DOUBLE_EQ(1, consumption->mah);
 }
 
 TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
@@ -201,6 +206,7 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
        std::make_pair("voltage", 11.1), std::make_pair("current_capacity", 2),
        std::make_pair("max_capacity", 5.225),
        std::make_pair("avg_power", expected_power_w),
+       std::make_pair("electric_charge_delta", 1),
        std::make_pair("sample_age", 2)});
 
   battery_data.voltage_mv = 11200;  // 11.2V.
@@ -234,6 +240,7 @@ TEST_F(BatterySamplerTest, ReturnsSamplesAndComputesPower) {
                             std::make_pair("current_capacity", 1.999),
                             std::make_pair("max_capacity", 5.225),
                             std::make_pair("avg_power", expected_power_w),
+                            std::make_pair("electric_charge_delta", 1),
                             std::make_pair("sample_age", 0)});
 }
 
