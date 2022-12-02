@@ -990,8 +990,6 @@ bool HistorySyncBridge::UpdateEntityInBackend(
   // Note: UpdateSyncedVisit() keeps any existing local referrer/opener IDs in
   // place, and the originator IDs are never updated in practice, so there's no
   // need to invoke the ID remapper here (in contrast to AddEntityInBackend()).
-  // TODO(crbug.com/1341636): Add an integration test to ensure that updates
-  // don't break referrer/opener links.
   VisitID updated_visit_id = history_backend_->UpdateSyncedVisit(
       GURL(specifics.redirect_entries(index).url()),
       base::UTF8ToUTF16(specifics.redirect_entries(index).title()),
