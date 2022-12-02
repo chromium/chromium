@@ -214,6 +214,7 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   BOOL isMainFrameNavigationAction = [self isMainFrameNavigationAction:action];
   auto decisionHandler = ^(WKNavigationActionPolicy policy) {
     preferences.preferredContentMode = contentMode;
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
     if (@available(iOS 16.0, *)) {
       if ((policy == WKNavigationActionPolicyAllow) &&
           isMainFrameNavigationAction) {
@@ -221,6 +222,7 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
                               preferences.lockdownModeEnabled);
       }
     }
+#endif  // defined (__IPHONE_16_0)
     handler(policy, preferences);
   };
 
