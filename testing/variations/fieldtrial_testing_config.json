@@ -3724,8 +3724,10 @@
                     "name": "Enabled",
                     "params": {
                         "AutocompleteStabilityPreserveDefaultAfterTransfer": "true",
+                        "AutocompleteStabilityPreserveDefaultExcludeKeywordInputs": "true",
                         "AutocompleteStabilityPreserveDefaultForAsyncUpdates": "true",
-                        "AutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength": "3"
+                        "AutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength": "3",
+                        "AutocompleteStabilityPreventDefaultPreviousMatches": "true"
                     },
                     "enable_features": [
                         "OmniboxPreserveDefault"
@@ -3760,6 +3762,27 @@
             ]
         }
     ],
+    "DesktopOmniboxShortcutBoost": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {},
+                    "enable_features": [
+                        "OmniboxShortcutBoost"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmnibox_HistoryQuickProviderSpecificity": [
         {
             "platforms": [
@@ -3776,8 +3799,12 @@
                     "params": {
                         "DomainSuggestionsMaxMatchesPerDomain": "2",
                         "DomainSuggestionsMinInputLength": "4",
-                        "DomainSuggestionsVisitCapPerVisit": "2",
-                        "DomainSuggestionsVisitThreshold": "4"
+                        "DomainSuggestionsScoreFactor": "2",
+                        "DomainSuggestionsTypedUrlsOffset": "1",
+                        "DomainSuggestionsTypedUrlsThreshold": "7",
+                        "DomainSuggestionsTypedVisitCapPerVisit": "2",
+                        "DomainSuggestionsTypedVisitOffset": "1",
+                        "DomainSuggestionsTypedVisitThreshold": "4"
                     },
                     "enable_features": [
                         "OmniboxDomainSuggestions",
