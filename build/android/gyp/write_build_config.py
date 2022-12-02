@@ -387,10 +387,6 @@ suffix (as expected by `System.loadLibrary()`).
 List of native libraries for the secondary ABI to be embedded in this APK.
 Empty if only a single ABI is supported.
 
-* `native['uncompress_shared_libraries']`
-A boolean indicating whether native libraries are stored uncompressed in the
-APK.
-
 * `native['loadable_modules']`
 A list of native libraries to store within the APK, in addition to those from
 `native['libraries']`. These correspond to things like the Chromium linker
@@ -1219,10 +1215,6 @@ def main(argv):
       'android_app_bundle_module')
 
   if not is_apk_or_module_target:
-    if options.uncompress_shared_libraries:
-      raise Exception('--uncompressed-shared-libraries can only be used '
-                      'with --type=android_apk or '
-                      '--type=android_app_bundle_module')
     if options.library_always_compress:
       raise Exception(
           '--library-always-compress can only be used with --type=android_apk '
@@ -1990,8 +1982,6 @@ def main(argv):
         secondary_native_library_placeholder_paths,
         'java_libraries_list':
         java_libraries_list,
-        'uncompress_shared_libraries':
-        options.uncompress_shared_libraries,
         'library_always_compress':
         options.library_always_compress,
         'loadable_modules':

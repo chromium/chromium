@@ -44,10 +44,6 @@ default_chrome_public_jinja_variables = [
 #   png_to_webp: Optional. If true, convert image resources to webp format.
 #     requires Android K+, since these were not supported by Android properly
 #     before 4.3.0.
-#   load_library_from_apk: Optional. If true, native libraries will be loaded
-#     directly from the APK (and stored zipaligned and uncompressed). This
-#     requires either the Chromium linker, or Android M+.
-#   version_name: Application version name (e.g. "Developer Build").
 #
 #   Plus all other variables accepted by android_apk() or
 #   android_app_bundle_module(), depending on the target type.
@@ -215,10 +211,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
         deps += [ "//base/android/linker:chromium_android_linker" ]
         loadable_modules +=
             [ "$root_out_dir/libchromium_android_linker$shlib_extension" ]
-      }
-
-      if (!defined(load_library_from_apk)) {
-        load_library_from_apk = chromium_linker_supported
       }
     }
     if (build_with_internal_optimization_guide) {
@@ -566,13 +558,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         no_xml_namespaces = true
       }
 
-      # Configrations to make android load shared library from APK.
-      if (defined(invoker.uncompress_shared_libraries)) {
-        uncompress_shared_libraries = invoker.uncompress_shared_libraries
-      } else {
-        uncompress_shared_libraries = true
-      }
-
       if (_is_bundle_module) {
         _pak_prefix += "_bundle_module"
       } else {
@@ -623,7 +608,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       "secondary_abi_shared_libraries",
       "secondary_native_lib_placeholders",
       "shared_libraries",
-      "uncompress_shared_libraries",
       "use_chromium_linker",
       "webview_product_config_java_package",
     ]

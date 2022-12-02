@@ -45,7 +45,6 @@ template("system_webview_bundle") {
                              [
                                "base_module_target",
                                "min_sdk_version",
-                               "uncompress_shared_libraries",
                              ])
       android_manifest = "//weblayer/browser/java/AndroidManifest.xml"
 

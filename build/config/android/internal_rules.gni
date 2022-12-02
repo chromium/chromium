@@ -462,11 +462,6 @@ template("write_build_config") {
       args += [ "--secondary-native-lib-placeholders=${invoker.secondary_native_lib_placeholders}" ]
     }
 
-    if (defined(invoker.uncompress_shared_libraries) &&
-        invoker.uncompress_shared_libraries) {
-      args += [ "--uncompress-shared-libraries" ]
-    }
-
     if (defined(invoker.library_always_compress)) {
       args += [ "--library-always-compress=${invoker.library_always_compress}" ]
     }
@@ -2705,8 +2700,6 @@ if (enable_java_templates) {
   #   keystore_path: Path to keystore to use for signing.
   #   keystore_name: Key alias to use.
   #   keystore_password: Keystore password.
-  #   uncompress_shared_libraries: (optional, default false) Whether to store
-  #     native libraries inside the APK uncompressed and page-aligned.
   template("package_apk") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "public_deps" ])
     _is_robolectric_apk =
@@ -2787,10 +2780,6 @@ if (enable_java_templates) {
     }
     if (defined(invoker.uncompress_dex) && invoker.uncompress_dex) {
       _args += [ "--uncompress-dex" ]
-    }
-    if (defined(invoker.uncompress_shared_libraries) &&
-        invoker.uncompress_shared_libraries) {
-      _args += [ "--uncompress-shared-libraries=True" ]
     }
     if (defined(invoker.library_always_compress)) {
       _args +=
@@ -3282,8 +3271,6 @@ if (enable_java_templates) {
   #    be stored in the APK.
   #  secondary_abi_loadable_modules: Optional list of native libraries for
   #    secondary ABI.
-  #  uncompress_shared_libraries: Optional. True to store native shared
-  #    libraries uncompressed and page-aligned.
   #  proto_resources_path: The path of an zip archive containing the APK's
   #    resources compiled to the protocol buffer format (instead of regular
   #    binary xml + resources.arsc).
@@ -3589,7 +3576,6 @@ if (enable_java_templates) {
               "secondary_abi_shared_libraries_runtime_deps_file",
               "secondary_native_lib_placeholders",
               "shared_libraries_runtime_deps_file",
-              "uncompress_shared_libraries",
               "library_always_compress",
             ])
       }
@@ -4205,8 +4191,6 @@ template("create_android_app_bundle_module") {
         ":native:secondary_native_library_placeholders)",
     "--android-abi=$android_app_abi",
     "--min-sdk-version=${invoker.min_sdk_version}",
-    "--uncompress-shared-libraries=@FileArg(" +
-        "$_rebased_build_config:native:uncompress_shared_libraries)",
     "--library-always-compress=@FileArg($_rebased_build_config:native:library_always_compress)",
   ]
   if (defined(android_app_secondary_abi)) {

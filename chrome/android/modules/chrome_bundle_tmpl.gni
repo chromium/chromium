@@ -115,8 +115,6 @@ template("chrome_bundle") {
                              ])
       module_desc = _module_desc
       version_name = chrome_version_name
-      uncompress_shared_libraries =
-          invoker.is_monochrome_or_trichrome || chromium_linker_supported
 
       if (defined(invoker.expected_android_manifest_template)) {
         expected_android_manifest =

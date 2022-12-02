@@ -140,7 +140,6 @@ template("system_webview_apk_or_module_tmpl") {
     _include_primary_support = false
     _include_secondary_support = false
 
-    uncompress_shared_libraries = true
     if (!_use_trichrome_library) {
       shared_resources = true
 

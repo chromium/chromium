@@ -29,7 +29,6 @@ public class NativeLibraries {{
 
     // Set to true to enable the use of the Chromium Linker.
     public static {MAYBE_FINAL}boolean sUseLinker{USE_LINKER};
-    public static {MAYBE_FINAL}boolean sUseLibraryInZipFile{USE_LIBRARY_IN_ZIP_FILE};
 
     // This is the list of native libraries to be loaded (in the correct order)
     // by LibraryLoader.java.
@@ -57,10 +56,6 @@ def main():
       '--enable-chromium-linker',
       action='store_true',
       help='Enable Chromium linker.')
-  parser.add_argument(
-      '--load-library-from-apk',
-      action='store_true',
-      help='Load libaries from APK without uncompressing.')
   parser.add_argument(
       '--native-libraries-list', help='File with list of native libraries.')
   parser.add_argument(
@@ -106,7 +101,6 @@ def main():
   format_dict = {
       'MAYBE_FINAL': 'final ' if options.final else '',
       'USE_LINKER': bool_str(options.enable_chromium_linker),
-      'USE_LIBRARY_IN_ZIP_FILE': bool_str(options.load_library_from_apk),
       'LIBRARIES': ','.join(_FormatLibraryName(n) for n in native_libraries),
       'CPU_FAMILY': options.cpu_family,
   }

@@ -2553,13 +2553,6 @@ if (current_toolchain == default_toolchain) {
 
       shared_libraries = [ ":libchrome" ]
 
-      # Native libraries can be loaded directly from the APK using the
-      # Chromium linker. However, we disable this for J-K due to an OEM-specific
-      # platform bug, where overzealous SELinux settings prevent mapping some apk
-      # file segments with PROT_EXEC (see http://crbug.com/398425). This was
-      # fixed for Android L by adding proper CTS tests.
-      load_library_from_apk = chromium_linker_supported
-
       version_name = chrome_version_name
     }
   }

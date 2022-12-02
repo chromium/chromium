@@ -790,8 +790,6 @@ if (enable_java_templates && is_android) {
   #   version_number: (Optional) String of expected version of 'main' native
   #     library.
   #   enable_chromium_linker: (Optional) Whether to use the Chromium linker.
-  #   load_library_from_apk: (Optional) Whether libraries should be loaded from
-  #     the APK without uncompressing.
   #   use_final_fields: True to use final fields. When false, all other
   #       variables must not be set.
   template("write_native_libraries_java") {
@@ -838,10 +836,6 @@ if (enable_java_templates && is_android) {
         if (defined(invoker.enable_chromium_linker) &&
             invoker.enable_chromium_linker) {
           args += [ "--enable-chromium-linker" ]
-        }
-        if (defined(invoker.load_library_from_apk) &&
-            invoker.load_library_from_apk) {
-          args += [ "--load-library-from-apk" ]
         }
       }
     }
@@ -1558,7 +1552,6 @@ if (enable_java_templates && is_android) {
       _native_libraries_target_name = "${target_name}__native_libraries"
       write_native_libraries_java(_native_libraries_target_name) {
         enable_chromium_linker = false
-        load_library_from_apk = false
         use_final_fields = true
         if (defined(_shared_library_list_file)) {
           native_libraries_list_file = _shared_library_list_file
@@ -2345,8 +2338,7 @@ if (enable_java_templates && is_android) {
   #       * dependencies of this .so are not automatically included
   #       * ".cr.so" is never added
   #       * they are not side-loaded when incremental_install=true.
-  #       * load_library_from_apk, use_chromium_linker,
-  #         and enable_relocation_packing do not apply
+  #       * use_chromium_linker, and enable_relocation_packing do not apply
   #     Use this instead of shared_libraries when you are going to load the library
   #     conditionally, and only when shared_libraries doesn't work for you.
   #   secondary_abi_loadable_modules: This is the loadable_modules analog to
@@ -2393,9 +2385,6 @@ if (enable_java_templates && is_android) {
   #   shared_resources_allowlist_target: Optional name of a target specifying
   #     an input R.txt file that lists the resources that can be exported
   #     by the APK when shared_resources or app_as_shared_lib is defined.
-  #   uncompress_shared_libraries: True if shared libraries should be stored
-  #     uncompressed in the APK. Must be unset or true if load_library_from_apk
-  #     is set to true.
   #   uncompress_dex: Store final .dex files uncompressed in the apk.
   #   omit_dex: If true, do not build or include classes.dex.
   #   strip_resource_names: True if resource names should be stripped from the
@@ -2542,19 +2531,8 @@ if (enable_java_templates && is_android) {
 
     _use_chromium_linker =
         defined(invoker.use_chromium_linker) && invoker.use_chromium_linker
-    _load_library_from_apk =
-        defined(invoker.load_library_from_apk) && invoker.load_library_from_apk
 
     not_needed([ "_use_chromium_linker" ])
-
-    # Make sure that uncompress_shared_libraries is set to true if
-    # load_library_from_apk is true.
-    if (defined(invoker.uncompress_shared_libraries)) {
-      _uncompress_shared_libraries = invoker.uncompress_shared_libraries
-      assert(!_load_library_from_apk || _uncompress_shared_libraries)
-    } else {
-      _uncompress_shared_libraries = _load_library_from_apk
-    }
 
     # The dependency that makes the chromium linker, if any is needed.
     _native_libs_deps = []
@@ -2949,7 +2927,6 @@ if (enable_java_templates && is_android) {
           native_libraries_list_file = _secondary_abi_shared_library_list_file
         }
         enable_chromium_linker = _use_chromium_linker
-        load_library_from_apk = _load_library_from_apk
         use_final_fields = true
       }
       _srcjar_deps += [ ":${_template_name}__native_libraries" ]
@@ -3130,8 +3107,6 @@ if (enable_java_templates && is_android) {
 
       loadable_modules = _loadable_modules
 
-      uncompress_shared_libraries = _uncompress_shared_libraries
-
       if (defined(_allowlist_r_txt_path) && _is_bundle_module) {
         # Used to write the file path to the target's .build_config.json only.
         base_allowlist_rtxt_path = _allowlist_r_txt_path
@@ -3269,7 +3244,6 @@ if (enable_java_templates && is_android) {
                                  "secondary_abi_loadable_modules",
                                  "secondary_native_lib_placeholders",
                                  "uncompress_dex",
-                                 "uncompress_shared_libraries",
                                  "library_always_compress",
                                ])
 
@@ -3280,7 +3254,6 @@ if (enable_java_templates && is_android) {
 
         build_config = _build_config
         min_sdk_version = _min_sdk_version
-        uncompress_shared_libraries = _uncompress_shared_libraries
         packaged_resources_path = _arsc_resources_path
 
         # Need full deps rather than _non_java_deps, because loadable_modules
@@ -3581,7 +3554,6 @@ if (enable_java_templates && is_android) {
                                "lint_min_sdk_version",
                                "lint_suppressions_dep",
                                "lint_suppressions_file",
-                               "load_library_from_apk",
                                "loadable_modules",
                                "manifest_package",
                                "manual_jni_registration",
@@ -3619,7 +3591,6 @@ if (enable_java_templates && is_android) {
                                "target_sdk_version",
                                "testonly",
                                "uncompress_dex",
-                               "uncompress_shared_libraries",
                                "library_always_compress",
                                "use_chromium_linker",
                                "version_code",
@@ -3711,7 +3682,6 @@ if (enable_java_templates && is_android) {
                                "jar_excluded_patterns",
                                "javac_args",
                                "jni_sources_exclusions",
-                               "load_library_from_apk",
                                "loadable_modules",
                                "product_config_java_packages",
                                "main_component_library",
@@ -3748,7 +3718,6 @@ if (enable_java_templates && is_android) {
                                "strip_unused_resources",
                                "target_sdk_version",
                                "testonly",
-                               "uncompress_shared_libraries",
                                "library_always_compress",
                                "use_chromium_linker",
                                "uses_split",

@@ -131,9 +131,6 @@ def _ParseArgs(args):
   options.library_always_compress = build_utils.ParseGnList(
       options.library_always_compress)
 
-  options.uncompress_shared_libraries = \
-      options.uncompress_shared_libraries in [ 'true', 'True' ]
-
   if not options.android_abi and (options.native_libs or
                                   options.native_lib_placeholders):
     raise Exception('Must specify --android-abi with --native-libs')
@@ -244,7 +241,7 @@ def _AddFiles(apk, details):
           alignment=alignment)
 
 
-def _GetNativeLibrariesToAdd(native_libs, android_abi, uncompress, fast_align,
+def _GetNativeLibrariesToAdd(native_libs, android_abi, fast_align,
                              lib_always_compress):
   """Returns the list of file_detail tuples for native libraries in the apk.
 
@@ -256,8 +253,7 @@ def _GetNativeLibrariesToAdd(native_libs, android_abi, uncompress, fast_align,
 
   for path in native_libs:
     basename = os.path.basename(path)
-    compress = not uncompress or any(lib_name in basename
-                                     for lib_name in lib_always_compress)
+    compress = any(lib_name in basename for lib_name in lib_always_compress)
     lib_android_abi = android_abi
     if path.startswith('android_clang_arm64_hwasan/'):
       lib_android_abi = 'arm64-v8a-hwasan'
@@ -363,14 +359,12 @@ def main(args):
     return ret
 
   libs_to_add = _GetNativeLibrariesToAdd(native_libs, options.android_abi,
-                                         options.uncompress_shared_libraries,
                                          fast_align,
                                          options.library_always_compress)
   if options.secondary_android_abi:
     libs_to_add.extend(
         _GetNativeLibrariesToAdd(secondary_native_libs,
                                  options.secondary_android_abi,
-                                 options.uncompress_shared_libraries,
                                  fast_align, options.library_always_compress))
 
   if options.expected_file:
