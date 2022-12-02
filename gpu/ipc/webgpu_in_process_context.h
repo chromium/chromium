@@ -57,6 +57,7 @@ class WebGPUInProcessContext {
   // Test only functions.
   ServiceTransferCache* GetTransferCacheForTest() const;
   InProcessCommandBuffer* GetCommandBufferForTest() const;
+  CommandBufferHelper* GetCommandBufferHelperForTest() const;
 
  private:
   std::unique_ptr<CommandBufferHelper> helper_;

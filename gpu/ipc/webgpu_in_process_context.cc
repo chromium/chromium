@@ -107,4 +107,9 @@ InProcessCommandBuffer* WebGPUInProcessContext::GetCommandBufferForTest()
   return command_buffer_.get();
 }
 
+CommandBufferHelper* WebGPUInProcessContext::GetCommandBufferHelperForTest()
+    const {
+  return helper_.get();
+}
+
 }  // namespace gpu
