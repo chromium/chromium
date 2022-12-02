@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -59,7 +60,9 @@ class PhoneHubTrayTest : public AshTestBase {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kPhoneHub,
-                              chromeos::features::kPhoneHubCameraRoll},
+                              chromeos::features::kPhoneHubCameraRoll,
+                              chromeos::features::kEcheLauncher,
+                              chromeos::features::kEcheSWA},
         /*disabled_features=*/{});
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
@@ -561,6 +564,12 @@ TEST_F(PhoneHubTrayTest, StartOnboardingFlow) {
 }
 
 TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByClickingAckButton) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kPhoneHub,
+                            chromeos::features::kPhoneHubCameraRoll,
+                            chromeos::features::kEcheSWA},
+      /*disabled_features=*/{});
   // Simulate a pending setup state to show the onboarding screen.
   GetFeatureStatusProvider()->SetStatus(
       phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
@@ -734,6 +743,18 @@ TEST_F(PhoneHubTrayTest, OnSessionChanged) {
       phonehub::FeatureStatus::kEnabledAndConnected);
   EXPECT_TRUE(phone_hub_tray_->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(phone_hub_tray_->GetVisible());
+}
+
+// This is a test to check for use-after-free error on accessing
+// a possible dangling reference to `phone_status_view`.
+TEST_F(PhoneHubTrayTest, SafeAccessToHeaderView) {
+  phone_hub_tray_->ShowBubble();
+
+  // Bubble is closed w/o calling `phone_hub_tray_->CloseBubble()`
+  phone_hub_tray_->GetBubbleWidget()->CloseNow();
+
+  // Make sure it does not cause a UAF error.This is caught by ASAN (go/asan)
+  phone_hub_tray_->UpdateHeaderVisibility();
 }
 
 }  // namespace ash

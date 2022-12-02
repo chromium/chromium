@@ -113,6 +113,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
+
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
@@ -142,6 +144,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void EcheIconActivated(const ui::Event& event);
   void PhoneHubIconActivated(const ui::Event& event);
 
+  views::View* GetPhoneStatusView();
+
   // Icon of the tray. Unowned.
   views::ImageButton* icon_;
 
@@ -163,7 +167,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   std::unique_ptr<TrayBubbleWrapper> bubble_;
 
   // The header status view on top of the bubble.
-  views::View* phone_status_view_ = nullptr;
+  // IMPORTANT: This is not owned, always access through GetPhoneStatusView
+  views::View* phone_status_view_dont_use_ = nullptr;
 
   // The main content view of the bubble, which changes depending on the state.
   // Unowned.

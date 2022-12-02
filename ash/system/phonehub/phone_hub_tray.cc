@@ -238,8 +238,8 @@ void PhoneHubTray::ShowBubble() {
 
   // Creates header view on top for displaying phone status and settings icon.
   auto phone_status = ui_controller_->CreateStatusHeaderView(this);
-  phone_status_view_ = phone_status.get();
-  DCHECK(phone_status_view_);
+  phone_status_view_dont_use_ = phone_status.get();
+  DCHECK(phone_status_view_dont_use_);
   bubble_view->AddChildView(std::move(phone_status));
   UpdateHeaderVisibility();
 
@@ -291,10 +291,10 @@ void PhoneHubTray::OpenConnectedDevicesSettings() {
 }
 
 void PhoneHubTray::HideStatusHeaderView() {
-  if (!phone_status_view_)
+  if (!GetPhoneStatusView())
     return;
 
-  phone_status_view_->SetVisible(false);
+  GetPhoneStatusView()->SetVisible(false);
   bubble_->bubble_view()->UpdateBubble();
 }
 
@@ -358,6 +358,10 @@ void PhoneHubTray::CloseBubble() {
     content_view_ = nullptr;
   }
 
+  if (phone_status_view_dont_use_) {
+    phone_status_view_dont_use_ = nullptr;
+  }
+
   bubble_.reset();
   SetIsActive(false);
   shelf()->UpdateAutoHideState();
@@ -372,13 +376,13 @@ void PhoneHubTray::UpdateVisibility() {
 void PhoneHubTray::UpdateHeaderVisibility() {
   if (!features::IsEcheLauncherEnabled())
     return;
-  if (!phone_status_view_)
+  if (!GetPhoneStatusView())
     return;
 
   DCHECK(ui_controller_.get());
   auto ui_state = ui_controller_->ui_state();
-  phone_status_view_->SetVisible(ui_state !=
-                                 PhoneHubUiController::UiState::kMiniLauncher);
+  GetPhoneStatusView()->SetVisible(
+      ui_state != PhoneHubUiController::UiState::kMiniLauncher);
 }
 
 void PhoneHubTray::TemporarilyDisableAnimation() {
@@ -397,6 +401,13 @@ void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
   } else {
     ShowBubble();
   }
+}
+
+views::View* PhoneHubTray::GetPhoneStatusView() {
+  if (!bubble_ || !bubble_->GetBubbleView()) {
+    phone_status_view_dont_use_ = nullptr;
+  }
+  return phone_status_view_dont_use_;
 }
 
 }  // namespace ash
