@@ -60192,6 +60192,7 @@ from previous Chrome versions.
   <int value="-338606027" label="TrimOnMemoryPressure:disabled"/>
   <int value="-338277966" label="DecoupleSyncFromAndroidMasterSync:enabled"/>
   <int value="-337722581" label="AssistantConsentV2:enabled"/>
+  <int value="-337308250" label="AutofillMoreProminentPopup:enabled"/>
   <int value="-336768659" label="NtpPhotosModule:enabled"/>
   <int value="-335331552" label="TabGroupsForTablets:disabled"/>
   <int value="-334873793" label="MediaSessionNotification:enabled"/>
@@ -63607,6 +63608,7 @@ from previous Chrome versions.
   <int value="1700117535" label="MediaFeedsBackgroundFetching:disabled"/>
   <int value="1700181145" label="PowerBookmarksSidePanel:enabled"/>
   <int value="1700394127" label="OverlayScrollbar:disabled"/>
+  <int value="1700875006" label="AutofillMoreProminentPopup:disabled"/>
   <int value="1701295056"
       label="AutofillEnableVirtualCardManagementInDesktopSettingsPage:enabled"/>
   <int value="1701972870" label="NTPSnippetsIncreasedVisibility:enabled"/>
