@@ -24,7 +24,7 @@ namespace gpu {
 // static
 std::unique_ptr<GLImagePbufferBacking>
 GLImagePbufferBacking::CreateFromGLTexture(
-    scoped_refptr<GLImagePbuffer> image,
+    base::OnceClosure on_destruction_closure,
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -38,14 +38,15 @@ GLImagePbufferBacking::CreateFromGLTexture(
   auto si_format = viz::SharedImageFormat::SinglePlane(format);
   auto shared_image =
       base::WrapUnique<GLImagePbufferBacking>(new GLImagePbufferBacking(
-          std::move(image), mailbox, si_format, size, color_space,
-          surface_origin, alpha_type, usage, std::move(wrapped_gl_texture)));
+          std::move(on_destruction_closure), mailbox, si_format, size,
+          color_space, surface_origin, alpha_type, usage,
+          std::move(wrapped_gl_texture)));
 
   return shared_image;
 }
 
 GLImagePbufferBacking::GLImagePbufferBacking(
-    scoped_refptr<GLImagePbuffer> image,
+    base::OnceClosure on_destruction_closure,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
     const gfx::Size& size,
@@ -64,10 +65,8 @@ GLImagePbufferBacking::GLImagePbufferBacking(
           usage,
           viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
           false /* is_thread_safe */),
-      image_(image),
-      passthrough_texture_(std::move(passthrough_texture)) {
-  DCHECK(image_);
-}
+      on_destruction_closure_runner_(std::move(on_destruction_closure)),
+      passthrough_texture_(std::move(passthrough_texture)) {}
 
 GLImagePbufferBacking::~GLImagePbufferBacking() {
   // If the cached promise texture is referencing the GL texture, then it needs

@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_
 
-#include "gpu/command_buffer/service/shared_image/gl_image_pbuffer.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -14,9 +13,9 @@
 namespace gpu {
 
 // Implementation of SharedImageBacking that takes in a caller-created GL
-// Texture and GLImagePbuffer, scopes their lifetime, and exposes the texture
-// via SharedImageRepresentations. Used with the legacy mailbox implementation
-// in //media's DXVA video decoder. DO NOT USE FOR ANY OTHER PURPOSE.
+// Texture, scopes its lifetime, and exposes it via SharedImageRepresentations.
+// Used with the legacy mailbox implementation in //media's DXVA video decoder.
+// DO NOT USE FOR ANY OTHER PURPOSE.
 // TODO(crbug.com/1384438): Remove this class.
 class GPU_GLES2_EXPORT GLImagePbufferBacking
     : public ClearTrackingSharedImageBacking,
@@ -25,8 +24,9 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
   // Used when GLImagePbufferBacking is serving as a temporary SharedImage
   // wrapper to an already-allocated texture. The returned backing will not
   // create any new textures.
+  // |on_destruction_closure| is invoked on destruction of this object.
   static std::unique_ptr<GLImagePbufferBacking> CreateFromGLTexture(
-      scoped_refptr<GLImagePbuffer> image,
+      base::OnceClosure on_destruction_closure,
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -45,7 +45,7 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
 
  private:
   GLImagePbufferBacking(
-      scoped_refptr<GLImagePbuffer> image,
+      base::OnceClosure on_destruction_closure,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
       const gfx::Size& size,
@@ -86,7 +86,7 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
   void GLTextureImageRepresentationEndAccess(bool readonly) override;
   void GLTextureImageRepresentationRelease(bool have_context) override;
 
-  scoped_refptr<GLImagePbuffer> image_;
+  base::ScopedClosureRunner on_destruction_closure_runner_;
 
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
 
