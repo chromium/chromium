@@ -184,9 +184,10 @@ TEST_P(SpellingServiceClientTest, RequestTextCheck) {
                                      test_case.sanitized_request_text,
                                      test_case.corrected_text);
 
-  base::ListValue dictionary;
+  base::Value::List dictionary;
   dictionary.Append(test_case.language);
-  pref->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionary);
+  pref->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                std::move(dictionary));
 
   client_.RequestTextCheck(
       &profile_, test_case.request_type,
@@ -357,20 +358,22 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
   // SpellingServiceClient::IsAvailable() describes why this function returns
   // false for suggestions.) If there is no language set, then we
   // do not allow any remote.
-  pref->Set(spellcheck::prefs::kSpellCheckDictionaries, base::ListValue());
+  pref->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                base::Value::List());
 
   EXPECT_FALSE(client_.IsAvailable(&profile_, kSuggest));
   EXPECT_FALSE(client_.IsAvailable(&profile_, kSpellcheck));
 
-  static const char* kSupported[] = {
+  static constexpr const char* kSupported[] = {
       "en-AU", "en-CA", "en-GB", "en-US", "da-DK", "es-ES",
   };
   // If spellcheck is allowed, then suggest is not since spellcheck is a
   // superset of suggest.
   for (size_t i = 0; i < std::size(kSupported); ++i) {
-    base::ListValue dictionary;
+    base::Value::List dictionary;
     dictionary.Append(kSupported[i]);
-    pref->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionary);
+    pref->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                  std::move(dictionary));
 
     EXPECT_FALSE(client_.IsAvailable(&profile_, kSuggest));
     EXPECT_TRUE(client_.IsAvailable(&profile_, kSpellcheck));
@@ -378,7 +381,7 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
 
   // This function returns true for suggestions for all and false for
   // spellcheck for unsupported locales.
-  static const char* kUnsupported[] = {
+  static constexpr const char* kUnsupported[] = {
       "af-ZA", "bg-BG", "ca-ES", "cs-CZ", "de-DE", "el-GR", "et-EE", "fo-FO",
       "fr-FR", "he-IL", "hi-IN", "hr-HR", "hu-HU", "id-ID", "it-IT", "lt-LT",
       "lv-LV", "nb-NO", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ro-RO", "ru-RU",
@@ -386,9 +389,10 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
   };
   for (size_t i = 0; i < std::size(kUnsupported); ++i) {
     SCOPED_TRACE(std::string("Expected language ") + kUnsupported[i]);
-    base::ListValue dictionary;
+    base::Value::List dictionary;
     dictionary.Append(kUnsupported[i]);
-    pref->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionary);
+    pref->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                  std::move(dictionary));
 
     EXPECT_TRUE(client_.IsAvailable(&profile_, kSuggest));
     EXPECT_FALSE(client_.IsAvailable(&profile_, kSpellcheck));

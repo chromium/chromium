@@ -162,12 +162,12 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(SpellcheckServiceUnitTest, GetDictionaries) {
   prefs()->SetString(language::prefs::kAcceptLanguages,
                      GetParam().accept_languages);
-  base::ListValue spellcheck_dictionaries;
+  base::Value::List spellcheck_dictionaries;
   for (const std::string& dictionary : GetParam().spellcheck_dictionaries) {
     spellcheck_dictionaries.Append(dictionary);
   }
-  prefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-               spellcheck_dictionaries);
+  prefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                   std::move(spellcheck_dictionaries));
 
   std::vector<SpellcheckService::Dictionary> dictionaries;
   SpellcheckService::GetDictionaries(browser_context(), &dictionaries);
@@ -234,12 +234,12 @@ void SpellcheckServiceHybridUnitTestBase::RunGetDictionariesTest(
     return;
 
   prefs()->SetString(language::prefs::kAcceptLanguages, accept_languages);
-  base::ListValue spellcheck_dictionaries_list;
+  base::Value::List spellcheck_dictionaries_list;
   for (std::string dict : spellcheck_dictionaries) {
     spellcheck_dictionaries_list.Append(dict);
   }
-  prefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-               spellcheck_dictionaries_list);
+  prefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                   std::move(spellcheck_dictionaries_list));
 
   // Simulate first-run scenario (method is normally called during browser
   // start-up). If the primary accept language has no dictionary support, it is
