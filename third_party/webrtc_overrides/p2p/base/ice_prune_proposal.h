@@ -1,0 +1,44 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_PRUNE_PROPOSAL_H_
+#define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_PRUNE_PROPOSAL_H_
+
+#include <string>
+#include <vector>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/webrtc/api/array_view.h"
+#include "third_party/webrtc/p2p/base/connection.h"
+#include "third_party/webrtc/p2p/base/ice_controller_interface.h"
+#include "third_party/webrtc/rtc_base/system/rtc_export.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
+#include "third_party/webrtc_overrides/p2p/base/ice_proposal.h"
+
+namespace blink {
+
+// A proposal to discard some ICE connections.
+class RTC_EXPORT IcePruneProposal : public IceProposal {
+ public:
+  IcePruneProposal(
+      const rtc::ArrayView<const cricket::Connection*> connections_to_prune,
+      bool reply_expected);
+
+  IcePruneProposal(const IcePruneProposal&) = default;
+
+  ~IcePruneProposal() override = default;
+
+  // The ICE connections that will be discarded. Once pruned, these are no
+  // longer viable candidates for a STUN ping or to switch the transport to.
+  const rtc::ArrayView<const IceConnection> connections_to_prune() const {
+    return connections_to_prune_;
+  }
+
+ private:
+  std::vector<const IceConnection> connections_to_prune_;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_PRUNE_PROPOSAL_H_

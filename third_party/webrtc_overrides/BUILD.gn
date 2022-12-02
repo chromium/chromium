@@ -268,10 +268,23 @@ source_set("bridge_ice_controller") {
     "p2p/base/bridge_ice_controller.h",
     "p2p/base/bridge_ice_transport_factory.cc",
     "p2p/base/bridge_ice_transport_factory.h",
+    "p2p/base/ice_connection.cc",
+    "p2p/base/ice_connection.h",
+    "p2p/base/ice_controller_observer.h",
+    "p2p/base/ice_ping_proposal.cc",
+    "p2p/base/ice_ping_proposal.h",
+    "p2p/base/ice_proposal.h",
+    "p2p/base/ice_prune_proposal.cc",
+    "p2p/base/ice_prune_proposal.h",
+    "p2p/base/ice_switch_proposal.cc",
+    "p2p/base/ice_switch_proposal.h",
   ]
   configs += [ "//third_party/webrtc:library_impl_config" ]
   deps = [
     "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/webrtc/api:array_view",
+    "//third_party/webrtc/api:candidate",
     "//third_party/webrtc/api:ice_transport_interface",
     "//third_party/webrtc/api:make_ref_counted",
     "//third_party/webrtc/api:scoped_refptr",
