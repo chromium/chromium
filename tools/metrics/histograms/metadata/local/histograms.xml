@@ -252,38 +252,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorage.MojoSizeInKB" units="KB" expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
+<histogram name="LocalStorage.MojoSizeInKB" units="KB"
+    expires_after="2023-12-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Size of the HTML5 LocalStorage DB in KB in the renderer-side cache using
     Mojo implementation.
+
+    Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
-<histogram name="LocalStorage.MojoTimeToPrime" units="ms" expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
+<histogram name="LocalStorage.MojoTimeToPrime" units="ms"
+    expires_after="2023-12-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Time (in ms) to load HTML5 LocalStorage into the renderer-side cache using
     Mojo implementation.
+
+    Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrimeFor{LocalStorageSizes}" units="ms"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
+    expires_after="2023-12-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Time (in ms) to load HTML5 LocalStorage into the renderer-side cache using
     Mojo implementation, split by size. {LocalStorageSizes}
+
+    Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
   <token key="LocalStorageSizes" variants="LocalStorageSizes"/>
 </histogram>
 
 <histogram name="LocalStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2023-05-01">
-  <owner>mek@chromium.org</owner>
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2023-12-01">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The renderer side cache hit rate metrics for new HTML5 LocalStorage DB
@@ -294,11 +302,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.RendererLocalStorageSizeInKB" units="KB"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
+    expires_after="2023-12-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Size of the HTML5 LocalStorage DB in KB in the renderer-side cache.
+
+    Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
