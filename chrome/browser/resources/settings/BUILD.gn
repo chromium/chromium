@@ -39,6 +39,8 @@ build_webui("build") {
   grd_prefix = "settings"
 
   static_files = [
+    "images/ad_privacy_banner_dark.svg",
+    "images/ad_privacy_banner.svg",
     "images/cookies_banner_dark.svg",
     "images/cookies_banner.svg",
     "images/googleg_standard_clr_32px.svg",

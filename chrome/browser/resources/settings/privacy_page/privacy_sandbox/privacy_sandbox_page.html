@@ -1,7 +1,16 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  img {
+    width: 100%;
+  }
+</style>
 
-<!-- TODO(b/254413936): Add image header. -->
-
+<picture>
+  <source
+      srcset="chrome://settings/images/ad_privacy_banner_dark.svg"
+      media="(prefers-color-scheme: dark)">
+  <img id="banner" alt=""
+      src="chrome://settings/images/ad_privacy_banner.svg">
+</picture>
 <cr-link-row
     id="privacySandboxTopicsLinkRow"
     start-icon="settings20:interests"
