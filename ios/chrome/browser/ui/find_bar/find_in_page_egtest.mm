@@ -97,7 +97,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 // Tests that find in page allows iteration between search results and displays
 // correct number of results.
 // TODO(crbug.com/1109740) : Fix failing test.
-- (void)DISABLED_testFindInPage {
+- (void)FLAKY_testFindInPage {
   // Type "find".
   [self typeFindInPageText:@"find"];
   // Should be highlighting result 1 of 2.
@@ -115,7 +115,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 // the search term is persisted between FIP runs, but in incognito search term
 // is not retained and not autofilled.
 // TODO(crbug.com/1109740) : Fix failing test.
-- (void)DISABLED_testFindInPageRetainsSearchTerm {
+- (void)FLAKY_testFindInPageRetainsSearchTerm {
   // Type "find".
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
@@ -157,7 +157,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
 // Tests accessibility of the Find in Page screen.
 // TODO(crbug.com/1109740) : Fix failing test.
-- (void)DISABLED_testAccessibilityOnFindInPage {
+- (void)FLAKY_testAccessibilityOnFindInPage {
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
 
