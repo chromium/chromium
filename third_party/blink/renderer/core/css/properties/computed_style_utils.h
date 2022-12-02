@@ -141,7 +141,6 @@ class CORE_EXPORT ComputedStyleUtils {
                                       bool will_change_contents,
                                       bool will_change_scroll_position);
 
-  static CSSValue* ValueForAnimationDelay(double delay);
   static CSSValue* ValueForAnimationDelayStart(const Timing::Delay& delay);
   static CSSValue* ValueForAnimationDelayEnd(const Timing::Delay& delay);
   static CSSValue* ValueForAnimationDirection(Timing::PlaybackDirection);
@@ -153,7 +152,6 @@ class CORE_EXPORT ComputedStyleUtils {
       const scoped_refptr<TimingFunction>&);
   static CSSValue* ValueForAnimationTimeline(const StyleTimeline&);
 
-  static CSSValue* ValueForAnimationDelayList(const CSSTimingData*);
   static CSSValue* ValueForAnimationDelayStartList(const CSSTimingData*);
   static CSSValue* ValueForAnimationDelayEndList(const CSSTimingData*);
   static CSSValue* ValueForAnimationDirectionList(const CSSAnimationData*);

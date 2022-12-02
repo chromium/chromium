@@ -9,7 +9,8 @@ element.style { ()
     animation: animName 1s 2s, mediaAnim 2s, doesNotExist 3s, styleSheetAnim 0s;
         animation-duration: 1s, 2s, 3s, 0s;
         animation-timing-function: ease, ease, ease, ease;
-        animation-delay: 2s, 0s, 0s, 0s;
+        animation-delay-start: 2s, 0s, 0s, 0s;
+        animation-delay-end: 0s, 0s, 0s, 0s;
         animation-iteration-count: 1, 1, 1, 1;
         animation-direction: normal, normal, normal, normal;
         animation-fill-mode: none, none, none, none;
@@ -62,7 +63,8 @@ element.style { ()
     animation: animName 1s 2s, mediaAnim 2s, doesNotExist 3s, styleSheetAnim 0s;
         animation-duration: 1s, 2s, 3s, 0s;
         animation-timing-function: ease, ease, ease, ease;
-        animation-delay: 2s, 0s, 0s, 0s;
+        animation-delay-start: 2s, 0s, 0s, 0s;
+        animation-delay-end: 0s, 0s, 0s, 0s;
         animation-iteration-count: 1, 1, 1, 1;
         animation-direction: normal, normal, normal, normal;
         animation-fill-mode: none, none, none, none;
@@ -115,7 +117,8 @@ element.style { ()
     animation: animName 1s 2s, mediaAnim 2s, doesNotExist 3s, styleSheetAnim 0s;
         animation-duration: 1s, 2s, 3s, 0s;
         animation-timing-function: ease, ease, ease, ease;
-        animation-delay: 2s, 0s, 0s, 0s;
+        animation-delay-start: 2s, 0s, 0s, 0s;
+        animation-delay-end: 0s, 0s, 0s, 0s;
         animation-iteration-count: 1, 1, 1, 1;
         animation-direction: normal, normal, normal, normal;
         animation-fill-mode: none, none, none, none;
@@ -168,7 +171,8 @@ element.style { ()
     animation: animName 1s 2s, mediaAnim 2s, doesNotExist 3s, styleSheetAnim 0s;
         animation-duration: 1s, 2s, 3s, 0s;
         animation-timing-function: ease, ease, ease, ease;
-        animation-delay: 2s, 0s, 0s, 0s;
+        animation-delay-start: 2s, 0s, 0s, 0s;
+        animation-delay-end: 0s, 0s, 0s, 0s;
         animation-iteration-count: 1, 1, 1, 1;
         animation-direction: normal, normal, normal, normal;
         animation-fill-mode: none, none, none, none;
@@ -221,7 +225,8 @@ element.style { ()
     animation: animName 1s 2s, mediaAnim 2s, doesNotExist 3s, styleSheetAnim 0s;
         animation-duration: 1s, 2s, 3s, 0s;
         animation-timing-function: ease, ease, ease, ease;
-        animation-delay: 2s, 0s, 0s, 0s;
+        animation-delay-start: 2s, 0s, 0s, 0s;
+        animation-delay-end: 0s, 0s, 0s, 0s;
         animation-iteration-count: 1, 1, 1, 1;
         animation-direction: normal, normal, normal, normal;
         animation-fill-mode: none, none, none, none;

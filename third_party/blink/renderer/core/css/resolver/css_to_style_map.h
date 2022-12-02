@@ -67,7 +67,6 @@ class CSSToStyleMap {
                                FillLayer*,
                                const CSSValue&);
 
-  static double MapAnimationDelay(const CSSValue&);
   static Timing::Delay MapAnimationDelayStart(const CSSValue&);
   static Timing::Delay MapAnimationDelayEnd(const CSSValue&);
   static Timing::PlaybackDirection MapAnimationDirection(const CSSValue&);

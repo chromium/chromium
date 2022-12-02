@@ -9,7 +9,7 @@
 
 namespace blink {
 
-TEST(CSSPropertyNamesTest, CSSScrollTimeline) {
+TEST(CSSPropertyNamesTest, AlternativeAnimation) {
   {
     ScopedCSSScrollTimelineForTest scoped_feature(false);
     EXPECT_EQ(
@@ -22,6 +22,22 @@ TEST(CSSPropertyNamesTest, CSSScrollTimeline) {
     EXPECT_EQ(
         CSSPropertyID::kAlternativeAnimation,
         UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
+  }
+}
+
+TEST(CSSPropertyNamesTest, AlternativeAnimationDelay) {
+  {
+    ScopedCSSScrollTimelineForTest scoped_feature(false);
+    EXPECT_EQ(CSSPropertyID::kAnimationDelay,
+              UnresolvedCSSPropertyID(/* execution_context */ nullptr,
+                                      "animation-delay"));
+  }
+
+  {
+    ScopedCSSScrollTimelineForTest scoped_feature(true);
+    EXPECT_EQ(CSSPropertyID::kAlternativeAnimationDelay,
+              UnresolvedCSSPropertyID(/* execution_context */ nullptr,
+                                      "animation-delay"));
   }
 }
 

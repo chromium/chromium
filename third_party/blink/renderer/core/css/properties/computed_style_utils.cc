@@ -1817,19 +1817,6 @@ CSSValue* CreateAnimationValueList(const Vector<T>& values,
 
 }  // namespace
 
-CSSValue* ComputedStyleUtils::ValueForAnimationDelay(double delay) {
-  return CSSNumericLiteralValue::Create(delay,
-                                        CSSPrimitiveValue::UnitType::kSeconds);
-}
-
-CSSValue* ComputedStyleUtils::ValueForAnimationDelayList(
-    const CSSTimingData* timing_data) {
-  return CreateAnimationValueList(
-      timing_data ? timing_data->DelayList()
-                  : Vector<double>{CSSTimingData::InitialDelay()},
-      &ValueForAnimationDelay);
-}
-
 CSSValue* ComputedStyleUtils::ValueForAnimationDelayStart(
     const Timing::Delay& delay) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();

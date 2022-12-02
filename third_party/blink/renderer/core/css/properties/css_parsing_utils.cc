@@ -3708,6 +3708,11 @@ CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange& range,
   return nullptr;
 }
 
+CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,
+                      CSSValueID::kEnter, CSSValueID::kExit>(range);
+}
+
 CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
                                 const CSSParserContext& context) {
   DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
@@ -3716,9 +3721,7 @@ CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
     return time;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  CSSValue* range_name =
-      ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover, CSSValueID::kEnter,
-                   CSSValueID::kExit>(range);
+  CSSValue* range_name = ConsumeTimelineRangeName(range);
   if (!range_name)
     return nullptr;
   list->Append(*range_name);

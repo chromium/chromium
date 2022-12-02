@@ -2293,6 +2293,7 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kAnimation:
     case CSSPropertyID::kAlternativeAnimation:
     case CSSPropertyID::kAnimationDelay:
+    case CSSPropertyID::kAlternativeAnimationDelay:
     case CSSPropertyID::kAnimationDelayEnd:
     case CSSPropertyID::kAnimationDelayStart:
     case CSSPropertyID::kAnimationDirection:

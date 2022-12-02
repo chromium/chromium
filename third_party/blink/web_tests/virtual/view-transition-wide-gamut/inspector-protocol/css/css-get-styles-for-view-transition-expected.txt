@@ -480,19 +480,27 @@ The test verifies functionality of querying style information for view-transitio
                                         value : ease
                                     }
                                     [2] : {
-                                        name : animation-delay
+                                        name : animation-delay-start
                                         value : 0s
                                     }
                                     [3] : {
+                                        name : animation-delay-end
+                                        value : 0s
+                                    }
+                                    [4] : {
                                         name : animation-iteration-count
                                         value : 1
                                     }
-                                    [4] : {
+                                    [5] : {
                                         name : animation-direction
                                         value : normal
                                     }
                                 ]
                                 shorthandEntries : [
+                                    [0] : {
+                                        name : animation-delay
+                                        value : 0s
+                                    }
                                 ]
                             }
                             supports : [
@@ -2708,19 +2716,27 @@ Dumping styles for : ::view-transition-group with id shared{
                                 value : ease
                             }
                             [2] : {
-                                name : animation-delay
+                                name : animation-delay-start
                                 value : 0s
                             }
                             [3] : {
+                                name : animation-delay-end
+                                value : 0s
+                            }
+                            [4] : {
                                 name : animation-iteration-count
                                 value : 1
                             }
-                            [4] : {
+                            [5] : {
                                 name : animation-direction
                                 value : normal
                             }
                         ]
                         shorthandEntries : [
+                            [0] : {
+                                name : animation-delay
+                                value : 0s
+                            }
                         ]
                     }
                     supports : [

@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS Property animation-delay value '1s'
+PASS Property animation-delay value '-1s'
+FAIL Property animation-delay value '1s 2s' assert_true: '1s 2s' is a supported value for animation-delay. expected true got false
+PASS Property animation-delay value '1s, 2s'
+FAIL Property animation-delay value '1s 2s, 3s' assert_true: '1s 2s, 3s' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value '1s, 2s 3s' assert_true: '1s, 2s 3s' is a supported value for animation-delay. expected true got false
+PASS Property animation-delay value '1s, 2s, 3s'
+FAIL Property animation-delay value 'cover' assert_true: 'cover' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'contain' assert_true: 'contain' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'enter' assert_true: 'enter' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'exit' assert_true: 'exit' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'enter, exit' assert_true: 'enter, exit' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'enter 0% enter 100%' assert_true: 'enter 0% enter 100%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'exit 0% exit 100%' assert_true: 'exit 0% exit 100%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'cover 0% cover 100%' assert_true: 'cover 0% cover 100%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'contain 0% contain 100%' assert_true: 'contain 0% contain 100%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'cover 50%' assert_true: 'cover 50%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'contain 50%' assert_true: 'contain 50%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'enter 50%' assert_true: 'enter 50%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'exit 50%' assert_true: 'exit 50%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'enter 50% 0s' assert_true: 'enter 50% 0s' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value '0s enter 50%' assert_true: '0s enter 50%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'enter 50% exit 50%' assert_true: 'enter 50% exit 50%' is a supported value for animation-delay. expected true got false
+FAIL Property animation-delay value 'cover 50% enter 50%, contain 50% exit 50%' assert_true: 'cover 50% enter 50%, contain 50% exit 50%' is a supported value for animation-delay. expected true got false
+Harness: the test ran to completion.
+

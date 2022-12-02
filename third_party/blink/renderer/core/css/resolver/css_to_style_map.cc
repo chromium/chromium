@@ -289,12 +289,6 @@ void CSSToStyleMap::MapFillPositionY(StyleResolverState& state,
   }
 }
 
-double CSSToStyleMap::MapAnimationDelay(const CSSValue& value) {
-  if (value.IsInitialValue())
-    return CSSTimingData::InitialDelay();
-  return To<CSSPrimitiveValue>(value).ComputeSeconds();
-}
-
 namespace {
 
 Timing::Delay MapAnimationTimingDelay(const CSSValue& value) {

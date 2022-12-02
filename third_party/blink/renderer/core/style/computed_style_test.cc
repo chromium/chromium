@@ -1394,20 +1394,20 @@ TEST_F(ComputedStyleTest, ClonedStyleAnimationsAreIndependent) {
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
 
   auto& animations = builder.AccessAnimations();
-  animations.DelayList().clear();
-  animations.DelayList().push_back(CSSAnimationData::InitialDelay());
+  animations.DelayStartList().clear();
+  animations.DelayStartList().push_back(CSSAnimationData::InitialDelayStart());
   scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
-  EXPECT_EQ(1u, style->Animations()->DelayList().size());
+  EXPECT_EQ(1u, style->Animations()->DelayStartList().size());
 
   builder = ComputedStyleBuilder(*style);
   auto& cloned_style_animations = builder.AccessAnimations();
-  EXPECT_EQ(1u, cloned_style_animations.DelayList().size());
-  cloned_style_animations.DelayList().push_back(
-      CSSAnimationData::InitialDelay());
+  EXPECT_EQ(1u, cloned_style_animations.DelayStartList().size());
+  cloned_style_animations.DelayStartList().push_back(
+      CSSAnimationData::InitialDelayStart());
   scoped_refptr<const ComputedStyle> cloned_style = builder.TakeStyle();
 
-  EXPECT_EQ(2u, cloned_style->Animations()->DelayList().size());
-  EXPECT_EQ(1u, style->Animations()->DelayList().size());
+  EXPECT_EQ(2u, cloned_style->Animations()->DelayStartList().size());
+  EXPECT_EQ(1u, style->Animations()->DelayStartList().size());
 }
 
 TEST_F(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {

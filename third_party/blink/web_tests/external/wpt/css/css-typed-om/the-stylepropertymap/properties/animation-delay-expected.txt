@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+FAIL Can set 'animation-delay' to CSS-wide keywords assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+FAIL Can set 'animation-delay' to var() references assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
+FAIL Can set 'animation-delay' to a time Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Setting 'animation-delay' to a length throws TypeError
+PASS Setting 'animation-delay' to a percent throws TypeError
+PASS Setting 'animation-delay' to an angle throws TypeError
+PASS Setting 'animation-delay' to a flexible length throws TypeError
+PASS Setting 'animation-delay' to a number throws TypeError
+PASS Setting 'animation-delay' to a URL throws TypeError
+PASS Setting 'animation-delay' to a transform throws TypeError
+Harness: the test ran to completion.
+

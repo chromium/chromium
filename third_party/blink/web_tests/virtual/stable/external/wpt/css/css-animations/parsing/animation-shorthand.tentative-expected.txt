@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+FAIL e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-delay-end assert_equals: animation-delay-end should be canonical expected (string) "0s" but got (undefined) undefined
+FAIL e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-delay-start assert_equals: animation-delay-start should be canonical expected (string) "-3s" but got (undefined) undefined
+PASS e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-direction
+PASS e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-duration
+PASS e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-fill-mode
+PASS e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-iteration-count
+PASS e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-name
+PASS e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-play-state
+FAIL e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-timeline assert_equals: animation-timeline should be canonical expected (string) "auto" but got (undefined) undefined
+PASS e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should set animation-timing-function
+FAIL e.style['animation'] = "anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)" should not set unrelated longhands assert_equals: expected 0 but got 1
+Harness: the test ran to completion.
+

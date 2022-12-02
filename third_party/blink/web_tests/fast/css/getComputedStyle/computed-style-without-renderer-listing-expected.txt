@@ -52,7 +52,6 @@ align-self: auto
 alignment-baseline: auto
 anchor-name: none
 anchor-scroll: none
-animation-delay: 0s
 animation-delay-end: 0s
 animation-delay-start: 0s
 animation-direction: normal

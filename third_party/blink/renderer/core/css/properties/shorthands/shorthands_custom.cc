@@ -44,8 +44,20 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
                                 bool use_legacy_parsing) {
   switch (property) {
     case CSSPropertyID::kAnimationDelay:
+      DCHECK(!RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
       return css_parsing_utils::ConsumeTime(
           range, context, CSSPrimitiveValue::ValueRange::kAll);
+    case CSSPropertyID::kAnimationDelayStart:
+      DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+      return css_parsing_utils::ConsumeAnimationDelay(range, context);
+    case CSSPropertyID::kAnimationDelayEnd:
+      // New animation-* properties are  "reset only":
+      // https://github.com/w3c/csswg-drafts/issues/6946#issuecomment-1233190360
+      //
+      // Returning nullptr here means that AnimationDelayEnd::InitialValue will
+      // be used.
+      DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+      return nullptr;
     case CSSPropertyID::kAnimationDirection:
       return css_parsing_utils::ConsumeIdent<
           CSSValueID::kNormal, CSSValueID::kAlternate, CSSValueID::kReverse,
@@ -111,8 +123,16 @@ const CSSValue* CSSValueFromComputedAnimation(
           CSSTimingData::GetRepeated(animation_data->DurationList(), i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
           CSSTimingData::GetRepeated(animation_data->TimingFunctionList(), i)));
-      list->Append(*ComputedStyleUtils::ValueForAnimationDelay(
-          CSSTimingData::GetRepeated(animation_data->DelayList(), i)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationDelayStart(
+          CSSTimingData::GetRepeated(animation_data->DelayStartList(), i)));
+      if (CSSAnimationData::InitialDelayEnd() !=
+          CSSTimingData::GetRepeated(animation_data->DelayEndList(), i)) {
+        DCHECK_EQ(shorthand.length(), 10u);
+        DCHECK_EQ(shorthand.properties()[3]->PropertyID(),
+                  CSSPropertyID::kAnimationDelayEnd);
+        list->Append(*ComputedStyleUtils::ValueForAnimationDelayEnd(
+            CSSTimingData::GetRepeated(animation_data->DelayEndList(), i)));
+      }
       list->Append(*ComputedStyleUtils::ValueForAnimationIterationCount(
           CSSTimingData::GetRepeated(animation_data->IterationCountList(), i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationDirection(
@@ -128,8 +148,8 @@ const CSSValue* CSSValueFromComputedAnimation(
       // https://drafts.csswg.org/cssom/#serializing-css-values
       if (CSSAnimationData::InitialTimeline() !=
           animation_data->GetTimeline(i)) {
-        DCHECK_EQ(shorthand.length(), 9u);
-        DCHECK_EQ(shorthand.properties()[8]->PropertyID(),
+        DCHECK_EQ(shorthand.length(), 10u);
+        DCHECK_EQ(shorthand.properties()[9]->PropertyID(),
                   CSSPropertyID::kAnimationTimeline);
         list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
             animation_data->GetTimeline(i)));
@@ -195,6 +215,149 @@ const CSSValue* AlternativeAnimation::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return CSSValueFromComputedAnimation(alternativeAnimationShorthand(),
                                        style.Animations());
+}
+
+namespace {
+
+CSSValue* RangeOffsetValue(const CSSValue* range_name, double percentage) {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*range_name);
+  list->Append(*CSSNumericLiteralValue::Create(
+      percentage, CSSPrimitiveValue::UnitType::kPercentage));
+  return list;
+}
+
+// Consume a single <animation-delay-start> and a single
+// <animation-delay-start>, and append the result to `start_list` and
+// `end_list` respectively.
+bool ConsumeAnimationDelayItemInto(CSSParserTokenRange& range,
+                                   const CSSParserContext& context,
+                                   CSSValueList* start_list,
+                                   CSSValueList* end_list) {
+  using css_parsing_utils::ConsumeAnimationDelay;
+  using css_parsing_utils::ConsumeTimelineRangeName;
+
+  CSSParserTokenRange original_range = range;
+
+  const CSSValue* start_delay = ConsumeAnimationDelay(range, context);
+  const CSSValue* end_delay = ConsumeAnimationDelay(range, context);
+
+  // If a <timeline-range-name> alone is specified, animation-delay-start is set
+  // to that name plus 0% and animation-delay-end is set to that name plus 100%.
+  //
+  // https://drafts.csswg.org/scroll-animations-1/#propdef-animation-delay
+  if (!start_delay) {
+    range = original_range;
+    const CSSValue* range_name = ConsumeTimelineRangeName(range);
+    if (!range_name)
+      return false;
+    start_delay = RangeOffsetValue(range_name, 0);
+    end_delay = RangeOffsetValue(range_name, 100);
+  }
+
+  if (!start_delay)
+    return false;
+
+  // If the <animation-delay-end> value is omitted, it is set to zero.
+  //
+  // https://drafts.csswg.org/scroll-animations-1/#propdef-animation-delay
+  if (!end_delay) {
+    end_delay = CSSNumericLiteralValue::Create(
+        0, CSSPrimitiveValue::UnitType::kSeconds);
+  }
+
+  DCHECK(start_delay);
+  DCHECK(end_delay);
+
+  start_list->Append(*start_delay);
+  end_list->Append(*end_delay);
+
+  return true;
+}
+
+}  // namespace
+
+bool AlternativeAnimationDelay::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+
+  using css_parsing_utils::AddProperty;
+  using css_parsing_utils::ConsumeCommaIncludingWhitespace;
+  using css_parsing_utils::IsImplicitProperty;
+
+  const StylePropertyShorthand shorthand = alternativeAnimationDelayShorthand();
+  DCHECK_EQ(2u, shorthand.length());
+  DCHECK_EQ(&GetCSSPropertyAnimationDelayStart(), shorthand.properties()[0]);
+  DCHECK_EQ(&GetCSSPropertyAnimationDelayEnd(), shorthand.properties()[1]);
+
+  CSSValueList* start_list = CSSValueList::CreateCommaSeparated();
+  CSSValueList* end_list = CSSValueList::CreateCommaSeparated();
+
+  do {
+    if (!ConsumeAnimationDelayItemInto(range, context, start_list, end_list))
+      return false;
+  } while (ConsumeCommaIncludingWhitespace(range));
+
+  DCHECK(start_list->length());
+  DCHECK(end_list->length());
+  DCHECK_EQ(start_list->length(), end_list->length());
+
+  AddProperty(CSSPropertyID::kAnimationDelayStart,
+              CSSPropertyID::kAlternativeAnimationDelay, *start_list, important,
+              IsImplicitProperty::kNotImplicit, properties);
+  AddProperty(CSSPropertyID::kAnimationDelayEnd,
+              CSSPropertyID::kAlternativeAnimationDelay, *end_list, important,
+              IsImplicitProperty::kNotImplicit, properties);
+
+  return range.AtEnd();
+}
+
+const CSSValue* AlternativeAnimationDelay::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  const Vector<Timing::Delay>& delay_start_list =
+      style.Animations()
+          ? style.Animations()->DelayStartList()
+          : Vector<Timing::Delay>{CSSAnimationData::InitialDelayStart()};
+  const Vector<Timing::Delay>& delay_end_list =
+      style.Animations()
+          ? style.Animations()->DelayEndList()
+          : Vector<Timing::Delay>{CSSAnimationData::InitialDelayEnd()};
+
+  if (delay_start_list.size() != delay_end_list.size())
+    return nullptr;
+
+  auto* outer_list = CSSValueList::CreateCommaSeparated();
+
+  for (wtf_size_t i = 0; i < delay_start_list.size(); ++i) {
+    const Timing::Delay& start = delay_start_list[i];
+    const Timing::Delay& end = delay_end_list[i];
+
+    // E.g. "enter 0% enter 100%" must be shortened to just "enter".
+    if (start.IsTimelineOffset() && end.IsTimelineOffset() &&
+        start.phase == end.phase && start.relative_offset == 0.0 &&
+        end.relative_offset == 1.0) {
+      outer_list->Append(
+          *MakeGarbageCollected<CSSIdentifierValue>(start.phase));
+      continue;
+    }
+
+    auto* inner_list = CSSValueList::CreateSpaceSeparated();
+    inner_list->Append(
+        *ComputedStyleUtils::ValueForAnimationDelayStart(delay_start_list[i]));
+    if (end != CSSTimingData::InitialDelayEnd()) {
+      inner_list->Append(
+          *ComputedStyleUtils::ValueForAnimationDelayEnd(delay_end_list[i]));
+    }
+    outer_list->Append(*inner_list);
+  }
+
+  return outer_list;
 }
 
 bool Background::ParseShorthand(
@@ -2907,9 +3070,8 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
       list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
           CSSTimingData::GetRepeated(transition_data->TimingFunctionList(),
                                      i)));
-      list->Append(*CSSNumericLiteralValue::Create(
-          CSSTimingData::GetRepeated(transition_data->DelayList(), i),
-          CSSPrimitiveValue::UnitType::kSeconds));
+      list->Append(*ComputedStyleUtils::ValueForAnimationDelayStart(
+          CSSTimingData::GetRepeated(transition_data->DelayStartList(), i)));
       transitions_list->Append(*list);
     }
     return transitions_list;
@@ -2923,9 +3085,8 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
                                       CSSPrimitiveValue::UnitType::kSeconds));
   list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
       CSSTransitionData::InitialTimingFunction()));
-  list->Append(
-      *CSSNumericLiteralValue::Create(CSSTransitionData::InitialDelay(),
-                                      CSSPrimitiveValue::UnitType::kSeconds));
+  list->Append(*ComputedStyleUtils::ValueForAnimationDelayStart(
+      CSSTransitionData::InitialDelayStart()));
   return list;
 }
 
