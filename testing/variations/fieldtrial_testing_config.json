@@ -4227,6 +4227,26 @@
             ]
         }
     ],
+    "DoNotEvictOnAXEvents": [
+        {
+            "platforms": [
+                "android",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "disable_features": [
+                        "EvictOnAXEvents"
+                    ]
+                }
+            ]
+        }
+    ],
     "DocumentEventNodePathCaching": [
         {
             "platforms": [
