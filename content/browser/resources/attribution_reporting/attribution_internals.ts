@@ -245,6 +245,8 @@ class Source {
   reportingOrigin: string;
   sourceTime: Date;
   expiryTime: Date;
+  eventReportWindowTime: Date;
+  aggregatableReportWindowTime: Date;
   sourceType: string;
   filterData: string;
   aggregationKeys: string;
@@ -263,6 +265,9 @@ class Source {
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
+    this.eventReportWindowTime = new Date(mojo.eventReportWindowTime);
+    this.aggregatableReportWindowTime =
+        new Date(mojo.aggregatableReportWindowTime);
     this.sourceType = sourceTypeToText(mojo.sourceType);
     this.priority = mojo.priority;
     this.filterData = JSON.stringify(mojo.filterData, null, ' ');
@@ -294,6 +299,11 @@ class SourceTableModel extends TableModel<Source> {
       new ValueColumn<Source, string>('Report To', (e) => e.reportingOrigin),
       new DateColumn<Source>('Source Registration Time', (e) => e.sourceTime),
       new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
+      new DateColumn<Source>(
+          'Event Report Window Time', (e) => e.eventReportWindowTime),
+      new DateColumn<Source>(
+          'Aggregatable Report Window Time',
+          (e) => e.aggregatableReportWindowTime),
       new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
       new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
       new CodeColumn<Source>('Filter Data', (e) => e.filterData),

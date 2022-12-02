@@ -316,22 +316,22 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 7 &&
           table.children[0].children[0].innerText === $1 &&
-          table.children[0].children[7].innerText === "Navigation" &&
-          table.children[1].children[7].innerText === "Event" &&
-          table.children[0].children[8].innerText === "0" &&
-          table.children[1].children[8].innerText === $2 &&
-          table.children[0].children[9].innerText === "{}" &&
-          table.children[1].children[9].innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
-          table.children[0].children[10].innerText === "{}" &&
-          table.children[1].children[10].innerText === '{\n "a": "0x1"\n}' &&
-          table.children[0].children[11].innerText === "0 / 65536" &&
-          table.children[1].children[11].innerText === "1300 / 65536" &&
-          table.children[0].children[12].innerText === "19" &&
-          table.children[1].children[12].innerText === "" &&
-          table.children[0].children[13].innerText === "" &&
-          table.children[1].children[13].innerText === "13, 17" &&
-          table.children[0].children[14].innerText === "" &&
-          table.children[1].children[14].innerText === "14, 18" &&
+          table.children[0].children[9].innerText === "Navigation" &&
+          table.children[1].children[9].innerText === "Event" &&
+          table.children[0].children[10].innerText === "0" &&
+          table.children[1].children[10].innerText === $2 &&
+          table.children[0].children[11].innerText === "{}" &&
+          table.children[1].children[11].innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
+          table.children[0].children[12].innerText === "{}" &&
+          table.children[1].children[12].innerText === '{\n "a": "0x1"\n}' &&
+          table.children[0].children[13].innerText === "0 / 65536" &&
+          table.children[1].children[13].innerText === "1300 / 65536" &&
+          table.children[0].children[14].innerText === "19" &&
+          table.children[1].children[14].innerText === "" &&
+          table.children[0].children[15].innerText === "" &&
+          table.children[1].children[15].innerText === "13, 17" &&
+          table.children[0].children[16].innerText === "" &&
+          table.children[1].children[16].innerText === "14, 18" &&
           table.children[0].children[1].innerText === "Unattributable: noised" &&
           table.children[1].children[1].innerText === "Attributable" &&
           table.children[2].children[1].innerText === "Attributable: reached event-level attribution limit" &&
@@ -339,8 +339,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[4].children[1].innerText === "Rejected: insufficient source capacity" &&
           table.children[5].children[1].innerText === "Rejected: insufficient unique destination capacity" &&
           table.children[6].children[1].innerText === "Rejected: excessive reporting origins" &&
-          table.children[5].children[15].innerText === "disabled" &&
-          table.children[6].children[15].innerText === "enabled") {
+          table.children[5].children[17].innerText === "disabled" &&
+          table.children[6].children[17].innerText === "enabled") {
         obs.disconnect();
         document.title = $3;
       }

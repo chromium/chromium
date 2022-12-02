@@ -102,6 +102,8 @@ struct WebUISource {
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;
+  double event_report_window_time;
+  double aggregatable_report_window_time;
   attribution_reporting.mojom.SourceType source_type;
   int64 priority;
   DebugKey? debug_key;

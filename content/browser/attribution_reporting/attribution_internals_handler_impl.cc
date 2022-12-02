@@ -81,8 +81,9 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       source.source_event_id(), source.source_origin(),
       source.DestinationSite().Serialize(), source.reporting_origin(),
       source.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
-      source.source_type(), source.priority(),
-      WebUIDebugKey(source.debug_key()), dedup_keys,
+      source.event_report_window_time().ToJsTime(),
+      source.aggregatable_report_window_time().ToJsTime(), source.source_type(),
+      source.priority(), WebUIDebugKey(source.debug_key()), dedup_keys,
       source.filter_data().filter_values(),
       base::MakeFlatMap<std::string, std::string>(
           source.aggregation_keys().keys(), {},
