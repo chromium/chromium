@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
@@ -19,6 +20,32 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
+
+namespace {
+
+void AssertExtensionIdWakeupFilesExist(const base::FilePath& path_prefix) {
+  for (const auto& id :
+       RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds()) {
+    ASSERT_TRUE(base::PathExists(path_prefix.Append(id)));
+  }
+}
+
+void AssertExtensionIdWakeupFilesNotExist(const base::FilePath& path_prefix) {
+  for (const auto& id :
+       RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds()) {
+    ASSERT_FALSE(base::PathExists(path_prefix.Append(id)));
+  }
+}
+
+void DeleteExtensionIdWakeupFiles(const base::FilePath& path_prefix) {
+  for (const auto& id :
+       RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds()) {
+    base::FilePath file_path = path_prefix.Append(id);
+    base::DeleteFile(file_path);
+  }
+}
+
+}  // namespace
 
 class RemoteWebAuthnExtensionNotifierTest : public testing::Test {
  public:
@@ -38,6 +65,8 @@ class RemoteWebAuthnExtensionNotifierTest : public testing::Test {
 };
 
 RemoteWebAuthnExtensionNotifierTest::RemoteWebAuthnExtensionNotifierTest() {
+  EXPECT_FALSE(
+      RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds().empty());
   EXPECT_TRUE(scoped_temp_dir_1_.CreateUniqueTempDir());
   EXPECT_TRUE(scoped_temp_dir_2_.CreateUniqueTempDir());
   io_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -70,37 +99,33 @@ void RemoteWebAuthnExtensionNotifierTest::WaitForNextIoTask() {
 TEST_F(RemoteWebAuthnExtensionNotifierTest, WritesFileInBothDirectories) {
   notifier_->NotifyStateChange();
   WaitForNextIoTask();
-  ASSERT_TRUE(base::PathExists(scoped_temp_dir_1_.GetPath().Append(
-      RemoteWebAuthnExtensionNotifier::kRemoteWebAuthnExtensionId)));
-  ASSERT_TRUE(base::PathExists(scoped_temp_dir_2_.GetPath().Append(
-      RemoteWebAuthnExtensionNotifier::kRemoteWebAuthnExtensionId)));
+  AssertExtensionIdWakeupFilesExist(scoped_temp_dir_1_.GetPath());
+  AssertExtensionIdWakeupFilesExist(scoped_temp_dir_2_.GetPath());
 }
 
-TEST_F(RemoteWebAuthnExtensionNotifierTest, WritesFileOnlyInExistingDirectory) {
+TEST_F(RemoteWebAuthnExtensionNotifierTest,
+       WritesFilesOnlyInExistingDirectory) {
   base::FilePath deleted_temp_dir_1_path = scoped_temp_dir_1_.GetPath();
   ASSERT_TRUE(scoped_temp_dir_1_.Delete());
   notifier_->NotifyStateChange();
   WaitForNextIoTask();
-  ASSERT_FALSE(base::PathExists(deleted_temp_dir_1_path.Append(
-      RemoteWebAuthnExtensionNotifier::kRemoteWebAuthnExtensionId)));
-  ASSERT_TRUE(base::PathExists(scoped_temp_dir_2_.GetPath().Append(
-      RemoteWebAuthnExtensionNotifier::kRemoteWebAuthnExtensionId)));
+  AssertExtensionIdWakeupFilesNotExist(deleted_temp_dir_1_path);
+  AssertExtensionIdWakeupFilesExist(scoped_temp_dir_2_.GetPath());
 }
 
-TEST_F(RemoteWebAuthnExtensionNotifierTest, FileRewrittenAfterSecondCall) {
-  base::FilePath wakeup_file_path = scoped_temp_dir_1_.GetPath().Append(
-      RemoteWebAuthnExtensionNotifier::kRemoteWebAuthnExtensionId);
+TEST_F(RemoteWebAuthnExtensionNotifierTest, FilesRewrittenAfterSecondCall) {
+  base::FilePath wakeup_file_prefix = scoped_temp_dir_1_.GetPath();
 
   notifier_->NotifyStateChange();
   WaitForNextIoTask();
-  ASSERT_TRUE(base::PathExists(wakeup_file_path));
+  AssertExtensionIdWakeupFilesExist(wakeup_file_prefix);
 
-  base::DeleteFile(wakeup_file_path);
-  ASSERT_FALSE(base::PathExists(wakeup_file_path));
+  DeleteExtensionIdWakeupFiles(wakeup_file_prefix);
+  AssertExtensionIdWakeupFilesNotExist(wakeup_file_prefix);
 
   notifier_->NotifyStateChange();
   WaitForNextIoTask();
-  ASSERT_TRUE(base::PathExists(wakeup_file_path));
+  AssertExtensionIdWakeupFilesExist(wakeup_file_prefix);
 }
 
 TEST_F(RemoteWebAuthnExtensionNotifierTest,
@@ -108,26 +133,27 @@ TEST_F(RemoteWebAuthnExtensionNotifierTest,
   notifier_->NotifyStateChange();
   notifier_.reset();
   WaitForNextIoTask();
-  ASSERT_TRUE(base::PathExists(scoped_temp_dir_1_.GetPath().Append(
-      RemoteWebAuthnExtensionNotifier::kRemoteWebAuthnExtensionId)));
+  AssertExtensionIdWakeupFilesExist(scoped_temp_dir_1_.GetPath());
 }
 
 TEST_F(RemoteWebAuthnExtensionNotifierTest,
        OnlyOneExtensionWakeupTaskIsScheduledForMultipleCalls) {
-  base::FilePath wakeup_file_path = scoped_temp_dir_1_.GetPath().Append(
-      RemoteWebAuthnExtensionNotifier::kRemoteWebAuthnExtensionId);
+  base::FilePath wakeup_file_prefix = scoped_temp_dir_1_.GetPath();
   notifier_->NotifyStateChange();
   notifier_->NotifyStateChange();
   notifier_->NotifyStateChange();
   WaitForNextIoTask();
-  ASSERT_TRUE(base::PathExists(wakeup_file_path));
+  AssertExtensionIdWakeupFilesExist(wakeup_file_prefix);
 
-  base::DeleteFile(wakeup_file_path);
-  ASSERT_FALSE(base::PathExists(wakeup_file_path));
+  DeleteExtensionIdWakeupFiles(wakeup_file_prefix);
+  AssertExtensionIdWakeupFilesNotExist(wakeup_file_prefix);
 
   WaitForNextIoTask();
   WaitForNextIoTask();
-  ASSERT_FALSE(base::PathExists(wakeup_file_path));
+  for (const auto& id :
+       RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds()) {
+    ASSERT_FALSE(base::PathExists(wakeup_file_prefix.Append(id)));
+  }
 }
 
 }  // namespace remoting
