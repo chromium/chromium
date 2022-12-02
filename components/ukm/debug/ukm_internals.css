@@ -10,106 +10,124 @@ div {
   padding: 2px;
 }
 
-div.ukm_collection_status {
+
+div.ukm-collection-status {
   background: linear-gradient(0deg, steelblue, lightblue);
   padding: 16px;
   color: white;
   width: auto;
 }
 
-#sources>div:nth-child(odd) {
-  background: lightsteelblue;
-}
-
-#sources>div:nth-child(even) {
-  background: lightgrey;
-}
-
-span#state, span#clientid, span#sessionid, span#is_sampling_enabled{
+span#state, span#clientid, span#sessionid, span#is_sampling_enabled {
   text-decoration: underline;
   font-weight: bold;
 }
 
-span.url {
+/**
+ * Sources table formatting.
+ */
+
+#sources {
+  margin: 20px 0 0 0;
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.sourceid {
+  width: 2em;
+}
+
+.source-container>td {
+  padding: 10px 10px 10px 10px;
+}
+
+#sources>thead>tr>td {
   font-weight: bold;
+  border-top: 0 solid #666;
+  border-bottom: 1px solid #666;
+  padding: 0 0 5px 10px;
 }
 
-span.sourceid {
-  float: right;
+#sources>tbody>tr>td {
+  border: 1px dotted #ccc;
+  padding: 10px 10px 10px 10px;
 }
 
-div.url_card {
-  padding: 0px;
+#sources>tbody>tr:nth-child(odd) {
+  background: #ccc;
 }
 
-div.entries {
-  display: none;
-  overflow: hidden;
+#sources>tbody>tr:nth-child(even) {
+  background: #eee;
 }
 
-div.entry {
- width: 470px;
- padding: 0px 0px 10px 10px;
- display: inline-block;
-}
-
-div.collapsible_header {
-  background-color: #eee;
+#sources>tbody>tr>td.url:hover {
+  background-color: lightsteelblue;
   cursor: pointer;
 }
 
-div.collapsible_header:hover {
-  background-color: #ccc;
+#sources>tbody>tr>td.url {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+#sources>tbody>tr.thin-border-bottom {
+  border-bottom: 1px dashed black;
+}
+
+/*
+ * Styling for the event-metrics tables.
+ */
+
+div.events {
+  display: none;
+  overflow: hidden;
+  padding-top: 10px;
+}
+
+div.event {
+ width: 470px;
+ padding: 0 0 10px 10px;
+ display: inline-block;
 }
 
 td {
-  font-family: "Lucida Console", Monaco, monospace;
+  font-family: 'Lucida Console', Monaco, monospace;
   font-size: 0.8em;
   overflow-wrap: break-word;
   border-top: 1px solid black;
 }
 
-td.entry_name {
+td.event-name {
   min-width: 320px;
 }
 
-td.metric_name {
+td.metric-name {
   min-width: 320px;
-  border-left: 1px solid black;
+  border-inline-start: 1px solid black;
 }
 
-
-td.metric_value {
-  text-align: right;
+td.metric-value {
+  text-align: end;
   min-width: 120px;
-  border-left: 1px solid black;
+  border-inline-start: 1px solid black;
 }
 
-table.entry_table {
+table.event-table {
   width: 780px;
   border: solid 1px black;
 }
 
-select.hex_list {
+select.hex-list {
   width: 100px;
   font-size: 0.7em;
-  font-family: "Lucida Console", Monaco, monospace;
+  font-family: 'Lucida Console', Monaco, monospace;
   height: 22px;
-}
-
-div.source_container {
-  padding: 0px;
-}
-
-div.source_container:first-child {
-  padding-top: 2px;
 }
 
 input.text {
   width: 480px;
-}
-
-input.checkbox {
 }
 
 div.labels {

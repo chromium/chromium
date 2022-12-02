@@ -120,7 +120,7 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
       entries_list.Append(ConvertEntryToDict(ukm_service->decode_map_, *entry));
     }
 
-    source_dict.Set("entries", std::move(entries_list));
+    source_dict.Set("events", std::move(entries_list));
 
     sources_list.Append(std::move(source_dict));
   }
