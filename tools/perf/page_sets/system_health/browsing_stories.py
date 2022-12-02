@@ -1514,8 +1514,7 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
         performance_mark_and_measure=self.PERFOMANCE_MARK_AND_MEASURE)
 
   def _Login(self, action_runner):
-    # google_login.NewLoginGoogleAccount(action_runner, 'googletest')
-    google_login.ManualLoginGoogleAccount(action_runner)
+    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 
     # Navigating to http://mail.google.com immediately leads to an infinite
     # redirection loop due to a bug in WPR (see
@@ -1631,7 +1630,7 @@ class GmailSearchStory2020(_GmailBrowsingStory):
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.YEAR_2020]
 
-  _SEARCH_SELECTOR = 'input[aria-label="Search mail"]'
+  _SEARCH_SELECTOR = 'input[aria-label="Search mail and chat"]'
 
   # Page event queries.
   SEARCH_BEGIN_EVENT = '''
