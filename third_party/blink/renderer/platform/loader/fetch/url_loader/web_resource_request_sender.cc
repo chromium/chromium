@@ -90,6 +90,7 @@ namespace blink {
 
 namespace {
 
+#if BUILDFLAG(IS_WIN)
 // Converts |time| from a remote to local TimeTicks, overwriting the original
 // value.
 void RemoteToLocalTimeTicks(const InterProcessTimeTicksConverter& converter,
@@ -97,6 +98,7 @@ void RemoteToLocalTimeTicks(const InterProcessTimeTicksConverter& converter,
   RemoteTimeTicks remote_time = RemoteTimeTicks::FromTimeTicks(*time);
   *time = converter.ToLocalTimeTicks(remote_time).ToTimeTicks();
 }
+#endif
 
 void CheckSchemeForReferrerPolicy(const network::ResourceRequest& request) {
   if ((request.referrer_policy ==
@@ -608,6 +610,11 @@ base::TimeTicks WebResourceRequestSender::ToLocalURLResponseHead(
       response_head.load_timing.request_start.is_null()) {
     return remote_response_start;
   }
+
+#if BUILDFLAG(IS_WIN)
+  // This code below can only be reached on Windows as the
+  // base::TimeTicks::IsConsistentAcrossProcesses() above always returns true
+  // except on Windows platform.
   InterProcessTimeTicksConverter converter(
       LocalTimeTicks::FromTimeTicks(request_info.local_request_start),
       LocalTimeTicks::FromTimeTicks(request_info.local_response_start),
@@ -638,6 +645,7 @@ base::TimeTicks WebResourceRequestSender::ToLocalURLResponseHead(
   RemoteToLocalTimeTicks(converter,
                          &load_timing->service_worker_respond_with_settled);
   RemoteToLocalTimeTicks(converter, &remote_response_start);
+#endif
   return remote_response_start;
 }
 
