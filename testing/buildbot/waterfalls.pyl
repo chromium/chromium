@@ -571,20 +571,11 @@
         'additional_compile_targets': [
           'android_lint',
           'boundary_interface_example_apk',
-          'chrome_public_apk',
-          'chrome_public_test_apk',
-          'content_shell_test_apk',
           'dump_syms',
           'microdump_stackwalk',
-          'mojo_test_apk',
-          'monochrome_public_bundle_smoke_test',
-          'system_webview_apk',
-          'system_webview_shell_apk',
-          'trichrome_chrome_bundle_smoke_test',
         ],
         'test_suites': {
           'junit_tests': 'chromium_junit_tests',
-          'gtest_tests': 'chromium_android_gtests',
         },
       },
       'Android arm64 Builder (dbg)': {
