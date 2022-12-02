@@ -19538,9 +19538,109 @@ be describing additional metrics about the same event.
       The input tensor at index 3 represented in IEEE 754 double precision.
     </summary>
   </metric>
+  <metric name="Input30">
+    <summary>
+      The input tensor at index 30 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input31">
+    <summary>
+      The input tensor at index 31 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input32">
+    <summary>
+      The input tensor at index 32 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input33">
+    <summary>
+      The input tensor at index 33 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input34">
+    <summary>
+      The input tensor at index 34 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input35">
+    <summary>
+      The input tensor at index 35 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input36">
+    <summary>
+      The input tensor at index 36 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input37">
+    <summary>
+      The input tensor at index 37 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input38">
+    <summary>
+      The input tensor at index 38 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input39">
+    <summary>
+      The input tensor at index 39 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
   <metric name="Input4">
     <summary>
       The input tensor at index 4 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input40">
+    <summary>
+      The input tensor at index 40 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input41">
+    <summary>
+      The input tensor at index 41 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input42">
+    <summary>
+      The input tensor at index 42 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input43">
+    <summary>
+      The input tensor at index 43 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input44">
+    <summary>
+      The input tensor at index 44 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input45">
+    <summary>
+      The input tensor at index 45 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input46">
+    <summary>
+      The input tensor at index 46 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input47">
+    <summary>
+      The input tensor at index 47 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input48">
+    <summary>
+      The input tensor at index 48 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input49">
+    <summary>
+      The input tensor at index 49 represented in IEEE 754 double precision.
     </summary>
   </metric>
   <metric name="Input5">
