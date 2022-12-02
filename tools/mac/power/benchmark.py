@@ -39,6 +39,12 @@ def main():
                       dest='no_checks',
                       action='store_true',
                       help="Invalid environment doesn't throw")
+  parser.add_argument(
+      '--skip-wait-for-battery-not-full',
+      dest='wait_for_battery_not_full',
+      action='store_false',
+      help=("Skip waiting until the battery isn't full before recording a "
+            "scenario (for debugging only)"))
   mode_group = parser.add_mutually_exclusive_group()
   mode_group.add_argument(
       '--tracing_mode',
@@ -151,7 +157,8 @@ def main():
         # interval (if the benchmark starts n seconds after an IOPMPowerSource
         # notification, power measurements will implicitly include these n
         # seconds during which the benchmark wasn't running).
-        driver.WaitBatteryNotFull()
+        if args.wait_for_battery_not_full:
+          driver.WaitBatteryNotFull()
 
         logging.info(f'Recording scenario {scenario.name} ...')
         driver.Record(scenario)
