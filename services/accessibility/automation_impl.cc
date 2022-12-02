@@ -22,11 +22,13 @@ void AutomationImpl::Bind(
 void AutomationImpl::DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id) {
   // TODO(crbug.com/1355633): Send tree destroyed event to accessibility
   // features.
+  // When implementing this method, cc an IPC security reviewer.
 }
 
 void AutomationImpl::DispatchActionResult(const ui::AXActionData& data,
                                           bool result) {
   // TODO(crbug.com/1355633): Send action result to accessibility features.
+  // When implementing this method, cc an IPC security reviewer.
 }
 
 void AutomationImpl::DispatchAccessibilityEvents(
@@ -35,6 +37,7 @@ void AutomationImpl::DispatchAccessibilityEvents(
     const gfx::Point& mouse_location,
     const std::vector<ui::AXEvent>& events) {
   // TODO(crbug.com/1355633): Send events to accessibility features.
+  // When implementing this method, cc an IPC security reviewer.
 }
 
 void AutomationImpl::DispatchAccessibilityLocationChange(
@@ -42,6 +45,7 @@ void AutomationImpl::DispatchAccessibilityLocationChange(
     int node_id,
     const ui::AXRelativeBounds& bounds) {
   // TODO(crbug.com/1355633): Send location change to accessibility features.
+  // When implementing this method, cc an IPC security reviewer.
 }
 
 }  // namespace ax

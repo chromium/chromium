@@ -4,7 +4,6 @@
 
 #include "services/accessibility/features/v8_manager.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -17,7 +16,6 @@
 #include "gin/function_template.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
-#include "gin/v8_initializer.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/features/automation_internal_bindings.h"
 #include "v8/include/v8-context.h"
@@ -74,18 +72,6 @@ scoped_refptr<V8Manager> V8Manager::Create() {
   return result;
 }
 
-// static
-void V8Manager::InitializeV8() {
-  // Only initialize V8 for the Accessibility Service once.
-  if (!gin::IsolateHolder::Initialized()) {
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
-    gin::V8Initializer::LoadV8Snapshot();
-#endif
-    gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
-                                   gin::ArrayBufferAllocator::SharedInstance());
-  }
-}
-
 V8Manager::V8Manager(scoped_refptr<base::SingleThreadTaskRunner> v8_runner,
                      scoped_refptr<base::SequencedTaskRunner> main_runner)
     : base::RefCountedDeleteOnSequence<V8Manager>(v8_runner),
@@ -128,12 +114,12 @@ void V8Manager::ExecuteScript(const std::string& script,
                                       std::move(on_complete)));
 }
 
-v8::Isolate* V8Manager::GetIsolate() {
+v8::Isolate* V8Manager::GetIsolate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return isolate_holder_ ? isolate_holder_->isolate() : nullptr;
 }
 
-v8::Local<v8::Context> V8Manager::GetContext() {
+v8::Local<v8::Context> V8Manager::GetContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return context_holder_->context();
 }
@@ -178,9 +164,15 @@ void V8Manager::AddV8BindingsOnThread() {
   if (automation_bindings_) {
     v8::Local<v8::ObjectTemplate> automation_template =
         v8::ObjectTemplate::New(isolate_holder_->isolate());
-    automation_bindings_->AddRoutesToTemplate(&automation_template);
+    automation_bindings_->AddAutomationRoutesToTemplate(&automation_template);
     chrome_template->Set(isolate_holder_->isolate(), "automation",
                          automation_template);
+    v8::Local<v8::ObjectTemplate> automation_internal_template =
+        v8::ObjectTemplate::New(isolate_holder_->isolate());
+    automation_bindings_->AddAutomationInternalRoutesToTemplate(
+        &automation_internal_template);
+    chrome_template->Set(isolate_holder_->isolate(), "automationInternal",
+                         automation_internal_template);
   }
   // TODO(crbug.com/1355633): Add other API bindings to the global template.
 
@@ -228,33 +220,9 @@ void V8Manager::BindAutomationOnThread(
 void V8Manager::ExecuteScriptOnThread(const std::string& script,
                                       base::OnceCallback<void()> on_complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Enter isolate scope.
-  v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
-
-  // Creates and enters stack-allocated handle scope.
-  // All the Local handles (Local<>) in this function will belong to this
-  // HandleScope and will be garbage collected when it goes out of scope in this
-  // C++ function.
-  v8::HandleScope handle_scope(isolate_holder_->isolate());
-
-  // Enter the context for compiling and running the hello world script.
-  v8::Context::Scope context_scope(context_holder_->context());
-  {
-    const char* code_c = script.c_str();
-    v8::Local<v8::String> source =
-        v8::String::NewFromUtf8(isolate_holder_->isolate(), code_c)
-            .ToLocalChecked();
-
-    // Compile the source code.
-    v8::Local<v8::Script> compiled =
-        v8::Script::Compile(context_holder_->context(), source)
-            .ToLocalChecked();
-
-    // Run the script.
-    compiled->Run(context_holder_->context()).ToLocalChecked();
-
-    std::move(on_complete).Run();
-  }
+  bool result = BindingsIsolateHolder::ExecuteScriptInContext(script);
+  DCHECK(result);
+  std::move(on_complete).Run();
 }
 
 }  // namespace ax

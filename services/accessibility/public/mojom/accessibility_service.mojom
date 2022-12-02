@@ -26,20 +26,20 @@ interface Automation {
   // DispatchActionResult(
   //   ax.mojom.AXActionData data, bool result);
 
-  // // Forwards an event from any accessibility tree to the service.
-  // DispatchAccessibilityEvents(
-  //   ax.mojom.AXTreeID tree_id,
-  //   array<ax.mojom.AXTreeUpdate> updates,
-  //   gfx.mojom.Point mouse_location,
-  //   array<ax.mojom.AXEvent> events);
+  // Forwards an event from any accessibility tree to the service.
+  DispatchAccessibilityEvents(
+    ax.mojom.AXTreeID tree_id,
+    array<ax.mojom.AXTreeUpdate> updates,
+    gfx.mojom.Point mouse_location,
+    array<ax.mojom.AXEvent> events);
 
-  // // Dispatches a location change for a specific |node_id| in the tree
-  // // with ID |tree_id|. Currently used by Blink in
-  // // RenderAccessibilityHost::HandleAXLocationChanges.
-  // DispatchAccessibilityLocationChange(
-  //   ax.mojom.AXTreeID tree_id,
-  //   int32 node_id,
-  //   ax.mojom.AXRelativeBounds bounds);
+  // Dispatches a location change for a specific |node_id| in the tree
+  // with ID |tree_id|. Currently used by Blink in
+  // RenderAccessibilityHost::HandleAXLocationChanges.
+  DispatchAccessibilityLocationChange(
+    ax.mojom.AXTreeID tree_id,
+    int32 node_id,
+    ax.mojom.AXRelativeBounds bounds);
 
   // // Dispatches the result of a query for text location.
   // // Currently supported by ARC++ in response to
@@ -60,7 +60,8 @@ interface AutomationClient {
   // // Enables automation for the client. This will result in the client
   // // repeatedly calling DispatchAccessibilityEvents() on the Automation
   // // interface.
-  // Enable();
+  // // Runs the callback with tree ID for the desktop tree.
+  // Enable() => (ax.mojom.AXTreeID desktop_id);
 
   // // Disables automation in the client. This has the effect of turning off
   // // accessibility tree creation within the client. Calling this method

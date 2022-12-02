@@ -45,11 +45,10 @@ void AutomationClientImpl::DispatchAccessibilityEvents(
   DCHECK(tree_id != ui::AXTreeIDUnknown());
   if (tree_id == ui::AXTreeIDUnknown())
     return;
-  // TODO(crbug.com/1355633): Send to AccessibilityService.
-  // for (auto& remote : automation_remotes_) {
-  //   remote->DispatchAccessibilityEvents(tree_id, updates, mouse_location,
-  //                                       events);
-  // }
+  for (auto& remote : automation_remotes_) {
+    remote->DispatchAccessibilityEvents(tree_id, updates, mouse_location,
+                                        events);
+  }
 }
 
 void AutomationClientImpl::DispatchAccessibilityLocationChange(
@@ -57,11 +56,10 @@ void AutomationClientImpl::DispatchAccessibilityLocationChange(
   ui::AXTreeID tree_id = params.tree_id;
   if (tree_id == ui::AXTreeIDUnknown())
     return;
-  // TODO(crbug.com/1355633): Send to AccessibilityService.
-  // for (auto& remote : automation_remotes_) {
-  //   remote->DispatchAccessibilityLocationChange(tree_id, params.id,
-  //                                               params.new_location);
-  // }
+  for (auto& remote : automation_remotes_) {
+    remote->DispatchAccessibilityLocationChange(tree_id, params.id,
+                                                params.new_location);
+  }
 }
 void AutomationClientImpl::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {
   if (tree_id == ui::AXTreeIDUnknown())
@@ -91,9 +89,10 @@ void AutomationClientImpl::DispatchGetTextLocationDataResult(
   // }
 }
 
-void AutomationClientImpl::Enable() {
+void AutomationClientImpl::Enable(EnableCallback callback) {
   // Enable automation for all of Desktop.
   AutomationManagerAura::GetInstance()->Enable();
+  std::move(callback).Run(AutomationManagerAura::GetInstance()->ax_tree_id());
 }
 
 void AutomationClientImpl::Disable() {

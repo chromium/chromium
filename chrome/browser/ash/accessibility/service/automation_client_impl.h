@@ -28,10 +28,13 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client);
 
  private:
+  friend class AccessibilityServiceClientTest;
+
   // The following are called by the Accessibility service, passing information
   // back to the OS.
   // TODO(crbug.com/1355633): Override from ax::mojom::AutomationClient:
-  void Enable();
+  using EnableCallback = base::OnceCallback<void(const ui::AXTreeID&)>;
+  void Enable(EnableCallback callback);
   void Disable();
   void EnableTree(const ui::AXTreeID& tree_id);
   void PerformAction(const ui::AXActionData& data);

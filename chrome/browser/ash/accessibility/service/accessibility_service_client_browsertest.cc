@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
+#include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/fake_accessibility_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -57,6 +58,14 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
   }
 
   bool ServiceIsBound() { return fake_service_->IsBound(); }
+
+  void ToggleAutomationEnabled(AccessibilityServiceClient& client,
+                               bool enabled) {
+    if (enabled)
+      client.automation_client_->Enable(base::DoNothing());
+    else
+      client.automation_client_->Disable();
+  }
 
   // Unowned.
   FakeAccessibilityService* fake_service_ = nullptr;
@@ -192,11 +201,18 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
     fake_service_->BindAnotherAutomation();
   }
 
-  // TODO(crbug.com/1355633): Enable this part of the test once the mojom
-  // AutomationClient and Automation land.
-  // fake_service_->AutomationClientEnable();
-  // // Expect an a11y event to have come through three times, once for
-  // // each AutomationClient.
-  // fake_service_->WaitForAutomationEvents();
+  // TODO(crbug.com/1355633): Replace once mojom to Enable lands.
+  ToggleAutomationEnabled(client, true);
+  // Enable can be called multiple times (once for each bound Automation)
+  // with no bad effects.
+  // fake_service_->AutomationClientEnable(true);
+
+  // Real accessibility events should have come through.
+  fake_service_->WaitForAutomationEvents();
+
+  // TODO(crbug.com/1355633): Replace once mojom to Disable lands.
+  ToggleAutomationEnabled(client, false);
+  // Disabling multiple times has no bad effect.
+  // fake_service_->AutomationClientEnable(false);
 }
 }  // namespace ash

@@ -73,7 +73,7 @@ scoped_refptr<V8Manager> AssistiveTechnologyControllerImpl::GetOrMakeV8Manager(
     mojom::AssistiveTechnologyType type) {
   // For the first one we can ask it to initialize v8.
   if (!v8_initialized_) {
-    V8Manager::InitializeV8();
+    BindingsIsolateHolder::InitializeV8();
     v8_initialized_ = true;
   }
 

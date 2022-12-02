@@ -11,7 +11,7 @@
 #include "gin/function_template.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/automation_impl.h"
-#include "services/accessibility/features/v8_manager.h"
+#include "services/accessibility/features/bindings_isolate_holder.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -23,26 +23,46 @@
 namespace ax {
 
 AutomationInternalBindings::AutomationInternalBindings(
-    base::WeakPtr<V8Manager> v8_manager,
-    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller,
+    base::WeakPtr<BindingsIsolateHolder> isolate_holder,
+    base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
     scoped_refptr<base::SequencedTaskRunner> main_runner)
-    : v8_manager_(v8_manager),
+    : isolate_holder_(isolate_holder),
       automation_v8_bindings_(std::make_unique<ui::AutomationV8Bindings>(
           /*AutomationTreeManagerOwner=*/this,
           /*AutomationV8Router=*/this)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Bind(at_controller, main_runner);
+  Bind(ax_service_client, main_runner);
 }
 
 AutomationInternalBindings::~AutomationInternalBindings() = default;
-void AutomationInternalBindings::AddRoutesToTemplate(
+
+void AutomationInternalBindings::AddAutomationRoutesToTemplate(
     v8::Local<v8::ObjectTemplate>* object_template) {
   template_ = object_template;
   automation_v8_bindings_->AddV8Routes();
-  // TODO(crbug.com/1357889): Add bindings for AutomationInternalAPI functions,
-  // like automationInternal.enableTree, etc, paralleling the implementation in
-  // extensions/browser/api/automation_internal/automation_internal_api.h.
   template_ = nullptr;
+}
+
+void AutomationInternalBindings::AddAutomationInternalRoutesToTemplate(
+    v8::Local<v8::ObjectTemplate>* object_template) {
+  // Adds V8 route for "automationInternal.enableDesktop" and "disableDesktop".
+  (*object_template)
+      ->Set(GetIsolate(), "enableDesktop",
+            gin::CreateFunctionTemplate(
+                GetIsolate(),
+                base::BindRepeating(&AutomationInternalBindings::Enable,
+                                    weak_ptr_factory_.GetWeakPtr())));
+  (*object_template)
+      ->Set(GetIsolate(), "disableDesktop",
+            gin::CreateFunctionTemplate(
+                GetIsolate(),
+                base::BindRepeating(&AutomationInternalBindings::Disable,
+                                    weak_ptr_factory_.GetWeakPtr())));
+
+  // TODO(crbug.com/1357889): Add bindings for additional AutomationInternalAPI
+  // functions, like automationInternal.performAction, etc, paralleling the
+  // implementation in
+  // extensions/browser/api/automation_internal/automation_internal_api.h.
 }
 
 ui::AutomationV8Bindings* AutomationInternalBindings::GetAutomationV8Bindings()
@@ -69,14 +89,14 @@ void AutomationInternalBindings::ThrowInvalidArgumentsException(
 
 v8::Isolate* AutomationInternalBindings::GetIsolate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(v8_manager_);
-  return v8_manager_->GetIsolate();
+  DCHECK(isolate_holder_);
+  return isolate_holder_->GetIsolate();
 }
 
 v8::Local<v8::Context> AutomationInternalBindings::GetContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(v8_manager_);
-  return v8_manager_->GetContext();
+  DCHECK(isolate_holder_);
+  return isolate_holder_->GetContext();
 }
 
 void AutomationInternalBindings::RouteHandlerFunction(
@@ -100,7 +120,7 @@ AutomationInternalBindings::ParseTreeChangeObserverFilter(
 std::string AutomationInternalBindings::GetMarkerTypeString(
     ax::mojom::MarkerType type) const {
   // TODO(crbug.com/1357889): Implement based on Automation API.
-  return "";
+  return ui::ToString(type);
 }
 
 std::string AutomationInternalBindings::GetFocusedStateString() const {
@@ -117,7 +137,7 @@ std::string
 AutomationInternalBindings::GetLocalizedStringForImageAnnotationStatus(
     ax::mojom::ImageAnnotationStatus status) const {
   // TODO(crbug.com/1357889): Implement based on Automation API.
-  return "";
+  return ui::ToString(status);
 }
 
 std::string AutomationInternalBindings::GetTreeChangeTypeString(
@@ -139,14 +159,22 @@ void AutomationInternalBindings::DispatchEvent(
   // TODO(crbug.com/1357889): Send the event to V8.
 }
 
-void AutomationInternalBindings::Enable() {
+void AutomationInternalBindings::Enable(gin::Arguments* args) {
   // TODO(crbug.com/1357889): Send to the OS AutomationClient.
-  // automation_client_remote_->Enable();
+  // automation_client_remote_->Enable(
+  //     base::BindOnce(&AutomationInternalBindings::OnTreeID,
+  //     weak_ptr_factory_.GetWeakPtr()));
+
+  // TODO(crbug.com/1357889): Need to figure out how to RespondLater to these
+  // args in order to send the tree ID back to the JS caller as a callback.
 }
 
-void AutomationInternalBindings::Disable() {
+void AutomationInternalBindings::Disable(gin::Arguments* args) {
   // TODO(crbug.com/1357889): Send to the OS AutomationClient.
   // automation_client_remote_->Disable();
+  // Execute the return value on the args so that the JS callback
+  // will execute.
+  args->Return(true);
 }
 
 void AutomationInternalBindings::EnableTree(const ui::AXTreeID& tree_id) {
@@ -161,21 +189,22 @@ void AutomationInternalBindings::PerformAction(
 }
 
 void AutomationInternalBindings::Bind(
-    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller,
+    base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
     scoped_refptr<base::SequencedTaskRunner> main_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   main_runner->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller,
+          [](base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
              mojo::PendingReceiver<mojom::AutomationClient> remote,
              mojo::PendingRemote<mojom::Automation> receiver) {
-            if (at_controller) {
-              at_controller->BindAutomation(std::move(receiver),
-                                            std::move(remote));
+            if (ax_service_client) {
+              ax_service_client->BindAutomation(std::move(receiver),
+                                                std::move(remote));
             }
           },
-          at_controller, automation_client_remote_.BindNewPipeAndPassReceiver(),
+          ax_service_client,
+          automation_client_remote_.BindNewPipeAndPassReceiver(),
           automation_receiver_.BindNewPipeAndPassRemote()));
 }
 

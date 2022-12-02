@@ -9,8 +9,8 @@
 #include <set>
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 
 namespace ax {
@@ -20,7 +20,8 @@ class V8Manager;
 // for Chrome OS. This tracks which features are enabled and will
 // load/unload feature implementations from V8 as needed.
 class AssistiveTechnologyControllerImpl
-    : public mojom::AssistiveTechnologyController {
+    : public mojom::AssistiveTechnologyController,
+      public mojom::AccessibilityServiceClient {
  public:
   AssistiveTechnologyControllerImpl();
   ~AssistiveTechnologyControllerImpl() override;
@@ -38,9 +39,10 @@ class AssistiveTechnologyControllerImpl
 
   // Called by AutomationInternalBindings owned by a V8 instance
   // to request binding of Automation and AutomationClient in the OS.
-  void BindAutomation(
-      mojo::PendingRemote<mojom::Automation> automation,
-      mojo::PendingReceiver<mojom::AutomationClient> automation_client);
+  // mojom::AccessibilityServiceClient:
+  void BindAutomation(mojo::PendingRemote<mojom::Automation> automation,
+                      mojo::PendingReceiver<mojom::AutomationClient>
+                          automation_client) override;
 
   // mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(

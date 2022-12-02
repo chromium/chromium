@@ -20,6 +20,7 @@ namespace ax {
 class FakeServiceClient : public mojom::AccessibilityServiceClient,
                           public mojom::AutomationClient {
  public:
+  // |service| may be null if it won't be used in the test.
   explicit FakeServiceClient(mojom::AccessibilityService* service);
   FakeServiceClient(const FakeServiceClient& other) = delete;
   FakeServiceClient& operator=(const FakeServiceClient&) = delete;
@@ -32,19 +33,22 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
 
   // Methods for testing.
   void BindAccessibilityServiceClientForTest();
+  bool AccessibilityServiceClientIsBound() const;
   void SetAutomationBoundClosure(base::OnceClosure closure);
-  bool AccessibilityServiceClientIsBound();
-  bool AutomationIsBound();
+  bool AutomationIsBound() const;
+  base::WeakPtr<FakeServiceClient> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   raw_ptr<mojom::AccessibilityService> service_;
-
   base::OnceClosure automation_bound_closure_;
-
-  mojo::Receiver<mojom::AccessibilityServiceClient> a11y_client_receiver_{this};
 
   mojo::RemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;
+  mojo::Receiver<mojom::AccessibilityServiceClient> a11y_client_receiver_{this};
+
+  base::WeakPtrFactory<FakeServiceClient> weak_ptr_factory_{this};
 };
 
 }  // namespace ax

@@ -17,7 +17,7 @@ class V8ManagerTest : public testing::Test {
   V8ManagerTest& operator=(const V8ManagerTest&) = delete;
   ~V8ManagerTest() override = default;
 
-  void SetUp() override { V8Manager::InitializeV8(); }
+  void SetUp() override { BindingsIsolateHolder::InitializeV8(); }
 
  private:
   base::test::TaskEnvironment task_environment_;

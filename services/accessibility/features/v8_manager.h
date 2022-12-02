@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "services/accessibility/features/bindings_isolate_holder.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
 
@@ -39,11 +40,9 @@ class AssistiveTechnologyControllerImpl;
 // isolate are only accessed from that thread.
 // There may be one V8Manager per Assistive Technology feature or features
 // may share V8Managers.
-class V8Manager : public base::RefCountedDeleteOnSequence<V8Manager> {
+class V8Manager : public BindingsIsolateHolder,
+                  public base::RefCountedDeleteOnSequence<V8Manager> {
  public:
-  // Initializes V8 for the service. May be called from the main thread.
-  static void InitializeV8();
-
   // Creates a new V8Manager with its own isolate and context.
   static scoped_refptr<V8Manager> Create();
 
@@ -55,12 +54,16 @@ class V8Manager : public base::RefCountedDeleteOnSequence<V8Manager> {
   void InstallAutomation(
       base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller);
   void AddV8Bindings();
+
+  // Executes the given string as a Javascript script, and calls the
+  // callback when execution is complete.
   void ExecuteScript(const std::string& script,
                      base::OnceCallback<void()> on_complete);
 
   // Called from V8 thread.
-  v8::Isolate* GetIsolate();
-  v8::Local<v8::Context> GetContext();
+  // BindingsIsolateHolder overrides:
+  v8::Isolate* GetIsolate() const override;
+  v8::Local<v8::Context> GetContext() const override;
 
  private:
   // Allows RefCountedDeleteOnSequence able access to the destructor.
@@ -69,7 +72,7 @@ class V8Manager : public base::RefCountedDeleteOnSequence<V8Manager> {
 
   explicit V8Manager(scoped_refptr<base::SingleThreadTaskRunner> v8_runner,
                      scoped_refptr<base::SequencedTaskRunner> main_runner);
-  ~V8Manager();
+  virtual ~V8Manager();
 
   // Methods called from V8 thread.
   void ConstructIsolateOnThread();

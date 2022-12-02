@@ -35,13 +35,15 @@ class AutomationImpl : public mojom::Automation {
   // mojom::Automation:
   void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id);
   void DispatchActionResult(const ui::AXActionData& data, bool result);
-  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
-                                   const std::vector<ui::AXTreeUpdate>& updates,
-                                   const gfx::Point& mouse_location,
-                                   const std::vector<ui::AXEvent>& events);
-  void DispatchAccessibilityLocationChange(const ui::AXTreeID& tree_id,
-                                           int node_id,
-                                           const ui::AXRelativeBounds& bounds);
+  void DispatchAccessibilityEvents(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const gfx::Point& mouse_location,
+      const std::vector<ui::AXEvent>& events) override;
+  void DispatchAccessibilityLocationChange(
+      const ui::AXTreeID& tree_id,
+      int node_id,
+      const ui::AXRelativeBounds& bounds) override;
 
   // We may have multiple automation sources, so use a set to store their
   // receivers.

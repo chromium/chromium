@@ -41,16 +41,17 @@ class FakeAccessibilityService
       override;
 
   // TODO(crbug.com/1355633): Override from ax::mojom::Automation:
-  void DispatchTreeDestroyedEvent(const base::UnguessableToken& tree_id);
+  void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id);
   void DispatchActionResult(const ui::AXActionData& data, bool result);
-  void DispatchAccessibilityEvents(const base::UnguessableToken& tree_id,
-                                   const std::vector<ui::AXTreeUpdate>& updates,
-                                   const gfx::Point& mouse_location,
-                                   const std::vector<ui::AXEvent>& events);
+  void DispatchAccessibilityEvents(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const gfx::Point& mouse_location,
+      const std::vector<ui::AXEvent>& events) override;
   void DispatchAccessibilityLocationChange(
-      const base::UnguessableToken& tree_id,
+      const ui::AXTreeID& tree_id,
       int node_id,
-      const ui::AXRelativeBounds& bounds);
+      const ui::AXRelativeBounds& bounds) override;
 
   // ax::mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(
@@ -61,11 +62,14 @@ class FakeAccessibilityService
   // Methods for testing.
   //
 
-  bool IsBound();
+  // Whether the service client remote is bound.
+  bool IsBound() const;
 
+  // Waits for EnableAssistiveTechnology to be called.
   void WaitForATChanged();
 
-  const std::set<ax::mojom::AssistiveTechnologyType>& GetEnabledATs() {
+  // Gets the currently enabled assistive technology types.
+  const std::set<ax::mojom::AssistiveTechnologyType>& GetEnabledATs() const {
     return enabled_ATs_;
   }
 
@@ -73,16 +77,35 @@ class FakeAccessibilityService
   // V8 instances in the service.
   void BindAnotherAutomation();
 
+  // Calls ax::mojom::AutomationClient::Enable or ::Disable.
   void AutomationClientEnable(bool enabled);
 
+  // Whats for Automation events to come in.
   void WaitForAutomationEvents();
+
+  // Getters for automation events.
+  std::vector<ui::AXTreeID> tree_destroyed_events() const {
+    return tree_destroyed_events_;
+  }
+  std::vector<std::tuple<ui::AXActionData, bool>> action_results() const {
+    return action_results_;
+  }
+  std::vector<ui::AXTreeID> accessibility_events() const {
+    return accessibility_events_;
+  }
+  std::vector<ui::AXTreeID> location_changes() const {
+    return location_changes_;
+  }
 
  private:
   base::OnceClosure change_ATs_closure_;
   std::set<ax::mojom::AssistiveTechnologyType> enabled_ATs_;
   base::OnceClosure automation_events_closure_;
-  std::vector<base::UnguessableToken> tree_destroyed_events_;
+
+  std::vector<ui::AXTreeID> tree_destroyed_events_;
   std::vector<std::tuple<ui::AXActionData, bool>> action_results_;
+  std::vector<ui::AXTreeID> accessibility_events_;
+  std::vector<ui::AXTreeID> location_changes_;
 
   mojo::ReceiverSet<ax::mojom::Automation> automation_receivers_;
   mojo::RemoteSet<ax::mojom::AutomationClient> automation_client_remotes_;

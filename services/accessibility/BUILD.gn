@@ -25,6 +25,8 @@ source_set("lib") {
       "assistive_technology_controller_impl.h",
       "features/automation_internal_bindings.cc",
       "features/automation_internal_bindings.h",
+      "features/bindings_isolate_holder.cc",
+      "features/bindings_isolate_holder.h",
       "features/v8_manager.cc",
       "features/v8_manager.h",
     ]
@@ -69,6 +71,7 @@ source_set("tests") {
     sources = [
       "accessibility_service_cros_unittest.cc",
       "assistive_technology_controller_impl_unittest.cc",
+      "features/automation_internal_bindings_unittest.cc",
       "features/v8_manager_unittest.cc",
     ]
     deps += [ "//ui/accessibility:accessibility" ]

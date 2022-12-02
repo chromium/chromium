@@ -43,7 +43,7 @@ void FakeAccessibilityService::BindAssistiveTechnologyController(
 }
 
 void FakeAccessibilityService::DispatchTreeDestroyedEvent(
-    const base::UnguessableToken& tree_id) {
+    const ui::AXTreeID& tree_id) {
   tree_destroyed_events_.emplace_back(tree_id);
   if (automation_events_closure_)
     std::move(automation_events_closure_).Run();
@@ -58,18 +58,20 @@ void FakeAccessibilityService::DispatchActionResult(
 }
 
 void FakeAccessibilityService::DispatchAccessibilityEvents(
-    const base::UnguessableToken& tree_id,
+    const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
     const gfx::Point& mouse_location,
     const std::vector<ui::AXEvent>& events) {
+  accessibility_events_.emplace_back(tree_id);
   if (automation_events_closure_)
     std::move(automation_events_closure_).Run();
 }
 
 void FakeAccessibilityService::DispatchAccessibilityLocationChange(
-    const base::UnguessableToken& tree_id,
+    const ui::AXTreeID& tree_id,
     int node_id,
     const ui::AXRelativeBounds& bounds) {
+  location_changes_.emplace_back(tree_id);
   if (automation_events_closure_)
     std::move(automation_events_closure_).Run();
 }
@@ -87,7 +89,7 @@ void FakeAccessibilityService::WaitForATChanged() {
   runner.Run();
 }
 
-bool FakeAccessibilityService::IsBound() {
+bool FakeAccessibilityService::IsBound() const {
   return accessibility_service_client_remote_.is_bound();
 }
 

@@ -21,19 +21,21 @@ void FakeServiceClient::BindAutomation(
 }
 
 void FakeServiceClient::BindAccessibilityServiceClientForTest() {
-  service_->BindAccessibilityServiceClient(
-      a11y_client_receiver_.BindNewPipeAndPassRemote());
+  if (service_) {
+    service_->BindAccessibilityServiceClient(
+        a11y_client_receiver_.BindNewPipeAndPassRemote());
+  }
 }
 
 void FakeServiceClient::SetAutomationBoundClosure(base::OnceClosure closure) {
   automation_bound_closure_ = std::move(closure);
 }
 
-bool FakeServiceClient::AutomationIsBound() {
+bool FakeServiceClient::AutomationIsBound() const {
   return automation_client_receivers_.size() && automation_remotes_.size();
 }
 
-bool FakeServiceClient::AccessibilityServiceClientIsBound() {
+bool FakeServiceClient::AccessibilityServiceClientIsBound() const {
   return a11y_client_receiver_.is_bound();
 }
 

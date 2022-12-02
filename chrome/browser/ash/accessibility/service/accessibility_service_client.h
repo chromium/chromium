@@ -49,6 +49,8 @@ class AccessibilityServiceClient
   void SetDictationEnabled(bool enabled);
 
  private:
+  friend class AccessibilityServiceClientTest;
+
   // Called when the profile changes or on destruction. Disconnects all mojom
   // endpoints.
   void Reset();

@@ -21,8 +21,12 @@
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
 
+namespace gin {
+class Arguments;
+}  // namespace gin
+
 namespace ax {
-class V8Manager;
+class BindingsIsolateHolder;
 
 // AutomationInternalBindings creates the Javascript V8 bindings for the
 // Automation API in the Accessibility Service. It runs in a V8 thread.
@@ -32,9 +36,14 @@ class AutomationInternalBindings : public mojom::Automation,
                                    public ui::AutomationTreeManagerOwner,
                                    public ui::AutomationV8Router {
  public:
+  // AutomationInternalBindings will use the |ax_service_client| on the
+  // |main_runner| to bind itself to the main OS process. We assume that
+  // |isolate_holder| has a longer lifetime than this class.
+  // Specifically, AutomationInternalBindings is owned by
+  // V8Manager which implements BindingsIsolateHolder.
   explicit AutomationInternalBindings(
-      base::WeakPtr<V8Manager> v8_manager,
-      base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller,
+      base::WeakPtr<BindingsIsolateHolder> isolate_holder,
+      base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
       scoped_refptr<base::SequencedTaskRunner> main_runner);
   ~AutomationInternalBindings() override;
   AutomationInternalBindings(const AutomationInternalBindings&) = delete;
@@ -43,7 +52,12 @@ class AutomationInternalBindings : public mojom::Automation,
 
   // Creates bindings between C++ functions and Javascript by adding
   // V8 bindings to the given |object_template|.
-  void AddRoutesToTemplate(v8::Local<v8::ObjectTemplate>* object_template);
+  // Adds V8 bindings for the chrome.automation API.
+  void AddAutomationRoutesToTemplate(
+      v8::Local<v8::ObjectTemplate>* object_template);
+  // Adds V8 bindings for the chrome.automationInternal API.
+  void AddAutomationInternalRoutesToTemplate(
+      v8::Local<v8::ObjectTemplate>* object_template);
 
   // ui::AutomationTreeManagerOwner:
   ui::AutomationV8Bindings* GetAutomationV8Bindings() const override;
@@ -75,34 +89,38 @@ class AutomationInternalBindings : public mojom::Automation,
 
   // Methods to communicate back to the OS main process. These should get bound
   // to V8 JS methods and called from there.
-  void Enable();
-  void Disable();
+  void Enable(gin::Arguments* args);
+  void Disable(gin::Arguments* args);
   void EnableTree(const ui::AXTreeID& tree_id);
   void PerformAction(const ui::AXActionData& action_data);
 
  private:
+  friend class AutomationInternalBindingsTest;
+
   // Binds to Automation in the OS on the |main_runner|.
-  void Bind(base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller,
+  void Bind(base::WeakPtr<mojom::AccessibilityServiceClient> at_controller,
             scoped_refptr<base::SequencedTaskRunner> main_runner);
 
   // TODO(crbug.com/1355633): Override these from
   // mojom::Automation:
   void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id);
   void DispatchActionResult(const ui::AXActionData& data, bool result);
-  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
-                                   const std::vector<ui::AXTreeUpdate>& updates,
-                                   const gfx::Point& mouse_location,
-                                   const std::vector<ui::AXEvent>& events);
-  void DispatchAccessibilityLocationChange(const ui::AXTreeID& tree_id,
-                                           int node_id,
-                                           const ui::AXRelativeBounds& bounds);
+  void DispatchAccessibilityEvents(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const gfx::Point& mouse_location,
+      const std::vector<ui::AXEvent>& events) override;
+  void DispatchAccessibilityLocationChange(
+      const ui::AXTreeID& tree_id,
+      int node_id,
+      const ui::AXRelativeBounds& bounds) override;
   void DispatchGetTextLocationResult(const ax::mojom::AXActionData& data,
                                      gfx::Rect rect);
 
   // Used during object template creation.
   v8::Local<v8::ObjectTemplate>* template_;
 
-  base::WeakPtr<V8Manager> v8_manager_;
+  base::WeakPtr<BindingsIsolateHolder> isolate_holder_;
 
   std::unique_ptr<ui::AutomationV8Bindings> automation_v8_bindings_;
 
