@@ -57,9 +57,6 @@ public class PassphraseTypeDialogFragment
     public static PassphraseTypeDialogFragment create(
             @PassphraseType int currentType, boolean isCustomPassphraseAllowed) {
         assert currentType >= 0 && currentType <= PassphraseType.MAX_VALUE;
-        assert currentType
-                != PassphraseType.TRUSTED_VAULT_PASSPHRASE
-            : "Changing trusted vault to custom passphrase is supported, but UI forbids it today";
         PassphraseTypeDialogFragment dialog = new PassphraseTypeDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_CURRENT_TYPE, currentType);
