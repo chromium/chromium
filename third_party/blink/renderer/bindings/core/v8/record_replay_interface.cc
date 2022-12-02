@@ -1450,6 +1450,10 @@ static void HandleNetworkPrepareRequestEvent(const base::DictionaryValue& info) 
   event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->DeepCopy()));
   event.Set("requestMethod", std::unique_ptr<base::Value>(info.FindPath("requestMethod")->DeepCopy()));
   event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->DeepCopy()));
+  const base::Value* request_cause_value = info.FindPath("requestCause");
+  if (request_cause_value) {
+    event.Set("requestCause", std::unique_ptr<base::Value>(request_cause_value->DeepCopy()));
+  }
 
   gCurrentNetworkRequestEvent = &event;
   recordreplay::OnNetworkRequestEvent(request_id.c_str());
