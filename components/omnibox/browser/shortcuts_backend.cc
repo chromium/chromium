@@ -107,11 +107,15 @@ std::u16string ExpandToFullWord(const std::u16string& text,
   WordStarts text_word_starts;
   const auto text_words =
       String16VectorFromString16(trimmed_text, &text_word_starts);
+  // `String16VectorFromString16()` only considers the 1st 200
+  // (`kMaxSignificantChars`) chars for word starts while it considers the full
+  // text for words.
+  DCHECK_LE(text_word_starts.size(), text_words.size());
   // Even though `text` won't be empty, it may contain no words if it consists
   // of only symbols and whitespace. Additionally, even if it does contain
   // words, if it ends with symbols, the last word shouldn't be expanded to
   // avoid expanding, e.g., the text 'Cha*' to 'Cha*rles'.
-  if (text_words.empty() ||
+  if (text_word_starts.empty() ||
       text_word_starts.back() + text_words.back().length() !=
           trimmed_text.length()) {
     return trimmed_text;
