@@ -46758,13 +46758,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="11" label="Device registration error"/>
 </enum>
 
-<enum name="GCMUpstreamMessageStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Message size limit exceeded"/>
-  <int value="2" label="Access token request failed"/>
-  <int value="3" label="Send request failed"/>
-</enum>
-
 <enum name="GCReason">
   <int value="0" label="Idle GC"/>
   <int value="1" label="Precise GC"/>

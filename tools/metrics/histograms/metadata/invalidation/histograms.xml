@@ -113,16 +113,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Invalidations.GCMUpstreamRequest"
-    enum="GCMUpstreamMessageStatus" expires_after="M76">
-  <owner>nyquist@chromium.org</owner>
-  <owner>khushalsagar@chromium.org</owner>
-  <owner>melandory@chromium.org</owner>
-  <summary>
-    Status of sending outgoing invalidation message through GCM upsteam.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
