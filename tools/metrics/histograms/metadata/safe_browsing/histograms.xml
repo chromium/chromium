@@ -344,6 +344,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.BrowserThrottle.{RequestType}AfterWillProcessResponse"
+    units="BooleanYesNo" expires_after="2023-03-02">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether {RequestType} was called after WillProcessResponse. Logged
+    each time {RequestType} is called.
+  </summary>
+  <token key="RequestType">
+    <variant name="WillRedirectRequest" summary="WillRedirectRequest"/>
+    <variant name="WillStartRequest" summary="WillStartRequest"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.CheckBrowseUrl.HasLocalMatch"
     enum="BooleanMatched" expires_after="2023-03-26">
   <owner>vakh@chromium.org</owner>

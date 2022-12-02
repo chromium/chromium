@@ -269,6 +269,9 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(0u, pending_checks_);
   DCHECK(!blocked_);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.BrowserThrottle.WillStartRequestAfterWillProcessResponse",
+      will_process_response_count_ > 0);
 
   original_url_ = request->url;
   pending_checks_++;
@@ -291,6 +294,11 @@ void BrowserURLLoaderThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* /* modified_headers */,
     net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.BrowserThrottle."
+      "WillRedirectRequestAfterWillProcessResponse",
+      will_process_response_count_ > 0);
+
   if (blocked_) {
     // OnCheckUrlResult() has set |blocked_| to true and called
     // |delegate_->CancelWithError|, but this method is called before the
