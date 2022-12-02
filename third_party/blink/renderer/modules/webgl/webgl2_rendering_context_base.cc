@@ -5391,6 +5391,14 @@ ScriptValue WebGL2RenderingContextBase::getParameter(ScriptState* script_state,
                         "invalid parameter name, "
                         "EXT_disjoint_timer_query_webgl2 not enabled");
       return ScriptValue::CreateNull(script_state->GetIsolate());
+    case GL_PROVOKING_VERTEX_ANGLE:
+      if (ExtensionEnabled(kWebGLProvokingVertexName)) {
+        return GetUnsignedIntParameter(script_state, GL_PROVOKING_VERTEX_ANGLE);
+      }
+      SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
+                        "invalid parameter name, "
+                        "WEBGL_provoking_vertex not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
 
     default:
       return WebGLRenderingContextBase::getParameter(script_state, pname);

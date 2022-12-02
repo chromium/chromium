@@ -150,6 +150,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool oes_draw_buffers_indexed = false;
     bool ext_yuv_target = false;
     bool angle_rgbx_internal_format = false;
+    bool angle_provoking_vertex = false;
   };
 
   FeatureInfo();

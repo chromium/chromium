@@ -3889,6 +3889,10 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_LAST_VERTEX_CONVENTION_OES",
     },
     {
+        0x8E4F,
+        "GL_PROVOKING_VERTEX_ANGLE",
+    },
+    {
         0x8E50,
         "GL_SAMPLE_LOCATION_NV",
     },

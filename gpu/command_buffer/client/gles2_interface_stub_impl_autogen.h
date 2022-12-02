@@ -1155,4 +1155,5 @@ GLboolean GLES2InterfaceStub::IsEnablediOES(GLenum /* target */,
                                             GLuint /* index */) {
   return 0;
 }
+void GLES2InterfaceStub::ProvokingVertexANGLE(GLenum /* provokeMode */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

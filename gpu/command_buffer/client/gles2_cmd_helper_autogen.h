@@ -3242,4 +3242,12 @@ void IsEnablediOES(GLenum target,
   }
 }
 
+void ProvokingVertexANGLE(GLenum provokeMode) {
+  gles2::cmds::ProvokingVertexANGLE* c =
+      GetCmdSpace<gles2::cmds::ProvokingVertexANGLE>();
+  if (c) {
+    c->Init(provokeMode);
+  }
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_CMD_HELPER_AUTOGEN_H_

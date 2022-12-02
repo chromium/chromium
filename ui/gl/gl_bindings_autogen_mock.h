@@ -1703,6 +1703,7 @@ Mock_glProgramUniformMatrix4x3fv(GLuint program,
                                  GLsizei count,
                                  GLboolean transpose,
                                  const GLfloat* value);
+static void GL_BINDING_CALL Mock_glProvokingVertexANGLE(GLenum provokeMode);
 static void GL_BINDING_CALL Mock_glPushDebugGroup(GLenum source,
                                                   GLuint id,
                                                   GLsizei length,

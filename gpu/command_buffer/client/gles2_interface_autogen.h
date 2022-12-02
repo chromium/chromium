@@ -879,4 +879,5 @@ virtual void ColorMaskiOES(GLuint buf,
                            GLboolean b,
                            GLboolean a) = 0;
 virtual GLboolean IsEnablediOES(GLenum target, GLuint index) = 0;
+virtual void ProvokingVertexANGLE(GLenum provokeMode) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

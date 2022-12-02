@@ -115,6 +115,8 @@ blink_modules_sources("webgl") {
     "webgl_object.h",
     "webgl_program.cc",
     "webgl_program.h",
+    "webgl_provoking_vertex.cc",
+    "webgl_provoking_vertex.h",
     "webgl_query.cc",
     "webgl_query.h",
     "webgl_renderbuffer.cc",

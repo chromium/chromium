@@ -1378,6 +1378,7 @@ typedef void(GL_BINDING_CALL* glProgramUniformMatrix4x3fvProc)(
     GLsizei count,
     GLboolean transpose,
     const GLfloat* value);
+typedef void(GL_BINDING_CALL* glProvokingVertexANGLEProc)(GLenum provokeMode);
 typedef void(GL_BINDING_CALL* glPushDebugGroupProc)(GLenum source,
                                                     GLuint id,
                                                     GLsizei length,
@@ -1969,6 +1970,7 @@ struct ExtensionsGL {
   bool b_GL_ANGLE_memory_object_flags;
   bool b_GL_ANGLE_memory_object_fuchsia;
   bool b_GL_ANGLE_multi_draw;
+  bool b_GL_ANGLE_provoking_vertex;
   bool b_GL_ANGLE_request_extension;
   bool b_GL_ANGLE_robust_client_memory;
   bool b_GL_ANGLE_robust_resource_initialization;
@@ -2452,6 +2454,7 @@ struct ProcsGL {
   glProgramUniformMatrix4fvProc glProgramUniformMatrix4fvFn;
   glProgramUniformMatrix4x2fvProc glProgramUniformMatrix4x2fvFn;
   glProgramUniformMatrix4x3fvProc glProgramUniformMatrix4x3fvFn;
+  glProvokingVertexANGLEProc glProvokingVertexANGLEFn;
   glPushDebugGroupProc glPushDebugGroupFn;
   glPushGroupMarkerEXTProc glPushGroupMarkerEXTFn;
   glQueryCounterProc glQueryCounterFn;
@@ -3807,6 +3810,7 @@ class GL_EXPORT GLApi {
                                              GLsizei count,
                                              GLboolean transpose,
                                              const GLfloat* value) = 0;
+  virtual void glProvokingVertexANGLEFn(GLenum provokeMode) = 0;
   virtual void glPushDebugGroupFn(GLenum source,
                                   GLuint id,
                                   GLsizei length,
@@ -4879,6 +4883,8 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glProgramUniformMatrix4x2fvFn
 #define glProgramUniformMatrix4x3fv \
   ::gl::g_current_gl_context->glProgramUniformMatrix4x3fvFn
+#define glProvokingVertexANGLE \
+  ::gl::g_current_gl_context->glProvokingVertexANGLEFn
 #define glPushDebugGroup ::gl::g_current_gl_context->glPushDebugGroupFn
 #define glPushGroupMarkerEXT ::gl::g_current_gl_context->glPushGroupMarkerEXTFn
 #define glQueryCounter ::gl::g_current_gl_context->glQueryCounterFn

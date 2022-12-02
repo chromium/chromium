@@ -1174,6 +1174,7 @@ void glProgramUniformMatrix4x3fvFn(GLuint program,
                                    GLsizei count,
                                    GLboolean transpose,
                                    const GLfloat* value) override;
+void glProvokingVertexANGLEFn(GLenum provokeMode) override;
 void glPushDebugGroupFn(GLenum source,
                         GLuint id,
                         GLsizei length,

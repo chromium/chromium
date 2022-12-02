@@ -3561,4 +3561,12 @@ void GLES2Implementation::ColorMaskiOES(GLuint buf,
   CheckGLError();
 }
 
+void GLES2Implementation::ProvokingVertexANGLE(GLenum provokeMode) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glProvokingVertexANGLE("
+                     << GLES2Util::GetStringEnum(provokeMode) << ")");
+  helper_->ProvokingVertexANGLE(provokeMode);
+  CheckGLError();
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_IMPL_AUTOGEN_H_

@@ -1780,6 +1780,10 @@ GL_FUNCTIONS = [
   'arguments': 'GLuint program, GLint location, GLsizei count, '
                'GLboolean transpose, const GLfloat* value' },
 { 'return_type': 'void',
+  'versions': [{'name': 'glProvokingVertexANGLE',
+                'extensions': ['GL_ANGLE_provoking_vertex']}],
+  'arguments': 'GLenum provokeMode', },
+{ 'return_type': 'void',
   'versions': [{ 'name': 'glPushDebugGroup' },
                { 'name': 'glPushDebugGroupKHR',
                  'extensions': ['GL_KHR_debug'] }],

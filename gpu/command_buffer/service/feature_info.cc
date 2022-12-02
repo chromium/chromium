@@ -1736,6 +1736,11 @@ void FeatureInfo::InitializeFeatures() {
     AddExtensionString("GL_ANGLE_rgbx_internal_format");
     validators_.texture_internal_format_storage.AddValue(GL_RGBX8_ANGLE);
   }
+
+  if (gfx::HasExtension(extensions, "GL_ANGLE_provoking_vertex")) {
+    feature_flags_.angle_provoking_vertex = true;
+    AddExtensionString("GL_ANGLE_provoking_vertex");
+  }
 }
 
 void FeatureInfo::InitializeFloatAndHalfFloatFeatures(

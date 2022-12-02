@@ -4762,5 +4762,22 @@ error::Error GLES2DecoderPassthroughImpl::HandleIsEnablediOES(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleProvokingVertexANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::ProvokingVertexANGLE& c =
+      *static_cast<const volatile gles2::cmds::ProvokingVertexANGLE*>(cmd_data);
+  if (!features().angle_provoking_vertex) {
+    return error::kUnknownCommand;
+  }
+
+  GLenum provokeMode = static_cast<GLenum>(c.provokeMode);
+  error::Error error = DoProvokingVertexANGLE(provokeMode);
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
 }  // namespace gles2
 }  // namespace gpu

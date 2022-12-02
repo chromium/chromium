@@ -297,6 +297,8 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ANGLE_memory_object_fuchsia");
   ext.b_GL_ANGLE_multi_draw =
       gfx::HasExtension(extensions, "GL_ANGLE_multi_draw");
+  ext.b_GL_ANGLE_provoking_vertex =
+      gfx::HasExtension(extensions, "GL_ANGLE_provoking_vertex");
   ext.b_GL_ANGLE_request_extension =
       gfx::HasExtension(extensions, "GL_ANGLE_request_extension");
   ext.b_GL_ANGLE_robust_client_memory =
@@ -2479,6 +2481,11 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glProgramUniformMatrix4x3fvFn =
         reinterpret_cast<glProgramUniformMatrix4x3fvProc>(
             GetGLProcAddress("glProgramUniformMatrix4x3fv"));
+  }
+
+  if (ext.b_GL_ANGLE_provoking_vertex) {
+    fn.glProvokingVertexANGLEFn = reinterpret_cast<glProvokingVertexANGLEProc>(
+        GetGLProcAddress("glProvokingVertexANGLE"));
   }
 
   if (ver->IsAtLeastGL(4u, 3u) || ver->IsAtLeastGLES(3u, 2u)) {
@@ -5475,6 +5482,10 @@ void GLApiBase::glProgramUniformMatrix4x3fvFn(GLuint program,
                                               const GLfloat* value) {
   driver_->fn.glProgramUniformMatrix4x3fvFn(program, location, count, transpose,
                                             value);
+}
+
+void GLApiBase::glProvokingVertexANGLEFn(GLenum provokeMode) {
+  driver_->fn.glProvokingVertexANGLEFn(provokeMode);
 }
 
 void GLApiBase::glPushDebugGroupFn(GLenum source,
@@ -9303,6 +9314,11 @@ void TraceGLApi::glProgramUniformMatrix4x3fvFn(GLuint program,
                                 "TraceGLAPI::glProgramUniformMatrix4x3fv");
   gl_api_->glProgramUniformMatrix4x3fvFn(program, location, count, transpose,
                                          value);
+}
+
+void TraceGLApi::glProvokingVertexANGLEFn(GLenum provokeMode) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glProvokingVertexANGLE");
+  gl_api_->glProvokingVertexANGLEFn(provokeMode);
 }
 
 void TraceGLApi::glPushDebugGroupFn(GLenum source,
@@ -14160,6 +14176,12 @@ void LogGLApi::glProgramUniformMatrix4x3fvFn(GLuint program,
                                          value);
 }
 
+void LogGLApi::glProvokingVertexANGLEFn(GLenum provokeMode) {
+  GL_SERVICE_LOG("glProvokingVertexANGLE"
+                 << "(" << GLEnums::GetStringEnum(provokeMode) << ")");
+  gl_api_->glProvokingVertexANGLEFn(provokeMode);
+}
+
 void LogGLApi::glPushDebugGroupFn(GLenum source,
                                   GLuint id,
                                   GLsizei length,
@@ -17995,6 +18017,10 @@ void NoContextGLApi::glProgramUniformMatrix4x3fvFn(GLuint program,
                                                    GLboolean transpose,
                                                    const GLfloat* value) {
   NoContextHelper("glProgramUniformMatrix4x3fv");
+}
+
+void NoContextGLApi::glProvokingVertexANGLEFn(GLenum provokeMode) {
+  NoContextHelper("glProvokingVertexANGLE");
 }
 
 void NoContextGLApi::glPushDebugGroupFn(GLenum source,

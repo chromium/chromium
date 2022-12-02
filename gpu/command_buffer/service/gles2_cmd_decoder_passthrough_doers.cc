@@ -4939,5 +4939,11 @@ error::Error GLES2DecoderPassthroughImpl::DoDisableiOES(GLenum target,
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::DoProvokingVertexANGLE(
+    GLenum provokeMode) {
+  api()->glProvokingVertexANGLEFn(provokeMode);
+  return error::kNoError;
+}
+
 }  // namespace gles2
 }  // namespace gpu

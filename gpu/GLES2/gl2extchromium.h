@@ -279,6 +279,28 @@ typedef void (GL_APIENTRYP PFNGLBLITFRAMEBUFFERCHROMIUMPROC) (GLint srcX0, GLint
 #endif
 #endif /* GL_ANGLE_rgbx_internal_format */
 
+/* GL_ANGLE_provoking_vertex */
+#ifndef GL_ANGLE_provoking_vertex
+#define GL_ANGLE_provoking_vertex 1
+
+#ifndef GL_FIRST_VERTEX_CONVENTION_ANGLE
+#define GL_FIRST_VERTEX_CONVENTION_ANGLE 0x8E4D
+#endif
+
+#ifndef GL_LAST_VERTEX_CONVENTION_ANGLE
+#define GL_LAST_VERTEX_CONVENTION_ANGLE 0x8E4E
+#endif
+
+#ifndef GL_PROVOKING_VERTEX_ANGLE
+#define GL_PROVOKING_VERTEX_ANGLE 0x8E4F
+#endif
+
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glProvokingVertexANGLE(GLenum provokeMode);
+#endif
+typedef void(GL_APIENTRYP PFNGLPROVOKINGVERTEXANGLEPROC)(GLenum provokeMode);
+#endif /* GL_ANGLE_provoking_vertex */
+
 /* GL_CHROMIUM_async_pixel_transfers */
 #ifndef GL_CHROMIUM_async_pixel_transfers
 #define GL_CHROMIUM_async_pixel_transfers 1

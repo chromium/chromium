@@ -58,6 +58,7 @@ class WebGL2ConformanceIntegrationTest(
         'WEBGL_lose_context',
         'WEBGL_multi_draw',
         'WEBGL_multi_draw_instanced_base_vertex_base_instance',
+        'WEBGL_provoking_vertex',
         'WEBGL_video_texture',
         'WEBGL_webcodecs_video_frame',
     ]

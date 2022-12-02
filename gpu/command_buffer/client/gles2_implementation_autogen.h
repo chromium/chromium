@@ -1189,4 +1189,6 @@ void ColorMaskiOES(GLuint buf,
 
 GLboolean IsEnablediOES(GLenum target, GLuint index) override;
 
+void ProvokingVertexANGLE(GLenum provokeMode) override;
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_AUTOGEN_H_

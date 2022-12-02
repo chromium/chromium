@@ -2477,6 +2477,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_multi_draw_instanced_base_vertex_base_instance.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_program.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_program.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_provoking_vertex.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_provoking_vertex.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_query.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_query.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_renderbuffer.cc",

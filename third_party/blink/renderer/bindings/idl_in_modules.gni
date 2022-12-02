@@ -931,6 +931,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webgl/webgl_multi_draw.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_multi_draw_instanced_base_vertex_base_instance.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_program.idl",
+          "//third_party/blink/renderer/modules/webgl/webgl_provoking_vertex.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_query.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_renderbuffer.idl",
           "//third_party/blink/renderer/modules/webgl/webgl_rendering_context.idl",

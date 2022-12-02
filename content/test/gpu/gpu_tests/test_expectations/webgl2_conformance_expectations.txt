@@ -127,6 +127,11 @@ crbug.com/1194209 [ mac no-passthrough ] WebglExtension_WEBGL_webcodecs_video_fr
 # Extension only available through passthrough decoder?
 crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 
+# Extension not available on OpenGL ES, but could plausibly be
+# implemented on ANGLE's Vulkan backend.
+[ android no-passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
+[ android passthrough angle-opengles ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
+
 # This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
 # proprietary codecs.
 crbug.com/1136205 [ chromeos ] conformance/textures/misc/video-rotation.html [ Skip ]

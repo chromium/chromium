@@ -335,7 +335,8 @@
   OP(BlendFunciOES)                                            /* 576 */ \
   OP(BlendFuncSeparateiOES)                                    /* 577 */ \
   OP(ColorMaskiOES)                                            /* 578 */ \
-  OP(IsEnablediOES)                                            /* 579 */
+  OP(IsEnablediOES)                                            /* 579 */ \
+  OP(ProvokingVertexANGLE)                                     /* 580 */
 
 enum CommandId {
   kOneBeforeStartPoint =

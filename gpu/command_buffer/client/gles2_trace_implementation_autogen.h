@@ -851,4 +851,5 @@ void ColorMaskiOES(GLuint buf,
                    GLboolean b,
                    GLboolean a) override;
 GLboolean IsEnablediOES(GLenum target, GLuint index) override;
+void ProvokingVertexANGLE(GLenum provokeMode) override;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_AUTOGEN_H_

@@ -391,3 +391,6 @@ GL_APICALL void         GL_APIENTRY glBlendFunciOES (GLuint buf, GLenum src, GLe
 GL_APICALL void         GL_APIENTRY glBlendFuncSeparateiOES (GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
 GL_APICALL void         GL_APIENTRY glColorMaskiOES (GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
 GL_APICALL GLboolean    GL_APIENTRY glIsEnablediOES (GLenum target, GLuint index);
+
+// Extension ANGLE_provoking_vertex
+GL_APICALL void         GL_APIENTRY glProvokingVertexANGLE (GLenum provokeMode);

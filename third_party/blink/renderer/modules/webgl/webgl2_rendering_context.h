@@ -21,6 +21,7 @@ class EXTTextureCompressionBPTC;
 class EXTTextureCompressionRGTC;
 class EXTTextureFilterAnisotropic;
 class EXTTextureNorm16;
+class KHRParallelShaderCompile;
 class OESDrawBuffersIndexed;
 class OESTextureFloatLinear;
 class OVRMultiview2;
@@ -29,7 +30,7 @@ class WebGLDrawInstancedBaseVertexBaseInstance;
 class WebGLLoseContext;
 class WebGLMultiDraw;
 class WebGLMultiDrawInstancedBaseVertexBaseInstance;
-class KHRParallelShaderCompile;
+class WebGLProvokingVertex;
 class WebGLVideoTexture;
 class WebGLWebCodecsVideoFrame;
 
@@ -97,6 +98,7 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   Member<WebGLMultiDraw> webgl_multi_draw_;
   Member<WebGLMultiDrawInstancedBaseVertexBaseInstance>
       webgl_multi_draw_instanced_base_vertex_base_instance_;
+  Member<WebGLProvokingVertex> webgl_provoking_vertex_;
   Member<WebGLVideoTexture> webgl_video_texture_;
   Member<WebGLWebCodecsVideoFrame> webgl_webcodecs_video_frame_;
 };

@@ -3093,6 +3093,11 @@ _FUNCTION_INFO = {
     'extension': "CHROMIUM_texture_mailbox",
     'trace_level': 1,
   },
+  'ProvokingVertexANGLE': {
+    'extension_flag': 'angle_provoking_vertex',
+    'unit_test': False,
+    'extension': 'ANGLE_provoking_vertex',
+  },
   'RenderbufferStorage': {
     'decoder_func': 'DoRenderbufferStorage',
     'gl_test_func': 'glRenderbufferStorageEXT',
