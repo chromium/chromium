@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tests left floats should clear left initial-letters and visa-versa.</title>
+<title>Tests right float should be pushed on to next line.</title>
 <link rel="author" title="Google LLC" href="https://www.google.com/">
 <link rel="help" href="https://drafts.csswg.org/css-inline/#initial-letter-floats">
 <meta name="flags" content="ahem">
 <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" >
+<link rel="match" href="initial-letter-float-005-ref.html">
 <style>
     .sample {
         border: solid 1px green;
@@ -17,27 +18,24 @@
 
     .float {
         background: cyan;
-        clear: none;
-        float: left;
+        clear: left;
+        float: right;
         height: 50px;
         width: 50px;
     }
 
-    .fake-initial-letter {
-        background: lime;
-        float: left;
-        height: 80px;
-        margin-top: 14px;
-        width: 80px;
+    .initial-letter::first-letter {
+        initial-letter: 3 drop;
+        color: lime;
+        font-size: 100px;   /* should be ignored in rendering */
+        line-height: 50px;  /* should be ignored in rendering */
     }
 </style>
 </head>
 <body>
-<div class="sample">
-<div class="fake-initial-letter"></div>
-bc<br>
-<div class="float" style="clear:left"></div>
-def<br>ghi<br>jkl<br>mno<br>
+<div class="sample initial-letter">
+Abc def<div class="float"></div><br>
+ghi<br>jkl<br>mno<br>
 </div>
 </body>
 </html>

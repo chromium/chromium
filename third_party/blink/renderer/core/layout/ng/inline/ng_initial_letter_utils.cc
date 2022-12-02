@@ -6,10 +6,11 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
@@ -20,6 +21,7 @@ namespace {
 // letter text and shift down amount of surrounding text in
 // `initial_letter_block_start_adjust`,
 LayoutUnit ComputeInitialLetterBoxBlockOffset(
+    const NGPhysicalBoxFragment& initial_letter_box_fragment,
     const LayoutUnit block_size,
     const ComputedStyle& initial_letter_box_style,
     const ComputedStyle& paragraph_style,
@@ -41,13 +43,17 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
   // Block-axis positioning[1]:
   //   size >= sink: => under alignment with shift (sink - 1) * line_height
   //   size < sink   => over alignment
+  // For `initial-letter-align: alphabetic`[2], over is cap-height and under is
+  // baseline.
   //
-  // Note: Even if the spec[2] says baseline of initial letter text to align
+  // Note: Even if the spec[3] says baseline of initial letter text to align
   // with n'th line of baseline. It is hard to do so, because the first line
   // has half leading but following lines are not, all lines have half leading
   // in quirk mode.
   // [1] https://drafts.csswg.org/css-inline/#initial-letter-block-position
-  // [2] https://drafts.csswg.org/css-inline/#drop-initial
+  // [2]
+  // https://drafts.csswg.org/css-inline-3/#valdef-initial-letter-align-alphabetic
+  // [3] https://drafts.csswg.org/css-inline/#drop-initial
 
   if (size < sink) {
     // Example: `initial-letter: 5 7`
@@ -76,17 +82,17 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
       initial_letter_box_style.GetTextOrientation() ==
           ETextOrientation::kSideways) {
     // `writing-mode: horizontal-tb` or `text-orientation: sideways`
-    const LayoutUnit block_offset = line_height * size - block_size;
+    // `baseline` is ascent for not `vertical-lr`, descent for `vertical-lr`.
+    const LayoutUnit baseline = *initial_letter_box_fragment.FirstBaseline();
+    const LayoutUnit ascent = paragraph_style.IsFlippedLinesWritingMode()
+                                  ? block_size - baseline
+                                  : baseline;
+    const LayoutUnit block_offset =
+        LayoutUnit(line_height * initial_letter.Size()) - ascent;
     const FontHeight text_metrics = paragraph_style.GetFontHeight();
     FontHeight line_metrics = text_metrics;
     line_metrics.AddLeading(paragraph_style.ComputedLineHeightAsFixed());
     const LayoutUnit descent = line_metrics.descent;
-    if (size > initial_letter.Size()) {
-      // The initial letter text ink overflow crosses baseline. Align to
-      // line over with half leading.
-      // See `NGInlineBoxState::ComputeTextMetrics()` about leading.
-      return block_offset - (line_metrics.descent - text_metrics.descent);
-    }
     return block_offset - descent;
   }
 
@@ -241,27 +247,26 @@ const NGExclusion* PostPlaceInitialLetterBox(
   NGLogicalLineItem* const initial_letter_line_item = std::find_if(
       line_box->begin(), line_box->end(),
       [](const auto& line_item) { return line_item.IsInitialLetterBox(); });
-  DCHECK(initial_letter_line_item->PhysicalFragment()->IsInitialLetterBox());
-  DCHECK(!initial_letter_line_item->PhysicalFragment()
-              ->Style()
-              .InitialLetter()
-              .IsNormal());
+
+  const auto& initial_letter_box_fragment =
+      *To<NGPhysicalBoxFragment>(initial_letter_line_item->PhysicalFragment());
+
+  DCHECK(initial_letter_box_fragment.IsInitialLetterBox());
+  DCHECK(!initial_letter_box_fragment.Style().InitialLetter().IsNormal());
 
   const ComputedStyle& line_style = line_info->LineStyle();
   const WritingDirectionMode writing_direction_mode =
       line_style.GetWritingDirection();
 
   const LogicalSize initial_letter_box_size =
-      NGFragment(writing_direction_mode,
-                 *initial_letter_line_item->PhysicalFragment())
-          .Size();
+      NGFragment(writing_direction_mode, initial_letter_box_fragment).Size();
 
   LayoutUnit initial_letter_block_start_adjust;
   const LayoutUnit initial_letter_border_box_block_offset =
-      ComputeInitialLetterBoxBlockOffset(initial_letter_box_size.block_size,
-                                         *initial_letter_line_item->Style(),
-                                         line_style,
-                                         &initial_letter_block_start_adjust) +
+      ComputeInitialLetterBoxBlockOffset(
+          initial_letter_box_fragment, initial_letter_box_size.block_size,
+          *initial_letter_line_item->Style(), line_style,
+          &initial_letter_block_start_adjust) +
       initial_letter_box_margins.block_start;
   DCHECK_GE(initial_letter_block_start_adjust, LayoutUnit());
   line_info->SetInitialLetterBlockStartAdjustment(
