@@ -76,6 +76,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/logging_chrome.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
@@ -157,10 +158,6 @@ base::FilePath LacrosLogPath() {
   return LacrosLogDirectory().Append("lacros.log");
 }
 
-base::FilePath LacrosPreviousLogPath() {
-  return LacrosLogDirectory().Append("lacros.log.PREVIOUS");
-}
-
 base::FilePath LacrosPostLoginLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
 }
@@ -169,28 +166,18 @@ base::FilePath LacrosCrashDumpDirectory() {
   return LacrosLogDirectory().Append("Crash Reports");
 }
 
-// Moves any existing lacros log file to lacros.log.PREVIOUS. Returns true if a
-// log file existed before being moved, and false if no log file was found.
+// Rotate existing Lacros's log file. Returns true if a log file existed before
+// being moved, and false if no log file was found.
 bool RotateLacrosLogs() {
-  // Remove lacros.log.PREVIOUS log entry if present.
-  base::FilePath previous_log_path = LacrosPreviousLogPath();
-  unlink(previous_log_path.value().c_str());
-
   base::FilePath log_path = LacrosLogPath();
-  // Handle edge case where previous code created a symbolic link that could not
-  // correctly resolve by deleting that symbolic link.
-  if (base::IsLink(log_path)) {
-    unlink(log_path.value().c_str());
-    return true;
-  }
+  if (!base::PathExists(log_path))
+    return false;
 
-  // If there is an existing log entry rename it to lacros.log.PREVIOUS.
-  if (base::PathExists(log_path)) {
-    base::Move(log_path, previous_log_path);
-    return true;
+  if (!logging::RotateLogFile(log_path)) {
+    PLOG(ERROR) << "Failed to rotate the log file: " << log_path.value()
+                << ". Keeping using the same log file without rotating.";
   }
-
-  return false;
+  return true;
 }
 
 void PreloadFile(base::FilePath file_path) {

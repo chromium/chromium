@@ -41,14 +41,14 @@ LoggingDestination DetermineLoggingDestination(
 // write new logs to the latest log file. Otherwise, we reuse the existing file
 // if exists.
 base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log);
+
+// Allow external calls to the internal method for testing.
+bool RotateLogFile(const base::FilePath& target_path);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(UNIT_TEST)
 // Expose the following methods only for tests.
-
-// Allow external calls to the internal method for testing.
-bool RotateLogFile(const base::FilePath& target_path);
 
 // Point the logging symlink to the system log or the user session log.
 base::FilePath SetUpSymlinkIfNeeded(const base::FilePath& symlink_path,

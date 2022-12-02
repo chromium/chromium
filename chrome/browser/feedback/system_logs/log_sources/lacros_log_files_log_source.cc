@@ -4,6 +4,7 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -45,16 +46,44 @@ void LacrosLogFilesLogSource::Fetch(SysLogsSourceCallback callback) {
       base::BindOnce(std::move(callback), std::move(response)));
 }
 
+base::FilePath LacrosLogFilesLogSource::FindPreviousLogPath(
+    const base::FilePath& log_base_path) {
+  base::FileEnumerator log_enum(log_base_path,
+                                /*recursive=*/false,
+                                base::FileEnumerator::FILES, "lacros_*.log");
+
+  // Find the most recent timestamped log - that's the previous one, if any.
+  base::FilePath previous_log_path = log_enum.Next();
+  for (base::FilePath log_path = log_enum.Next(); !log_path.empty();
+       log_path = log_enum.Next()) {
+    // Lacros log files have the following format:
+    // - lacros_YYMMDD-HHMMSS.log
+    // As specified in |logging::GenerateTimestampedName|.
+    // Hence a lexicographic comparison is sufficient to determine
+    // the most recent log file.
+    if (log_path.value() > previous_log_path.value())
+      previous_log_path = log_path;
+  }
+
+  return previous_log_path;
+}
+
 void LacrosLogFilesLogSource::FindFiles(const base::FilePath& log_base_path,
                                         const std::string& log_key_base,
                                         SystemLogsResponse* response) {
+  // Current log.
   base::FilePath log_path = log_base_path.Append("lacros.log");
   ReadFile(log_path, log_key_base, response);
 
-  base::FilePath previous_log_path =
-      log_base_path.Append("lacros.log.PREVIOUS");
+  // Previous log.
+  std::string previous_log_key = log_key_base + "_previous";
+  base::FilePath previous_log_path = FindPreviousLogPath(log_base_path);
+  if (previous_log_path.empty()) {
+    response->emplace(previous_log_key, kNotAvailable);
+    return;
+  }
 
-  ReadFile(previous_log_path, log_key_base + "_previous", response);
+  ReadFile(previous_log_path, previous_log_key, response);
 }
 
 void LacrosLogFilesLogSource::ReadFile(const base::FilePath& log_file_path,

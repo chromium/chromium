@@ -28,6 +28,11 @@ class LacrosLogFilesLogSource : public SystemLogsSource {
   void Fetch(SysLogsSourceCallback callback) override;
 
  private:
+  // This method finds the path of the previous Lacros log (before the current
+  // one), if any. If there's no such file, it returns an empty FilePath.
+  // See http://crbug.com/1317511#c7 for the semantic of log rotation.
+  base::FilePath FindPreviousLogPath(const base::FilePath& log_base_path);
+
   // This method must run on a blocking sequence. It attempts to attach both the
   // current and previous log files to |response|.
   void FindFiles(const base::FilePath& log_base_path,
@@ -39,8 +44,8 @@ class LacrosLogFilesLogSource : public SystemLogsSource {
                 const std::string& log_key,
                 SystemLogsResponse* response);
 
-  // This is the base path for all Lacros logs. This class will search for a
-  // 'lacros.log' and 'lacros.log.PREVIOUS' file in this directory.
+  // This is the base path for all Lacros logs. This class will search for
+  // 'lacros.log' and 'lacros_${TIMESTAMP}.log' file in this directory.
   const base::FilePath log_base_path_;
   // This is the key base for Lacros logs in Ash feedback reports. This class
   // attaches the key base to the newest log, and appends '_previous' to the key
