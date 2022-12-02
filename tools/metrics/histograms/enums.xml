@@ -51283,6 +51283,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="31" label="BeginDownload"/>
   <int value="32" label="Bug1234857"/>
   <int value="33" label="FileSystemAccessPermissionRequest"/>
+  <int value="34" label="CreateFencedFrame"/>
 </enum>
 
 <enum name="IncidentType">
