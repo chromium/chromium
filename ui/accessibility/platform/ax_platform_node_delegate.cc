@@ -6,7 +6,9 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/notreached.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_selection.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
 namespace ui {
@@ -31,6 +33,448 @@ ui::AXNodeID AXPlatformNodeDelegate::GetId() const {
 
 AXTreeManager* AXPlatformNodeDelegate::GetTreeManager() const {
   return AXTreeManager::FromID(GetTreeData().tree_id);
+}
+
+const AXNodeData& AXPlatformNodeDelegate::GetData() const {
+  if (node_)
+    return node_->data();
+
+  static base::NoDestructor<AXNodeData> empty_data;
+  return *empty_data;
+}
+
+std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
+  if (node_)
+    return node_->GetTextContentUTF16();
+
+  // Unlike in web content the "kValue" attribute always takes precedence,
+  // because we assume that users of the base impl, such as Views controls,
+  // are carefully crafted by hand, in contrast to HTML pages, where any content
+  // that might be present in the shadow DOM (AKA in the internal accessibility
+  // tree) is actually used by the renderer when assigning the "kValue"
+  // attribute, including any redundant white space.
+  std::u16string value =
+      GetString16Attribute(ax::mojom::StringAttribute::kValue);
+  if (!value.empty())
+    return value;
+
+  // TODO(https://crbug.com/1030703): The check for `IsInvisibleOrIgnored()`
+  // should not be needed. `ChildAtIndex()` and `GetChildCount()` are already
+  // supposed to skip over nodes that are invisible or ignored, but
+  // `ViewAXPlatformNodeDelegate` does not currently implement this behavior.
+  if (IsLeaf() && !IsInvisibleOrIgnored())
+    return GetString16Attribute(ax::mojom::StringAttribute::kName);
+
+  std::u16string text_content;
+  for (size_t i = 0; i < GetChildCount(); ++i) {
+    // TODO(nektar): Add const to all tree traversal methods and remove
+    // const_cast.
+    const AXPlatformNode* child = AXPlatformNode::FromNativeViewAccessible(
+        const_cast<AXPlatformNodeDelegate*>(this)->ChildAtIndex(i));
+    if (!child || !child->GetDelegate())
+      continue;
+    text_content += child->GetDelegate()->GetTextContentUTF16();
+  }
+  return text_content;
+}
+
+std::u16string AXPlatformNodeDelegate::GetValueForControl() const {
+  if (node_)
+    return base::UTF8ToUTF16(node()->GetValueForControl());
+
+  if (!IsControl(GetRole()) && !GetData().IsRangeValueSupported())
+    return std::u16string();
+
+  std::u16string value =
+      GetString16Attribute(ax::mojom::StringAttribute::kValue);
+  float numeric_value;
+  if (GetData().IsRangeValueSupported() && value.empty() &&
+      GetData().GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
+                                  &numeric_value)) {
+    value = base::NumberToString16(numeric_value);
+  }
+  return value;
+}
+
+AXNodePosition::AXPositionInstance AXPlatformNodeDelegate::CreatePositionAt(
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  if (node_)
+    return AXNodePosition::CreatePosition(*node_, offset, affinity);
+  return AXNodePosition::CreateNullPosition();
+}
+
+AXNodePosition::AXPositionInstance AXPlatformNodeDelegate::CreateTextPositionAt(
+    int offset,
+    ax::mojom::TextAffinity affinity) const {
+  if (node_) {
+    DCHECK(node_->tree())
+        << "All nodes should be owned by an accessibility tree.\n"
+        << *node_;
+    DCHECK(node_->IsDataValid());
+    return AXNodePosition::CreateTextPosition(*node_, offset, affinity);
+  }
+  return AXNodePosition::CreateNullPosition();
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNSWindow() {
+  NOTREACHED() << "Only available on macOS.";
+  return nullptr;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNativeViewAccessible() {
+  // TODO(crbug.com/703369) On Windows, where we have started to migrate to an
+  // AXPlatformNode implementation, the BrowserAccessibilityWin subclass has
+  // overridden this method. On all other platforms, this method should not be
+  // called yet. In the future, when all subclasses have moved over to be
+  // implemented by AXPlatformNode, we may make this method completely virtual.
+  NOTREACHED() << "https://crbug.com/703369";
+  return nullptr;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetParent() const {
+  return nullptr;
+}
+
+absl::optional<size_t> AXPlatformNodeDelegate::GetIndexInParent() {
+  if (node_)
+    return node_->GetUnignoredIndexInParent();
+
+  AXPlatformNodeDelegate* parent = GetParentDelegate();
+  if (!parent)
+    return absl::nullopt;
+
+  for (size_t i = 0; i < parent->GetChildCount(); i++) {
+    AXPlatformNode* child_node =
+        AXPlatformNode::FromNativeViewAccessible(parent->ChildAtIndex(i));
+    if (child_node && child_node->GetDelegate() == this)
+      return i;
+  }
+  return absl::nullopt;
+}
+
+size_t AXPlatformNodeDelegate::GetChildCount() const {
+  return 0u;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::ChildAtIndex(size_t index) {
+  return nullptr;
+}
+
+bool AXPlatformNodeDelegate::HasModalDialog() const {
+  return false;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetFirstChild() {
+  if (GetChildCount() > 0)
+    return ChildAtIndex(0);
+  return nullptr;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetLastChild() {
+  size_t child_count = GetChildCount();
+  if (child_count > 0)
+    return ChildAtIndex(child_count - 1);
+  return nullptr;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNextSibling() {
+  AXPlatformNodeDelegate* parent = GetParentDelegate();
+  if (!parent)
+    return nullptr;
+  auto index = GetIndexInParent();
+  if (index.has_value()) {
+    size_t next_index = index.value() + 1;
+    if (next_index < parent->GetChildCount())
+      return parent->ChildAtIndex(next_index);
+  }
+  return nullptr;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetPreviousSibling() {
+  AXPlatformNodeDelegate* parent = GetParentDelegate();
+  if (!parent)
+    return nullptr;
+  auto index = GetIndexInParent();
+  if (index.has_value()) {
+    size_t next_index = index.value() - 1;
+    if (next_index < parent->GetChildCount())
+      return parent->ChildAtIndex(next_index);
+  }
+  return nullptr;
+}
+
+bool AXPlatformNodeDelegate::IsChildOfLeaf() const {
+  if (node_)
+    return node_->IsChildOfLeaf();
+
+  // TODO(nektar): Make all tree traversal methods const and remove const_cast.
+  const AXPlatformNodeDelegate* parent =
+      const_cast<AXPlatformNodeDelegate*>(this)->GetParentDelegate();
+  if (!parent)
+    return false;
+  if (parent->IsLeaf())
+    return true;
+  return parent->IsChildOfLeaf();
+}
+
+bool AXPlatformNodeDelegate::IsDescendantOfAtomicTextField() const {
+  if (node_)
+    return node_->IsDescendantOfAtomicTextField();
+
+  // TODO(nektar): Add const to all tree traversal methods and remove
+  // const_cast.
+  for (AXPlatformNodeDelegate* ancestor_delegate =
+           const_cast<AXPlatformNodeDelegate*>(this);
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegate*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (ancestor_delegate->GetData().IsAtomicTextField())
+      return true;
+  }
+  return false;
+}
+
+bool AXPlatformNodeDelegate::IsPlatformDocument() const {
+  return ui::IsPlatformDocument(GetRole());
+}
+
+bool AXPlatformNodeDelegate::IsFocused() const {
+  // TODO(accessibility): Move `GetFocus` into `AXTreeManager` so we can use
+  // `BrowserAccessibility` implementation here and remove it from there.
+  return false;
+}
+
+bool AXPlatformNodeDelegate::IsIgnored() const {
+  if (node_)
+    return node_->IsIgnored();
+
+  // To avoid the situation where a screen reader user will not be able to
+  // access a focused node because it has accidentally been marked as ignored,
+  // we unignore any nodes that are focused. However, we don't need to check
+  // this here because subclasses should make sure that the ignored state is
+  // removed from all nodes that are currently focused. This condition will be
+  // enforced once we switch to using an AXTree of AXNodes in Views.
+  return GetRole() == ax::mojom::Role::kNone ||
+         HasState(ax::mojom::State::kIgnored);
+}
+
+bool AXPlatformNodeDelegate::IsToplevelBrowserWindow() {
+  return false;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetLowestPlatformAncestor()
+    const {
+  AXPlatformNodeDelegate* current_delegate =
+      const_cast<AXPlatformNodeDelegate*>(this);
+  AXPlatformNodeDelegate* lowest_unignored_delegate = current_delegate;
+  if (lowest_unignored_delegate->IsIgnored()) {
+    lowest_unignored_delegate = static_cast<AXPlatformNodeDelegate*>(
+        lowest_unignored_delegate->GetParentDelegate());
+  }
+  DCHECK(!lowest_unignored_delegate || !lowest_unignored_delegate->IsIgnored())
+      << "`AXPlatformNodeDelegate::GetParentDelegate()` should return "
+         "either an unignored object or nullptr.";
+
+  // `highest_leaf_delegate` could be nullptr.
+  AXPlatformNodeDelegate* highest_leaf_delegate = lowest_unignored_delegate;
+  // For the purposes of this method, a leaf node does not include leaves in the
+  // internal accessibility tree, only in the platform exposed tree.
+  for (AXPlatformNodeDelegate* ancestor_delegate = lowest_unignored_delegate;
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegate*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (ancestor_delegate->IsLeaf())
+      highest_leaf_delegate = ancestor_delegate;
+  }
+  if (highest_leaf_delegate)
+    return highest_leaf_delegate->GetNativeViewAccessible();
+
+  if (lowest_unignored_delegate)
+    return lowest_unignored_delegate->GetNativeViewAccessible();
+  return current_delegate->GetNativeViewAccessible();
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetTextFieldAncestor() const {
+  // TODO(nektar): Add const to all tree traversal methods and remove
+  // const_cast.
+  for (AXPlatformNodeDelegate* ancestor_delegate =
+           const_cast<AXPlatformNodeDelegate*>(this);
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegate*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (ancestor_delegate->GetData().IsTextField())
+      return ancestor_delegate->GetNativeViewAccessible();
+  }
+  return nullptr;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetSelectionContainer()
+    const {
+  // TODO(nektar): Add const to all tree traversal methods and remove
+  // const_cast.
+  for (AXPlatformNodeDelegate* ancestor_delegate =
+           const_cast<AXPlatformNodeDelegate*>(this);
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegate*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (IsContainerWithSelectableChildren(ancestor_delegate->GetRole()))
+      return ancestor_delegate->GetNativeViewAccessible();
+  }
+  return nullptr;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetTableAncestor() const {
+  // TODO(nektar): Add const to all tree traversal methods and remove
+  // const_cast.
+  for (AXPlatformNodeDelegate* ancestor_delegate =
+           const_cast<AXPlatformNodeDelegate*>(this);
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegate*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (IsTableLike(ancestor_delegate->GetRole()))
+      return ancestor_delegate->GetNativeViewAccessible();
+  }
+  return nullptr;
+}
+
+const std::string& AXPlatformNodeDelegate::GetName() const {
+  if (node_)
+    return node()->GetNameUTF8();
+  return GetStringAttribute(ax::mojom::StringAttribute::kName);
+}
+
+const std::string& AXPlatformNodeDelegate::GetDescription() const {
+  return GetStringAttribute(ax::mojom::StringAttribute::kDescription);
+}
+
+std::u16string AXPlatformNodeDelegate::GetHypertext() const {
+  // Overloaded by platforms which require a hypertext accessibility text
+  // implementation.
+  return std::u16string();
+}
+
+const std::map<int, int>&
+AXPlatformNodeDelegate::GetHypertextOffsetToHyperlinkChildIndex() const {
+  if (node_)
+    return node_->GetHypertextOffsetToHyperlinkChildIndex();
+
+  // TODO(nektar): Remove this dummy method once hypertext computation and
+  // selection handling has moved entirely to AXNode / AXPosition.
+  static base::NoDestructor<std::map<int, int>> dummy_map;
+  return *dummy_map;
+}
+
+bool AXPlatformNodeDelegate::SetHypertextSelection(int start_offset,
+                                                   int end_offset) {
+  AXActionData action_data;
+  action_data.action = ax::mojom::Action::kSetSelection;
+  action_data.anchor_node_id = action_data.focus_node_id = GetData().id;
+  action_data.anchor_offset = start_offset;
+  action_data.focus_offset = end_offset;
+  return AccessibilityPerformAction(action_data);
+}
+
+TextAttributeMap AXPlatformNodeDelegate::ComputeTextAttributeMap(
+    const TextAttributeList& default_attributes) const {
+  ui::TextAttributeMap attributes_map;
+  attributes_map[0] = default_attributes;
+  return attributes_map;
+}
+
+std::string AXPlatformNodeDelegate::GetInheritedFontFamilyName() const {
+  return GetInheritedStringAttribute(ax::mojom::StringAttribute::kFontFamily);
+}
+
+gfx::Rect AXPlatformNodeDelegate::GetBoundsRect(
+    const AXCoordinateSystem coordinate_system,
+    const AXClippingBehavior clipping_behavior,
+    AXOffscreenResult* offscreen_result) const {
+  return gfx::Rect();
+}
+
+gfx::Rect AXPlatformNodeDelegate::GetHypertextRangeBoundsRect(
+    const int start_offset,
+    const int end_offset,
+    const AXCoordinateSystem coordinate_system,
+    const AXClippingBehavior clipping_behavior,
+    AXOffscreenResult* offscreen_result) const {
+  return gfx::Rect();
+}
+
+gfx::Rect AXPlatformNodeDelegate::GetInnerTextRangeBoundsRect(
+    const int start_offset,
+    const int end_offset,
+    const AXCoordinateSystem coordinate_system,
+    const AXClippingBehavior clipping_behavior,
+    AXOffscreenResult* offscreen_result) const {
+  return gfx::Rect();
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::HitTestSync(
+    int screen_physical_pixel_x,
+    int screen_physical_pixel_y) const {
+  return nullptr;
+}
+
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetFocus() const {
+  return nullptr;
+}
+
+bool AXPlatformNodeDelegate::IsOffscreen() const {
+  return false;
+}
+
+bool AXPlatformNodeDelegate::IsMinimized() const {
+  return false;
+}
+
+bool AXPlatformNodeDelegate::IsText() const {
+  if (node_)
+    return node_->IsText();
+  return ui::IsText(GetRole());
+}
+
+bool AXPlatformNodeDelegate::IsWebContent() const {
+  return false;
+}
+
+bool AXPlatformNodeDelegate::HasVisibleCaretOrSelection() const {
+  return IsDescendantOfAtomicTextField();
+}
+
+std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetReverseRelations(
+    ax::mojom::IntAttribute attr) {
+  // TODO(accessibility) Implement these if views ever use relations more
+  // widely. The use so far has been for the Omnibox to the suggestion
+  // popup. If this is ever implemented, then the "popup for" to "controlled
+  // by" mapping in AXPlatformRelationWin can be removed, as it would be
+  // redundant with setting the controls relationship.
+  return std::set<AXPlatformNode*>();
+}
+
+std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetReverseRelations(
+    ax::mojom::IntListAttribute attr) {
+  return std::set<AXPlatformNode*>();
+}
+
+std::u16string AXPlatformNodeDelegate::GetAuthorUniqueId() const {
+  if (node_)
+    return node_->GetHtmlAttribute("id");
+  return std::u16string();
+}
+
+const AXUniqueId& AXPlatformNodeDelegate::GetUniqueId() const {
+  static base::NoDestructor<AXUniqueId> dummy_unique_id;
+  return *dummy_unique_id;
+}
+
+AXPlatformNodeDelegate* AXPlatformNodeDelegate::GetParentDelegate() const {
+  AXPlatformNode* parent_node =
+      ui::AXPlatformNode::FromNativeViewAccessible(GetParent());
+  if (parent_node)
+    return parent_node->GetDelegate();
+  return nullptr;
 }
 
 const AXTreeData& AXPlatformNodeDelegate::GetTreeData() const {
@@ -396,12 +840,6 @@ bool AXPlatformNodeDelegate::IsInvisibleOrIgnored() const {
   if (node_)
     return node_->IsInvisibleOrIgnored();
   return IsIgnored() || GetData().IsInvisible();
-}
-
-const std::string& AXPlatformNodeDelegate::GetName() const {
-  if (node_)
-    return node()->GetNameUTF8();
-  return GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
 bool AXPlatformNodeDelegate::IsTable() const {

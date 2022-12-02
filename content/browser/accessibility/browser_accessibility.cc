@@ -176,10 +176,6 @@ bool BrowserAccessibility::IsDescendantOf(
   return node()->IsDescendantOfCrossingTreeBoundary(ancestor->node());
 }
 
-bool BrowserAccessibility::IsIgnored() const {
-  return node()->IsIgnored();
-}
-
 bool BrowserAccessibility::IsIgnoredForTextNavigation() const {
   return node()->IsIgnoredForTextNavigation();
 }
@@ -722,13 +718,6 @@ bool BrowserAccessibility::HasExplicitlyEmptyName() const {
   return GetNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
 }
 
-BrowserAccessibility::AXPosition BrowserAccessibility::CreatePositionAt(
-    int offset,
-    ax::mojom::TextAffinity affinity) const {
-  return ui::AXNodePosition::CreatePosition(
-      *node(), /* child_index_or_text_offset */ offset);
-}
-
 // |offset| could either be a text character or a child index in case of
 // non-text objects.
 // Currently, to be safe, we convert to text leaf equivalents and we don't use
@@ -744,27 +733,10 @@ std::u16string BrowserAccessibility::GetNameAsString16() const {
   return node()->GetNameUTF16();
 }
 
-const std::string& BrowserAccessibility::GetDescription() const {
-  return GetStringAttribute(ax::mojom::StringAttribute::kDescription);
-}
-
 std::u16string BrowserAccessibility::GetHypertext() const {
   // Overloaded by platforms which require a hypertext accessibility text
   // implementation.
   return std::u16string();
-}
-
-const std::map<int, int>&
-BrowserAccessibility::GetHypertextOffsetToHyperlinkChildIndex() const {
-  return node()->GetHypertextOffsetToHyperlinkChildIndex();
-}
-
-std::u16string BrowserAccessibility::GetTextContentUTF16() const {
-  return node()->GetTextContentUTF16();
-}
-
-std::u16string BrowserAccessibility::GetValueForControl() const {
-  return base::UTF8ToUTF16(node()->GetValueForControl());
 }
 
 gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
@@ -844,14 +816,6 @@ bool BrowserAccessibility::IsOffscreen() const {
   return offscreen_result == ui::AXOffscreenResult::kOffscreen;
 }
 
-bool BrowserAccessibility::IsMinimized() const {
-  return false;
-}
-
-bool BrowserAccessibility::IsText() const {
-  return node()->IsText();
-}
-
 bool BrowserAccessibility::IsWebContent() const {
   return true;
 }
@@ -928,10 +892,6 @@ std::set<ui::AXPlatformNode*> BrowserAccessibility::GetReverseRelations(
       manager_->ax_tree()->GetReverseRelations(attr, GetData().id));
 }
 
-std::u16string BrowserAccessibility::GetAuthorUniqueId() const {
-  return node()->GetHtmlAttribute("id");
-}
-
 const ui::AXUniqueId& BrowserAccessibility::GetUniqueId() const {
   // This is not the same as GetData().id which comes from Blink, because
   // those ids are only unique within the Blink process. We need one that is
@@ -969,38 +929,9 @@ BrowserAccessibility::GetUIADirectChildrenInRange(
   return {};
 }
 
-gfx::NativeViewAccessible BrowserAccessibility::GetNativeViewAccessible() {
-  // TODO(703369) On Windows, where we have started to migrate to an
-  // AXPlatformNode implementation, the BrowserAccessibilityWin subclass has
-  // overridden this method. On all other platforms, this method should not be
-  // called yet. In the future, when all subclasses have moved over to be
-  // implemented by AXPlatformNode, we may make this method completely virtual.
-  NOTREACHED();
-  return nullptr;
-}
-
 //
 // AXPlatformNodeDelegate.
 //
-
-const ui::AXNodeData& BrowserAccessibility::GetData() const {
-  return node()->data();
-}
-
-BrowserAccessibility::AXPosition BrowserAccessibility::CreateTextPositionAt(
-    int offset,
-    ax::mojom::TextAffinity affinity) const {
-  DCHECK(node()->IsDataValid());
-  DCHECK(manager_->GetNode(GetId()))
-      << "No node for id: " << GetId() << "   " << node()->id() << "  "
-      << node()->data().id;
-  return ui::AXNodePosition::CreateTextPosition(*node(), offset, affinity);
-}
-
-gfx::NativeViewAccessible BrowserAccessibility::GetNSWindow() {
-  NOTREACHED();
-  return nullptr;
-}
 
 gfx::NativeViewAccessible BrowserAccessibility::GetParent() const {
   BrowserAccessibility* parent = PlatformGetParent();
@@ -1023,10 +954,6 @@ gfx::NativeViewAccessible BrowserAccessibility::ChildAtIndex(size_t index) {
   if (!child)
     return nullptr;
   return child->GetNativeViewAccessible();
-}
-
-bool BrowserAccessibility::HasModalDialog() const {
-  return false;
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetFirstChild() {
@@ -1055,10 +982,6 @@ gfx::NativeViewAccessible BrowserAccessibility::GetPreviousSibling() {
   if (!sibling)
     return nullptr;
   return sibling->GetNativeViewAccessible();
-}
-
-bool BrowserAccessibility::IsChildOfLeaf() const {
-  return node()->IsChildOfLeaf();
 }
 
 bool BrowserAccessibility::IsEmptyLeaf() const {
@@ -1095,10 +1018,6 @@ bool BrowserAccessibility::IsFocused() const {
 
 bool BrowserAccessibility::IsToplevelBrowserWindow() {
   return false;
-}
-
-bool BrowserAccessibility::IsDescendantOfAtomicTextField() const {
-  return node()->IsDescendantOfAtomicTextField();
 }
 
 bool BrowserAccessibility::IsPlatformDocument() const {
@@ -1965,10 +1884,6 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetRootOfChildTree() const {
 
 ui::TextAttributeList BrowserAccessibility::ComputeTextAttributes() const {
   return ui::TextAttributeList();
-}
-
-std::string BrowserAccessibility::GetInheritedFontFamilyName() const {
-  return GetInheritedStringAttribute(ax::mojom::StringAttribute::kFontFamily);
 }
 
 ui::TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes()

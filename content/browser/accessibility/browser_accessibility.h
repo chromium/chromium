@@ -375,32 +375,16 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::u16string GetNameAsString16() const;
 
   // `AXPlatformNodeDelegate` implementation.
-  std::u16string GetAuthorUniqueId() const override;
-  const ui::AXNodeData& GetData() const override;
-  AXPosition CreatePositionAt(
-      int offset,
-      ax::mojom::TextAffinity affinity =
-          ax::mojom::TextAffinity::kDownstream) const override;
-  AXPosition CreateTextPositionAt(
-      int offset,
-      ax::mojom::TextAffinity affinity =
-          ax::mojom::TextAffinity::kDownstream) const override;
-  gfx::NativeViewAccessible GetNSWindow() override;
-  gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() const override;
   size_t GetChildCount() const override;
   gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
-  bool HasModalDialog() const override;
   gfx::NativeViewAccessible GetFirstChild() override;
   gfx::NativeViewAccessible GetLastChild() override;
   gfx::NativeViewAccessible GetNextSibling() override;
   gfx::NativeViewAccessible GetPreviousSibling() override;
-  bool IsChildOfLeaf() const override;
-  bool IsDescendantOfAtomicTextField() const override;
   bool IsPlatformDocument() const override;
   bool IsLeaf() const override;
   bool IsFocused() const override;
-  bool IsIgnored() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::NativeViewAccessible GetLowestPlatformAncestor() const override;
   gfx::NativeViewAccessible GetTextFieldAncestor() const override;
@@ -410,13 +394,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::unique_ptr<ChildIterator> ChildrenBegin() override;
   std::unique_ptr<ChildIterator> ChildrenEnd() override;
 
-  const std::string& GetDescription() const override;
   std::u16string GetHypertext() const override;
-  const std::map<int, int>& GetHypertextOffsetToHyperlinkChildIndex()
-      const override;
   bool SetHypertextSelection(int start_offset, int end_offset) override;
-  std::u16string GetTextContentUTF16() const override;
-  std::u16string GetValueForControl() const override;
   gfx::Rect GetBoundsRect(
       const ui::AXCoordinateSystem coordinate_system,
       const ui::AXClippingBehavior clipping_behavior,
@@ -459,11 +438,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::u16string GetStyleNameAttributeAsLocalizedString() const override;
   ui::TextAttributeMap ComputeTextAttributeMap(
       const ui::TextAttributeList& default_attributes) const override;
-  std::string GetInheritedFontFamilyName() const override;
   bool ShouldIgnoreHoveredStateForTesting() override;
   bool IsOffscreen() const override;
-  bool IsMinimized() const override;
-  bool IsText() const override;
   bool IsWebContent() const override;
   bool HasVisibleCaretOrSelection() const override;
   ui::AXPlatformNode* GetTargetNodeForRelation(
