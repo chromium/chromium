@@ -231,7 +231,7 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
   size_t bytes_to_copy = 0;
 
   if (!frame_splitter_->AdvanceFrameFragment(data, data_size, &bytes_to_copy)) {
-    VLOGF(1) << "Invalid H.264 stream detected.";
+    VLOGF(1) << "Invalid bitstream detected.";
     std::move(current_decode_request_->decode_cb)
         .Run(DecoderStatus::Codes::kFailed);
     current_decode_request_.reset();
@@ -741,9 +741,12 @@ bool V4L2StatefulVideoDecoderBackend::IsSupportedProfile(
   DCHECK(device_);
   if (supported_profiles_.empty()) {
     constexpr uint32_t kSupportedInputFourccs[] = {
-        V4L2_PIX_FMT_H264,
-        V4L2_PIX_FMT_VP8,
-        V4L2_PIX_FMT_VP9,
+      V4L2_PIX_FMT_H264,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      V4L2_PIX_FMT_HEVC,
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+      V4L2_PIX_FMT_VP8,
+      V4L2_PIX_FMT_VP9,
     };
     scoped_refptr<V4L2Device> device = V4L2Device::Create();
     VideoDecodeAccelerator::SupportedProfiles profiles =

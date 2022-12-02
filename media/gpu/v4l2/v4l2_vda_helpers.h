@@ -18,6 +18,9 @@ namespace media {
 
 class V4L2Device;
 class H264Parser;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+class H265Parser;
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // Helper static methods to be shared between V4L2VideoDecodeAccelerator and
 // V4L2SliceVideoDecodeAccelerator. This avoids some code duplication between
@@ -114,6 +117,31 @@ class H264InputBufferFragmentSplitter : public InputBufferFragmentSplitter {
   // Set if we have a pending incomplete frame in the input buffer.
   bool partial_frame_pending_ = false;
 };
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+// Splitter for HEVC, making sure to properly report when a partial frame
+// may be pending.
+class HEVCInputBufferFragmentSplitter : public InputBufferFragmentSplitter {
+ public:
+  explicit HEVCInputBufferFragmentSplitter();
+  ~HEVCInputBufferFragmentSplitter() override;
+
+  bool AdvanceFrameFragment(const uint8_t* data,
+                            size_t size,
+                            size_t* endpos) override;
+  void Reset() override;
+  bool IsPartialFramePending() const override;
+
+ private:
+  // For HEVC decode, hardware requires that we send it frame-sized chunks.
+  // We'll need to parse the stream.
+  std::unique_ptr<H265Parser> h265_parser_;
+  // Set if we have a pending incomplete frame in the input buffer.
+  bool partial_frame_pending_ = false;
+  // Set if we have pending slice data in the input buffer.
+  bool slice_data_pending_ = false;
+};
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 }  // namespace v4l2_vda_helpers
 }  // namespace media

@@ -14,6 +14,9 @@
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/video/h264_parser.h"
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/video/h265_parser.h"
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 namespace media {
 namespace v4l2_vda_helpers {
@@ -149,6 +152,11 @@ InputBufferFragmentSplitter::CreateFromProfile(
     case VideoCodec::kH264:
       return std::make_unique<
           v4l2_vda_helpers::H264InputBufferFragmentSplitter>();
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoCodec::kHEVC:
+      return std::make_unique<
+          v4l2_vda_helpers::HEVCInputBufferFragmentSplitter>();
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case VideoCodec::kVP8:
     case VideoCodec::kVP9:
       // VP8/VP9 don't need any frame splitting, use the default implementation.
@@ -271,6 +279,143 @@ void H264InputBufferFragmentSplitter::Reset() {
 bool H264InputBufferFragmentSplitter::IsPartialFramePending() const {
   return partial_frame_pending_;
 }
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+HEVCInputBufferFragmentSplitter::HEVCInputBufferFragmentSplitter()
+    : h265_parser_(new H265Parser()) {}
+
+HEVCInputBufferFragmentSplitter::~HEVCInputBufferFragmentSplitter() = default;
+
+bool HEVCInputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
+                                                           size_t size,
+                                                           size_t* endpos) {
+  DCHECK(h265_parser_);
+
+  // For HEVC, we need to feed HW one frame at a time. This parses the bitstream
+  // to determine frame boundaries.
+  h265_parser_->SetStream(data, size);
+  H265NALU nalu;
+  H265Parser::Result result;
+  *endpos = 0;
+
+  // Keep on peeking the next NALs while they don't indicate a frame
+  // boundary.
+  while (true) {
+    bool end_of_frame = false;
+    result = h265_parser_->AdvanceToNextNALU(&nalu);
+    if (result == H265Parser::kInvalidStream ||
+        result == H265Parser::kUnsupportedStream) {
+      return false;
+    }
+    if (result == H265Parser::kEOStream) {
+      // We've reached the end of the buffer before finding a frame boundary.
+      if (*endpos != 0)
+        partial_frame_pending_ = true;
+      *endpos = size;
+      return true;
+    }
+    switch (nalu.nal_unit_type) {
+      case H265NALU::BLA_W_LP:
+      case H265NALU::BLA_W_RADL:
+      case H265NALU::BLA_N_LP:
+      case H265NALU::IDR_W_RADL:
+      case H265NALU::IDR_N_LP:
+      case H265NALU::TRAIL_N:
+      case H265NALU::TRAIL_R:
+      case H265NALU::TSA_N:
+      case H265NALU::TSA_R:
+      case H265NALU::STSA_N:
+      case H265NALU::STSA_R:
+      case H265NALU::RADL_N:
+      case H265NALU::RADL_R:
+      case H265NALU::RASL_N:
+      case H265NALU::RASL_R:
+      case H265NALU::CRA_NUT: {
+        // Rec. ITU-T H.265, section 7.3.1.2 NAL unit header syntax
+        constexpr uint8_t kHevcNaluHeaderSize = 2;
+
+        // These NALU's have a slice header which starts after the NAL unit
+        // header. This ensures that there is enough data in the NALU to contain
+        // contain at least one byte of the slice header.
+        if (nalu.size <= kHevcNaluHeaderSize)
+          return false;
+
+        // From Rec. ITU-T H.265, section 7.3.6 Slice segment header syntax, the
+        // first bit in the slice header is first_slice_segment_in_pic_flag. If
+        // it is set, then the slice starts a new frame.
+        if ((nalu.data[kHevcNaluHeaderSize] & 0x80) == 0x80) {
+          if (slice_data_pending_) {
+            end_of_frame = true;
+            break;
+          }
+        }
+        slice_data_pending_ = true;
+        break;
+      }
+      case H265NALU::SPS_NUT:
+      case H265NALU::PPS_NUT:
+        // Only creates a new frame if there is already slice data. This groups
+        // the SPS and PPS with the first frame. This is needed for the Venus
+        // driver for HEVC. Curiously, the same treatment is not needed for
+        // H.264.
+        // TODO(b/227247905): If a different policy is needed for the Stateless
+        // backend, then make the behavior externally configurable.
+        if (slice_data_pending_) {
+          end_of_frame = true;
+        }
+        break;
+      case H265NALU::EOS_NUT:
+      case H265NALU::EOB_NUT:
+      case H265NALU::AUD_NUT:
+      case H265NALU::RSV_NVCL41:
+      case H265NALU::RSV_NVCL42:
+      case H265NALU::RSV_NVCL43:
+      case H265NALU::RSV_NVCL44:
+      case H265NALU::UNSPEC48:
+      case H265NALU::UNSPEC49:
+      case H265NALU::UNSPEC50:
+      case H265NALU::UNSPEC51:
+      case H265NALU::UNSPEC52:
+      case H265NALU::UNSPEC53:
+      case H265NALU::UNSPEC54:
+      case H265NALU::UNSPEC55:
+        // These unconditionally signal a frame boundary.
+        end_of_frame = true;
+        break;
+      default:
+        // For all others, keep going.
+        break;
+    }
+    if (end_of_frame) {
+      if (!partial_frame_pending_ && *endpos == 0) {
+        // The frame was previously restarted, and we haven't filled the
+        // current frame with any contents yet. Start the new frame here and
+        // continue parsing NALs.
+      } else {
+        // The frame wasn't previously restarted and/or we have contents for
+        // the current frame; signal the start of a new frame here: we don't
+        // have a partial frame anymore.
+        partial_frame_pending_ = false;
+        slice_data_pending_ = false;
+        return true;
+      }
+    }
+    *endpos = (nalu.data + nalu.size) - data;
+  }
+  NOTREACHED();
+  return false;
+}
+
+void HEVCInputBufferFragmentSplitter::Reset() {
+  partial_frame_pending_ = false;
+  slice_data_pending_ = false;
+  h265_parser_.reset(new H265Parser());
+}
+
+bool HEVCInputBufferFragmentSplitter::IsPartialFramePending() const {
+  return partial_frame_pending_;
+}
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 }  // namespace v4l2_vda_helpers
 }  // namespace media

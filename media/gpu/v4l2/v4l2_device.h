@@ -82,6 +82,11 @@
 #endif
 #endif
 
+// TODO(b/260863940): Remove this once V4L2 header is updated
+#ifndef V4L2_CID_MPEG_VIDEO_HEVC_PROFILE
+#define V4L2_CID_MPEG_VIDEO_HEVC_PROFILE (V4L2_CID_MPEG_BASE + 615)
+#endif
+
 // TODO(b/132589320): remove this once V4L2 header is updated.
 #ifndef V4L2_PIX_FMT_MM21
 // MTK 8-bit block mode, two non-contiguous planes.
