@@ -852,6 +852,14 @@ BASE_FEATURE(kExoLinuxDmabufV4,
              "ExoLinuxDmabufV4",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables sending explicit modifiers for the zwp_linux_dmabuf_v1 Wayland
+// protocol. This option only has an effect with version 3 or 4 of the protocol.
+// If disabled only the DRM_FORMAT_MOD_INVALID modifier will be send,
+// effectively matching version 2 behavior more closely.
+BASE_FEATURE(kExoLinuxDmabufModifiers,
+             "ExoLinuxDmabufModifiers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable use of ordinal (unaccelerated) motion by Exo clients.
 BASE_FEATURE(kExoOrdinalMotion,
              "ExoOrdinalMotion",

@@ -281,8 +281,11 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
 
     base::flat_map<size_t, uint64_t> modifier_entries;
     modifier_entries.emplace(format_table_index++, DRM_FORMAT_MOD_INVALID);
-    for (uint64_t modifier : modifiers)
-      modifier_entries.emplace(format_table_index++, modifier);
+
+    if (base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufModifiers)) {
+      for (uint64_t modifier : modifiers)
+        modifier_entries.emplace(format_table_index++, modifier);
+    }
 
     drm_formats_and_modifiers_.emplace(drm_format, modifier_entries);
   }
