@@ -105,7 +105,7 @@ class GLES2_IMPL_EXPORT ImplementationBase
   gpu::ContextResult Initialize(const SharedMemoryLimits& limits);
 
   // Waits for all commands to execute.
-  void WaitForCmd();
+  bool WaitForCmd();
 
   // Gets the value of the result.
   template <typename T>

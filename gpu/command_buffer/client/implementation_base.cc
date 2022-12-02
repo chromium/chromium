@@ -256,9 +256,9 @@ gpu::ContextResult ImplementationBase::Initialize(
   return gpu::ContextResult::kSuccess;
 }
 
-void ImplementationBase::WaitForCmd() {
+bool ImplementationBase::WaitForCmd() {
   TRACE_EVENT0("gpu", "ImplementationBase::WaitForCmd");
-  helper_->Finish();
+  return helper_->Finish();
 }
 
 int32_t ImplementationBase::GetResultShmId() {
@@ -301,7 +301,9 @@ bool ImplementationBase::GetBucketContents(uint32_t bucket_id,
         }
         helper_->GetBucketData(bucket_id, offset, buffer.size(),
                                buffer.shm_id(), buffer.offset());
-        WaitForCmd();
+        if (!WaitForCmd()) {
+          return false;
+        }
       }
       uint32_t size_to_copy = std::min(size, buffer.size());
       memcpy(&(*data)[offset], buffer.address(), size_to_copy);
