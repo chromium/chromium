@@ -957,7 +957,13 @@ String Color::SerializeAsCSSColor() const {
       if (param0_is_none_) {
         result.Append("none ");
       } else {
-        result.AppendNumber(param0_);
+        // Lightness value in Oklab and Oklch is considered as 0.0 - 1.0 while
+        // we store it internally as 0.0 - 100.0.
+        result.AppendNumber(param0_ /
+                            (color_space_ == ColorSpace::kOklab ||
+                                     color_space_ == ColorSpace::kOklch
+                                 ? 100.0f
+                                 : 1.0f));
         result.Append(" ");
       }
 
