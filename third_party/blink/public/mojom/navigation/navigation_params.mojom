@@ -29,6 +29,7 @@ import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_inf
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
@@ -529,4 +530,9 @@ struct CommitNavigationParams {
   // to same-document main-frame navigation initiated by the top-level document.
   // Used by SoftNavigationHeuristics to trace back the chain of events.
   TaskAttributionId? soft_navigation_heuristic_task_id;
+
+  // Maps the blink runtime-enabled features modified in the browser process to
+  // their new enabled/disabled status:
+  // <enum_representing_runtime_enabled_feature, enabled/disabled>
+  map<blink.mojom.RuntimeFeatureState, bool> modified_runtime_features;
 };

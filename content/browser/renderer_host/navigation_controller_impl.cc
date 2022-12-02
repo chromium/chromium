@@ -111,6 +111,7 @@
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -3829,7 +3830,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
           /*view_transition_state=*/absl::nullopt,
-          /*soft_navigation_heuristics_task_id=*/absl::nullopt);
+          /*soft_navigation_heuristics_task_id=*/absl::nullopt,
+          /*modified_runtime_features=*/
+          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>());
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();

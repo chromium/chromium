@@ -123,6 +123,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
@@ -11845,6 +11846,11 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   accessibility_fatal_error_count_ = 0;
 
   UpdateIsolatableSandboxedIframeTracking(navigation_request);
+
+  // After commit, the browser process's access of the features' state becomes
+  // read-only. (i.e. It can only get feature state, not set)
+  RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+      this, navigation_request->GetRuntimeFeatureStateContext());
 }
 
 // TODO(arthursonzogni): Below, many NavigationRequest's objects are passed from

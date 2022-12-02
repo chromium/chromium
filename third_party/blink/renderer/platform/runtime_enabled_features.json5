@@ -2730,6 +2730,7 @@
     // For unit tests.
     {
       name: "TestFeature",
+      browser_process_read_write_access: true,
     },
     // For unit tests.
     {
