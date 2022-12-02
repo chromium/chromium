@@ -59573,6 +59573,7 @@ from previous Chrome versions.
   <int value="-711422585" label="kSignInProfileCreationEnterprise:disabled"/>
   <int value="-710519788" label="VariableCOLRV1:disabled"/>
   <int value="-709058455" label="ui-slow-animations"/>
+  <int value="-708531565" label="EsbIphBubbleAndCollapseSettings:enabled"/>
   <int value="-708482536" label="Cormorant:disabled"/>
   <int value="-707407907" label="ScanAppMediaLink:enabled"/>
   <int value="-706733351" label="enable-floating-virtual-keyboard:enabled"/>
@@ -63746,6 +63747,7 @@ from previous Chrome versions.
   <int value="1792609232" label="NTPShortcuts:enabled"/>
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>
+  <int value="1793099809" label="EsbIphBubbleAndCollapseSettings:disabled"/>
   <int value="1793434695" label="VideoPlayerAppHidden:enabled"/>
   <int value="1794057460" label="AutofillProfileClientValidation:enabled"/>
   <int value="1794586887"

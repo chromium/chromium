@@ -653,6 +653,9 @@ extern const char kDownloadBubbleV2Description[];
 extern const char kDownloadRangeName[];
 extern const char kDownloadRangeDescription[];
 
+extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsName[];
+extern const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[];
+
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 

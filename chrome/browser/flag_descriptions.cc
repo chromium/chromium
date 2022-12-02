@@ -1089,6 +1089,13 @@ const char kDownloadRangeName[] = "Enable download range support";
 const char kDownloadRangeDescription[] =
     "Enables arbitrary download range request support.";
 
+const char kEnableEnhancedSafeBrowsingSettingsImprovementsName[] =
+    "Enable enhanced safe browsing settings improvements";
+const char kEnableEnhancedSafeBrowsingSettingsImprovementsDescription[] =
+    "Adds an in-product-help bubble to the ESB settings options when users are "
+    "directed to the chrome security settings page through ESB promotions and "
+    "also collapses the ESB option.";
+
 const char kEnableNetworkLoggingToFileName[] = "Enable network logging to file";
 const char kEnableNetworkLoggingToFileDescription[] =
     "Enables network logging to a file named netlog.json in the user data "
