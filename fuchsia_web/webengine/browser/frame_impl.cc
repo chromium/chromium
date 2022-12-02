@@ -448,13 +448,6 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
 
   content::UpdateFontRendererPreferencesFromSystemSettings(
       web_contents_->GetMutableRendererPrefs());
-
-  // TODO(http://crbug.com/1254073): Deprecate autoplay_policy in
-  // CreateFrameParams.
-  if (params_for_popups_.has_autoplay_policy()) {
-    content_area_settings_.set_autoplay_policy(
-        params_for_popups_.autoplay_policy());
-  }
 }
 
 FrameImpl::~FrameImpl() {
@@ -1223,18 +1216,6 @@ void FrameImpl::SetNavigationPolicyProvider(
     fidl::InterfaceHandle<fuchsia::web::NavigationPolicyProvider> provider) {
   navigation_policy_handler_ = std::make_unique<NavigationPolicyHandler>(
       std::move(params), std::move(provider));
-}
-
-void FrameImpl::SetPreferredTheme(fuchsia::settings::ThemeType theme) {
-  fuchsia::web::ContentAreaSettings settings;
-  settings.set_theme(theme);
-  SetContentAreaSettings(std::move(settings));
-}
-
-void FrameImpl::SetPageScale(float scale) {
-  fuchsia::web::ContentAreaSettings settings;
-  settings.set_page_scale(scale);
-  SetContentAreaSettings(std::move(settings));
 }
 
 void FrameImpl::SetContentAreaSettings(

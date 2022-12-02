@@ -61,7 +61,6 @@ class NavigationControllerImpl final
   void GoForward() override;
   void Stop() override;
   void Reload(fuchsia::web::ReloadType type) override;
-  void GetVisibleEntry(GetVisibleEntryCallback callback) override;
 
   // content::WebContentsObserver implementation.
   void TitleWasSet(content::NavigationEntry*) override;

@@ -81,19 +81,6 @@ IN_PROC_BROWSER_TEST_F(FaviconTest, Disabled) {
 
   // Favicon should not be sent.
   EXPECT_FALSE(frame_.navigation_listener().current_state()->has_favicon());
-
-  // Call GetVisibleEntry() and verify that it doesn't send favicon.
-  base::RunLoop run_loop;
-  fuchsia::web::NavigationState visible_entry;
-  auto nav_controller = frame_.GetNavigationController();
-  nav_controller->GetVisibleEntry(
-      [&run_loop, &visible_entry](fuchsia::web::NavigationState result) {
-        visible_entry = std::move(result);
-        run_loop.Quit();
-      });
-  run_loop.Run();
-
-  EXPECT_FALSE(visible_entry.has_favicon());
 }
 
 // Check that the favicon for the page is sent after the page is loaded. Also

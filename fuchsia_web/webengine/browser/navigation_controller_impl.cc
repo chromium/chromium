@@ -335,11 +335,6 @@ void NavigationControllerImpl::Reload(fuchsia::web::ReloadType type) {
   web_contents_->GetController().Reload(internal_reload_type, false);
 }
 
-void NavigationControllerImpl::GetVisibleEntry(
-    fuchsia::web::NavigationController::GetVisibleEntryCallback callback) {
-  callback(GetVisibleNavigationState());
-}
-
 void NavigationControllerImpl::TitleWasSet(content::NavigationEntry* entry) {
   // The title was changed after the document was loaded.
   OnNavigationEntryChanged();

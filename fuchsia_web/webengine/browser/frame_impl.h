@@ -278,8 +278,6 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
       fuchsia::web::NavigationPolicyProviderParams params,
       fidl::InterfaceHandle<fuchsia::web::NavigationPolicyProvider> provider)
       override;
-  void SetPreferredTheme(fuchsia::settings::ThemeType theme) override;
-  void SetPageScale(float scale) override;
   void SetContentAreaSettings(
       fuchsia::web::ContentAreaSettings settings) override;
   void ResetContentAreaSettings() override;

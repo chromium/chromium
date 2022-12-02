@@ -186,18 +186,14 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_VisibilityState) {
   frame.navigation_listener().RunUntilTitleEquals("hidden");
 }
 
-void VerifyCanGoBackAndForward(
-    const fuchsia::web::NavigationControllerPtr& controller,
-    bool can_go_back_expected,
-    bool can_go_forward_expected) {
-  base::test::TestFuture<fuchsia::web::NavigationState> visible_entry;
-  controller->GetVisibleEntry(
-      CallbackToFitFunction(visible_entry.GetCallback()));
-  ASSERT_TRUE(visible_entry.Wait());
-  EXPECT_TRUE(visible_entry.Get().has_can_go_back());
-  EXPECT_EQ(visible_entry.Get().can_go_back(), can_go_back_expected);
-  EXPECT_TRUE(visible_entry.Get().has_can_go_forward());
-  EXPECT_EQ(visible_entry.Get().can_go_forward(), can_go_forward_expected);
+void VerifyCanGoBackAndForward(FrameForTest& frame,
+                               bool can_go_back_expected,
+                               bool can_go_forward_expected) {
+  auto* state = frame.navigation_listener().current_state();
+  EXPECT_TRUE(state->has_can_go_back());
+  EXPECT_EQ(state->can_go_back(), can_go_back_expected);
+  EXPECT_TRUE(state->has_can_go_forward());
+  EXPECT_EQ(state->can_go_forward(), can_go_forward_expected);
 }
 
 // Verifies that the browser will navigate and generate a navigation listener
@@ -384,25 +380,25 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, GoBackAndForward) {
   frame.navigation_listener().RunUntilUrlTitleBackForwardEquals(
       title2, kPage2Title, true, false);
 
-  VerifyCanGoBackAndForward(frame.GetNavigationController(), true, false);
+  VerifyCanGoBackAndForward(frame, true, false);
   frame.GetNavigationController()->GoBack();
   frame.navigation_listener().RunUntilUrlTitleBackForwardEquals(
       title1, kPage1Title, false, true);
 
   // At the top of the navigation entry list; this should be a no-op.
-  VerifyCanGoBackAndForward(frame.GetNavigationController(), false, true);
+  VerifyCanGoBackAndForward(frame, false, true);
   frame.GetNavigationController()->GoBack();
 
   // Process the navigation request message.
   base::RunLoop().RunUntilIdle();
 
-  VerifyCanGoBackAndForward(frame.GetNavigationController(), false, true);
+  VerifyCanGoBackAndForward(frame, false, true);
   frame.GetNavigationController()->GoForward();
   frame.navigation_listener().RunUntilUrlTitleBackForwardEquals(
       title2, kPage2Title, true, false);
 
   // At the end of the navigation entry list; this should be a no-op.
-  VerifyCanGoBackAndForward(frame.GetNavigationController(), true, false);
+  VerifyCanGoBackAndForward(frame, true, false);
   frame.GetNavigationController()->GoForward();
 
   // Process the navigation request message.
@@ -615,90 +611,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ReloadFrame) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FrameImplTest, GetVisibleEntry) {
-  auto frame = FrameForTest::Create(context(), {});
-
-  // Verify that a Frame returns an empty NavigationState prior to receiving any
-  // LoadUrl() calls.
-  {
-    base::test::TestFuture<fuchsia::web::NavigationState> result;
-    auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
-    ASSERT_TRUE(result.Wait());
-    EXPECT_FALSE(result.Get().has_title());
-    EXPECT_FALSE(result.Get().has_url());
-    EXPECT_FALSE(result.Get().has_page_type());
-  }
-
-  net::test_server::EmbeddedTestServerHandle test_server_handle;
-  ASSERT_TRUE(test_server_handle =
-                  embedded_test_server()->StartAndReturnHandle());
-  GURL title1(embedded_test_server()->GetURL(kPage1Path));
-  GURL title2(embedded_test_server()->GetURL(kPage2Path));
-
-  // Navigate to a page.
-  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       title1.spec()));
-  frame.navigation_listener().RunUntilUrlAndTitleEquals(title1, kPage1Title);
-
-  // Verify that GetVisibleEntry() reflects the new Frame navigation state.
-  {
-    base::test::TestFuture<fuchsia::web::NavigationState> result;
-    auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
-    ASSERT_TRUE(result.Wait());
-    ASSERT_TRUE(result.Get().has_url());
-    EXPECT_EQ(result.Get().url(), title1.spec());
-    ASSERT_TRUE(result.Get().has_title());
-    EXPECT_EQ(result.Get().title(), kPage1Title);
-    ASSERT_TRUE(result.Get().has_page_type());
-    EXPECT_EQ(result.Get().page_type(), fuchsia::web::PageType::NORMAL);
-  }
-
-  // Navigate to another page.
-  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       title2.spec()));
-  frame.navigation_listener().RunUntilUrlAndTitleEquals(title2, kPage2Title);
-
-  // Verify the navigation with GetVisibleEntry().
-  {
-    base::test::TestFuture<fuchsia::web::NavigationState> result;
-    auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
-    ASSERT_TRUE(result.Wait());
-    ASSERT_TRUE(result.Get().has_url());
-    EXPECT_EQ(result.Get().url(), title2.spec());
-    ASSERT_TRUE(result.Get().has_title());
-    EXPECT_EQ(result.Get().title(), kPage2Title);
-    ASSERT_TRUE(result.Get().has_page_type());
-    EXPECT_EQ(result.Get().page_type(), fuchsia::web::PageType::NORMAL);
-  }
-
-  // Navigate back to the first page.
-  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       title1.spec()));
-  frame.navigation_listener().RunUntilUrlAndTitleEquals(title1, kPage1Title);
-
-  // Verify the navigation with GetVisibleEntry().
-  {
-    base::test::TestFuture<fuchsia::web::NavigationState> result;
-    auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
-    ASSERT_TRUE(result.Wait());
-    ASSERT_TRUE(result.Get().has_url());
-    EXPECT_EQ(result.Get().url(), title1.spec());
-    ASSERT_TRUE(result.Get().has_title());
-    EXPECT_EQ(result.Get().title(), kPage1Title);
-    ASSERT_TRUE(result.Get().has_page_type());
-    EXPECT_EQ(result.Get().page_type(), fuchsia::web::PageType::NORMAL);
-  }
-}
-
 // Verifies that NavigationState correctly reports when the Renderer terminates
-// or crashes. Also verifies that GetVisibleEntry() reports the same state.
+// or crashes.
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationState_RendererGone) {
   auto frame = FrameForTest::Create(context(), {});
 
@@ -738,20 +652,6 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationState_RendererGone) {
   EXPECT_EQ(current_state->title(), kPage1Title);
   ASSERT_TRUE(current_state->has_page_type());
   EXPECT_EQ(current_state->page_type(), fuchsia::web::PageType::ERROR);
-
-  // Verify that GetVisibleEntry() also reflects the expected error state.
-  {
-    base::test::TestFuture<fuchsia::web::NavigationState> result;
-    auto controller = frame.GetNavigationController();
-    controller->GetVisibleEntry(CallbackToFitFunction(result.GetCallback()));
-    ASSERT_TRUE(result.Wait());
-    ASSERT_TRUE(result.Get().has_url());
-    EXPECT_EQ(result.Get().url(), url.spec());
-    ASSERT_TRUE(result.Get().has_title());
-    EXPECT_EQ(result.Get().title(), kPage1Title);
-    ASSERT_TRUE(result.Get().has_page_type());
-    EXPECT_EQ(result.Get().page_type(), fuchsia::web::PageType::ERROR);
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NoNavigationObserverAttached) {

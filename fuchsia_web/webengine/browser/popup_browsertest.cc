@@ -91,13 +91,18 @@ class PopupTest : public FrameImplTestBaseWithServer {
   // Loads a page that autoplays video in a popup, populates the popup_*
   // members, and returns its URL.
   GURL LoadAutoPlayingPageInPopup(
-      fuchsia::web::CreateFrameParams parent_frame_params) {
+      fuchsia::web::AutoplayPolicy autoplay_policy) {
     GURL popup_parent_url = GetParentPageTestServerUrl(kAutoplayFileAndQuery);
     GURL popup_child_url = embedded_test_server()->GetURL(
         base::StringPrintf("/%s", kAutoplayFileAndQuery));
 
-    auto parent_frame =
-        FrameForTest::Create(context(), std::move(parent_frame_params));
+    auto parent_frame = FrameForTest::Create(context(), {});
+
+    // Set `autoplay_policy` for the parent frame. It should be inherited by the
+    // popup.
+    fuchsia::web::ContentAreaSettings settings;
+    settings.set_autoplay_policy(autoplay_policy);
+    parent_frame->SetContentAreaSettings(std::move(settings));
 
     parent_frame->SetPopupFrameCreationListener(
         popup_listener_binding_.NewBinding());
@@ -171,13 +176,10 @@ IN_PROC_BROWSER_TEST_F(PopupTest, MultiplePopups) {
 // the parent Frame by verifying that autoplay is blocked in the child. This
 // mostly verifies that AutoPlaySucceedsis actually modifies behavior.
 IN_PROC_BROWSER_TEST_F(PopupTest,
-                       PopupFrameHasSameCreateFrameParams_AutoplayBlocked) {
-  // The default autoplay_policy is REQUIRE_USER_ACTIVATION.
-  fuchsia::web::CreateFrameParams parent_frame_params;
-
+                       PopupFrameHasSameContentAreaSettings_AutoplayBlocked) {
   // Load the page and wait for the popup Frame to be created.
-  GURL popup_child_url =
-      LoadAutoPlayingPageInPopup(std::move(parent_frame_params));
+  GURL popup_child_url = LoadAutoPlayingPageInPopup(
+      fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
 
   // Verify that the child does not autoplay media.
   popup_nav_listener_.RunUntilUrlAndTitleEquals(popup_child_url,
@@ -188,14 +190,10 @@ IN_PROC_BROWSER_TEST_F(PopupTest,
 // parent Frame by allowing autoplay in the parent's params and verifying that
 // autoplay succeeds in the child.
 IN_PROC_BROWSER_TEST_F(PopupTest,
-                       PopupFrameHasSameCreateFrameParams_AutoplaySucceeds) {
-  // Set autoplay to always be allowed in the parent frame.
-  fuchsia::web::CreateFrameParams parent_frame_params;
-  parent_frame_params.set_autoplay_policy(fuchsia::web::AutoplayPolicy::ALLOW);
-
+                       PopupFrameHasSameContentAreaSettings_AutoplaySucceeds) {
   // Load the page and wait for the popup Frame to be created.
   GURL popup_child_url =
-      LoadAutoPlayingPageInPopup(std::move(parent_frame_params));
+      LoadAutoPlayingPageInPopup(fuchsia::web::AutoplayPolicy::ALLOW);
 
   // Verify that the child autoplays media.
   popup_nav_listener_.RunUntilUrlAndTitleEquals(popup_child_url,

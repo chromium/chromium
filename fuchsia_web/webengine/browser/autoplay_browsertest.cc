@@ -43,9 +43,10 @@ class AutoplayTest : public WebEngineBrowserTest {
   // Creates a Frame with |navigation_listener_| attached and |policy|
   // applied.
   FrameForTest CreateFrame(fuchsia::web::AutoplayPolicy policy) {
-    fuchsia::web::CreateFrameParams params;
-    params.set_autoplay_policy(policy);
-    auto frame = FrameForTest::Create(context(), std::move(params));
+    auto frame = FrameForTest::Create(context(), {});
+    fuchsia::web::ContentAreaSettings settings;
+    settings.set_autoplay_policy(policy);
+    frame->SetContentAreaSettings(std::move(settings));
     return frame;
   }
 };
