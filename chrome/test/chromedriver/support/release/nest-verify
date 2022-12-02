@@ -67,7 +67,7 @@ function compare_md5 {
 
 compare_md5 "$unzipped/chromedriver_linux64/chromedriver" "$published/chromedriver_linux64/chromedriver"
 compare_md5 "$unzipped/chromedriver_mac64/chromedriver" "$published/chromedriver_mac64/chromedriver"
-compare_md5 "$unzipped/chromedriver_mac_arm64/chromedriver_mac64/chromedriver" "$published/chromedriver_mac_arm64/chromedriver"
+compare_md5 "$unzipped/chromedriver_mac_arm64/chromedriver" "$published/chromedriver_mac_arm64/chromedriver"
 compare_md5 "$unzipped/chromedriver_win32/chromedriver.exe" "$published/chromedriver_win32/chromedriver.exe"
 compare_md5 "$packed/notes.txt" "$published/notes.txt"
 

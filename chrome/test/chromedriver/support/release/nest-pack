@@ -67,10 +67,17 @@ then
   exit 1
 fi
 
+function create_package() {
+  arch="$1"
+  executable="$2"
+  src_dir=$src/chromedriver_$arch
+  zip -j $tgt/chromedriver_$arch.zip $src_dir/$executable $src_dir/LICENSE.chromedriver
+}
 
-zip -j $tgt/chromedriver_linux64.zip $src/chromedriver_linux64/chromedriver
-zip -j $tgt/chromedriver_mac64.zip $src/chromedriver_mac64/chromedriver
-zip -j $tgt/chromedriver_mac_arm64.zip $src/chromedriver_mac_arm64/chromedriver_mac64/chromedriver
-zip -j $tgt/chromedriver_win32.zip $src/chromedriver_win32/chromedriver.exe
+create_package linux64 chromedriver
+create_package mac64 chromedriver
+create_package mac_arm64 chromedriver
+create_package win32 chromedriver.exe
+
 echo -n "$version" > $tgt/latest
 cp "$path_to_notes" "$tgt/notes.txt"
