@@ -8,9 +8,17 @@ for more details about the presubmit API built into depot_tools.
 """
 
 USE_PYTHON3 = True
+PRESUBMIT_VERSION = '2.0.0'
 
 
-def RunTypescriptTests(input_api, output_api):
+def CheckRunTypescriptTests(input_api, output_api):
+  affected = input_api.AffectedFiles()
+
+  sources = set(['ts_library.py', 'ts_library.gni', 'tsconfig_base.json'])
+  affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
+  if not sources.intersection(set(affected_files)):
+    return []
+
   presubmit_path = input_api.PresubmitLocalPath()
   sources = ['ts_library_test.py']
   tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
@@ -20,20 +28,7 @@ def RunTypescriptTests(input_api, output_api):
                                               run_on_python2=False)
 
 
-def _CheckChangeOnUploadOrCommit(input_api, output_api):
-  results = []
-  affected = input_api.AffectedFiles()
-
-  sources = set(['ts_library.py', 'ts_library.gni', 'tsconfig_base.json'])
-  affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
-  if sources.intersection(set(affected_files)):
-    results += RunTypescriptTests(input_api, output_api)
-  results += _CheckStyleESLint(input_api, output_api)
-
-  return results
-
-
-def _CheckStyleESLint(input_api, output_api):
+def CheckStyleESLint(input_api, output_api):
   results = []
 
   try:
@@ -47,11 +42,3 @@ def _CheckStyleESLint(input_api, output_api):
     sys.path = old_sys_path
 
   return results
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  return _CheckChangeOnUploadOrCommit(input_api, output_api)
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  return _CheckChangeOnUploadOrCommit(input_api, output_api)
