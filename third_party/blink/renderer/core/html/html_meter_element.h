@@ -77,8 +77,6 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
   void DidElementStateChange();
   void UpdateValueAppearance(double percentage);
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      const StyleRecalcContext&) override;
 
   Member<HTMLDivElement> value_;
 };

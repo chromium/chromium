@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/html/shadow/progress_shadow_element.h"
+#include "third_party/blink/renderer/core/html/shadow/meter_shadow_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -10,12 +10,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/html/html_progress_element.h"
+#include "third_party/blink/renderer/core/html/html_meter_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 
 namespace blink {
 
-class ProgressShadowElementTest : public testing::Test {
+class MeterShadowElementTest : public testing::Test {
  protected:
   void SetUp() final {
     dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
@@ -26,49 +26,47 @@ class ProgressShadowElementTest : public testing::Test {
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
-TEST_F(ProgressShadowElementTest, LayoutObjectIsNeeded) {
+TEST_F(MeterShadowElementTest, LayoutObjectIsNotNeeded) {
   GetDocument().body()->setInnerHTML(R"HTML(
-    <progress id='prog' style='-webkit-appearance:none' />
+    <meter id='m' style='-webkit-appearance:none' />
   )HTML");
 
-  auto* progress =
-      To<HTMLProgressElement>(GetDocument().getElementById("prog"));
-  ASSERT_TRUE(progress);
+  auto* meter = To<HTMLMeterElement>(GetDocument().getElementById("m"));
+  ASSERT_TRUE(meter);
 
-  auto* shadow_element = To<Element>(progress->GetShadowRoot()->firstChild());
-  ASSERT_TRUE(shadow_element);
+  auto* shadow_element = To<Element>(meter->GetShadowRoot()->firstChild());
+  EXPECT_TRUE(shadow_element);
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  progress->SetForceReattachLayoutTree();
+  meter->SetForceReattachLayoutTree();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetDocument().GetStyleEngine().RecalcStyle();
-  EXPECT_TRUE(shadow_element->GetComputedStyle());
+  EXPECT_FALSE(shadow_element->GetComputedStyle());
 
   scoped_refptr<ComputedStyle> style =
       shadow_element->StyleForLayoutObject(StyleRecalcContext());
-  EXPECT_TRUE(shadow_element->LayoutObjectIsNeeded(*style));
+  EXPECT_FALSE(shadow_element->LayoutObjectIsNeeded(*style));
 }
 
-TEST_F(ProgressShadowElementTest, OnlyChangeDirectionOnShadowElement) {
+TEST_F(MeterShadowElementTest, OnlyChangeDirectionOnShadowElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
-    <progress id='prog' style='-webkit-appearance:none; writing-mode:vertical-lr; direction: ltr;' />
+    <meter id='m' style='writing-mode:vertical-lr; direction: ltr;' />
   )HTML");
 
-  auto* progress =
-      To<HTMLProgressElement>(GetDocument().getElementById("prog"));
-  ASSERT_TRUE(progress);
+  auto* meter = To<HTMLMeterElement>(GetDocument().getElementById("m"));
+  ASSERT_TRUE(meter);
 
-  auto* shadow_element = To<Element>(progress->GetShadowRoot()->firstChild());
+  auto* shadow_element = To<Element>(meter->GetShadowRoot()->firstChild());
   ASSERT_TRUE(shadow_element);
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  progress->SetForceReattachLayoutTree();
+  meter->SetForceReattachLayoutTree();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetDocument().GetStyleEngine().RecalcStyle();
 
-  EXPECT_TRUE(progress->GetComputedStyle());
-  EXPECT_EQ(progress->GetComputedStyle()->Direction(), TextDirection::kLtr);
+  EXPECT_TRUE(meter->GetComputedStyle());
+  EXPECT_EQ(meter->GetComputedStyle()->Direction(), TextDirection::kLtr);
 
   EXPECT_TRUE(shadow_element->GetComputedStyle());
   EXPECT_EQ(shadow_element->GetComputedStyle()->Direction(),

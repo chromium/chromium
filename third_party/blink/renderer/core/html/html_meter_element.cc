@@ -24,9 +24,9 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html/shadow/meter_shadow_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -41,7 +41,6 @@ HTMLMeterElement::HTMLMeterElement(Document& document)
     : HTMLElement(html_names::kMeterTag, document) {
   UseCounter::Count(document, WebFeature::kMeterElement);
   EnsureUserAgentShadowRoot();
-  SetHasCustomStyleCallbacks();
 }
 
 HTMLMeterElement::~HTMLMeterElement() = default;
@@ -178,20 +177,20 @@ void HTMLMeterElement::DidElementStateChange() {
 void HTMLMeterElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DCHECK(!value_);
 
-  auto* inner = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  auto* inner = MakeGarbageCollected<MeterShadowElement>(GetDocument());
   inner->SetShadowPseudoId(shadow_element_names::kPseudoMeterInnerElement);
   root.AppendChild(inner);
 
-  auto* bar = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  auto* bar = MakeGarbageCollected<MeterShadowElement>(GetDocument());
   bar->SetShadowPseudoId(AtomicString("-webkit-meter-bar"));
 
-  value_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  value_ = MakeGarbageCollected<MeterShadowElement>(GetDocument());
   UpdateValueAppearance(0);
   bar->AppendChild(value_);
 
   inner->AppendChild(bar);
 
-  auto* fallback = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  auto* fallback = MakeGarbageCollected<MeterShadowElement>(GetDocument());
   fallback->AppendChild(MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
   fallback->SetShadowPseudoId(AtomicString("-internal-fallback"));
   root.AppendChild(fallback);
@@ -236,20 +235,6 @@ bool HTMLMeterElement::CanContainRangeEndPoint() const {
 void HTMLMeterElement::Trace(Visitor* visitor) const {
   visitor->Trace(value_);
   HTMLElement::Trace(visitor);
-}
-
-scoped_refptr<ComputedStyle> HTMLMeterElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext& style_recalc_context) {
-  scoped_refptr<ComputedStyle> style =
-      OriginalStyleForLayoutObject(style_recalc_context);
-  // For vertical writing-mode, we need to set the direction to rtl so that
-  // the meter value bar is rendered bottom up.
-  if (!IsHorizontalWritingMode(style->GetWritingMode())) {
-    ComputedStyleBuilder builder(*style);
-    builder.SetDirection(TextDirection::kRtl);
-    style = builder.TakeStyle();
-  }
-  return style;
 }
 
 }  // namespace blink

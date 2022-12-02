@@ -40,7 +40,6 @@ HTMLProgressElement::HTMLProgressElement(Document& document)
     : HTMLElement(html_names::kProgressTag, document), value_(nullptr) {
   UseCounter::Count(document, WebFeature::kProgressElement);
   EnsureUserAgentShadowRoot();
-  SetHasCustomStyleCallbacks();
 }
 
 HTMLProgressElement::~HTMLProgressElement() = default;
@@ -156,20 +155,6 @@ void HTMLProgressElement::SetInlineSizePercentage(double position) const {
                                  CSSPrimitiveValue::UnitType::kPercentage);
   value_->SetInlineStyleProperty(CSSPropertyID::kBlockSize, 100,
                                  CSSPrimitiveValue::UnitType::kPercentage);
-}
-
-scoped_refptr<ComputedStyle> HTMLProgressElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext& style_recalc_context) {
-  scoped_refptr<ComputedStyle> style =
-      OriginalStyleForLayoutObject(style_recalc_context);
-  // For vertical writing-mode, we need to set the direction to rtl so that
-  // the progress value bar is rendered bottom up.
-  if (!IsHorizontalWritingMode(style->GetWritingMode())) {
-    ComputedStyleBuilder builder(*style);
-    builder.SetDirection(TextDirection::kRtl);
-    style = builder.TakeStyle();
-  }
-  return style;
 }
 
 }  // namespace blink
