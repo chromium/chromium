@@ -1050,9 +1050,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Returns a const reference to a blink::RuntimeFeatureStateContext object.
   // Once the commit params are sent to the renderer we no longer allow write
-  // access to the RFSC, but read access is still possible up until the
-  // RuntimeFeatureStateDocumentData is available (after
-  // RenderFrameHostImpl::DidCommitNewDocument).
+  // access to the RFSC, but read access is still available.
   const blink::RuntimeFeatureStateContext& GetRuntimeFeatureStateContext();
 
  private:

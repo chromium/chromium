@@ -8365,7 +8365,6 @@ NavigationRequest::GetMutableRuntimeFeatureStateContext() {
 
 const blink::RuntimeFeatureStateContext&
 NavigationRequest::GetRuntimeFeatureStateContext() {
-  DCHECK_LE(state_, NavigationState::READY_TO_COMMIT);
   return runtime_feature_state_context_;
 }
 
