@@ -426,6 +426,13 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
         return nullptr;
 
       DCHECK(allow_update);
+
+      // When we add FragmentData entries, we need to make sure that we update
+      // paint properties. The object may not have been marked for an update, if
+      // the reason for creating an additional FragmentData was that the
+      // fragmentainer block-size shrunk, for instance.
+      if (!last_fragment->NextFragment())
+        object.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
       fragment_data = &last_fragment->EnsureNextFragment();
     }
   }

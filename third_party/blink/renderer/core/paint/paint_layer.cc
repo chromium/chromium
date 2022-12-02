@@ -553,8 +553,14 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       PhysicalRect old_visual_rect =
           PhysicalVisualOverflowRectAllowingUnset(GetLayoutObject());
       GetLayoutObject().RecalcVisualOverflow();
-      if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect())
+      if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect()) {
         MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
+      }
+    }
+    if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)) {
+      GetLayoutObject().InvalidateIntersectionObserverCachedRects();
+      GetLayoutObject().GetFrameView()->SetIntersectionObservationState(
+          LocalFrameView::kDesired);
     }
     needs_visual_overflow_recalc_ = false;
   }
@@ -808,7 +814,15 @@ void PaintLayer::SetNeedsVisualOverflowRecalc() {
   GetLayoutObject().InvalidateVisualOverflow();
 #endif
   needs_visual_overflow_recalc_ = true;
-  MarkAncestorChainForFlagsUpdate();
+  // |MarkAncestorChainForFlagsUpdate| will cause a paint property update which
+  // is only needed if visual overflow actually changes. To avoid this, only
+  // mark this as needing a descendant dependent flags update, which will
+  // cause a paint property update if needed (see:
+  // PaintLayer::UpdateDescendantDependentFlags).
+  if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
+    SetNeedsDescendantDependentFlagsUpdate();
+  else
+    MarkAncestorChainForFlagsUpdate();
 }
 
 bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
