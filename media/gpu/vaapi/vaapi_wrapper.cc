@@ -790,7 +790,9 @@ absl::optional<VADisplay> GetVADisplayStateX11(const base::ScopedFD& drm_fd) {
     case gl::kGLImplementationEGLGLES2:
       return vaGetDisplayDRM(drm_fd.get());
 
-    case gl::kGLImplementationNone: {
+    case gl::kGLImplementationNone:
+
+    case gl::kGLImplementationDesktopGL: {
       VADisplay display =
           vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
       if (vaDisplayIsValid(display))

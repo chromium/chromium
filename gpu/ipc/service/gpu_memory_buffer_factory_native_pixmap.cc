@@ -20,6 +20,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+#include "ui/gl/gl_image_glx_native_pixmap.h"            // nogncheck
+#endif
+
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/vulkan/vulkan_device_queue.h"
 #endif
@@ -167,6 +171,11 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
       // EGL
       return CreateImageFromPixmap<gl::GLImageNativePixmap>(
           plane_size, plane_format, color_space, pixmap, plane);
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+    case gl::kGLImplementationDesktopGL:
+      return CreateImageFromPixmap<gl::GLImageGLXNativePixmap>(
+          size, format, color_space, pixmap, plane);
+#endif
     default:
       NOTREACHED();
       return nullptr;
