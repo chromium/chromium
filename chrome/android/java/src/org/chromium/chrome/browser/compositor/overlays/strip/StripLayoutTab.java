@@ -130,6 +130,20 @@ public class StripLayoutTab implements VirtualView {
                 }
             };
 
+    /** A property for animations to use for changing the drawX of the tab. */
+    public static final FloatProperty<StripLayoutTab> BOTTOM_MARGIN =
+            new FloatProperty<StripLayoutTab>("bottomMargin") {
+                @Override
+                public void setValue(StripLayoutTab object, float value) {
+                    object.setBottomMargin(value);
+                }
+
+                @Override
+                public Float get(StripLayoutTab object) {
+                    return object.getBottomMargin();
+                }
+            };
+
     /** A property for animations to use for changing the trailingMargin of the tab. */
     public static final FloatProperty<StripLayoutTab> TRAILING_MARGIN =
             new FloatProperty<StripLayoutTab>("trailingMargin") {
@@ -164,10 +178,6 @@ public class StripLayoutTab implements VirtualView {
     // Animation/Timer Constants
     private static final int ANIM_TAB_CLOSE_BUTTON_FADE_MS = 150;
 
-    // Position Constants
-    private static final float DEFAULT_OFFSET_Y = 0.f;
-    private static final float FOLIO_DETACHED_OFFSET_Y = 4.f;
-
     // Close button width
     private static final int CLOSE_BUTTON_WIDTH_DP = 36;
     private static final int CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP = 48;
@@ -192,6 +202,7 @@ public class StripLayoutTab implements VirtualView {
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
     private final boolean mIncognito;
+    private float mBottomMargin;
     private float mContentOffsetX;
     private float mDividerOpacity;
     private float mVisiblePercentage = 1.f;
@@ -596,14 +607,17 @@ public class StripLayoutTab implements VirtualView {
     }
 
     /**
+     * @param bottomMargin How far to offset the bottom of the tab container from the toolbar.
+     */
+    public void setBottomMargin(float bottomMargin) {
+        mBottomMargin = bottomMargin;
+    }
+
+    /**
      * @return How far to offset the bottom of the tab container from the toolbar.
      */
-    public float getBottomOffsetY() {
-        if (TabUiFeatureUtilities.isTabStripFolioEnabled() && !mFolioAttached) {
-            return FOLIO_DETACHED_OFFSET_Y;
-        }
-
-        return DEFAULT_OFFSET_Y;
+    public float getBottomMargin() {
+        return mBottomMargin;
     }
 
     /**

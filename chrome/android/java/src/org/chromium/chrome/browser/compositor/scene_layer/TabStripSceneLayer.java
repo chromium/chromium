@@ -193,7 +193,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     isSelected, st.getClosePressed(), layoutHelper.getWidth() * mDpToPx,
                     st.getDrawX() * mDpToPx, st.getDrawY() * mDpToPx, st.getWidth() * mDpToPx,
                     st.getHeight() * mDpToPx, st.getContentOffsetX() * mDpToPx,
-                    st.getDividerOffsetX() * mDpToPx, st.getBottomOffsetY() * mDpToPx,
+                    st.getDividerOffsetX() * mDpToPx, st.getBottomMargin() * mDpToPx,
                     st.getCloseButton().getOpacity(), st.getDividerOpacity(), st.isLoading(),
                     st.getLoadingSpinnerRotation(), st.getBrightness(), st.getOpacity(isSelected),
                     layerTitleCache, resourceManager);
