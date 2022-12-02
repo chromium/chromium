@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -28,8 +28,10 @@
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -43,6 +45,7 @@
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -73,7 +76,9 @@ GetReplacementsForFeature(const base::Feature& feature) {
 
 class FeaturePromoDialogTest : public DialogBrowserTest {
  public:
-  FeaturePromoDialogTest() {
+  FeaturePromoDialogTest()
+      : update_dialog_scope_(web_app::SetIdentityUpdateDialogActionForTesting(
+            web_app::AppIdentityUpdate::kSkipped)) {
     scoped_feature_list_.InitWithFeatures(
         {}, {media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature});
 
@@ -83,9 +88,7 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
   }
   void SetUp() override {
     webapps::TestAppBannerManagerDesktop::SetUp();
-    // Skip app identity updating if the dialog is shown on navigation,
-    // otherwise tests are blocked waiting for a dialog response.
-    chrome::SetAutoAcceptAppIdentityUpdateForTesting(false);
+
     DialogBrowserTest::SetUp();
   }
   void SetUpOnMainThread() override {
@@ -146,6 +149,8 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::AutoReset<absl::optional<web_app::AppIdentityUpdate>>
+      update_dialog_scope_;
 
   static void RegisterMockTracker(content::BrowserContext* context) {
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(

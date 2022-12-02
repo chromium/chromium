@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -34,10 +35,6 @@ void FakeWebAppUiManager::SetNumWindowsForApp(const AppId& app_id,
 bool FakeWebAppUiManager::DidUninstallAndReplace(const AppId& from_app,
                                                  const AppId& to_app) {
   return uninstall_and_replace_map_[from_app] == to_app;
-}
-
-void FakeWebAppUiManager::ResolveAppIdentityDialogForTesting(bool enabled) {
-  resolve_app_identity_dialog_for_testing_ = enabled;
 }
 
 WebAppUiManagerImpl* FakeWebAppUiManager::AsImpl() {
@@ -106,13 +103,13 @@ void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
     const SkBitmap& new_icon,
     content::WebContents* web_contents,
     AppIdentityDialogCallback callback) {
-  if (!resolve_app_identity_dialog_for_testing_.has_value())
+  auto identity_update_dialog_action_for_testing =
+      GetIdentityUpdateDialogActionForTesting();
+  if (!identity_update_dialog_action_for_testing) {
     return;
+  }
 
-  if (resolve_app_identity_dialog_for_testing_.value())
-    std::move(callback).Run(web_app::AppIdentityUpdate::kAllowed);
-  else
-    std::move(callback).Run(web_app::AppIdentityUpdate::kSkipped);
+  std::move(callback).Run(identity_update_dialog_action_for_testing.value());
 }
 
 }  // namespace web_app

@@ -178,10 +178,6 @@ void ShowWebAppIdentityUpdateDialog(
     content::WebContents* web_contents,
     web_app::AppIdentityDialogCallback callback);
 
-// Sets whether |ShowWebAppIdentityUpdateDialog| should accept immediately
-// without any user interaction.
-void SetAutoAcceptAppIdentityUpdateForTesting(absl::optional<bool> auto_accept);
-
 #if !BUILDFLAG(IS_ANDROID)
 // Callback used to indicate whether a user has accepted the launch of a
 // web app. The |allowed| is true when the user allows the app to launch.

@@ -10,16 +10,20 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
@@ -449,7 +453,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   std::unique_ptr<base::RunLoop> window_controls_overlay_callback_for_testing_ =
       nullptr;
 
-  base::flat_set<Site> site_remember_deny_open_file;
+  base::flat_set<Site> site_remember_deny_open_file_;
+  base::AutoReset<absl::optional<web_app::AppIdentityUpdate>>
+      update_dialog_scope_;
 };
 
 // Simple base browsertest class usable by all non-sync web app integration

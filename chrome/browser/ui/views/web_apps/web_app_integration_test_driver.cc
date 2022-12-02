@@ -74,6 +74,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -774,7 +775,9 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
 }
 
 WebAppIntegrationTestDriver::WebAppIntegrationTestDriver(TestDelegate* delegate)
-    : delegate_(delegate) {
+    : delegate_(delegate),
+      update_dialog_scope_(web_app::SetIdentityUpdateDialogActionForTesting(
+          web_app::AppIdentityUpdate::kSkipped)) {
   scoped_feature_list_.InitAndEnableFeature(
       webapps::features::kDesktopPWAsDetailedInstallDialog);
 }
@@ -884,6 +887,10 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 // prevent the app_id_update_dialog_waiter_ from hanging.
 void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
     UpdateDialogResponse response) {
+  // Resetting the global test state for app identity update dialogs so that
+  // tests can accept/cancel the app identity update dialog.
+  update_dialog_scope_ =
+      web_app::SetIdentityUpdateDialogActionForTesting(absl::nullopt);
   views::Widget* widget = app_id_update_dialog_waiter_->WaitIfNeededAndGet();
   ASSERT_TRUE(widget != nullptr);
   switch (response) {
@@ -1206,7 +1213,7 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
   if (allow_deny == AllowDenyOptions::kDeny) {
     close_reason = views::Widget::ClosedReason::kCancelButtonClicked;
     if (ask_again == AskAgainOptions::kRemember) {
-      site_remember_deny_open_file.emplace(site);
+      site_remember_deny_open_file_.emplace(site);
     }
   } else {
     close_reason = views::Widget::ClosedReason::kAcceptButtonClicked;
@@ -1878,7 +1885,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   handler.HandleUninstallApp(web_app_ids);
 #endif
   uninstall_waiter.Wait();
-  site_remember_deny_open_file.erase(site);
+  site_remember_deny_open_file_.erase(site);
 
   AfterStateChangeAction();
 }
@@ -1913,7 +1920,7 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
   // Wait for app settings page to be closed.
   destroyed_watcher.Wait();
 
-  site_remember_deny_open_file.erase(site);
+  site_remember_deny_open_file_.erase(site);
 
   AfterStateChangeAction();
 #else
@@ -1951,7 +1958,7 @@ void WebAppIntegrationTestDriver::UninstallFromMenu(Site site) {
   // the app_browser.
   app_menu_model.reset();
   uninstall_waiter.Wait();
-  site_remember_deny_open_file.erase(site);
+  site_remember_deny_open_file_.erase(site);
   AfterStateChangeAction();
 }
 
@@ -1994,7 +2001,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
   // App Service.
   if (app == nullptr)
     uninstall_waiter.Wait();
-  site_remember_deny_open_file.erase(site);
+  site_remember_deny_open_file_.erase(site);
   AfterStateChangeAction();
 }
 
@@ -2018,7 +2025,7 @@ void WebAppIntegrationTestDriver::UninstallFromOs(Site site) {
       {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
 
   uninstall_waiter.Wait();
-  site_remember_deny_open_file.erase(site);
+  site_remember_deny_open_file_.erase(site);
   AfterStateChangeAction();
 #else
   NOTREACHED() << "Not supported on non-Windows platforms";
@@ -3376,7 +3383,6 @@ WebAppIntegrationTest::~WebAppIntegrationTest() = default;
 void WebAppIntegrationTest::SetUp() {
   helper_.SetUp();
   InProcessBrowserTest::SetUp();
-  chrome::SetAutoAcceptAppIdentityUpdateForTesting(false);
 }
 
 void WebAppIntegrationTest::SetUpOnMainThread() {

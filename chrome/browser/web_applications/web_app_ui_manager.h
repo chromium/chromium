@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -28,6 +29,14 @@ namespace web_app {
 class WebAppSyncBridge;
 // WebAppUiManagerImpl can be used only in UI code.
 class WebAppUiManagerImpl;
+
+// Overrides the app identity update dialog's behavior for testing, allowing the
+// test to auto-accept or auto-skip the dialog.
+base::AutoReset<absl::optional<AppIdentityUpdate>>
+SetIdentityUpdateDialogActionForTesting(
+    absl::optional<AppIdentityUpdate> auto_accept_action);
+
+absl::optional<AppIdentityUpdate> GetIdentityUpdateDialogActionForTesting();
 
 class WebAppUiManagerObserver : public base::CheckedObserver {
  public:

@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -13,15 +14,16 @@
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -370,7 +372,9 @@ TEST_F(ManifestUpdateDataFetchUtilsTest, TestImageComparison) {
 
 class ManifestUpdateDataFetchCommandTest : public WebAppTest {
  public:
-  ManifestUpdateDataFetchCommandTest() = default;
+  ManifestUpdateDataFetchCommandTest()
+      : update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
+            AppIdentityUpdate::kAllowed)) {}
   ManifestUpdateDataFetchCommandTest(
       const ManifestUpdateDataFetchCommandTest&) = delete;
   ManifestUpdateDataFetchCommandTest& operator=(
@@ -385,13 +389,6 @@ class ManifestUpdateDataFetchCommandTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    auto ui_manager = std::make_unique<FakeWebAppUiManager>();
-    ui_manager->ResolveAppIdentityDialogForTesting(true);
-    ui_manager_ = ui_manager.get();
-    provider->SetWebAppUiManager(std::move(ui_manager));
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -442,12 +439,11 @@ class ManifestUpdateDataFetchCommandTest : public WebAppTest {
   }
 
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
-  FakeWebAppUiManager& fake_ui_manager() { return *ui_manager_; }
   GURL app_url() { return app_url_; }
 
  private:
   const GURL app_url_{"http://www.foo.bar/web_apps/basic.html"};
-  raw_ptr<FakeWebAppUiManager> ui_manager_;
+  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope_;
 };
 
 TEST_F(ManifestUpdateDataFetchCommandTest, VerifySuccessfulNameUpdate) {
@@ -658,7 +654,8 @@ TEST_F(ManifestUpdateDataFetchCommandTest, IconReadFromDiskFailed) {
 
 TEST_F(ManifestUpdateDataFetchCommandTest, DoNotAcceptAppUpdateDialog) {
   // Ensure we do not accept the app identity dialog for testing.
-  fake_ui_manager().ResolveAppIdentityDialogForTesting(false);
+  base::AutoReset<absl::optional<AppIdentityUpdate>> test_scope =
+      SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kSkipped);
   auto install_info = std::make_unique<WebAppInstallInfo>();
   install_info->start_url = app_url();
   install_info->scope = app_url().GetWithoutFilename();

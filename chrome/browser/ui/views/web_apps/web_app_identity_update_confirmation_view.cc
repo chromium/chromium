@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/views/web_apps/web_app_identity_update_confirmation_view.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
@@ -35,12 +37,6 @@ const int kArrowIconSizeDp = 32;
 // The width of the columns left and right of the arrow (containing the name
 // of the app (before and after).
 const int kNameColumnWidth = 170;
-
-// Keeps track of whether the testing code has set an action to be performed
-// when the dialog is set to show (and what that action should be: true = accept
-// the dialog, false = do not accept).
-absl::optional<bool> g_auto_resolve_app_identity_update_dialog_for_testing;
-
 }  // namespace
 
 WebAppIdentityUpdateConfirmationView::~WebAppIdentityUpdateConfirmationView() =
@@ -211,8 +207,8 @@ void ShowWebAppIdentityUpdateDialog(
     const SkBitmap& new_icon,
     content::WebContents* web_contents,
     web_app::AppIdentityDialogCallback callback) {
-  if (g_auto_resolve_app_identity_update_dialog_for_testing &&
-      *g_auto_resolve_app_identity_update_dialog_for_testing == false) {
+  if (web_app::GetIdentityUpdateDialogActionForTesting() ==  // IN-TEST
+      web_app::AppIdentityUpdate::kSkipped) {
     std::move(callback).Run(web_app::AppIdentityUpdate::kSkipped);
     return;
   }
@@ -227,15 +223,10 @@ void ShowWebAppIdentityUpdateDialog(
           dialog, web_contents->GetTopLevelNativeWindow());
   dialog_widget->Show();
 
-  if (g_auto_resolve_app_identity_update_dialog_for_testing &&
-      *g_auto_resolve_app_identity_update_dialog_for_testing) {
+  if (web_app::GetIdentityUpdateDialogActionForTesting() ==  // IN-TEST
+      web_app::AppIdentityUpdate::kAllowed) {
     dialog->AcceptDialog();
   }
-}
-
-void SetAutoAcceptAppIdentityUpdateForTesting(  // IN-TEST
-    absl::optional<bool> auto_accept) {
-  g_auto_resolve_app_identity_update_dialog_for_testing = auto_accept;
 }
 
 }  // namespace chrome

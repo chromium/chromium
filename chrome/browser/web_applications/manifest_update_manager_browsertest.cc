@@ -66,6 +66,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -296,7 +297,9 @@ void WaitForUpdatePendingCallback(const GURL& url) {
 
 class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
  public:
-  ManifestUpdateManagerBrowserTest() {
+  ManifestUpdateManagerBrowserTest()
+      : update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
+            AppIdentityUpdate::kSkipped)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatures(
         {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
@@ -317,7 +320,6 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(http_server_.Start());
     // Suppress globally to avoid OS hooks deployed for system web app during
     // WebAppProvider setup.
-    chrome::SetAutoAcceptAppIdentityUpdateForTesting(false);
     InProcessBrowserTest::SetUp();
   }
 
@@ -593,6 +595,11 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
         app_id, size, x, y);
   }
 
+  void AcceptAppIdentityUpdateDialogForTesting() {
+    update_dialog_scope_ =
+        SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
+  }
+
  protected:
   net::EmbeddedTestServer::HandleRequestCallback request_override_;
 
@@ -608,6 +615,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   // size, even if the image is multi-colored.
   std::vector<std::pair<int, SkColor>> updated_colors_;
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope_;
 };
 
 enum class UpdateDialogParam {
@@ -1994,8 +2002,9 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
               color_utils::SkColorToRgbaString(SK_ColorDKGRAY));
   }
 
-  if (IsUpdateDialogEnabled())
-    chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+  if (IsUpdateDialogEnabled()) {
+    AcceptAppIdentityUpdateDialogForTesting();
+  }
 
   OverrideManifest(kManifest, {"browser"});
 
@@ -3087,8 +3096,9 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
     }
   )";
 
-  if (IsUpdateDialogEnabled())
-    chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+  if (IsUpdateDialogEnabled()) {
+    AcceptAppIdentityUpdateDialogForTesting();
+  }
 
   OverrideManifest(kManifest, {});
   AppId app_id = InstallWebApp();
@@ -4015,7 +4025,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   EXPECT_EQ(override_title, GetProvider().registrar().GetAppShortName(app_id));
 
   // Simulate the user accepting the App Identity update dialog (if it appears).
-  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope =
+      SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
 
   views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
   observer.set_shown_callback(
@@ -4179,7 +4190,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 
   // Simulate the user accepting the App Identity update dialog (when it
   // appears).
-  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope =
+      SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
 
   // Setup the web app, install it and immediately update the manifest.
   OverrideManifest(kManifestTemplate, {"Test app name", kIconList});
@@ -4298,7 +4310,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 // sends the right signal back.
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
                        VerifyCallbackUpgradeAllowed) {
-  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope =
+      SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
 
   constexpr char kManifestTemplate[] = R"(
     {
@@ -4706,8 +4719,9 @@ IN_PROC_BROWSER_TEST_P(
   trace += "---------------------------\n";
 
   if (IsAppIdentityUpdateDialogForIconEnabled() ||
-      IsAppIdentityUpdateDialogForNameEnabled())
-    chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+      IsAppIdentityUpdateDialogForNameEnabled()) {
+    AcceptAppIdentityUpdateDialogForTesting();
+  }
 
   std::string app_name = "Test app name";
 
