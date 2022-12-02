@@ -2848,9 +2848,12 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'TimeDateCommand', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'SwipeToScrollByPage', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+// TODO(https://crbug.com/1395217): Re-enable the test.
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'DISABLED_SwipeToScrollByPage',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
     <p style="font-size: 200pt">This is a test</p>
     <p style="font-size: 200pt">This is a test</p>
     <p style="font-size: 200pt">This is a test</p>
@@ -2859,17 +2862,17 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SwipeToScrollByPage', async function() {
     <p style="font-size: 200pt">This is a test</p>
     <p style="font-size: 200pt">This is a test</p>
   `;
-  const root = await this.runWithLoadedTree(site);
-  mockFeedback.call(doGesture(Gesture.SWIPE_UP3))
-      .expectSpeech(/Page 2 of/)
-      .call(doGesture(Gesture.SWIPE_UP3))
-      .expectSpeech(/Page 3 of/)
-      .call(doGesture(Gesture.SWIPE_DOWN3))
-      .expectSpeech(/Page 2 of/)
-      .call(doGesture(Gesture.SWIPE_DOWN3))
-      .expectSpeech(/Page 1 of/);
-  await mockFeedback.replay();
-});
+      const root = await this.runWithLoadedTree(site);
+      mockFeedback.call(doGesture(Gesture.SWIPE_UP3))
+          .expectSpeech(/Page 2 of/)
+          .call(doGesture(Gesture.SWIPE_UP3))
+          .expectSpeech(/Page 3 of/)
+          .call(doGesture(Gesture.SWIPE_DOWN3))
+          .expectSpeech(/Page 2 of/)
+          .call(doGesture(Gesture.SWIPE_DOWN3))
+          .expectSpeech(/Page 1 of/);
+      await mockFeedback.replay();
+    });
 
 AX_TEST_F(
     'ChromeVoxBackgroundTest', 'PointerOnOffOnRepeatsNode', async function() {
