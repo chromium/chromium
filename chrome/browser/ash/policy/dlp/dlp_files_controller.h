@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_H_
 
-#include <sys/types.h>
-#include <cstddef>
-#include <functional>
+#include <memory>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -16,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/file_access/scoped_file_access_copy.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -232,10 +231,13 @@ class DlpFilesController {
   // Returns whether a dlp policy matches for the `file`.
   bool IsDlpPolicyMatched(const FileDaemonInfo& file);
 
-  // The same source url information stored for |source| is copied for
-  // |destination|
-  virtual void CopySourceInformation(const storage::FileSystemURL& source,
-                                     const storage::FileSystemURL& destination);
+  // Requests ScopedFileAccess for |source| for the operation to copy from
+  // |source| to |destination|.
+  virtual void RequestCopyAccess(
+      const storage::FileSystemURL& source,
+      const storage::FileSystemURL& destination,
+      base::OnceCallback<void(std::unique_ptr<file_access::ScopedFileAccess>)>
+          result_callback);
 
   void SetWarnNotifierForTesting(
       std::unique_ptr<DlpWarnNotifier> warn_notifier);
@@ -305,7 +307,8 @@ class DlpFilesController {
   // Not null only while the dialog is opened.
   base::WeakPtr<views::Widget> warn_dialog_widget_ = nullptr;
 
-  // Keeps track of events and detects duplicate ones using time based approach.
+  // Keeps track of events and detects duplicate ones using time based
+  // approach.
   std::unique_ptr<DlpFilesEventStorage> event_storage_;
 
   base::WeakPtrFactory<DlpFilesController> weak_ptr_factory_{this};

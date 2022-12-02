@@ -21,9 +21,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -46,6 +48,8 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_copy.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -60,7 +64,6 @@
 #include "url/gurl.h"
 
 namespace policy {
-
 namespace {
 
 // Timeout defining when two events having the same properties are considered
@@ -316,27 +319,90 @@ class RootsRecursionDelegate {
   base::WeakPtrFactory<RootsRecursionDelegate> weak_ptr_factory_{this};
 };
 
+// This callback is used when we copy a file within the internal filesystem
+// (Downloads / MyFiles). It is called after the source URL of the source file
+// is retrieved. It creates a callback `delayed_add_file` and requests the
+// ScopedFileAccess for the copy operation. To this access token the
+// `delayed_add_file` callback is added so it is called after the copy operation
+// finishes.
 void GotFilesSourcesOfCopy(
     storage::FileSystemURL destination,
+    ::dlp::RequestFileAccessRequest file_access_request,
+    base::OnceCallback<void(std::unique_ptr<file_access::ScopedFileAccess>)>
+        result_callback,
     std::vector<DlpFilesController::DlpFileMetadata> metadata) {
   if (metadata.size() == 0) {
+    std::move(result_callback)
+        .Run(std::make_unique<file_access::ScopedFileAccess>(
+            file_access::ScopedFileAccess::Allowed()));
     return;
   }
   DCHECK(metadata.size() == 1);
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
+    std::move(result_callback)
+        .Run(std::make_unique<file_access::ScopedFileAccess>(
+            file_access::ScopedFileAccess::Allowed()));
     return;
   }
 
   if (metadata[0].source_url.empty()) {
+    std::move(result_callback)
+        .Run(std::make_unique<file_access::ScopedFileAccess>(
+            file_access::ScopedFileAccess::Allowed()));
     return;
   }
 
-  ::dlp::AddFileRequest request;
-  request.set_file_path(destination.path().value());
-  request.set_source_url(metadata[0].source_url);
-  // TODO(https://crbug.com/1368497): we might want to use the callback for
-  // error handling
-  chromeos::DlpClient::Get()->AddFile(request, base::DoNothing());
+  ::dlp::AddFileRequest add_request;
+  add_request.set_file_path(destination.path().value());
+  add_request.set_source_url(metadata[0].source_url);
+
+  // The callback will be invoked with the destruction of the
+  // ScopedFileAccessCopy object
+  base::OnceCallback<void()> delayed_add_file = base::BindPostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::BindOnce(
+          [](::dlp::AddFileRequest&& add_request) {
+            // TODO(https://crbug.com/1368497): we might want to use the
+            // callback for error handling.
+            chromeos::DlpClient::Get()->AddFile(add_request, base::DoNothing());
+          },
+          std::move(add_request)));
+
+  chromeos::DlpClient::RequestFileAccessCallback add_file_callback =
+      base::BindOnce(
+          [](base::OnceCallback<void(
+                 std::unique_ptr<file_access::ScopedFileAccess>)>
+                 result_callback,
+             base::OnceCallback<void()> delayed_add_file,
+             const ::dlp::RequestFileAccessResponse response,
+             base::ScopedFD fd) {
+            std::move(result_callback)
+                .Run(std::make_unique<file_access::ScopedFileAccessCopy>(
+                    response.allowed(), base::ScopedFD(),
+                    std::move(delayed_add_file)));
+          },
+          std::move(result_callback), std::move(delayed_add_file));
+
+  chromeos::DlpClient::Get()->RequestFileAccess(file_access_request,
+                                                std::move(add_file_callback));
+}
+
+::dlp::DlpComponent MapPolicyToProtoComponent(
+    DlpRulesManager::Component component) {
+  switch (component) {
+    case DlpRulesManager::Component::kUnknownComponent:
+      return ::dlp::DlpComponent::UNKOWN_COMPONENT;
+    case DlpRulesManager::Component::kArc:
+      return ::dlp::DlpComponent::ARC;
+    case DlpRulesManager::Component::kCrostini:
+      return ::dlp::DlpComponent::CROSTINI;
+    case DlpRulesManager::Component::kPluginVm:
+      return ::dlp::DlpComponent::PLUGIN_VM;
+    case DlpRulesManager::Component::kUsb:
+      return ::dlp::DlpComponent::USB;
+    case DlpRulesManager::Component::kDrive:
+      return ::dlp::DlpComponent::GOOGLE_DRIVE;
+  }
 }
 
 // Returns an instance of NotificationDisplayService for the primary profile.
@@ -504,18 +570,68 @@ void DlpFilesController::GetDisallowedTransfers(
                      base::Unretained(roots_recursion_delegate)));
 }
 
-void DlpFilesController::CopySourceInformation(
-    const storage::FileSystemURL& source,
-    const storage::FileSystemURL& destination) {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-
-  // One path is external component.
-  if (MapFilePathtoPolicyComponent(profile, source.path()).has_value() ||
-      MapFilePathtoPolicyComponent(profile, destination.path()).has_value()) {
+void DlpFilesController::RequestCopyAccess(
+    const storage::FileSystemURL& source_file,
+    const storage::FileSystemURL& destination,
+    base::OnceCallback<void(std::unique_ptr<file_access::ScopedFileAccess>)>
+        result_callback) {
+  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
+    std::move(result_callback)
+        .Run(std::make_unique<file_access::ScopedFileAccess>(
+            file_access::ScopedFileAccess::Allowed()));
     return;
   }
-  GetDlpMetadata({source}, absl::nullopt,
-                 base::BindOnce(&GotFilesSourcesOfCopy, destination));
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+
+  absl::optional<DlpRulesManager::Component> dst_component =
+      MapFilePathtoPolicyComponent(profile, destination.path());
+  absl::optional<DlpRulesManager::Component> src_component =
+      MapFilePathtoPolicyComponent(profile, source_file.path());
+  ::dlp::DlpComponent component_proto;
+  if (!src_component.has_value()) {
+    src_component = DlpRulesManager::Component::kUnknownComponent;
+  }
+  if (dst_component.has_value()) {
+    component_proto = MapPolicyToProtoComponent(dst_component.value());
+  } else {
+    // Treat non external as system. We want to allow the operation and system
+    // is allowed always
+    component_proto = ::dlp::SYSTEM;
+  }
+
+  // Copy from external is not limited by DLP.
+  if (src_component != DlpRulesManager::Component::kUnknownComponent) {
+    std::move(result_callback)
+        .Run(std::make_unique<file_access::ScopedFileAccess>(
+            file_access::ScopedFileAccess::Allowed()));
+    return;
+  }
+
+  ::dlp::RequestFileAccessRequest file_access_request;
+  file_access_request.add_files_paths(source_file.path().value());
+  file_access_request.set_destination_component(component_proto);
+
+  if (component_proto == ::dlp::SYSTEM) {
+    // We allow internal copy, we still have to get the scopedFS
+    // and we might need to copy the source URL information.
+    GetDlpMetadata(
+        {source_file}, /*destination=*/absl::nullopt,
+        base::BindOnce(&GotFilesSourcesOfCopy, destination, file_access_request,
+                       std::move(result_callback)));
+    return;
+  }
+
+  chromeos::DlpClient::Get()->RequestFileAccess(
+      file_access_request,
+      base::BindOnce(
+          [](base::OnceCallback<void(
+                 std::unique_ptr<file_access::ScopedFileAccess>)> callback,
+             ::dlp::RequestFileAccessResponse res, base::ScopedFD fd) {
+            std::move(callback).Run(
+                std::make_unique<file_access::ScopedFileAccess>(res.allowed(),
+                                                                std::move(fd)));
+          },
+          std::move(result_callback)));
 }
 
 void DlpFilesController::GetDlpMetadata(

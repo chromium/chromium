@@ -10,6 +10,8 @@ component("file_access") {
     "file_access_copy_or_move_delegate_factory.h",
     "scoped_file_access.cc",
     "scoped_file_access.h",
+    "scoped_file_access_copy.cc",
+    "scoped_file_access_copy.h",
     "scoped_file_access_delegate.cc",
     "scoped_file_access_delegate.h",
   ]
@@ -26,6 +28,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "file_access_copy_or_move_delegate_factory_unittest.cc",
+    "scoped_file_access_copy_unittest.cc",
     "scoped_file_access_delegate_unittest.cc",
   ]
 

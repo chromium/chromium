@@ -24,14 +24,14 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccess {
   ScopedFileAccess& operator=(ScopedFileAccess&& other);
   ScopedFileAccess(const ScopedFileAccess&) = delete;
   ScopedFileAccess& operator=(const ScopedFileAccess&) = delete;
-  ~ScopedFileAccess();
+  virtual ~ScopedFileAccess();
 
   bool is_allowed() const { return allowed_; }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   ScopedFileAccess(bool allowed, base::ScopedFD fd);
 #else
-  ScopedFileAccess(bool allowed);
+  explicit ScopedFileAccess(bool allowed);
 #endif
 
   // Object identifying allowed access.

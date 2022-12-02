@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(DLP) DlpClient {
   using GetFilesSourceCall =
       base::RepeatingCallback<void(const dlp::GetFilesSourcesRequest,
                                    GetFilesSourcesCallback)>;
+  using RequestFileAccessCall =
+      base::RepeatingCallback<void(const dlp::RequestFileAccessRequest,
+                                   RequestFileAccessCallback)>;
 
   // Interface with testing functionality. Accessed through
   // GetTestInterface(), only implemented in the fake implementation.
@@ -62,16 +65,19 @@ class COMPONENT_EXPORT(DLP) DlpClient {
     // Sets the response for IsAlive call.
     virtual void SetIsAlive(bool is_alive) = 0;
 
-    // use |mock| for AddFile calls.
+    // Sets `mock` used in AddFile calls.
     virtual void SetAddFileMock(AddFileCall mock) = 0;
 
-    // use |mock| for GetFilesSource calls;
+    // Sets `mock` used in GetFilesSource calls.
     virtual void SetGetFilesSourceMock(GetFilesSourceCall mock) = 0;
 
     // Returns the last CheckFilesTransferRequest. If it wasn't called, it'll
     // return an empty proto.
     virtual dlp::CheckFilesTransferRequest GetLastCheckFilesTransferRequest()
         const = 0;
+
+    // Sets `mock` used in RequestFileAccess calls.
+    virtual void SetRequestFileAccessMock(RequestFileAccessCall mock) = 0;
 
    protected:
     virtual ~TestInterface() = default;
