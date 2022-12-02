@@ -704,7 +704,7 @@
 <translation id="1643072738649235303">采用 SHA-1 算法的 X9.62 ECDSA 签名</translation>
 <translation id="1643921258693943800">若要使用“附近分享”功能，请开启蓝牙和 Wi-Fi</translation>
 <translation id="1644574205037202324">历史记录</translation>
-<translation id="1644852018355792105">为设备 <ph name="DEVICE" /> 输入蓝牙密钥</translation>
+<translation id="1644852018355792105">为设备 <ph name="DEVICE" /> 输入蓝牙通行密钥</translation>
 <translation id="1645004815457365098">来源不明</translation>
 <translation id="1645516838734033527">为确保您的 <ph name="DEVICE_TYPE" /> 安全无虞，Smart Lock 要求在您的手机上设置屏幕锁定。</translation>
 <translation id="1646982517418478057">请输入密码，用于加密该证书</translation>
@@ -1993,7 +1993,7 @@
 <translation id="2801954693771979815">屏幕上的内容大小</translation>
 <translation id="2802557211515765772">没有任何受管理的打印机。</translation>
 <translation id="2803313416453193357">打开文件夹</translation>
-<translation id="2803719750464280163">请确认 <ph name="PASSKEY" /> 是蓝牙设备“<ph name="DEVICE" />”上显示的密钥。</translation>
+<translation id="2803719750464280163">请确认 <ph name="PASSKEY" /> 是蓝牙设备“<ph name="DEVICE" />”上显示的通行密钥。</translation>
 <translation id="2804043232879091219">无法打开替代浏览器</translation>
 <translation id="2804667941345577550">您将会自动退出这个网站（包括打开的标签页）</translation>
 <translation id="2804680522274557040">摄像头已关闭</translation>
@@ -4096,7 +4096,7 @@
 <translation id="4823484602432206655">读取和更改用户设置与设备设置</translation>
 <translation id="4824037980212326045">Linux 备份和恢复</translation>
 <translation id="4824958205181053313">取消同步？</translation>
-<translation id="4825532258163983651">无法删除密钥</translation>
+<translation id="4825532258163983651">无法删除通行密钥</translation>
 <translation id="4827675678516992122">无法连接</translation>
 <translation id="4827784381479890589">在 Chrome 浏览器中使用增强的“拼写检查”功能（您输入的文字会被发送给 Google 以方便其提供拼写建议）</translation>
 <translation id="4827904420700932487">为此图片创建二维码</translation>
@@ -5041,7 +5041,7 @@
 <translation id="5734362860645681824">通讯</translation>
 <translation id="5734697361979786483">添加文件共享</translation>
 <translation id="5736796278325406685">请输入有效的用户名</translation>
-<translation id="5738093759615225354">您需要使用此密钥才能登录计算机</translation>
+<translation id="5738093759615225354">您需要使用此通行密钥才能登录计算机</translation>
 <translation id="5738329404678738022">借助同步功能存储书签和其他数据</translation>
 <translation id="5739017626473506901">请登录以帮助<ph name="USER_NAME" />添加学校帐号</translation>
 <translation id="5739235828260127894">正在等待验证。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -8209,7 +8209,7 @@
 <translation id="8724859055372736596">在文件夹中显示(&amp;S)</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8725178340343806893">收藏夹/书签</translation>
-<translation id="87254326763805752">确认密钥</translation>
+<translation id="87254326763805752">确认通行密钥</translation>
 <translation id="8726206820263995930">从服务器抓取策略设置时出错：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="8728351286589123703">您已选择的权限将被重置</translation>
 <translation id="8729133765463465108">使用摄像头扫描二维码</translation>
