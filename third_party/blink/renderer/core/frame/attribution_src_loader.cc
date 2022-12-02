@@ -523,17 +523,36 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   // TODO(johnidel): We should consider updating the eligibility header based on
   // previously registered requests in the chain.
 
+  if (Document* document = local_frame_->DomWindow()->document();
+      document->IsPrerendering()) {
+    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        &AttributionSrcLoader::RegisterAttributionHeaders,
+        WrapPersistentIfNeeded(this), src_type, std::move(*reporting_origin),
+        source_json, trigger_json, resource->InspectorId()));
+  } else {
+    RegisterAttributionHeaders(src_type, std::move(*reporting_origin),
+                               source_json, trigger_json,
+                               resource->InspectorId());
+  }
+
+  return true;
+}
+
+void AttributionSrcLoader::RegisterAttributionHeaders(
+    SrcType src_type,
+    attribution_reporting::SuitableOrigin reporting_origin,
+    const AtomicString& source_json,
+    const AtomicString& trigger_json,
+    uint64_t request_id) {
   // Create a client to mimic processing of attributionsrc requests. Note we do
   // not share `AttributionDataHosts` for redirects chains.
   // TODO(johnidel): Consider refactoring this such that we can share clients
   // for redirect chain, or not create the client at all.
-
   auto* client = MakeGarbageCollected<ResourceClient>(
       this, src_type, /*nav_type=*/absl::nullopt);
-  client->HandleResponseHeaders(std::move(*reporting_origin), source_json,
-                                trigger_json, resource->InspectorId());
+  client->HandleResponseHeaders(std::move(reporting_origin), source_json,
+                                trigger_json, request_id);
   client->Finish();
-  return true;
 }
 
 String AttributionSrcLoader::ResourceClient::DebugName() const {

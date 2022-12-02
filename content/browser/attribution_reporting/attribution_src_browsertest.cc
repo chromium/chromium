@@ -6,10 +6,13 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -1336,6 +1339,85 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
 
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front().source_event_id, 5UL);
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
+                       SubresourceTriggerNotRegisteredOnPrerender) {
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost).Times(0);
+
+  const GURL kInitialUrl =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
+  int host_id = prerender_helper_.AddPrerender(page_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  EXPECT_TRUE(ExecJs(
+      prerender_rfh,
+      JsReplace(
+          "createTrackingPixel($1);",
+          https_server()->GetURL("c.test", "/register_trigger_headers.html"))));
+
+  // If a data host were registered, it would arrive in the browser process
+  // before the navigation finished.
+  EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
+                       SubresourceTriggerRegisteredOnActivatedPrerender) {
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  const GURL kInitialUrl =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), kInitialUrl));
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
+  int host_id = prerender_helper_.AddPrerender(page_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  EXPECT_TRUE(ExecJs(
+      prerender_rfh,
+      JsReplace(
+          "createTrackingPixel($1);",
+          https_server()->GetURL("c.test", "/register_trigger_headers.html"))));
+
+  // Delay prerender activation so that subresource response is received
+  // earlier than that.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+  run_loop.Run();
+
+  prerender_helper_.NavigatePrimaryPage(page_url);
+  ASSERT_EQ(page_url, web_contents()->GetLastCommittedURL());
+  ASSERT_TRUE(host_observer.was_activated());
+
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForTriggerData(/*num_trigger_data=*/1);
+  const auto& trigger_data = data_host->trigger_data();
+
+  ASSERT_EQ(trigger_data.size(), 1u);
+  ASSERT_EQ(trigger_data.front().event_triggers.vec().size(), 1u);
+  EXPECT_EQ(trigger_data.front().event_triggers.vec().front().data, 7u);
 }
 
 class AttributionSrcFencedFrameBrowserTest : public AttributionSrcBrowserTest {

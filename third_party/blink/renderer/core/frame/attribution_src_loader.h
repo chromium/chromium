@@ -119,6 +119,13 @@ class CORE_EXPORT AttributionSrcLoader
   // Returns whether OS-level attribution is supported.
   bool HasOsSupport() const;
 
+  void RegisterAttributionHeaders(
+      SrcType src_type,
+      attribution_reporting::SuitableOrigin reporting_origin,
+      const AtomicString& source_json,
+      const AtomicString& trigger_json,
+      uint64_t request_id);
+
   const Member<LocalFrame> local_frame_;
   size_t num_resource_clients_ = 0;
 };
