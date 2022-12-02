@@ -4,16 +4,15 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../select_to_speak/select_to_speak_e2e_test_base.js',
   'testing/assert_additions.js',
-  '../chromevox/testing/snippets.js',
+  'testing/common_e2e_test_base.js',
+  'testing/snippets.js',
 ]);
 
 /**
  * Test fixture for automation_util.js.
  */
-AccessibilityExtensionAutomationUtilE2ETest =
-    class extends SelectToSpeakE2ETest {
+AccessibilityExtensionAutomationUtilE2ETest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

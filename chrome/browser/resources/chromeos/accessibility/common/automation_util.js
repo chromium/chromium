@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview ChromeVox utilities for the automation extension API.
+ * @fileoverview Utilities for the automation extension API.
  */
 
 import {AutomationPredicate} from './automation_predicate.js';
