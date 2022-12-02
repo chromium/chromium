@@ -101644,6 +101644,32 @@
         {}
        ]
       ],
+      "content-visibility-auto-in-iframe.html": [
+       "ba02cac6684d2c283de114c0b00fcd4e6f99f724",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-auto-in-iframe-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-auto-intrinsic-width.html": [
+       "bd90fff5143e43d4e1fddd6a1113b97b2a2957a7",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "content-visibility-canvas.html": [
        "fe469489528c45797b8ff68bfc739c39cefdf7b0",
        [
@@ -101750,6 +101776,19 @@
       ],
       "content-visibility-with-top-layer-004.html": [
        "e21b11e92db1fe8e7684536d04371ae077c8e66a",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/spacer-with-top-layer-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-with-top-layer-005.html": [
+       "5283aea19734d1349622a249715c0a190d1ebad5",
        [
         null,
         [
@@ -281167,6 +281206,10 @@
        "ec61729c2311f24dfa8efe151f5160dc4cb2a083",
        []
       ],
+      "content-visibility-auto-in-iframe-ref.html": [
+       "03a2875b75a7de0cb2fad0284da20bd6420c3f49",
+       []
+      ],
       "content-visibility-canvas-ref.html": [
        "dbedcf18ad7200f3595ba70607fb023a1373edb7",
        []
@@ -430722,7 +430765,7 @@
        ]
       ],
       "content-visibility-070.html": [
-       "4f63069edde41369ff6e9d5b71c9e1f32b479fd0",
+       "a41b513e6269b796ef9ebd0c76fec777681d6cfc",
        [
         null,
         {}
