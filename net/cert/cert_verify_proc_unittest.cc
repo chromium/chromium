@@ -4785,6 +4785,149 @@ TEST_P(CertVerifyProcConstraintsTest, UnknownExtensionIntermediate) {
   }
 }
 
+// A set of tests that check how various constraints are enforced when they
+// are applied to a directly trusted non-self-signed leaf certificate.
+class CertVerifyProcConstraintsTrustedLeafTest
+    : public CertVerifyProcInternalTest {
+ protected:
+  void SetUp() override {
+    CertVerifyProcInternalTest::SetUp();
+
+    chain_ = CertBuilder::CreateSimpleChain(/*chain_length=*/2);
+  }
+
+  int Verify() {
+    ScopedTestRoot test_root(chain_.front()->GetX509Certificate().get());
+    CertVerifyResult verify_result;
+    int flags = 0;
+    return CertVerifyProcInternalTest::Verify(
+        chain_.front()->GetX509Certificate().get(), "www.example.com", flags,
+        CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
+  }
+
+  std::vector<std::unique_ptr<CertBuilder>> chain_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifyProcConstraintsTrustedLeafTest,
+                         testing::ValuesIn(kAllCertVerifiers),
+                         VerifyProcTypeToName);
+
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BaseCase) {
+  // Without changing anything on the test chain, it should validate
+  // successfully. If this is not true then the rest of the tests in this class
+  // are unlikely to be useful.
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsIsCa) {
+  chain_[0]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsPathlen) {
+  chain_[0]->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/0);
+
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsMissing) {
+  chain_[0]->EraseExtension(der::Input(kBasicConstraintsOid));
+
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+// A set of tests that check how various constraints are enforced when they
+// are applied to a directly trusted self-signed leaf certificate.
+class CertVerifyProcConstraintsTrustedSelfSignedTest
+    : public CertVerifyProcInternalTest {
+ protected:
+  void SetUp() override {
+    CertVerifyProcInternalTest::SetUp();
+
+    cert_ = std::move(CertBuilder::CreateSimpleChain(/*chain_length=*/1)[0]);
+  }
+
+  int Verify() {
+    ScopedTestRoot test_root(cert_->GetX509Certificate().get());
+    CertVerifyResult verify_result;
+    int flags = 0;
+    return CertVerifyProcInternalTest::Verify(
+        cert_->GetX509Certificate().get(), "www.example.com", flags,
+        CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
+  }
+
+  std::unique_ptr<CertBuilder> cert_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifyProcConstraintsTrustedSelfSignedTest,
+                         testing::ValuesIn(kAllCertVerifiers),
+                         VerifyProcTypeToName);
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, BaseCase) {
+  // Without changing anything on the test cert, it should validate
+  // successfully. If this is not true then the rest of the tests in this class
+  // are unlikely to be useful.
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, BasicConstraintsIsCa) {
+  cert_->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
+       BasicConstraintsNotCaPathlen) {
+  cert_->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/0);
+
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
+       BasicConstraintsIsCaPathlen) {
+  cert_->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/0);
+
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
+       BasicConstraintsMissing) {
+  cert_->EraseExtension(der::Input(kBasicConstraintsOid));
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
 TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
   scoped_refptr<X509Certificate> cert(
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
