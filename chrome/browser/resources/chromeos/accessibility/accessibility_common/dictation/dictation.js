@@ -88,6 +88,9 @@ export class Dictation {
     /** @private {boolean} */
     this.isContextCheckingFeatureEnabled_ = false;
 
+    /** @private {Macro} */
+    this.prevMacro_ = null;
+
     this.initialize_();
   }
 
@@ -307,8 +310,10 @@ export class Dictation {
       return;
     }
 
-    const macro = await this.speechParser_.parse(transcript);
+    let macro = await this.speechParser_.parse(transcript);
     MetricsUtils.recordMacroRecognized(macro);
+    macro = this.handleRepeat_(macro);
+
     // Check if the macro can execute.
     // TODO(crbug.com/1264544): Deal with ambiguous results here.
     const checkContextResult = macro.checkContext();
@@ -530,6 +535,23 @@ export class Dictation {
    */
   increaseNoFocusedImeTimeoutForTesting_() {
     Dictation.Timeouts.NO_FOCUSED_IME_MS = 20 * 1000;
+  }
+
+  /**
+   * @param {!Macro} macro
+   * @return {!Macro}
+   * @private
+   */
+  handleRepeat_(macro) {
+    let newMacro = macro;
+    if (newMacro.getMacroName() === MacroName.REPEAT && this.prevMacro_) {
+      // If this is the REPEAT macro, then we actually want the previously
+      // executed macro.
+      newMacro = this.prevMacro_;
+    }
+
+    this.prevMacro_ = newMacro;
+    return newMacro;
   }
 }
 

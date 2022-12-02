@@ -918,12 +918,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea)));
 
-INSTANTIATE_TEST_SUITE_P(
-    OnDeviceTextArea,
-    DictationWithAutoclickTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
-                                 EditableType::kTextArea)));
-
 IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, CanDictate) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
@@ -1105,12 +1099,6 @@ INSTANTIATE_TEST_SUITE_P(
     DictationCommandsTest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kInput)));
-
-INSTANTIATE_TEST_SUITE_P(
-    OnDeviceTextArea,
-    DictationCommandsTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
-                                 EditableType::kTextArea)));
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesCommands) {
   std::string expected_text = "";
@@ -1768,12 +1756,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea)));
 
-INSTANTIATE_TEST_SUITE_P(
-    OnDeviceTextArea,
-    DictationUITest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
-                                 EditableType::kTextArea)));
-
 IN_PROC_BROWSER_TEST_P(DictationUITest,
                        MAYBE_ShownWhenSpeechRecognitionStarts) {
   ToggleDictationWithKeystroke();
@@ -1962,7 +1944,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterCommandExecuted) {
       /*hints=*/std::vector<std::u16string>{kTrySaying, kUndo, kHelp});
 }
 
-// Tests behavior of Dictation and installation of Pumpkin.
+// Tests behavior of Dictation using the Pumpkin semantic parser.
 class DictationPumpkinTest : public DictationTest {
  protected:
   DictationPumpkinTest() = default;
@@ -2041,17 +2023,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kInput)));
 
-INSTANTIATE_TEST_SUITE_P(
-    NetworkContentEditable,
-    DictationPumpkinTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
-                                 EditableType::kContentEditable)));
-
-INSTANTIATE_TEST_SUITE_P(
-    OnDeviceTextArea,
-    DictationPumpkinTest,
-    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kOnDevice,
-                                 EditableType::kTextArea)));
+// TODO(b:259353252): Add NetworkContentEditable test once commands are working
+// in content editables.
 
 // TODO(crbug.com/1368843): Test is flaky on MSAN builds.
 #if defined(MEMORY_SANITIZER)
@@ -2113,6 +2086,127 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, UndoAndRedo) {
   SendFinalResultAndWaitForEditableValue("Lyra", "The constellation lyra");
   SendFinalResultAndWaitForEditableValue("undo that", "The constellation");
   SendFinalResultAndWaitForEditableValue("redo that", "The constellation lyra");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, DeletePrevWord) {
+  SendFinalResultAndWaitForEditableValue("This is a test", "This is a test");
+  SendFinalResultAndWaitForEditableValue("clear one word", "This is a ");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, DeletePrevSent) {
+  SendFinalResultAndWaitForEditableValue("Hello, world.", "Hello, world.");
+  SendFinalResultAndWaitForEditableValue("erase sentence", "");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, MoveByWord) {
+  SendFinalResultAndWaitForEditableValue("This is a quiz", "This is a quiz");
+  SendFinalResultAndWaitForCaretBoundsChanged("back one word");
+  SendFinalResultAndWaitForEditableValue("pop", "This is a pop quiz");
+  SendFinalResultAndWaitForCaretBoundsChanged("right one word");
+  SendFinalResultAndWaitForEditableValue("folks!", "This is a pop quiz folks!");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartDeletePhrase) {
+  SendFinalResultAndWaitForEditableValue("This is a difficult test",
+                                         "This is a difficult test");
+  SendFinalResultAndWaitForEditableValue("erase difficult", "This is a test");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartReplacePhrase) {
+  SendFinalResultAndWaitForEditableValue("This is a difficult test.",
+                                         "This is a difficult test.");
+  SendFinalResultAndWaitForEditableValue("substitute difficult with simple",
+                                         "This is a simple test.");
+  SendFinalResultAndWaitForEditableValue("replace is with isn't",
+                                         "This isn't a simple test.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartInsertBefore) {
+  SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
+  SendFinalResultAndWaitForEditableValue("insert simple in front of test",
+                                         "This is a simple test.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SmartSelectBetween) {
+  SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
+  SendFinalResultAndWaitForSelectionChanged(
+      "highlight everything between is and test");
+  SendFinalResultAndWaitForEditableValue("was a quiz", "This was a quiz.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, MoveBySentence) {
+  SendFinalResultAndWaitForEditableValue("Hello world! Goodnight world?",
+                                         "Hello world! Goodnight world?");
+  SendFinalResultAndWaitForCaretBoundsChanged("one sentence back");
+  SendFinalResultAndWaitForEditableValue(
+      "Good evening.", "Hello world! Good evening. Goodnight world?");
+  SendFinalResultAndWaitForCaretBoundsChanged("forward one sentence");
+  SendFinalResultAndWaitForEditableValue(
+      "Time for a midnight snack",
+      "Hello world! Good evening. Goodnight world? Time for a midnight snack");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, DeleteAllText) {
+  SendFinalResultAndWaitForEditableValue("Hello, world.", "Hello, world.");
+  SendFinalResultAndWaitForEditableValue("clear", "");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavStartText) {
+  SendFinalResultAndWaitForEditableValue("Is good", "Is good");
+  SendFinalResultAndWaitForCaretBoundsChanged("to start");
+  SendFinalResultAndWaitForEditableValue("The weather outside",
+                                         "The weather outside Is good");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavEndText) {
+  SendFinalResultAndWaitForEditableValue("The weather outside is",
+                                         "The weather outside is");
+  SendFinalResultAndWaitForCaretBoundsChanged("to start");
+  SendFinalResultAndWaitForCaretBoundsChanged("to end");
+  std::string expected = "The weather outside is good";
+  SendFinalResultAndWaitForEditableValue("good", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SelectPrevWord) {
+  SendFinalResultAndWaitForEditableValue("The weather today is bad",
+                                         "The weather today is bad");
+  SendFinalResultAndWaitForSelectionChanged("highlight back one word");
+  std::string expected = "The weather today is nice";
+  SendFinalResultAndWaitForEditableValue("nice", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SelectNextWord) {
+  SendFinalResultAndWaitForEditableValue("The weather today is bad",
+                                         "The weather today is bad");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWaitForSelectionChanged("highlight right one word");
+  std::string expected = "The weather today is nice";
+  SendFinalResultAndWaitForEditableValue("nice", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SelectNextChar) {
+  SendFinalResultAndWaitForEditableValue("Text", "Text");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
+  SendFinalResultAndWaitForCaretBoundsChanged("select next letter");
+  std::string expected = "ext";
+  SendFinalResultAndWaitForEditableValue("delete", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, SelectPrevChar) {
+  SendFinalResultAndWaitForEditableValue("Text", "Text");
+  SendFinalResultAndWaitForCaretBoundsChanged("select previous letter");
+  std::string expected = "Tex";
+  SendFinalResultAndWaitForEditableValue("delete", expected);
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Repeat) {
+  SendFinalResultAndWaitForEditableValue("Test", "Test");
+  SendFinalResultAndWaitForEditableValue("delete", "Tes");
+  SendFinalResultAndWaitForEditableValue("try that action again", "Te");
+  // Repeat also works for inputting text.
+  SendFinalResultAndWaitForEditableValue("keyboard cat", "Te keyboard cat");
+  SendFinalResultAndWaitForEditableValue("again",
+                                         "Te keyboard cat keyboard cat");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Metrics) {

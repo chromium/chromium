@@ -117,6 +117,28 @@ AX_TEST_F('DictationPumpkinParseTest', 'Parse', async function() {
     new ParseTestCase('deselect selection', 'UNSELECT_TEXT'),
     new ParseTestCase('what can I say', 'LIST_COMMANDS'),
     new ParseTestCase('new line'),
+    new ParseTestCase('avada kedavra', 'STOP_LISTENING'),
+    new ParseTestCase('clear one word', 'DELETE_PREV_WORD'),
+    new ParseTestCase('erase sentence', 'DELETE_PREV_SENT'),
+    new ParseTestCase('right one word', 'NAV_NEXT_WORD'),
+    new ParseTestCase('back one word', 'NAV_PREV_WORD'),
+    new ParseTestCase('delete avada kedavra', 'SMART_DELETE_PHRASE'),
+    new ParseTestCase('replace hello with goodbye', 'SMART_REPLACE_PHRASE'),
+    new ParseTestCase(
+        'insert hello in front of goodbye', 'SMART_INSERT_BEFORE'),
+    new ParseTestCase(
+        'highlight everything between hello and goodbye',
+        'SMART_SELECT_BTWN_INCL'),
+    new ParseTestCase('forward one sentence', 'NAV_NEXT_SENT'),
+    new ParseTestCase('one sentence back', 'NAV_PREV_SENT'),
+    new ParseTestCase('clear', 'DELETE_ALL_TEXT'),
+    new ParseTestCase('to start', 'NAV_START_TEXT'),
+    new ParseTestCase('to end', 'NAV_END_TEXT'),
+    new ParseTestCase('highlight back one word', 'SELECT_PREV_WORD'),
+    new ParseTestCase('highlight right one word', 'SELECT_NEXT_WORD'),
+    new ParseTestCase('select next letter', 'SELECT_NEXT_CHAR'),
+    new ParseTestCase('select previous letter', 'SELECT_PREV_CHAR'),
+    new ParseTestCase('try that action again', 'REPEAT'),
   ];
 
   for (const test of testCases) {
@@ -134,12 +156,48 @@ AX_TEST_F(
       const testCases = [
         new ParseTestCase('remove two characters', 'DELETE_PREV_CHAR', 2),
         new ParseTestCase('left five characters', 'NAV_PREV_CHAR', 5),
+        new ParseTestCase('clear five words', 'DELETE_PREV_WORD', 5),
+        new ParseTestCase('forward three words', 'NAV_NEXT_WORD', 3),
+        new ParseTestCase('backward three words', 'NAV_PREV_WORD', 3),
+        new ParseTestCase('highlight back three words', 'SELECT_PREV_WORD', 3),
+        new ParseTestCase('highlight right three words', 'SELECT_NEXT_WORD', 3),
+        new ParseTestCase('select next three letters', 'SELECT_NEXT_CHAR', 3),
+        new ParseTestCase(
+            'select previous three letters', 'SELECT_PREV_CHAR', 3),
       ];
 
       for (const test of testCases) {
         await this.runParseTestCase(test);
       }
     });
+
+// Tests that smart macro properties are correctly parsed and set.
+AX_TEST_F('DictationPumpkinParseTest', 'SmartMacros', async function() {
+  await this.waitForPumpkinParseStrategy_();
+
+  let macro =
+      await this.getPumpkinParseStrategy().parse('delete avada kedavra');
+  assertEquals('SMART_DELETE_PHRASE', macro.getMacroNameString());
+  assertEquals('avada kedavra', macro.phrase_);
+
+  macro =
+      await this.getPumpkinParseStrategy().parse('replace hello with goodbye');
+  assertEquals('SMART_REPLACE_PHRASE', macro.getMacroNameString());
+  assertEquals('hello', macro.deletePhrase_);
+  assertEquals('goodbye', macro.insertPhrase_);
+
+  macro = await this.getPumpkinParseStrategy().parse(
+      'insert hello in front of goodbye');
+  assertEquals('SMART_INSERT_BEFORE', macro.getMacroNameString());
+  assertEquals('hello', macro.insertPhrase_);
+  assertEquals('goodbye', macro.beforePhrase_);
+
+  macro = await this.getPumpkinParseStrategy().parse(
+      'highlight everything between hello and goodbye');
+  assertEquals('SMART_SELECT_BTWN_INCL', macro.getMacroNameString());
+  assertEquals('hello', macro.startPhrase_);
+  assertEquals('goodbye', macro.endPhrase_);
+});
 
 AX_TEST_F('DictationPumpkinParseTest', 'ChangeLocale', async function() {
   await this.waitForPumpkinParseStrategy_();

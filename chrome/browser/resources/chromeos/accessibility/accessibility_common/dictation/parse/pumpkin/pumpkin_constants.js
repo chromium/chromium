@@ -154,6 +154,8 @@ export const HypothesisArgumentName = {
   SEM_TAG: 'SEM_TAG',
   NUM_ARG: 'NUM_ARG',
   OPEN_ENDED_TEXT: 'OPEN_ENDED_TEXT',
+  BEGIN_PHRASE: 'BEGIN_PHRASE',
+  END_PHRASE: 'END_PHRASE',
 };
 
 /** @const {string} */

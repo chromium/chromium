@@ -233,8 +233,9 @@ export class UnselectTextMacro extends RepeatableKeyPressMacro {
 
 /** Macro to delete the previous word. */
 export class DeletePrevWordMacro extends RepeatableKeyPressMacro {
-  constructor() {
-    super(MacroName.DELETE_PREV_WORD, /*repeat=*/ 1);
+  /** @param {number=} repeat The number of words to delete. */
+  constructor(repeat = 1) {
+    super(MacroName.DELETE_PREV_WORD, repeat);
   }
 
   /** @override */
