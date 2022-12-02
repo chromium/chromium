@@ -151,6 +151,8 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
  public:
   TestPasswordsDelegate() {
     store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    presenter_.Init();
+    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() {

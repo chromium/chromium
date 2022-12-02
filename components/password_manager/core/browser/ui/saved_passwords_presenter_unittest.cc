@@ -52,11 +52,13 @@ using StrictMockSavedPasswordsPresenterObserver =
 
 class SavedPasswordsPresenterTest : public ::testing::Test {
  protected:
-  SavedPasswordsPresenterTest() {
+  void SetUp() override {
     store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    presenter_.Init();
+    task_env_.RunUntilIdle();
   }
 
-  ~SavedPasswordsPresenterTest() override {
+  void TearDown() override {
     store_->ShutdownOnUIThread();
     task_env_.RunUntilIdle();
   }
@@ -88,6 +90,8 @@ class SavedPasswordsPresenterWithPasswordNotesTest
       feature_list_.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
     else
       feature_list_.InitAndDisableFeature(syncer::kPasswordNotesWithBackup);
+    SavedPasswordsPresenterTest::SetUp();
+    RunUntilIdle();
   }
   base::test::ScopedFeatureList feature_list_;
 };
@@ -848,14 +852,16 @@ namespace {
 
 class SavedPasswordsPresenterWithTwoStoresTest : public ::testing::Test {
  protected:
-  SavedPasswordsPresenterWithTwoStoresTest() {
+  void SetUp() override {
     profile_store_->Init(/*prefs=*/nullptr,
                          /*affiliated_match_helper=*/nullptr);
     account_store_->Init(/*prefs=*/nullptr,
                          /*affiliated_match_helper=*/nullptr);
+    presenter_.Init();
+    RunUntilIdle();
   }
 
-  ~SavedPasswordsPresenterWithTwoStoresTest() override {
+  void TearDown() override {
     account_store_->ShutdownOnUIThread();
     profile_store_->ShutdownOnUIThread();
     task_env_.RunUntilIdle();
@@ -929,6 +935,11 @@ TEST_F(SavedPasswordsPresenterTest, AddCredentialsListEmpty) {
   EXPECT_CALL(completion_callback,
               Run(std::vector<SavedPasswordsPresenter::AddResult>{}));
   RunUntilIdle();
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(), IsEmpty());
 }
 
 // Tests whether adding 1 password notifies observers with credentials in one
@@ -987,6 +998,13 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
                   SavedPasswordsPresenter::AddResult::kConflictInProfileStore,
                   SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(CredentialUIEntry(existing_profile_form),
+                                   CredentialUIEntry(new_profile_form)));
 }
 
 // Tests whether adding whether adding 2 credentials with 1 that has same
@@ -1015,6 +1033,13 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
                   SavedPasswordsPresenter::AddResult::kConflictInAccountStore,
                   SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(CredentialUIEntry(existing_account_form),
+                                   CredentialUIEntry(new_account_form)));
 }
 
 // Tests whether adding 2 credentials with 1 that has same username and realm in
@@ -1049,6 +1074,13 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
           SavedPasswordsPresenter::AddResult::kConflictInProfileAndAccountStore,
           SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(CredentialUIEntry(existing_profile_form),
+                                   CredentialUIEntry(new_profile_form)));
 }
 
 // Tests whether adding 2 passwords with 1 that already exists in the profile
@@ -1075,6 +1107,13 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
                   SavedPasswordsPresenter::AddResult::kExactMatch,
                   SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(CredentialUIEntry(existing_profile_form),
+                                   CredentialUIEntry(new_profile_form)));
 }
 
 // Tests whether adding whether adding 2 passwords with 1 that already exists in
@@ -1100,6 +1139,13 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
                   SavedPasswordsPresenter::AddResult::kExactMatch,
                   SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(CredentialUIEntry(existing_account_form),
+                                   CredentialUIEntry(new_account_form)));
 }
 
 // Tests whether adding 2 passwords with 1 that already exists in both profile
@@ -1129,6 +1175,13 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
                   SavedPasswordsPresenter::AddResult::kExactMatch,
                   SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(CredentialUIEntry(existing_profile_form),
+                                   CredentialUIEntry(new_profile_form)));
 }
 
 // Tests whether adding 2 passwords notifies observers with credentials in one
@@ -1153,7 +1206,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
       completion_callback;
 
-  EXPECT_CALL(observer, OnSavedPasswordsChanged);
+  EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(2);
 
   CredentialUIEntry account_store_cred_1(account_store_form_1);
   CredentialUIEntry account_store_cred_2(account_store_form_2);
@@ -1166,6 +1219,12 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
                   SavedPasswordsPresenter::AddResult::kSuccess,
                   SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(account_store_cred_1, account_store_cred_2));
   presenter().RemoveObserver(&observer);
 }
 
@@ -1205,6 +1264,12 @@ TEST_F(SavedPasswordsPresenterTest,
                   SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
   presenter().RemoveObserver(&observer);
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(profile_store_cred_2));
 }
 
 TEST_F(SavedPasswordsPresenterTest, AddCredentialsAcceptsOnlyValidURLs) {
@@ -1240,6 +1305,12 @@ TEST_F(SavedPasswordsPresenterTest, AddCredentialsAcceptsOnlyValidURLs) {
                   SavedPasswordsPresenter::AddResult::kSuccess,
                   SavedPasswordsPresenter::AddResult::kInvalid}));
   RunUntilIdle();
+
+  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
+  // the logins.
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(valid_url_cred, valid_android_cred));
 }
 
 // Tests whether passwords added via AddPassword are saved to the correct store

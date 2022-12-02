@@ -84,6 +84,8 @@ class InsecureCredentialsManagerTest : public ::testing::Test {
  protected:
   InsecureCredentialsManagerTest() {
     store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    presenter_.Init();
+    RunUntilIdle();
   }
 
   ~InsecureCredentialsManagerTest() override {
@@ -1199,6 +1201,8 @@ class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
                          /*affiliated_match_helper=*/nullptr);
     account_store_->Init(/*prefs=*/nullptr,
                          /*affiliated_match_helper=*/nullptr);
+    presenter_.Init();
+    RunUntilIdle();
   }
 
   ~InsecureCredentialsManagerWithTwoStoresTest() override {

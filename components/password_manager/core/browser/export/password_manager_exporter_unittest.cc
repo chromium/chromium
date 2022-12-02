@@ -75,6 +75,8 @@ class PasswordManagerExporterTest : public testing::Test {
     exporter_.SetSetPosixFilePermissionsForTesting(
         mock_set_posix_file_permissions_.Get());
     store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    presenter_.Init();
+    task_environment_.RunUntilIdle();
   }
 
   PasswordManagerExporterTest(const PasswordManagerExporterTest&) = delete;

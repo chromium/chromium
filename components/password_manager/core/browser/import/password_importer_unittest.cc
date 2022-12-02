@@ -63,6 +63,8 @@ class PasswordImporterTest : public testing::Test {
                          /*affiliated_match_helper=*/nullptr);
     account_store_->Init(/*prefs=*/nullptr,
                          /*affiliated_match_helper=*/nullptr);
+    presenter_.Init();
+    task_environment_.RunUntilIdle();
   }
 
   PasswordImporterTest(const PasswordImporterTest&) = delete;

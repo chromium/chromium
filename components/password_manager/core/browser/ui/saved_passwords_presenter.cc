@@ -138,7 +138,6 @@ SavedPasswordsPresenter::SavedPasswordsPresenter(
                                                         account_store_.get())) {
   DCHECK(profile_store_);
   DCHECK(affiliation_service_);
-  AddObservers();
 }
 
 SavedPasswordsPresenter::~SavedPasswordsPresenter() {
@@ -146,6 +145,12 @@ SavedPasswordsPresenter::~SavedPasswordsPresenter() {
 }
 
 void SavedPasswordsPresenter::Init() {
+  // Clear old cache.
+  sort_key_to_password_forms_.clear();
+
+  profile_store_->AddObserver(this);
+  if (account_store_)
+    account_store_->AddObserver(this);
   pending_store_updates++;
   profile_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
       weak_ptr_factory_.GetWeakPtr());
@@ -164,12 +169,6 @@ void SavedPasswordsPresenter::RemoveObservers() {
   if (account_store_)
     account_store_->RemoveObserver(this);
   profile_store_->RemoveObserver(this);
-}
-
-void SavedPasswordsPresenter::AddObservers() {
-  profile_store_->AddObserver(this);
-  if (account_store_)
-    account_store_->AddObserver(this);
 }
 
 bool SavedPasswordsPresenter::RemoveCredential(
@@ -300,14 +299,14 @@ void SavedPasswordsPresenter::AddCredentials(
 
   // Invalid credentials are filtered out since AddCredentialAsync() won't
   // perform any checks on the credential and expects a valid credential.
-  std::vector<const CredentialUIEntry*> valid_credentials;
+  std::vector<CredentialUIEntry> valid_credentials;
   valid_credentials.reserve(credentials.size());
 
   base::ranges::transform(credentials, std::back_inserter(results),
                           [&](const CredentialUIEntry& credential) {
                             AddResult result = GetExpectedAddResult(credential);
                             if (result == AddResult::kSuccess)
-                              valid_credentials.emplace_back(&credential);
+                              valid_credentials.push_back(credential);
                             return result;
                           });
 
@@ -319,7 +318,7 @@ void SavedPasswordsPresenter::AddCredentials(
 
   if (valid_credentials.size() == 1) {
     AddCredentialAsync(
-        *valid_credentials[0], type,
+        std::move(valid_credentials[0]), type,
         base::BindOnce(std::move(completion), std::move(results)));
     return;
   }
@@ -328,19 +327,15 @@ void SavedPasswordsPresenter::AddCredentials(
   // beginning.
   RemoveObservers();
 
-  // The observers will have an effect only on the Add after enabling them. Thus
-  // we need to reenable them already on the n-1 transaction.
+  // Reinitialize presenter after all add operations are complete.
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      valid_credentials.size() - 1,
-      base::BindOnce(&SavedPasswordsPresenter::AddObservers,
+      valid_credentials.size(),
+      base::BindOnce(&SavedPasswordsPresenter::Init,
                      weak_ptr_factory_.GetWeakPtr())
-          .Then(base::BindOnce(
-              &SavedPasswordsPresenter::AddCredentialAsync,
-              weak_ptr_factory_.GetWeakPtr(), *valid_credentials.back(), type,
-              base::BindOnce(std::move(completion), std::move(results)))));
+          .Then(base::BindOnce(std::move(completion), std::move(results))));
 
-  for (size_t i = 0; i < valid_credentials.size() - 1; i++)
-    AddCredentialAsync(*valid_credentials[i], type, barrier_closure);
+  for (CredentialUIEntry& credential : valid_credentials)
+    AddCredentialAsync(std::move(credential), type, barrier_closure);
 }
 
 SavedPasswordsPresenter::EditResult

@@ -202,7 +202,6 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void NotifySavedPasswordsChanged();
 
   void RemoveObservers();
-  void AddObservers();
 
   // Returns the expected result for adding |credential|, looks for
   // missing/invalid fields and checks if the credential already exists in the

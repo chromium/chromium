@@ -104,6 +104,8 @@ class BulkLeakCheckServiceAdapterTest : public ::testing::Test {
     prefs_.registry()->RegisterBooleanPref(::prefs::kSafeBrowsingEnabled, true);
     prefs_.registry()->RegisterBooleanPref(::prefs::kSafeBrowsingEnhanced,
                                            false);
+    presenter_.Init();
+    RunUntilIdle();
   }
 
   ~BulkLeakCheckServiceAdapterTest() override {
