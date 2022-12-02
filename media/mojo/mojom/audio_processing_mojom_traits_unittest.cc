@@ -27,8 +27,6 @@ TEST(AudioProcessingMojomTraitsTest, AudioProcessingSettings) {
   settings_in.transient_noise_suppression =
       !settings_in.transient_noise_suppression;
   settings_in.automatic_gain_control = !settings_in.automatic_gain_control;
-  settings_in.experimental_automatic_gain_control =
-      !settings_in.experimental_automatic_gain_control;
   settings_in.high_pass_filter = !settings_in.high_pass_filter;
   settings_in.multi_channel_capture_processing =
       !settings_in.multi_channel_capture_processing;

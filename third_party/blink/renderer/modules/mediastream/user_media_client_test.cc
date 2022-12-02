@@ -1044,7 +1044,6 @@ TEST_P(UserMediaClientTest, DefaultConstraintsPropagate) {
   EXPECT_TRUE(properties.goog_noise_suppression);
   EXPECT_TRUE(properties.goog_experimental_noise_suppression);
   EXPECT_TRUE(properties.goog_highpass_filter);
-  EXPECT_TRUE(properties.goog_experimental_auto_gain_control);
 
   EXPECT_TRUE(video_capture_settings.HasValue());
   EXPECT_EQ(video_capture_settings.Width(),
@@ -1101,7 +1100,6 @@ TEST_P(UserMediaClientTest, DefaultTabCapturePropagate) {
   EXPECT_FALSE(properties.goog_noise_suppression);
   EXPECT_FALSE(properties.goog_experimental_noise_suppression);
   EXPECT_FALSE(properties.goog_highpass_filter);
-  EXPECT_FALSE(properties.goog_experimental_auto_gain_control);
 
   EXPECT_TRUE(video_capture_settings.HasValue());
   EXPECT_EQ(video_capture_settings.Width(), blink::kDefaultScreenCastWidth);
@@ -1156,7 +1154,6 @@ TEST_P(UserMediaClientTest, DefaultDesktopCapturePropagate) {
   EXPECT_FALSE(properties.goog_noise_suppression);
   EXPECT_FALSE(properties.goog_experimental_noise_suppression);
   EXPECT_FALSE(properties.goog_highpass_filter);
-  EXPECT_FALSE(properties.goog_experimental_auto_gain_control);
 
   EXPECT_TRUE(video_capture_settings.HasValue());
   EXPECT_EQ(video_capture_settings.Width(), blink::kDefaultScreenCastWidth);
@@ -1217,7 +1214,6 @@ TEST_P(UserMediaClientTest, NonDefaultAudioConstraintsPropagate) {
   EXPECT_FALSE(properties.goog_noise_suppression);
   EXPECT_FALSE(properties.goog_experimental_noise_suppression);
   EXPECT_FALSE(properties.goog_highpass_filter);
-  EXPECT_FALSE(properties.goog_experimental_auto_gain_control);
 }
 
 TEST_P(UserMediaClientTest, CreateWithMandatoryInvalidAudioDeviceId) {

@@ -230,12 +230,6 @@ void CountAudioConstraintUses(ExecutionContext* context,
           &MediaTrackConstraintSetPlatform::goog_auto_gain_control)) {
     counter.Count(WebFeature::kMediaStreamConstraintsGoogAutoGainControl);
   }
-  if (RequestUsesDiscreteConstraint(constraints,
-                                    &MediaTrackConstraintSetPlatform::
-                                        goog_experimental_auto_gain_control)) {
-    counter.Count(
-        WebFeature::kMediaStreamConstraintsGoogExperimentalAutoGainControl);
-  }
   if (RequestUsesDiscreteConstraint(
           constraints,
           &MediaTrackConstraintSetPlatform::goog_noise_suppression)) {

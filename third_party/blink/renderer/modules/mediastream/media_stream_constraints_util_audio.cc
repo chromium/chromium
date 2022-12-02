@@ -479,8 +479,6 @@ class EchoCancellationContainer {
         GetDefaultValueForAudioProperties(echo_cancellation_constraint);
 
     properties->goog_auto_gain_control &= default_audio_processing_value;
-    properties->goog_experimental_auto_gain_control &=
-        default_audio_processing_value;
 
     properties->goog_experimental_echo_cancellation &=
         default_audio_processing_value;
@@ -646,43 +644,26 @@ class AutoGainControlContainer {
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
     BoolSet agc_set = blink::media_constraints::BoolSetFromConstraint(
         constraint_set.goog_auto_gain_control);
-    BoolSet experimentaL_agc_set =
-        blink::media_constraints::BoolSetFromConstraint(
-            constraint_set.goog_experimental_auto_gain_control);
-
     // Apply autoGainControl/googAutoGainControl constraint.
     allowed_values_ = allowed_values_.Intersection(agc_set);
-    if (IsEmpty())
-      return constraint_set.goog_auto_gain_control.GetName();
-    // Apply also googExperimentalAutoGainControl constraint.
-    allowed_values_ = allowed_values_.Intersection(experimentaL_agc_set);
-
-    return IsEmpty()
-               ? constraint_set.goog_experimental_auto_gain_control.GetName()
-               : nullptr;
+    return IsEmpty() ? constraint_set.goog_auto_gain_control.GetName()
+                     : nullptr;
   }
 
   std::tuple<double, bool> SelectSettingsAndScore(
       const ConstraintSet& constraint_set,
       bool default_setting) const {
     BooleanConstraint agc_constraint = constraint_set.goog_auto_gain_control;
-    BooleanConstraint experimental_agc_constraint =
-        constraint_set.goog_experimental_auto_gain_control;
 
-    if (agc_constraint.HasIdeal() || experimental_agc_constraint.HasIdeal()) {
-      bool agc_ideal =
-          agc_constraint.HasIdeal() ? agc_constraint.Ideal() : false;
-      bool experimentaL_agc_ideal = experimental_agc_constraint.HasIdeal()
-                                        ? experimental_agc_constraint.Ideal()
-                                        : false;
-
-      bool combined_ideal = agc_ideal || experimentaL_agc_ideal;
-      if (allowed_values_.Contains(combined_ideal))
-        return std::make_tuple(1.0, combined_ideal);
+    if (agc_constraint.HasIdeal()) {
+      bool agc_ideal = agc_constraint.Ideal();
+      if (allowed_values_.Contains(agc_ideal))
+        return std::make_tuple(1.0, agc_ideal);
     }
 
-    if (allowed_values_.is_universal())
+    if (allowed_values_.is_universal()) {
       return std::make_tuple(0.0, default_setting);
+    }
 
     return std::make_tuple(0.0, allowed_values_.FirstElement());
   }
@@ -909,13 +890,6 @@ class ProcessingBasedContainer {
         auto_gain_control_container_.SelectSettingsAndScore(
             constraint_set, properties.goog_auto_gain_control);
     score += sub_score;
-    // Let goog_experimental_auto_gain_control match the value decided for
-    // goog_auto_gain_control.
-    // TODO(crbug.com/924485): entirely remove
-    // goog_experimental_auto_gain_control in the AudioProcessingProperties
-    // object since no longer needed.
-    properties.goog_experimental_auto_gain_control =
-        properties.goog_auto_gain_control;
 
     for (size_t i = 0; i < kNumBooleanContainerIds; ++i) {
       auto& info = kBooleanPropertyContainerInfoMap[i];
@@ -1557,9 +1531,6 @@ AudioCaptureSettings SelectSettingsAudioCapture(
       constraints.Basic(),
       media_stream_source == blink::kMediaStreamSourceDesktop,
       should_disable_hardware_noise_suppression);
-  DCHECK_EQ(settings.audio_processing_properties().goog_auto_gain_control,
-            settings.audio_processing_properties()
-                .goog_experimental_auto_gain_control);
 
   return settings;
 }

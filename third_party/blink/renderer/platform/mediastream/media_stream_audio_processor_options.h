@@ -75,8 +75,6 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   // removal).
   bool goog_experimental_noise_suppression = true;
   bool goog_highpass_filter = true;
-  // TODO(bugs.webrtc.org/7494): Effectively a no-op, remove this flag.
-  bool goog_experimental_auto_gain_control = true;
 };
 }  // namespace blink
 

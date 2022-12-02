@@ -86,8 +86,7 @@ std::string GetAudioProcesingPropertiesLogString(
       "goog_experimental_echo_cancellation: %s, "
       "goog_noise_suppression: %s, "
       "goog_experimental_noise_suppression: %s, "
-      "goog_highpass_filter: %s, "
-      "goog_experimental_agc: %s, ",
+      "goog_highpass_filter: %s, ",
       aec_to_string(properties.echo_cancellation_type),
       bool_to_string(properties.disable_hw_noise_suppression),
       bool_to_string(properties.goog_audio_mirroring),
@@ -95,8 +94,7 @@ std::string GetAudioProcesingPropertiesLogString(
       bool_to_string(properties.goog_experimental_echo_cancellation),
       bool_to_string(properties.goog_noise_suppression),
       bool_to_string(properties.goog_experimental_noise_suppression),
-      bool_to_string(properties.goog_highpass_filter),
-      bool_to_string(properties.goog_experimental_auto_gain_control));
+      bool_to_string(properties.goog_highpass_filter));
   return str;
 }
 
