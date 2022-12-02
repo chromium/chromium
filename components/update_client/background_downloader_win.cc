@@ -361,9 +361,18 @@ bool JobFileUrlEqualPredicate(ComPtr<IBackgroundCopyJob> job, const GURL& url) {
 // Creates an instance of the BITS manager.
 HRESULT CreateBitsManager(ComPtr<IBackgroundCopyManager>* bits_manager) {
   ComPtr<IBackgroundCopyManager> local_bits_manager;
-  HRESULT hr =
-      ::CoCreateInstance(__uuidof(BackgroundCopyManager), nullptr, CLSCTX_ALL,
-                         IID_PPV_ARGS(&local_bits_manager));
+  HRESULT hr;
+  {
+    // CoCreateInstance may acquire the loader lock to load a library. Doing it
+    // at background priority can cause a priority inversion with the main
+    // thread, perceived as a hang by the user.
+    // SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY() mitigates this problem
+    // by boosting the thread's priority. See crbug.com/1295941.
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+    hr = ::CoCreateInstance(__uuidof(BackgroundCopyManager), nullptr,
+                            CLSCTX_ALL, IID_PPV_ARGS(&local_bits_manager));
+  }
+
   if (FAILED(hr)) {
     return hr;
   }
