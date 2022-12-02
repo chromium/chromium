@@ -5,9 +5,9 @@
 #include "media/gpu/windows/dxva_picture_buffer_win.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "gpu/command_buffer/service/shared_image/gl_image_pbuffer.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/dxva_video_decode_accelerator_win.h"
+#include "media/gpu/windows/gl_image_pbuffer.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 #include "ui/gl/gl_bindings.h"
@@ -139,8 +139,7 @@ bool PbufferPictureBuffer::Initialize(const DXVAVideoDecodeAccelerator& decoder,
       egl_display, EGL_D3D_TEXTURE_2D_SHARE_HANDLE_ANGLE, texture_share_handle_,
       egl_config, attrib_list);
   RETURN_ON_FAILURE(decoding_surface_, "Failed to create surface", false);
-  gl_image_ =
-      base::MakeRefCounted<gpu::GLImagePbuffer>(size(), decoding_surface_);
+  gl_image_ = base::MakeRefCounted<GLImagePbuffer>(size(), decoding_surface_);
   if (decoder.d3d11_device_ && decoder.use_keyed_mutex_) {
     void* keyed_mutex = nullptr;
     EGLBoolean ret =

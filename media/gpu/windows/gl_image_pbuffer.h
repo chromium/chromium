@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_H_
-#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_H_
+#ifndef MEDIA_GPU_WINDOWS_GL_IMAGE_PBUFFER_H_
+#define MEDIA_GPU_WINDOWS_GL_IMAGE_PBUFFER_H_
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
-#include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_image.h"
 
-namespace gpu {
+namespace media {
 
 // GLImagePbuffer is just used to hold references to the underlying
 // image content so it can be destroyed when the textures are.
-class GPU_GLES2_EXPORT GLImagePbuffer final : public gl::GLImage {
+class GLImagePbuffer final : public gl::GLImage {
  public:
   GLImagePbuffer(const gfx::Size& size, EGLSurface surface);
 
@@ -47,6 +46,6 @@ class GPU_GLES2_EXPORT GLImagePbuffer final : public gl::GLImage {
   EGLSurface surface_;
 };
 
-}  // namespace gpu
+}  // namespace media
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_H_
+#endif  // MEDIA_GPU_WINDOWS_GL_IMAGE_PBUFFER_H_

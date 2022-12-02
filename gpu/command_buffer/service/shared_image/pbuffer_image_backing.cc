@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image/gl_image_pbuffer_backing.h"
+#include "gpu/command_buffer/service/shared_image/pbuffer_image_backing.h"
 
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -22,8 +22,7 @@
 namespace gpu {
 
 // static
-std::unique_ptr<GLImagePbufferBacking>
-GLImagePbufferBacking::CreateFromGLTexture(
+std::unique_ptr<PbufferImageBacking> PbufferImageBacking::CreateFromGLTexture(
     base::OnceClosure on_destruction_closure,
     const Mailbox& mailbox,
     viz::ResourceFormat format,
@@ -37,7 +36,7 @@ GLImagePbufferBacking::CreateFromGLTexture(
 
   auto si_format = viz::SharedImageFormat::SinglePlane(format);
   auto shared_image =
-      base::WrapUnique<GLImagePbufferBacking>(new GLImagePbufferBacking(
+      base::WrapUnique<PbufferImageBacking>(new PbufferImageBacking(
           std::move(on_destruction_closure), mailbox, si_format, size,
           color_space, surface_origin, alpha_type, usage,
           std::move(wrapped_gl_texture)));
@@ -45,7 +44,7 @@ GLImagePbufferBacking::CreateFromGLTexture(
   return shared_image;
 }
 
-GLImagePbufferBacking::GLImagePbufferBacking(
+PbufferImageBacking::PbufferImageBacking(
     base::OnceClosure on_destruction_closure,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
@@ -68,7 +67,7 @@ GLImagePbufferBacking::GLImagePbufferBacking(
       on_destruction_closure_runner_(std::move(on_destruction_closure)),
       passthrough_texture_(std::move(passthrough_texture)) {}
 
-GLImagePbufferBacking::~GLImagePbufferBacking() {
+PbufferImageBacking::~PbufferImageBacking() {
   // If the cached promise texture is referencing the GL texture, then it needs
   // to be deleted, too.
   if (cached_promise_texture_) {
@@ -83,19 +82,19 @@ GLImagePbufferBacking::~GLImagePbufferBacking() {
   passthrough_texture_.reset();
 }
 
-GLenum GLImagePbufferBacking::GetGLTarget() const {
+GLenum PbufferImageBacking::GetGLTarget() const {
   return GL_TEXTURE_2D;
 }
 
-GLuint GLImagePbufferBacking::GetGLServiceId() const {
+GLuint PbufferImageBacking::GetGLServiceId() const {
   return passthrough_texture_->service_id();
 }
 
-scoped_refptr<gfx::NativePixmap> GLImagePbufferBacking::GetNativePixmap() {
+scoped_refptr<gfx::NativePixmap> PbufferImageBacking::GetNativePixmap() {
   return nullptr;
 }
 
-void GLImagePbufferBacking::OnMemoryDump(
+void PbufferImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
@@ -112,27 +111,27 @@ void GLImagePbufferBacking::OnMemoryDump(
   }
 }
 
-SharedImageBackingType GLImagePbufferBacking::GetType() const {
+SharedImageBackingType PbufferImageBacking::GetType() const {
   return SharedImageBackingType::kGLImage;
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
-GLImagePbufferBacking::ProduceGLTexture(SharedImageManager* manager,
-                                        MemoryTypeTracker* tracker) {
+PbufferImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                      MemoryTypeTracker* tracker) {
   NOTREACHED();
   return nullptr;
 }
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
-GLImagePbufferBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
-                                                   MemoryTypeTracker* tracker) {
+PbufferImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
+                                                 MemoryTypeTracker* tracker) {
   DCHECK(passthrough_texture_);
   return std::make_unique<GLTexturePassthroughGLCommonRepresentation>(
       manager, this, this, tracker, passthrough_texture_);
 }
 
-std::unique_ptr<OverlayImageRepresentation>
-GLImagePbufferBacking::ProduceOverlay(SharedImageManager* manager,
-                                      MemoryTypeTracker* tracker) {
+std::unique_ptr<OverlayImageRepresentation> PbufferImageBacking::ProduceOverlay(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
   // PbufferPictureBuffer does not support overlays (
   // PbufferPictureBuffer::AllowOverlay() returns false), and so this method
   // should never be invoked.
@@ -140,7 +139,7 @@ GLImagePbufferBacking::ProduceOverlay(SharedImageManager* manager,
   return nullptr;
 }
 
-std::unique_ptr<DawnImageRepresentation> GLImagePbufferBacking::ProduceDawn(
+std::unique_ptr<DawnImageRepresentation> PbufferImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
@@ -154,7 +153,7 @@ std::unique_ptr<DawnImageRepresentation> GLImagePbufferBacking::ProduceDawn(
       factory(), manager, tracker, device, backend_type, this, true);
 }
 
-std::unique_ptr<SkiaImageRepresentation> GLImagePbufferBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> PbufferImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -176,16 +175,16 @@ std::unique_ptr<SkiaImageRepresentation> GLImagePbufferBacking::ProduceSkia(
       cached_promise_texture_, tracker);
 }
 
-bool GLImagePbufferBacking::GLTextureImageRepresentationBeginAccess(
+bool PbufferImageBacking::GLTextureImageRepresentationBeginAccess(
     bool readonly) {
   passthrough_texture_->set_is_bind_pending(false);
   return true;
 }
 
-void GLImagePbufferBacking::GLTextureImageRepresentationEndAccess(
-    bool readonly) {}
+void PbufferImageBacking::GLTextureImageRepresentationEndAccess(bool readonly) {
+}
 
-void GLImagePbufferBacking::GLTextureImageRepresentationRelease(
+void PbufferImageBacking::GLTextureImageRepresentationRelease(
     bool has_context) {
   // No action needed: This class retains the passed-in texture for its
   // lifetime, and releases it in its destructor.

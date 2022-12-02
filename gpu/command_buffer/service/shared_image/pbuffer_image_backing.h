@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_
-#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_PBUFFER_IMAGE_BACKING_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_PBUFFER_IMAGE_BACKING_H_
 
 #include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
@@ -17,15 +17,15 @@ namespace gpu {
 // Used with the legacy mailbox implementation in //media's DXVA video decoder.
 // DO NOT USE FOR ANY OTHER PURPOSE.
 // TODO(crbug.com/1384438): Remove this class.
-class GPU_GLES2_EXPORT GLImagePbufferBacking
+class GPU_GLES2_EXPORT PbufferImageBacking
     : public ClearTrackingSharedImageBacking,
       public GLTextureImageRepresentationClient {
  public:
-  // Used when GLImagePbufferBacking is serving as a temporary SharedImage
+  // Used when PbufferImageBacking is serving as a temporary SharedImage
   // wrapper to an already-allocated texture. The returned backing will not
   // create any new textures.
   // |on_destruction_closure| is invoked on destruction of this object.
-  static std::unique_ptr<GLImagePbufferBacking> CreateFromGLTexture(
+  static std::unique_ptr<PbufferImageBacking> CreateFromGLTexture(
       base::OnceClosure on_destruction_closure,
       const Mailbox& mailbox,
       viz::ResourceFormat format,
@@ -36,15 +36,15 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
       uint32_t usage,
       scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture);
 
-  GLImagePbufferBacking(const GLImagePbufferBacking& other) = delete;
-  GLImagePbufferBacking& operator=(const GLImagePbufferBacking& other) = delete;
-  ~GLImagePbufferBacking() override;
+  PbufferImageBacking(const PbufferImageBacking& other) = delete;
+  PbufferImageBacking& operator=(const PbufferImageBacking& other) = delete;
+  ~PbufferImageBacking() override;
 
   GLenum GetGLTarget() const;
   GLuint GetGLServiceId() const;
 
  private:
-  GLImagePbufferBacking(
+  PbufferImageBacking(
       base::OnceClosure on_destruction_closure,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -95,4 +95,4 @@ class GPU_GLES2_EXPORT GLImagePbufferBacking
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_PBUFFER_BACKING_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_PBUFFER_IMAGE_BACKING_H_

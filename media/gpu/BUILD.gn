@@ -236,6 +236,8 @@ component("gpu") {
       "windows/dxva_picture_buffer_win.h",
       "windows/dxva_video_decode_accelerator_win.cc",
       "windows/dxva_video_decode_accelerator_win.h",
+      "windows/gl_image_pbuffer.cc",
+      "windows/gl_image_pbuffer.h",
       "windows/init_guid.cc",
       "windows/media_foundation_video_encode_accelerator_win.cc",
       "windows/media_foundation_video_encode_accelerator_win.h",

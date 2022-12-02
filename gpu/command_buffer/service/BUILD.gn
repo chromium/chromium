@@ -567,10 +567,8 @@ target(link_target_type, "gles2_sources") {
       "shared_image/dxgi_swap_chain_image_backing.h",
       "shared_image/dxgi_swap_chain_image_representation.cc",
       "shared_image/dxgi_swap_chain_image_representation.h",
-      "shared_image/gl_image_pbuffer.cc",
-      "shared_image/gl_image_pbuffer.h",
-      "shared_image/gl_image_pbuffer_backing.cc",
-      "shared_image/gl_image_pbuffer_backing.h",
+      "shared_image/pbuffer_image_backing.cc",
+      "shared_image/pbuffer_image_backing.h",
     ]
     libs = [ "dxguid.lib" ]
   }

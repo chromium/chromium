@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image/gl_image_pbuffer.h"
+#include "media/gpu/windows/gl_image_pbuffer.h"
 
 #include "base/logging.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 
-namespace gpu {
+namespace media {
 
 GLImagePbuffer::GLImagePbuffer(const gfx::Size& size, EGLSurface surface)
     : size_(size), surface_(surface) {}
@@ -63,4 +63,4 @@ GLImagePbuffer::~GLImagePbuffer() {
   eglDestroySurface(egl_display, surface_);
 }
 
-}  // namespace gpu
+}  // namespace media
