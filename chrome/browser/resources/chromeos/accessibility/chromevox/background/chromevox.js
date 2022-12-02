@@ -6,7 +6,7 @@
  * @fileoverview Defines a global object that holds references to the three
  * different output engines.
  */
-import {AbstractEarcons} from '../common/abstract_earcons.js';
+import {EarconInterface} from '../common/earcon_interface.js';
 import {TtsInterface} from '../common/tts_interface.js';
 
 import {BrailleInterface} from './braille/braille_interface.js';
@@ -14,7 +14,7 @@ import {BrailleInterface} from './braille/braille_interface.js';
 export const ChromeVox = {
   /** @type {BrailleInterface} */
   braille: null,
-  /** @type {AbstractEarcons} */
+  /** @type {EarconInterface} */
   earcons: null,
   /** @type {TtsInterface} */
   tts: null,

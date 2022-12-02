@@ -4,11 +4,7 @@
 
 /**
  * @fileoverview Base class for implementing earcons.
- *
- * When adding earcons, please add them to getEarconName and getEarconId.
- *
  */
-import {LocalStorage} from '../../common/local_storage.js';
 
 /**
  * Earcon names.
@@ -72,7 +68,7 @@ export const EarconDescription = {
 };
 
 
-export class AbstractEarcons {
+export class EarconInterface {
   /**
    * Plays the specified earcon sound.
    * @param {Earcon} earcon An earcon identifier.
@@ -91,23 +87,11 @@ export class AbstractEarcons {
    * Whether or not earcons are available.
    * @return {boolean} True if earcons are available.
    */
-  earconsAvailable() {
-    return true;
-  }
+  earconsAvailable() {}
 
-  /**
-   * Whether or not earcons are enabled.
-   * @return {boolean} True if earcons are enabled.
-   */
-  get enabled() {
-    return LocalStorage.get('earcons');
-  }
+  /** @return {boolean} */
+  get enabled() {}
 
-  /**
-   * Set whether or not earcons are enabled.
-   * @param {boolean} value True turns on earcons, false turns off earcons.
-   */
-  set enabled(value) {
-    LocalStorage.set('earcons', value);
-  }
+  /** @param {boolean} enabled */
+  set enabled(enabled) {}
 }

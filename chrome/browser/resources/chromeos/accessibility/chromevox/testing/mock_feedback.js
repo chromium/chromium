@@ -129,7 +129,7 @@ MockFeedback = class {
 
     const MockEarcons = function() {};
     MockEarcons.prototype = {
-      __proto__: AbstractEarcons.prototype,
+      __proto__: EarconInterface.prototype,
       playEarcon: this.addEarcon_.bind(this),
     };
 
