@@ -3105,7 +3105,7 @@ const char kLacrosAccessibilityLargeCursorEnabled[] =
 // settings.a11y.screen_magnifier_type2, but we only shipped one type (full).
 // See http://crbug.com/170850 for history.
 const char kLacrosAccessibilityScreenMagnifierEnabled[] =
-    "lacros.ettings.a11y.screen_magnifier";
+    "lacros.settings.a11y.screen_magnifier";
 
 // A boolean pref which determines whether select-to-speak is enabled.
 const char kLacrosAccessibilitySelectToSpeakEnabled[] =
