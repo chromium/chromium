@@ -298,6 +298,9 @@ try_.builder(
 
 try_.builder(
     name = "linux-chromeos-annotator-rel",
+    mirrors = [
+        "ci/linux-chromeos-annotator-rel",
+    ],
 )
 
 try_.builder(
