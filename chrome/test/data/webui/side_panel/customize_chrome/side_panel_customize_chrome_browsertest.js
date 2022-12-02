@@ -62,6 +62,24 @@ var SidePanelCustomizeChromeCategoriesTest =
   }
 };
 
+var SidePanelCustomizeChromeColorTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/color_test.js';
+  }
+};
+
+var SidePanelCustomizeChromeColorsTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/colors_test.js';
+  }
+};
+
 var SidePanelCustomizeChromeThemesTest =
     class extends SidePanelCustomizeChromeBrowserTest {
   /** @override */
@@ -84,6 +102,14 @@ TEST_F('SidePanelCustomizeChromeAppearanceTest', 'All', function() {
 });
 
 TEST_F('SidePanelCustomizeChromeCategoriesTest', 'All', function() {
+  mocha.run();
+});
+
+TEST_F('SidePanelCustomizeChromeColorTest', 'All', function() {
+  mocha.run();
+});
+
+TEST_F('SidePanelCustomizeChromeColorsTest', 'All', function() {
   mocha.run();
 });
 

@@ -1,0 +1,29 @@
+<style>
+  :host,
+  svg {
+    display: block;
+    height: 50px;
+    width: 50px;
+  }
+
+  #background {
+    fill: var(--customize-chrome-color-background-color);
+  }
+
+  #foreground {
+    fill: var(--customize-chrome-color-foreground-color);
+  }
+</style>
+<!-- TODO(crbug.com/1384229): Allow clicking. -->
+<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+  <circle id="foreground" cx="25" cy="25" r="25">
+  </circle>
+  <clipPath id="bottomHalf">
+    <rect x="1" y="25" width="48" height="24"></rect>
+  </clipPath>
+  <circle id="background" cx="25" cy="25" r="24"
+      clip-path="url(#bottomHalf)"></circle>
+  <!-- TODO(crbug.com/1384229): Add ability to be selected and show check mark
+                                if so. -->
+</svg>
