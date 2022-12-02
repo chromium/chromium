@@ -208,13 +208,34 @@ DrmDisplayHostManager::DrmDisplayHostManager(
   auto display_infos =
       GetAvailableDisplayControllerInfos(primary_drm_device_handle_->fd());
   has_dummy_display_ = !display_infos.empty();
-  for (const auto& display_info : display_infos) {
-    displays_.push_back(std::make_unique<DrmDisplayHost>(
-        proxy_,
+  MapEdidIdToDisplaySnapshot edid_id_collision_map;
+  for (auto& display_info : display_infos) {
+    // Create a dummy DisplaySnapshot and resolve display ID collisions.
+    std::unique_ptr<display::DisplaySnapshot> current_display_snapshot =
         CreateDisplaySnapshot(
             display_info.get(), primary_drm_device_handle_->fd(),
-            primary_drm_device_handle_->sys_path(), 0, gfx::Point()),
-        true /* is_dummy */));
+            primary_drm_device_handle_->sys_path(), 0, gfx::Point());
+
+    const auto colliding_display_snapshot_iter =
+        edid_id_collision_map.find(current_display_snapshot->edid_display_id());
+    if (colliding_display_snapshot_iter != edid_id_collision_map.end()) {
+      // Resolve collisions by adding each colliding display's connector index
+      // to its display ID.
+      current_display_snapshot->AddIndexToDisplayId();
+
+      display::DisplaySnapshot* colliding_display_snapshot =
+          colliding_display_snapshot_iter->second;
+      colliding_display_snapshot->AddIndexToDisplayId();
+      edid_id_collision_map[colliding_display_snapshot->edid_display_id()] =
+          colliding_display_snapshot;
+    }
+
+    // Update the map with the new (or potentially resolved) display snapshot.
+    edid_id_collision_map[current_display_snapshot->edid_display_id()] =
+        current_display_snapshot.get();
+
+    displays_.push_back(std::make_unique<DrmDisplayHost>(
+        proxy_, std::move(current_display_snapshot), true /* is_dummy */));
   }
 }
 

@@ -21,6 +21,9 @@ using MovableDisplaySnapshots =
 
 using EventPropertyMap = base::flat_map<std::string, std::string>;
 
+using MapEdidIdToDisplaySnapshot =
+    base::flat_map<int64_t, display::DisplaySnapshot*>;
+
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_COMMON_DISPLAY_TYPES_H_

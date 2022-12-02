@@ -69,11 +69,12 @@ class DrmDisplay {
   uint32_t crtc() const { return crtc_; }
   uint32_t connector() const;
   const std::vector<drmModeModeInfo>& modes() const { return modes_; }
+  const gfx::Point& origin() { return origin_; }
 
-  std::unique_ptr<display::DisplaySnapshot> Update(
-      HardwareDisplayControllerInfo* info,
-      uint8_t device_index);
-
+  // Updates the internal state of this display in accordance to |info| and
+  // |display_snapshot|.
+  void Update(HardwareDisplayControllerInfo* info,
+              const display::DisplaySnapshot* display_snapshot);
   void SetOrigin(const gfx::Point origin) { origin_ = origin; }
   bool GetHDCPState(display::HDCPState* state,
                     display::ContentProtectionMethod* protection_method);
