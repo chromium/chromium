@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/types/pass_key.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -581,9 +582,18 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
 
   frame_delegate_ = FencedFrameDelegate::Create(this);
 
-  KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
-  if (inner_config_) {
-    // If there is an inner config, the url will be retrieved from it.
+  KURL url;
+  // If there is an inner config, the urn or url will be retrieved from it.
+  if (!inner_config_) {
+    url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
+  } else if (inner_config_->urn(PassKey())) {
+    // TODO(lbrady) Right now, the URN should always be null. It will eventually
+    // be able to have a value read into it. We will enable the DCHECK at that
+    // point.
+    // DCHECK(IsValidUrnUuidURL(GURL(inner_config_->urn().value())));
+    NOTREACHED();
+    url = inner_config_->urn(PassKey()).value();
+  } else {
     DCHECK(inner_config_->url());
     url = inner_config_->GetValueIgnoringVisibility<
         FencedFrameInnerConfig::Attribute::kURL>();

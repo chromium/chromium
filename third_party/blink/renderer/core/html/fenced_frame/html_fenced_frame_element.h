@@ -28,6 +28,7 @@ class KURL;
 // - Passing --enable-features=FencedFrames
 class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   DEFINE_WRAPPERTYPEINFO();
+  using PassKey = base::PassKey<HTMLFencedFrameElement>;
 
  public:
   // For a while there will be two underlying implementations of Fenced Frames:

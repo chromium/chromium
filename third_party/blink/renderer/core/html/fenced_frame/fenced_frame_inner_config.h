@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_INNER_CONFIG_H_
 
 #include "base/notreached.h"
+#include "base/types/pass_key.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_html_fenced_frame_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_opaqueproperty_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_opaqueproperty_usvstring.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -68,6 +70,10 @@ class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
     NOTREACHED();
   }
 
+  absl::optional<KURL> urn(base::PassKey<HTMLFencedFrameElement>) {
+    return urn_;
+  }
+
  private:
   KURL url_;
   uint32_t width_;
@@ -126,6 +132,12 @@ class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
     }
     NOTREACHED();
   }
+
+  // The URN attribute is used as the key in the FencedFrameURNMapping map.
+  // When we navigate a fenced frame using a `FencedFrameInnerConfig` object
+  // that has a non-null `urn_`, we navigate to that URN instead of the
+  // platform-provided URL. This value is never exposed to the web platform.
+  absl::optional<KURL> urn_;
 };
 
 template <>
