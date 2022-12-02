@@ -85,6 +85,7 @@ xkb:lt::lit           lt             lt        LT login
 xkb:lv:apostrophe:lav lv(apostrophe) lv        LV login
 xkb:hr::scr           hr             hr        HR login
 xkb:gb:extd:eng       gb(extd)       en,en-GB  GB login
+xkb:pk::eng           us             en,en-PK  PK login
 xkb:za:gb:eng         gb(extd)       en,en-ZA  ZA login
 xkb:gb:dvorak:eng     gb(dvorak)     en,en-GB  DV login
 xkb:fi::fin           fi             fi        FI login
