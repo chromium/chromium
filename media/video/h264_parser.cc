@@ -247,6 +247,8 @@ H264SliceHeader::H264SliceHeader() {
   memset(this, 0, sizeof(*this));
 }
 
+H264SliceHeader::H264SliceHeader(const H264SliceHeader& t) = default;
+
 H264SEIMessage::H264SEIMessage() {
   memset(this, 0, sizeof(*this));
 }
