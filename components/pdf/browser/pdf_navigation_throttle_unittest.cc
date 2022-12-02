@@ -48,6 +48,8 @@ class PdfNavigationThrottleTest : public content::RenderViewHostTestHarness {
             url, render_frame_host);
     navigation_handle_->set_initiator_origin(
         render_frame_host->GetLastCommittedOrigin());
+    navigation_handle_->set_source_site_instance(
+        render_frame_host->GetSiteInstance());
   }
 
   std::unique_ptr<PdfNavigationThrottle> CreateNavigationThrottle(
