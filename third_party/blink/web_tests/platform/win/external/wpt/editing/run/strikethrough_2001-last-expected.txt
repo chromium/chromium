@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 123 tests; 101 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 123 tests; 104 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL [["stylewithcss","true"],["strikethrough",""]] "foo<s>[bar]</s>baz" queryCommandState("strikethrough") after assert_equals: Wrong result returned expected false but got true
 FAIL [["stylewithcss","true"],["strikethrough",""]] "foo<s>[bar]</s>baz" queryCommandValue("strikethrough") after assert_equals: Wrong result returned expected "" but got "true"
 PASS [["stylewithcss","false"],["strikethrough",""]] "foo<s>[bar]</s>baz": execCommand("stylewithcss", false, "false") return value
@@ -52,7 +52,7 @@ PASS [["stylewithcss","false"],["strikethrough",""]] "foo{<s>bar</s>}baz" queryC
 FAIL [["stylewithcss","false"],["strikethrough",""]] "foo{<s>bar</s>}baz" queryCommandValue("strikethrough") after assert_equals: Wrong result returned expected "" but got "false"
 PASS [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz": execCommand("strikethrough", false, "") return value
 PASS [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" checks for modifications to non-editable content
-FAIL [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<span style=\"text-decoration:line-through\">obar</span>baz" but got "fo<strike>ob</strike><span style=\"text-decoration:line-through\">ar</span>baz"
+FAIL [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<strike>o</strike><s>bar</s>baz" but got "fo<strike>ob</strike><span style=\"text-decoration:line-through\">ar</span>baz"
 PASS [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" queryCommandIndeterm("strikethrough") before
 PASS [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" queryCommandState("strikethrough") before
 FAIL [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</span>baz" queryCommandValue("strikethrough") before assert_equals: Wrong result returned expected "" but got "false"
@@ -62,7 +62,7 @@ FAIL [["strikethrough",""]] "fo[o<span style=text-decoration:line-through>b]ar</
 PASS [["stylewithcss","true"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>": execCommand("strikethrough", false, "") return value
 PASS [["stylewithcss","true"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"text-decoration:line-through\">fo</span>ob<span style=\"text-decoration:line-through\">ar</span>" but got "<strike>fo</strike>ob<s>ar</s>"
+PASS [["stylewithcss","true"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" compare innerHTML
 PASS [["stylewithcss","true"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" queryCommandValue("stylewithcss") before
@@ -78,7 +78,7 @@ FAIL [["stylewithcss","true"],["strikethrough",""]] "<strike>fo[o</strike><s>b]a
 PASS [["stylewithcss","false"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>": execCommand("strikethrough", false, "") return value
 PASS [["stylewithcss","false"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<s>fo</s>ob<s>ar</s>" but got "<strike>fo</strike>ob<s>ar</s>"
+PASS [["stylewithcss","false"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" compare innerHTML
 PASS [["stylewithcss","false"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["strikethrough",""]] "<strike>fo[o</strike><s>b]ar</s>" queryCommandValue("stylewithcss") before
@@ -94,7 +94,7 @@ FAIL [["stylewithcss","false"],["strikethrough",""]] "<strike>fo[o</strike><s>b]
 PASS [["stylewithcss","true"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>": execCommand("strikethrough", false, "") return value
 PASS [["stylewithcss","true"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"text-decoration:line-through\">fo</span>o<del>bar</del>" but got "<s>fo</s>o<del>bar</del>"
+PASS [["stylewithcss","true"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>" compare innerHTML
 PASS [["stylewithcss","true"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["strikethrough",""]] "<s>fo[o</s><del>b]ar</del>" queryCommandValue("stylewithcss") before

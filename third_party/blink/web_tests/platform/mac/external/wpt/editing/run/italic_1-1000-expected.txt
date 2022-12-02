@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 841 PASS, 159 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 843 PASS, 157 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["italic",""]] "foo[]bar": execCommand("italic", false, "") return value
 PASS [["italic",""]] "foo[]bar" checks for modifications to non-editable content
 PASS [["italic",""]] "foo[]bar" compare innerHTML
@@ -843,7 +843,7 @@ FAIL [["stylewithcss","false"],["italic",""]] "foo<dfn>b[a]r</dfn>baz" queryComm
 PASS [["stylewithcss","true"],["italic",""]] "foo<em>b[a]r</em>baz": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["italic",""]] "foo<em>b[a]r</em>baz": execCommand("italic", false, "") return value
 PASS [["stylewithcss","true"],["italic",""]] "foo<em>b[a]r</em>baz" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["italic",""]] "foo<em>b[a]r</em>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<span style=\"font-style:italic\">b</span>a<span style=\"font-style:italic\">r</span>baz" but got "foo<em>b</em>a<em>r</em>baz"
+PASS [["stylewithcss","true"],["italic",""]] "foo<em>b[a]r</em>baz" compare innerHTML
 PASS [["stylewithcss","true"],["italic",""]] "foo<em>b[a]r</em>baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["italic",""]] "foo<em>b[a]r</em>baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["italic",""]] "foo<em>b[a]r</em>baz" queryCommandValue("stylewithcss") before
@@ -859,7 +859,7 @@ FAIL [["stylewithcss","true"],["italic",""]] "foo<em>b[a]r</em>baz" queryCommand
 PASS [["stylewithcss","false"],["italic",""]] "foo<em>b[a]r</em>baz": execCommand("stylewithcss", false, "false") return value
 PASS [["stylewithcss","false"],["italic",""]] "foo<em>b[a]r</em>baz": execCommand("italic", false, "") return value
 PASS [["stylewithcss","false"],["italic",""]] "foo<em>b[a]r</em>baz" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["italic",""]] "foo<em>b[a]r</em>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<i>b</i>a<i>r</i>baz" but got "foo<em>b</em>a<em>r</em>baz"
+PASS [["stylewithcss","false"],["italic",""]] "foo<em>b[a]r</em>baz" compare innerHTML
 PASS [["stylewithcss","false"],["italic",""]] "foo<em>b[a]r</em>baz" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["italic",""]] "foo<em>b[a]r</em>baz" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["italic",""]] "foo<em>b[a]r</em>baz" queryCommandValue("stylewithcss") before

@@ -136166,7 +136166,7 @@
      ],
      "initial-letter": {
       "Initial-letter-breaking-rtl.html": [
-       "3f8327fda904b73d1b79bb2f075624e36eb93fe9",
+       "14222f4ca9463e6aca9e68a7c364e00b73ba7b5d",
        [
         null,
         [
@@ -136179,7 +136179,7 @@
        ]
       ],
       "Initial-letter-breaking-vlr.html": [
-       "c432ed81112e5e0022916c4dec57d5dfc5c636ce",
+       "16c54c66f539d2e596c89710364691a7ec275242",
        [
         null,
         [
@@ -136192,7 +136192,7 @@
        ]
       ],
       "Initial-letter-breaking-vrl.html": [
-       "e7d9c2ad908c040072e971472434dd12377a6bbf",
+       "146fd5c5d216ff6569cce33dbbc913f54afb0711",
        [
         null,
         [
@@ -136205,7 +136205,7 @@
        ]
       ],
       "Initial-letter-breaking.html": [
-       "e6d15162eca584ad13d4d53ac688ee352d30658f",
+       "bd199fc2bb6d5d01d6fd9a7f7a9567995612b80b",
        [
         null,
         [
@@ -136490,39 +136490,39 @@
         {}
        ]
       ],
-      "initial-letter-floats-003.html": [
-       "c16645fc0c3567488568b0197901005097ec0724",
+      "initial-letter-float-003.html": [
+       "985227533aec0e2fd717c14c1157cd193a17d819",
        [
         null,
         [
          [
-          "/css/css-inline/initial-letter/initial-letter-floats-003-ref.html",
+          "/css/css-inline/initial-letter/initial-letter-float-003-ref.html",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "initial-letter-floats-004.html": [
-       "32beedf5f8e679b17fb1f0d3722cf607667a8986",
+      "initial-letter-float-004.html": [
+       "07dd52cc9c052781955d1b2db31384899e590c34",
        [
         null,
         [
          [
-          "/css/css-inline/initial-letter/initial-letter-floats-004-ref.html",
+          "/css/css-inline/initial-letter/initial-letter-float-004-ref.html",
           "=="
          ]
         ],
         {}
        ]
       ],
-      "initial-letter-floats-005.html": [
-       "0ad557bff092c78a9f1aae192f56364d7385113d",
+      "initial-letter-float-005.html": [
+       "6cdd851e4dcd19edf8b52feabaa2a60231a0cb25",
        [
         null,
         [
          [
-          "/css/css-inline/initial-letter/initial-letter-floats-005-ref.html",
+          "/css/css-inline/initial-letter/initial-letter-float-005-ref.html",
           "=="
          ]
         ],
@@ -136549,6 +136549,19 @@
         [
          [
           "/css/css-inline/initial-letter/initial-letter-indentation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "initial-letter-layout-text-decoration-underline.html": [
+       "af70ecd1bd6f597ae75cceb21255127175c1e03b",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/initial-letter/initial-letter-layout-text-decoration-underline-ref.html",
           "=="
          ]
         ],
@@ -243576,7 +243589,7 @@
        },
        "font-element-text-decoration-color": {
         "001-a.html": [
-         "c8ed1903fd839c81a3199e4cabe3a0b52cc0c369",
+         "2ac6f446496ada6bd86f208aaafadbab01e06c3d",
          [
           null,
           [
@@ -243589,7 +243602,7 @@
          ]
         ],
         "001-q.html": [
-         "9025e72899183fb2d5d9b6e61b6c4161d043e1e5",
+         "846cb6e8af5f7cb662b5e9f71f61f778284214ca",
          [
           null,
           [
@@ -243602,7 +243615,7 @@
          ]
         ],
         "001-s.html": [
-         "bac80e53bae44cf4871826f350e289fd1416197e",
+         "d781fab289ba00d4cffcf68e21287a6f026cc925",
          [
           null,
           [
@@ -243615,7 +243628,7 @@
          ]
         ],
         "001-x.xhtml": [
-         "7a5090c366bc78402ba46587474d30e31ec2a2c3",
+         "623b346eea56a3aa17a342cf81516d7af2a85414",
          [
           null,
           [
@@ -298997,11 +299010,11 @@
      ],
      "initial-letter": {
       "Initial-letter-breaking-ref.html": [
-       "74788e7f60cef117383252a178f06890dddf1d3b",
+       "3e2be1766dd74690b7550c7ad1b162381056e77c",
        []
       ],
       "Initial-letter-breaking-rtl-ref.html": [
-       "c9ff86ee90f8935261176c9d599712802c1b6c03",
+       "986e2945ae9845ac2c973b5eb96a555052bb0b61",
        []
       ],
       "Initial-letter-breaking-rtl.html.ini": [
@@ -299009,7 +299022,7 @@
        []
       ],
       "Initial-letter-breaking-vlr-ref.html": [
-       "34856a52b1476c279eb3b5df9992e193e84ee044",
+       "d43b2e39bfaca8ee7a70478bafa4ea762c9c7d08",
        []
       ],
       "Initial-letter-breaking-vlr.html.ini": [
@@ -299017,7 +299030,7 @@
        []
       ],
       "Initial-letter-breaking-vrl-ref.html": [
-       "6b0363b6841ea2963ecfda2a4d8d965287e2bdc0",
+       "0fe5e74a082b110e8779a174269a1cdf19b50f2d",
        []
       ],
       "Initial-letter-breaking-vrl.html.ini": [
@@ -299029,11 +299042,11 @@
        []
       ],
       "initial-letter-block-position-drop-over-ruby-ref.html": [
-       "c7492e4bb5f4c34086397339889c7513ad5ef7d0",
+       "adc458fe9b634c68d7d01c9515d36a397383fc24",
        []
       ],
       "initial-letter-block-position-drop-over-ruby-tall-ref.html": [
-       "3ce5ba9158493348fa3d2825c58b7a91297f4bab",
+       "c170adcae30ec1e69ced676fc8b33e7ce99e8793",
        []
       ],
       "initial-letter-block-position-drop-over-ruby-tall.html.ini": [
@@ -299045,11 +299058,11 @@
        []
       ],
       "initial-letter-block-position-drop-under-ruby-ref.html": [
-       "f490dc55603ab9397438b4bf81333ce8e394c99b",
+       "db3c809965aa06b97e3ddce4fc038ab3b155eae4",
        []
       ],
       "initial-letter-block-position-drop-under-ruby-tall-ref.html": [
-       "07b6c98335c85ecf1455d60bc2105637d2c56d87",
+       "c56ef2efb7e107059efb4684f4ac3ec579023894",
        []
       ],
       "initial-letter-block-position-drop-under-ruby-tall.html.ini": [
@@ -299061,11 +299074,11 @@
        []
       ],
       "initial-letter-block-position-margins-ref.html": [
-       "ffcc8bf284c1222994015a77b11cd5f6e9398b63",
+       "a2c48782707c09ed6b23b7ad4d054db8014cfcbc",
        []
       ],
       "initial-letter-block-position-margins-rtl-ref.html": [
-       "6feb72dc7dad89d0e3450ce2a24a5cf6a196accd",
+       "00dd32be9a7ae278dfd809a2f8f072e37b389642",
        []
       ],
       "initial-letter-block-position-margins-rtl.html.ini": [
@@ -299093,11 +299106,11 @@
        []
       ],
       "initial-letter-block-position-raise-over-ruby-ref.html": [
-       "c5222c99be058a64e9ff3d0c9308484b59136b1c",
+       "43222b43dac567241f64ea0ef17ea18ef254b775",
        []
       ],
       "initial-letter-block-position-raise-over-ruby-tall-ref.html": [
-       "74f29445feb08b137aa91af48c6b22189d98bd81",
+       "f1086074c2a66593dd5fe8b97eb1b5c294e6cfa4",
        []
       ],
       "initial-letter-block-position-raise-over-ruby-tall.html.ini": [
@@ -299109,11 +299122,11 @@
        []
       ],
       "initial-letter-block-position-raise-under-ruby-ref.html": [
-       "da28721a2173a517d5ab5c8c7ad889936d2ccb04",
+       "9adde375569332e32890a3b472ff60c7da1efaa2",
        []
       ],
       "initial-letter-block-position-raise-under-ruby-tall-ref.html": [
-       "c88f02bbbabd219b43377cd86376d13bc32045d8",
+       "7e334e55dbf062392c6a2718c9078c289abba4ee",
        []
       ],
       "initial-letter-block-position-raise-under-ruby-tall.html.ini": [
@@ -299129,11 +299142,11 @@
        []
       ],
       "initial-letter-drop-initial-ref.html": [
-       "40208550d1366a1533eaaab9660b518108cbbcdf",
+       "aa2615957147e48936717432c58ac77fe6f3abba",
        []
       ],
       "initial-letter-drop-initial-rtl-ref.html": [
-       "0b99ceffcc34ca2c10391a387346be329efe776c",
+       "1b55ae05e6bba343d861b037f8e518bd65e62606",
        []
       ],
       "initial-letter-drop-initial-rtl.html.ini": [
@@ -299161,11 +299174,11 @@
        []
       ],
       "initial-letter-float-001-ref.html": [
-       "ebb90a64dd4862af26ccfe25397998c54c1b66da",
+       "a269513a000baf42346776df58fb15b2be616720",
        []
       ],
       "initial-letter-float-001-rtl-ref.html": [
-       "62df03f30d684f1800888dc66232a8acc23849d0",
+       "22b93e1a3f142d12c8c059c04a1cc4ba7ca83290",
        []
       ],
       "initial-letter-float-001-rtl.html.ini": [
@@ -299193,31 +299206,31 @@
        []
       ],
       "initial-letter-float-002-ref.html": [
-       "df71adc04a59e829a72f49edca28b1ad696ee63e",
+       "f451a265be957498defb36be9f2b15d7347b1b66",
        []
       ],
       "initial-letter-float-002.html.ini": [
        "fc741e4858f0f3311f110bd1b2d697e6512adb62",
        []
       ],
-      "initial-letter-floats-003-ref.html": [
-       "86770a9398941c3b8bf1aa7aed7b52c6991060cc",
+      "initial-letter-float-003-ref.html": [
+       "54c30de947b11ba90ebdfae406081b7ba78b658a",
+       []
+      ],
+      "initial-letter-float-004-ref.html": [
+       "0e9a6ab273c4fef8f7692af577a6ea84878aaf9c",
+       []
+      ],
+      "initial-letter-float-005-ref.html": [
+       "d1e7be2aa2f80651aa1d559274302230b0cf1e56",
        []
       ],
       "initial-letter-floats-003.html.ini": [
        "daaa6ea952146689869bdfad8258ff0882ad0b69",
        []
       ],
-      "initial-letter-floats-004-ref.html": [
-       "76dab2b2b91a72fef7ae505c7d6970d358bf2f0f",
-       []
-      ],
       "initial-letter-floats-004.html.ini": [
        "6da05519bcde66db3331bf905aeb95fdaece8e46",
-       []
-      ],
-      "initial-letter-floats-005-ref.html": [
-       "34112a1d403cd271b1d8b3da5a0a22d09f202a22",
        []
       ],
       "initial-letter-floats-005.html.ini": [
@@ -299225,11 +299238,11 @@
        []
       ],
       "initial-letter-indentation-ref.html": [
-       "627dc43a2126867fa8af1738779674fb92989ddf",
+       "1afceed1a1d7c12dca0543973b884336702d8c67",
        []
       ],
       "initial-letter-indentation-rtl-ref.html": [
-       "8c72718ab9274cbb24996e0a71f2ca875eb22d95",
+       "3a7c17145a85df2237851927a1924b804a14f88a",
        []
       ],
       "initial-letter-indentation-rtl.html.ini": [
@@ -299240,12 +299253,16 @@
        "2f25a7a3aa6494563e10625c54ef4659a702ece5",
        []
       ],
+      "initial-letter-layout-text-decoration-underline-ref.html": [
+       "4559c4db02b3ef935bd7805668cd6241ddbc4a05",
+       []
+      ],
       "initial-letter-raise-initial-ref.html": [
-       "983e5802bc5da5ddd0ee481c87da9130a90366eb",
+       "f59625a4a9de3e9dcac9739a62fc959e0114ab1d",
        []
       ],
       "initial-letter-raise-initial-rtl-ref.html": [
-       "fbf155df783ad973476f1fb2946aeb6d8934729a",
+       "9dce9e6e14c71474909f490881710376a5d21dd6",
        []
       ],
       "initial-letter-raise-initial-rtl.html.ini": [
@@ -299273,7 +299290,7 @@
        []
       ],
       "initial-letter-raised-sunken-caps-raise-ref.html": [
-       "3585854384c6cebf39e2d0074acd2094cec36fb3",
+       "7285ed8a82289fefb98bfb90d5442bdc554bb09c",
        []
       ],
       "initial-letter-raised-sunken-caps-raise.html.ini": [
@@ -299281,7 +299298,7 @@
        []
       ],
       "initial-letter-raised-sunken-caps-sunken-ref.html": [
-       "a70288d80e6a493c1767a7a4ab65e5fcfaa08e2c",
+       "a68a760ac62a2c0610bfadac74f1d9f56e557f19",
        []
       ],
       "initial-letter-raised-sunken-caps-sunken.html.ini": [
@@ -299289,7 +299306,7 @@
        []
       ],
       "initial-letter-short-para-initial-letter-clears-ref.html": [
-       "8f96d661e05533d861036176037f88c9a20128b2",
+       "07b93dd0eeeb7997f7bb6a4112a46790980b7042",
        []
       ],
       "initial-letter-short-para-initial-letter-clears.html.ini": [
@@ -299297,7 +299314,7 @@
        []
       ],
       "initial-letter-short-para-initial-letter-wraps-ref.html": [
-       "2808ba5fe64ae2ce3acfc1da0a2da74c0469da06",
+       "efdfc61a679ad0e05c60bb102d4cc8752c712dbc",
        []
       ],
       "initial-letter-short-para-initial-letter-wraps.html.ini": [
@@ -299305,11 +299322,11 @@
        []
       ],
       "initial-letter-sunk-initial-ref.html": [
-       "06b9ad9b975d7a6c4a2f2501464fbf56736d969f",
+       "9b036a2be38ef38f379df2a7d2ce1fe5dbea109d",
        []
       ],
       "initial-letter-sunk-initial-rtl-ref.html": [
-       "e686e9826904064165fbefd4473dfe45fe5afb1d",
+       "3318c7e8bdd2dcaf4aac9c871485234e529e907f",
        []
       ],
       "initial-letter-sunk-initial-rtl.html.ini": [
@@ -299341,7 +299358,7 @@
        []
       ],
       "initial-letter-with-first-line-ref.html": [
-       "f3e01e14c4f92fc8fb60844fd48d2b0635a9e4ca",
+       "5b54045363d63bbbad4af05897877e3bbd4b3ce2",
        []
       ],
       "initial-letter-with-first-line.html.ini": [
@@ -299349,11 +299366,11 @@
        []
       ],
       "initial-letter-with-tab-ref.html": [
-       "43cba30d512bca6669def384a403f90dcb76b6d2",
+       "332dc003772b5595dbe59edd7a94dcd8dd2fcf47",
        []
       ],
       "initial-letter-with-tab-rtl-ref.html": [
-       "13f633a25981c01604f3c008e21f50b188df2110",
+       "0b9a074af70d652f61eacfd206cd8a1dca9cb5ff",
        []
       ],
       "initial-letter-with-tab-rtl.html.ini": [
@@ -331884,7 +331901,7 @@
       []
      ],
      "bold.js": [
-      "61ccf4f8adfbe05bc262ea1ee697d1e3a293c1c8",
+      "14147e4266c5747efbd7e715015982b75ff7d865",
       []
      ],
      "createlink.js": [
@@ -331964,7 +331981,7 @@
       []
      ],
      "italic.js": [
-      "b7bd63f95b9976d8a34495f3764a61492b970d8d",
+      "bb744135e360f49d6f6734e670b0197465364d2e",
       []
      ],
      "justifycenter.js": [
@@ -332000,7 +332017,7 @@
       []
      ],
      "strikethrough.js": [
-      "9817f4f0f851c7d27956ec8196bc1b580261fb28",
+      "7624ca126a82cd44332221fece06de23e7b0e1b8",
       []
      ],
      "subscript.js": [
@@ -333354,7 +333371,7 @@
       []
      ],
      "strikethrough_1-1000-expected.txt": [
-      "b9fccacb72bb1b189d67f8caeca034c36b71559a",
+      "d1a7aea1855b173c0ec3d119240e7547b38b2f41",
       []
      ],
      "subscript.html.ini": [
@@ -351977,7 +351994,7 @@
        },
        "font-element-text-decoration-color": {
         "001-ref.html": [
-         "a6fec366db2b8d11401c31cf88ec75e02468144b",
+         "fb632e693d194f7f65d009490a5ac66541718bda",
          []
         ],
         "DIR_METADATA": [
@@ -372898,7 +372915,7 @@
     },
     "view-timelines": {
      "testcommon.js": [
-      "41341cf6fb80c2cfa89ac0f1aeafed74f606d002",
+      "969f282e678b5f36781c37aa734bb832013766a6",
       []
      ]
     }
@@ -384325,7 +384342,7 @@
      []
     ],
     "utils.js": [
-     "3637646d6aa0fdf86f5683ba8aac97d1c336fe3d",
+     "aea658d3f2c9b4643bdaeac03b3983aa2acc06f1",
      []
     ],
     "video-decoder.crossOriginIsolated.https.any.js.headers": [
@@ -584857,7 +584874,7 @@
       ]
      ],
      "view-timeline-inset.html": [
-      "0dcce6d48dca175b1c7da744427f083e07227719",
+      "72480ea9f3cad78676b1aae10bed5bed99bd7b87",
       [
        null,
        {}
@@ -616701,7 +616718,7 @@
      ]
     ],
     "video-frame-serialization.any.js": [
-     "02dbad18210e3200bead7daad8f2a9ced0191d25",
+     "4968c43cda3763fb9b6df7db4dc08a9da40b1868",
      [
       "webcodecs/video-frame-serialization.any.html",
       {
