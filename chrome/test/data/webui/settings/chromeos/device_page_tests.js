@@ -469,8 +469,12 @@ suite('SettingsDevicePage', function() {
 
     // enableAudioSettingsPage feature flag by default is turned on in tests.
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
+
+    // enableInputDeviceSettingsSplit feature flag by default is turned off.
+    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#mouseRow')));
     assertFalse(isVisible(
         devicePage.shadowRoot.querySelector('#perDeviceKeyboardRow')));
+
     webUIListenerCallback('has-mouse-changed', false);
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
 
@@ -490,6 +494,14 @@ suite('SettingsDevicePage', function() {
     });
     await init();
     assertFalse(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
+  });
+
+  test('mouse row visibility', async function() {
+    loadTimeData.overrideValues({
+      enableInputDeviceSettingsSplit: true,
+    });
+    await init();
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#mouseRow')));
   });
 
   test('per-device-keyboard row visibility', async function() {
