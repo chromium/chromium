@@ -39,6 +39,15 @@ Object: {
 }
 Got GPU process name event:
 Object: {
+	args: {
+		name: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
 }
 Got Renderer process name event:
 Object: {

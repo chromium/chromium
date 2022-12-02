@@ -29,7 +29,7 @@
 
   const browserProcessName =
       processNames.find(event => event.args.name === 'Browser');
-  const gpuProcessName = processNames.find(event => event.args.name === 'Gpu');
+  const gpuProcessName = processNames.find(event => event.args.name === 'GPU Process');
   const rendererProcessNames =
       processNames.filter(event => event.args.name === 'Renderer');
 
