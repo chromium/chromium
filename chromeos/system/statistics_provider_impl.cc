@@ -452,6 +452,8 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     if (machine_info_.find(kFirmwareWriteProtectCurrentKey) ==
             machine_info_.end() &&
         !crossystem_wpsw.empty()) {
+      LOG(WARNING) << "wpsw_cur missing from machine_info, using value: "
+                   << crossystem_wpsw;
       machine_info_[kFirmwareWriteProtectCurrentKey] = crossystem_wpsw;
     }
   }
