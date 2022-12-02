@@ -9,6 +9,11 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 class Profile;
 
@@ -17,8 +22,9 @@ class CustomizeChromePageHandler
  public:
   CustomizeChromePageHandler(
       mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
-          receiver,
-      Profile* profile);
+          pending_page_handler,
+      mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
+      content::WebContents* web_contents);
 
   CustomizeChromePageHandler(const CustomizeChromePageHandler&) = delete;
   CustomizeChromePageHandler& operator=(const CustomizeChromePageHandler&) =
@@ -36,7 +42,9 @@ class CustomizeChromePageHandler
   bool IsShortcutsVisible() const;
 
   raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
 
+  mojo::Remote<side_panel::mojom::CustomizeChromePage> page_;
   mojo::Receiver<side_panel::mojom::CustomizeChromePageHandler> receiver_;
 };
 

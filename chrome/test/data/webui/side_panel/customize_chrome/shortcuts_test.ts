@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
 
-import {CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ShortcutsElement} from 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -22,7 +22,8 @@ suite('ShortcutsTest', () => {
     handler = installMock(
         CustomizeChromePageHandlerRemote,
         (mock: CustomizeChromePageHandlerRemote) =>
-            CustomizeChromeApiProxy.setInstance(mock));
+            CustomizeChromeApiProxy.setInstance(
+                mock, new CustomizeChromePageCallbackRouter()));
   });
 
   async function setInitialSettings(

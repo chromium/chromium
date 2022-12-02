@@ -15,19 +15,41 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace {
+
 using testing::_;
+
+class MockPage : public side_panel::mojom::CustomizeChromePage {
+ public:
+  MockPage() = default;
+  ~MockPage() override = default;
+
+  mojo::PendingRemote<side_panel::mojom::CustomizeChromePage>
+  BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  mojo::Receiver<side_panel::mojom::CustomizeChromePage> receiver_{this};
+};
+
+}  // namespace
 
 class CustomizeChromePageHandlerTest : public testing::Test {
  public:
   CustomizeChromePageHandlerTest()
       : handler_(mojo::PendingReceiver<
                      side_panel::mojom::CustomizeChromePageHandler>(),
-                 &profile_) {}
+                 mock_page_.BindAndGetRemote(),
+                 web_contents_factory_.CreateWebContents(&profile_)) {}
 
   TestingProfile& profile() { return profile_; }
   CustomizeChromePageHandler& handler() { return handler_; }
@@ -36,6 +58,8 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  testing::NiceMock<MockPage> mock_page_;
   CustomizeChromePageHandler handler_;
 };
 

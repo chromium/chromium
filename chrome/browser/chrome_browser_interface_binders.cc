@@ -1008,7 +1008,8 @@ void PopulateChromeWebUIFrameBinders(
 
   if (customize_chrome::IsSidePanelEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::CustomizeChromePageHandler, CustomizeChromeUI>(map);
+        side_panel::mojom::CustomizeChromePageHandlerFactory,
+        CustomizeChromeUI>(map);
   }
 
   if (user_notes::IsUserNotesEnabled()) {

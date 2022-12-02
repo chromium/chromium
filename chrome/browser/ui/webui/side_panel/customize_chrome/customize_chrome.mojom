@@ -15,6 +15,13 @@ struct ChromeColor {
   skia.mojom.SkColor foreground;
 };
 
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface CustomizeChromePageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<CustomizeChromePage> page,
+                    pending_receiver<CustomizeChromePageHandler> handler);
+};
+
 // Browser-side handler for requests from WebUI page.
 interface CustomizeChromePageHandler {
   // Sets the visibility of NTP tiles and whether custom links are enabled.
@@ -26,4 +33,8 @@ interface CustomizeChromePageHandler {
 
   // Returns the chrome colors used in the customize chrome side panel.
   GetChromeColors() => (array<ChromeColor> colors);
+};
+
+// WebUI-side handler for requests from the browser.
+interface CustomizeChromePage {
 };

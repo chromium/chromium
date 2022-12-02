@@ -14,13 +14,16 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui),
-      profile_(Profile::FromWebUI(web_ui)) {
+      profile_(Profile::FromWebUI(web_ui)),
+      web_contents_(web_ui->GetWebContents()),
+      page_factory_receiver_(this) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUICustomizeChromeSidePanelHost);
 
@@ -52,8 +55,19 @@ CustomizeChromeUI::~CustomizeChromeUI() = default;
 WEB_UI_CONTROLLER_TYPE_IMPL(CustomizeChromeUI)
 
 void CustomizeChromeUI::BindInterface(
-    mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
+    mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandlerFactory>
         receiver) {
+  if (page_factory_receiver_.is_bound()) {
+    page_factory_receiver_.reset();
+  }
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void CustomizeChromeUI::CreatePageHandler(
+    mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
+    mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
+        pending_page_handler) {
+  DCHECK(pending_page.is_valid());
   customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
-      std::move(receiver), profile_);
+      std::move(pending_page_handler), std::move(pending_page), web_contents_);
 }
