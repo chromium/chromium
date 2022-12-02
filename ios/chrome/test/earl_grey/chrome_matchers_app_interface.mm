@@ -1050,6 +1050,38 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kSettingsToolbarAddButtonId);
 }
 
++ (id<GREYMatcher>)cellCanBeSwipedToDismissed {
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    if (![element isKindOfClass:UITableViewCell.class])
+      return NO;
+
+    UITableViewCell* cell = base::mac::ObjCCastStrict<UITableViewCell>(element);
+
+    // Try to find the TableView containing the cell.
+    UIView* potential_table_view = [cell superview];
+    while (![potential_table_view isKindOfClass:UITableView.class] &&
+           potential_table_view.superview) {
+      potential_table_view = potential_table_view.superview;
+    }
+
+    if (![potential_table_view isKindOfClass:UITableView.class])
+      return NO;
+
+    UITableView* table_view =
+        base::mac::ObjCCastStrict<UITableView>(potential_table_view);
+
+    NSIndexPath* index_path = [table_view indexPathForCell:cell];
+
+    return [table_view.dataSource tableView:table_view
+                      canEditRowAtIndexPath:index_path];
+  };
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    [description appendText:@"cellCanBeSwipedToDismissed"];
+  };
+  return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                              descriptionBlock:describe];
+}
+
 #pragma mark - Overflow Menu Destinations
 
 + (id<GREYMatcher>)bookmarksDestinationButton {

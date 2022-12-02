@@ -676,6 +676,10 @@ id<GREYMatcher> SettingsToolbarAddButton() {
   return [ChromeMatchersAppInterface settingsToolbarAddButton];
 }
 
+id<GREYMatcher> CellCanBeSwipedToDismissed() {
+  return [ChromeMatchersAppInterface cellCanBeSwipedToDismissed];
+}
+
 #pragma mark - Overflow Menu Destinations
 
 id<GREYMatcher> BookmarksDestinationButton() {

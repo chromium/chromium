@@ -532,6 +532,9 @@
 // Returns a matcher to the add button in the toolbar of the settings view.
 + (id<GREYMatcher>)settingsToolbarAddButton;
 
+// Returns a matcher matching cells that can be swiped-to-dismiss.
++ (id<GREYMatcher>)cellCanBeSwipedToDismissed;
+
 #pragma mark - Overflow Menu Destinations
 
 // Returns matcher for the bookmarks destination button in the overflow menu
