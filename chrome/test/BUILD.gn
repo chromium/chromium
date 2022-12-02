@@ -9602,6 +9602,7 @@ if (!is_android) {
       "//chrome/browser/autofill:test_support_ui",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",

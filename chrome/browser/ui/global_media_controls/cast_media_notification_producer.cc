@@ -42,6 +42,12 @@ bool ShouldHideNotification(const raw_ptr<Profile> profile,
     return true;
   }
 
+  if (base::FeatureList::IsEnabled(
+          media_router::kMediaRemotingWithoutFullscreen) &&
+      route.media_source().IsRemotePlaybackSource()) {
+    return true;
+  }
+
   // Skip the multizone member check if it's a DIAL route.
   if (!route.media_source().IsCastPresentationUrl()) {
     return false;

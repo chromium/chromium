@@ -8,10 +8,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -33,6 +35,7 @@
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/soda/constants.h"
 #include "content/public/browser/presentation_observer.h"
 #include "content/public/browser/presentation_request.h"
@@ -338,7 +341,13 @@ class TestMediaRouter : public media_router::MockMediaRouter {
 
 class MediaDialogViewBrowserTest : public InProcessBrowserTest {
  public:
-  MediaDialogViewBrowserTest() = default;
+  MediaDialogViewBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {media::kGlobalMediaControls, media::kLiveCaption,
+         feature_engagement::kIPHLiveCaptionFeature,
+         media::kLiveCaptionMultiLanguage},
+        {});
+  }
 
   MediaDialogViewBrowserTest(const MediaDialogViewBrowserTest&) = delete;
   MediaDialogViewBrowserTest& operator=(const MediaDialogViewBrowserTest&) =
@@ -353,12 +362,6 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {media::kGlobalMediaControls, media::kLiveCaption,
-         feature_engagement::kIPHLiveCaptionFeature,
-         media::kLiveCaptionMultiLanguage},
-        {});
-
     presentation_manager_ =
         std::make_unique<TestWebContentsPresentationManager>();
     media_router::WebContentsPresentationManager::SetTestInstance(
@@ -1104,9 +1107,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 class MediaDialogViewWithBackForwardCacheBrowserTest
     : public MediaDialogViewBrowserTest {
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MediaDialogViewBrowserTest::SetUpCommandLine(command_line);
-
+  MediaDialogViewWithBackForwardCacheBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::map<std::string, std::string> params;
 #if BUILDFLAG(IS_ANDROID)
@@ -1276,6 +1277,59 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(GetActiveWebContents()));
   EXPECT_NE(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh2->GetLifecycleState());
+}
+
+class MediaDialogViewWithRemotePlaybackBrowserTest
+    : public MediaDialogViewBrowserTest {
+ public:
+  MediaDialogViewWithRemotePlaybackBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        media_router::kMediaRemotingWithoutFullscreen);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MediaDialogViewWithRemotePlaybackBrowserTest,
+                       ShowMediaSessionWithRemotePlayback) {
+  // Open a tab and play media.
+  OpenTestURL();
+  StartPlayback();
+  WaitForStart();
+
+  // Create a Remote Playback route.
+  content::WebContents* web_contents = GetActiveWebContents();
+  SessionID::id_type item_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents).id();
+  const std::string route_description = "Casting: Remote Playback";
+  media_router::MediaRoute route("id",
+                                 media_router::MediaSource(base::StringPrintf(
+                                     "remote-playback:media-session?tab_id=%d&"
+                                     "video_codec=hevc&audio_codec=aac",
+                                     item_tab_id)),
+                                 "sink_id", route_description, true);
+  route.set_media_sink_name("My sink");
+  std::vector<media_router::MediaRoute> routes = {route};
+  media_router_->NotifyMediaRoutesChanged(routes);
+  ON_CALL(*media_router_, GetCurrentRoutes())
+      .WillByDefault(testing::Return(routes));
+  base::RunLoop().RunUntilIdle();
+
+  // Open the media dialog. The cast item should be hidden.
+  ui_.ClickToolbarIcon();
+  EXPECT_TRUE(ui_.WaitForDialogOpened());
+  EXPECT_TRUE(ui_.IsDialogVisible());
+  ui_.WaitForItemCount(1);
+  ui_.WaitForDialogToContainText(u"Big Buck Bunny");
+  ui_.WaitForDialogToContainText(u"Blender Foundation");
+
+  // Check that the ui contains a footer view.
+  const auto item_pair =
+      MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting().begin();
+  const global_media_controls::MediaItemUIFooter* view =
+      item_pair->second->footer_view_for_testing();
+  EXPECT_TRUE(view && view->GetVisible());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
