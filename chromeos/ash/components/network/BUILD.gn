@@ -226,6 +226,8 @@ source_set("test_support") {
     "mock_managed_network_configuration_handler.h",
     "mock_network_device_handler.cc",
     "mock_network_device_handler.h",
+    "mock_network_metadata_store.cc",
+    "mock_network_metadata_store.h",
     "mock_network_state_handler.cc",
     "mock_network_state_handler.h",
     "network_handler_test_helper.cc",

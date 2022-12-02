@@ -113,7 +113,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
 
   // Returns custom apn list for cellular network with given guid. Returns
   // nullptr if no pref exists for |network_guid|.
-  const base::Value::List* GetCustomApnList(const std::string& network_guid);
+  virtual const base::Value::List* GetCustomApnList(
+      const std::string& network_guid);
 
   // When the active user is the device owner and its the first login, this
   // marks networks that were added in OOBE to the user's list.
