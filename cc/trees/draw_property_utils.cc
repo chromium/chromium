@@ -1246,8 +1246,12 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
   // Compute effects and determine if render surfaces have contributing layers
   // that escape clip.
   for (LayerImpl* layer : *layer_list) {
+    float previous_opacity = layer->draw_properties().opacity;
     layer->draw_properties().opacity =
         LayerDrawOpacity(layer, property_trees->effect_tree());
+    if (previous_opacity != layer->draw_properties().opacity)
+      layer->SetNeedsPushProperties();
+
     RenderSurfaceImpl* render_target = layer->render_target();
     int lca_clip_id = LowestCommonAncestor(layer->clip_tree_index(),
                                            render_target->ClipTreeIndex(),
