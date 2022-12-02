@@ -352,7 +352,6 @@ export class SettingsReviewNotificationPermissionsElement extends
   private onKeyDown_(e: KeyboardEvent) {
     // Only allow undoing via ctrl+z when the undo toast is opened.
     if (!this.$.undoToast.open) {
-      e.preventDefault();
       return;
     }
 
@@ -365,7 +364,6 @@ export class SettingsReviewNotificationPermissionsElement extends
      * and ctrl on mac).
      */
     if (e.key !== 'z') {
-      e.preventDefault();
       return;
     }
     const excludedModifiers = [e.altKey, e.shiftKey];
@@ -379,7 +377,6 @@ export class SettingsReviewNotificationPermissionsElement extends
     // </if>
     if (!excludedModifiers.some(Boolean) && targetModifier) {
       this.undoLastAction();
-      e.preventDefault();
     }
   }
 
