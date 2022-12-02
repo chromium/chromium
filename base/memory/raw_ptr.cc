@@ -5,7 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include <cstdint>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 
