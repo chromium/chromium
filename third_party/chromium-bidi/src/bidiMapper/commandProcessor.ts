@@ -31,13 +31,15 @@ import {
   UnknownCommandException,
   UnknownException,
 } from './domains/protocol/error';
+import {BrowsingContextStorage} from './domains/context/browsingContextStorage';
 
 export class CommandProcessor {
   #contextProcessor: BrowsingContextProcessor;
   #bidiServer: IBidiServer;
   #eventManager: IEventManager;
+  #cdpConnection: CdpConnection;
 
-  static run(
+  static async run(
     cdpConnection: CdpConnection,
     bidiServer: IBidiServer,
     eventManager: IEventManager,
@@ -50,7 +52,7 @@ export class CommandProcessor {
       selfTargetId
     );
 
-    commandProcessor.#run();
+    await commandProcessor.#run();
   }
 
   private constructor(
@@ -61,6 +63,7 @@ export class CommandProcessor {
   ) {
     this.#eventManager = eventManager;
     this.#bidiServer = bidiServer;
+    this.#cdpConnection = cdpConnection;
     this.#contextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       selfTargetId,
@@ -68,10 +71,29 @@ export class CommandProcessor {
     );
   }
 
-  #run() {
+  async #prepareCdp() {
+    const cdpClient = this.#cdpConnection.browserClient();
+
+    // Needed to get events about new targets.
+    await cdpClient.sendCommand('Target.setDiscoverTargets', {discover: true});
+
+    // Needed to automatically attach to new targets.
+    await cdpClient.sendCommand('Target.setAutoAttach', {
+      autoAttach: true,
+      waitForDebuggerOnStart: true,
+      flatten: true,
+    });
+
+    await Promise.all(
+      BrowsingContextStorage.getTopLevelContexts().map((c) => c.awaitLoaded())
+    );
+  }
+
+  async #run() {
     this.#bidiServer.on('message', (messageObj) => {
       return this.#onBidiMessage(messageObj);
     });
+    await this.#prepareCdp();
   }
 
   // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols

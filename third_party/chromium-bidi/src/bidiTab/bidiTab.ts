@@ -19,13 +19,12 @@
 
 import {CommandProcessor} from '../bidiMapper/commandProcessor';
 
-import {CdpClient, CdpConnection} from '../cdp';
+import {CdpConnection} from '../cdp';
 import {BiDiMessageEntry, BidiServer} from '../bidiMapper/bidiServer';
 import {ITransport} from '../utils/transport';
 
 import {log, LogType} from '../utils/log';
 import {EventManager} from '../bidiMapper/domains/events/EventManager';
-import {BrowsingContextStorage} from '../bidiMapper/domains/context/browsingContextStorage';
 import {MapperTabPage} from './mapperTabPage';
 
 const logSystem = log(LogType.system);
@@ -57,7 +56,6 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   MapperTabPage.generatePage();
 
   const cdpConnection = _createCdpConnection();
-  const cdpClient = cdpConnection.browserClient();
   const bidiServer = _createBidiServer();
   const eventManager = new EventManager(bidiServer);
 
@@ -66,10 +64,12 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   // The command processor needs to start running before calling _prepareCdp
   // so that it has a chance to set up event listeners for tracking targets.
-  CommandProcessor.run(cdpConnection, bidiServer, eventManager, selfTargetId);
-
-  // Needed to get events about new targets.
-  await _prepareCdp(cdpClient);
+  await CommandProcessor.run(
+    cdpConnection,
+    bidiServer,
+    eventManager,
+    selfTargetId
+  );
 
   logSystem('launched');
 
@@ -146,20 +146,4 @@ async function _waitSelfTargetId(): Promise<string> {
       resolve(targetId);
     };
   });
-}
-
-async function _prepareCdp(cdpClient: CdpClient) {
-  // Needed to get events about new targets.
-  await cdpClient.sendCommand('Target.setDiscoverTargets', {discover: true});
-
-  // Needed to automatically attach to new targets.
-  await cdpClient.sendCommand('Target.setAutoAttach', {
-    autoAttach: true,
-    waitForDebuggerOnStart: true,
-    flatten: true,
-  });
-
-  await Promise.all(
-    BrowsingContextStorage.getTopLevelContexts().map((c) => c.awaitLoaded())
-  );
 }
