@@ -7,6 +7,10 @@ BasedOnStyle: Chromium
 # 'int>>' if the file already contains at least one such instance.)
 Standard: Cpp11
 
+# TODO(crbug.com/1392808): Remove when InsertBraces has been upstreamed into
+# the Chromium style (is implied by BasedOnStyle: Chromium).
+InsertBraces: true
+
 # Make sure code like:
 # IPC_BEGIN_MESSAGE_MAP()
 #   IPC_MESSAGE_HANDLER(WidgetHostViewHost_Update, OnUpdate)

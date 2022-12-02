@@ -304,8 +304,9 @@ these:
     following:
     ```c++
       DCHECK(foo);
-      if (!foo)  // Eliminate this code.
+      if (!foo) {  // Eliminate this code.
         ...
+      }
 
       if (!bar) {  // Replace this whole conditional with "DCHECK(bar);".
         NOTREACHED();
