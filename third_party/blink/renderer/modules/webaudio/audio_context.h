@@ -215,11 +215,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   void UninitializeMediaDeviceService();
 
   // Callback from blink::mojom::MediaDevicesDispatcherHost::EnumerateDevices().
-  void DevicesEnumerated(const Vector<Vector<WebMediaDeviceInfo>>& enumeration,
-                         Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
-                             video_input_capabilities,
-                         Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
-                             audio_input_capabilities);
+  void DevicesEnumerated(mojom::blink::EnumerationResponsePtr response);
 
   // A helper function used to update `v8_sink_id_` whenever `sink_id_` is
   // updated.

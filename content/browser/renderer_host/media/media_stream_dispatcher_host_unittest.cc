@@ -107,9 +107,13 @@ MATCHER_P(SameTypesAs,
   return true;
 }
 
-void AudioInputDevicesEnumerated(base::OnceClosure quit_closure,
-                                 media::AudioDeviceDescriptions* out,
-                                 const MediaDeviceEnumeration& enumeration) {
+void AudioInputDevicesEnumerated(
+    base::OnceClosure quit_closure,
+    media::AudioDeviceDescriptions* out,
+    media::mojom::DeviceEnumerationResult result_code,
+    const MediaDeviceEnumeration& enumeration) {
+  EXPECT_EQ(result_code, media::mojom::DeviceEnumerationResult::kSuccess);
+
   for (const auto& info : enumeration[static_cast<size_t>(
            blink::mojom::MediaDeviceType::MEDIA_AUDIO_INPUT)]) {
     out->emplace_back(info.label, info.device_id, info.group_id);

@@ -98,14 +98,9 @@ class PepperMediaDeviceManager
                       const std::string& label,
                       const blink::MediaStreamDevice& device);
 
-  void DevicesEnumerated(
-      DevicesOnceCallback callback,
-      MediaDeviceType type,
-      const std::vector<blink::WebMediaDeviceInfoArray>& enumeration,
-      std::vector<blink::mojom::VideoInputDeviceCapabilitiesPtr>
-          video_input_capabilities,
-      std::vector<blink::mojom::AudioInputDeviceCapabilitiesPtr>
-          audio_input_capabilities);
+  void DevicesEnumerated(DevicesOnceCallback callback,
+                         MediaDeviceType type,
+                         blink::mojom::EnumerationResponsePtr response);
 
   blink::mojom::MediaStreamDispatcherHost* GetMediaStreamDispatcherHost();
   blink::WebMediaStreamDeviceObserver* GetMediaStreamDeviceObserver() const;

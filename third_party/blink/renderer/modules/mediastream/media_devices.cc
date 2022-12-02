@@ -787,17 +787,42 @@ void RecordEnumeratedDevices(ScriptPromiseResolver* resolver,
 
 void MediaDevices::DevicesEnumerated(
     ScriptPromiseResolver* resolver,
-    const Vector<Vector<WebMediaDeviceInfo>>& enumeration,
-    Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
-        video_input_capabilities,
-    Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
-        audio_input_capabilities) {
+    mojom::blink::EnumerationResponsePtr response) {
   if (!enumerate_device_requests_.Contains(resolver))
     return;
 
   RequestMetadata request_metadata = enumerate_device_requests_.at(resolver);
-
   enumerate_device_requests_.erase(resolver);
+
+  if (response->result_code !=
+      media::mojom::blink::DeviceEnumerationResult::kSuccess) {
+    switch (response->result_code) {
+      case media::mojom::blink::DeviceEnumerationResult::
+          kErrorCaptureServiceCrash:
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kOperationError, "Could not enumerate cameras"));
+        break;
+      case media::mojom::blink::DeviceEnumerationResult::kUnknownError:
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kOperationError, "Enumeration failed"));
+        break;
+      case media::mojom::blink::DeviceEnumerationResult::kSuccess:
+        NOTREACHED();
+        break;
+    }
+
+    // TODO(crbug.com/1373398): Add a UMA histogram tracking failures.
+    RecordEnumerateDevicesLatency(request_metadata.start_time);
+    return;
+  }
+
+  const Vector<Vector<WebMediaDeviceInfo>>& enumeration = response->enumeration;
+  Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
+      video_input_capabilities =
+          std::move(response->video_input_device_capabilities);
+  Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
+      audio_input_capabilities =
+          std::move(response->audio_input_device_capabilities);
 
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed()) {

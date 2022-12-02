@@ -53,6 +53,7 @@ void VideoInputDevicesEnumerated(base::OnceClosure quit_closure,
                                  const std::string& salt,
                                  const url::Origin& security_origin,
                                  blink::WebMediaDeviceInfoArray* out,
+                                 media::mojom::DeviceEnumerationResult,
                                  const MediaDeviceEnumeration& enumeration) {
   for (const auto& info : enumeration[static_cast<size_t>(
            blink::mojom::MediaDeviceType::MEDIA_VIDEO_INPUT)]) {

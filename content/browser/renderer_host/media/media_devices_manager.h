@@ -29,6 +29,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
 using blink::mojom::AudioInputDeviceCapabilitiesPtr;
+using blink::mojom::EnumerationResponsePtr;
 using blink::mojom::MediaDeviceType;
 using blink::mojom::VideoInputDeviceCapabilitiesPtr;
 
@@ -64,11 +65,10 @@ class CONTENT_EXPORT MediaDevicesManager
   };
 
   using EnumerationCallback =
-      base::OnceCallback<void(const MediaDeviceEnumeration&)>;
-  using EnumerateDevicesCallback = base::OnceCallback<void(
-      const std::vector<blink::WebMediaDeviceInfoArray>&,
-      std::vector<VideoInputDeviceCapabilitiesPtr>,
-      std::vector<AudioInputDeviceCapabilitiesPtr>)>;
+      base::OnceCallback<void(media::mojom::DeviceEnumerationResult,
+                              const MediaDeviceEnumeration&)>;
+  using EnumerateDevicesCallback =
+      base::OnceCallback<void(EnumerationResponsePtr)>;
   using StopRemovedInputDeviceCallback = base::RepeatingCallback<void(
       MediaDeviceType type,
       const blink::WebMediaDeviceInfo& media_device_info)>;
@@ -241,6 +241,7 @@ class CONTENT_EXPORT MediaDevicesManager
       EnumerateDevicesCallback callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions,
+      media::mojom::DeviceEnumerationResult enumeration_result,
       const MediaDeviceEnumeration& enumeration);
   void GetAudioInputCapabilities(
       bool request_video_input_capabilities,
