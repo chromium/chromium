@@ -1232,7 +1232,7 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
     return true;
   }
   if (event.key_code() == ui::VKEY_ESCAPE)
-    return model()->WillHandleEscapeKey();
+    return true;
   return Textfield::SkipDefaultKeyEventProcessing(event);
 }
 

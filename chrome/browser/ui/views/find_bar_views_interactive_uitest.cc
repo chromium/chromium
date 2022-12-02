@@ -784,16 +784,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, GlobalEscapeClosesFind) {
   EXPECT_FALSE(IsFindBarVisible());
 }
 
-class FindInPageTestEnabledBlurWithEscape : public FindInPageTest {
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(omnibox::kBlurWithEscape);
-    FindInPageTest::SetUp();
-  }
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FindInPageTestEnabledBlurWithEscape,
-                       ConsumedGlobalEscapeDoesNotCloseFind) {
+IN_PROC_BROWSER_TEST_F(FindInPageTest, ConsumedGlobalEscapeDoesNotCloseFind) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.

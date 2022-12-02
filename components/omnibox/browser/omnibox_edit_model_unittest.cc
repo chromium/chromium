@@ -1053,12 +1053,9 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
 
 TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
   {
-    // With both `kClosePopupWithEscape` and `kBlurWithEscape` enabled, escape
-    // should incrementally revert temporary text, close the popup, clear input,
-    // and blur the omnibox.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {omnibox::kClosePopupWithEscape, omnibox::kBlurWithEscape}, {});
+    // With `kClosePopupWithEscape` enabled, escape should incrementally revert
+    // temporary text, close the popup, clear input, and blur the omnibox.
+    base::test::ScopedFeatureList feature_list{omnibox::kClosePopupWithEscape};
 
     AutocompleteMatch match;
     match.type = AutocompleteMatchType::NAVSUGGEST;
@@ -1134,12 +1131,11 @@ TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
   }
 
   {
-    // With both `kClosePopupWithEscape` and `kBlurWithEscape` disabled, escape
-    // should incrementally revert temporary text then simultaneously close the
-    // popup & clear input.
+    // With `kClosePopupWithEscape` disabled, escape should incrementally revert
+    // temporary text then simultaneously close the popup & clear input, and
+    // lastly blur the omnibox.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {}, {omnibox::kClosePopupWithEscape, omnibox::kBlurWithEscape});
+    feature_list.InitWithFeatures({}, {omnibox::kClosePopupWithEscape});
 
     AutocompleteMatch match;
     match.type = AutocompleteMatchType::NAVSUGGEST;
@@ -1188,17 +1184,17 @@ TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
     }
 
     {
-      // Should not handle the key press.
+      // Blur the omnibox.
       base::HistogramTester histogram_tester;
-      EXPECT_FALSE(model()->OnEscapeKeyPressed());
-      histogram_tester.ExpectUniqueSample("Omnibox.Escape", 0, 1);
-      model()->SetPopupIsOpen(
-          false);  // `TestOmniboxEditModel` stubs the popup.
+      EXPECT_TRUE(model()->OnEscapeKeyPressed());
+      histogram_tester.ExpectUniqueSample("Omnibox.Escape", 5, 1);
+      model()->OnKillFocus();  // `TestOmniboxEditModel` stubs the client which
+                               // handles blurring the omnibox.
       EXPECT_FALSE(model()->HasTemporaryText());
       EXPECT_FALSE(model()->PopupIsOpen());
       EXPECT_EQ(view()->GetText(), u"");
       EXPECT_FALSE(model()->user_input_in_progress());
-      EXPECT_TRUE(model()->has_focus());
+      EXPECT_FALSE(model()->has_focus());
     }
   }
 }

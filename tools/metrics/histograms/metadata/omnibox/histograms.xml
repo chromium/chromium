@@ -680,19 +680,13 @@ chromium-metrics-reviews@google.com.
     progress with the popup closed) typically occurs when input was in progress,
     then the omnibox was blurred, and then it was refocused.
 
-    5) If the `kBlurWithEscape` feature is enabled, it is blurred.
-
-    6) Otherwise, omnibox state is unchanged. This doesn't mean the escape did
-    nothing; e.g., it may have stopped a navigation. Some of the cases,
-    including case (6), may also select the omnibox's entire text, but this
-    isn't recorded.
+    5) The omnibox is blurred.
 
     This histogram records which of the above occurred.
 
-    It is recorded every time escape is pressed with the omnibox focused. With
-    the `kBlurWithEscape` feature disabled, pressing escape e.g. 10 times will
-    emit the metric 10 times; but with the feature enabled, it emits at most 4
-    times until the omnibox is blurred.
+    It is recorded every time escape is pressed with the omnibox focused.
+    Pressing escape repeatedly e.g. 10 times will emits at most 4 times until
+    the omnibox is blurred.
   </summary>
 </histogram>
 

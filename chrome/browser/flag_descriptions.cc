@@ -1897,11 +1897,6 @@ const char kOmniboxAssistantVoiceSearchDescription[] =
     "When enabled, use Assistant for omnibox voice query recognition instead of"
     " Android's built-in voice recognition service. Only works on Android.";
 
-const char kOmniboxBlurWithEscapeName[] = "Omnibox Blur with Escape";
-const char kOmniboxBlurWithEscapeDescription[] =
-    "When enabled, pressing escape when the omnibox is focused without user "
-    "input will blur the omnibox and focus the web page.";
-
 const char kOmniboxBookmarkPathsName[] = "Omnibox Bookmark Paths";
 const char kOmniboxBookmarkPathsDescription[] =
     "Allows inputs to match with bookmark paths. E.g. 'planets jupiter' can "

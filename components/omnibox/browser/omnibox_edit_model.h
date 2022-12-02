@@ -344,11 +344,6 @@ class OmniboxEditModel {
   // Called when the view is losing focus.  Resets some state.
   void OnKillFocus();
 
-  // Returns whether the omnibox will handle a press of the escape key.  The
-  // caller can use this to decide whether the browser should process escape as
-  // "stop current page load".
-  bool WillHandleEscapeKey() const;
-
   // Called when the user presses the escape key.  Decides what, if anything, to
   // revert about any current edits.  Returns whether the key was handled.
   bool OnEscapeKeyPressed();

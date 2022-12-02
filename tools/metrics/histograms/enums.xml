@@ -74406,7 +74406,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="OmniboxEscapeAction">
-  <int value="0" label="None; omnibox state unaffected"/>
+  <int value="0"
+      label="Deprecated: None; omnibox state unaffected - No longer logged
+             since m105"/>
   <int value="1" label="Reverted temporary Text"/>
   <int value="2" label="Closed popup"/>
   <int value="3" label="Cleared user input"/>

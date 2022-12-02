@@ -90,7 +90,8 @@ namespace {
 enum class OmniboxEscapeAction {
   // `kNone` doesn't mean escape did nothing (e.g. it could have stopped a
   // navigation), just that it did not affect the omnibox state.
-  kNone = 0,
+  //  kNone = 0, No longer used since escape now always blurs the omnibox if it
+  //             does nothing else.
   kRevertTemporaryText = 1,
   kClosePopup = 2,
   kClearUserInput = 3,
@@ -1369,11 +1370,6 @@ void OmniboxEditModel::OnKillFocus() {
 #endif
 }
 
-bool OmniboxEditModel::WillHandleEscapeKey() const {
-  return user_input_in_progress_ || has_temporary_text_ ||
-         base::FeatureList::IsEnabled(omnibox::kBlurWithEscape);
-}
-
 bool OmniboxEditModel::OnEscapeKeyPressed() {
   const char* kOmniboxEscapeHistogramName = "Omnibox.Escape";
 
@@ -1432,17 +1428,10 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   }
 
   // Blur the omnibox and focus the web contents.
-  if (base::FeatureList::IsEnabled(omnibox::kBlurWithEscape)) {
-    base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
-                                  OmniboxEscapeAction::kBlur);
-    client_->FocusWebContents();
-    return true;
-  }
-
   base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
-                                OmniboxEscapeAction::kNone);
-
-  return false;
+                                OmniboxEscapeAction::kBlur);
+  client_->FocusWebContents();
+  return true;
 }
 
 void OmniboxEditModel::OnControlKeyChanged(bool pressed) {

@@ -4953,11 +4953,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "omnibox-blur-with-escape",
-    "owners": ["manukh", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "omnibox-bookmark-paths",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 115
