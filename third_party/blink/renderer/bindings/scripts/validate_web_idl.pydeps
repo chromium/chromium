@@ -16,6 +16,7 @@ validator/framework/target_store.py
 validator/framework/target_type.py
 validator/framework/validator.py
 validator/rules/__init__.py
+validator/rules/rules_attributes.py
 validator/rules/rules_constants.py
 validator/rules/rules_dictionaries.py
 validator/rules/rules_extended_attributes.py
