@@ -61,7 +61,7 @@ async function createAutofillSection(
   const section = document.createElement('settings-autofill-section');
   section.prefs = {autofill: prefValues};
   document.body.appendChild(section);
-  await flushTasks();
+  await autofillManager.whenCalled('getAddressList');
 
   return section;
 }
