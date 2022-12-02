@@ -10,7 +10,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/common/content_export.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -102,7 +102,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   // Given as a callback to NavigationURLLoaderImpl.
   void RequestHandlerWrapper(
-      SingleRequestURLLoaderFactory::RequestHandler handler,
+      network::SingleRequestURLLoaderFactory::RequestHandler handler,
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);

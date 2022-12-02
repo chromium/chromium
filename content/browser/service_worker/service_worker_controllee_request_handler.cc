@@ -539,7 +539,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
           std::move(fallback_callback_), container_host_, frame_tree_node_id_));
 
   std::move(loader_callback_)
-      .Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
+      .Run(base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
           base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
                          loader_wrapper_->get()->AsWeakPtr())));
 }

@@ -428,7 +428,12 @@ void ExternalProtocolHandler::LaunchUrl(
     bool has_user_gesture,
     bool is_in_fenced_frame_tree,
     const absl::optional<url::Origin>& initiating_origin,
-    content::WeakDocumentPtr initiator_document) {
+    content::WeakDocumentPtr initiator_document
+#if BUILDFLAG(IS_ANDROID)
+    ,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory
+#endif
+) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Disable anti-flood protection if the user is invoking a bookmark or
@@ -479,8 +484,9 @@ void ExternalProtocolHandler::LaunchUrl(
   navigation_interception::InterceptNavigationDelegate* delegate =
       navigation_interception::InterceptNavigationDelegate::Get(web_contents);
   if (delegate) {
-    delegate->HandleSubframeExternalProtocol(
-        escaped_url, page_transition, has_user_gesture, initiating_origin);
+    delegate->HandleSubframeExternalProtocol(escaped_url, page_transition,
+                                             has_user_gesture,
+                                             initiating_origin, out_factory);
   }
   return;
 #else

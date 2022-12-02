@@ -1132,16 +1132,22 @@ bool ShouldHonorPolicies() {
 const char kDisableSandboxExternalProtocolSwitch[] =
     "disable-sandbox-external-protocols";
 
-void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
-               const GURL& url,
-               content::WebContents::Getter web_contents_getter,
-               ui::PageTransition page_transition,
-               bool is_primary_main_frame,
-               bool is_in_fenced_frame_tree,
-               network::mojom::WebSandboxFlags sandbox_flags,
-               bool has_user_gesture,
-               const absl::optional<url::Origin>& initiating_origin,
-               content::WeakDocumentPtr initiator_document) {
+void LaunchURL(
+    base::WeakPtr<ChromeContentBrowserClient> client,
+    const GURL& url,
+    content::WebContents::Getter web_contents_getter,
+    ui::PageTransition page_transition,
+    bool is_primary_main_frame,
+    bool is_in_fenced_frame_tree,
+    network::mojom::WebSandboxFlags sandbox_flags,
+    bool has_user_gesture,
+    const absl::optional<url::Origin>& initiating_origin,
+    content::WeakDocumentPtr initiator_document
+#if BUILDFLAG(IS_ANDROID)
+    ,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory
+#endif
+) {
   // If there is no longer a WebContents, the request may have raced with tab
   // closing. Don't fire the external request. (It may have been a prerender.)
   content::WebContents* web_contents = web_contents_getter.Run();
@@ -1257,7 +1263,12 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
     ExternalProtocolHandler::LaunchUrl(
         url, std::move(web_contents_getter), page_transition, has_user_gesture,
         is_in_fenced_frame_tree, initiating_origin,
-        std::move(initiator_document));
+        std::move(initiator_document)
+#if BUILDFLAG(IS_ANDROID)
+            ,
+        out_factory
+#endif
+    );
   }
 }
 
@@ -6260,6 +6271,18 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
                                      ? initiator_document->GetWeakDocumentPtr()
                                      : content::WeakDocumentPtr();
 
+#if BUILDFLAG(IS_ANDROID)
+  // For Android this is always called on the UI thread.
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+  // Called synchronously so we can populate the |out_factory| param.
+  LaunchURL(weak_factory_.GetWeakPtr(), url, std::move(web_contents_getter),
+            page_transition, is_primary_main_frame, is_in_fenced_frame_tree,
+            sandbox_flags, has_user_gesture, initiating_origin,
+            std::move(weak_initiator_document), out_factory);
+#else
+  // TODO(crbug.com/1394838): Figure out why this was initially made async, and,
+  // if possible, unify with the sync path above.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&LaunchURL, weak_factory_.GetWeakPtr(), url,
@@ -6267,6 +6290,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
                      is_primary_main_frame, is_in_fenced_frame_tree,
                      sandbox_flags, has_user_gesture, initiating_origin,
                      std::move(weak_initiator_document)));
+#endif
   return true;
 }
 

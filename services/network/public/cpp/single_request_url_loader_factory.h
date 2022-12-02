@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_LOADER_SINGLE_REQUEST_URL_LOADER_FACTORY_H_
-#define CONTENT_BROWSER_LOADER_SINGLE_REQUEST_URL_LOADER_FACTORY_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_SINGLE_REQUEST_URL_LOADER_FACTORY_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_SINGLE_REQUEST_URL_LOADER_FACTORY_H_
 
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
-namespace content {
+namespace network {
 
 // An implementation of SharedURLLoaderFactory which handles only a single
 // request. It's an error to call CreateLoaderAndStart() more than a total of
 // one time across this object or any of its clones.
-class CONTENT_EXPORT SingleRequestURLLoaderFactory
+class COMPONENT_EXPORT(NETWORK_CPP) SingleRequestURLLoaderFactory
     : public network::SharedURLLoaderFactory {
  public:
   using RequestHandler = base::OnceCallback<void(
@@ -60,6 +60,6 @@ class CONTENT_EXPORT SingleRequestURLLoaderFactory
       receivers_;
 };
 
-}  // namespace content
+}  // namespace network
 
-#endif  // CONTENT_BROWSER_LOADER_SINGLE_REQUEST_URL_LOADER_FACTORY_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_SINGLE_REQUEST_URL_LOADER_FACTORY_H_

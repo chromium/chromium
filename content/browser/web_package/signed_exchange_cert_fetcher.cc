@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/data_url_loader_factory.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
@@ -27,6 +26,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -154,7 +154,7 @@ void SignedExchangeCertFetcher::Start() {
   // URLRequestContext's SharedURLLoaderFactory.
   if (resource_request_->url.SchemeIs(url::kDataScheme)) {
     shared_url_loader_factory_ =
-        base::MakeRefCounted<SingleRequestURLLoaderFactory>(
+        base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
             base::BindOnce(&SignedExchangeCertFetcher::OnDataURLRequest,
                            base::Unretained(this)));
   }

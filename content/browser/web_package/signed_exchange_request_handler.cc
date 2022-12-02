@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_loader.h"
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
@@ -18,6 +17,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
@@ -70,9 +70,10 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
 
   DCHECK(tentative_resource_request.url.EqualsIgnoringRef(
       *signed_exchange_loader_->inner_request_url()));
-  std::move(callback).Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
-      base::BindOnce(&SignedExchangeRequestHandler::StartResponse,
-                     weak_factory_.GetWeakPtr())));
+  std::move(callback).Run(
+      base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+          base::BindOnce(&SignedExchangeRequestHandler::StartResponse,
+                         weak_factory_.GetWeakPtr())));
 }
 
 bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(

@@ -133,9 +133,9 @@ class NavigationLoaderInterceptorBrowserContainer
             [](LoaderCallback callback,
                URLLoaderRequestInterceptor::RequestHandler handler) {
               if (handler) {
-                std::move(callback).Run(
-                    base::MakeRefCounted<SingleRequestURLLoaderFactory>(
-                        std::move(handler)));
+                std::move(callback).Run(base::MakeRefCounted<
+                                        network::SingleRequestURLLoaderFactory>(
+                    std::move(handler)));
               } else {
                 std::move(callback).Run({});
               }
@@ -723,7 +723,7 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
         factory = base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
             std::move(loader_factory));
       } else {
-        factory = base::MakeRefCounted<SingleRequestURLLoaderFactory>(
+        factory = base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
             base::BindOnce(UnknownSchemeCallback, handled));
       }
     } else {

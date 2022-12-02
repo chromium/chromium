@@ -118,6 +118,8 @@ component("cpp") {
     "simple_url_loader_stream_consumer.h",
     "simple_url_loader_throttle.cc",
     "simple_url_loader_throttle.h",
+    "single_request_url_loader_factory.cc",
+    "single_request_url_loader_factory.h",
     "source_stream_to_data_pipe.cc",
     "source_stream_to_data_pipe.h",
     "spki_hash_set.cc",

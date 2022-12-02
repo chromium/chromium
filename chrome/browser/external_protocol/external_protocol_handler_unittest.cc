@@ -218,7 +218,12 @@ class ExternalProtocolHandlerTest : public testing::Test {
                             base::Unretained(this)),
         ui::PAGE_TRANSITION_LINK, /*has_user_gesture=*/true,
         /*is_in_fenced_frame_tree=*/false, initiating_origin,
-        content::WeakDocumentPtr());
+        content::WeakDocumentPtr()
+#if BUILDFLAG(IS_ANDROID)
+            ,
+        nullptr
+#endif
+    );
     run_loop_.Run();
     ExternalProtocolHandler::SetDelegateForTesting(nullptr);
 
@@ -334,11 +339,12 @@ class MockInterceptNavigationDelegate
       : InterceptNavigationDelegate(base::android::AttachCurrentThread(),
                                     nullptr) {}
 
-  MOCK_METHOD4(HandleSubframeExternalProtocol,
+  MOCK_METHOD5(HandleSubframeExternalProtocol,
                void(const GURL&,
                     ui::PageTransition,
                     bool,
-                    const absl::optional<url::Origin>&));
+                    const absl::optional<url::Origin>&,
+                    mojo::PendingRemote<network::mojom::URLLoaderFactory>*));
 };
 
 TEST_F(ExternalProtocolHandlerTest, TestUrlEscape_Android) {
@@ -355,7 +361,8 @@ TEST_F(ExternalProtocolHandlerTest, TestUrlEscape_Android) {
 
   EXPECT_CALL(*delegate.get(),
               HandleSubframeExternalProtocol(testing::Eq(escaped), testing::_,
-                                             true, testing::Eq(opaque_origin)));
+                                             true, testing::Eq(opaque_origin),
+                                             testing::Eq(nullptr)));
 
   navigation_interception::InterceptNavigationDelegate::Associate(
       web_contents_.get(), std::move(delegate));
@@ -366,7 +373,7 @@ TEST_F(ExternalProtocolHandlerTest, TestUrlEscape_Android) {
                           base::Unretained(this)),
       ui::PAGE_TRANSITION_LINK, /*has_user_gesture=*/true,
       /*is_in_fenced_frame_tree=*/false, opaque_origin,
-      content::WeakDocumentPtr());
+      content::WeakDocumentPtr(), nullptr);
 }
 
 #endif  // if !BUILDFLAG(IS_ANDROID)

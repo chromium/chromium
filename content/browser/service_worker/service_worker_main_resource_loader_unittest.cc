@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/fake_service_worker.h"
@@ -31,6 +30,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -50,8 +50,8 @@ namespace content {
 namespace service_worker_main_resource_loader_unittest {
 
 void ReceiveRequestHandler(
-    SingleRequestURLLoaderFactory::RequestHandler* out_handler,
-    SingleRequestURLLoaderFactory::RequestHandler handler) {
+    network::SingleRequestURLLoaderFactory::RequestHandler* out_handler,
+    network::SingleRequestURLLoaderFactory::RequestHandler handler) {
   *out_handler = std::move(handler);
 }
 

@@ -5,7 +5,6 @@
 #include "content/browser/web_package/web_bundle_interceptor_for_history_navigation_from_network.h"
 
 #include "components/web_package/web_bundle_utils.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/web_package/web_bundle_interceptor_for_history_navigation.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_redirect_url_loader.h"
@@ -14,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "url/gurl.h"
 
@@ -46,19 +46,21 @@ void WebBundleInterceptorForHistoryNavigationFromNetwork::MaybeCreateLoader(
     case State::kInitial:
       DCHECK_EQ(tentative_resource_request.url, target_inner_url_);
       std::move(callback).Run(
-          base::MakeRefCounted<SingleRequestURLLoaderFactory>(base::BindOnce(
-              &WebBundleInterceptorForHistoryNavigationFromNetwork::
-                  StartRedirectResponse,
-              weak_factory_.GetWeakPtr())));
+          base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+              base::BindOnce(
+                  &WebBundleInterceptorForHistoryNavigationFromNetwork::
+                      StartRedirectResponse,
+                  weak_factory_.GetWeakPtr())));
       return;
     case State::kRedirectedToWebBundle:
       DCHECK(!reader_);
       if (tentative_resource_request.url != source_->url()) {
         std::move(callback).Run(
-            base::MakeRefCounted<SingleRequestURLLoaderFactory>(base::BindOnce(
-                &WebBundleInterceptorForHistoryNavigationFromNetwork::
-                    StartErrorResponseForUnexpectedRedirect,
-                weak_factory_.GetWeakPtr())));
+            base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+                base::BindOnce(
+                    &WebBundleInterceptorForHistoryNavigationFromNetwork::
+                        StartErrorResponseForUnexpectedRedirect,
+                    weak_factory_.GetWeakPtr())));
       } else {
         std::move(callback).Run({});
       }
@@ -67,10 +69,12 @@ void WebBundleInterceptorForHistoryNavigationFromNetwork::MaybeCreateLoader(
       NOTREACHED();
       return;
     case State::kMetadataReady:
-      std::move(callback).Run(base::MakeRefCounted<
-                              SingleRequestURLLoaderFactory>(base::BindOnce(
-          &WebBundleInterceptorForHistoryNavigationFromNetwork::StartResponse,
-          weak_factory_.GetWeakPtr())));
+      std::move(callback).Run(
+          base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+              base::BindOnce(
+                  &WebBundleInterceptorForHistoryNavigationFromNetwork::
+                      StartResponse,
+                  weak_factory_.GetWeakPtr())));
   }
 }
 

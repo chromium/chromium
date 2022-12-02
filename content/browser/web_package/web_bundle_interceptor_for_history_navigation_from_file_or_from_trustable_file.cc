@@ -4,11 +4,11 @@
 
 #include "content/browser/web_package/web_bundle_interceptor_for_history_navigation_from_file_or_from_trustable_file.h"
 
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "content/browser/web_package/web_bundle_utils.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -41,7 +41,8 @@ void WebBundleInterceptorForHistoryNavigationFromFileOrFromTrustableFile::
                       FallbackCallback fallback_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(
-      base::MakeRefCounted<SingleRequestURLLoaderFactory>(base::BindOnce(
+      base::MakeRefCounted<
+          network::SingleRequestURLLoaderFactory>(base::BindOnce(
           &WebBundleInterceptorForHistoryNavigationFromFileOrFromTrustableFile::
               CreateURLLoader,
           weak_factory_.GetWeakPtr())));

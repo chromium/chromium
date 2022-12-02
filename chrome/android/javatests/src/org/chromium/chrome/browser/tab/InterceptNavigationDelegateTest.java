@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -34,6 +35,7 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -77,6 +79,8 @@ public class InterceptNavigationDelegateTest {
             BASE_PAGE + "navigation_from_user_gesture_to_iframe_page.html";
     private static final String NAVIGATION_FROM_PRERENDERING_PAGE =
             BASE_PAGE + "navigation_from_prerender.html";
+    private static final String IFRAME_CONTAINER_PAGE = BASE_PAGE + "iframe_container_page.html";
+    private static final String HELLO_PAGE = BASE_PAGE + "hello.html";
 
     private static final long DEFAULT_MAX_TIME_TO_WAIT_IN_MS = 3000;
     private static final long LONG_MAX_TIME_TO_WAIT_IN_MS = 20000;
@@ -85,7 +89,8 @@ public class InterceptNavigationDelegateTest {
     private List<NavigationHandle> mNavParamHistory = new ArrayList<>();
     private List<ExternalNavigationParams> mExternalNavParamHistory = new ArrayList<>();
     private EmbeddedTestServer mTestServer;
-    private boolean mSubframeExternalProtocolCalled;
+    private CallbackHelper mSubframeExternalProtocolCalled = new CallbackHelper();
+    private GURL mSubframeRedirectTarget;
 
     class TestExternalNavigationHandler extends ExternalNavigationHandler {
         public TestExternalNavigationHandler() {
@@ -124,7 +129,8 @@ public class InterceptNavigationDelegateTest {
                 public GURL handleSubframeExternalProtocol(GURL escapedUrl,
                         @PageTransition int transition, boolean hasUserGesture,
                         Origin initiatorOrigin) {
-                    mSubframeExternalProtocolCalled = true;
+                    mSubframeExternalProtocolCalled.notifyCalled();
+                    if (mSubframeRedirectTarget != null) return mSubframeRedirectTarget;
                     return super.handleSubframeExternalProtocol(
                             escapedUrl, transition, hasUserGesture, initiatorOrigin);
                 }
@@ -220,7 +226,7 @@ public class InterceptNavigationDelegateTest {
         TouchCommon.singleClickView(mActivity.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
-        CriteriaHelper.pollUiThread(() -> mSubframeExternalProtocolCalled);
+        mSubframeExternalProtocolCalled.waitForFirst();
     }
 
     @Test
@@ -238,5 +244,36 @@ public class InterceptNavigationDelegateTest {
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
         Assert.assertEquals(2, mNavParamHistory.size());
         Assert.assertEquals(2, mExternalNavParamHistory.size());
+    }
+
+    @Test
+    @MediumTest
+    public void testIframeUrlRedirection() throws TimeoutException {
+        // Will cause handleSubframeExternalProtocol to return this GURL.
+        mSubframeRedirectTarget = new GURL(mTestServer.getURL(HELLO_PAGE));
+        String mainFrameUrl = mTestServer.getURL(IFRAME_CONTAINER_PAGE);
+
+        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
+
+        final CallbackHelper subframeRedirect = new CallbackHelper();
+        WebContentsObserver observer = new WebContentsObserver() {
+            @Override
+            public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                Assert.assertEquals(mainFrameUrl, navigation.getUrl().getSpec());
+            }
+
+            @Override
+            public void didRedirectNavigation(NavigationHandle navigation) {
+                if (navigation.isInPrimaryMainFrame()) return;
+                Assert.assertEquals(mSubframeRedirectTarget, navigation.getUrl());
+                subframeRedirect.notifyCalled();
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { tab.getWebContents().addObserver(observer); });
+
+        sActivityTestRule.loadUrl(mainFrameUrl);
+        mSubframeExternalProtocolCalled.waitForFirst();
+        subframeRedirect.waitForFirst();
     }
 }

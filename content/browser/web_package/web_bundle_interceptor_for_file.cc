@@ -5,7 +5,6 @@
 #include "content/browser/web_package/web_bundle_interceptor_for_file.h"
 
 #include "base/ranges/algorithm.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_redirect_url_loader.h"
 #include "content/browser/web_package/web_bundle_source.h"
@@ -13,6 +12,7 @@
 #include "content/browser/web_package/web_bundle_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 
 namespace content {
@@ -40,9 +40,10 @@ void WebBundleInterceptorForFile::MaybeCreateLoader(
     std::move(callback).Run({});
     return;
   }
-  std::move(callback).Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
-      base::BindOnce(&WebBundleInterceptorForFile::StartResponse,
-                     weak_factory_.GetWeakPtr())));
+  std::move(callback).Run(
+      base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+          base::BindOnce(&WebBundleInterceptorForFile::StartResponse,
+                         weak_factory_.GetWeakPtr())));
 }
 
 bool WebBundleInterceptorForFile::MaybeCreateLoaderForResponse(

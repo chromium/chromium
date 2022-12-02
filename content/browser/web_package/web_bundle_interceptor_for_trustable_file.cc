@@ -5,12 +5,12 @@
 #include "content/browser/web_package/web_bundle_interceptor_for_trustable_file.h"
 
 #include "base/bind.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_redirect_url_loader.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 
 namespace content {
 
@@ -37,9 +37,10 @@ void WebBundleInterceptorForTrustableFile::MaybeCreateLoader(
     LoaderCallback callback,
     FallbackCallback fallback_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(callback).Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
-      base::BindOnce(&WebBundleInterceptorForTrustableFile::CreateURLLoader,
-                     weak_factory_.GetWeakPtr())));
+  std::move(callback).Run(
+      base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+          base::BindOnce(&WebBundleInterceptorForTrustableFile::CreateURLLoader,
+                         weak_factory_.GetWeakPtr())));
 }
 
 void WebBundleInterceptorForTrustableFile::CreateURLLoader(

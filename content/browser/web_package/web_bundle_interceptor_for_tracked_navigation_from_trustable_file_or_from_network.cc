@@ -5,7 +5,6 @@
 #include "content/browser/web_package/web_bundle_interceptor_for_tracked_navigation_from_trustable_file_or_from_network.h"
 
 #include "base/command_line.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "content/browser/web_package/web_bundle_utils.h"
@@ -15,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace content {
@@ -53,7 +53,8 @@ void WebBundleInterceptorForTrackedNavigationFromTrustableFileOrFromNetwork::
           url_loader_factory_->reader()->source().IsPathRestrictionSatisfied(
               resource_request.url)));
   std::move(callback).Run(base::MakeRefCounted<
-                          SingleRequestURLLoaderFactory>(base::BindOnce(
+                          network::
+                              SingleRequestURLLoaderFactory>(base::BindOnce(
       &WebBundleInterceptorForTrackedNavigationFromTrustableFileOrFromNetwork::
           CreateURLLoader,
       weak_factory_.GetWeakPtr())));

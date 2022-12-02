@@ -1180,8 +1180,6 @@ source_set("browser") {
     "loader/prefetch_url_loader_service.h",
     "loader/shared_cors_origin_access_list_impl.cc",
     "loader/shared_cors_origin_access_list_impl.h",
-    "loader/single_request_url_loader_factory.cc",
-    "loader/single_request_url_loader_factory.h",
     "loader/url_loader_throttles.cc",
     "locks/lock_manager.cc",
     "locks/lock_manager.h",

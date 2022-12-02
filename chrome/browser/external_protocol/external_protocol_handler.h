@@ -10,6 +10,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/shell_integration.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
@@ -110,13 +112,19 @@ class ExternalProtocolHandler {
   // If possible, |initiator_document| identifies the document that requested
   // the external protocol launch.
   // Must run on the UI thread.
-  static void LaunchUrl(const GURL& url,
-                        content::WebContents::Getter web_contents_getter,
-                        ui::PageTransition page_transition,
-                        bool has_user_gesture,
-                        bool is_in_fenced_frame_tree,
-                        const absl::optional<url::Origin>& initiating_origin,
-                        content::WeakDocumentPtr initiator_document);
+  static void LaunchUrl(
+      const GURL& url,
+      content::WebContents::Getter web_contents_getter,
+      ui::PageTransition page_transition,
+      bool has_user_gesture,
+      bool is_in_fenced_frame_tree,
+      const absl::optional<url::Origin>& initiating_origin,
+      content::WeakDocumentPtr initiator_document
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory
+#endif
+  );
 
   // Starts a url using the external protocol handler with the help
   // of shellexecute. Should only be called if the protocol is allowlisted

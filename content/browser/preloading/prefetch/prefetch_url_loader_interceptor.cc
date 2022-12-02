@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_from_string_url_loader.h"
@@ -26,6 +25,7 @@
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -231,9 +231,9 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
           prefetch_container->ReleasePrefetchedResponse(),
           prefetch_container->GetPrefetchResponseSizes(),
           tenative_resource_request);
-  scoped_refptr<SingleRequestURLLoaderFactory>
+  scoped_refptr<network::SingleRequestURLLoaderFactory>
       single_request_url_loader_factory =
-          base::MakeRefCounted<SingleRequestURLLoaderFactory>(
+          base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
               url_loader->ServingResponseHandler());
 
   // Create URL loader factory pipe that can be possibly proxied by Extensions.

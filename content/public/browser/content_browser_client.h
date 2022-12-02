@@ -1942,6 +1942,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // |initiator_document| refers to the document that initiated the navigation,
   // if it is still available. Use |initiating_origin| instead for security
   // decisions.
+  //
+  // |out_factory| allows the embedder to continue the navigation, by providing
+  // their own URLLoader. If it isn't set, the navigation is canceled. It is
+  // canceled either silently when this function returns true, or with an error
+  // page otherwise.
   virtual bool HandleExternalProtocol(
       const GURL& url,
       base::RepeatingCallback<WebContents*()> web_contents_getter,

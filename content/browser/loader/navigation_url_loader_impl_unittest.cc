@@ -17,7 +17,6 @@
 #include "base/unguessable_token.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/navigation_url_loader.h"
-#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
@@ -45,6 +44,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/test/url_loader_context_for_tests.h"
@@ -95,9 +95,10 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
                          BrowserContext* browser_context,
                          LoaderCallback callback,
                          FallbackCallback fallback_callback) override {
-    std::move(callback).Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
-        base::BindOnce(&TestNavigationLoaderInterceptor::StartLoader,
-                       base::Unretained(this))));
+    std::move(callback).Run(
+        base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+            base::BindOnce(&TestNavigationLoaderInterceptor::StartLoader,
+                           base::Unretained(this))));
   }
 
   void StartLoader(
