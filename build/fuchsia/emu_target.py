@@ -19,7 +19,7 @@ import target
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              'test')))
-from compatible_utils import running_unattended
+from compatible_utils import find_image_in_sdk, running_unattended
 
 
 class EmuTarget(target.Target):
@@ -46,15 +46,13 @@ class EmuTarget(target.Target):
   def _GetPbPath(self, image):
     if not image:
       image = 'terminal.qemu-%s' % self._target_cpu
-    if not os.path.exists(common.PRODUCT_BUNDLE_SIGNATURE_FILE):
-      raise FileNotFoundError('There are no product bundles downloaded. Add '
-                              'the images and run "gclient sync" again.')
-    with open(common.PRODUCT_BUNDLE_SIGNATURE_FILE, 'r') as f:
-      signature = json.load(f)
-    if image not in signature['images']:
+    image_path = find_image_in_sdk(image,
+                                   product_bundle=True,
+                                   sdk_root=os.path.dirname(common.IMAGES_ROOT))
+    if not image_path:
       raise FileNotFoundError(f'Product bundle {image} is not downloaded. Add '
                               'the image and run "gclient sync" again.')
-    return os.path.join(common.IMAGES_ROOT, signature['path'], image, 'images')
+    return image_path
 
   def _GetEmuMetadata(self):
     with open(os.path.join(self._pb_path, 'product_bundle.json')) as f:
