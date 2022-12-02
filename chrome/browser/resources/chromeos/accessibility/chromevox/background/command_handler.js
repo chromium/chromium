@@ -1785,22 +1785,21 @@ export class CommandHandler extends CommandHandlerInterface {
 
   /** @private */
   toggleScreen_() {
-    const oldState = sessionStorage.getItem('darkScreen');
-    const newState = (oldState === 'true') ? false : true;
+    const newState = !ChromeVoxPrefs.darkScreen;
     if (newState && !LocalStorage.get('acceptToggleScreen')) {
       // If this is the first time, show a confirmation dialog.
       chrome.accessibilityPrivate.showConfirmationDialog(
           Msgs.getMsg('toggle_screen_title'),
           Msgs.getMsg('toggle_screen_description'), confirmed => {
             if (confirmed) {
-              sessionStorage.setItem('darkScreen', 'true');
+              ChromeVoxPrefs.darkScreen = true;
               LocalStorage.set('acceptToggleScreen', true);
               chrome.accessibilityPrivate.darkenScreen(true);
               new Output().format('@toggle_screen_off').go();
             }
           });
     } else {
-      sessionStorage.setItem('darkScreen', (newState) ? 'true' : 'false');
+      ChromeVoxPrefs.darkScreen = newState;
       chrome.accessibilityPrivate.darkenScreen(newState);
       new Output()
           .format((newState) ? '@toggle_screen_off' : '@toggle_screen_on')

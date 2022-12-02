@@ -141,6 +141,16 @@ export class ChromeVoxPrefs {
     ChromeVoxPrefs.isStickyPrefOn = value;
   }
 
+  /** @return {boolean} */
+  get darkScreen() {
+    return ChromeVoxPrefs.darkScreen_;
+  }
+
+  /** @param {boolean} newVal */
+  set darkScreen(newVal) {
+    ChromeVoxPrefs.darkScreen_ = newVal;
+  }
+
   enableOrDisableLogUrlWatcher_() {
     for (const pref of Object.values(ChromeVoxPrefs.loggingPrefs)) {
       if (LocalStorage.get(pref)) {
@@ -270,3 +280,12 @@ ChromeVoxPrefs.isStickyPrefOn = false;
  * @type {?boolean}
  */
 ChromeVoxPrefs.stickyOverride = null;
+
+/**
+ * Whether the screen is darkened.
+ *
+ * Starts each session as false, since the display will be on whenever
+ * ChromeVox starts.
+ * @private {boolean}
+ */
+ChromeVoxPrefs.darkScreen_ = false;

@@ -5,7 +5,6 @@
 // Common external variables when compiling ChromeVox background code
 
 var localStorage = {};
-var sessionStorage = {};
 var PhoneticDictionaries = {};
 
 /** Speech Rule Engine. See sre_browser.js. */
