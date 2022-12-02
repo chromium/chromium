@@ -951,7 +951,11 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         # Needed to use liburlpattern API.
         r'third_party/blink/renderer/core/url_pattern/.*',
         # Needed to use QUICHE API.
+        r'net/quic/.*',
+        r'net/spdy/.*',
         r'net/test/embedded_test_server/.*',
+        r'net/third_party/quiche/.*',
+        r'services/network/web_transport\.cc',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK
       ],
