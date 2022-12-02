@@ -4577,6 +4577,27 @@
             ]
         }
     ],
+    "FastPathPaintPropertyUpdates": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "FastPathPaintPropertyUpdates",
+                    "enable_features": [
+                        "FastPathPaintPropertyUpdates"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeatureNotificationGuide": [
         {
             "platforms": [
