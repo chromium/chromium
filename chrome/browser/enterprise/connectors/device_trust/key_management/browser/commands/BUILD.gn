@@ -3,11 +3,7 @@
 # found in the LICENSE file.
 
 source_set("commands") {
-  friend = [
-    "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
-    ":test_support",
-    ":unit_tests",
-  ]
+  friend = [ ":unit_tests" ]
 
   public = [
     "key_rotation_command.h",
@@ -100,7 +96,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/common",
-    "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
     "//testing/gtest",
   ]
 
