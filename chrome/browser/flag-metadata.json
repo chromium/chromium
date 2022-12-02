@@ -551,14 +551,6 @@
     "expiry_milestone": 111
   },
   {
-    "name": "autofill-more-prominent-popup",
-    "owners": [
-      "vykochko@google.com",
-      "autofill-squad-muc@google.com"
-    ],
-    "expiry_milestone": 113
-  },
-  {
     "name": "autofill-parse-iban-fields",
     "owners": [ "jsaul@google.com", "vishwasuppoor@google.com" ],
     "expiry_milestone": 112

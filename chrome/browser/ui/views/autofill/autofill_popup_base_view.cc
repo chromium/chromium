@@ -47,16 +47,6 @@
 
 namespace autofill {
 
-namespace {
-
-views::Emphasis GetPopupEmphasis() {
-  return base::FeatureList::IsEnabled(features::kAutofillMoreProminentPopup)
-             ? views::Emphasis::kMaximum
-             : views::Emphasis::kMedium;
-}
-
-}  // namespace
-
 // The widget that the AutofillPopupBaseView will be attached to.
 class AutofillPopupBaseView::Widget : public views::Widget {
  public:
@@ -105,7 +95,8 @@ class AutofillPopupBaseView::Widget : public views::Widget {
 
 // static
 int AutofillPopupBaseView::GetCornerRadius() {
-  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(GetPopupEmphasis());
+  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMedium);
 }
 
 // static
@@ -348,11 +339,6 @@ gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
 
   gfx::Rect popup_bounds;
 
-  int maximum_pixel_offset_to_center =
-      base::FeatureList::IsEnabled(features::kAutofillMoreProminentPopup)
-          ? features::kAutofillMoreProminentPopupMaxOffsetToCenterParam.Get()
-          : kMaximumPixelsToMoveSuggstionToCenter;
-
   // Deduce the arrow and the position.
   views::BubbleBorder::Arrow arrow = GetOptimalPopupPlacement(
       /*content_area_bounds=*/max_bounds_for_popup,
@@ -361,7 +347,7 @@ gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
       /*right_to_left=*/delegate_->IsRTL(),
       /*scrollbar_width=*/gfx::scrollbar_size(),
       /*maximum_pixel_offset_to_center=*/
-      maximum_pixel_offset_to_center,
+      kMaximumPixelsToMoveSuggstionToCenter,
       /*maximum_width_percentage_to_center=*/
       kMaximumWidthPercentageToMoveTheSuggestionToCenter,
       /*popup_bounds=*/popup_bounds);
@@ -439,7 +425,7 @@ std::unique_ptr<views::Border> AutofillPopupBaseView::CreateBorder() {
   border->SetCornerRadius(GetCornerRadius());
   border->set_md_shadow_elevation(
       ChromeLayoutProvider::Get()->GetShadowElevationMetric(
-          GetPopupEmphasis()));
+          views::Emphasis::kMedium));
   return border;
 }
 
