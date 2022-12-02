@@ -44,6 +44,9 @@ UseCounterMetricsRecorder::GetAllowedWebDevMetricsUkmFeatures() {
            WebFeature::kScrollTimelineConstructor,
            WebFeature::kCSSAtRuleScrollTimeline,
            WebFeature::kCSSAtRuleContainer,
-           WebFeature::kBlockingAttributeRenderToken}));
+           WebFeature::kBlockingAttributeRenderToken,
+           WebFeature::kV8MemoryInfo_TotalJSHeapSize_AttributeGetter,
+           WebFeature::kV8MemoryInfo_UsedJSHeapSize_AttributeGetter,
+           WebFeature::kV8MemoryInfo_JSHeapSizeLimit_AttributeGetter}));
   return *opt_in_features;
 }
