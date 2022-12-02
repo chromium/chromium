@@ -23,6 +23,7 @@ import androidx.fragment.app.DialogFragment;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -74,7 +75,11 @@ public class PassphraseCreationDialogFragment extends DialogFragment {
 
     private SpannableString getInstructionsText() {
         final Activity activity = getActivity();
-        return SpanApplier.applySpans(activity.getString(R.string.sync_custom_passphrase),
+        return SpanApplier.applySpans(
+                activity.getString(
+                        ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ENABLE_HISTORY_DATA_TYPE)
+                                ? R.string.new_sync_custom_passphrase
+                                : R.string.sync_custom_passphrase),
                 new SpanInfo("<learnmore>", "</learnmore>", new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
