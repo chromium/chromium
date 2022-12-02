@@ -406,10 +406,11 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
     case FocusedFieldType::kFillableTextArea:
       return false;  // TODO(https://crbug.com/965478): true on long-press.
 
-    // Never show if the focused field is not explicitly fillable.
+    // Sometimes autocomplete entries may be set when the focus is on an unknown
+    // or unfillable field.
     case FocusedFieldType::kUnfillableElement:
     case FocusedFieldType::kUnknown:
-      return false;
+      return available_sources_.contains(FillingSource::AUTOFILL);
   }
 }
 

@@ -499,3 +499,20 @@ TEST_F(ManualFillingControllerLegacyTest, OnSavePasswordsToggledFalse) {
               OnToggleChanged(AccessoryAction::TOGGLE_SAVE_PASSWORDS, false));
   controller()->OnToggleChanged(AccessoryAction::TOGGLE_SAVE_PASSWORDS, false);
 }
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryWhenAutofillSourceAvailableOnUnknownField) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kUnknown);
+
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible()).Times(1);
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+  // Noop duplicate call.
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+  testing::Mock::VerifyAndClearExpectations(view());
+
+  EXPECT_CALL(*view(), Hide()).Times(1);
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/false);
+}

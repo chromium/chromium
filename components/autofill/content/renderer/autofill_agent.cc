@@ -1154,12 +1154,20 @@ void AutofillAgent::HandleFocusChangeComplete() {
   // focusing a field will not register as a click. Thus, when screen readers
   // are used, treat the focused node as if it was the last clicked. Also check
   // to ensure focus is on a field where text can be entered.
+  // When the focus is on a non-input field on Android, keyboard accessory may
+  // be shown if autofill data is available. Make sure to hide the accessory if
+  // focus changes to another element.
   if ((focused_node_was_last_clicked_ || is_screen_reader_enabled_) &&
       !focused_element.IsNull() && focused_element.IsFormControlElement()) {
     WebFormControlElement focused_form_control_element =
         focused_element.To<WebFormControlElement>();
-    if (form_util::IsTextAreaElementOrTextInput(focused_form_control_element))
+    if (form_util::IsTextAreaElementOrTextInput(focused_form_control_element)) {
       FormControlElementClicked(focused_form_control_element);
+    } else if (IsKeyboardAccessoryEnabled()) {
+      GetAutofillDriver().HidePopup();
+    }
+  } else if (IsKeyboardAccessoryEnabled()) {
+    GetAutofillDriver().HidePopup();
   }
 
   focused_node_was_last_clicked_ = false;
