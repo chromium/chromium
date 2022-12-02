@@ -1,16 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Builds and packages instrumented libraries for dynamic tools."""
 
 import argparse
-import contextlib
 import multiprocessing
 import os
-import shutil
 import subprocess
 import tarfile
+
 
 BUILD_TYPES = {
     'msan-no-origins': [
@@ -122,13 +121,13 @@ def main():
   else:
     for build_type in build_types:
       build_libraries(build_type, args.release, args.jobs, args.use_goma)
-  print 'To upload, run:'
+  print('To upload, run:')
   for build_type in build_types:
     print(
         'upload_to_google_storage.py -b '
         'chromium-instrumented-libraries %s-%s.tgz' %
         (build_type, args.release))
-  print 'You should then commit the resulting .sha1 files.'
+  print('You should then commit the resulting .sha1 files.')
 
 
 if __name__ == '__main__':
