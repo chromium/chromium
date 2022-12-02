@@ -750,12 +750,6 @@ TEST_F(SearchControllerImplTest, InvokeResult) {
   EXPECT_EQ(result->id(), "b");
   EXPECT_EQ(result->category(), Category::kGames);
 
-  // The results should not change if the invoke action is |kAppend|.
-  search_controller_->InvokeResultAction(result,
-                                         ash::SearchResultActionType::kAppend);
-  WaitInMilliseconds();
-  ExpectIdOrder({"a", "c", "d", "b"});
-
   // The result should be removed if the invoke action is |kRemove|.
   search_controller_->InvokeResultAction(result,
                                          ash::SearchResultActionType::kRemove);

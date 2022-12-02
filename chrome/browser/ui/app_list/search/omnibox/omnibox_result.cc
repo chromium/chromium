@@ -269,23 +269,13 @@ void OmniboxResult::InitializeButtonActions(
   Actions actions;
   for (ash::SearchResultActionType button_action : button_actions) {
     std::u16string button_tooltip;
-    bool visible_on_hover = false;
-
     switch (button_action) {
       case ash::SearchResultActionType::kRemove:
         button_tooltip = l10n_util::GetStringFUTF16(
             IDS_APP_LIST_REMOVE_SUGGESTION_ACCESSIBILITY_NAME, title());
-        visible_on_hover = true;  // visible upon hovering
         break;
-      case ash::SearchResultActionType::kAppend:
-        button_tooltip = l10n_util::GetStringFUTF16(
-            IDS_APP_LIST_APPEND_SUGGESTION_ACCESSIBILITY_NAME, title());
-        visible_on_hover = false;  // always visible
-        break;
-      default:
-        NOTREACHED();
     }
-    Action search_action(button_action, button_tooltip, visible_on_hover);
+    Action search_action(button_action, button_tooltip);
     actions.emplace_back(search_action);
   }
 

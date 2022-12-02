@@ -109,7 +109,7 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   // kAnswerCard is always the first list view shown.
   auto* answer_card_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
-          /*main_view=*/nullptr, view_delegate, dialog_controller_,
+          view_delegate, dialog_controller_,
           SearchResultView::SearchResultViewType::kAnswerCard,
           /*animates_result_updates=*/true, absl::nullopt));
   answer_card_container->SetListType(
@@ -119,7 +119,7 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   // kBestMatch is always the second list view shown.
   auto* best_match_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
-          /*main_view=*/nullptr, view_delegate, dialog_controller_,
+          view_delegate, dialog_controller_,
           SearchResultView::SearchResultViewType::kDefault,
           /*animated_result_updates=*/true, absl::nullopt));
   best_match_container->SetListType(
@@ -144,7 +144,7 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   for (size_t i = 0; i < category_count; ++i) {
     auto* result_container =
         scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
-            /*main_view=*/nullptr, view_delegate, dialog_controller_,
+            view_delegate, dialog_controller_,
             SearchResultView::SearchResultViewType::kDefault,
             /*animates_result_updates=*/true, i));
     add_result_container(result_container);

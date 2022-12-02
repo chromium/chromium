@@ -25,7 +25,6 @@ aggregate_vector_icons("app_list_vector_icons") {
     "release_notes_chip.icon",
     "search.icon",
     "search_engine_not_google.icon",
-    "search_result_append.icon",
     "search_result_remove.icon",
     "vertical_bar_end.icon",
     "vertical_bar_middle.icon",

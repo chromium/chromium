@@ -426,15 +426,9 @@ enum class SearchResultDisplayType {
 
 // Actions for search results. These map to the buttons beside some search
 // results, and do not include the launching of the result itself.
-// TODO(crbug.com/1263751): Currently these are only relevant to omnibox
-// results, but these are being generalized to other result types.
 enum SearchResultActionType {
   // Removes the search result.
-  kRemove = 0,
-  // Appends the result to search box query.
-  kAppend,
-  // kSearchResultActionMax is always last.
-  kSearchResultActionTypeMax
+  kRemove,
 };
 
 // The shape to mask a search result icon with.
@@ -497,15 +491,12 @@ using SearchResultTags = std::vector<SearchResultTag>;
 struct ASH_PUBLIC_EXPORT SearchResultAction {
   SearchResultAction();
   SearchResultAction(SearchResultActionType type,
-                     const std::u16string& tooltip_text,
-                     bool visible_on_hover);
+                     const std::u16string& tooltip_text);
   SearchResultAction(const SearchResultAction& other);
   ~SearchResultAction();
 
   SearchResultActionType type;
   std::u16string tooltip_text;
-  // Visible when button or its parent row in hover state.
-  bool visible_on_hover;
 };
 using SearchResultActions = std::vector<SearchResultAction>;
 

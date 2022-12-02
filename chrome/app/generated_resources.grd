@@ -11897,9 +11897,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_APP_LIST_REMOVE_SUGGESTION_ACCESSIBILITY_NAME" desc="The spoken feedback for removing suggestion button">
           Remove the suggestion <ph name="SUGGESTION_NAME">$1<ex>Harry Potter</ex></ph>
         </message>
-        <message name="IDS_APP_LIST_APPEND_SUGGESTION_ACCESSIBILITY_NAME" desc="The spoken feedback for appending suggestion button">
-           Append the suggestion <ph name="SUGGESTION_NAME">$1<ex>Harry Potter</ex></ph> to search box
-        </message>
         <message name="IDS_APP_LIST_CONTEXT_MENU_NEW_TAB" desc="Title text for the 'open new' context menu item of an app list item configured to open in a tab">
           New tab
         </message>

@@ -111,7 +111,7 @@ class TestContainer : public SearchResultContainerView {
             std::vector<SearchResult::Action>(
                 params.actions_per_result.value(),
                 SearchResult::Action(SearchResultActionType::kRemove,
-                                     std::u16string(), false)));
+                                     std::u16string())));
         search_result_views_.emplace_back(std::move(result_view));
       } else {
         auto result_view = std::make_unique<TestResultView>();
@@ -1288,7 +1288,7 @@ TEST_F(ResultSelectionTest, ActionRemovedWhileSelected) {
   selected_view->AsResultViewWithActions()->GetActionsView()->SetActions(
       std::vector<SearchResult::Action>(
           1, SearchResult::Action(ash::SearchResultActionType::kRemove,
-                                  std::u16string(), false)));
+                                  std::u16string())));
   ASSERT_EQ(create_test_location(0, 1), GetCurrentLocation());
   EXPECT_TRUE(CurrentResultActionNotSelected());
 

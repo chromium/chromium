@@ -1312,18 +1312,6 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
       dialog_controller_->Show(std::move(dialog));
       break;
     }
-    case SearchResultActionType::kAppend:
-      // Zero state suggestions are only available when productivity launcher
-      // is not enabled, so don't record zero-state metric when the feature is
-      // turned on.
-      if (!features::IsProductivityLauncherEnabled()) {
-        RecordZeroStateSearchResultUserActionHistogram(
-            ZeroStateSearchResultUserActionType::kAppendResult);
-      }
-      list_view_->SearchResultActionActivated(this, button_action);
-      break;
-    case SearchResultActionType::kSearchResultActionTypeMax:
-      NOTREACHED();
   }
 }
 

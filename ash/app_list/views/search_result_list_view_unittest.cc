@@ -64,14 +64,14 @@ class SearchResultListViewTest : public views::test::WidgetTest,
     widget_ = CreateTopLevelPlatformWidget();
 
     default_view_ = std::make_unique<SearchResultListView>(
-        nullptr, &view_delegate_, nullptr,
+        &view_delegate_, nullptr,
         SearchResultView::SearchResultViewType::kDefault, true, absl::nullopt);
     default_view_->SetListType(
         SearchResultListView::SearchResultListType::kBestMatch);
     default_view_->SetActive(true);
 
     answer_card_view_ = std::make_unique<SearchResultListView>(
-        nullptr, &view_delegate_, nullptr,
+        &view_delegate_, nullptr,
         SearchResultView::SearchResultViewType::kAnswerCard, true,
         absl::nullopt);
     answer_card_view_->SetListType(

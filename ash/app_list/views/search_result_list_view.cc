@@ -15,8 +15,6 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
-#include "ash/app_list/views/app_list_main_view.h"
-#include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -104,14 +102,12 @@ SearchResultListView::SearchResultListType CategoryToListType(
 }  // namespace
 
 SearchResultListView::SearchResultListView(
-    AppListMainView* main_view,
     AppListViewDelegate* view_delegate,
     SearchResultPageDialogController* dialog_controller,
     SearchResultView::SearchResultViewType search_result_view_type,
     bool animates_result_updates,
     absl::optional<size_t> productivity_launcher_index)
     : SearchResultContainerView(view_delegate),
-      main_view_(main_view),
       view_delegate_(view_delegate),
       animates_result_updates_(animates_result_updates),
       results_container_(new views::View),
@@ -514,11 +510,6 @@ void SearchResultListView::SearchResultActionActivated(
         Update();
         break;
       }
-      case SearchResultActionType::kAppend:
-        main_view_->search_box_view()->UpdateQuery(view->result()->title());
-        break;
-      case SearchResultActionType::kSearchResultActionTypeMax:
-        NOTREACHED();
     }
   }
 }
