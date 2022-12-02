@@ -24,7 +24,7 @@ import {
   Session,
 } from './domains/protocol/bidiProtocolTypes';
 import {CdpConnection} from './cdp';
-import {BiDiMessageEntry, IBidiServer} from './utils/bidiServer';
+import {BiDiMessageEntry, IBidiServer} from './bidiServer';
 import {IEventManager} from './domains/events/EventManager';
 import {
   ErrorResponseClass,

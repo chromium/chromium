@@ -16,7 +16,7 @@
  */
 
 import {CommonDataTypes, Message} from '../protocol/bidiProtocolTypes';
-import {BiDiMessageEntry, IBidiServer} from '../../utils/bidiServer';
+import {BiDiMessageEntry, IBidiServer} from '../../bidiServer';
 import {SubscriptionManager} from './SubscriptionManager';
 import {IdWrapper} from '../../../utils/idWrapper';
 import {Buffer} from '../../../utils/buffer';

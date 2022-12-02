@@ -20,7 +20,7 @@
 import {CommandProcessor} from '../bidiMapper/commandProcessor';
 
 import {CdpClient, CdpConnection} from '../cdp';
-import {BiDiMessageEntry, BidiServer} from '../bidiMapper/utils/bidiServer';
+import {BiDiMessageEntry, BidiServer} from '../bidiMapper/bidiServer';
 import {ITransport} from '../utils/transport';
 
 import {log, LogType} from '../utils/log';

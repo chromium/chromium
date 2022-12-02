@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-import {log, LogType} from '../../utils/log';
-import {EventEmitter} from '../../utils/EventEmitter';
+import {log, LogType} from '../utils/log';
+import {EventEmitter} from '../utils/EventEmitter';
 
-import {ITransport} from '../../utils/transport';
-import {Message} from '../domains/protocol/bidiProtocolTypes';
-import {ProcessingQueue} from '../../utils/processingQueue';
+import {ITransport} from '../utils/transport';
+import {Message} from './domains/protocol/bidiProtocolTypes';
+import {ProcessingQueue} from '../utils/processingQueue';
 import ErrorCode = Message.ErrorCode;
 
 const logBidi = log(LogType.bidi);
