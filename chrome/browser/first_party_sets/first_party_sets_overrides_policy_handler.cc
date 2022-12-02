@@ -29,6 +29,10 @@ std::string ParseErrorTypeToString(
       return "This set is an invalid type.";
     case content::FirstPartySetsHandler::ParseErrorType::kInvalidOrigin:
       return "This set contains an invalid origin.";
+    case content::FirstPartySetsHandler::ParseErrorType::kNonHttpsScheme:
+      return "This set contains a non-HTTPS origin.";
+    case content::FirstPartySetsHandler::ParseErrorType::kInvalidDomain:
+      return "This set contains an invalid registrable domain.";
     case content::FirstPartySetsHandler::ParseErrorType::kSingletonSet:
       return "This set doesn't contain any sites in its associatedSites list.";
     case content::FirstPartySetsHandler::ParseErrorType::kNonDisjointSets:

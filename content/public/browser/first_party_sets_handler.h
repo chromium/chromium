@@ -35,8 +35,12 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   enum class ParseErrorType {
     // The set definition was not the correct data type.
     kInvalidType,
-    // A string in the set was not a registrable domain.
+    // A string in the set could not be parsed as a URL or origin.
     kInvalidOrigin,
+    // An origin in the set was specified using a scheme other than HTTPS.
+    kNonHttpsScheme,
+    // A origin in the set did not use a valid a registrable domain.
+    kInvalidDomain,
     // The set had no members.
     kSingletonSet,
     // The set was non-disjoint with other pre-existing sets.

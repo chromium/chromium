@@ -157,7 +157,7 @@ TEST(FirstPartySetParser, SkipsSetOnNonOriginPrimary) {
 
   EXPECT_THAT(
       ParseSets(
-          R"({"primary": "example", "associatedSites": ["https://aaaa.test"]})"
+          R"({"primary": "https://127.0.0.1:1234", "associatedSites": ["https://aaaa.test"]})"
           "\n"
           R"({"primary": "https://example2.test", "associatedSites": )"
           R"(["https://associatedsite2.test"]})"
@@ -215,7 +215,7 @@ TEST(FirstPartySetParser, SkipsSetOnNonOriginAssociatedSite) {
 
   EXPECT_THAT(
       ParseSets(
-          R"({"primary": "https://example.test", "associatedSites": ["aaaa"]})"
+          R"({"primary": "https://example.test", "associatedSites": ["https://127.0.0.1:1234"]})"
           "\n"
           R"({"primary": "https://example2.test", "associatedSites": )"
           R"(["https://associatedsite2.test"]})"
@@ -473,7 +473,7 @@ TEST(FirstPartySetParser, Rejects_NondisjointCcTLDAliases) {
       Pair(IsEmpty(), IsEmpty()));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      Accepts_MissingSetLists) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
@@ -487,7 +487,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
       FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest, Accepts_EmptyLists) {
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
+     Accepts_EmptyLists) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [],
@@ -502,7 +503,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest, Accepts_EmptyLists) {
       FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidTypeError_MissingPrimary) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
@@ -523,7 +524,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kReplacementsField, 0, kPrimaryField}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidTypeError_WrongPrimaryType) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
@@ -545,7 +546,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kReplacementsField, 0, kPrimaryField}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidTypeError_WrongAssociatedSitesFieldType) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
@@ -567,7 +568,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kReplacementsField, 0, kAssociatedSitesField}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidTypeError_WrongAssociatedSiteType) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
@@ -590,7 +591,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kReplacementsField, 0, kAssociatedSitesField, 1}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidOriginError_PrimaryOpaque) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
@@ -612,7 +613,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kReplacementsField, 0, kPrimaryField}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidOriginError_AssociatedSiteOpaque) {
   base::Value policy_value = base::JSONReader::Read(R"(
                {
@@ -634,8 +635,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
-     InvalidOriginError_PrimaryNonHttps) {
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, PrimaryNonHttps) {
   base::Value policy_value = base::JSONReader::Read(R"(
                  {
                 "replacements": [
@@ -652,12 +652,12 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .error()
           .first,
-      ParseError(ParseErrorType::kInvalidOrigin,
+      ParseError(ParseErrorType::kNonHttpsScheme,
                  {kReplacementsField, 0, kPrimaryField}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
-     InvalidOriginError_AssociatedSiteNonHttps) {
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
+     AssociatedSiteNonHttps) {
   base::Value policy_value = base::JSONReader::Read(R"(
                {
                 "replacements": [
@@ -674,12 +674,12 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .error()
           .first,
-      ParseError(ParseErrorType::kInvalidOrigin,
+      ParseError(ParseErrorType::kNonHttpsScheme,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
-     InvalidOriginError_PrimaryNonRegisteredDomain) {
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
+     PrimaryNonRegisteredDomain) {
   base::Value policy_value = base::JSONReader::Read(R"(
                 {
                 "replacements": [
@@ -696,12 +696,12 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .error()
           .first,
-      ParseError(ParseErrorType::kInvalidOrigin,
+      ParseError(ParseErrorType::kInvalidDomain,
                  {kReplacementsField, 0, kPrimaryField}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
-     InvalidOriginError_AssociatedSiteNonRegisteredDomain) {
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
+     AssociatedSiteNonRegisteredDomain) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [
@@ -718,11 +718,11 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .error()
           .first,
-      ParseError(ParseErrorType::kInvalidOrigin,
+      ParseError(ParseErrorType::kInvalidDomain,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      SingletonSetError_EmptyAssociatedSites) {
   base::Value policy_value = base::JSONReader::Read(R"(
              {
@@ -744,7 +744,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kReplacementsField, 0, kAssociatedSitesField}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      RepeatedDomainError_WithinReplacements) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
@@ -766,7 +766,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      NonDisjointError_WithinReplacements) {
   base::Value policy_value = base::JSONReader::Read(R"(
                    {
@@ -792,7 +792,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kReplacementsField, 1, kAssociatedSitesField, 0}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      NonDisjointError_WithinAdditions) {
   base::Value policy_value = base::JSONReader::Read(R"(
                    {
@@ -818,7 +818,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kAdditionsField, 1, kAssociatedSitesField, 0}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      NonDisjointError_AcrossBothLists) {
   base::Value policy_value = base::JSONReader::Read(R"(
                {
@@ -845,7 +845,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                  {kAdditionsField, 0, kAssociatedSitesField, 0}));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
   base::Value policy_value = base::JSONReader::Read(R"(
                {
                 "replacements": [
@@ -874,7 +874,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .error()
           .first,
-      ParseError(ParseErrorType::kInvalidOrigin,
+      ParseError(ParseErrorType::kInvalidDomain,
                  {kAdditionsField, 0, kPrimaryField}));
 
   // The ParseWarning in the ccTLDs field of "additions[0]" isn't added since
@@ -891,7 +891,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
                                 "https://primary1.test", 0})));
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      SuccessfulMapping_SameList) {
   net::SchemefulSite primary1(GURL("https://primary1.test"));
   net::SchemefulSite associated_site1(GURL("https://associatedsite1.test"));
@@ -942,7 +942,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
       IsEmpty());
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      SuccessfulMapping_CrossList) {
   net::SchemefulSite primary1(GURL("https://primary1.test"));
   net::SchemefulSite associated_site1(GURL("https://associatedsite1.test"));
@@ -1007,7 +1007,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
       IsEmpty());
 }
 
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      SuccessfulMapping_CCTLDs) {
   net::SchemefulSite primary1(GURL("https://primary1.test"));
   net::SchemefulSite associated_site1(GURL("https://associatedsite1.test"));

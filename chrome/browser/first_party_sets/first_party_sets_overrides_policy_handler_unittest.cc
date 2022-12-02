@@ -377,7 +377,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Error at FirstPartySetsOverrides.replacements[0].primary: Schema "
             u"validation "
-            u"error: This set contains an invalid origin.");
+            u"error: This set contains a non-HTTPS origin.");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
