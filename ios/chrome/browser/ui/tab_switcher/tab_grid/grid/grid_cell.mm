@@ -451,8 +451,8 @@ void PositionView(UIView* view, CGPoint point) {
     [titleLabel.trailingAnchor
         constraintEqualToAnchor:closeIconView.leadingAnchor
                        constant:-kGridCellTitleLabelContentInset],
-    [titleLabel.centerYAnchor
-        constraintEqualToAnchor:closeIconView.centerYAnchor],
+    [topBar.topAnchor constraintEqualToAnchor:closeIconView.centerYAnchor
+                                     constant:-kGridCellCloseButtonTopSpacing],
     [closeIconView.trailingAnchor
         constraintEqualToAnchor:topBar.trailingAnchor
                        constant:-kGridCellCloseButtonContentInset],
@@ -467,8 +467,8 @@ void PositionView(UIView* view, CGPoint point) {
       [titleLabel.trailingAnchor
           constraintEqualToAnchor:_selectIconView.leadingAnchor
                          constant:-kGridCellTitleLabelContentInset],
-      [titleLabel.centerYAnchor
-          constraintEqualToAnchor:_selectIconView.centerYAnchor],
+      [topBar.topAnchor constraintEqualToAnchor:_selectIconView.topAnchor
+                                       constant:-kGridCellSelectIconTopSpacing],
       [_selectIconView.trailingAnchor
           constraintEqualToAnchor:topBar.trailingAnchor
                          constant:-kGridCellSelectIconContentInset],
