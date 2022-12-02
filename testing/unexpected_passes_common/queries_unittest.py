@@ -15,6 +15,7 @@ import unittest.mock as mock
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
+from unexpected_passes_common import expectations
 from unexpected_passes_common import multiprocessing_utils
 from unexpected_passes_common import queries
 from unexpected_passes_common import unittest_utils
@@ -72,7 +73,9 @@ class QueryBuilderUnittest(unittest.TestCase):
     self.addCleanup(self._patcher.stop)
 
     builders.ClearInstance()
+    expectations.ClearInstance()
     unittest_utils.RegisterGenericBuildersImplementation()
+    unittest_utils.RegisterGenericExpectationsImplementation()
     self._querier = unittest_utils.CreateGenericQuerier()
 
     self._relevant_file_patcher = mock.patch.object(
@@ -128,6 +131,7 @@ class QueryBuilderUnittest(unittest.TestCase):
             'typ_tags': [
                 'win',
                 'intel',
+                'unknown_tag',  # This is expected to be removed.
             ],
             'step_name':
             'step_name',
@@ -222,7 +226,7 @@ class QueryBuilderUnittest(unittest.TestCase):
             ],
             'typ_tags': [
                 'linux',
-                'release',
+                'intel',
             ],
             'step_name': 'a step name',
         },
@@ -235,7 +239,7 @@ class QueryBuilderUnittest(unittest.TestCase):
             ],
             'typ_tags': [
                 'linux',
-                'debug',
+                'amd',
             ],
             'step_name': 'another step name',
         },
@@ -246,10 +250,10 @@ class QueryBuilderUnittest(unittest.TestCase):
         data_types.BuilderEntry('builder', constants.BuilderTypes.CI, False))
     self.assertEqual(len(results), 2)
     self.assertIn(
-        data_types.Result('test_name', ['linux', 'release'], 'Failure',
+        data_types.Result('test_name', ['linux', 'intel'], 'Failure',
                           'a step name', '1234'), results)
     self.assertIn(
-        data_types.Result('test_name', ['linux', 'debug'], 'Failure',
+        data_types.Result('test_name', ['linux', 'amd'], 'Failure',
                           'another step name', '1234'), results)
     self.assertEqual(len(expectation_files), 2)
     self.assertEqual(set(expectation_files),
@@ -392,7 +396,7 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     unmatched_results = self._querier.FillExpectationMapForBuilders(
         expectation_map, builders_to_fill)
     stats = data_types.BuildStats()
-    stats.AddPassedBuild()
+    stats.AddPassedBuild(frozenset(['win']))
     expected_expectation_map = {
         'foo': {
             expectation: {

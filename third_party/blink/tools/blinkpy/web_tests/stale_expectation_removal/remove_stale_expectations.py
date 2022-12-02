@@ -42,6 +42,7 @@ def main() -> int:
         args.include_internal_builders)
     common_builders.RegisterInstance(builders_instance)
     expectations_instance = expectations.WebTestExpectations()
+    common_expectations.RegisterInstance(expectations_instance)
 
     test_expectation_map = expectations_instance.CreateTestExpectationMap(
         expectations_instance.GetExpectationFilepaths(), None,
@@ -90,12 +91,19 @@ def main() -> int:
                 'Unused expectations removed from %s. Stale comments, etc. '
                 'may still need to be removed.\n' % expectation_file)
 
+    # These two options are mutually exclusive.
     if args.modify_semi_stale_expectations:
         affected_urls |= expectations_instance.ModifySemiStaleExpectations(
             semi_stale)
         stale_message += ('Semi-stale expectations modified in expectation '
                           'files. Stale comments, etc. may still need to be '
                           'removed.\n')
+    if args.narrow_semi_stale_expectation_scope:
+        affected_urls |= expectations_instance.NarrowSemiStaleExpectationScope(
+            semi_stale)
+        stale_message += ('Semi-stale expectations narrowed in expectation '
+                          'files. Stale comments, etc. may still need to be '
+                          'removed.')
 
     if stale_message:
         print(stale_message)

@@ -14,6 +14,7 @@ from unexpected_passes import gpu_unittest_utils as gpu_uu
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
+from unexpected_passes_common import expectations
 from unexpected_passes_common import unittest_utils as uu
 
 
@@ -24,7 +25,9 @@ class QueryBuilderUnittest(unittest.TestCase):
     self.addCleanup(self._patcher.stop)
 
     builders.ClearInstance()
+    expectations.ClearInstance()
     uu.RegisterGenericBuildersImplementation()
+    uu.RegisterGenericExpectationsImplementation()
 
   def testSuiteExceptionMap(self) -> None:
     """Tests that the suite passed to the query changes for some suites."""

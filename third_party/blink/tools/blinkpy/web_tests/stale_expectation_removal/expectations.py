@@ -34,6 +34,7 @@ class WebTestExpectations(expectations.Expectations):
         self._expectation_filepaths = None
         self._expectation_file_tag_headers = {}
         self._flag_specific_expectation_files = None
+        self._known_tags = None
 
     def GetExpectationFilepaths(self) -> List[str]:
         # We don't use the Port classes' expectations_files() and
@@ -80,3 +81,13 @@ class WebTestExpectations(expectations.Expectations):
                 header += line
             self._expectation_file_tag_headers[expectation_file] = header
         return self._expectation_file_tag_headers[expectation_file]
+
+    def _GetKnownTags(self) -> Set[str]:
+        if self._known_tags is None:
+            self._known_tags = set()
+            for f in self.GetExpectationFilepaths():
+                list_parser = self.ParseTaggedTestListContent(
+                    self._GetExpectationFileTagHeader(f))
+                for ts in list_parser.tag_sets:
+                    self._known_tags |= ts
+        return self._known_tags

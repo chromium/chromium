@@ -551,9 +551,7 @@ def _ConvertUnusedExpectationsToStringDict(
   for expectation_file, expectations in unused_expectations.items():
     expectation_str_list = []
     for e in expectations:
-      expectation_str_list.append(
-          '[ %s ] %s [ %s ]' %
-          (' '.join(e.tags), e.test, ' '.join(e.expected_results)))
+      expectation_str_list.append(e.AsExpectationFileString())
     output_dict[expectation_file] = expectation_str_list
   return output_dict
 

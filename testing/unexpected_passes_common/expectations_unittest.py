@@ -53,6 +53,20 @@ crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
 crbug.com/3456 [ linux ] some/bad/test [ Skip ]
 """
 
+FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+
 
 class CreateTestExpectationMapUnittest(unittest.TestCase):
   def setUp(self) -> None:
@@ -607,6 +621,78 @@ class GetExpectationLineUnittest(unittest.TestCase):
     self.assertEqual(line_number, 3)
 
 
+class FilterToMostSpecificTypTagsUnittest(fake_filesystem_unittest.TestCase):
+  def setUp(self) -> None:
+    self._expectations = uu.CreateGenericExpectations()
+    self.setUpPyfakefs()
+    with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
+      self.filename = f.name
+
+  def testBasic(self) -> None:
+    """Tests that only the most specific tags are kept."""
+    expectation_file_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+"""
+    with open(self.filename, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+    tags = frozenset(['win', 'nvidia', 'nvidia-0x1111', 'release'])
+    filtered_tags = self._expectations._FilterToMostSpecificTypTags(
+        tags, self.filename)
+    self.assertEqual(filtered_tags, set(['win', 'nvidia-0x1111', 'release']))
+
+  def testSingleTags(self) -> None:
+    """Tests that functionality works with single tags."""
+    expectation_file_contents = """\
+# tags: [ tag1_most_specific ]
+# tags: [ tag2_most_specific ]"""
+    with open(self.filename, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+    tags = frozenset(['tag1_most_specific', 'tag2_most_specific'])
+    filtered_tags = self._expectations._FilterToMostSpecificTypTags(
+        tags, self.filename)
+    self.assertEqual(filtered_tags, tags)
+
+  def testUnusedTags(self) -> None:
+    """Tests that functionality works as expected with extra/unused tags."""
+    expectation_file_contents = """\
+# tags: [ tag1_least_specific tag1_middle_specific tag1_most_specific ]
+# tags: [ tag2_least_specific tag2_middle_specific tag2_most_specific ]
+# tags: [ some_unused_tag ]"""
+    with open(self.filename, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+    tags = frozenset([
+        'tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
+        'tag2_least_specific'
+    ])
+    filtered_tags = self._expectations._FilterToMostSpecificTypTags(
+        tags, self.filename)
+    self.assertEqual(filtered_tags,
+                     set(['tag1_most_specific', 'tag2_middle_specific']))
+
+  def testMissingTags(self) -> None:
+    """Tests that a file not having all tags is an error."""
+    expectation_file_contents = """\
+# tags: [ tag1_least_specific tag1_middle_specific ]
+# tags: [ tag2_least_specific tag2_middle_specific tag2_most_specific ]"""
+    with open(self.filename, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+    tags = frozenset([
+        'tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
+        'tag2_least_specific'
+    ])
+    with self.assertRaisesRegex(RuntimeError, r'.*tag1_most_specific.*'):
+      self._expectations._FilterToMostSpecificTypTags(tags, self.filename)
+
+
 class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self) -> None:
     self.setUpPyfakefs()
@@ -782,6 +868,614 @@ crbug.com/4567 [ linux ] some/good/test [ Pass ]
       any_input_mock.assert_called_once()
       with open(self.filename) as infile:
         self.assertEqual(infile.read(), FAKE_EXPECTATION_FILE_CONTENTS)
+
+
+class NarrowSemiStaleExpectationScopeUnittest(fake_filesystem_unittest.TestCase
+                                              ):
+  def setUp(self) -> None:
+    self.setUpPyfakefs()
+    self.instance = uu.CreateGenericExpectations()
+
+    with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
+      f.write(FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
+      self.filename = f.name
+
+  def testEmptyExpectationMap(self) -> None:
+    """Tests that scope narrowing with an empty map is a no-op."""
+    urls = self.instance.NarrowSemiStaleExpectationScope(
+        data_types.TestExpectationMap({}))
+    self.assertEqual(urls, set())
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(),
+                       FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
+
+  def testMultipleSteps(self) -> None:
+    """Tests that scope narrowing works across multiple steps."""
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel': intel_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, set(['crbug.com/1234']))
+
+  def testMultipleBuilders(self) -> None:
+    """Tests that scope narrowing works across multiple builders."""
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_amd_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                }),
+                'win_intel_builder':
+                data_types.StepBuildStatsMap({
+                    'intel': intel_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, set(['crbug.com/1234']))
+
+  def testMultipleExpectations(self) -> None:
+    """Tests that scope narrowing works across multiple expectations."""
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd']))
+    failed_amd_stats = data_types.BuildStats()
+    failed_amd_stats.AddFailedBuild('1', frozenset(['win', 'amd']))
+    multi_amd_stats = data_types.BuildStats()
+    multi_amd_stats.AddFailedBuild('1', frozenset(['win', 'amd', 'debug']))
+    multi_amd_stats.AddFailedBuild('1', frozenset(['win', 'amd', 'release']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel']))
+    debug_stats = data_types.BuildStats()
+    debug_stats.AddFailedBuild('1', frozenset(['linux', 'debug']))
+    release_stats = data_types.BuildStats()
+    release_stats.AddPassedBuild(frozenset(['linux', 'release']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel': intel_stats,
+                }),
+            }),
+            # These two expectations are here to ensure that our continue logic
+            # works as expected when we hit cases we can't handle, i.e. that
+            # later expectations are still handled properly.
+            data_types.Expectation('bar/test', ['win'], 'Failure', ''):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'win1': amd_stats,
+                    'win2': failed_amd_stats,
+                }),
+            }),
+            data_types.Expectation('baz/test', ['win'], 'Failure', ''):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'win1': amd_stats,
+                    'win2': multi_amd_stats,
+                }),
+            }),
+            data_types.Expectation(
+                'foo/test', ['linux'], 'RetryOnFailure', 'crbug.com/2345'):
+            data_types.BuilderStepMap({
+                'linux_builder':
+                data_types.StepBuildStatsMap({
+                    'debug': debug_stats,
+                    'release': release_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/2345 [ debug linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, set(['crbug.com/1234', 'crbug.com/2345']))
+
+  def testMultipleOutputLines(self) -> None:
+    """Tests that scope narrowing works with multiple output lines."""
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel']))
+    nvidia_stats = data_types.BuildStats()
+    nvidia_stats.AddFailedBuild('1', frozenset(['win', 'nvidia']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_amd_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                }),
+                'win_intel_builder':
+                data_types.StepBuildStatsMap({
+                    'intel': intel_stats,
+                }),
+                'win_nvidia_builder':
+                data_types.StepBuildStatsMap({
+                    'nvidia': nvidia_stats,
+                })
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/1234 [ nvidia win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, set(['crbug.com/1234']))
+
+  def testMultipleTagSets(self) -> None:
+    """Tests that multiple tag sets result in a scope narrowing no-op."""
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd', 'release']))
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd', 'debug']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel': intel_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(),
+                       FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
+    self.assertEqual(urls, set())
+
+  def testAmbiguousTags(self):
+    """Tests that ambiguous tag sets result in a scope narrowing no-op."""
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd']))
+    bad_amd_stats = data_types.BuildStats()
+    bad_amd_stats.AddFailedBuild('1', frozenset(['win', 'amd']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel': intel_stats,
+                    'bad_amd': bad_amd_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(),
+                       FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
+    self.assertEqual(urls, set())
+
+  def testConsolidateKnownOverlappingTags(self) -> None:
+    """Tests that scope narrowing consolidates known overlapping tags."""
+
+    # This specific example emulates a dual GPU machine where we remove the
+    # integrated GPU tag.
+    def SideEffect(tags):
+      return tags - {'intel'}
+
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd']))
+    nvidia_dgpu_intel_igpu_stats = data_types.BuildStats()
+    nvidia_dgpu_intel_igpu_stats.AddFailedBuild(
+        '1', frozenset(['win', 'nvidia', 'intel']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'dual_gpu': nvidia_dgpu_intel_igpu_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    with mock.patch.object(self.instance,
+                           '_ConsolidateKnownOverlappingTags',
+                           side_effect=SideEffect):
+      urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ nvidia win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, set(['crbug.com/1234']))
+
+  def testFilterToSpecificTags(self) -> None:
+    """Tests that scope narrowing filters to the most specific tags."""
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd', 'amd-0x1111']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel', 'intel-0x2222']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel': intel_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ intel-0x2222 win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, set(['crbug.com/1234']))
+
+  def testSupersetsRemoved(self) -> None:
+    """Tests that superset tags (i.e. conflicts) are omitted."""
+    # These stats are set up so that the raw new tag sets are:
+    # [{win, amd}, {win, amd, debug}] since the passed Intel build also has
+    # "release". Thus, if we aren't correctly filtering out supersets, we'll
+    # end up with [ amd win ] and [ amd debug win ] in the expectation file
+    # instead of just [ amd win ].
+    amd_release_stats = data_types.BuildStats()
+    amd_release_stats.AddFailedBuild('1', frozenset(['win', 'amd', 'release']))
+    amd_debug_stats = data_types.BuildStats()
+    amd_debug_stats.AddFailedBuild('1', frozenset(['win', 'amd', 'debug']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddPassedBuild(frozenset(['win', 'intel', 'release']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd_release': amd_release_stats,
+                    'amd_debug': amd_debug_stats,
+                    'intel': intel_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ amd win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, set(['crbug.com/1234']))
+
+  def testNoPassingOverlap(self):
+    """Tests that scope narrowing works with no overlap between passing tags."""
+    # There is no commonality between [ amd debug ] and [ intel release ], so
+    # the resulting expectation we generate should just be the tags from the
+    # failed build.
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd', 'debug']))
+    intel_stats_debug = data_types.BuildStats()
+    intel_stats_debug.AddFailedBuild('1', frozenset(['win', 'intel', 'debug']))
+    intel_stats_release = data_types.BuildStats()
+    intel_stats_release.AddPassedBuild(frozenset(['win', 'intel', 'release']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel_debug': intel_stats_debug,
+                    'intel_release': intel_stats_release,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ debug intel win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, set(['crbug.com/1234']))
+
+  def testMultipleOverlap(self):
+    """Tests that scope narrowing works with multiple potential overlaps."""
+    # [ win intel debug ], [ win intel release ], and [ win amd debug ] each
+    # have 2/3 tags overlapping with each other, so we expect one pair to be
+    # simplified and the other to remain the same.
+    intel_debug_stats = data_types.BuildStats()
+    intel_debug_stats.AddFailedBuild('1', frozenset(['win', 'intel', 'debug']))
+    intel_release_stats = data_types.BuildStats()
+    intel_release_stats.AddFailedBuild('1',
+                                       frozenset(['win', 'intel', 'release']))
+    amd_debug_stats = data_types.BuildStats()
+    amd_debug_stats.AddFailedBuild('1', frozenset(['win', 'amd', 'debug']))
+    amd_release_stats = data_types.BuildStats()
+    amd_release_stats.AddPassedBuild(frozenset(['win', 'amd', 'release']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd_debug': amd_debug_stats,
+                    'amd_release': amd_release_stats,
+                    'intel_debug': intel_debug_stats,
+                    'intel_release': intel_release_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    # Python sets are not stable between different processes due to random hash
+    # seeds that are on by default. Since there are two valid ways to simplify
+    # the tags we provided, this means that the test is flaky if we only check
+    # for one due to the non-deterministic order the tags are processed, so
+    # instead, accept either valid output.
+    #
+    # Random hash seeds can be disabled by setting PYTHONHASHSEED, but that
+    # requires that we either ensure that this test is always run with that set
+    # (difficult/error-prone), or we manually set the seed and recreate the
+    # process (hacky). Simply accepting either valid value instead of trying to
+    # force a certain order seems like the better approach.
+    expected_contents1 = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ amd debug win ] foo/test [ Failure ]
+crbug.com/1234 [ intel win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    expected_contents2 = """\
+# tags: [ win win10
+#         linux
+#         mac ]
+# tags: [ nvidia nvidia-0x1111
+#         intel intel-0x2222
+#         amd amd-0x3333]
+# tags: [ release debug ]
+# results: [ Failure RetryOnFailure ]
+
+crbug.com/1234 [ debug win ] foo/test [ Failure ]
+crbug.com/1234 [ intel release win ] foo/test [ Failure ]
+crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
+"""
+    with open(self.filename) as infile:
+      self.assertIn(infile.read(), (expected_contents1, expected_contents2))
+    self.assertEqual(urls, set(['crbug.com/1234']))
+
+  def testMultipleOverlapRepeatedIntersection(self):
+    """Edge case where intersection checks need to be repeated to work."""
+    original_contents = """\
+# tags: [ mac
+#         win ]
+# tags: [ amd amd-0x3333
+#         intel intel-0x2222 intel-0x4444
+#         nvidia nvidia-0x1111 ]
+# results: [ Failure ]
+
+crbug.com/1234 foo/test [ Failure ]
+"""
+    with open(self.filename, 'w') as outfile:
+      outfile.write(original_contents)
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddFailedBuild('1', frozenset(['mac', 'amd', 'amd-0x3333']))
+    intel_stats_1 = data_types.BuildStats()
+    intel_stats_1.AddFailedBuild('1',
+                                 frozenset(['mac', 'intel', 'intel-0x2222']))
+    intel_stats_2 = data_types.BuildStats()
+    intel_stats_2.AddFailedBuild('1',
+                                 frozenset(['mac', 'intel', 'intel-0x4444']))
+    nvidia_stats = data_types.BuildStats()
+    nvidia_stats.AddPassedBuild(frozenset(['win', 'nvidia', 'nvidia-0x1111']))
+
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test', [], 'Failure', 'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'mixed_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel_1': intel_stats_1,
+                    'intel_2': intel_stats_2,
+                    'nvidia': nvidia_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ mac
+#         win ]
+# tags: [ amd amd-0x3333
+#         intel intel-0x2222 intel-0x4444
+#         nvidia nvidia-0x1111 ]
+# results: [ Failure ]
+
+crbug.com/1234 [ mac ] foo/test [ Failure ]
+"""
+    with open(self.filename) as infile:
+      self.assertIn(infile.read(), expected_contents)
+    self.assertEqual(urls, set(['crbug.com/1234']))
 
 
 class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):

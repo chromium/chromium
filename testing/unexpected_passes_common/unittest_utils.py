@@ -5,7 +5,7 @@
 
 from __future__ import print_function
 
-from typing import Any, Callable, Iterable, List, Optional, Tuple, Type
+from typing import Any, Callable, Iterable, List, Optional, Set, Tuple, Type
 import unittest.mock as mock
 
 from unexpected_passes_common import builders
@@ -17,9 +17,9 @@ from unexpected_passes_common import queries as queries_module
 def CreateStatsWithPassFails(passes: int, fails: int) -> data_types.BuildStats:
   stats = data_types.BuildStats()
   for _ in range(passes):
-    stats.AddPassedBuild()
+    stats.AddPassedBuild(frozenset())
   for i in range(fails):
-    stats.AddFailedBuild('build_id%d' % i)
+    stats.AddFailedBuild('build_id%d' % i, frozenset())
   return stats
 
 
@@ -183,9 +183,17 @@ class GenericExpectations(expectations.Expectations):
   def _GetExpectationFileTagHeader(self, _) -> str:
     return """\
 # tags: [ linux mac win ]
+# tags: [ amd intel nvidia ]
 # results: [ Failure RetryOnFailure Skip Pass ]
 """
+
+  def _GetKnownTags(self) -> Set[str]:
+    return set(['linux', 'mac', 'win', 'amd', 'intel', 'nvidia'])
 
 
 def CreateGenericExpectations() -> GenericExpectations:
   return GenericExpectations()
+
+
+def RegisterGenericExpectationsImplementation() -> None:
+  expectations.RegisterInstance(CreateGenericExpectations())

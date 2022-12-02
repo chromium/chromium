@@ -16,11 +16,15 @@ from blinkpy.web_tests.stale_expectation_removal import queries
 from blinkpy.web_tests.stale_expectation_removal import unittest_utils as wt_uu
 from unexpected_passes_common import constants as common_constants
 from unexpected_passes_common import data_types as common_data_types
+from unexpected_passes_common import expectations as common_expectations
+from unexpected_passes_common import unittest_utils as common_uu
 
 
 class ConvertJsonResultToResultObjectUnittest(unittest.TestCase):
     def setUp(self) -> None:
         common_data_types.SetResultImplementation(data_types.WebTestResult)
+        common_expectations.ClearInstance()
+        common_uu.RegisterGenericExpectationsImplementation()
 
     def tearDown(self) -> None:
         common_data_types.SetResultImplementation(common_data_types.BaseResult)

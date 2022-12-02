@@ -20,6 +20,7 @@ from typ import json_results
 from unexpected_passes_common import builders as builders_module
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
+from unexpected_passes_common import expectations
 from unexpected_passes_common import multiprocessing_utils
 
 DEFAULT_NUM_SAMPLES = 100
@@ -316,7 +317,7 @@ class BigQueryQuerier(object):
     test_name = self._StripPrefixFromTestId(json_result['test_id'])
     actual_result = _ConvertActualResultToExpectationFileFormat(
         json_result['status'])
-    tags = json_result['typ_tags']
+    tags = expectations.GetInstance().FilterToKnownTags(json_result['typ_tags'])
     step = json_result['step_name']
     return data_types.Result(test_name, tags, actual_result, step, build_id)
 

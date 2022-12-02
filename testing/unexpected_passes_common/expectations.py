@@ -6,13 +6,14 @@
 from __future__ import print_function
 
 import collections
+import copy
 import datetime
 import logging
 import os
 import re
 import subprocess
 import sys
-from typing import Iterable, List, Optional, Set, Tuple, Union
+from typing import FrozenSet, Iterable, List, Optional, Set, Tuple, Union
 
 import six
 
@@ -63,8 +64,27 @@ GIT_BLAME_REGEX = re.compile(
     r'^[\w\s]+\(.+(?P<date>\d\d\d\d-\d\d-\d\d)[^\)]+\)(?P<content>.*)$',
     re.DOTALL)
 EXPECTATION_LINE_REGEX = re.compile(r'^.*\[ .* \] .* \[ \w* \].*$', re.DOTALL)
+TAG_GROUP_REGEX = re.compile(r'# tags: \[([^\]]*)\]', re.MULTILINE | re.DOTALL)
 
 # pylint: disable=useless-object-inheritance
+
+_registered_instance = None
+
+
+def GetInstance() -> 'Expectations':
+  return _registered_instance
+
+
+def RegisterInstance(instance: 'Expectations') -> None:
+  global _registered_instance
+  assert _registered_instance is None
+  assert isinstance(instance, Expectations)
+  _registered_instance = instance
+
+
+def ClearInstance() -> None:
+  global _registered_instance
+  _registered_instance = None
 
 
 class RemovalType(object):
@@ -73,6 +93,9 @@ class RemovalType(object):
 
 
 class Expectations(object):
+  def __init__(self):
+    self._cached_tag_groups = {}
+
   def CreateTestExpectationMap(
       self, expectation_files: Optional[Union[str, List[str]]],
       tests: Optional[Iterable[str]],
@@ -312,6 +335,100 @@ class Expectations(object):
     """
     raise NotImplementedError()
 
+  def ParseTaggedTestListContent(self, content: str
+                                 ) -> expectations_parser.TaggedTestListParser:
+    """Helper to parse typ expectation files.
+
+    This allows subclasses to avoid adding typ to PYTHONPATH.
+    """
+    return expectations_parser.TaggedTestListParser(content)
+
+  def FilterToKnownTags(self, tags: Iterable[str]) -> Set[str]:
+    """Filters |tags| to only include tags known to expectation files.
+
+    Args:
+      tags: An iterable of strings containing tags.
+
+    Returns:
+      A set containing the elements of |tags| with any tags that are not defined
+      in any expectation files removed.
+    """
+    return self._GetKnownTags() & set(tags)
+
+  def _GetKnownTags(self) -> Set[str]:
+    """Gets all known/defined tags from expectation files.
+
+    Returns:
+      A set of strings containing all known/defined tags from expectation files.
+    """
+    raise NotImplementedError()
+
+  def _FilterToMostSpecificTypTags(self, typ_tags: FrozenSet[str],
+                                   expectation_file: str) -> FrozenSet[str]:
+    """Filters |typ_tags| to the most specific set.
+
+    Assumes that the tags in |expectation_file| are ordered from least specific
+    to most specific within each tag group.
+
+    Args:
+      typ_tags: A frozenset of strings containing the typ tags to filter.
+      expectations_file: A string containing a filepath pointing to the
+          expectation file to filter tags with.
+
+    Returns:
+      A frozenset containing the contents of |typ_tags| with only the most
+      specific tag from each group remaining.
+    """
+    # The logic for this function was lifted from the GPU/Blink flake finders,
+    # so there may be room to share code between the two.
+
+    if expectation_file not in self._cached_tag_groups:
+      with open(expectation_file) as infile:
+        contents = infile.read()
+      tag_groups = []
+      for match in TAG_GROUP_REGEX.findall(contents):
+        tag_groups.append(match.strip().replace('#', '').split())
+      self._cached_tag_groups[expectation_file] = tag_groups
+    tag_groups = self._cached_tag_groups[expectation_file]
+
+    num_matches = 0
+    tags_in_same_group = collections.defaultdict(list)
+    for tag in typ_tags:
+      for index, tag_group in enumerate(tag_groups):
+        if tag in tag_group:
+          tags_in_same_group[index].append(tag)
+          num_matches += 1
+          break
+    if num_matches != len(typ_tags):
+      all_tags = set()
+      for group in tag_groups:
+        all_tags |= set(group)
+      raise RuntimeError('Found tags not in expectation file: %s' %
+                         ' '.join(set(typ_tags) - all_tags))
+
+    filtered_tags = set()
+    for index, tags in tags_in_same_group.items():
+      if len(tags) == 1:
+        filtered_tags.add(tags[0])
+      else:
+        tag_group = tag_groups[index]
+        best_index = -1
+        for t in tags:
+          i = tag_group.index(t)
+          if i > best_index:
+            best_index = i
+        filtered_tags.add(tag_group[best_index])
+    return frozenset(filtered_tags)
+
+  def _ConsolidateKnownOverlappingTags(self, typ_tags: FrozenSet[str]
+                                       ) -> FrozenSet[str]:
+    """Consolidates tags that are known to overlap/cause issues.
+
+    One known example of this would be dual GPU machines that report tags for
+    both GPUs.
+    """
+    return typ_tags
+
   def ModifySemiStaleExpectations(
       self, stale_expectation_map: data_types.TestExpectationMap) -> Set[str]:
     """Modifies lines from |stale_expectation_map| in |expectation_file|.
@@ -320,10 +437,8 @@ class Expectations(object):
     semi-stale expectations cannot be blindly removed like fully stale ones.
 
     Args:
-      stale_expectation_map: A data_types.TestExpectationMap containing stale
-          expectations.
-      file_handle: An optional open file-like object to output to. If not
-          specified, stdout will be used.
+      stale_expectation_map: A data_types.TestExpectationMap containing
+          semi-stale expectations.
 
     Returns:
       A set of strings containing URLs of bugs associated with the modified
@@ -381,6 +496,113 @@ class Expectations(object):
                                                        RemovalType.STALE)
     for e in expectations_to_modify:
       modified_urls |= set(e.bug.split())
+    return modified_urls
+
+  def NarrowSemiStaleExpectationScope(
+      self, stale_expectation_map: data_types.TestExpectationMap) -> Set[str]:
+    """Narrows the scope of expectations in |stale_expectation_map|.
+
+    Expectations are modified such that they only apply to configurations that
+    need them, to the best extent possible. If scope narrowing is not possible,
+    e.g. the same hardware/software combination reports fully passing on one bot
+    but reports some failures on another bot, the expectation will not be
+    modified.
+
+    Args:
+      stale_expectation_map: A data_types.TestExpectationMap containing
+          semi-stale expectations.
+
+    Returns:
+      A set of strings containing URLs of bugs associated with the modified
+      expectations.
+    """
+    modified_urls = set()
+    for expectation_file, e, builder_map in (
+        stale_expectation_map.IterBuilderStepMaps()):
+      skip_to_next_expectation = False
+
+      pass_tag_sets = set()
+      fail_tag_sets = set()
+      # Determine which tags sets failures can occur on vs. tag sets that
+      # don't have any failures.
+      for builder, step, build_stats in builder_map.IterBuildStats():
+        if len(build_stats.tag_sets) > 1:
+          # This shouldn't really be happening during normal operation, but is
+          # expected to happen if a configuration changes, e.g. an OS was
+          # upgraded. In these cases, the old data will eventually age out and
+          # we will stop getting multiple tag sets.
+          logging.warning(
+              'Step %s on builder %s produced multiple tag sets: %s. Not '
+              'narrowing expectation scope for expectation %s.', step, builder,
+              build_stats.tag_sets, e.AsExpectationFileString())
+          skip_to_next_expectation = True
+          break
+        if build_stats.NeverNeededExpectation(e):
+          pass_tag_sets |= build_stats.tag_sets
+        else:
+          fail_tag_sets |= build_stats.tag_sets
+      if skip_to_next_expectation:
+        continue
+
+      # Calculate new tag sets that should be functionally equivalent to the
+      # single, more broad tag set that we are replacing. This is done by
+      # checking if the intersection between any pairs of fail tag sets are
+      # still distinct from any pass tag sets, i.e. if the intersection between
+      # fail tag sets is still a valid fail tag set. If so, the original sets
+      # are replaced by the intersection.
+      new_tag_sets = set()
+      used_fail_tag_sets = set()
+      for fail_tags in fail_tag_sets:
+        if any(fail_tags <= pt for pt in pass_tag_sets):
+          logging.warning(
+              'Unable to determine what makes failing configs unique for %s, '
+              'not narrowing expectation scope.', e.AsExpectationFileString())
+          skip_to_next_expectation = True
+          break
+        if fail_tags in used_fail_tag_sets:
+          continue
+        used_fail_tag_sets.add(fail_tags)
+        tag_set_to_add = fail_tags
+        for ft in fail_tag_sets:
+          if ft in used_fail_tag_sets:
+            continue
+          intersection = tag_set_to_add & ft
+          if not any(intersection <= pt for pt in pass_tag_sets):
+            # Intersection would still only cover known failure cases, so use
+            # it instead of the tag sets that the intersection came from.
+            tag_set_to_add = intersection
+            used_fail_tag_sets.add(ft)
+        new_tag_sets.add(tag_set_to_add)
+      if skip_to_next_expectation:
+        continue
+
+      # Remove anything we know could be problematic, e.g. causing expectation
+      # file parsing errors.
+      new_tag_sets = {
+          self._ConsolidateKnownOverlappingTags(nts)
+          for nts in new_tag_sets
+      }
+      new_tag_sets = {
+          self._FilterToMostSpecificTypTags(nts, expectation_file)
+          for nts in new_tag_sets
+      }
+
+      # Replace the existing expectation with our new ones.
+      with open(expectation_file) as infile:
+        file_contents = infile.read()
+      line, _ = self._GetExpectationLine(e, file_contents, expectation_file)
+      modified_urls |= set(e.bug.split())
+      expectation_strs = []
+      for new_tags in new_tag_sets:
+        expectation_copy = copy.copy(e)
+        expectation_copy.tags = new_tags
+        expectation_strs.append(expectation_copy.AsExpectationFileString())
+      expectation_strs.sort()
+      replacement_lines = '\n'.join(expectation_strs)
+      file_contents = file_contents.replace(line, replacement_lines)
+      with open(expectation_file, 'w') as outfile:
+        outfile.write(file_contents)
+
     return modified_urls
 
   def _GetExpectationLine(self, expectation: data_types.Expectation,

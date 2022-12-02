@@ -259,8 +259,8 @@ class ConvertUnusedExpectationsToStringDictUnittest(unittest.TestCase):
       # Set ordering does not appear to be stable between test runs, as we can
       # get either order of tags. So, generate them now instead of hard coding
       # them.
-      tags = ' '.join(set(['win', 'nvidia']))
-      results = ' '.join(set(['Failure', 'Timeout']))
+      tags = ' '.join(['nvidia', 'win'])
+      results = ' '.join(['Failure', 'Timeout'])
       expected_output = {
           'foo_file': [
               '[ %s ] foo/test [ %s ]' % (tags, results),

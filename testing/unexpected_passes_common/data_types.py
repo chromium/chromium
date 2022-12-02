@@ -9,10 +9,12 @@ import collections
 import copy
 import fnmatch
 import logging
-from typing import (Any, Dict, Generator, Iterable, List, Optional, Set, Tuple,
-                    Type, Union)
+from typing import (Any, Dict, FrozenSet, Generator, Iterable, List, Optional,
+                    Set, Tuple, Type, Union)
 
 import six
+
+from typ import expectations_parser
 
 FULL_PASS = 1
 NEVER_PASS = 2
@@ -132,6 +134,20 @@ class BaseExpectation():
     """
     return self._comp(test_name)
 
+  def AsExpectationFileString(self) -> str:
+    """Gets a string representation of the expectation usable in files.
+
+    Returns:
+      A string containing all of the information in the expectation in a format
+      that is compatible with expectation files.
+    """
+    typ_expectation = expectations_parser.Expectation(
+        reason=self.bug,
+        test=self.test,
+        raw_tags=list(self.tags),
+        raw_results=list(self.expected_results))
+    return typ_expectation.to_string()
+
 
 class BaseResult():
   """Container for a test result.
@@ -177,7 +193,8 @@ class BaseBuildStats():
   def __init__(self):
     self.passed_builds = 0
     self.total_builds = 0
-    self.failure_links = frozenset()
+    self.failure_links = set()
+    self.tag_sets = set()
 
   @property
   def failed_builds(self) -> int:
@@ -191,14 +208,15 @@ class BaseBuildStats():
   def did_never_pass(self) -> bool:
     return self.failed_builds == self.total_builds
 
-  def AddPassedBuild(self) -> None:
+  def AddPassedBuild(self, tags: FrozenSet[str]) -> None:
     self.passed_builds += 1
     self.total_builds += 1
+    self.tag_sets.add(tags)
 
-  def AddFailedBuild(self, build_id: str) -> None:
+  def AddFailedBuild(self, build_id: str, tags: FrozenSet[str]) -> None:
     self.total_builds += 1
-    build_link = BuildLinkFromBuildId(build_id)
-    self.failure_links = frozenset([build_link]) | self.failure_links
+    self.failure_links.add(BuildLinkFromBuildId(build_id))
+    self.tag_sets.add(tags)
 
   def GetStatsAsString(self) -> str:
     return '(%d/%d passed)' % (self.passed_builds, self.total_builds)
@@ -235,7 +253,8 @@ class BaseBuildStats():
     return (isinstance(other, BuildStats)
             and self.passed_builds == other.passed_builds
             and self.total_builds == other.total_builds
-            and self.failure_links == other.failure_links)
+            and self.failure_links == other.failure_links
+            and self.tag_sets == other.tag_sets)
 
   def __ne__(self, other: Any) -> bool:
     return not self.__eq__(other)
@@ -474,9 +493,9 @@ class BaseTestExpectationMap(BaseTypedMap):
       stats: A data_types.BuildStats object to add the result to.
     """
     if result.actual_result == 'Pass':
-      stats.AddPassedBuild()
+      stats.AddPassedBuild(result.tags)
     else:
-      stats.AddFailedBuild(result.build_id)
+      stats.AddFailedBuild(result.build_id, result.tags)
 
   def SplitByStaleness(
       self) -> Tuple['BaseTestExpectationMap', 'BaseTestExpectationMap',

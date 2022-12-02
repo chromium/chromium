@@ -80,10 +80,11 @@ class WebTestBuildStats(data_types.BaseBuildStats):
 
     def AddSlowBuild(self, build_id: str) -> None:
         # Don't increment total builds since the corresponding build should
-        # already be added as a passed/failed build.
+        # already be added as a passed/failed build. Similarly, we don't take
+        # tags as an argument since those will already be passed to
+        # AddPassedBuild/AddFailedBuild.
         self.slow_builds += 1
-        build_link = data_types.BuildLinkFromBuildId(build_id)
-        self.failure_links = frozenset([build_link]) | self.failure_links
+        self.failure_links.add(data_types.BuildLinkFromBuildId(build_id))
 
     def GetStatsAsString(self) -> str:
         s = super(WebTestBuildStats, self).GetStatsAsString()

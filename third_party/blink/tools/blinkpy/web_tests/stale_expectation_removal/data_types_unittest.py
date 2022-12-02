@@ -81,8 +81,8 @@ class WebTestResultUnittest(unittest.TestCase):
 class WebTestBuildStatsUnittest(unittest.TestCase):
     def CreateGenericBuildStats(self) -> data_types.WebTestBuildStats:
         stats = data_types.WebTestBuildStats()
-        stats.AddPassedBuild()
-        stats.AddFailedBuild('build_id')
+        stats.AddPassedBuild(frozenset())
+        stats.AddFailedBuild('build_id', frozenset())
         return stats
 
     def testEquality(self) -> None:
@@ -104,7 +104,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
 
     def testProperties(self) -> None:
         s = data_types.WebTestBuildStats()
-        s.AddPassedBuild()
+        s.AddPassedBuild(frozenset())
         self.assertTrue(s.never_slow)
         self.assertFalse(s.always_slow)
         s.AddSlowBuild('slow_id')
@@ -127,7 +127,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         expectation = data_types.WebTestExpectation('foo', ['debug'], 'Slow')
         stats = data_types.WebTestBuildStats()
         # The fact that this failed should be ignored.
-        stats.AddFailedBuild('build_id')
+        stats.AddFailedBuild('build_id', frozenset())
         self.assertTrue(stats.NeverNeededExpectation(expectation))
         stats.AddSlowBuild('build_id')
         self.assertFalse(stats.NeverNeededExpectation(expectation))
@@ -139,14 +139,14 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         stats = data_types.WebTestBuildStats()
         # This should only return true if there are no slow builds AND there
         # are no failed builds.
-        stats.AddPassedBuild()
+        stats.AddPassedBuild(frozenset())
         # Passed build, not slow.
         self.assertTrue(stats.NeverNeededExpectation(expectation))
         stats.AddSlowBuild('build_id')
         # Passed build, slow.
         self.assertFalse(stats.NeverNeededExpectation(expectation))
         stats = data_types.WebTestBuildStats()
-        stats.AddFailedBuild('build_id')
+        stats.AddFailedBuild('build_id', frozenset())
         # Failed build, not slow.
         self.assertFalse(stats.NeverNeededExpectation(expectation))
         stats.AddSlowBuild('build_id')
@@ -158,12 +158,12 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         expectation = data_types.WebTestExpectation('foo', ['debug'],
                                                     'Failure')
         stats = data_types.WebTestBuildStats()
-        stats.AddPassedBuild()
+        stats.AddPassedBuild(frozenset())
         self.assertTrue(stats.NeverNeededExpectation(expectation))
         # Slowness should not be considered in this case.
         stats.AddSlowBuild('build_id')
         self.assertTrue(stats.NeverNeededExpectation(expectation))
-        stats.AddFailedBuild('build_id')
+        stats.AddFailedBuild('build_id', frozenset())
         self.assertFalse(stats.NeverNeededExpectation(expectation))
 
     def testAlwaysNeededExpectationSlowExpectation(self) -> None:
@@ -171,7 +171,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         expectation = data_types.WebTestExpectation('foo', ['debug'], 'Slow')
         stats = data_types.WebTestBuildStats()
         # The fact that this failed should be ignored.
-        stats.AddFailedBuild('build_id')
+        stats.AddFailedBuild('build_id', frozenset())
         self.assertFalse(stats.AlwaysNeededExpectation(expectation))
         stats.AddSlowBuild('build_id')
         self.assertTrue(stats.AlwaysNeededExpectation(expectation))
@@ -183,14 +183,14 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         stats = data_types.WebTestBuildStats()
         # This should return true if either all builds failed OR all builds were
         # slow.
-        stats.AddPassedBuild()
+        stats.AddPassedBuild(frozenset())
         # Passed build, not slow.
         self.assertFalse(stats.AlwaysNeededExpectation(expectation))
         stats.AddSlowBuild('build_id')
         # Passed build, slow.
         self.assertTrue(stats.AlwaysNeededExpectation(expectation))
         stats = data_types.WebTestBuildStats()
-        stats.AddFailedBuild('build_id')
+        stats.AddFailedBuild('build_id', frozenset())
         # Failed build, not slow.
         self.assertTrue(stats.AlwaysNeededExpectation(expectation))
         stats.AddSlowBuild('build_id')
@@ -202,9 +202,9 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         expectation = data_types.WebTestExpectation('foo', ['debug'],
                                                     'Failure')
         stats = data_types.WebTestBuildStats()
-        stats.AddFailedBuild('build_id')
+        stats.AddFailedBuild('build_id', frozenset())
         self.assertTrue(stats.AlwaysNeededExpectation(expectation))
-        stats.AddPassedBuild()
+        stats.AddPassedBuild(frozenset())
         self.assertFalse(stats.AlwaysNeededExpectation(expectation))
         # Slowness should not be considered in this case even if all builds are
         # slow.
@@ -232,7 +232,7 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         stats = data_types.WebTestBuildStats()
         expectation_map._AddSingleResult(result, stats)
         expected_stats = data_types.WebTestBuildStats()
-        expected_stats.AddPassedBuild()
+        expected_stats.AddPassedBuild(frozenset(['debug']))
         self.assertEqual(stats, expected_stats)
 
         # Test adding a slow result.
@@ -240,7 +240,7 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         stats = data_types.WebTestBuildStats()
         expectation_map._AddSingleResult(result, stats)
         expected_stats = data_types.WebTestBuildStats()
-        expected_stats.AddPassedBuild()
+        expected_stats.AddPassedBuild(frozenset(['debug']))
         expected_stats.AddSlowBuild('build_id')
         self.assertEqual(stats, expected_stats)
 

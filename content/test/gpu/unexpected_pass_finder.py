@@ -120,6 +120,7 @@ def main():
                                                args.include_internal_builders)
   builders.RegisterInstance(builders_instance)
   expectations_instance = gpu_expectations.GpuExpectations()
+  expectations.RegisterInstance(expectations_instance)
 
   test_expectation_map = expectations_instance.CreateTestExpectationMap(
       args.expectation_file, args.tests, args.expectation_grace_period)
@@ -164,11 +165,18 @@ def main():
                         'etc. may still need to be removed.\n' %
                         expectation_file)
 
+  # These two options are mutually exclusive.
   if args.modify_semi_stale_expectations:
     affected_urls |= expectations_instance.ModifySemiStaleExpectations(
         semi_stale)
     stale_message += ('Semi-stale expectations modified in %s. Stale '
                       'comments, etc. may still need to be removed.\n' %
+                      args.expectation_file)
+  if args.narrow_semi_stale_expectation_scope:
+    affected_urls |= expectations_instance.NarrowSemiStaleExpectationScope(
+        semi_stale)
+    stale_message += ('Semi-stale expectations narrowed in %s. Stale comments, '
+                      'etc. may still need still need to be removed.\n' %
                       args.expectation_file)
 
   if stale_message:
