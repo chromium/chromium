@@ -22,6 +22,8 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//v8/gni/v8.gni")
 
@@ -1010,16 +1012,52 @@ mojom("web_ui_test_mojo_bindings") {
   webui_module_path = "/content/test/data"
 }
 
-js_library("web_ui_mojo_test_js") {
-  sources = [ "data/web_ui_mojo_test.js" ]
-  deps = [ ":web_ui_test_mojo_bindings_webui_js" ]
+# Closure compilation is only used on Ash. See below for TypeScript targets
+# which are used across platforms.
+if (is_chromeos_ash) {
+  js_library("web_ui_mojo_test_js") {
+    sources = [ "data/web_ui_mojo_test.js" ]
+    deps = [ ":web_ui_test_mojo_bindings_webui_js" ]
+  }
+
+  # NOTE: Building this target serves as a compile test for type-checking of
+  # WebUI JS that consumes generated Mojom JS bindings.
+  js_type_check("web_ui_mojo_test_js_type_check") {
+    deps = [ ":web_ui_mojo_test_js" ]
+    closure_flags = default_closure_args + mojom_js_args
+  }
 }
 
-# NOTE: Building this target serves as a compile test for type-checking of
-# WebUI JS that consumes generated Mojom JS bindings.
-js_type_check("web_ui_mojo_test_js_type_check") {
-  deps = [ ":web_ui_mojo_test_js" ]
-  closure_flags = default_closure_args + mojom_js_args
+mojom("web_ui_ts_test_mojo_bindings") {
+  testonly = true
+  sources = [
+    "data/web_ui_ts_test.test-mojom",
+    "data/web_ui_ts_test_types.test-mojom",
+  ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  webui_module_path = "/content/test/data"
+  use_typescript_sources = true
+}
+
+preprocess_if_expr("preprocess_mojo_webui_test") {
+  in_folder = "./data"
+  out_folder = "$target_gen_dir/data"
+  in_files = [ "web_ui_mojo_ts_test.ts" ]
+}
+
+ts_library("web_ui_mojo_test_build_ts") {
+  root_dir = "$target_gen_dir/data"
+  out_dir = "$target_gen_dir/data/tsc"
+  in_files = [
+    "web_ui_mojo_ts_test.ts",
+    "web_ui_ts_test.test-mojom-webui.ts",
+    "web_ui_ts_test_types.test-mojom-webui.ts",
+  ]
+  deps = [ "//ui/webui/resources/mojo:library" ]
+  extra_deps = [
+    ":preprocess_mojo_webui_test",
+    ":web_ui_ts_test_mojo_bindings_ts__generator",
+  ]
 }
 
 mojom("mojo_web_test_bindings") {
@@ -1526,8 +1564,8 @@ test("content_browsertests") {
     ":browsertest_support",
     ":content_test_mojo_bindings",
     ":test_support",
-    ":web_ui_mojo_test_js_type_check",
     ":web_ui_test_mojo_bindings",
+    ":web_ui_ts_test_mojo_bindings",
     "//base/test:test_support",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
@@ -1801,7 +1839,10 @@ test("content_browsertests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/assistant:buildflags" ]
+    deps += [
+      ":web_ui_mojo_test_js_type_check",
+      "//chromeos/ash/components/assistant:buildflags",
+    ]
   }
 
   if (is_android) {
@@ -2039,7 +2080,10 @@ grit("web_ui_mojo_test_resources") {
     "grit/web_ui_mojo_test_resources_map.h",
     "web_ui_mojo_test_resources.pak",
   ]
-  deps = [ ":web_ui_test_mojo_bindings_js__generator" ]
+  deps = [
+    ":web_ui_mojo_test_build_ts",
+    ":web_ui_test_mojo_bindings_js__generator",
+  ]
 }
 
 static_library("run_all_unittests") {

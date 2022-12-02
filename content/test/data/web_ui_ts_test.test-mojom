@@ -1,0 +1,13 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "content/test/data/web_ui_ts_test_types.test-mojom";
+import "url/mojom/url.mojom";
+
+interface WebUITsMojoTestCache {
+  Put(url.mojom.Url url, string contents);
+  GetAll() => (array<TsCacheItem> items);
+};
