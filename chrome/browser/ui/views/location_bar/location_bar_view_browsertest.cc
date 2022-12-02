@@ -334,10 +334,10 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // 3) Navigate back to A. |RenderFrameHost| have to be restored from
-  // BackForwardCache. And |RenderFrameHost| have to be matched with |rfh_a|.
+  // BackForwardCache and be the primary main frame.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(), rfh_a);
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
   EXPECT_EQ(rfh_b->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -345,10 +345,10 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   EXPECT_TRUE(geolocation_icon.GetVisible());
 
   // 4) Navigate forward to B. |RenderFrameHost| have to be restored from
-  // BackForwardCache. And |RenderFrameHost| have to be matched with |rfh_b|.
+  // BackForwardCache and be the primary main frame.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(), rfh_b);
+  EXPECT_TRUE(rfh_b->IsInPrimaryMainFrame());
 
   // Geolocation icon should be off.
   EXPECT_FALSE(geolocation_icon.GetVisible());
