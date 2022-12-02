@@ -98,6 +98,8 @@ class HardwareDisplayControllerInfo {
   drmModeCrtc* crtc() const { return crtc_.get(); }
   uint8_t index() const { return index_; }
 
+  ScopedDrmConnectorPtr ReleaseConnector() { return std::move(connector_); }
+
  private:
   ScopedDrmConnectorPtr connector_;
   ScopedDrmCrtcPtr crtc_;

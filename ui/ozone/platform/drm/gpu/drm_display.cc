@@ -156,17 +156,15 @@ std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
       info, drm_->get_fd(), drm_->device_path(), device_index, origin_);
   base_connector_id_ = params->base_connector_id();
   crtc_ = info->crtc()->crtc_id;
-  // TODO(crbug.com/1119499): consider taking ownership of |info->connector()|
-  connector_ = ScopedDrmConnectorPtr(
-      drm_->GetConnector(info->connector()->connector_id));
-  if (!connector_) {
-    PLOG(ERROR) << "Failed to get connector "
-                << info->connector()->connector_id;
-    return nullptr;
-  }
+  // We take ownership of |info|'s connector because it will not be used again
+  // beyond this point. It is safe to assume that |connector_| is populated
+  // since it was obtained from GetDisplayInfosAndInvalidCrtcs(), which discards
+  // invalid (nullptr) connectors.
+  connector_ = info->ReleaseConnector();
+  DCHECK(connector_);
 
   display_id_ = params->display_id();
-  modes_ = GetDrmModeVector(info->connector());
+  modes_ = GetDrmModeVector(connector_.get());
   is_hdr_capable_ =
       params->bits_per_channel() > 8 && params->color_space().IsHDR();
   privacy_screen_property_ =
@@ -185,8 +183,7 @@ std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
 bool DrmDisplay::GetHDCPState(
     display::HDCPState* hdcp_state,
     display::ContentProtectionMethod* protection_method) {
-  if (!connector_)
-    return false;
+  DCHECK(connector_);
 
   TRACE_EVENT1("drm", "DrmDisplay::GetHDCPState", "connector",
                connector_->connector_id);
@@ -249,9 +246,7 @@ bool DrmDisplay::GetHDCPState(
 bool DrmDisplay::SetHDCPState(
     display::HDCPState state,
     display::ContentProtectionMethod protection_method) {
-  if (!connector_) {
-    return false;
-  }
+  DCHECK(connector_);
 
   if (protection_method != display::CONTENT_PROTECTION_METHOD_NONE) {
     ScopedDrmPropertyPtr content_type_property(

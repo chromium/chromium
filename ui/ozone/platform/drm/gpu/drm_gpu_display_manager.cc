@@ -163,26 +163,25 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
         displays_.push_back(std::make_unique<DrmDisplay>(drm));
       }
 
+      // Do not use |display_info| beyond this point, since some of its internal
+      // references will be surrendered.
       auto display_snapshot = displays_.back()->Update(
           display_info.get(), static_cast<uint8_t>(device_index));
-      if (display_snapshot) {
-        const auto colliding_display_snapshot_iter =
-            id_collision_map.find(display_snapshot->edid_display_id());
-        if (colliding_display_snapshot_iter != id_collision_map.end()) {
-          // There is a collision between |display_snapshot| and a previous
-          // display. Resolve it by adding their connector indices to their
-          // display IDs, respectively.
-          collision_detected = true;
-          display_snapshot->AddIndexToDisplayId();
-          colliding_display_snapshot_iter->second->AddIndexToDisplayId();
-        } else {
-          id_collision_map[display_snapshot->edid_display_id()] =
-              display_snapshot.get();
-        }
-        params_list.push_back(std::move(display_snapshot));
+
+      const auto colliding_display_snapshot_iter =
+          id_collision_map.find(display_snapshot->edid_display_id());
+      if (colliding_display_snapshot_iter != id_collision_map.end()) {
+        // There is a collision between |display_snapshot| and a previous
+        // display. Resolve it by adding their connector indices to their
+        // display IDs, respectively.
+        collision_detected = true;
+        display_snapshot->AddIndexToDisplayId();
+        colliding_display_snapshot_iter->second->AddIndexToDisplayId();
       } else {
-        displays_.pop_back();
+        id_collision_map[display_snapshot->edid_display_id()] =
+            display_snapshot.get();
       }
+      params_list.push_back(std::move(display_snapshot));
     }
     device_index++;
   }
