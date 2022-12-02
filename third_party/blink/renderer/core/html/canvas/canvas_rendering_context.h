@@ -272,6 +272,9 @@ class CORE_EXPORT CanvasRenderingContext
   }
 
   // WebGL & WebGPU-specific interface
+  virtual void SetHDRConfiguration(
+      gfx::HDRMode hdr_mode,
+      absl::optional<gfx::HDRMetadata> hdr_metadata) {}
   virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) { NOTREACHED(); }
   virtual void Reshape(int width, int height) {}
   virtual int ExternallyAllocatedBufferCountPerPixel() {

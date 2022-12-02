@@ -1067,6 +1067,12 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
                                              max_viewport_dims_);
   InitializeWebGLContextLimits(context_provider.get());
 
+  // TODO(https://crbug.com/1230619): Remove this in favor of
+  // drawingBufferStorage.
+  if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled()) {
+    pixel_format_deprecated_ = requested_attributes.pixel_format;
+  }
+
   scoped_refptr<DrawingBuffer> buffer =
       CreateDrawingBuffer(std::move(context_provider), graphics_info);
   if (!buffer) {
@@ -7231,6 +7237,14 @@ uint32_t WebGLRenderingContextBase::NumberOfContextLosses() const {
 
 cc::Layer* WebGLRenderingContextBase::CcLayer() const {
   return isContextLost() ? nullptr : GetDrawingBuffer()->CcLayer();
+}
+
+void WebGLRenderingContextBase::SetHDRConfiguration(
+    gfx::HDRMode hdr_mode,
+    absl::optional<gfx::HDRMetadata> hdr_metadata) {
+  if (!isContextLost() && GetDrawingBuffer()) {
+    GetDrawingBuffer()->SetHDRConfiguration(hdr_mode, hdr_metadata);
+  }
 }
 
 void WebGLRenderingContextBase::SetFilterQuality(

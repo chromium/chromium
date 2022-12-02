@@ -216,6 +216,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   void SetIsInHiddenPage(bool);
   void SetFilterQuality(cc::PaintFlags::FilterQuality);
+  void SetHDRConfiguration(gfx::HDRMode hdr_mode,
+                           absl::optional<gfx::HDRMetadata> hdr_metadata);
   cc::PaintFlags::FilterQuality FilterQuality() const {
     return filter_quality_;
   }
@@ -677,6 +679,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool destruction_in_progress_ = false;
   bool is_hidden_ = false;
   bool has_eqaa_support = false;
+
+  gfx::HDRMode hdr_mode_ = gfx::HDRMode::kDefault;
+  absl::optional<gfx::HDRMetadata> hdr_metadata_;
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
 

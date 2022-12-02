@@ -476,9 +476,7 @@ void HTMLCanvasElement::configureHighDynamicRange(
 
   CanvasResourceHost::SetHDRConfiguration(hdr_mode, hdr_metadata);
   if (context_ && (IsWebGL() || IsWebGPU())) {
-    // TODO(https://crbug.com/1274220): Implement HDR support for WebGL and
-    // WebGPU.
-    NOTIMPLEMENTED();
+    context_->SetHDRConfiguration(hdr_mode, hdr_metadata);
   } else if (canvas2d_bridge_) {
     canvas2d_bridge_->SetHDRConfiguration(hdr_mode, hdr_metadata);
   }
