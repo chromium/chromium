@@ -1579,6 +1579,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2408955596600435184">Introduce tu PIN</translation>
 <translation id="2409268599591722235">Adelante</translation>
 <translation id="2410079346590497630">Detalles de la compilación</translation>
+<translation id="2410298923485357543">Usar voz natural cuando el dispositivo está online</translation>
 <translation id="2410754283952462441">Elige una cuenta</translation>
 <translation id="241082044617551207">Complemento desconocido</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -2299,6 +2300,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3059195548603439580">¿Buscas componentes del sistema? Visita</translation>
 <translation id="3060952009917586498">Cambiar el idioma del dispositivo. El idioma actual es el <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">No se ha podido establecer conexión con tu teléfono. Comprueba que tengas el teléfono cerca, que esté desbloqueado y que las conexiones Bluetooth y Wi‑Fi estén activadas.</translation>
+<translation id="3061302636956643119">El texto se enviará a Google para procesarse.</translation>
 <translation id="3064871050034234884">Los sitios pueden reproducir sonido</translation>
 <translation id="3065041951436100775">Comentarios sobre una pestaña que se ha cerrado.</translation>
 <translation id="3065522099314259755">Latencia de repetición del teclado</translation>
@@ -2652,7 +2654,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Añade esta página a marcadores para encontrarla fácilmente en otro momento</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
-<translation id="3433507769937235446">Bloquear cuando estés ausente</translation>
+<translation id="3433507769937235446">Bloqueo en ausencia</translation>
 <translation id="3433621910545056227">¡Vaya! El sistema no ha podido establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo. Consulta más información sobre estos ajustes y cómo configurarlos en families.google.com.</translation>
@@ -3898,6 +3900,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4582563038311694664">Recuperar configuración completa</translation>
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4586275095964870617"><ph name="URL" /> no se ha podido abrir en un navegador alternativo. Ponte en contacto con el administrador del sistema.</translation>
+<translation id="4587589328781138893">Sitios web</translation>
 <translation id="4589713469967853491">Registros escritos correctamente en el directorio Descargas.</translation>
 <translation id="4590324241397107707">Almacenamiento en bases de datos</translation>
 <translation id="459204634473266369">No hay dispositivos guardados en <ph name="PRIMARY_EMAIL" /></translation>

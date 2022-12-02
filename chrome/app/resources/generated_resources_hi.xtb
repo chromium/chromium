@@ -596,6 +596,7 @@
 <translation id="1546280085599573572">इस एक्सटेंशन ने यह बदल दिया है कि जब आप 'होम बटन' पर क्लिक करते हैं तब कौन सा पेज दिखाया जाए.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> एक <ph name="EXTENSION_TYPE" /> इंस्टॉल करना चाहता है जो ये काम कर सकता है:</translation>
 <translation id="1547808936554660006">मैं जानता हूं कि पावरवॉश, इंस्टॉल की गई ई-सिम प्रोफ़ाइलों को नहीं हटाएगा</translation>
+<translation id="1547936895218027488">साइड पैनल को खोलने के लिए, उसके आइकॉन पर क्लिक करें</translation>
 <translation id="1549275686094429035">एआरसी चालू है</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ऐक्‍सेस करना चाहता है <ph name="VOLUME_NAME" />. वह आपकी फ़ाइलों में बदलाव कर सकता है या उन्‍हें मिटा सकता है.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने <ph name="SEARCH_PROVIDER_DOMAIN" /> का इस्तेमाल करने के लिए सर्च इंजन बदला है</translation>
@@ -1429,6 +1430,7 @@
 <translation id="2287944065963043964">लॉगिन स्क्रीन</translation>
 <translation id="2289270750774289114">जब कोई साइट आस-पास के ब्लूटूथ डिवाइस को खोजना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="2290615375132886363">टैबलेट मोड में नेविगेशन बटन</translation>
+<translation id="2291452790265535215">बुकमार्क, यात्रा वगैरह की जानकारी देखने के लिए, साइड पैनल का इस्तेमाल करें</translation>
 <translation id="229182044471402145">कोई भी मिलता-जुलता फ़ॉन्ट नहीं मिला.</translation>
 <translation id="2292848386125228270">कृपया <ph name="PRODUCT_NAME" /> को सामान्‍य उपयोगकर्ता की तरह शुरू करें. अगर आपको डेवलपमेंट के लिए रूट के रूप में चलाना है, तो --no-sandbox फ़्लैग के साथ फिर से चलाएं.</translation>
 <translation id="2294081976975808113">स्क्रीन की निजता</translation>
@@ -1590,6 +1592,7 @@
 <translation id="2408955596600435184">अपना पिन डालें</translation>
 <translation id="2409268599591722235">आइए शुरू करें</translation>
 <translation id="2410079346590497630">बिल्ड की जानकारी</translation>
+<translation id="2410298923485357543">डिवाइस इंटरनेट से कनेक्ट होने पर, अच्छी क्वालिटी वाली आवाज़ का इस्तेमाल करें</translation>
 <translation id="2410754283952462441">कोई खाता चुनें</translation>
 <translation id="241082044617551207">अज्ञात प्लग इन</translation>
 <translation id="2412753904894530585">केर्बेरोस</translation>
@@ -2310,6 +2313,7 @@
 <translation id="3059195548603439580">सिस्टम कॉम्पोनेंट वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="3060952009917586498">डिवाइस की भाषा बदलें. मौजूदा भाषा <ph name="LANGUAGE" /> है.</translation>
 <translation id="3060987956645097882">हम आपके फ़ोन से कनेक्ट नहीं कर पाए. पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, यह भी कि उस पर ब्लूटूथ और वाई-फ़ाई चालू हैं.</translation>
+<translation id="3061302636956643119">टेक्स्ट को प्रोसेस के लिए Google के पास भेजा जाएगा.</translation>
 <translation id="3064871050034234884">साइटें आवाज़ चालू कर सकती हैं</translation>
 <translation id="3065041951436100775">टैब किल्ड फ़ीडबैक.</translation>
 <translation id="3065522099314259755">कीबोर्ड के अपने-आप दोहराने में लगने वाला समय</translation>
@@ -3901,11 +3905,13 @@
 <translation id="4582563038311694664">सभी सेटिंग रीसेट करें</translation>
 <translation id="4585793705637313973">पेज में बदलाव करें</translation>
 <translation id="4586275095964870617"><ph name="URL" /> वैकल्पिक ब्राउज़र में नहीं खुला. कृपया अपने सिस्टम एडमिन से संपर्क करें.</translation>
+<translation id="4587589328781138893">Sites</translation>
 <translation id="4589713469967853491">डाउनलोड डायरेक्ट्री में लॉग सेव किए गए.</translation>
 <translation id="4590324241397107707">डेटाबेस मेमोरी</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> से कोई डिवाइस नहीं जुड़ा है</translation>
 <translation id="4592891116925567110">स्टाइलस की मदद से ड्रॉ करने के लिए ऐप्लिकेशन</translation>
 <translation id="4593021220803146968"><ph name="URL" /> पर &amp;जाएं</translation>
+<translation id="4594218792629569101">पेज को अपनी सूची में सबसे नीचे ले जाने के लिए, “पढ़ा गया के तौर पर मार्क करें” को चुनें</translation>
 <translation id="4594577641390224176">सिस्टम की जानकारी वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="4595560905247879544">ऐप्स और एक्सटेंशन केवल मैनेजर (<ph name="CUSTODIAN_NAME" />) के द्वारा बदले जा सकते हैं.</translation>
 <translation id="4596295440756783523">इन सर्वर की पहचान करने वाले प्रमाणपत्र आपके रिकॉर्ड में हैं</translation>
@@ -4410,6 +4416,7 @@
 <translation id="5084328598860513926">सेट अप करने के दौरान कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें. इसके अलावा, डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">अपडेट जाँच रहा है</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">नोट में 1,000 से ज़्यादा वर्ण हैं</translation>
 <translation id="5086874064903147617">डिफ़ॉल्ट होमपेज को बहाल करना चाहते हैं?</translation>
 <translation id="5087249366037322692">किसी तृतीय-पक्ष द्वारा जोड़ा गया</translation>
 <translation id="5087580092889165836">कार्ड जोड़ें</translation>
@@ -6573,6 +6580,7 @@
 <translation id="7111822978084196600">इस विंडो को कोई नाम दें</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> आइटम</translation>
 <translation id="7113502843173351041">अपना ईमेल पता जानें</translation>
+<translation id="7113974454301513811">अब मौजूदा टैब को अपनी सूची में जोड़ें</translation>
 <translation id="7114054701490058191">पासवर्ड मेल नहीं खाते</translation>
 <translation id="7114648273807173152">Smart Lock का इस्तेमाल करके अपने Google खाते में साइन इन करने के लिए, सेटिंग &gt; कनेक्ट किए हुए डिवाइस &gt; आपका फ़ोन &gt; Smart Lock पर जाएं.</translation>
 <translation id="7115361495406486998">Google खाते वाला कोई भी संपर्क नहीं है</translation>
@@ -8424,6 +8432,7 @@
 <translation id="8859174528519900719">सबफ़्रेम: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">सेवा की शर्तें लोड नहीं की जा सकीं</translation>
 <translation id="8859662783913000679">अभिभावक का खाता</translation>
+<translation id="8860973272057162405">{COUNT,plural, =1{{COUNT} खाता}one{{COUNT} खाता}other{{COUNT} खाते}}</translation>
 <translation id="8861568709166518036">होम स्क्रीन पर जाने, वापस जाने, और एक ऐप्लिकेशन से दूसरे पर जाने के लिए, स्क्रीन पर दिए गए बटन का इस्तेमाल करें. ChromeVox या अपने-आप क्लिक होने की सुविधा के चालू होने पर, ये बटन अपने-आप ऐक्टिव हो जाते हैं.</translation>
 <translation id="8862003515646449717">किसी तेज़ ब्राउज़र पर जाएं</translation>
 <translation id="8863753581171631212">नए <ph name="APP" /> में लिंक खोलें</translation>
@@ -8795,6 +8804,7 @@
 <translation id="9201842707396338580">कोई गड़बड़ी हुई. कृपया डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;प्रोफ़ाइलिंग सक्षम</translation>
 <translation id="9203904171912129171">डिवाइस चुनें</translation>
+<translation id="920410963177453528">कोई दूसरा पैनल चुनने के लिए, ड्रॉप-डाउन पर क्लिक करें</translation>
 <translation id="9206889157914079472">स्टाइलस की मदद से लॉक स्क्रीन से नोट लेना</translation>
 <translation id="9208192193641542858">आपके पुराने पासवर्ड की मदद से, स्थानीय डेटा को सुरक्षित बनाया गया है. अगर आपने हाल ही में अपना पासवर्ड बदला है, तो पुराना पासवर्ड फिर से डालकर देखें.</translation>
 <translation id="9209563766569767417">Linux कंटेनर सेट अप की जांच हो रही है</translation>

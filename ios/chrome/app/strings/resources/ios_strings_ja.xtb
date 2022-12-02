@@ -99,6 +99,7 @@
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1650222530560417226">[ログ記録を開始] をタップすると、今後 JavaScript コンソールに表示されるすべてのタブのログやエラーが収集されます。ログは、このページを閉じるか [ログ記録を停止] をタップするまで収集（およびメモリにのみ保存）されます。</translation>
+<translation id="1653432787084483144">{count,plural, =1{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}other{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}}</translation>
 <translation id="1657011748321897393">ネットワークに接続されていないため共有できませんでした。</translation>
 <translation id="1657641691196698092">ブロックされた Cookie</translation>
 <translation id="165877110639533037">開いているタブはありません</translation>
@@ -139,6 +140,7 @@
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスワードを設定する必要があります。</translation>
 <translation id="2021670401941426298">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="202292859882676807">マイクへのアクセスが許可されています</translation>
+<translation id="2050196510205866090">{count,plural, =1{キーボードの上部に保存済みのお支払方法が {count} 件表示されています。}other{キーボードの上部に保存済みのお支払方法が {count} 件表示されています。}}</translation>
 <translation id="2073572773299281212">最終同期: <ph name="DAYS" /> 日前</translation>
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
@@ -180,6 +182,7 @@
 <translation id="2375243552872247702">おすすめコンテンツを表示</translation>
 <translation id="2381405137052800939">基本設定</translation>
 <translation id="2386793615875593361">1 枚選択されています</translation>
+<translation id="2411749908844615428">{count,plural, =1{キーボードの上部に保存済みの住所が {count} 件表示されています。}other{キーボードの上部に保存済みの住所が {count} 件表示されています。}}</translation>
 <translation id="2421004566762153674">サードパーティの Cookie をブロック</translation>
 <translation id="2421044535038393232">編集を続ける</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> の「<ph name="USERNAME" />」のパスワードは保存済みです</translation>
@@ -477,6 +480,7 @@
 データは同期パスフレーズで暗号化されます。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="4682686630151240767">1. iPhone の [設定] を開く</translation>
 <translation id="4689564913179979534">お支払い方法を管理...</translation>
+<translation id="469300482518076788">タブを閉じる</translation>
 <translation id="4697071790493980729">一致する検索結果は見つかりませんでした</translation>
 <translation id="470966556546083668">同期をオンにしない</translation>
 <translation id="4737560986434232178">最近使ったタブを検索</translation>
@@ -1025,6 +1029,7 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731388423028622182">iPhone をリセットしている途中で、アカウント <ph name="USER_NAME" /> からログアウトしました。下の [続行] をタップしてログインしてください。</translation>
 <translation id="87371078663613140">メニューバーのオプションを確認します</translation>
+<translation id="8737620822084008350">{count,plural, =1{キーボードの上部に保存済みのプロフィールが {count} 件表示されています。}other{キーボードの上部に保存済みのプロフィールが {count} 件表示されています。}}</translation>
 <translation id="8741995161408053644">Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
 <translation id="8750037785291841318">タブはここに表示されます</translation>
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>

@@ -43,8 +43,10 @@
 <translation id="1378727793141957596">Google Drive ਵਿੱਚ ਸੁਆਗਤ ਹੈ!</translation>
 <translation id="1379911846207762492">ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਨਾ ਹੋਣ 'ਤੇ ਤੁਸੀਂ ਪਹੁੰਚ ਕਰਨ ਲਈ ਫ਼ਾਈਲਾਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਕਰਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
+<translation id="1388045380422025115">ਸਭ ਕਿਸਮਾਂ</translation>
 <translation id="1395262318152388157">ਸੀਕ ਸਲਾਈਡਰ</translation>
 <translation id="1399511500114202393">ਕੋਈ ਵਰਤੋਂਕਾਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨਹੀਂ</translation>
+<translation id="1403008701842173542">ਹਰ ਥਾਂ</translation>
 <translation id="1404323374378969387">ਨਾਰਵੇਜੀਆਈ</translation>
 <translation id="1433628812591023318">Parallels Desktop ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਾਉਣ ਲਈ, ਫ਼ਾਈਲ ਦਾ Windows ਫ਼ਾਈਲਾਂ 'ਤੇ ਲਿਜਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="1435838927755162558">Parallels Desktop ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
@@ -102,6 +104,7 @@
 <translation id="1834290891154666894">ਵਿਸ਼ੇ ਸੰਬੰਧੀ ਵਿਕਲਪਿਕ ਨਾਮ ਦੇ ਮਿਲਾਨ ਵਾਲਾ ਇੰਦਰਾਜ ਅਵੈਧ ਹੈ</translation>
 <translation id="1838709767668011582">Google ਸਾਈਟ</translation>
 <translation id="1853795129690976061">ਇਹ ਫੋਲਡਰ Linux ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="1859422890169495746">ਇਹ Chromebook</translation>
 <translation id="1864756863218646478">ਫਾਈਲ ਨਹੀਂ ਲੱਭੀ ਜਾ ਸਕੀ।</translation>
 <translation id="1884013283844450420">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="1920670151694390848">ਮਲਿਆਲਮ ਲਿਪੀਅੰਤਰਨ</translation>
@@ -152,6 +155,7 @@
 <translation id="2307462900900812319">ਨੈੱਟਵਰਕ ਸੰਰੂਪਿਤ ਕਰੋ</translation>
 <translation id="2325650632570794183">ਇਹ ਫ਼ਾਈਲ ਕਿਸਮ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਅਜਿਹੀ ਐਪ ਲੱਭਣ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' 'ਤੇ ਜਾਓ ਜੋ ਇਸ ਕਿਸਮ ਦੀ ਫ਼ਾਈਲ ਖੋਲ੍ਹ ਸਕਦੀ ਹੈ।</translation>
 <translation id="2326539130272988168">ਬੁਲਗਾਰੀਆਈ</translation>
+<translation id="2337715497728194187">Bruschetta ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="23721837607121582">ਮੋਬਾਈਲ ਪ੍ਰੋਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰੋ, <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ਸੂਚੀ ਦ੍ਰਿਸ਼ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ਫੋਲਡਰ Linux ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਗਏ</translation>
@@ -181,6 +185,7 @@
 <translation id="2544853746127077729">ਪ੍ਰਮਾਣੀਕਰਨ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੂੰ ਨੈੱਟਵਰਕ ਵੱਲੋਂ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="255937426064304553">ਅਮਰੀਕਾ ਅੰਤਰਰਾਸ਼ਟਰੀ</translation>
 <translation id="2563185590376525700">ਡੱਡੂ</translation>
+<translation id="2574327434504608656">Bruschetta ਨਾਲ 1 ਫੋਲਡਰ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2578394532502990878">ਤਮਿਲ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="2579959351793446050">ਉੜੀਆ</translation>
 <translation id="2602810353103180630">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ, ਵੇਰਵੇ</translation>
@@ -274,6 +279,7 @@
 <translation id="3408072735282270043">ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">ਨੀਓ 2 ਕੀ-ਬੋਰਡ ਨਾਲ ਜਰਮਨ (ਜਰਮਨੀ)</translation>
 <translation id="3414856743105198592">ਹਟਾਉਣਯੋਗ ਮੀਡੀਆ ਨੂੰ ਫੌਰਮੈਟ ਕਰਨ ਨਾਲ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਏਗਾ। ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="3435143625481187092">Bruschetta ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="3437801641691368414">ਬਣਾਉਣ ਦਾ ਸਮਾਂ</translation>
 <translation id="343907260260897561">ਤਤਕਾਲ ਫ਼ੋਟੋ ਖਿੱਚਣ ਵਾਲਾ ਕੈਮਰਾ</translation>
 <translation id="3455931012307786678">ਇਸਤੋਨੀਆਈ</translation>
@@ -353,6 +359,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ਨੂੰ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="4176286497474237543">ਰੱਦੀ ਫੋਲਡਰ ਨੂੰ ਹੁਣੇ ਖਾਲੀ ਕਰੋ</translation>
 <translation id="4179621117429069925">ਇਹ ਆਈਟਮ ਤੁਹਾਡੀ ਰੱਦੀ ਵਿੱਚ ਹੈ</translation>
+<translation id="4181839429935094755">Bruschetta ਨਾਲ <ph name="NUMBER_OF_ITEMS" /> ਫੋਲਡਰ ਸਾਂਝੇ ਕੀਤੇ ਗਏ</translation>
 <translation id="4186579485882418952">ਆਫ਼ਲਾਈਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4193154014135846272">Google ਦਸਤਾਵੇਜ਼</translation>
 <translation id="4197674956721858839">Zip ਚੋਣ</translation>
@@ -414,6 +421,7 @@
 <translation id="4646813851450205600">QWERTY ਕੀ-ਬੋਰਡ ਨਾਲ ਚੈੱਕ</translation>
 <translation id="4656777537938206294">ਫ਼ਾਈਲਾਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਕਰਵਾਓ</translation>
 <translation id="4658782175094886150">ਬਰਫ਼ੀਲੀ ਥਾਂ 'ਤੇ ਵਿਅਕਤੀ</translation>
+<translation id="466782788172479199">Bruschetta ਨੂੰ ਤੁਹਾਡੀ Google Drive ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' ਦੇ ਮੈਂਬਰ ਪਹੁੰਚ ਗੁਆ ਦੇਣਗੇ ਜੇਕਰ ਇਹਨਾਂ ਆਈਟਮਾਂ ਨੂੰ ਉਹਨਾਂ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ।</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ਸਵੈਡਿਸ਼</translation>
@@ -447,6 +455,7 @@
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="485316830061041779">ਜਰਮਨ</translation>
 <translation id="4867079195717347957">ਕਾਲਮ ਨੂੰ ਘੱਟਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
+<translation id="4867297348137739678">ਪਿਛਲਾ ਹਫ਼ਤਾ</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ਬਾਈਟ</translation>
 <translation id="4874569719830985133">ਹਮੇਸ਼ਾਂ ਲਈ ਮਿਟਾਓ</translation>
 <translation id="4880214202172289027">ਵੌਲਿਊਮ ਸਲਾਈਡਰ</translation>
@@ -519,6 +528,7 @@
 <translation id="5330145655348521461">ਇਹ ਫਾਈਲਾਂ ਇੱਕ ਵੱਖਰੇ ਡੈਸਕਟਾਪ ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਹੋਈਆਂ ਹਨ। ਇਸਨੂੰ ਦੇਖਣ ਲਈ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 'ਤੇ ਹਲਚਲ ਕਰੋ।</translation>
 <translation id="5330512191124428349">ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> ਤੋਂ ਇਲਾਵਾ ਸਾਰੇ URL ਫ਼ਾਈਲ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹਨ</translation>
+<translation id="5344246330454251646">Bruschetta ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="535792325654997756">ਬਿੱਲੀਆਂ ਨਾਲ ਵਿਅਕਤੀ</translation>
 <translation id="5358764674931277">ਫ੍ਰੇਮ ਰੇਟ</translation>
 <translation id="5363339716524495120">ਇਨਪੁੱਟ ਭਾਸ਼ਾ ਚੀਨੀ ਹੈ</translation>
@@ -564,6 +574,7 @@
 <translation id="5700087501958648444">ਆਡੀਓ ਦੀ ਜਾਣਕਾਰੀ</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ਨੂੰ ਰੱਦੀ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="5724172041621205163">ਪੈਟਾਸ਼ੋਟੇ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਥਾਈ</translation>
+<translation id="57383366388012121">ਪਿਛਲਾ ਮਹੀਨਾ</translation>
 <translation id="5756666464756035725">ਹੰਗਰੀਆਈ QWERTY</translation>
 <translation id="5763377084591234761">ਜਰਮਨ (ਸਵਿਟਜ਼ਰਲੈਂਡ)</translation>
 <translation id="5769519078756170258">ਬਾਹਰ ਰੱਖਣ ਲਈ ਹੋਸਟ ਜਾਂ ਡੋਮੇਨ</translation>
@@ -673,6 +684,7 @@
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
 <translation id="6732801395666424405">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਲੋਡ ਨਹੀਂ ਕੀਤੇ ਗਏ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Bruschetta ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="6751256176799620176">1 ਫੋਲਡਰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="6755827872271341378">ChromeOS Flex ਡੀਵਾਈਸ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
@@ -701,6 +713,7 @@
 <translation id="6935521024859866267">ਉਲਟਾ</translation>
 <translation id="6943836128787782965">HTTP ਅਸਫ਼ਲ ਹੋ ਗਿਆ</translation>
 <translation id="6949408524333579394">ਸਰਬੀਆਈ ਲਿਪੀਅੰਤਰਨ</translation>
+<translation id="69548399407432279">ਪਿਛਲਾ ਸਾਲ</translation>
 <translation id="6960565108681981554">ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਕੈਰੀਅਰ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="696203921837389374">ਮੋਬਾਈਲ ਡਾਟਾ ਤੋਂ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
@@ -844,6 +857,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ਆਡੀਓ</translation>
 <translation id="8045462269890919536">Romanian</translation>
 <translation id="8049184478152619004">ਨਿੱਜੀ ਅਣਬਲਾਕ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ (PUK) ਦਾਖਲ ਕਰੋ</translation>
+<translation id="8055538340801153769">ਇਹ ਫੋਲਡਰ</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> ਨੂੰ ਐਕਸਟਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8087576439476816834">ਡਾਊਨਲੋਡ ਕਰੋ, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ਮੇਰੇ ਨਾਲ ਸ਼ੇਅਰ ਕੀਤਾ</translation>

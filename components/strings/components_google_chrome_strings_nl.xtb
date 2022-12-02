@@ -5,7 +5,6 @@
 <translation id="130631256467250065">Je wijzigingen worden doorgevoerd wanneer je het apparaat opnieuw opstart.</translation>
 <translation id="1635457557763038537">Je wijzigingen worden toegepast als je Chrome opnieuw start.</translation>
 <translation id="2447485272386224171">Chrome wordt mogelijk gemaakt door het opensource-project <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> en andere <ph name="BEGIN_LINK_OSS" />opensource-software<ph name="END_LINK_OSS" />.</translation>
-<translation id="2505647373045235387">De eerste instelling van Chrome OS is niet afgerond.</translation>
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Deze pagina bevat alleen informatie over recente crashes als je <ph name="BEGIN_LINK" />crashrapportage aanzet<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Sta Chrome toe via je firewall- of antivirusinstellingen het netwerk te gebruiken.</translation>
@@ -38,5 +37,4 @@
           en verwijder het vinkje naast 'Een proxyserver voor het LAN-netwerk gebruiken'.</translation>
 <translation id="7230956101631259640">Je bekijkt een beveiligde Chrome-pagina</translation>
 <translation id="8187289872471304532">Ga naar 'Applicaties &gt; Systeemvoorkeuren &gt; Netwerk &gt; Geavanceerd &gt; Proxy's' en verwijder de vinkjes bij proxyservers die zijn aangevinkt.</translation>
-<translation id="864712724203364111">Chrome OS Flex heeft de eerste instelling nog niet afgerond.</translation>
 </translationbundle>

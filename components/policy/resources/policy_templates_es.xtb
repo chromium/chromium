@@ -393,6 +393,7 @@ La disponibilidad de las extensiones seguirá estando controlada por otras polí
           Si no se asigna ningún valor a esta política, el usuario podrá instalar cualquier extensión en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1393485621820363363">Impresoras de dispositivos de empresa habilitadas</translation>
 <translation id="1395505489889158859">Habilitar el envío de nombres de usuario y de archivo a impresoras nativas</translation>
+<translation id="1396119629372155901">Función ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes inhabilitada</translation>
 <translation id="1397855852561539316">URL de sugerencia del proveedor de búsquedas predeterminadas</translation>
 <translation id="1402227992519954892">Habilitar los informes sobre las aplicaciones del dispositivo</translation>
 <translation id="141279920573530952">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a todos los puertos serie disponibles.
@@ -597,6 +598,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1583248206450240930">Utilizar <ph name="PRODUCT_FRAME_NAME" /> de forma predeterminada</translation>
 <translation id="1587585749332985896">No permite utilizar el modo sin interfaz gráfica</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
+<translation id="1590802206069983683">Función ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes disponible</translation>
 <translation id="1592334921377856028">Inhabilitar los informes sobre el estado del hardware del dispositivo</translation>
 <translation id="1595013560176869154">Si se habilita esta política, se podrán usar PINs poco seguros. Estas son algunas de las características de los PINs poco seguros: un mismo número (1111), números consecutivos (1234), números consecutivos descendentes (4321) y PINs habituales. Si se inhabilita esta política, los usuarios no podrán establecer PINs poco seguros o fáciles de adivinar.
 
@@ -7071,6 +7073,9 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7925224837072026018">Si se define esta política, se permite que las extensiones o aplicaciones Android accedan a las claves corporativas. Las claves están designadas solo para un uso corporativo si se generan con la API chrome.enterprise.platformKeys API en una cuenta gestionada. Los usuarios no pueden conceder acceso a extensiones o aplicaciones Android mediante claves corporativas ni quitarlo.
 
 De forma predeterminada, una extensión o aplicación Android no puede utilizar una clave designada para uso corporativo, lo que equivale a asignar el valor "False" a allowCorporateKeyUsage en esa extensión. Solo si se le asigna el valor "True" a allowCorporateKeyUsage en una extensión o aplicación Android, esta podrá utilizar cualquier clave de plataforma marcada para uso corporativo para firmar datos arbitrarios. Este permiso solo se debe conceder si se tiene la certeza de que la extensión o la aplicación Android garantiza un acceso seguro a la clave y la protege de posibles ataques.</translation>
+<translation id="7930383470029339167">ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes es una función de Chrome diseñada para hacer que los iframes de orígenes cruzados en varios procesos y en un mismo proceso tengan un comportamiento de renderizado coherente. Para obtener más información sobre la limitación en varios procesos frente a la de un mismo proceso, consulta https://chromestatus.com/feature/5175574929080320.
+
+La finalidad de esta política de empresa es permitir que los administradores controlen si sus usuarios pueden activar o no la limitación adicional. Si se inhabilita esta política, se impedirá que se habilite la limitación. Si se habilita esta política o no se define, el usuario podrá habilitar la limitación o esta se podrá habilitar mediante variaciones de Chrome.</translation>
 <translation id="793188693675675950">Inhabilitar la importación de la página principal en la primera ejecución</translation>
 <translation id="7933141401888114454">Habilitar la creación de usuarios supervisados</translation>
 <translation id="793473937901685727">Establecer la disponibilidad del certificado para las aplicaciones ARC</translation>
@@ -8406,8 +8411,8 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 
       Si no se asigna ningún valor a esta política o se le asigna el valor <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, se usará el modo predeterminado de la experiencia de incorporación del Asistente.
       Si se le asigna el valor <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, se usará el modo EDU de la experiencia de incorporación del Asistente.</translation>
+<translation id="9191821120522935133">Permite habilitar la limitación de iframes no visibles de orígenes cruzados.</translation>
 <translation id="9192220384862917760">Habilitar el modo de cortina en hosts de acceso remoto</translation>
-<translation id="9194447412184412480">Determina la configuración de los usuarios autenticados a través de SAML con un proveedor de identidad externo</translation>
 <translation id="9195766455191826480">No enviar información sobre el estado de seguridad</translation>
 <translation id="9197740283131855199">Porcentaje que permite ajustar el tiempo de espera de inactividad de la pantalla si el usuario vuelve a ser activo después de la inactividad</translation>
 <translation id="9200828125069750521">Parámetros para URL de imagen que utiliza POST</translation>

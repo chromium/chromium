@@ -5,7 +5,6 @@
 <translation id="130631256467250065">As alterações terão efeito da próxima vez que reiniciar o dispositivo.</translation>
 <translation id="1635457557763038537">As alterações terão efeito da próxima vez que voltar a iniciar o Chrome.</translation>
 <translation id="2447485272386224171">O Chrome foi concretizado graças ao projeto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, assim como a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>
-<translation id="2505647373045235387">O ChromeOS não concluiu a configuração inicial.</translation>
 <translation id="2588322182880276190">Logótipo do Chrome</translation>
 <translation id="3444832043240812445">Esta página mostra informações sobre falhas recentes apenas se <ph name="BEGIN_LINK" />ativar relatórios de falha<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Permita que o Chrome aceda à rede nas definições da sua firewall ou
@@ -39,5 +38,4 @@
           e desmarque "Utilizar um servidor proxy para a rede local".</translation>
 <translation id="7230956101631259640">Está a ver uma página segura do Chrome</translation>
 <translation id="8187289872471304532">Aceda a Apps &gt; Preferências do Sistema &gt; Rede &gt; Avançadas &gt; Proxies e desmarque todos os proxies selecionados.</translation>
-<translation id="864712724203364111">O ChromeOS Flex não concluiu a respetiva configuração inicial.</translation>
 </translationbundle>

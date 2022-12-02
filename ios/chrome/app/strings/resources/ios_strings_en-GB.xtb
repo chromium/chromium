@@ -99,6 +99,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1650222530560417226">Tap the 'Start Logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop Logging' is tapped.</translation>
+<translation id="1653432787084483144">{count,plural, =1{{count} saved password available above your keyboard.}other{{count} saved passwords available above your keyboard.}}</translation>
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
 <translation id="1657641691196698092">Blocked cookies</translation>
 <translation id="165877110639533037">No open tabs</translation>
@@ -139,6 +140,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="2021670401941426298">See your search engine’s instructions for deleting your search history, if applicable.</translation>
 <translation id="202292859882676807">Microphone access allowed</translation>
+<translation id="2050196510205866090">{count,plural, =1{{count} saved payment method available above your keyboard.}other{{count} saved payment methods available above your keyboard.}}</translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -180,6 +182,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2375243552872247702">See Content for You</translation>
 <translation id="2381405137052800939">Basics</translation>
 <translation id="2386793615875593361">1 selected</translation>
+<translation id="2411749908844615428">{count,plural, =1{{count} saved address available above your keyboard.}other{{count} saved addresses available above your keyboard.}}</translation>
 <translation id="2421004566762153674">Blocking third-party cookies</translation>
 <translation id="2421044535038393232">Keep editing</translation>
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
@@ -439,6 +442,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4375040482473363939">QR code Search</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4389019817280890563">Tap to change language.</translation>
+<translation id="4420409367264901497">Edit Bookmark</translation>
 <translation id="4442550905108052454">Open <ph name="BEGIN_BOLD" />Settings<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Add language</translation>
 <translation id="4462491365653392320">Track prices on tabs</translation>
@@ -477,6 +481,7 @@ See your search engine’s instructions for deleting your search history, if app
 Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
 <translation id="4682686630151240767">1. Open iPhone settings</translation>
 <translation id="4689564913179979534">Manage Payment Methods...</translation>
+<translation id="469300482518076788">Close tab</translation>
 <translation id="4697071790493980729">No results found</translation>
 <translation id="470966556546083668">Don't turn on sync</translation>
 <translation id="4737560986434232178">Search recent tabs</translation>
@@ -1025,6 +1030,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731388423028622182">You were signed out of your account <ph name="USER_NAME" /> as part of your iPhone reset. Tap continue below to sign in.</translation>
 <translation id="87371078663613140">Explore the options in the menu bar</translation>
+<translation id="8737620822084008350">{count,plural, =1{{count} saved profile available above your keyboard.}other{{count} saved profiles available above your keyboard.}}</translation>
 <translation id="8741995161408053644">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">You'll find your tabs here</translation>
 <translation id="8756969031206844760">Update password?</translation>

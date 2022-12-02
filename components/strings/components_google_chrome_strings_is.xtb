@@ -5,7 +5,6 @@
 <translation id="130631256467250065">Breytingarnar taka gildi næst þegar þú endurræsir tækið.</translation>
 <translation id="1635457557763038537">Breytingarnar taka gildi næst þegar þú endurræsir Chrome.</translation>
 <translation id="2447485272386224171">Opna kóðaverkefnið <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og annar <ph name="BEGIN_LINK_OSS" />opinn hugbúnaður<ph name="END_LINK_OSS" /> gerir Chrome mögulegt.</translation>
-<translation id="2505647373045235387">ChromeOS hefur ekki lokið við frumuppsetningu.</translation>
 <translation id="2588322182880276190">Chrome lógóið</translation>
 <translation id="3444832043240812445">Þessi síða sýnir aðeins upplýsingar um nýleg hrun ef þú <ph name="BEGIN_LINK" />kveikir á tilkynningum um hrun<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Veittu Chrome aðgang að netkerfinu þínu í eldveggsstillingunum þínum eða
@@ -41,5 +40,4 @@
 <translation id="8187289872471304532">Farðu í
           Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
           og taktu valið af öllum proxy-þjónum sem hafa verið valdir.</translation>
-<translation id="864712724203364111">ChromeOS Flex hefur ekki lokið frumuppsetningu.</translation>
 </translationbundle>

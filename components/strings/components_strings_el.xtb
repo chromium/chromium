@@ -518,7 +518,6 @@
 <translation id="2219735899272417925">Απαιτείται επαναφορά της συσκευής</translation>
 <translation id="2224337661447660594">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="2225927550500503913">Η εικονική κάρτα ενεργοποιήθηκε</translation>
-<translation id="2230458221926704099">Επιδιορθώστε τη σύνδεσή σας χρησιμοποιώντας την <ph name="BEGIN_LINK" />εφαρμογή διαγνωστικών ελέγχων<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Αποστολή τώρα</translation>
 <translation id="2241693394036365668">Το αρχείο κατέβηκε</translation>
 <translation id="2246264294482514010">10 x 12 ίντσες</translation>
@@ -2225,7 +2224,6 @@
 <translation id="6668389483194953109">Βρέθηκε το όνομα μεγέθους χαρτιού custom, αλλά η ιδιότητα custom_size είναι κενή ή μη έγκυρη.</translation>
 <translation id="6671697161687535275">Να καταργηθεί η πρόταση φόρμας από το Chromium;</translation>
 <translation id="6683717648675961851">Καταχωρίσεις θέσεων εργασίας</translation>
-<translation id="6685834062052613830">Αποσυνδεθείτε και ολοκληρώστε την εγκατάσταση</translation>
 <translation id="6687335167692595844">Ζητήθηκε μέγεθος γραμματοσειράς</translation>
 <translation id="6687696737818665306">Ηθοποιία και θέατρο</translation>
 <translation id="6688743156324860098">Ενημέρωση…</translation>

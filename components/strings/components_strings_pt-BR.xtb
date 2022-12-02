@@ -518,7 +518,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2219735899272417925">É necessário redefinir o dispositivo</translation>
 <translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2225927550500503913">Cartão virtual ativado</translation>
-<translation id="2230458221926704099">Corrija sua conexão usando o <ph name="BEGIN_LINK" />app de diagnóstico<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Enviar agora</translation>
 <translation id="2241693394036365668">Um arquivo é transferido por download</translation>
 <translation id="2246264294482514010">10 x 12 pol.</translation>
@@ -2221,7 +2220,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6668389483194953109">O nome do tamanho do papel foi encontrado como "custom", mas a propriedade "custom_size" está vazia ou é inválida.</translation>
 <translation id="6671697161687535275">Remover sugestão de formulário do Chromium?</translation>
 <translation id="6683717648675961851">Vagas de emprego</translation>
-<translation id="6685834062052613830">Saia e termine a configuração</translation>
 <translation id="6687335167692595844">Tamanho da fonte solicitado</translation>
 <translation id="6687696737818665306">Atuação e teatro</translation>
 <translation id="6688743156324860098">Atualizar…</translation>

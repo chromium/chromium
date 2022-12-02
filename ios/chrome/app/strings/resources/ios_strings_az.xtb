@@ -99,6 +99,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1641113438599504367">Təhlükəsiz Axtarış</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1650222530560417226">Gələcək JavaScript konsolunun qeyd və xətalarını bütün tablardan toplamaq üçün "Qeydlərə Başlayın" düyməsinə klikləyin. Qeydlər bu səhifə bağlanana və ya "Qeydləri Dayandırın" seçimi edilənədək toplanacaq (və yalnız yaddaşda saxlanacaq).</translation>
+<translation id="1653432787084483144">{count,plural, =1{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="1657011748321897393">Paylaşım uğursuz oldu, çünki Siz şəbəkəyə qoşulmamısınız.</translation>
 <translation id="1657641691196698092">Bloklanmış Kukilər</translation>
 <translation id="165877110639533037">Açıq Panel Yoxdur</translation>
@@ -139,6 +140,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="2015722694326466240">Parollara baxmaq üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="2021670401941426298">Axtarış tarixçənizi silmək üçün axtarış sisteminizin təlimatlarına (təmin edilibsə) baxın.</translation>
 <translation id="202292859882676807">Mikrofona giriş icazəsi verilib</translation>
+<translation id="2050196510205866090">{count,plural, =1{{count} yaddaşda saxlanılmış ödəniş metodu klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış ödəniş metodu klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> Gün Əvvəl Aktiv Olub</translation>
 <translation id="2074131957428911366">Sinxronizasiya seçimlərini <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> edə bilərsiniz.</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
@@ -180,6 +182,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2375243552872247702">Sizin üçün məzmuna baxın</translation>
 <translation id="2381405137052800939">Əsaslar</translation>
 <translation id="2386793615875593361">1 ədəd seçildi</translation>
+<translation id="2411749908844615428">{count,plural, =1{{count} yaddaşda saxlanılmış ünvan klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış ünvan klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="2421004566762153674">Üçüncü tərəf kukilərinin bloklanması</translation>
 <translation id="2421044535038393232">Redaktəyə Davam Edin</translation>
 <translation id="2434405374328098816">Artıq <ph name="WEBSITE" /> saytında "<ph name="USERNAME" />" üçün parolu yadda saxlamısınız</translation>
@@ -478,6 +481,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başlamaq üçün onu daxil edin.</translation>
 <translation id="4682686630151240767">1. iPhone Ayarlarını açın</translation>
 <translation id="4689564913179979534">Ödəniş Metodlarını İdarə Edin...</translation>
+<translation id="469300482518076788">Tabı bağlayın</translation>
 <translation id="4697071790493980729">Heç bir nəticə tapılmayıb</translation>
 <translation id="470966556546083668">Sinxronizasiyanı aktiv etməyin</translation>
 <translation id="4737560986434232178">Son Tabları axtarın</translation>
@@ -1026,6 +1030,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8731388423028622182">iPhone sıfırlamasının bir hissəsi olaraq <ph name="USER_NAME" /> hesabınızdan çıxdınız. Daxil olmaq üçün aşağıda "davam edin" seçiminə toxunun.</translation>
 <translation id="87371078663613140">Menyu panelində seçimləri araşdırın</translation>
+<translation id="8737620822084008350">{count,plural, =1{{count} yaddaşda saxlanılmış profil klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış profil klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> bölməsində Google Hesabının axtarış tarixçəsinin digər formaları ola bilər.</translation>
 <translation id="8750037785291841318">Tabları burada tapa bilərsiniz</translation>
 <translation id="8756969031206844760">Parol yenilənsin?</translation>

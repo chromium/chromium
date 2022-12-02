@@ -5,7 +5,6 @@
 <translation id="130631256467250065">Jou veranderinge sal in werking tree wanneer jy jou toestel herbegin.</translation>
 <translation id="1635457557763038537">Jou veranderinge sal die volgende keer wanneer jy Chrome herbegin, in werking tree.</translation>
 <translation id="2447485272386224171">Chrome word moontlik gemaak deur die <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-oopbronprojek en ander <ph name="BEGIN_LINK_OSS" />oopbronsagteware<ph name="END_LINK_OSS" />.</translation>
-<translation id="2505647373045235387">Chrome-bedryfstelsel se aanvanklike opstelling is nie voltooi nie.</translation>
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Hierdie bladsy wys net inligting oor jou onlangse omvalle as jy <ph name="BEGIN_LINK" />omvalrapportering aktiveer<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Laat Chrome in jou brandmuur- of antivirusinstellings toe om by jou netwerk
@@ -41,5 +40,4 @@
 <translation id="8187289872471304532">Gaan na
           Programme &gt; Stelselvoorkeure &gt; Netwerk &gt; Gevorderd &gt; Instaanbedieners
           en ontkies enige instaanbedieners wat gekies is.</translation>
-<translation id="864712724203364111">Chrome OS Flex het nie die aanvanklike opstelling voltooi nie.</translation>
 </translationbundle>

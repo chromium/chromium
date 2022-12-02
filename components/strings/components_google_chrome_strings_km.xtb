@@ -5,7 +5,6 @@
 <translation id="130631256467250065">ការប្តូររបស់អ្នកនឹងមានប្រសិទ្ធភាពនៅពេលដែលអ្នកចាប់ផ្តើមឧបករណ៍របស់អ្នកឡើងវិញពេលបន្ទាប់។</translation>
 <translation id="1635457557763038537">ការផ្លាស់ប្ដូរ​របស់អ្នក​នឹងមានប្រសិទ្ធភាព​នៅពេលដែល​អ្នកចាប់ផ្ដើម Chrome ឡើងវិញ​លើកក្រោយ។</translation>
 <translation id="2447485272386224171">Chrome អាចបង្កើត​ឡើងបាន​ដោយគម្រោង​កូដចំហ​របស់ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> និង<ph name="BEGIN_LINK_OSS" />កម្មវិធី​កូដចំហ<ph name="END_LINK_OSS" />ផ្សេងទៀត។</translation>
-<translation id="2505647373045235387">ChromeOS មិនបានបញ្ចប់​ការរៀបចំដំបូង​របស់វាទេ។</translation>
 <translation id="2588322182880276190">និមិត្តសញ្ញា Chrome</translation>
 <translation id="3444832043240812445">ទំព័រនេះបង្ហាញតែព័ត៌មានការគាំងកន្លងទៅថ្មីៗរបស់អ្នកតែប៉ុណ្ណោះ ប្រសិនបើអ្នក <ph name="BEGIN_LINK" />បើកដំណើរការការរាយការណ៍ការគាំង<ph name="END_LINK" />។</translation>
 <translation id="3875312571075912821">អនុញ្ញាតឲ្យ Chrome ចូលប្រើបណ្តាញនៅក្នុងការកំណត់ firewall ឬកម្មវិធីកម្ចាត់មេរោគ
@@ -42,5 +41,4 @@
 <translation id="8187289872471304532">ទៅកាន់
           កម្មវិធី &gt; ចំណូលចិត្តប្រព័ន្ធ &gt; បណ្តាញ &gt; កម្រិតខ្ពស់ &gt; ប្រូកស៊ី
           ហើយលុបការជ្រើសរើសប្រូកស៊ីណាមួយដែលបានជ្រើសរើស។</translation>
-<translation id="864712724203364111">ChromeOS Flex មិនបានបញ្ចប់ការរៀបចំដំបូងរបស់វាទេ។</translation>
 </translationbundle>

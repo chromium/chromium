@@ -44,6 +44,7 @@
 <translation id="1378727793141957596">Καλώς ήρθατε στο Google Drive!</translation>
 <translation id="1379911846207762492">Μπορείτε να καταστήσετε τα αρχεία διαθέσιμα εκτός σύνδεσης για να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
+<translation id="1388045380422025115">Όλοι οι τύποι</translation>
 <translation id="1395262318152388157">Ρυθμιστικό αναζήτησης</translation>
 <translation id="1399511500114202393">Δεν υπάρχει πιστοποιητικό χρήστη</translation>
 <translation id="1403008701842173542">Παντού</translation>
@@ -104,6 +105,7 @@
 <translation id="1834290891154666894">Μη έγκυρη εισαγωγή αντιστοιχίας εναλλακτικού ονόματος υποκειμένου</translation>
 <translation id="1838709767668011582">Ιστότοπος Google</translation>
 <translation id="1853795129690976061">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Linux.</translation>
+<translation id="1859422890169495746">Αυτό το Chromebook</translation>
 <translation id="1864756863218646478">Δεν ήταν δυνατή η εύρεση του αρχείου.</translation>
 <translation id="1884013283844450420">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Σύνδεση</translation>
 <translation id="1920670151694390848">Μεταγραφή στα Μαλαγιαλαμικά</translation>
@@ -155,6 +157,7 @@
 <translation id="2307462900900812319">Διαμόρφωση δικτύου</translation>
 <translation id="2325650632570794183">Αυτός ο τύπος αρχείου δεν υποστηρίζεται. Επισκεφτείτε το Chrome Web Store για να εντοπίσετε μια εφαρμογή που να μπορεί να ανοίξει αυτόν τον τύπο αρχείου.</translation>
 <translation id="2326539130272988168">Βουλγαρικά</translation>
+<translation id="2337715497728194187">Κοινοποίηση στο Bruschetta</translation>
 <translation id="23721837607121582">Λήψη προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Εναλλαγή σε προβολή λίστας</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> φάκελοι κοινόχρηστοι με Linux</translation>
@@ -184,6 +187,7 @@
 <translation id="2544853746127077729">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε από το δίκτυο</translation>
 <translation id="255937426064304553">Διεθνές ΗΠΑ</translation>
 <translation id="2563185590376525700">Βάτραχος</translation>
+<translation id="2574327434504608656">1 φάκελος κοινοποιήθηκε στο Bruschetta</translation>
 <translation id="2578394532502990878">Φωνητική εισαγωγή Ταμίλ</translation>
 <translation id="2579959351793446050">Όντια</translation>
 <translation id="2602810353103180630">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Αποκλείστηκε από τον διαχειριστή σας, Λεπτομέρειες</translation>
@@ -281,6 +285,7 @@
 <translation id="3408072735282270043">Ενεργοποίηση, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Γερμανικά (Γερμανίας) με πληκτρολόγιο Neo 2</translation>
 <translation id="3414856743105198592">Η μορφοποίηση του αφαιρούμενου μέσου θα διαγράψει όλα τα δεδομένα. Θέλετε να συνεχίσετε;</translation>
+<translation id="3435143625481187092">Παραχωρήστε στο Bruschetta άδεια πρόσβασης στα αρχεία του φακέλου <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Ώρα δημιουργίας</translation>
 <translation id="343907260260897561">Στιγμιαία φωτογραφική μηχανή</translation>
 <translation id="3455931012307786678">Εσθονικά</translation>
@@ -362,6 +367,7 @@
 <translation id="4159731583141908892">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε.</translation>
 <translation id="4176286497474237543">Άδειασμα κάδου τώρα</translation>
 <translation id="4179621117429069925">Αυτό το στοιχείο βρίσκεται στον κάδο</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> φάκελοι κοινοποιήθηκαν στο Bruschetta.</translation>
 <translation id="4186579485882418952">Ενεργοποίηση πρόσβασης εκτός σύνδεσης</translation>
 <translation id="4193154014135846272">Έγγραφο Google</translation>
 <translation id="4197674956721858839">Επιλογή για δημιουργία συμπιεσμένου αρχείου</translation>
@@ -423,6 +429,7 @@
 <translation id="4646813851450205600">Τσεχικά με πληκτρολόγιο QWERTY</translation>
 <translation id="4656777537938206294">Κάντε τα αρχεία διαθέσιμα εκτός σύνδεσης</translation>
 <translation id="4658782175094886150">Άτομο στο χιόνι</translation>
+<translation id="466782788172479199">Παραχωρήστε στο Bruschetta άδεια πρόσβασης στα αρχεία στο Google Drive. Οι αλλαγές θα συγχρονιστούν με τις άλλες συσκευές σας.</translation>
 <translation id="4669606053856530811">Τα μέλη του "<ph name="SOURCE_NAME" />" θα χάσουν την πρόσβαση, εκτός εάν αυτά τα στοιχεία είναι κοινόχρηστα για τα συγκεκριμένα μέλη.</translation>
 <translation id="467809019005607715">Παρουσιάσεις Google</translation>
 <translation id="4690246192099372265">Σουηδικά</translation>
@@ -534,6 +541,7 @@
 <translation id="5330145655348521461">Αυτά τα αρχεία άνοιξαν σε διαφορετικό προφίλ. Μεταφερθείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να τα δείτε.</translation>
 <translation id="5330512191124428349">Λήψη πληροφοριών</translation>
 <translation id="5337538975554986899">Πρόσβαση στο αρχείο για όλα τα URL εκτός από <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">Διαχείριση κοινοποίησης στο Bruschetta</translation>
 <translation id="535792325654997756">Άτομο με γάτες</translation>
 <translation id="5358764674931277">Ρυθμός καρέ</translation>
 <translation id="5363339716524495120">Η γλώσσα εισόδου είναι τα Κινέζικα</translation>
@@ -580,6 +588,7 @@
 <translation id="5700087501958648444">Πληροφορίες ήχου</translation>
 <translation id="5720028165859493293">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε στον κάδο</translation>
 <translation id="5724172041621205163">Ταϊλανδικά με πληκτρολόγιο Pattachote</translation>
+<translation id="57383366388012121">Προηγούμενος μήνας</translation>
 <translation id="5756666464756035725">QWERTY Ουγγρικών</translation>
 <translation id="5763377084591234761">Γερμανικά (Ελβετία)</translation>
 <translation id="5769519078756170258">Κεντρικός υπολογιστής ή τομέας προς εξαίρεση</translation>
@@ -689,6 +698,7 @@
 <translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="6732801395666424405">Δεν έχουν φορτωθεί τα πιστοποιητικά</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Κοινοποίηση φακέλου στο Bruschetta</translation>
 <translation id="6751256176799620176">Επιλέχθηκε 1 φάκελος</translation>
 <translation id="6755827872271341378">Συσκευή ChromeOS Flex</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
@@ -718,6 +728,7 @@
 <translation id="6935521024859866267">Ανάποδα</translation>
 <translation id="6943836128787782965">Η λήψη HTTP απέτυχε</translation>
 <translation id="6949408524333579394">Μεταγραφή σε Σερβικά</translation>
+<translation id="69548399407432279">Προηγούμενο έτος</translation>
 <translation id="6960565108681981554">Δεν έχει ενεργοποιηθεί. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε.</translation>
 <translation id="696203921837389374">Ενεργοποίηση συγχρονισμού μέσω δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -865,6 +876,7 @@
 <translation id="8045462269890919536">Ρουμανικά
 </translation>
 <translation id="8049184478152619004">Εισαγάγετε το προσωπικό κλειδί ξεκλειδώματος (PUK)</translation>
+<translation id="8055538340801153769">Αυτός ο φάκελος</translation>
 <translation id="807187749540895545">Εξαγωγή <ph name="FILE_NAME" />…</translation>
 <translation id="8087576439476816834">Λήψη του προφίλ <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Κοινόχρηστο με εμένα</translation>

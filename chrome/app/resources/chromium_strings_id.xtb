@@ -13,7 +13,6 @@
 <translation id="1231839967188101156">Jika diaktifkan, Chromium akan membebaskan memori dari tab yang tidak aktif. Tindakan ini akan memberikan lebih banyak resource komputer untuk tab aktif dan aplikasi lainnya, serta menjaga Chromium tetap cepat. Tab yang tidak aktif akan otomatis menjadi aktif lagi saat Anda kembali ke tab tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Penghemat Memori Membuat Chromium Lebih Cepat</translation>
 <translation id="1315551408014407711">Siapkan profil Chromium baru Anda</translation>
-<translation id="1385859895174722837">Asisten Google di Chromium</translation>
 <translation id="1396446129537741364">Chromium mencoba menampilkan sandi.</translation>
 <translation id="1414495520565016063">Anda sudah masuk ke Chromium!</translation>
 <translation id="1493803763272692301">Anda dapat menikmati manfaat optimal Chromium</translation>
@@ -110,7 +109,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="3474745554856756813">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chromium</translation>
 <translation id="3509308970982693815">Tutup semua jendela Chromium dan coba lagi.</translation>
-<translation id="3518180795744733843">Asisten Google di Chromium dapat menyelesaikan tindakan di seluruh situs untuk Anda</translation>
 <translation id="3533435340678213462">Untuk melindungi privasi Anda, kami otomatis menghapus minat Anda yang tersimpan lebih dari 4 minggu. Saat Anda terus menjelajah, minat dapat kembali muncul di daftar. Atau Anda dapat menghapus minat yang tidak perlu dipertimbangkan oleh Chromium.</translation>
 <translation id="3567254597502212821">Histori penjelajahan Anda, catatan situs yang telah Anda buka menggunakan Chromium di perangkat ini.</translation>
 <translation id="3575459661164320785">Ada software berbahaya di komputer Anda. Chromium dapat menghapusnya, memulihkan setelan Anda, dan menonaktifkan ekstensi agar browser berfungsi kembali secara normal.</translation>

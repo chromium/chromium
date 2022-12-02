@@ -593,6 +593,7 @@
 <translation id="1546280085599573572">這個擴充功能已變更您點選 [首頁] 按鈕時所顯示的網頁。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> 要求安裝具有下列功能的<ph name="EXTENSION_TYPE" />：</translation>
 <translation id="1547808936554660006">我瞭解執行 Powerwash 將不會移除已安裝的 eSIM 卡設定檔</translation>
+<translation id="1547936895218027488">按一下側邊面板圖示即可開啟</translation>
 <translation id="1549275686094429035">已啟用 ARC</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」要求存取 <ph name="VOLUME_NAME" />。您的檔案可能會遭到修改或刪除。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」擴充功能已將搜尋引擎改為 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
@@ -880,7 +881,7 @@
 <translation id="1800502858278951817">沒有任何擴充功能要求讀取及變更 <ph name="SITE_NAME" /> 的權限</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁無回應。你可以等待網頁回應，也可以離開網頁。</translation>
-<translation id="1803531841600994172">翻譯目標語言</translation>
+<translation id="1803531841600994172">譯文語言</translation>
 <translation id="1803545009660609783">重新調校</translation>
 <translation id="1805738995123446102">背景分頁正在使用你的麥克風</translation>
 <translation id="1805822111539868586">查看檢視模式</translation>
@@ -1417,6 +1418,7 @@
 <translation id="2287944065963043964">登入畫面</translation>
 <translation id="2289270750774289114">當網站要搜尋附近的藍牙裝置時，必須先詢問你 (建議)</translation>
 <translation id="2290615375132886363">平板電腦瀏覽按鈕</translation>
+<translation id="2291452790265535215">試著在側邊面板上使用書籤、瀏覽歷程和其他功能</translation>
 <translation id="229182044471402145">找不到相符的字型。</translation>
 <translation id="2292848386125228270">請以一般使用者身分啟用 <ph name="PRODUCT_NAME" />。開發時，如要以 root 身分執行，請使用 --no-sandbox 標記重新執行。</translation>
 <translation id="2294081976975808113">螢幕隱私設定</translation>
@@ -1578,6 +1580,7 @@
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="2409268599591722235">開始使用</translation>
 <translation id="2410079346590497630">版本詳細資料</translation>
+<translation id="2410298923485357543">在裝置連上網路時使用自然語音</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="241082044617551207">不明的外掛程式</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -2298,6 +2301,7 @@
 <translation id="3059195548603439580">要查看系統元件嗎？請前往</translation>
 <translation id="3060952009917586498">變更裝置語言。目前語言為<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">無法與你的手機建立連線。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
+<translation id="3061302636956643119">系統會將文字傳送給 Google 進行處理。</translation>
 <translation id="3064871050034234884">網站可以播放音效</translation>
 <translation id="3065041951436100775">分頁毀損意見回饋。</translation>
 <translation id="3065522099314259755">鍵盤重複延遲</translation>
@@ -2305,7 +2309,7 @@
 <translation id="3067198360141518313">執行這個外掛程式</translation>
 <translation id="3071624960923923138">按一下這裡即可開啟新分頁</translation>
 <translation id="3072775339180057696">要允許網站讀取「<ph name="FILE_NAME" />」嗎？</translation>
-<translation id="3074499504015191586">翻譯完整頁面</translation>
+<translation id="3074499504015191586">翻譯整頁內容</translation>
 <translation id="3075874217500066906">Powerwash 程序必須重新啟動才能開始執行。重新啟動後，系統將向你確認是否繼續程序。</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">只儲存在這部裝置上</translation>
@@ -3897,11 +3901,13 @@
 <translation id="4582563038311694664">重設所有設定</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617">無法在替代瀏覽器中開啟 <ph name="URL" />。請與你的系統管理員聯絡。</translation>
+<translation id="4587589328781138893">網站</translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="4590324241397107707">資料庫儲存空間</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
 <translation id="4593021220803146968">前往 <ph name="URL" />(&amp;G)</translation>
+<translation id="4594218792629569101">選取「標示為已讀取」即可將頁面移至清單底部</translation>
 <translation id="4594577641390224176">要查看系統的「關於」頁面嗎？請前往</translation>
 <translation id="4595560905247879544">只有管理員 (<ph name="CUSTODIAN_NAME" />) 可以修改應用程式和擴充功能。</translation>
 <translation id="4596295440756783523">您儲存了這些伺服器的識別憑證</translation>
@@ -4409,6 +4415,7 @@
 <translation id="5084328598860513926">佈建流程已中斷。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5085162214018721575">正在檢查有無更新</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">記事超過 1000 個半形字元</translation>
 <translation id="5086874064903147617">要還原預設首頁嗎？</translation>
 <translation id="5087249366037322692">由第三方新增</translation>
 <translation id="5087580092889165836">新增信用卡</translation>
@@ -5313,7 +5320,7 @@
 <translation id="5933522550144185133">「<ph name="APP_NAME" />」正在使用你的攝影機和麥克風</translation>
 <translation id="5935158534896975820">正在準備憑證簽署要求 (在伺服器上等待)</translation>
 <translation id="5935656526031444304">管理安全瀏覽功能</translation>
-<translation id="5936065461722368675">翻譯完整頁面</translation>
+<translation id="5936065461722368675">翻譯整頁內容</translation>
 <translation id="5938002010494270685">可進行安全性更新</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="5939719276406088041">無法建立捷徑</translation>
@@ -6568,6 +6575,7 @@
 <translation id="7111822978084196600">為這個視窗命名</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> 項商品</translation>
 <translation id="7113502843173351041">存取你的電子郵件地址</translation>
+<translation id="7113974454301513811">現在，將現有分頁加入清單</translation>
 <translation id="7114054701490058191">密碼不符</translation>
 <translation id="7114648273807173152">如要使用 Smart Lock 登入 Google 帳戶，請依序前往 [設定] &gt; [已連接的裝置] &gt; [你的手機] &gt; [Smart Lock]。</translation>
 <translation id="7115361495406486998">沒有可建立連線的聯絡人</translation>
@@ -8799,6 +8807,7 @@
 <translation id="9201842707396338580">發生錯誤，請與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="9203398526606335860">分析已啟用(&amp;P)</translation>
 <translation id="9203904171912129171">選取裝置</translation>
+<translation id="920410963177453528">點選下拉式選單選擇其他面板</translation>
 <translation id="9206889157914079472">在螢幕鎖定狀態下使用觸控筆做筆記</translation>
 <translation id="9208192193641542858">本機資料受舊密碼保護。如果你最近變更了密碼，請重新輸入舊密碼。</translation>
 <translation id="9209563766569767417">正在檢查 Linux 容器設定</translation>

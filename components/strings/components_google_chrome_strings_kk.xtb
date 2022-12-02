@@ -5,7 +5,6 @@
 <translation id="130631256467250065">Өзгерістеріңіз құрылғыңызды келесі қайта іске қосқанда күшіне енеді.</translation>
 <translation id="1635457557763038537">Өзгертулеріңіз Chrome келесіде қайта іске қосылғанда күшіне енеді.</translation>
 <translation id="2447485272386224171">Chrome браузері <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ашық кодты бағдарлама жобасы мен басқа <ph name="BEGIN_LINK_OSS" />ашық кодты бағдарлама<ph name="END_LINK_OSS" /> негізінде жасалды.</translation>
-<translation id="2505647373045235387">ChromeOS жүйесінің бастапқы реттеуі аяқталмады.</translation>
 <translation id="2588322182880276190">Chrome логотипі</translation>
 <translation id="3444832043240812445">Бұл бет <ph name="BEGIN_LINK" />жаңылыс туралы хабарлау<ph name="END_LINK" /> мүмкіндігін іске қоссаңыз, соңғы жаңылыстарыңыздағы ақпаратты ғана көрсетеді.</translation>
 <translation id="3875312571075912821">Брандмауэр немесе антивирус параметрлерінде Chrome жүйесіне
@@ -36,5 +35,4 @@
 <translation id="7230956101631259640">Қауіпсіз Chrome бетін көрудесіз</translation>
 <translation id="8187289872471304532">"Қолданбалар &gt; Жүйе параметрлері &gt; Желі &gt; Кеңейтілген &gt; Прокси серверлері" тармағына өтіп,
           таңдалған барлық прокси серверлерін таңдаудан алып тастаңыз.</translation>
-<translation id="864712724203364111">ChromeOS Flex-тің бастапқы реттеуі аяқталмады.</translation>
 </translationbundle>

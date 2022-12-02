@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">ยินดีต้อนรับสู่ Google ไดรฟ์!</translation>
 <translation id="1379911846207762492">คุณทำให้ไฟล์ใช้งานแบบออฟไลน์ได้เพื่อเข้าถึงเมื่อไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
+<translation id="1388045380422025115">ทุกประเภท</translation>
 <translation id="1395262318152388157">แถบเลื่อนสำหรับกรอวิดีโอ</translation>
 <translation id="1399511500114202393">ไม่มีใบรับรองของผู้ใช้</translation>
 <translation id="1403008701842173542">ทุกที่</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">รายการจับคู่ชื่อสำรองของหัวเรื่องไม่ถูกต้อง</translation>
 <translation id="1838709767668011582">เว็บไซต์ Google</translation>
 <translation id="1853795129690976061">โฟลเดอร์นี้แชร์กับ Linux อยู่</translation>
+<translation id="1859422890169495746">Chromebook เครื่องนี้</translation>
 <translation id="1864756863218646478">ไม่พบไฟล์</translation>
 <translation id="1884013283844450420">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, เชื่อมต่อ</translation>
 <translation id="1920670151694390848">มาลายาลัม (การทับศัพท์)</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">กำหนดค่าเครือข่าย</translation>
 <translation id="2325650632570794183">ไฟล์ประเภทนี้ไม่ได้รับการสนับสนุน โปรดไปที่ Chrome เว็บสโตร์เพื่อหาแอปพลิเคชันที่สามารถเปิดไฟล์ประเภทนี้</translation>
 <translation id="2326539130272988168">บัลแกเรีย</translation>
+<translation id="2337715497728194187">แชร์กับ Bruschetta</translation>
 <translation id="23721837607121582">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">เปลี่ยนเป็นมุมมองรายการ</translation>
 <translation id="2377590462528165447">แชร์กับ Linux แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">ใบรับรองการตรวจสอบสิทธิ์ได้รับการปฏิเสธจากเครือข่าย</translation>
 <translation id="255937426064304553">สหรัฐอเมริกาสากล</translation>
 <translation id="2563185590376525700">กบ</translation>
+<translation id="2574327434504608656">แชร์ 1 โฟลเดอร์กับ Bruschetta แล้ว</translation>
 <translation id="2578394532502990878">ทมิฬ (ตามการออกเสียง)</translation>
 <translation id="2579959351793446050">โอเดีย</translation>
 <translation id="2602810353103180630">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, ถูกผู้ดูแลระบบบล็อก, รายละเอียด</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043">เปิดใช้งาน <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">เยอรมัน (เยอรมนี) ด้วยแป้นพิมพ์ Neo 2</translation>
 <translation id="3414856743105198592">การฟอร์แมตอุปกรณ์แบบถอดได้จะทำให้ข้อมูลทั้งหมดถูกลบออก คุณต้องการดำเนินการต่อหรือไม่</translation>
+<translation id="3435143625481187092">ให้สิทธิ์ Bruschetta เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="3437801641691368414">เวลาที่สร้าง</translation>
 <translation id="343907260260897561">กล้องอินสแตนท์</translation>
 <translation id="3455931012307786678">เอสโทเนีย</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4176286497474237543">ล้างข้อมูลทั้งหมดในถังขยะเลย</translation>
 <translation id="4179621117429069925">รายการนี้อยู่ในถังขยะ</translation>
+<translation id="4181839429935094755">แชร์ <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์กับ Bruschetta แล้ว</translation>
 <translation id="4186579485882418952">เปิดใช้แบบออฟไลน์</translation>
 <translation id="4193154014135846272">เอกสารของ Google</translation>
 <translation id="4197674956721858839">การเลือกซิป</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">เช็กด้วยแป้นพิมพ์ Qwerty</translation>
 <translation id="4656777537938206294">ทำให้ไฟล์ใช้งานได้แบบออฟไลน์</translation>
 <translation id="4658782175094886150">คนอยู่ท่ามกลางหิมะ</translation>
+<translation id="466782788172479199">ให้สิทธิ์ Bruschetta เข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="4669606053856530811">สมาชิกของ "<ph name="SOURCE_NAME" />" จะสูญเสียสิทธิ์เข้าถึง เว้นแต่มีการแชร์รายการเหล่านี้กับสมาชิกดังกล่าว</translation>
 <translation id="467809019005607715">Google สไลด์</translation>
 <translation id="4690246192099372265">สวีเดน</translation>
@@ -523,6 +530,7 @@
 <translation id="5330145655348521461">ไฟล์เหล่านี้เปิดอยู่บนเดสก์ท็อปเครื่องอื่น โปรดย้ายมายัง <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) เพื่อดู</translation>
 <translation id="5330512191124428349">รับข้อมูล</translation>
 <translation id="5337538975554986899">การเข้าถึงไฟล์จาก URL ทั้งหมด ยกเว้น <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">จัดการการแชร์กับ Bruschetta</translation>
 <translation id="535792325654997756">คนกับแมว</translation>
 <translation id="5358764674931277">อัตราเฟรม</translation>
 <translation id="5363339716524495120">ภาษาในการป้อนข้อมูลคือภาษาจีน</translation>
@@ -568,6 +576,7 @@
 <translation id="5700087501958648444">ข้อมูลเสียง</translation>
 <translation id="5720028165859493293">ย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะแล้ว</translation>
 <translation id="5724172041621205163">ไทยด้วยแป้นพิมพ์ปัตตะโชติ</translation>
+<translation id="57383366388012121">เดือนที่แล้ว</translation>
 <translation id="5756666464756035725">QWERTY ภาษาฮังการี</translation>
 <translation id="5763377084591234761">เยอรมัน (สวิตเซอร์แลนด์)</translation>
 <translation id="5769519078756170258">โฮสต์หรือโดเมนที่จะยกเว้น</translation>
@@ -677,6 +686,7 @@
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6732801395666424405">ยังไม่ได้โหลดใบรับรอง</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">แชร์โฟลเดอร์กับ Bruschetta</translation>
 <translation id="6751256176799620176">เลือกไว้ 1 โฟลเดอร์</translation>
 <translation id="6755827872271341378">อุปกรณ์ Chrome OS Flex</translation>
 <translation id="6790428901817661496">เล่น</translation>
@@ -705,6 +715,7 @@
 <translation id="6935521024859866267">กลับหัว</translation>
 <translation id="6943836128787782965">การรับ HTTP ล้มเหลว</translation>
 <translation id="6949408524333579394">เซอร์เบีย (การทับศัพท์)</translation>
+<translation id="69548399407432279">ปีที่แล้ว</translation>
 <translation id="6960565108681981554">ไม่ได้เปิดการใช้งาน โปรดติดต่อผู้ให้บริการเครือข่าย</translation>
 <translation id="696203921837389374">เปิดใช้การซิงค์ผ่านข้อมูลมือถือ</translation>
 <translation id="6965382102122355670">ตกลง</translation>
@@ -848,6 +859,7 @@
 <translation id="8042602468072383151">เสียง <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">โรมาเนีย</translation>
 <translation id="8049184478152619004">ป้อนคีย์การเลิกบล็อกส่วนตัว (PUK)</translation>
+<translation id="8055538340801153769">โฟลเดอร์นี้</translation>
 <translation id="807187749540895545">กำลังแตกข้อมูลของ <ph name="FILE_NAME" />...</translation>
 <translation id="8087576439476816834">ดาวน์โหลด <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ที่แชร์กับฉัน</translation>

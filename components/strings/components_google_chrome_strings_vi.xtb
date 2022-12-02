@@ -5,7 +5,6 @@
 <translation id="130631256467250065">Thay đổi của bạn sẽ có hiệu lực vào lần tiếp theo bạn khởi động lại thiết bị của mình.</translation>
 <translation id="1635457557763038537">Các thay đổi của bạn sẽ có hiệu lực vào lần tiếp theo bạn chạy lại Chrome.</translation>
 <translation id="2447485272386224171">Chrome được xây dựng bằng dự án nguồn mở <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> và <ph name="BEGIN_LINK_OSS" />phần mềm nguồn mở<ph name="END_LINK_OSS" /> khác.</translation>
-<translation id="2505647373045235387">ChromeOS chưa hoàn tất quá trình thiết lập ban đầu.</translation>
 <translation id="2588322182880276190">Biểu trưng Chrome</translation>
 <translation id="3444832043240812445">Trang này chỉ hiển thị thông tin về các sự cố gần đây của bạn nếu bạn <ph name="BEGIN_LINK" />bật báo cáo sự cố<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Cho phép Chrome truy cập mạng trong cài đặt tường lửa hoặc diệt vi-rút
@@ -41,5 +40,4 @@
 <translation id="8187289872471304532">Đi tới
           Ứng dụng&gt; Tùy chọn hệ thống &gt; Mạng &gt; Nâng cao &gt; Proxy
           và bỏ chọn bất kỳ proxy nào đã được chọn.</translation>
-<translation id="864712724203364111">ChromeOS Flex chưa hoàn tất quá trình thiết lập ban đầu.</translation>
 </translationbundle>

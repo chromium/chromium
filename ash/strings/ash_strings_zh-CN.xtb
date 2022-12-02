@@ -554,6 +554,7 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{对 1 个应用关闭}other{对 # 个应用关闭}}</translation>
 <translation id="4066027111132117168">已开启，<ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">信号中等</translation>
+<translation id="4086921558679520050">在设备上开启物理麦克风开关</translation>
 <translation id="4112140312785995938">快退</translation>
 <translation id="4114315158543974537">开启手机中心</translation>
 <translation id="4115378294792113321">洋红色</translation>
@@ -606,6 +607,7 @@
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4379531060876907730">这些是您的触控笔工具</translation>
+<translation id="4381031910344220229">如果您取消麦克风静音，即意味着允许“<ph name="APP_NAME" />”以及所有具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="4389184120735010762">您按下了停靠放大镜的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="439598569299422042">已暂停，<ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">无法保存抓屏</translation>
@@ -960,6 +962,7 @@
 <translation id="6338485349199627913">“<ph name="DISPLAY_NAME" />”是一个由 <ph name="MANAGER" /> 管理的受管理自助服务终端</translation>
 <translation id="6344138931392227467">已连接到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="6351032674660237738">应用推荐</translation>
+<translation id="6352082849089527770">未知网络</translation>
 <translation id="6359587239691116345">获取最新的功能和安全性方面的改进。如果您拒绝此更新，您的设备可能会无法继续正常运行，您则可能会遇到安全问题和性能问题。</translation>
 <translation id="6376931439017688372">蓝牙已开启</translation>
 <translation id="6381109794406942707">要解锁此设备，请输入您的 PIN 码。</translation>
@@ -1133,6 +1136,7 @@
 <translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
 <translation id="736045644501761622">设置壁纸与样式</translation>
 <translation id="7371404428569700291">录制窗口</translation>
+<translation id="737315737514430195">如果您取消麦克风静音，即意味着允许所有具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="7377169924702866686">大写锁定已打开。</translation>
 <translation id="7377481913241237033">利用代码连接</translation>
 <translation id="7378203170292176219">拖动鼠标指针即可选择要录制的区域</translation>
@@ -1201,6 +1205,7 @@
 <translation id="7671610481353807627">应用已按颜色排序</translation>
 <translation id="7672095158465655885">已连接到网络“<ph name="NAME" />”，<ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">相机输入已设为“<ph name="CAMERA_NAME" />”。</translation>
+<translation id="7689817529363080918">如果您取消麦克风静音，即意味着允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">添加新的移动网络</translation>
 <translation id="7720400844887872976">保持开启状态，直到<ph name="TIME" /></translation>

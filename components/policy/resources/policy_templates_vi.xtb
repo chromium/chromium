@@ -8396,7 +8396,6 @@ Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được 
       Nếu bạn đặt chính sách này thành <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, thì chế độ EDU của trải nghiệm làm quen với Trợ lý sẽ được sử dụng.</translation>
 <translation id="9191821120522935133">Cho phép bật tính năng điều tiết iframe có nguồn gốc khác và không xuất hiện</translation>
 <translation id="9192220384862917760">Bật tính năng ẩn của máy chủ truy cập từ xa</translation>
-<translation id="9194447412184412480">Kiểm soát các tùy chọn cài đặt của người dùng được xác thực qua SAML bằng IdP bên ngoài</translation>
 <translation id="9195766455191826480">Không báo cáo trạng thái bảo mật</translation>
 <translation id="9197740283131855199">Tỷ lệ phần trăm xác định độ trễ mờ màn hình nếu người dùng hoạt động sau khi màn hình bị làm mờ</translation>
 <translation id="9200828125069750521">Tham số cho URL hình ảnh sử dụng POST</translation>

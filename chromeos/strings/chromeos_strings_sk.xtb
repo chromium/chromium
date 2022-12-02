@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Odoslať správu so spätnou väzbou</translation>
 <translation id="2407209115954268704">Stav uzamknutia SIM karty</translation>
+<translation id="241419523391571119">Ak chcete testovať, znova otvorte kryt</translation>
 <translation id="2414886740292270097">Tmavý režim</translation>
 <translation id="2418150275289244458">Otvoriť v nastaveniach</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. z <ph name="TOTAL_PAGES" /> obrázkov</translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">Za <ph name="NUM_SECONDS" /> s sa batéria vybila o <ph name="RATE" /></translation>
 <translation id="2902312830803030883">Ďalšie akcie</translation>
 <translation id="2926057806159140518">Zadajte používateľské meno a heslo alebo naskenujte QR kód</translation>
+<translation id="2940811910881150316">Zariadenie sa nedá testovať. Ak chcete testovať, znova otvorte kryt.</translation>
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3009958530611748826">Vyberte priečinok na uloženie</translation>
 <translation id="3017079585324758401">Pozadie</translation>
@@ -284,6 +286,7 @@
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="3824259034819781947">Priložiť súbory</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
+<translation id="3845880861638660475">Stlačením klávesov <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> zatvorte dialógové okno.</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3862598938296403232">Vyžaduje sa opis</translation>
@@ -291,6 +294,7 @@
 <translation id="3866249974567520381">Popis</translation>
 <translation id="387301095347517405">Koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
 <translation id="3885327323343477505">Zmeniť šetrič obrazovky</translation>
+<translation id="391412459402535266">Zariadenie sa nedá testovať. Ak chcete testovať, prepnite na režim laptopu.</translation>
 <translation id="3923184630988645767">Spotreba dát</translation>
 <translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
@@ -303,6 +307,7 @@
 <translation id="39823212440917567">Tlačové úlohy staršie ako <ph name="NUMBER_OF_DAYS" /> d. budú odstránené</translation>
 <translation id="3993704782688964914">Vaše zariadenie <ph name="DEVICE_NAME" /> je teraz aktuálne</translation>
 <translation id="4003384961948020559">Nepodarilo sa – výstup je plný</translation>
+<translation id="4021031199988160623">Ak chcete testovať, prepnite na režim laptopu</translation>
 <translation id="4034824040120875894">Tlačiareň</translation>
 <translation id="4044093238444069296">Brána sa nedá kontaktovať</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>

@@ -518,7 +518,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2219735899272417925">Device reset required</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2225927550500503913">Virtual card turned on</translation>
-<translation id="2230458221926704099">Fix your connection using the <ph name="BEGIN_LINK" />diagnostics app<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Send now</translation>
 <translation id="2241693394036365668">File is downloaded</translation>
 <translation id="2246264294482514010">10 in x 12 in</translation>
@@ -2221,7 +2220,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6668389483194953109">Found paper size name 'custom', but the 'custom_size' property is empty or invalid.</translation>
 <translation id="6671697161687535275">Remove form suggestion from Chromium?</translation>
 <translation id="6683717648675961851">Job listings</translation>
-<translation id="6685834062052613830">Sign out and complete setup</translation>
 <translation id="6687335167692595844">Font size requested</translation>
 <translation id="6687696737818665306">Acting and theatre</translation>
 <translation id="6688743156324860098">Update…</translation>
@@ -2850,6 +2848,7 @@ Additional details:
 <translation id="8241707690549784388">The page that you're looking for used information that you entered. Returning to that page might cause any action that you took to be repeated. Do you want to continue?</translation>
 <translation id="8241712895048303527">Block on this site</translation>
 <translation id="8242426110754782860">Proceed</translation>
+<translation id="8245703462678310750">Press and hold |<ph name="ACCELERATOR" />| to exit full screen and see download.</translation>
 <translation id="8249296373107784235">Abort</translation>
 <translation id="8249463483885748674">Standardised and admissions tests</translation>
 <translation id="8252991034201168845">Manage accessibility settings button, Enter to personalise your accessibility tools in Chrome OS settings</translation>

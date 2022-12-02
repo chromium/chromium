@@ -5,7 +5,6 @@
 <translation id="130631256467250065">تسري التغييرات في المرة التالية التي تعيد فيها تشغيل الجهاز.</translation>
 <translation id="1635457557763038537">‏ستسري التغييرات في المرة التالية التي تعيد فيها تشغيل Chrome.</translation>
 <translation id="2447485272386224171">‏أصبح Chrome الآن متاحًا بفضل المشروع المفتوح المصدر <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> و<ph name="BEGIN_LINK_OSS" />برامج أخرى مفتوحة المصدر<ph name="END_LINK_OSS" />.</translation>
-<translation id="2505647373045235387">‏لم يكتمل الإعداد الأولي لنظام التشغيل Chrome.</translation>
 <translation id="2588322182880276190">‏شعار Chrome</translation>
 <translation id="3444832043240812445">تعرض هذه الصفحة فقط معلومات عن الأعطال الحديثة إذا <ph name="BEGIN_LINK" />فعّلت الإبلاغ عن الأعطال<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">‏اسمح لمتصفح Chrome بالدخول إلى الشبكة من خلال إعدادات الجدار الناري أو
@@ -39,5 +38,4 @@
           وألغ اختيار "استخدام خادم وكيل لشبكة الاتصال المحلية".</translation>
 <translation id="7230956101631259640">‏أنت تعرض صفحة Chrome آمنة.</translation>
 <translation id="8187289872471304532">‏انتقل إلى Applications (التطبيقات) &gt; System Preferences (الإعدادات المفضّلة للنظام) &gt; Network (الشبكة) &gt; Advanced (الخيارات المتقدمة) &gt; Proxies (الخوادم الوكيلة) وألغ اختيار أي خوادم وكيلة تم تحديدها.</translation>
-<translation id="864712724203364111">‏لم يكتمل الإعداد الأولي لنظام التشغيل ChromeOS Flex.</translation>
 </translationbundle>

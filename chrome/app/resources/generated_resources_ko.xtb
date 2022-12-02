@@ -1596,6 +1596,7 @@
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2409268599591722235">시작하기</translation>
 <translation id="2410079346590497630">빌드 세부정보</translation>
+<translation id="2410298923485357543">기기가 온라인일 때 자연 음성 사용</translation>
 <translation id="2410754283952462441">계정 선택</translation>
 <translation id="241082044617551207">알 수 없는 플러그인</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -2316,6 +2317,7 @@
 <translation id="3059195548603439580">시스템 구성요소를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="3060952009917586498">기기 언어를 변경합니다. 현재 언어는 <ph name="LANGUAGE" />입니다.</translation>
 <translation id="3060987956645097882">휴대전화와 연결을 설정할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
+<translation id="3061302636956643119">처리를 위해 텍스트가 Google로 전송됩니다.</translation>
 <translation id="3064871050034234884">사이트에서 소리를 재생할 수 있음</translation>
 <translation id="3065041951436100775">탭 사용 중지 관련 피드백</translation>
 <translation id="3065522099314259755">키보드 반복 지연 시간</translation>
@@ -3915,6 +3917,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4582563038311694664">모든 설정 초기화</translation>
 <translation id="4585793705637313973">페이지 수정</translation>
 <translation id="4586275095964870617"><ph name="URL" />을(를) 대체 브라우저에서 열 수 없습니다. 시스템 관리자에게 문의하세요.</translation>
+<translation id="4587589328781138893">사이트</translation>
 <translation id="4589713469967853491">로그가 다운로드 디렉터리에 작성되었습니다.</translation>
 <translation id="4590324241397107707">데이터베이스 저장소</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />에 저장된 기기 없음</translation>

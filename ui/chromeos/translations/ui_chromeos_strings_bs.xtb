@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Dobro došli u Google Disk!</translation>
 <translation id="1379911846207762492">Možete postaviti dostupnost fajlova offline da im možete pristupati bez internetske veze.</translation>
 <translation id="1383876407941801731">Traži</translation>
+<translation id="1388045380422025115">Sve vrste</translation>
 <translation id="1395262318152388157">Klizač za premotavanje</translation>
 <translation id="1399511500114202393">Nema korisničkog certifikata</translation>
 <translation id="1403008701842173542">Svugdje</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">Nevažeći unos podudaranja alternativnog naziva predmeta</translation>
 <translation id="1838709767668011582">Google web lokacija</translation>
 <translation id="1853795129690976061">Ovaj folder se dijeli s Linuxom</translation>
+<translation id="1859422890169495746">Ovaj Chromebook</translation>
 <translation id="1864756863218646478">Nije moguće pronaći fajl.</translation>
 <translation id="1884013283844450420">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, poveži</translation>
 <translation id="1920670151694390848">malajalamski (transliteracija)</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">Konfiguriraj mrežu</translation>
 <translation id="2325650632570794183">Ova vrsta fajla nije podržana. Posjetite Chrome Web trgovinu da pronađete aplikaciju koja može otvoriti ovu vrstu fajla.</translation>
 <translation id="2326539130272988168">bugarski</translation>
+<translation id="2337715497728194187">Podijeli s Bruschettom</translation>
 <translation id="23721837607121582">Preuzimanje profila mobilnog uređaja, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Prebaci na prikaz liste</translation>
 <translation id="2377590462528165447">Broj foldera koji se dijele s Linuxom <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">Mreža je odbacila potvrdu za autentifikaciju</translation>
 <translation id="255937426064304553">SAD međunarodna</translation>
 <translation id="2563185590376525700">Žaba</translation>
+<translation id="2574327434504608656">1 mapa podijeljena je s Bruschettom</translation>
 <translation id="2578394532502990878">tamilski fonetski</translation>
 <translation id="2579959351793446050">odija</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, blokirao vaš administrator, detalji</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043">Aktiviranje, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">njemački (Njemačka) s Neo 2 tastaturom</translation>
 <translation id="3414856743105198592">Formatiranjem izmjenjivih medija izbrisat će se svi podaci. Želite li nastaviti?</translation>
+<translation id="3435143625481187092">Dajte Bruschetti dopuštenje za pristup datotekama u mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Vrijeme kreiranja</translation>
 <translation id="343907260260897561">Instant kamera</translation>
 <translation id="3455931012307786678">estonski</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892">Fajl <ph name="FILE_NAME" /> je premješten.</translation>
 <translation id="4176286497474237543">Isprazni otpad sada</translation>
 <translation id="4179621117429069925">Ova stavka je u otpadu</translation>
+<translation id="4181839429935094755">S Bruchettom se dijeli/dijele <ph name="NUMBER_OF_ITEMS" /> mapa/mape</translation>
 <translation id="4186579485882418952">Omogući offline</translation>
 <translation id="4193154014135846272">Google dokument</translation>
 <translation id="4197674956721858839">Kreiraj zip fajl odabranih stavki</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">češki s Qwerty tastaturom</translation>
 <translation id="4656777537938206294">Učinite fajlove dostupnim offline</translation>
 <translation id="4658782175094886150">Osoba na snijegu</translation>
+<translation id="466782788172479199">Dajte Bruschetti dopuštenje za pristup datotekama na Google disku. Promjene će se sinkronizirati na vašim ostalim uređajima.</translation>
 <translation id="4669606053856530811">Članovi tima „<ph name="SOURCE_NAME" />“ će izgubiti pristup osim ako se ove stavke ne dijele s njima.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Švedska</translation>
@@ -523,6 +530,7 @@
 <translation id="5330145655348521461">Ovi fajlovi su otvoreni na drugoj radnoj površini. Prebacite se na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da ih vidite.</translation>
 <translation id="5330512191124428349">Preuzmite informacije</translation>
 <translation id="5337538975554986899">Pristup fajlu putem svih URL-ova osim <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">Upravljajte dijeljenjem s Bruschettom</translation>
 <translation id="535792325654997756">Osoba s mačkama</translation>
 <translation id="5358764674931277">Broj slika u sekundi</translation>
 <translation id="5363339716524495120">Jezik unosa je kineski</translation>
@@ -568,6 +576,7 @@
 <translation id="5700087501958648444">Informacije o zvučnim zapisima</translation>
 <translation id="5720028165859493293">Fajl <ph name="FILE_NAME" /> je premješten u otpad</translation>
 <translation id="5724172041621205163">tajlandski s tastaturom Pattachote</translation>
+<translation id="57383366388012121">Prošli mjesec</translation>
 <translation id="5756666464756035725">Mađarska QWERTY</translation>
 <translation id="5763377084591234761">njemački (Švicarska)</translation>
 <translation id="5769519078756170258">Host računar ili domena koju treba izuzeti</translation>
@@ -677,6 +686,7 @@
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6732801395666424405">Potvrde nisu učitane</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Podijelite mapu s Bruschettom</translation>
 <translation id="6751256176799620176">Odabran je 1 folder</translation>
 <translation id="6755827872271341378">ChromeOS Flex uređaj</translation>
 <translation id="6790428901817661496">Pokreni</translation>
@@ -705,6 +715,7 @@
 <translation id="6935521024859866267">Naopačke</translation>
 <translation id="6943836128787782965">HTTP get nije uspio</translation>
 <translation id="6949408524333579394">srpski (transliteracija)</translation>
+<translation id="69548399407432279">Prošle godine</translation>
 <translation id="6960565108681981554">Nije aktivirano. Kontaktirajte mobilnog operatera.</translation>
 <translation id="696203921837389374">Omogući sinhronizaciju putem prijenosa podataka na mobilnoj mreži</translation>
 <translation id="6965382102122355670">Uredu</translation>
@@ -848,6 +859,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audio</translation>
 <translation id="8045462269890919536">rumunski</translation>
 <translation id="8049184478152619004">Unesite lični kôd za deblokiranje (PUK)</translation>
+<translation id="8055538340801153769">Ova mapa</translation>
 <translation id="807187749540895545">Izdvajanje fajla <ph name="FILE_NAME" />...</translation>
 <translation id="8087576439476816834">Preuzimanje, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Dijeljeno sa mnom</translation>

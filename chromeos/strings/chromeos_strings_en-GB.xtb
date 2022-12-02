@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Send feedback report</translation>
 <translation id="2407209115954268704">SIM lock status</translation>
+<translation id="241419523391571119">Reopen the lid to test</translation>
 <translation id="2414886740292270097">Dark</translation>
 <translation id="2418150275289244458">Open in settings</translation>
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="2902312830803030883">More actions</translation>
 <translation id="2926057806159140518">Enter your username and password or scan your QR code</translation>
+<translation id="2940811910881150316">Can’t test device. Reopen the lid to test.</translation>
 <translation id="3008341117444806826">REFRESH</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3017079585324758401">Background</translation>
@@ -284,6 +286,7 @@
 <translation id="3820172043799983114">Invalid PIN.</translation>
 <translation id="3824259034819781947">Attach files</translation>
 <translation id="3838338534323494292">New password</translation>
+<translation id="3845880861638660475">Press <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> to close the dialogue.</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3862598938296403232">Description is required</translation>
@@ -291,6 +294,7 @@
 <translation id="3866249974567520381">Description</translation>
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
 <translation id="3885327323343477505">Change screen saver</translation>
+<translation id="391412459402535266">Can’t test device. Switch to laptop mode to test.</translation>
 <translation id="3923184630988645767">Data usage</translation>
 <translation id="3932043219784172185">No device connected</translation>
 <translation id="3941014780699102620">Failed to resolve host</translation>
@@ -303,6 +307,7 @@
 <translation id="39823212440917567">Print jobs older than <ph name="NUMBER_OF_DAYS" /> days will be removed</translation>
 <translation id="3993704782688964914">Your <ph name="DEVICE_NAME" /> is now up to date</translation>
 <translation id="4003384961948020559">Failed – Output full</translation>
+<translation id="4021031199988160623">Switch to laptop mode to test</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4044093238444069296">Can't contact gateway</translation>
 <translation id="4046123991198612571">Next track</translation>
@@ -768,6 +773,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8372477600026034341">Extra hosts</translation>
 <translation id="8395584934117017006">This <ph name="DEVICE_TYPE" /> is enterprise managed</translation>
 <translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
+<translation id="8410244574650205435">Automatically detected</translation>
 <translation id="8420955526972171689">Run tests and troubleshooting for hardware issues</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8431300646573772016">What's new with Chrome OS</translation>

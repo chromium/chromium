@@ -331,6 +331,13 @@
 <translation id="1317658068839330898">不允許在網站上使用 <ph name="ASSISTANT_PRODUCT_NAME" /></translation>
 <translation id="1327466551276625742">離線時啟用網路設定提示</translation>
 <translation id="1330145147221172764">啟用螢幕小鍵盤</translation>
+<translation id="1330957570904024655">如果將這項政策設為啟用或不設定，即使下載的檔案來自可信任的來源，安全瀏覽功能仍會將其送交分析。
+
+如果將這項政策設為停用，只要下載的檔案來自可信任的來源，安全瀏覽功能就不會將其送交分析。
+
+這些限制適用於網頁內容和「下載連結」選單選項所觸發的下載作業，但不適用於目前顯示網頁的儲存或下載作業，或透過列印選項另存為 PDF 檔的作業。
+
+在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。</translation>
 <translation id="13356285923490863">政策名稱</translation>
 <translation id="1338603603553894503">指定在瀏覽器啟動時要啟用、停用或強制顯示設定檔選擇畫面。
 
@@ -8216,7 +8223,6 @@
       如果將這項政策設為 <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />，系統會使用 Google 助理入門使用體驗的 EDU 模式。</translation>
 <translation id="9191821120522935133">允許啟用不可見的不同來源 iframe 節流功能</translation>
 <translation id="9192220384862917760">啟用遠端存取主機的簾幕模式</translation>
-<translation id="9194447412184412480">控管使用外部 IdP 透過 SAML 進行驗證的使用者設定</translation>
 <translation id="9195766455191826480">不要回報裝置安全性狀態</translation>
 <translation id="9197740283131855199">使用者在螢幕調暗後繼續使用裝置時的螢幕調暗時間延長百分比</translation>
 <translation id="9200828125069750521">使用 POST 的圖片網址參數</translation>

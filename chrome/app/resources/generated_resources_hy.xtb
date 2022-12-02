@@ -595,6 +595,7 @@
 <translation id="1546280085599573572">Այս ընդլայնումը փոխել է Սկիզբ կոճակի սեղմումով ցուցադրվող էջը:</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />-ն ուզում է տեղադրել <ph name="EXTENSION_TYPE" /> ընդլայնումը, որը կկարողանա՝</translation>
 <translation id="1547808936554660006">Ես հասկանում եմ, որ eSIM-ի տեղադրված պրոֆիլները չեն հեռացվի Powerwash գործառույթն օգտագործելու դեպքում</translation>
+<translation id="1547936895218027488">Սեղմեք կողային վահանակի պատկերակը՝ այն բացելու համար</translation>
 <translation id="1549275686094429035">ARC-ն միացված է</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> հավելվածը ցանկանում է օգտվել <ph name="VOLUME_NAME" />-ից: Այն կարող է փոփոխել կամ ջնջել ձեր ֆայլերը:</translation>
 <translation id="1552301827267621511">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է օգտագործվող որոնիչը։ Այժմ օգտագործվում է <ph name="SEARCH_PROVIDER_DOMAIN" />-ը։</translation>
@@ -1419,6 +1420,7 @@
 <translation id="2287944065963043964">Մուտքի էկրան</translation>
 <translation id="2289270750774289114">Հարցնել, երբ որևէ կայք ուզում է հայտնաբերել մոտակա Bluetooth սարքերը (խորհուրդ է տրվում)</translation>
 <translation id="2290615375132886363">Պլանշետի նավիգացիայի կոճակներ</translation>
+<translation id="2291452790265535215">Փորձեք կողային վահանակն օգտագործել էջանիշների, աշխատաշրջանների և այլ տարրերի համար</translation>
 <translation id="229182044471402145">Համապատասխան տառատեսակ չի գտնվել</translation>
 <translation id="2292848386125228270">Գործարկեք <ph name="PRODUCT_NAME" />-ը սովորական օգտատիրոջ անունից: Եթե ծրագրավորման նպատակներով հարկավոր է այն գործարկել որպես ադմինիստրատոր, ապա վերագործարկեք այն --no-sandbox նշումով։</translation>
 <translation id="2294081976975808113">Էկրանի պաշտպանություն</translation>
@@ -1580,6 +1582,7 @@
 <translation id="2408955596600435184">Մուտքագրեք ձեր PIN կոդը</translation>
 <translation id="2409268599591722235">Սկսել</translation>
 <translation id="2410079346590497630">կառուցման մասին</translation>
+<translation id="2410298923485357543">Օգտագործել բնական ձայնը, երբ սարքը միացած է ինտերնետին</translation>
 <translation id="2410754283952462441">Ընտրեք հաշիվ</translation>
 <translation id="241082044617551207">Անհայտ փլագին</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -2300,6 +2303,7 @@
 <translation id="3059195548603439580">Համակարգի բաղադրիչնե՞րն եք փնտրում։ Անցեք</translation>
 <translation id="3060952009917586498">Փոխել սարքի լեզուն։ Ընթացիկ լեզուն՝ <ph name="LANGUAGE" />։</translation>
 <translation id="3060987956645097882">Չհաջողվեց կապ հաստատել ձեր հեռախոսի հետ։ Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
+<translation id="3061302636956643119">Տեքստը մշակման համար կուղարկվի Google-ին։</translation>
 <translation id="3064871050034234884">Կայքերը կարող են ձայն նվագարկել</translation>
 <translation id="3065041951436100775">Ներդիրը վերացրեց հետադարձ կապի էջը:</translation>
 <translation id="3065522099314259755">Ստեղնաշարի կրկնակի սեղմման հապաղում</translation>
@@ -3900,11 +3904,13 @@
 <translation id="4582563038311694664">Վերակայել բոլոր կարգավորումները</translation>
 <translation id="4585793705637313973">Փոխել էջը</translation>
 <translation id="4586275095964870617">Չհաջողվեց <ph name="URL" /> կայքը բացել այլ դիտարկիչում։ Կապվեք համակարգի ադմինիստրատորի հետ:</translation>
+<translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4589713469967853491">Մատյանները գրվեցին «Ներբեռնումներ» գրացուցակում։</translation>
 <translation id="4590324241397107707">Տվյալների շտեմարանի պահեստ</translation>
 <translation id="459204634473266369">Ոչ մի պահված սարք չկա <ph name="PRIMARY_EMAIL" /> հաշվում</translation>
 <translation id="4592891116925567110">Ստիլուսի միջոցով նկարելու հավելված</translation>
 <translation id="4593021220803146968">&amp;Անցնել <ph name="URL" /></translation>
+<translation id="4594218792629569101">Ընտրեք «Նշել որպես կարդացված»՝ էջը ձեր ցանկի ներքևում տեղադրելու համար</translation>
 <translation id="4594577641390224176">Համակարգի մասին է՞ջն եք փնտրում։ Անցեք</translation>
 <translation id="4595560905247879544">Հավելվածներն ու ընդլայնումները միայն կառավարիչը (<ph name="CUSTODIAN_NAME" />) կարող է փոփոխել:</translation>
 <translation id="4596295440756783523">Դուք ունեք որոշ հավաստագրեր, որոնք նույնականացնում են այս սերվերները</translation>
@@ -4413,6 +4419,7 @@
 <translation id="5084328598860513926">Համաժամացումն ընդհատվել է։ Փորձեք նորից կամ կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="5085162214018721575">Թարմացումների ստուգում</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">Նշումը պարունակում է ավելի քան 1000 նիշ</translation>
 <translation id="5086874064903147617">Վերականգնե՞լ կանխադրված գլխավոր էջը</translation>
 <translation id="5087249366037322692">Ավելացվել է այլ ծրագրի կողմից</translation>
 <translation id="5087580092889165836">Ավելացնել քարտ</translation>
@@ -6576,6 +6583,7 @@
 <translation id="7111822978084196600">Անվանեք այս պատուհանը</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> տարր</translation>
 <translation id="7113502843173351041">Տեսնել ձեր էլ․ հասցեն</translation>
+<translation id="7113974454301513811">Այժմ ընթացիկ ներդիրն ավելացրեք ձեր ցանկում</translation>
 <translation id="7114054701490058191">Գաղտնաբառերը չեն համընկնում</translation>
 <translation id="7114648273807173152">Smart Lock-ն օգտագործելու համար մտեք ձեր Google հաշիվ, անցեք Կարգավորումներ &gt; Միացված սարքեր &gt; Ձեր հեռախոսը &gt; Smart Lock:</translation>
 <translation id="7115361495406486998">Հասանելի կոնտակտներ չկան</translation>
@@ -8806,6 +8814,7 @@
 <translation id="9201842707396338580">Սխալ առաջացավ։ Կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="9203398526606335860">&amp;Տվյալների հավաքումը միացված է</translation>
 <translation id="9203904171912129171">Ընտրեք սարքը</translation>
+<translation id="920410963177453528">Սեղմեք իջնող ցանկը՝ այլ վահանակ ընտրելու համար</translation>
 <translation id="9206889157914079472">Ստիլուսի միջոցով նշումների ստեղծում կողպէկրանից</translation>
 <translation id="9208192193641542858">Սարքի տվյալները պաշտպանված են ձեր հին գաղտնաբառով։ Եթե դուք վերջերս փոխել եք գաղտնաբառը, ապա փորձեք օգտագործել ձեր հին գաղտնաբառը։</translation>
 <translation id="9209563766569767417">Լինուքսի կոնտեյների կարգավորումները ստուգվում են</translation>

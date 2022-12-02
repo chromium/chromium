@@ -43,8 +43,10 @@
 <translation id="1378727793141957596">Добре дојдовте во Google Диск!</translation>
 <translation id="1379911846207762492">Може да ги направите датотеките да бидат достапни офлајн за да пристапувате до нив кога нема да имате интернет-врска.</translation>
 <translation id="1383876407941801731">Барај</translation>
+<translation id="1388045380422025115">Сите типови</translation>
 <translation id="1395262318152388157">Барај лизгач</translation>
 <translation id="1399511500114202393">Нема сертификат на корисник</translation>
+<translation id="1403008701842173542">Насекаде</translation>
 <translation id="1404323374378969387">норвешки</translation>
 <translation id="1433628812591023318">За да пуштите датотеки во Parallels Desktop, датотеката мора да се премести во датотеките на Windows.</translation>
 <translation id="1435838927755162558">Споделете папка со Parallels Desktop</translation>
@@ -102,6 +104,7 @@
 <translation id="1834290891154666894">Неважечки запис за совпаѓање на алтернативното име на субјектот</translation>
 <translation id="1838709767668011582">Сајт на Google</translation>
 <translation id="1853795129690976061">Папкава е споделена со Linux</translation>
+<translation id="1859422890169495746">Овој Chromebook</translation>
 <translation id="1864756863218646478">Не може да се најде датотеката.</translation>
 <translation id="1884013283844450420">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, поврзи</translation>
 <translation id="1920670151694390848">транслитерација на малајалски</translation>
@@ -153,6 +156,7 @@
 <translation id="2307462900900812319">Конфигурирај мрежа</translation>
 <translation id="2325650632570794183">Овој тип датотека не е поддржан. Посетете ја веб-продавницата на Chrome за да најдете апликација што може да го отвори овој тип датотека.</translation>
 <translation id="2326539130272988168">бугарски</translation>
+<translation id="2337715497728194187">Споделете со Bruschetta</translation>
 <translation id="23721837607121582">Преземи го профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Префрли на режим за преглед во список</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папки се споделени со Linux</translation>
@@ -182,6 +186,7 @@
 <translation id="2544853746127077729">Мрежата го отфрли сертификатот за автентикација</translation>
 <translation id="255937426064304553">Меѓународен англиски (САД)</translation>
 <translation id="2563185590376525700">Жаба</translation>
+<translation id="2574327434504608656">Се споделува 1 папка со Bruschetta</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">одија</translation>
 <translation id="2602810353103180630">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
@@ -275,6 +280,7 @@
 <translation id="3408072735282270043">Активирај, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">германски (Германија) со тастатура Neo 2</translation>
 <translation id="3414856743105198592">Со форматирање на преносливиот медиум ќе се избришат сите податоци. Дали сакате да продолжите?</translation>
+<translation id="3435143625481187092">Дајте дозавола на Bruschetta да пристапи до датотеките во папката <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Време на создавање</translation>
 <translation id="343907260260897561">Инстант камера</translation>
 <translation id="3455931012307786678">естонски</translation>
@@ -354,6 +360,7 @@
 <translation id="4159731583141908892">Преместено: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Испразни ја корпата веднаш</translation>
 <translation id="4179621117429069925">Ставкава е во корпата</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> папки се споделени со Bruschetta</translation>
 <translation id="4186579485882418952">Овозможи офлајн</translation>
 <translation id="4193154014135846272">Документ на Google</translation>
 <translation id="4197674956721858839">Избор на пакување</translation>
@@ -415,6 +422,7 @@
 <translation id="4646813851450205600">чешки со тастатура Qwerty</translation>
 <translation id="4656777537938206294">Направете датотеките да се достапни офлајн</translation>
 <translation id="4658782175094886150">Човек во снег</translation>
+<translation id="466782788172479199">Дајте дозвола на Bruschetta да пристапува до датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите уреди.</translation>
 <translation id="4669606053856530811">Членовите на „<ph name="SOURCE_NAME" />“ ќе изгубат пристап освен ако ставкиве се споделени со нив.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">шведски</translation>
@@ -448,6 +456,7 @@
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485316830061041779">германски</translation>
 <translation id="4867079195717347957">Кликнете за подредување на колоната по опаѓачки редослед.</translation>
+<translation id="4867297348137739678">Изминатата седмица</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> бајти</translation>
 <translation id="4874569719830985133">Избриши засекогаш</translation>
 <translation id="4880214202172289027">Лизгач за јачина на звук</translation>
@@ -520,6 +529,7 @@
 <translation id="5330145655348521461">Датотеките се отворија на друга работна површина. Поместете ја на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) за да се прикаже.</translation>
 <translation id="5330512191124428349">Земете информации</translation>
 <translation id="5337538975554986899">Пристап до датотеки од сите URL-адреси, освен <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">Управувајте со споделувањето со Bruschetta</translation>
 <translation id="535792325654997756">Човек со мачки</translation>
 <translation id="5358764674931277">Стапка на слики</translation>
 <translation id="5363339716524495120">Јазикот за внесување е кинески</translation>
@@ -565,6 +575,7 @@
 <translation id="5700087501958648444">Информации за аудиото</translation>
 <translation id="5720028165859493293">Датотеката <ph name="FILE_NAME" /> е преместена во корпата</translation>
 <translation id="5724172041621205163">тајландски со тастатура Pattachote</translation>
+<translation id="57383366388012121">Изминатиот месец</translation>
 <translation id="5756666464756035725">Унгарска QWERTY</translation>
 <translation id="5763377084591234761">германски (Швајцарија)</translation>
 <translation id="5769519078756170258">Хост или домен за исклучување</translation>
@@ -674,6 +685,7 @@
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6732801395666424405">Нема вчитано сертификати</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Споделете папка со Bruschetta</translation>
 <translation id="6751256176799620176">Избрана е 1 папка</translation>
 <translation id="6755827872271341378">Уред со ChromeOS Flex</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
@@ -702,6 +714,7 @@
 <translation id="6935521024859866267">Превртено</translation>
 <translation id="6943836128787782965">HTTP не успеа</translation>
 <translation id="6949408524333579394">транслитерација на српски</translation>
+<translation id="69548399407432279">Минатата година</translation>
 <translation id="6960565108681981554">Не е активирана. Контактирајте со вашиот оператор.</translation>
 <translation id="696203921837389374">Овозможи синхронизација преку мобилен интернет</translation>
 <translation id="6965382102122355670">Во ред</translation>
@@ -845,6 +858,7 @@
 <translation id="8042602468072383151">Аудио: <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">романски</translation>
 <translation id="8049184478152619004">Внесете личен клуч за одблокирање (PUK)</translation>
+<translation id="8055538340801153769">Папкава</translation>
 <translation id="807187749540895545">Се извлекува <ph name="FILE_NAME" />…</translation>
 <translation id="8087576439476816834">Преземање, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Споделено со мене</translation>

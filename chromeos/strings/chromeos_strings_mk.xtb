@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Испрати извештај со повратни информации</translation>
 <translation id="2407209115954268704">Статус на заклучување на SIM-картичката</translation>
+<translation id="241419523391571119">Отворете го капакот повторно за да тестирате</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2418150275289244458">Отвори во поставките</translation>
 <translation id="2421798028054665193">Слика <ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">Испразнета <ph name="RATE" /> за <ph name="NUM_SECONDS" /> секунди.</translation>
 <translation id="2902312830803030883">Повеќе дејства</translation>
 <translation id="2926057806159140518">Внесете корисничко име и лозинка или скенирајте ваш QR-код</translation>
+<translation id="2940811910881150316">Не можете да го тестирате уредот. Отворете го капакот повторно за да тестирате.</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="3017079585324758401">Заднина</translation>
@@ -284,6 +286,7 @@
 <translation id="3820172043799983114">Неважечки PIN.</translation>
 <translation id="3824259034819781947">Приложете датотеки</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
+<translation id="3845880861638660475">Притиснете <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> за да го затворите дијалогот.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3862598938296403232">Описот е задолжителен</translation>
@@ -291,6 +294,7 @@
 <translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
 <translation id="3885327323343477505">Променете го заштитникот на екранот</translation>
+<translation id="391412459402535266">Не можете да го тестирате уредот. Префрлете се на режим за лаптоп за да тестирате.</translation>
 <translation id="3923184630988645767">Интернет</translation>
 <translation id="3932043219784172185">Нема поврзан уред</translation>
 <translation id="3941014780699102620">Неуспешно отворање на хостот</translation>
@@ -303,6 +307,7 @@
 <translation id="39823212440917567">Задачите за печатење постари од <ph name="NUMBER_OF_DAYS" /> дена ќе се отстранат</translation>
 <translation id="3993704782688964914">Уредот <ph name="DEVICE_NAME" /> сега е ажуриран</translation>
 <translation id="4003384961948020559">Неуспешно - излезната фиока е полна</translation>
+<translation id="4021031199988160623">Префрлете се на режим за лаптоп за да тестирате</translation>
 <translation id="4034824040120875894">Печатач</translation>
 <translation id="4044093238444069296">Не може да се стапи во контакт со портал</translation>
 <translation id="4046123991198612571">Следна песна</translation>
@@ -768,6 +773,7 @@
 <translation id="8372477600026034341">Дополнителни хостови</translation>
 <translation id="8395584934117017006">Организација управува со овој <ph name="DEVICE_TYPE" /></translation>
 <translation id="8398927464629426868">Брзината со која уредот се полни или празни во моментов</translation>
+<translation id="8410244574650205435">Автоматски откриено</translation>
 <translation id="8420955526972171689">Извршува тестови и решава проблеми во врска со хардверот</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8431300646573772016">Што е ново во Chrome OS</translation>

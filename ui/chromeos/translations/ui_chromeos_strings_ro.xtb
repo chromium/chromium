@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Bun venit la Disc Google!</translation>
 <translation id="1379911846207762492">Poți face fișiere disponibile offline pentru a le accesa când nu ai conexiune la internet.</translation>
 <translation id="1383876407941801731">Caută</translation>
+<translation id="1388045380422025115">Toate tipurile</translation>
 <translation id="1395262318152388157">Glisor pentru căutare</translation>
 <translation id="1399511500114202393">Niciun certificat de utilizator</translation>
 <translation id="1403008701842173542">Pretutindeni</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">intrare nevalidă a potrivirii numelui alternativ al subiectului</translation>
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1853795129690976061">Linux are acces la acest dosar</translation>
+<translation id="1859422890169495746">Acest Chromebook</translation>
 <translation id="1864756863218646478">Fișierul nu a putut fi găsit.</translation>
 <translation id="1884013283844450420">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectează-te</translation>
 <translation id="1920670151694390848">Malayalam, transliterație</translation>
@@ -134,6 +136,7 @@
 <translation id="2143778271340628265">Configurare proxy manuală</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2163152940313951844">Caracter nevalid: <ph name="CHARACTER_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2184934335987813305">Portugheză cu tastatură S.U.A. internațională pentru PC</translation>
 <translation id="2193661397560634290">Spațiu folosit: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Chineză simplificată</translation>
@@ -153,6 +156,7 @@
 <translation id="2307462900900812319">Configurați rețeaua</translation>
 <translation id="2325650632570794183">Acest tip de fișier nu este acceptat. Vă rugăm să accesați Magazinul web Chrome pentru a găsi o aplicație care poate deschide acest tip de fișier.</translation>
 <translation id="2326539130272988168">Bulgară</translation>
+<translation id="2337715497728194187">Permite accesul pentru Bruschetta</translation>
 <translation id="23721837607121582">Descarcă profilul mobil, Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Comută la afișarea listă</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Linux</translation>
@@ -182,6 +186,7 @@
 <translation id="2544853746127077729">Certificatul de autentificare a fost respins de rețea</translation>
 <translation id="255937426064304553">S.U.A. internațională</translation>
 <translation id="2563185590376525700">Broască</translation>
+<translation id="2574327434504608656">Un dosar cu acces permis pentru Bruschetta</translation>
 <translation id="2578394532502990878">Tamilă fonetică</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
@@ -275,6 +280,7 @@
 <translation id="3408072735282270043">Activează, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Germană (Germania) cu tastatură Neo 2</translation>
 <translation id="3414856743105198592">Formatarea suportului media amovibil va șterge toate datele. Doriți să continuați?</translation>
+<translation id="3435143625481187092">Acordă Bruschetta permisiunea să acceseze fișiere din dosarul <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Ora creării</translation>
 <translation id="343907260260897561">Cameră foto instantanee</translation>
 <translation id="3455931012307786678">Estoniană</translation>
@@ -354,6 +360,7 @@
 <translation id="4159731583141908892">Mutate: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Golește coșul de gunoi acum</translation>
 <translation id="4179621117429069925">Acest articol este în coșul de gunoi</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> dosare la care Bruschetta are acces</translation>
 <translation id="4186579485882418952">Activează funcția offline</translation>
 <translation id="4193154014135846272">Document Google</translation>
 <translation id="4197674956721858839">Arhivați fișierele selectate</translation>
@@ -415,6 +422,7 @@
 <translation id="4646813851450205600">Cehă cu tastatură QWERTY</translation>
 <translation id="4656777537938206294">Fă fișierele disponibile offline</translation>
 <translation id="4658782175094886150">Persoană înconjurată de zăpadă</translation>
+<translation id="466782788172479199">Acordă Bruschetta permisiunea de a accesa fișiere din Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="4669606053856530811">Membrii „<ph name="SOURCE_NAME" />” vor pierde accesul, exceptând cazul în care li se permite accesul la aceste articole.</translation>
 <translation id="467809019005607715">Prezentări Google</translation>
 <translation id="4690246192099372265">Suedeză</translation>
@@ -522,6 +530,7 @@
 <translation id="5330145655348521461">Aceste fișiere au fost deschise pe alt desktop. Pentru a le vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Obține informații</translation>
 <translation id="5337538975554986899">accesul la fișiere prin intermediul tuturor adreselor URL, cu excepția <ph name="NON_RESTRICTED_DESTINATIONS" />,</translation>
+<translation id="5344246330454251646">Gestionează permiterea accesului pentru Bruschetta</translation>
 <translation id="535792325654997756">Persoană cu pisici</translation>
 <translation id="5358764674931277">Rata de cadre</translation>
 <translation id="5363339716524495120">Limba de introducere a textului este chineza</translation>
@@ -567,6 +576,7 @@
 <translation id="5700087501958648444">Informații despre fișierul audio</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> a fost mutat în coșul de gunoi</translation>
 <translation id="5724172041621205163">Tastatură thailandeză Pattachote</translation>
+<translation id="57383366388012121">Luna trecută</translation>
 <translation id="5756666464756035725">Maghiară QWERTY</translation>
 <translation id="5763377084591234761">Germană (Elveția)</translation>
 <translation id="5769519078756170258">Gazda sau domeniul de exclus</translation>
@@ -676,6 +686,7 @@
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="6732801395666424405">Certificatele nu s-au încărcat</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Permite accesul Bruschetta la dosar</translation>
 <translation id="6751256176799620176">Un dosar selectat</translation>
 <translation id="6755827872271341378">Dispozitiv cu sistemul de operare Chrome Flex</translation>
 <translation id="6790428901817661496">Redă</translation>
@@ -704,6 +715,7 @@
 <translation id="6935521024859866267">Răsturnat</translation>
 <translation id="6943836128787782965">Metoda GET a protocolului HTTP nu a reușit</translation>
 <translation id="6949408524333579394">Sârbă, transliterație</translation>
+<translation id="69548399407432279">Ultimul an</translation>
 <translation id="6960565108681981554">Neactivată. Contactează operatorul.</translation>
 <translation id="696203921837389374">Activează sincronizarea prin date mobile</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -847,6 +859,7 @@
 <translation id="8042602468072383151">Fișier audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Română</translation>
 <translation id="8049184478152619004">Introdu cheia personală de deblocare (PUK)</translation>
+<translation id="8055538340801153769">Acest dosar</translation>
 <translation id="807187749540895545">Se extrage <ph name="FILE_NAME" />...</translation>
 <translation id="8087576439476816834">Descarcă, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Cu acces permis pentru mine</translation>

@@ -99,6 +99,7 @@
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1650222530560417226">輕按 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕按 [停止記錄] 為止。</translation>
+<translation id="1653432787084483144">{count,plural, =1{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅密碼儲存咗喺鍵盤上面。}}</translation>
 <translation id="1657011748321897393">您尚未連上網路，因此無法分享。</translation>
 <translation id="1657641691196698092">已封鎖的 Cookie</translation>
 <translation id="165877110639533037">沒有開啟的分頁</translation>
@@ -139,6 +140,7 @@
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="2021670401941426298">建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="202292859882676807">已允許存取麥克風</translation>
+<translation id="2050196510205866090">{count,plural, =1{有 {count} 個可以用嘅付款方法儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅付款方法儲存咗喺鍵盤上面。}}</translation>
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
@@ -180,6 +182,7 @@
 <translation id="2375243552872247702">為您顯示精選內容</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已選取 1 張</translation>
+<translation id="2411749908844615428">{count,plural, =1{有 {count} 個可以用嘅地址儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅地址儲存咗喺鍵盤上面。}}</translation>
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
 <translation id="2434405374328098816">您已儲存「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
@@ -477,6 +480,7 @@
 您已使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="4682686630151240767">1. 開啟 iPhone 的「設定」</translation>
 <translation id="4689564913179979534">管理付款方法…</translation>
+<translation id="469300482518076788">關閉分頁</translation>
 <translation id="4697071790493980729">找不到相符的結果</translation>
 <translation id="470966556546083668">不要開啟同步功能</translation>
 <translation id="4737560986434232178">搜尋最近開啟的分頁</translation>
@@ -1023,6 +1027,7 @@
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731388423028622182">您已在重設 iPhone 時登出帳戶 (<ph name="USER_NAME" />)，輕按下方的 [繼續] 即可登入。</translation>
 <translation id="87371078663613140">瀏覽選單列中的選項</translation>
+<translation id="8737620822084008350">{count,plural, =1{有 {count} 個可以用嘅個人檔案儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅個人檔案儲存咗喺鍵盤上面。}}</translation>
 <translation id="8741995161408053644">您的 Google 帳戶在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="8750037785291841318">您可在此查看分頁</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>

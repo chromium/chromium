@@ -593,6 +593,7 @@
 <translation id="1546280085599573572">この拡張機能により、ホームボタンをクリックしたときに表示されるページが変更されました。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> さんが次の処理を行う<ph name="EXTENSION_TYPE" />のインストールを求めています。</translation>
 <translation id="1547808936554660006">eSIM プロファイルは Powerwash で削除されないことを理解しました</translation>
+<translation id="1547936895218027488">サイドパネル アイコンをクリックして開きます</translation>
 <translation id="1549275686094429035">ARC は有効になっています</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」が <ph name="VOLUME_NAME" /> へのアクセスを求めています。ファイルが変更または削除される可能性があります。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」拡張機能により <ph name="SEARCH_PROVIDER_DOMAIN" /> を使用して検索するよう変更されました</translation>
@@ -1413,6 +1414,7 @@
 <translation id="2287944065963043964">ログイン画面</translation>
 <translation id="2289270750774289114">サイトから近くにある Bluetooth デバイスの検出を求められたときに確認する（推奨）</translation>
 <translation id="2290615375132886363">タブレットのナビゲーション ボタン</translation>
+<translation id="2291452790265535215">ブックマークやジャーニーなどのサイドパネル表示をお試しください</translation>
 <translation id="229182044471402145">一致するフォントは見つかりませんでした。</translation>
 <translation id="2292848386125228270">通常のユーザーとして <ph name="PRODUCT_NAME" /> を起動してください。開発の目的でルートとして実行する必要がある場合は、--no-sandbox フラグを指定して再実行してください。</translation>
 <translation id="2294081976975808113">画面のプライバシー</translation>
@@ -1573,6 +1575,7 @@
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="2409268599591722235">使ってみる</translation>
 <translation id="2410079346590497630">ビルドの詳細</translation>
+<translation id="2410298923485357543">デバイスがオンラインのときは自然な音声を使用する</translation>
 <translation id="2410754283952462441">アカウントの選択</translation>
 <translation id="241082044617551207">不明なプラグイン</translation>
 <translation id="2412753904894530585">Kerberos</translation>
@@ -2292,6 +2295,7 @@
 <translation id="3059195548603439580">システム コンポーネントをお探しですか？次にアクセスしてください</translation>
 <translation id="3060952009917586498">デバイスの言語を変更します。現在の言語は <ph name="LANGUAGE" /> です。</translation>
 <translation id="3060987956645097882">スマートフォンとの接続を確立できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
+<translation id="3061302636956643119">テキストは Google に送信されて処理されます。</translation>
 <translation id="3064871050034234884">サイトが音声を再生できるようにする</translation>
 <translation id="3065041951436100775">タブの強制終了に関するフィードバック。</translation>
 <translation id="3065522099314259755">キーボードのリピート間隔</translation>
@@ -3890,11 +3894,13 @@
 <translation id="4582563038311694664">すべての設定をリセット</translation>
 <translation id="4585793705637313973">ページの編集</translation>
 <translation id="4586275095964870617">「<ph name="URL" />」を代替ブラウザで開けませんでした。システム管理者にお問い合わせください。</translation>
+<translation id="4587589328781138893">サイト</translation>
 <translation id="4589713469967853491">ダウンロード ディレクトリにログを書き込みました。</translation>
 <translation id="4590324241397107707">データベース ストレージ</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> に保存されたデバイスはありません</translation>
 <translation id="4592891116925567110">タッチペンの描画アプリ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> に移動(&amp;G)</translation>
+<translation id="4594218792629569101">[既読にする] を選択すると、ページがリストの一番下に移動します</translation>
 <translation id="4594577641390224176">システム情報のページをお探しですか？次にアクセスしてください</translation>
 <translation id="4595560905247879544">アプリと拡張機能は管理者（<ph name="CUSTODIAN_NAME" />）だけが変更できます。</translation>
 <translation id="4596295440756783523">これらのサーバーを識別する証明書がファイルに格納されています</translation>
@@ -4402,6 +4408,7 @@
 <translation id="5084328598860513926">プロビジョニング フローが中断されました。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="5085162214018721575">アップデートを確認しています</translation>
 <translation id="5086082738160935172">HID</translation>
+<translation id="508645147179720015">メモが 1,000 文字を超えています</translation>
 <translation id="5086874064903147617">デフォルトのホームページに戻しますか？</translation>
 <translation id="5087249366037322692">サードパーティにより追加</translation>
 <translation id="5087580092889165836">カードを追加</translation>
@@ -6560,6 +6567,7 @@
 <translation id="7111822978084196600">このウィンドウに名前を付ける</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> 個のアイテム</translation>
 <translation id="7113502843173351041">メールアドレスの読み取り</translation>
+<translation id="7113974454301513811">ここで現在のタブをリストに追加します</translation>
 <translation id="7114054701490058191">パスワードが一致しません</translation>
 <translation id="7114648273807173152">Smart Lock を使用して Google アカウントにログインするには、[設定] &gt; [接続済みのデバイス] &gt; [スマートフォン] &gt; [Smart Lock] に移動します。</translation>
 <translation id="7115361495406486998">連絡先が見つかりませんでした</translation>
@@ -8789,6 +8797,7 @@
 <translation id="9201842707396338580">エラーが発生しました。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="9203398526606335860">プロファイル記録の開始(&amp;P)</translation>
 <translation id="9203904171912129171">デバイスを選択</translation>
+<translation id="920410963177453528">プルダウンをクリックして別のパネルを選択します</translation>
 <translation id="9206889157914079472">ロック画面でタッチペンによるメモ書きを許可</translation>
 <translation id="9208192193641542858">ローカルデータは以前のパスワードで保護されています。パスワードを最近変更した場合は、以前のパスワードをもう一度入力してください。</translation>
 <translation id="9209563766569767417">Linux コンテナの設定を確認しています</translation>
