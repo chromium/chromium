@@ -142,6 +142,18 @@ System.load(BundleUtils.getNativeLibraryPath("foo", "mysplitsname"));
 
 [b/171269960]: https://issuetracker.google.com/171269960
 
+### System.loadLibrary() Unusable from Split if Library depends on Another Loaded by Base Split
+
+Also tracked by [b/171269960], maybe related to linker namespaces. If a split
+tries to load `libfeature.so`, and `libfeature.so` has a `DT_NEEDED` entry for
+`libbase.so`, and `libbase.so` is loaded by the base split, then the load will
+fail.
+
+**Work-around:**
+
+Have base split load libraries from within splits. Proxy all JNI calls through
+a class that exists in the base split.
+
 ### System.loadLibrary() Broken for Libraries in Splits on System Image
 
 Also tracked by [b/171269960], Android's linker config (`ld.config.txt`) sets
