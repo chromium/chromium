@@ -64,11 +64,10 @@ enum NAV_SUGGESTIONS {
   SUGGEST_UNSUPPORTED_CIPHER = 1 << 8,
   SUGGEST_ANTIVIRUS_CONFIG = 1 << 9,
   SUGGEST_OFFLINE_CHECKS = 1 << 10,
-  SUGGEST_COMPLETE_SETUP = 1 << 11,
   // Reload page suggestion for pages created by a post.
-  SUGGEST_REPOST_RELOAD = 1 << 12,
-  SUGGEST_NAVIGATE_TO_ORIGIN = 1 << 13,
-  SUGGEST_SECURE_DNS_CONFIG = 1 << 14,
+  SUGGEST_REPOST_RELOAD = 1 << 11,
+  SUGGEST_NAVIGATE_TO_ORIGIN = 1 << 12,
+  SUGGEST_SECURE_DNS_CONFIG = 1 << 13,
 };
 
 enum SHOW_BUTTONS {
@@ -302,12 +301,6 @@ const LocalizedErrorMap net_error_options[] = {
    IDS_ERRORPAGES_HEADING_BLOCKED,
    IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR,
    SUGGEST_CONTACT_ADMINISTRATOR,
-   SHOW_NO_BUTTONS,
-  },
-  {net::ERR_BLOCKED_ENROLLMENT_CHECK_PENDING,
-   IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED,
-   IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING,
-   SUGGEST_COMPLETE_SETUP,
    SHOW_NO_BUTTONS,
   },
   {net::ERR_SSL_VERSION_OR_CIPHER_MISMATCH,
@@ -616,17 +609,6 @@ void GetSuggestionsSummaryList(int error_code,
     suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CONTACT_ADMIN_SUMMARY));
   }
-
-  if (IsOnlySuggestion(suggestions, SUGGEST_COMPLETE_SETUP)) {
-    DCHECK(suggestions_summary_list.empty());
-    DCHECK(!(suggestions & ~SUGGEST_COMPLETE_SETUP));
-    suggestions_summary_list.Append(SingleEntryDictionary(
-        "summary", IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CONNECTION_SUMMARY));
-    suggestions_summary_list.Append(SingleEntryDictionary(
-        "summary", IDS_ERRORPAGES_SUGGESTION_COMPLETE_SETUP_SUMMARY));
-    return;
-  }
-  DCHECK(!IsSuggested(suggestions, SUGGEST_COMPLETE_SETUP));
 
   if (IsOnlySuggestion(suggestions,SUGGEST_REPOST_RELOAD)) {
     DCHECK(suggestions_summary_list.empty());

@@ -212,16 +212,6 @@
       <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_CLIENT" desc="Summary in the error page when a request is blocked by the browser.">
         This page has been blocked by Chrome
       </message>
-      <if expr="reven">
-        <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
-          ChromeOS Flex hasn’t completed its initial setup.
-        </message>
-      </if>
-      <if expr="not reven">
-        <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
-          ChromeOS hasn’t completed its initial setup.
-        </message>
-      </if>
       <if expr="is_macosx">
         <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="Mac OSX instructions for disabling use of a proxy server.">
           Go to

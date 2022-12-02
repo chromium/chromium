@@ -97,10 +97,7 @@ NET_ERROR(BLOCKED_BY_ADMINISTRATOR, -22)
 // The socket is already connected.
 NET_ERROR(SOCKET_IS_CONNECTED, -23)
 
-// The request was blocked because the forced reenrollment check is still
-// pending. This error can only occur on ChromeOS.
-// The error can be emitted by code in chrome/browser/policy/policy_helpers.cc.
-NET_ERROR(BLOCKED_ENROLLMENT_CHECK_PENDING, -24)
+// Error -24 was removed (BLOCKED_ENROLLMENT_CHECK_PENDING)
 
 // The upload failed because the upload stream needed to be re-read, due to a
 // retry or a redirect, but the upload stream doesn't support that operation.
