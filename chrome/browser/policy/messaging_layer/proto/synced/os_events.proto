@@ -12,18 +12,27 @@ import "session_affiliated_user.proto";
 
 package ash.reporting;
 
+enum OsOperationType {
+  OS_OPERATION_TYPE_UNKNOWN = 0;
+  // To be reported when the process is initiated.
+  INITIATED = 1;
+  // To be reported when the process ended successfully.
+  SUCCESS = 2;
+  // To be reported when the process has failed.
+  FAILURE = 3;
+}
+
+// Chrome OS update event.
 message UpdateEvent {
-  optional bool success = 1;
-
-  optional string error = 2;
+  optional string error = 1;
 }
 
+// Chrome OS rollback event.
 message RollbackEvent {
-  optional bool success = 1;
-
-  optional string error = 2;
+  optional string error = 1;
 }
 
+// Chrome OS powerwash event.
 message PowerwashEvent {
   optional bool user_requested = 1;
 }
@@ -48,4 +57,6 @@ message OsEventsRecord {
     RollbackEvent rollback_event = 8;
     PowerwashEvent powerwash_event = 9;
   }
+
+  optional OsOperationType os_operation_type = 10;
 }
