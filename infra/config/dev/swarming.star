@@ -29,6 +29,8 @@ swarming.pool_realm(
     groups = [
         "project-chromium-ci-dev-task-accounts",
         "project-chromium-try-dev-task-accounts",
+        #TODO(b/258041976): mac os vm experiments
+        "chromium-swarming-dev-led-access",
     ],
 )
 
