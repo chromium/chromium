@@ -231,7 +231,8 @@ TEST_F(
           /*certificate_profile=*/attestation::AttestationCertificateProfile::
               PROFILE_DEVICE_SETUP_CERTIFICATE,
           /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
-          /*force_new_key=*/_, /*key_crypto_type=*/_, /*key_name=*/_,
+          /*force_new_key=*/_, /*key_crypto_type=*/_,
+          /*key_name=*/attestation::kDeviceSetupKey,
           /*profile_specific_data=*/_, /*callback=*/_))
       .WillOnce(WithArg<7>(
           Invoke([](attestation::AttestationFlow::CertificateCallback callback)
@@ -258,7 +259,8 @@ TEST_F(SecondDeviceAuthBrokerTest,
           /*certificate_profile=*/attestation::AttestationCertificateProfile::
               PROFILE_DEVICE_SETUP_CERTIFICATE,
           /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
-          /*force_new_key=*/_, /*key_crypto_type=*/_, /*key_name=*/_,
+          /*force_new_key=*/_, /*key_crypto_type=*/_,
+          /*key_name=*/attestation::kDeviceSetupKey,
           /*profile_specific_data=*/_, /*callback=*/_))
       .WillOnce(WithArg<7>(
           Invoke([](attestation::AttestationFlow::CertificateCallback callback)
@@ -286,7 +288,8 @@ TEST_F(SecondDeviceAuthBrokerTest,
           /*certificate_profile=*/attestation::AttestationCertificateProfile::
               PROFILE_DEVICE_SETUP_CERTIFICATE,
           /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
-          /*force_new_key=*/_, /*key_crypto_type=*/_, /*key_name=*/_,
+          /*force_new_key=*/_, /*key_crypto_type=*/_,
+          /*key_name=*/attestation::kDeviceSetupKey,
           /*profile_specific_data=*/
           Optional(
               VariantWith<::attestation::DeviceSetupCertificateRequestMetadata>(

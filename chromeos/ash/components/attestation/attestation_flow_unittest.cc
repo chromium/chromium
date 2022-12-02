@@ -18,7 +18,6 @@
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_factory.h"
 #include "chromeos/ash/components/attestation/attestation_flow_integrated.h"
-#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
@@ -46,6 +45,7 @@ namespace attestation {
 namespace {
 
 constexpr char kFakeUserEmail[] = "fake@test.com";
+constexpr char kFakeKeyName[] = "fake_key_name";
 
 }  // namespace
 
@@ -153,7 +153,7 @@ TEST_F(AttestationFlowTest, GetCertificate) {
       /*account_id=*/account_id,
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(),
+      /*key_name=*/kFakeKeyName,
       /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
@@ -161,10 +161,7 @@ TEST_F(AttestationFlowTest, GetCertificate) {
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
             AttestationClient::Get()
                 ->GetTestInterface()
-                ->GetMutableKeyInfoReply(
-                    kFakeUserEmail,
-                    GetKeyNameForProfile(PROFILE_ENTERPRISE_USER_CERTIFICATE,
-                                         "fake_origin"))
+                ->GetMutableKeyInfoReply(kFakeUserEmail, kFakeKeyName)
                 ->certificate());
 }
 
@@ -238,21 +235,18 @@ TEST_F(AttestationFlowTest, GetCertificate_DeviceSetupCertificate) {
       /*account_id=*/EmptyAccountId(), /*request_origin=*/kOrigin,
       /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(),
+      /*key_name=*/kFakeKeyName,
       /*profile_specific_data=*/
       absl::make_optional(
           AttestationFlow::CertProfileSpecificData(profile_specific_data)),
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 
-  EXPECT_EQ(
-      AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
-      AttestationClient::Get()
-          ->GetTestInterface()
-          ->GetMutableKeyInfoReply(
-              kEmptyUsername,
-              GetKeyNameForProfile(PROFILE_DEVICE_SETUP_CERTIFICATE, kOrigin))
-          ->certificate());
+  EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
+            AttestationClient::Get()
+                ->GetTestInterface()
+                ->GetMutableKeyInfoReply(kEmptyUsername, kFakeKeyName)
+                ->certificate());
 }
 
 // This is pretty much identical to `GetCertificate` while the flow under test
@@ -322,17 +316,14 @@ TEST_F(AttestationFlowTest, GetCertificateCreatedByFactory) {
       /*account_id=*/account_id, /*request_origin=*/"fake_origin",
       /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
             AttestationClient::Get()
                 ->GetTestInterface()
-                ->GetMutableKeyInfoReply(
-                    kFakeUserEmail,
-                    GetKeyNameForProfile(PROFILE_ENTERPRISE_USER_CERTIFICATE,
-                                         "fake_origin"))
+                ->GetMutableKeyInfoReply(kFakeUserEmail, kFakeKeyName)
                 ->certificate());
 }
 
@@ -401,7 +392,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Ecc) {
       /*account_id=*/account_id,
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
-      /*key_name=*/std::string(),
+      /*key_name=*/kFakeKeyName,
       /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
@@ -409,10 +400,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Ecc) {
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
             AttestationClient::Get()
                 ->GetTestInterface()
-                ->GetMutableKeyInfoReply(
-                    kFakeUserEmail,
-                    GetKeyNameForProfile(PROFILE_ENTERPRISE_USER_CERTIFICATE,
-                                         "fake_origin"))
+                ->GetMutableKeyInfoReply(kFakeUserEmail, kFakeKeyName)
                 ->certificate());
 }
 
@@ -488,17 +476,14 @@ TEST_F(AttestationFlowTest, GetCertificate_TestACA) {
       /*account_id=*/account_id,
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
             AttestationClient::Get()
                 ->GetTestInterface()
-                ->GetMutableKeyInfoReply(
-                    kFakeUserEmail,
-                    GetKeyNameForProfile(PROFILE_ENTERPRISE_USER_CERTIFICATE,
-                                         "fake_origin"))
+                ->GetMutableKeyInfoReply(kFakeUserEmail, kFakeKeyName)
                 ->certificate());
 }
 
@@ -568,7 +553,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
       /*account_id=*/account_id,
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kEnterpriseUserKey, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(callback));
 
   Run();
@@ -576,10 +561,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
             AttestationClient::Get()
                 ->GetTestInterface()
-                ->GetMutableKeyInfoReply(
-                    kFakeUserEmail,
-                    GetKeyNameForProfile(PROFILE_ENTERPRISE_USER_CERTIFICATE,
-                                         "fake_origin"))
+                ->GetMutableKeyInfoReply(kFakeUserEmail, kEnterpriseUserKey)
                 ->certificate());
 }
 
@@ -614,7 +596,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Prepared) {
       /*account_id=*/EmptyAccountId(),
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(callback));
 
   Run();
@@ -653,7 +635,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Confirm_Prepared) {
       /*account_id=*/EmptyAccountId(),
       /*request_origin=*/"fake_origin", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(callback));
 
   Run();
@@ -686,7 +668,7 @@ TEST_F(AttestationFlowTest, GetCertificate_NoEK) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -721,7 +703,7 @@ TEST_F(AttestationFlowTest, GetCertificate_EKRejected) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -759,7 +741,7 @@ TEST_F(AttestationFlowTest, GetCertificate_FailEnroll) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -805,16 +787,14 @@ TEST_F(AttestationFlowTest, GetMachineCertificateAlreadyEnrolled) {
       /*account_id=*/EmptyAccountId(),
       /*request_origin=*/"", /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
             AttestationClient::Get()
                 ->GetTestInterface()
                 ->GetMutableKeyInfoReply(
-                    /*username=*/"",
-                    GetKeyNameForProfile(PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
-                                         /*request_origin=*/""))
+                    /*username=*/"", kFakeKeyName)
                 ->certificate());
 }
 
@@ -865,17 +845,14 @@ TEST_F(AttestationFlowTest, GetMachineCertificateWithUsername) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
       /*account_id=*/account_id, /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
   // The certificate should be stored as a machine key instead of a user key.
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
             AttestationClient::Get()
                 ->GetTestInterface()
-                ->GetMutableKeyInfoReply(
-                    /*username=*/"",
-                    GetKeyNameForProfile(PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
-                                         /*request_origin=*/""))
+                ->GetMutableKeyInfoReply(/*username=*/"", kFakeKeyName)
                 ->certificate());
 }
 
@@ -919,18 +896,14 @@ TEST_F(AttestationFlowTest, GetEnrollmentCertificateAlreadyEnrolled) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
-  EXPECT_EQ(
-      AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
-      AttestationClient::Get()
-          ->GetTestInterface()
-          ->GetMutableKeyInfoReply(
-              /*username=*/"",
-              GetKeyNameForProfile(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-                                   /*request_origin=*/""))
-          ->certificate());
+  EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
+            AttestationClient::Get()
+                ->GetTestInterface()
+                ->GetMutableKeyInfoReply(/*username=*/"", kFakeKeyName)
+                ->certificate());
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_FailCreateCertRequest) {
@@ -962,7 +935,7 @@ TEST_F(AttestationFlowTest, GetCertificate_FailCreateCertRequest) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1002,7 +975,7 @@ TEST_F(AttestationFlowTest, GetCertificate_CertRequestRejected) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1047,7 +1020,7 @@ TEST_F(AttestationFlowTest, GetCertificate_CertRequestBadRequest) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1075,7 +1048,7 @@ TEST_F(AttestationFlowTest, GetCertificate_FailIsEnrolled) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/"fake_key_name", /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1120,16 +1093,14 @@ TEST_F(AttestationFlowTest, GetCertificate_CheckExisting) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/false, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
   EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
             AttestationClient::Get()
                 ->GetTestInterface()
                 ->GetMutableKeyInfoReply(
-                    /*username=*/"",
-                    GetKeyNameForProfile(PROFILE_ENTERPRISE_USER_CERTIFICATE,
-                                         /*request_origin=*/""))
+                    /*username=*/"", kFakeKeyName)
                 ->certificate());
 }
 
@@ -1160,7 +1131,7 @@ TEST_F(AttestationFlowTest, GetCertificate_AlreadyExists) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
       /*force_new_key=*/false, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kEnterpriseUserKey, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1198,7 +1169,8 @@ TEST_F(AttestationFlowTest, GetCertificate_LookupMachineKeyWithAccountId) {
       /*certificate_profile=*/PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
       /*account_id=*/account_id, /*request_origin=*/"",
       /*force_new_key=*/false, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kEnterpriseMachineKey,
+      /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(mock_callback));
   RunUntilIdle();
 }
@@ -1234,7 +1206,7 @@ TEST_F(AttestationFlowDeathTest,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/kOrigin,
       /*force_new_key=*/true,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(),
+      /*key_name=*/"fake_key_name",
       /*profile_specific_data=*/absl::nullopt, /*callback=*/base::DoNothing());
   EXPECT_DCHECK_DEATH(RunUntilIdle());
 }

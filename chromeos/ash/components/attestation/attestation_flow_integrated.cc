@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
@@ -124,16 +123,11 @@ void AttestationFlowIntegrated::GetCertificate(
     const absl::optional<AttestationFlow::CertProfileSpecificData>&
         profile_specific_data,
     CertificateCallback callback) {
-  const std::string attestation_key_name =
-      !key_name.empty()
-          ? key_name
-          : GetKeyNameForProfile(certificate_profile, request_origin);
-
-  base::OnceCallback<void(bool)> start_certificate_request = base::BindOnce(
-      &AttestationFlowIntegrated::StartCertificateRequest,
-      weak_factory_.GetWeakPtr(), certificate_profile, account_id,
-      request_origin, force_new_key, key_crypto_type, attestation_key_name,
-      profile_specific_data, std::move(callback));
+  base::OnceCallback<void(bool)> start_certificate_request =
+      base::BindOnce(&AttestationFlowIntegrated::StartCertificateRequest,
+                     weak_factory_.GetWeakPtr(), certificate_profile,
+                     account_id, request_origin, force_new_key, key_crypto_type,
+                     key_name, profile_specific_data, std::move(callback));
 
   base::TimeTicks end_time = base::TimeTicks::Now() + ready_timeout_;
   WaitForAttestationPrepared(end_time, std::move(start_certificate_request));

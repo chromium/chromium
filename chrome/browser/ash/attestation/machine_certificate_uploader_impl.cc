@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/account_id/account_id.h"
@@ -137,8 +138,7 @@ void MachineCertificateUploaderImpl::GetNewCertificate() {
       /*request_origin=*/std::string(),  // Not used.
       /*force_new_key=*/true,            // Force a new key to be generated.
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(),  // Leave key name empty to generate a default
-                                   // name.
+      /*key_name=*/ash::attestation::kEnterpriseMachineKey,
       /*profile_specific_data=*/absl::nullopt,
       /*callback=*/
       base::BindOnce(

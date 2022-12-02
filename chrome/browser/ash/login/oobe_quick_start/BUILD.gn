@@ -13,6 +13,7 @@ source_set("oobe_quick_start") {
     "//chrome/common:channel_info",
     "//chromeos/ash/components/attestation:attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/constants:constants",
     "//components/account_id:account_id",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/qr_code_generator:qr_code_generator",

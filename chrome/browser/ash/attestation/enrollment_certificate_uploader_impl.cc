@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -104,8 +105,7 @@ void EnrollmentCertificateUploaderImpl::GetCertificate(bool force_new_key) {
       /*request_origin=*/std::string(),  // Not used.
       /*force_new_key=*/force_new_key,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(),  // Leave key name empty to generate a default
-                                   // name.
+      /*key_name=*/kEnterpriseEnrollmentKey,
       /*profile_specific_data=*/absl::nullopt,
       /*callback=*/
       base::BindOnce(

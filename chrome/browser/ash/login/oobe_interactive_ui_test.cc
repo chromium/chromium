@@ -64,7 +64,7 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
-#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -860,9 +860,7 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
     AttestationClient::Get()
         ->GetTestInterface()
         ->AllowlistSignSimpleChallengeKey(
-            /*username=*/"",
-            attestation::GetKeyNameForProfile(
-                attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, ""));
+            /*username=*/"", attestation::kEnterpriseEnrollmentKey);
     OobeInteractiveUITest::SetUpOnMainThread();
     policy_test_server_mixin_.ConfigureFakeStatisticsForZeroTouch(
         &fake_statistics_provider_);

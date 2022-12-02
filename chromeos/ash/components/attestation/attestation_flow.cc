@@ -14,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
@@ -102,16 +101,12 @@ void AttestationFlow::GetCertificate(
     const std::string& key_name,
     const absl::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback) {
-  std::string attestation_key_name =
-      !key_name.empty()
-          ? key_name
-          : GetKeyNameForProfile(certificate_profile, request_origin);
+  DCHECK(!key_name.empty());
 
   base::OnceCallback<void(bool)> start_certificate_request = base::BindOnce(
       &AttestationFlow::StartCertificateRequest, weak_factory_.GetWeakPtr(),
       certificate_profile, account_id, request_origin, force_new_key,
-      key_crypto_type, attestation_key_name, profile_specific_data,
-      std::move(callback));
+      key_crypto_type, key_name, profile_specific_data, std::move(callback));
 
   // If this device has not enrolled with the Privacy CA, we need to do that
   // first.  Once enrolled we can proceed with the certificate request.

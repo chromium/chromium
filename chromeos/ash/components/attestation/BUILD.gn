@@ -32,8 +32,6 @@ component("attestation") {
     "attestation_flow_status_reporter.h",
     "attestation_flow_type_decider.cc",
     "attestation_flow_type_decider.h",
-    "attestation_flow_utils.cc",
-    "attestation_flow_utils.h",
   ]
 }
 
@@ -78,6 +76,5 @@ source_set("unit_tests") {
     "attestation_flow_status_reporter_unittest.cc",
     "attestation_flow_type_decider_unittest.cc",
     "attestation_flow_unittest.cc",
-    "attestation_flow_utils_unittest.cc",
   ]
 }

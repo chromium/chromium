@@ -35,6 +35,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
@@ -520,7 +521,8 @@ void EnrollmentHandler::StartAttestationBasedEnrollmentFlow(
       /*account_id=*/EmptyAccountId(), /*request_origin=*/std::string(),
       /*force_new_key=*/force_new_key,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*=key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/ash::attestation::kEnterpriseEnrollmentKey,
+      /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(callback));
 }
 

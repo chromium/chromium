@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
@@ -23,12 +22,9 @@ TpmEnrollmentKeySigningService::~TpmEnrollmentKeySigningService() = default;
 
 void TpmEnrollmentKeySigningService::SignData(const std::string& data,
                                               SigningCallback callback) {
-  const ash::attestation::AttestationCertificateProfile cert_profile =
-      ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE;
   ::attestation::SignSimpleChallengeRequest request;
   request.set_username("");
-  request.set_key_label(
-      ash::attestation::GetKeyNameForProfile(cert_profile, ""));
+  request.set_key_label(ash::attestation::kEnterpriseEnrollmentKey);
   request.set_challenge(data);
   ash::AttestationClient::Get()->SignSimpleChallenge(
       request, base::BindOnce(&TpmEnrollmentKeySigningService::OnDataSigned,

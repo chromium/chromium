@@ -11,9 +11,9 @@
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,9 +53,7 @@ TEST_F(TpmEnrollmentKeySigningServiceTest, SigningSuccess) {
   ash::AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistSignSimpleChallengeKey(
-          /*username=*/"",
-          ash::attestation::GetKeyNameForProfile(
-              ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, ""));
+          /*username=*/"", ash::attestation::kEnterpriseEnrollmentKey);
 
   base::RunLoop run_loop;
   bool returned_success = false;

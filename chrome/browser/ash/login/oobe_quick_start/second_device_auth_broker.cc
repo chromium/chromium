@@ -21,6 +21,7 @@
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/version_info/channel.h"
@@ -265,7 +266,7 @@ void SecondDeviceAuthBroker::FetchAttestationCertificate(
           PROFILE_DEVICE_SETUP_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/std::string(),
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(),
+      /*key_name=*/attestation::kDeviceSetupKey,
       /*profile_specific_data=*/
       absl::make_optional(attestation::AttestationFlow::CertProfileSpecificData(
           profile_specific_data)),

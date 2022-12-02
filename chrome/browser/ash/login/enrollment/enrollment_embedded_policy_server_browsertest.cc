@@ -50,8 +50,8 @@
 #include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -94,9 +94,7 @@ std::string GetDmTokenFromPolicy(const std::string& blob) {
 
 void AllowlistSimpleChallengeSigningKey() {
   AttestationClient::Get()->GetTestInterface()->AllowlistSignSimpleChallengeKey(
-      /*username=*/"",
-      attestation::GetKeyNameForProfile(
-          attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, ""));
+      /*username=*/"", attestation::kEnterpriseEnrollmentKey);
 }
 
 class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {

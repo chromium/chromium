@@ -24,8 +24,6 @@
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
-#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
-#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"

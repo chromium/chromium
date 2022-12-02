@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
@@ -26,6 +27,7 @@
 #include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -61,6 +63,11 @@ void ReportError(PlatformVerificationFlow::ChallengeCallback callback,
   UMA_HISTOGRAM_ENUMERATION(kAttestationResultHistogram, error,
                             PlatformVerificationFlow::RESULT_MAX);
   std::move(callback).Run(error, std::string(), std::string(), std::string());
+}
+
+std::string GetKeyName(base::StringPiece request_origin) {
+  return base::StrCat(
+      {ash::attestation::kContentProtectionKeyPrefix, request_origin});
 }
 
 }  // namespace
@@ -233,6 +240,8 @@ void PlatformVerificationFlow::GetCertificate(
       &PlatformVerificationFlow::OnCertificateTimeout, this, context);
   timer->Start(FROM_HERE, timeout_delay_, std::move(timeout_callback));
 
+  const std::string key_name =
+      GetKeyName(/*request_origin=*/context->data.service_id);
   AttestationFlow::CertificateCallback certificate_callback =
       base::BindOnce(&PlatformVerificationFlow::OnCertificateReady, this,
                      context, context->data.account_id, std::move(timer));
@@ -242,7 +251,7 @@ void PlatformVerificationFlow::GetCertificate(
       /*request_origin=*/context->data.service_id,
       /*force_new_key=*/force_new_key,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/key_name, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(certificate_callback));
 }
 
@@ -322,6 +331,8 @@ void PlatformVerificationFlow::OnChallengeReady(
   if (is_expiring_soon && renewals_in_progress_.count(certificate_chain) == 0) {
     renewals_in_progress_.insert(certificate_chain);
     // Fire off a certificate request so next time we'll have a new one.
+    const std::string key_name =
+        GetKeyName(/*request_origin=*/context.service_id);
     AttestationFlow::CertificateCallback renew_callback =
         base::BindOnce(&PlatformVerificationFlow::RenewCertificateCallback,
                        this, std::move(certificate_chain));
@@ -331,8 +342,7 @@ void PlatformVerificationFlow::OnChallengeReady(
         /*request_origin=*/context.service_id,
         /*force_new_key=*/true,  // force_new_key
         /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-        /*key_name=*/std::string(),  // key_name, empty means a default one will
-                                     // be generated.
+        /*key_name=*/key_name,
         /*profile_specific_data=*/absl::nullopt,
         /*callback=*/std::move(renew_callback));
   }

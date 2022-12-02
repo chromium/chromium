@@ -20,7 +20,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_factory.h"
-#include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
@@ -61,13 +60,6 @@ class AttestationFlowIntegratedTest : public testing::Test {
       ::attestation::ACAType aca_type,
       ::attestation::GetCertificateRequest request) {
     request.set_aca_type(aca_type);
-    request.set_key_type(request.key_type());
-    if (request.key_label().empty()) {
-      request.set_key_label(
-          GetKeyNameForProfile(static_cast<AttestationCertificateProfile>(
-                                   request.certificate_profile()),
-                               request.request_origin()));
-    }
     AttestationClient::Get()->GetTestInterface()->AllowlistCertificateRequest(
         request);
   }
@@ -662,44 +654,6 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificateWithAccountId) {
       /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*key_name=*/request.key_label(),
       /*profile_specific_data=*/absl::nullopt,
-      /*callback=*/
-      base::BindOnce(
-          &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
-          base::Unretained(this), callback.Get()));
-  Run();
-  EXPECT_FALSE(certificate.empty());
-  histogram_tester_.ExpectUniqueSample(
-      "ChromeOS.Attestation.GetCertificateStatus",
-      ::attestation::STATUS_SUCCESS, 1);
-}
-
-TEST_F(AttestationFlowIntegratedTest,
-       GetCertificateAttestationKeyNameFromProfile) {
-  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
-      true);
-
-  ::attestation::GetCertificateRequest request;
-  request.set_certificate_profile(
-      ::attestation::CertificateProfile::ENTERPRISE_ENROLLMENT_CERTIFICATE);
-  // Note: no key label is set.
-  request.set_request_origin("origin");
-  request.set_key_type(::attestation::KEY_TYPE_RSA);
-
-  AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
-
-  base::MockCallback<AttestationFlowIntegrated::CertificateCallback> callback;
-  std::string certificate;
-  EXPECT_CALL(callback, Run(AttestationStatus::ATTESTATION_SUCCESS, _))
-      .WillOnce(SaveArg<1>(&certificate));
-
-  AttestationFlowIntegrated flow;
-  flow.GetCertificate(
-      /*certificate_profile=*/static_cast<AttestationCertificateProfile>(
-          request.certificate_profile()),
-      /*account_id=*/EmptyAccountId(),
-      /*request_origin=*/request.request_origin(), /*force_new_key=*/true,
-      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/request.key_label(), /*profile_specific_data=*/absl::nullopt,
       /*callback=*/
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,

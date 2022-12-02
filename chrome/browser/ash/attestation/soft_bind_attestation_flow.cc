@@ -185,7 +185,6 @@ void SoftBindAttestationFlow::GetCertificateInternal(
     bool force_new_key,
     std::unique_ptr<Session> session) {
   AccountId account_id(session->GetAccountId());
-  std::string key_name(kSoftBindKey);
   AttestationFlow::CertificateCallback certificate_callback =
       base::BindOnce(&SoftBindAttestationFlow::OnCertificateReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(session));
@@ -195,7 +194,7 @@ void SoftBindAttestationFlow::GetCertificateInternal(
       /*request_origin=*/std::string(),
       /*force_new_key=*/force_new_key,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/key_name, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kSoftBindKey, /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(certificate_callback));
 }
 

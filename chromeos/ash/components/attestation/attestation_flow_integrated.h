@@ -77,8 +77,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   //                   already exists for the profile.  The new key will replace
   //                   the existing key on success.
   //   key_crypto_type - The crypto type of the key.
-  //   key_name - The name of the key. If left empty, a default name derived
-  //              from the |certificate_profile| and |account_id| will be used.
+  //   key_name - The name of the key. May not be empty.
   //   profile_specific_data - Optional certificate profile specific data. The
   //                           type must correspond to `certificate_profile`.
   //   callback - A callback which will be called when the operation completes.
