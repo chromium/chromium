@@ -461,11 +461,57 @@ TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnShutdown) {
   EXPECT_FALSE(base::PathExists(persisted_dir));
 }
 
-TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnInterval) {
+TEST_F(ExtensionTelemetryServiceTest, PersistsReportOnFailedUpload) {
   // Setting up the persister, signals, upload/write intervals, and the
   // uploader itself.
   telemetry_service_->SetEnabled(false);
   scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  telemetry_service_->SetEnabled(true);
+  base::TimeDelta interval = telemetry_service_->current_reporting_interval();
+  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                               base::Time::NowFromSystemTime());
+  test_url_loader_factory_.AddResponse(
+      ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy",
+      net::HTTP_BAD_REQUEST);
+  // Fast forward a reporting interval, there should be one file after the
+  // failed upload.
+  task_environment_.FastForwardBy(interval);
+  task_environment_.RunUntilIdle();
+  base::FilePath persisted_dir = profile_.GetPath();
+  persisted_dir = persisted_dir.AppendASCII("CRXTelemetry");
+  EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_0")));
+}
+
+TEST_F(ExtensionTelemetryServiceTest, NoReportPersistedIfUploadSucceeds) {
+  // With the default NumberWritesInInterval=1, the persisting interval is the
+  // same as the reporting interval. At each interval, the in-memory data
+  // is used to create a report which is then uploaded. If the upload succeeds,
+  // there is no need to persist anything.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  telemetry_service_->SetEnabled(true);
+  base::TimeDelta interval = telemetry_service_->current_reporting_interval();
+  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                               base::Time::NowFromSystemTime());
+  test_url_loader_factory_.AddResponse(
+      ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy", net::HTTP_OK);
+  // Fast forward a reporting interval, there should be no files persisted after
+  // the upload.
+  task_environment_.FastForwardBy(interval);
+  task_environment_.RunUntilIdle();
+  base::FilePath persisted_dir = profile_.GetPath();
+  persisted_dir = persisted_dir.AppendASCII("CRXTelemetry");
+  EXPECT_FALSE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_0")));
+}
+
+TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnInterval) {
+  // Setting up the persister, signals, upload/write intervals, and the
+  // uploader itself.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kExtensionTelemetry, {{"NumberOfWritesInInterval", "4"}}},
+       {kExtensionTelemetryPersistence, {}}},
+      {});
   telemetry_service_->SetEnabled(true);
   base::TimeDelta interval = telemetry_service_->current_reporting_interval();
   profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
@@ -496,7 +542,10 @@ TEST_F(ExtensionTelemetryServiceTest, MalformedPersistedFile) {
   // Setting up the persister, signals, upload/write intervals, and the
   // uploader itself.
   telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kExtensionTelemetry, {{"NumberOfWritesInInterval", "4"}}},
+       {kExtensionTelemetryPersistence, {}}},
+      {});
   telemetry_service_->SetEnabled(true);
   base::TimeDelta interval = telemetry_service_->current_reporting_interval();
   profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,

@@ -100,7 +100,7 @@ const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
 
 const base::FeatureParam<int> kExtensionTelemetryWritesPerInterval{
     &kExtensionTelemetry, "NumberOfWritesInInterval",
-    /*default_value=*/4};
+    /*default_value=*/1};
 
 BASE_FEATURE(kExtensionTelemetryCookiesGetAllSignal,
              "SafeBrowsingExtensionTelemetryCookiesGetAllSignal",
