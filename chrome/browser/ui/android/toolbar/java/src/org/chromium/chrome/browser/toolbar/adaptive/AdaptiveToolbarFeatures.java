@@ -6,13 +6,9 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * A utility class for handling feature flags used by {@link AdaptiveToolbarButtonController}.
@@ -63,29 +59,6 @@ public class AdaptiveToolbarFeatures {
     private static Boolean sIgnoreSegmentationResultsForTesting;
     private static Boolean sDisableUiForTesting;
     private static Boolean sShowUiOnlyAfterReadyForTesting;
-
-    /**
-     * Unique identifiers for each of the possible button variants.
-     *
-     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
-     * should never be reused.
-     */
-    @IntDef({AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.NONE,
-            AdaptiveToolbarButtonVariant.NEW_TAB, AdaptiveToolbarButtonVariant.SHARE,
-            AdaptiveToolbarButtonVariant.VOICE, AdaptiveToolbarButtonVariant.AUTO,
-            AdaptiveToolbarButtonVariant.PRICE_TRACKING, AdaptiveToolbarButtonVariant.READER_MODE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AdaptiveToolbarButtonVariant {
-        int UNKNOWN = 0;
-        int NONE = 1;
-        int NEW_TAB = 2;
-        int SHARE = 3;
-        int VOICE = 4;
-        int AUTO = 5;
-        int PRICE_TRACKING = 6;
-        int READER_MODE = 7;
-        int NUM_ENTRIES = 8;
-    }
 
     /** @return Whether the button variant is a dynamic action. */
     public static boolean isDynamicAction(@AdaptiveToolbarButtonVariant int variant) {

@@ -6009,6 +6009,9 @@ if (is_android) {
   java_cpp_enum("tab_model_enums_java") {
     sources = [ "android/tab_model/tab_model.h" ]
   }
+  java_cpp_enum("adaptive_toolbar_enums_java") {
+    sources = [ "android/toolbar/adaptive_toolbar_enums.h" ]
+  }
   java_cpp_enum("duplicate_download_enums_java") {
     sources = [ "android/infobars/duplicate_download_infobar.h" ]
   }
