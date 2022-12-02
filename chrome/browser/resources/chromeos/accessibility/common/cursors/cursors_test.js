@@ -3,18 +3,12 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE([
-  '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/chromevox_next_e2e_test_base.js',
-]);
+GEN_INCLUDE(['../testing/common_e2e_test_base.js']);
 
 /**
  * Test fixture for cursors.
  */
-AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
-  constructor() {
-    super(true /* isCommonClass */);
-  }
-
+AccessibilityExtensionCursorsTest = class extends CommonE2ETestBase {
   /** Test Cursor. @const {string} */
   get CURSOR() {
     return 'cursor';
@@ -38,15 +32,16 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
         'AutomationPredicate', '/common/automation_predicate.js');
     await importModule('constants', '/common/constants.js');
     // Various aliases
-    window.CHARACTER = CursorUnit.CHARACTER;
-    window.WORD = CursorUnit.WORD;
-    window.LINE = CursorUnit.LINE;
-    window.NODE = CursorUnit.NODE;
-    window.BOUND = CursorMovement.BOUND;
-    window.DIRECTIONAL = CursorMovement.DIRECTIONAL;
-    window.SYNC = CursorMovement.SYNC;
-    window.BACKWARD = constants.Dir.BACKWARD;
-    window.FORWARD = constants.Dir.FORWARD;
+    globalThis.CHARACTER = CursorUnit.CHARACTER;
+    globalThis.WORD = CursorUnit.WORD;
+    globalThis.LINE = CursorUnit.LINE;
+    globalThis.NODE = CursorUnit.NODE;
+    globalThis.BOUND = CursorMovement.BOUND;
+    globalThis.DIRECTIONAL = CursorMovement.DIRECTIONAL;
+    globalThis.SYNC = CursorMovement.SYNC;
+    globalThis.BACKWARD = constants.Dir.BACKWARD;
+    globalThis.FORWARD = constants.Dir.FORWARD;
+    globalThis.RoleType = chrome.automation.RoleType;
   }
 
   /**
@@ -97,10 +92,10 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
    * @param {Cursor} cursor
    */
   makeCursorAssertion(expected, cursor) {
-    if (goog.isDef(expected.value)) {
+    if (expected.value !== undefined) {
       assertEquals(expected.value, cursor.node.name);
     }
-    if (goog.isDef(expected.index)) {
+    if (expected.index !== undefined) {
       assertEquals(expected.index, cursor.index,
         'wrong index at ' + expected.value + ', expected: ' + expected.index + ' actual: ' + cursor.index);
     }
@@ -480,7 +475,7 @@ AX_TEST_F(
   `);
       // For some reason, Blink fails if we don't first select something
       // on the page.
-      ChromeVoxState.instance.currentRange.select();
+      CursorRange.fromNode(root).select();
       const link = root.find({role: RoleType.LINK});
       const p1 = root.find({role: RoleType.PARAGRAPH});
       const p2 = p1.nextSibling;

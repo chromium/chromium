@@ -348,7 +348,7 @@ export class Cursor {
                 break;
               }
             }
-            if (goog.isDef(start) && goog.isDef(end)) {
+            if (start !== undefined && end !== undefined) {
               newIndex = dir === Dir.FORWARD ? end : start;
             }
           } break;
@@ -379,7 +379,7 @@ export class Cursor {
                 }
               }
             }
-            if (goog.isDef(start)) {
+            if (start !== undefined) {
               // Successfully found the next word stop within the same text
               // node.
               newIndex = start;

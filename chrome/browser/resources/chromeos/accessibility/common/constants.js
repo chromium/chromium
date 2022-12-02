@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Constants used throughout ChromeVox.
+ * @fileoverview Constants used throughout the accessibility extensions.
  */
 
 export const constants = {};
