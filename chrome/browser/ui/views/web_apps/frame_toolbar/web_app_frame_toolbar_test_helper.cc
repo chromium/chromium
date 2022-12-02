@@ -296,3 +296,15 @@ void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
   EXPECT_TRUE(browser_view()->ShouldDescendIntoChildForEventHandling(
       browser_view()->GetWidget()->GetNativeView(), draggable_point));
 }
+
+Browser* WebAppFrameToolbarTestHelper::OpenPopup(
+    const std::string& target_url) {
+  std::string script = "window.open('" + target_url + "', '_blank', 'popup');";
+  content::ExecuteScriptAsync(
+      app_browser_->tab_strip_model()->GetActiveWebContents(), script);
+
+  Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_NE(app_browser_, popup);
+  EXPECT_TRUE(popup);
+  return popup;
+}

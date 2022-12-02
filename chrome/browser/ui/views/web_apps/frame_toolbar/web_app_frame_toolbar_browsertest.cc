@@ -576,6 +576,40 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
       helper()->web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
+                       PopupToItselfIsNotBorderless) {
+  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+  GrantWindowManagementPermission();
+  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+
+  // Popup to itself.
+  Browser* popup = helper()->OpenPopup(
+      EvalJs(helper()->browser_view()->GetActiveWebContents(),
+             "window.location.href")
+          .ExtractString());
+
+  BrowserView* popup_browser_view =
+      BrowserView::GetBrowserViewForBrowser(popup);
+  EXPECT_TRUE(content::WaitForRenderFrameReady(
+      popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
+  EXPECT_FALSE(popup_browser_view->IsBorderlessModeEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
+                       PopupToAnyOtherOriginIsNotBorderless) {
+  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+  GrantWindowManagementPermission();
+  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+
+  // Popup to any other website outside of the same origin.
+  Browser* popup = helper()->OpenPopup("https://google.com");
+  BrowserView* popup_browser_view =
+      BrowserView::GetBrowserViewForBrowser(popup);
+  EXPECT_TRUE(content::WaitForRenderFrameReady(
+      popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
+  EXPECT_FALSE(popup_browser_view->IsBorderlessModeEnabled());
+}
+
 // TODO(https://crbug.com/1277860): Flaky.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
                        DISABLED_DraggableRegions) {
@@ -731,22 +765,6 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         "rect");
   }
 
-  // Opens a new popup window from |app_browser| on |target_url| and returns
-  // the Browser it opened in.
-  Browser* OpenPopup(Browser* app_browser, const std::string& target_url) {
-    GURL target_gurl(target_url);
-
-    std::string script =
-        "window.open('" + target_url + "', '_blank', 'popup');";
-    content::ExecuteScriptAsync(
-        app_browser->tab_strip_model()->GetActiveWebContents(), script);
-    Browser* popup = ui_test_utils::WaitForBrowserToOpen();
-
-    EXPECT_NE(app_browser, popup);
-    EXPECT_TRUE(popup);
-    return popup;
-  }
-
  protected:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 
@@ -859,8 +877,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   InstallAndLaunchWebApp();
   auto* wco_web_contents = helper()->browser_view()->GetActiveWebContents();
 
-  Browser* popup = OpenPopup(
-      helper()->app_browser(),
+  Browser* popup = helper()->OpenPopup(
       EvalJs(wco_web_contents, "window.location.href").ExtractString());
 
   BrowserView* popup_browser_view =
@@ -894,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   ToggleWindowControlsOverlayAndWait();
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
 
-  Browser* popup = OpenPopup(helper()->app_browser(), "https://google.com");
+  Browser* popup = helper()->OpenPopup("https://google.com");
   BrowserView* popup_browser_view =
       BrowserView::GetBrowserViewForBrowser(popup);
   content::WebContents* popup_web_contents =

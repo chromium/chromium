@@ -74,6 +74,10 @@ class WebAppFrameToolbarTestHelper {
 
   void TestDraggableRegions();
 
+  // Opens a new popup window from |app_browser_| on |target_url| and returns
+  // the Browser it opened in.
+  Browser* OpenPopup(const std::string& target_url);
+
   Browser* app_browser() { return app_browser_; }
   BrowserView* browser_view() { return browser_view_; }
   BrowserNonClientFrameView* frame_view() { return frame_view_; }
