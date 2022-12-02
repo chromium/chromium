@@ -90,6 +90,12 @@ MediaControlsProgressView::~MediaControlsProgressView() = default;
 
 void MediaControlsProgressView::UpdateProgress(
     const media_session::MediaPosition& media_position) {
+  is_live_ = media_position.duration().is_max();
+  if (is_live_ == duration_->GetVisible()) {
+    duration_->SetVisible(!is_live_);
+    InvalidateLayout();
+  }
+
   // If the media is paused and |update_progress_timer_| is still running, stop
   // the timer.
   if (media_position.playback_rate() == 0 && update_progress_timer_.IsRunning())
@@ -97,7 +103,7 @@ void MediaControlsProgressView::UpdateProgress(
 
   const base::TimeDelta current_position = media_position.GetPosition();
   const base::TimeDelta duration = media_position.duration();
-  SetBarProgress(current_position / duration);
+  SetBarProgress(is_live_ ? 1.0 : current_position / duration);
 
   // For durations greater than 24 hours, prefer base::DURATION_WIDTH_NARROW for
   // better readability (e.g., 27h 23m 10s rather than 27:23:10).
@@ -122,7 +128,7 @@ void MediaControlsProgressView::UpdateProgress(
     }
 
     SetProgressTime(elapsed_time);
-    SetDuration(total_time);
+    SetDuration(is_live_ ? std::u16string() : total_time);
   }
 
   if (media_position.playback_rate() != 0) {
@@ -149,6 +155,9 @@ void MediaControlsProgressView::SetTextColor(SkColor color) {
 }
 
 bool MediaControlsProgressView::OnMousePressed(const ui::MouseEvent& event) {
+  if (is_live_)
+    return false;
+
   if (!event.IsOnlyLeftMouseButton())
     return false;
 
@@ -162,6 +171,9 @@ bool MediaControlsProgressView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void MediaControlsProgressView::OnGestureEvent(ui::GestureEvent* event) {
+  if (is_live_)
+    return;
+
   if (event->type() != ui::ET_GESTURE_TAP)
     return;
 
@@ -186,6 +198,10 @@ const std::u16string& MediaControlsProgressView::progress_time_for_testing()
 
 const std::u16string& MediaControlsProgressView::duration_for_testing() const {
   return duration_->GetText();
+}
+
+bool MediaControlsProgressView::is_duration_visible_for_testing() const {
+  return duration_->GetVisible();
 }
 
 void MediaControlsProgressView::SetBarProgress(double progress) {

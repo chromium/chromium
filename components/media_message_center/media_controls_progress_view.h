@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
   const views::ProgressBar* progress_bar_for_testing() const;
   const std::u16string& progress_time_for_testing() const;
   const std::u16string& duration_for_testing() const;
+  bool is_duration_visible_for_testing() const;
 
  private:
   void SetBarProgress(double progress);
@@ -64,6 +65,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
   base::RepeatingTimer update_progress_timer_;
 
   const base::RepeatingCallback<void(double)> seek_callback_;
+
+  // Used to track if the media is a live stream. i.e. Has an infinite duration.
+  bool is_live_ = false;
 };
 
 }  // namespace media_message_center
