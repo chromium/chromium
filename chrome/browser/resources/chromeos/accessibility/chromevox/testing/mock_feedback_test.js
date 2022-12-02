@@ -36,9 +36,9 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
         '/chromevox/background/braille/braille_interface.js');
     await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule(
-        'NavBraille', '/chromevox/common/braille/nav_braille.js');
+        ['AbstractEarcons', 'Earcon'], '/chromevox/common/abstract_earcons.js');
     await importModule(
-        ['Earcon', 'EarconInterface'], '/chromevox/common/earcon_interface.js');
+        'NavBraille', '/chromevox/common/braille/nav_braille.js');
     await importModule('Spannable', '/chromevox/common/spannable.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
   }

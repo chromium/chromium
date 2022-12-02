@@ -8,14 +8,14 @@
  */
 
 import {LocalStorage} from '../../common/local_storage.js';
-import {Earcon, EarconInterface} from '../common/earcon_interface.js';
+import {AbstractEarcons, Earcon} from '../common/abstract_earcons.js';
 import {LogType} from '../common/log_types.js';
 
 import {ChromeVoxState} from './chromevox_state.js';
 import {EarconEngine} from './earcon_engine.js';
 import {LogStore} from './logging/log_store.js';
 
-export class Earcons extends EarconInterface {
+export class Earcons extends AbstractEarcons {
   constructor() {
     super();
 
@@ -37,16 +37,6 @@ export class Earcons extends EarconInterface {
     } else {
       this.shouldPan_ = false;
     }
-  }
-
-  /** @override */
-  get enabled() {
-    return LocalStorage.get('earcons');
-  }
-
-  /** @override */
-  set enabled(value) {
-    LocalStorage.set('earcons', value);
   }
 
   /**

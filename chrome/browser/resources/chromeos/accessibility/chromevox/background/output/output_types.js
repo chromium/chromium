@@ -6,7 +6,7 @@
  * @fileoverview Definitions of all types related to output.
  */
 
-import {Earcon} from '../../common/earcon_interface.js';
+import {Earcon} from '../../common/abstract_earcons.js';
 import {Spannable} from '../../common/spannable.js';
 import {ChromeVox} from '../chromevox.js';
 

@@ -10,7 +10,7 @@
 import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {LocalStorage} from '../../common/local_storage.js';
-import {Earcon} from '../common/earcon_interface.js';
+import {Earcon} from '../common/abstract_earcons.js';
 
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';

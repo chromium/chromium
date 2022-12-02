@@ -6,7 +6,7 @@
  * @fileoverview Roel information for the Output module.
  */
 
-import {Earcon} from '../../common/earcon_interface.js';
+import {Earcon} from '../../common/abstract_earcons.js';
 import {AbstractRole, ChromeVoxRole} from '../../common/role_type.js';
 
 import {OutputContextOrder} from './output_types.js';

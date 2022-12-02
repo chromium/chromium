@@ -8,7 +8,7 @@
  * rest of the code.
  */
 
-import {Earcon} from '../common/earcon_interface.js';
+import {Earcon} from '../common/abstract_earcons.js';
 
 /** EarconEngine generates ChromeVox's earcons using the web audio API. */
 export class EarconEngine {
