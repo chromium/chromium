@@ -311,6 +311,9 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "multiPageDocScan",
       base::FeatureList::IsEnabled(ash::features::kCameraAppMultiPageDocScan));
+  source->AddBoolean(
+      "lowStorageWarning",
+      base::FeatureList::IsEnabled(ash::features::kCameraAppLowStorageWarning));
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {

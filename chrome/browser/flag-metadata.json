@@ -776,6 +776,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "camera-app-low-storage-warning",
+    "owners": [ "kamchonlathorn" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "camera-app-multi-page-doc-scan",
     "owners": [ "chuhsuan" ],
     "expiry_milestone": 111

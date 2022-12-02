@@ -4998,6 +4998,12 @@ const char kCameraAppDocScanDlcDescription[] =
     "Enables this flag to allow downloading document scanning feature via DLC "
     "and use it in the camera app";
 
+extern const char kCameraAppLowStorageWarningName[] =
+    "Camera App Low Storage Warning";
+extern const char kCameraAppLowStorageWarningDescription[] =
+    "Enable this flag to show warning and handle the video recording when "
+    "device storage is running low";
+
 const char kCameraAppMultiPageDocScanName[] = "Camera App Multi-Page Doc Scan";
 const char kCameraAppMultiPageDocScanDescription[] =
     "Enables this flag to show multi-page UI for document scanning featrue in "

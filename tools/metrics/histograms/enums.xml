@@ -58326,6 +58326,7 @@ from previous Chrome versions.
   <int value="-1416610483" label="WallpaperPerDesk:enabled"/>
   <int value="-1416184931" label="TranslateRankerEnforcement:enabled"/>
   <int value="-1415244717" label="CrostiniVirtualKeyboardSupport:disabled"/>
+  <int value="-1414699084" label="CameraAppLowStorageWarning:enabled"/>
   <int value="-1414531531" label="NtpModulesRedesignedLayout:disabled"/>
   <int value="-1412230070" label="query-tiles-instant-background-task"/>
   <int value="-1411980923" label="LinkCapturingUiUpdate:enabled"/>
@@ -63410,6 +63411,7 @@ from previous Chrome versions.
   <int value="1594664550" label="NTPModernLayout:enabled"/>
   <int value="1594993731" label="BluetoothRevamp:enabled"/>
   <int value="1595208893" label="AudioWorkletRealtimeThread:enabled"/>
+  <int value="1595796800" label="CameraAppLowStorageWarning:disabled"/>
   <int value="1596407332" label="EnableSavedDesks:enabled"/>
   <int value="1596615083"
       label="AutofillFillCreditCardAsPerFormatString:disabled"/>

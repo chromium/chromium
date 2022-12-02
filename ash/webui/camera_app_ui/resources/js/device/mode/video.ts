@@ -10,6 +10,7 @@ import {
 import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
 import * as expert from '../../expert.js';
+import {Flag} from '../../flag.js';
 import * as h264 from '../../h264.js';
 import {I18nString} from '../../i18n_string.js';
 import {LowStorageActionType, sendLowStorageEvent} from '../../metrics.js';
@@ -333,6 +334,11 @@ export class Video extends ModeBase {
    * start/resume the recording.
    */
   private async startMonitorStorage(): Promise<boolean> {
+    // If the monitoring is not enabled, skip setting callback and return true
+    // to always allow users to start/resume recording.
+    if (!loadTimeData.getChromeFlag(Flag.LOW_STORAGE_WARNING)) {
+      return true;
+    }
     const onChange = (newState: StorageMonitorStatus) => {
       if (newState === StorageMonitorStatus.NORMAL) {
         this.toggleLowStorageWarning(false);
@@ -573,7 +579,9 @@ export class Video extends ModeBase {
   }
 
   override stop(): void {
-    ChromeHelper.getInstance().stopMonitorStorage();
+    if (loadTimeData.getChromeFlag(Flag.LOW_STORAGE_WARNING)) {
+      ChromeHelper.getInstance().stopMonitorStorage();
+    }
     this.toggleLowStorageWarning(false);
     if (!state.get(state.State.RECORDING)) {
       return;
