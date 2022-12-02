@@ -15,10 +15,8 @@ import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayou
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
@@ -131,8 +129,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             }
         }
         getActiveLayout().onTabClosed(time(), id, nextId, incognito);
-        Tab nextTab = getTabById(nextId);
-        if (nextTab != null && nextTab.getView() != null) nextTab.getView().requestFocus();
         boolean animate = !tabRemoved && animationsEnabled();
         if (getActiveLayoutType() != LayoutType.TAB_SWITCHER
                 && getActiveLayoutType() != LayoutType.START_SURFACE && showOverview && !animate) {
@@ -182,16 +178,5 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             }
         }
         return false;
-    }
-
-    @Override
-    protected void tabCreated(int id, int sourceId, @TabLaunchType int launchType,
-            boolean isIncognito, boolean willBeSelected, float originX, float originY) {
-        super.tabCreated(id, sourceId, launchType, isIncognito, willBeSelected, originX, originY);
-
-        if (willBeSelected) {
-            Tab newTab = TabModelUtils.getTabById(getTabModelSelector().getModel(isIncognito), id);
-            if (newTab != null && newTab.getView() != null) newTab.getView().requestFocus();
-        }
     }
 }

@@ -906,6 +906,174 @@ public class TabsTest {
         });
     }
 
+    private static class FocusListener implements View.OnFocusChangeListener {
+        private View mView;
+        private int mTimesFocused;
+        private int mTimesUnfocused;
+
+        FocusListener(View view) {
+            mView = view;
+        }
+
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (v != mView) return;
+
+            if (hasFocus) {
+                mTimesFocused++;
+            } else {
+                mTimesUnfocused++;
+            }
+        }
+
+        int getTimesFocused() {
+            return mTimesFocused;
+        }
+
+        int getTimesUnfocused() {
+            return mTimesUnfocused;
+        }
+
+        boolean hasFocus() {
+            return TestThreadUtils.runOnUiThreadBlockingNoException(
+                    () -> { return mView.hasFocus(); });
+        }
+    }
+
+    // Regression test for https://crbug.com/1394372.
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Feature({"Android-TabSwitcher"})
+    public void testRequestFocusOnCloseTab() throws Exception {
+        final View urlBar = sActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        final TabModel model =
+                sActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
+        final Tab oldTab = TabModelUtils.getCurrentTab(model);
+
+        Assert.assertNotNull("Tab should have a view", oldTab.getView());
+
+        final FocusListener focusListener = new FocusListener(oldTab.getView());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { oldTab.getView().setOnFocusChangeListener(focusListener); });
+        Assert.assertEquals(
+                "oldTab should not have been focused.", 0, focusListener.getTimesFocused());
+        Assert.assertEquals(
+                "oldTab should not have been unfocused.", 0, focusListener.getTimesUnfocused());
+        Assert.assertTrue("oldTab should have focus.", focusListener.hasFocus());
+
+        final Tab newTab =
+                ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
+                        sActivityTestRule.getActivity(), "about:blank", false);
+
+        Assert.assertEquals(
+                "oldTab should not have been focused.", 0, focusListener.getTimesFocused());
+        Assert.assertEquals(
+                "oldTab should have been unfocused.", 1, focusListener.getTimesUnfocused());
+        Assert.assertFalse("oldTab should not have focus", focusListener.hasFocus());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { model.closeTab(newTab, false, false, true); });
+
+        Assert.assertEquals("oldTab should have been focused.", 1, focusListener.getTimesFocused());
+        Assert.assertEquals("oldTab should not have been unfocused again.", 1,
+                focusListener.getTimesUnfocused());
+        Assert.assertTrue("oldTab should have focus.", focusListener.hasFocus());
+
+        // Focus on the URL bar.
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> urlBar.requestFocus());
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        Assert.assertEquals(
+                "oldTab should not have been focused again.", 1, focusListener.getTimesFocused());
+        Assert.assertEquals("oldTab should have been unfocused by url bar.", 2,
+                focusListener.getTimesUnfocused());
+        Assert.assertFalse("oldTab should not have focus.", focusListener.hasFocus());
+        Assert.assertTrue("Keyboard should show",
+                sActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
+                        sActivityTestRule.getActivity(), urlBar));
+
+        // Check refocus doesn't happen again on the closure being finalized.
+        TestThreadUtils.runOnUiThreadBlocking(() -> model.commitAllTabClosures());
+
+        Assert.assertEquals(
+                "oldTab should not have been focused again after committing tab closures.", 1,
+                focusListener.getTimesFocused());
+        Assert.assertEquals(
+                "oldTab should not have been unfocused again after committing tab closures.", 2,
+                focusListener.getTimesUnfocused());
+        Assert.assertFalse("oldTab should remain unfocused.", focusListener.hasFocus());
+
+        Assert.assertTrue("Keyboard should show",
+                sActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
+                        sActivityTestRule.getActivity(), urlBar));
+
+        // Ensure the keyboard is hidden so we are in a clean-slate for next test.
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> urlBar.clearFocus());
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> oldTab.getView().requestFocus());
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        Assert.assertFalse("Keyboard should no longer show",
+                sActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
+                        sActivityTestRule.getActivity(), urlBar));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Feature({"Android-TabSwitcher"})
+    public void testRequestFocusOnSwitchTab() {
+        final TabModel model =
+                sActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
+        final Tab oldTab = TabModelUtils.getCurrentTab(model);
+
+        Assert.assertNotNull("Tab should have a view", oldTab.getView());
+
+        final FocusListener oldTabFocusListener = new FocusListener(oldTab.getView());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { oldTab.getView().setOnFocusChangeListener(oldTabFocusListener); });
+        Assert.assertEquals(
+                "oldTab should not have been focused.", 0, oldTabFocusListener.getTimesFocused());
+        Assert.assertEquals("oldTab should not have been unfocused.", 0,
+                oldTabFocusListener.getTimesUnfocused());
+        Assert.assertTrue("oldTab should have focus.", oldTabFocusListener.hasFocus());
+
+        final Tab newTab =
+                ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
+                        sActivityTestRule.getActivity(), "about:blank", false);
+        final FocusListener newTabFocusListener = new FocusListener(newTab.getView());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { newTab.getView().setOnFocusChangeListener(newTabFocusListener); });
+        Assert.assertEquals(
+                "newTab should not have been focused.", 0, newTabFocusListener.getTimesFocused());
+        Assert.assertEquals("newTab should not have been unfocused.", 0,
+                newTabFocusListener.getTimesUnfocused());
+        Assert.assertTrue("newTab should have focus.", newTabFocusListener.hasFocus());
+        Assert.assertEquals(
+                "oldTab should not have been focused.", 0, oldTabFocusListener.getTimesFocused());
+        Assert.assertEquals(
+                "oldTab should have been unfocused.", 1, oldTabFocusListener.getTimesUnfocused());
+        Assert.assertFalse("oldTab should not have focus.", oldTabFocusListener.hasFocus());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.setIndex(model.indexOf(oldTab), TabSelectionType.FROM_USER, false);
+        });
+
+        Assert.assertEquals(
+                "newTab should not have been focused.", 0, newTabFocusListener.getTimesFocused());
+        Assert.assertEquals(
+                "newTab should have been unfocused.", 1, newTabFocusListener.getTimesUnfocused());
+        Assert.assertFalse("newTab should not have focus.", newTabFocusListener.hasFocus());
+        Assert.assertEquals(
+                "oldTab should have been focused.", 1, oldTabFocusListener.getTimesFocused());
+        Assert.assertEquals("oldTab should not have been unfocused again.", 1,
+                oldTabFocusListener.getTimesUnfocused());
+        Assert.assertTrue("oldTab should have focus.", oldTabFocusListener.hasFocus());
+    }
+
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
