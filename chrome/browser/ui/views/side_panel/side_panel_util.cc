@@ -152,6 +152,11 @@ void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
                                width_percentage);
 }
 
+void SidePanelUtil::RecordNewTabButtonClicked(SidePanelEntry::Id id) {
+  base::RecordComputedAction(base::StrCat(
+      {"SidePanel.", GetHistogramNameForId(id), ".NewTabButtonClicked"}));
+}
+
 void SidePanelUtil::RecordEntryShownMetrics(SidePanelEntry::Id id) {
   base::RecordComputedAction(
       base::StrCat({"SidePanel.", GetHistogramNameForId(id), ".Shown"}));

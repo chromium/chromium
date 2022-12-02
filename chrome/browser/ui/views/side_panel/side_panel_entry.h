@@ -68,6 +68,9 @@ class SidePanelEntry final {
     absl::optional<extensions::ExtensionId> extension_id_ = absl::nullopt;
   };
 
+  // If adding a callback to provide a URL to the 'Open in New Tab' button, you
+  // must also add a relevant entry in actions.xml because a user action is
+  // logged on button click.
   SidePanelEntry(Id id,
                  std::u16string name,
                  ui::ImageModel icon,

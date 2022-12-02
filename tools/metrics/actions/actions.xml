@@ -29334,6 +29334,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="SidePanel.AboutThisSite.NewTabButtonClicked">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the new tab button is clicked with the about this site side
+    panel entry showing.
+  </description>
+</action>
+
 <action name="SidePanel.Assistant.Shown">
   <owner>brunobraga@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -29386,12 +29395,36 @@ should be able to be added at any place in this file.
   <description>The user closed the side panel.</description>
 </action>
 
+<action name="SidePanel.HistoryClusters.NewTabButtonClicked">
+  <owner>mfacey@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the new tab button is clicked with the history clusters side
+    panel entry showing.
+  </description>
+</action>
+
 <action name="SidePanel.HistoryClusters.Shown">
   <owner>mfacey@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     Recorded when the history clusters side panel entry is shown.
   </description>
+</action>
+
+<action name="SidePanel.Lens.NewTabButtonClicked">
+  <owner>lens-chrome-eng@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <description>
+    Recorded when the new tab button is clicked with the Lens side panel entry
+    showing.
+  </description>
+</action>
+
+<action name="SidePanel.Lens.Shown">
+  <owner>lens-chrome-eng@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <description>Recorded when the Lens side panel entry is shown.</description>
 </action>
 
 <action name="SidePanel.ReadAnything.Shown">

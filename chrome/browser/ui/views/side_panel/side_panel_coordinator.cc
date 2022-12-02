@@ -320,12 +320,12 @@ void SidePanelCoordinator::OpenInNewTab() {
   if (!new_tab_url.is_valid())
     return;
 
+  SidePanelUtil::RecordNewTabButtonClicked(current_entry_->key().id());
   content::OpenURLParams params(new_tab_url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                 /*is_renderer_initiated=*/false);
   browser_view_->browser()->OpenURL(params);
-
   Close();
 }
 

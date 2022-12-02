@@ -42,6 +42,7 @@ class SidePanelUtil {
   static SidePanelContentProxy* GetSidePanelContentProxy(
       views::View* content_view);
 
+  static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
   static void RecordSidePanelOpen(absl::optional<SidePanelOpenTrigger> trigger);
   static void RecordSidePanelClosed(base::TimeTicks opened_timestamp);
   static void RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
