@@ -55,6 +55,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -741,11 +742,13 @@ class RasterDecoderImpl final : public RasterDecoder,
   void DoClearPaintCacheINTERNAL();
 
   void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
-    auto* surface = access->surface();
+    int num_planes = access->representation()->format().NumberOfPlanes();
     auto end_state = access->TakeEndState();
-
-    DCHECK(surface);
-    surface->flush({}, end_state.get());
+    for (int plane_index = 0; plane_index < num_planes; plane_index++) {
+      auto* surface = access->surface(plane_index);
+      DCHECK(surface);
+      surface->flush({}, end_state.get());
+    }
   }
 
   void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores) {
@@ -2069,33 +2072,63 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
                          "Couldn't create SkImage from source shared image.");
     }
 
-    auto* canvas = dest_scoped_access->surface()->getCanvas();
-    SkPaint paint;
-
     // Skia will flip the image if the surface origins do not match.
     DCHECK_EQ(unpack_flip_y, source_shared_image->surface_origin() !=
                                  dest_shared_image->surface_origin());
-    paint.setBlendMode(SkBlendMode::kSrc);
+    auto dest_format = dest_shared_image->format();
+    if (dest_format.is_single_plane()) {
+      // Destination shared image cannot prefer external sampler.
+      DCHECK(!dest_format.IsLegacyMultiplanar());
 
-    // Reinterpret the source image as being in the destination color space, to
-    // disable color conversion.
-    auto source_image_reinterpreted = source_image;
-    if (canvas->imageInfo().colorSpace()) {
-      source_image_reinterpreted = source_image->reinterpretColorSpace(
-          canvas->imageInfo().refColorSpace());
+      auto* canvas = dest_scoped_access->surface()->getCanvas();
+      SkPaint paint;
+      paint.setBlendMode(SkBlendMode::kSrc);
+
+      // Reinterpret the source image as being in the destination color space,
+      // to disable color conversion.
+      auto source_image_reinterpreted = source_image;
+      if (canvas->imageInfo().colorSpace()) {
+        source_image_reinterpreted = source_image->reinterpretColorSpace(
+            canvas->imageInfo().refColorSpace());
+      }
+      canvas->drawImageRect(source_image_reinterpreted,
+                            gfx::RectToSkRect(source_rect),
+                            gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
+                            &paint, SkCanvas::kStrict_SrcRectConstraint);
+    } else {
+      SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes] = {};
+      for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
+           plane_index++) {
+        // Get surface per plane from destination scoped write access.
+        yuva_sk_surfaces[plane_index] =
+            dest_scoped_access->surface(plane_index);
+      }
+
+      // TODO(crbug.com/828599): This should really default to rec709.
+      SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
+      dest_shared_image->color_space().ToSkYUVColorSpace(
+          dest_format.MultiplanarBitDepth(), &yuv_color_space);
+
+      SkYUVAInfo yuva_info(gfx::SizeToSkISize(dest_shared_image->size()),
+                           ToSkYUVAPlaneConfig(dest_format),
+                           ToSkYUVASubsampling(dest_format), yuv_color_space);
+      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image.
+      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
     }
 
-    canvas->drawImageRect(source_image_reinterpreted,
-                          gfx::RectToSkRect(source_rect),
-                          gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
-                          &paint, SkCanvas::kStrict_SrcRectConstraint);
-
     FlushSurface(dest_scoped_access.get());
-
+    auto source_format = source_shared_image->format();
     if (auto end_state = source_scoped_access->TakeEndState()) {
-      gr_context()->setBackendTextureState(
-          source_scoped_access->promise_image_texture()->backendTexture(),
-          *end_state);
+      // Only one texture for external sampler case in source shared image.
+      const int num_planes = source_format.PrefersExternalSampler()
+                                 ? 1
+                                 : source_format.NumberOfPlanes();
+      for (int plane_index = 0; plane_index < num_planes; plane_index++) {
+        gr_context()->setBackendTextureState(
+            source_scoped_access->promise_image_texture(plane_index)
+                ->backendTexture(),
+            *end_state);
+      }
     }
 
     if (!dest_shared_image->IsCleared()) {
