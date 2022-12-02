@@ -6843,10 +6843,8 @@
         {
             "platforms": [
                 "android",
-                "fuchsia",
                 "ios",
                 "linux",
-                "mac",
                 "windows"
             ],
             "experiments": [
