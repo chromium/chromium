@@ -718,11 +718,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
 
-  [ChromeEarlGrey goBack];
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_MALWARE_V3_HEADING)];
 
-  [ChromeEarlGrey goForward];
+  [[EarlGrey selectElementWithMatcher:ForwardButton()]
+      performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
 }
 
