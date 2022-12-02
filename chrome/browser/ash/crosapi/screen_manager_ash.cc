@@ -135,6 +135,9 @@ class ScreenManagerAsh::ScreenCapturerImpl : public SnapshotCapturerBase {
       mojom::SnapshotSourcePtr source = mojom::SnapshotSource::New();
       source->id = window_list_.LookupOrAddId(root_window);
       source->title = base::UTF16ToUTF8(root_window->GetTitle());
+      source->display_id = display::Screen::GetScreen()
+                               ->GetDisplayNearestWindow(root_window)
+                               .id();
 
       if (root_window == ash::Shell::GetPrimaryRootWindow()) {
         sources.insert(sources.begin(), std::move(source));

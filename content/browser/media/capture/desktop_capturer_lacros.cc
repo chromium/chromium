@@ -76,10 +76,11 @@ bool DesktopCapturerLacros::GetSourceList(SourceList* result) {
     snapshot_capturer_->ListSources(&sources);
   }
 
-  for (auto& source : sources) {
+  for (const auto& source : sources) {
     Source s;
     s.id = source->id;
     s.title = source->title;
+    s.display_id = source->display_id;
 
     if (is_aura_capture_enabled_ && source->window_unique_id) {
       // Use the AcceleratedWidget's value as the in process identifier, since

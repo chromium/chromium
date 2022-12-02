@@ -25,6 +25,12 @@ struct SnapshotSource {
   // corresponds to. Will only be set for Lacros-owned windows.
   [MinVersion=1]
   string? window_unique_id@2;
+
+  // Display specific unique identifier that can be used to connect a
+  // |SnapshotSource| representing a display to other subsystems like
+  // the window placement API.
+  [MinVersion=2]
+  int64 display_id@3;
 };
 
 // This interface is used to capture bitmap snapshots of screens or windows.

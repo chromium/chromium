@@ -165,9 +165,6 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
   EXPECT_EQ(5u, track_ids.size());
 }
 
-// TODO(crbug.com/1392777): Enable these tests for lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        TrackContainsScreenDetailed) {
   SetScreens(/*screen_count=*/1u);
@@ -193,8 +190,6 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
     EXPECT_TRUE(CheckScreenDetailedExists(contents_, track_id));
   }
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        AutoSelectAllScreensNotAllowed) {

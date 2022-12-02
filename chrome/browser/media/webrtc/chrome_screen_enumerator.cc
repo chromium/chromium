@@ -100,13 +100,13 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
   }
 
   for (const auto& source : source_list) {
-    // TODO(crbug.com/1320864): Pass the correct display_id.
     const std::string media_id =
         content::DesktopMediaID(content::DesktopMediaID::Type::TYPE_SCREEN,
                                 source.id)
             .ToString();
     blink::MediaStreamDevice device(stream_type, media_id,
-                                    /*name=*/"Screen");
+                                    /*name=*/"Screen",
+                                    /*display_id=*/source.display_id);
     stream_devices_set->stream_devices.push_back(
         blink::mojom::StreamDevices::New(/*audio_device=*/absl::nullopt,
                                          /*video_device=*/device));
