@@ -58,17 +58,19 @@ struct MockInsecureCredentialsManagerObserver
 using StrictMockInsecureCredentialsManagerObserver =
     ::testing::StrictMock<MockInsecureCredentialsManagerObserver>;
 
-PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece16 username,
-                               base::StringPiece16 password,
-                               base::StringPiece16 username_element = u"") {
+PasswordForm MakeSavedPassword(
+    base::StringPiece signon_realm,
+    base::StringPiece16 username,
+    base::StringPiece16 password,
+    base::StringPiece16 username_element = u"",
+    PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.username_element = std::u16string(username_element);
-  form.in_store = PasswordForm::Store::kProfileStore;
+  form.in_store = store;
   return form;
 }
 
@@ -1236,9 +1238,11 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
 
   account_store().AddLogin(
-      MakeSavedPassword(kExampleOrg, kUsername1, kPassword1));
+      MakeSavedPassword(kExampleOrg, kUsername1, kPassword1, u"",
+                        PasswordForm::Store::kAccountStore));
   account_store().AddLogin(
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword216));
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword216, u"",
+                        PasswordForm::Store::kAccountStore));
 
   RunUntilIdle();
 

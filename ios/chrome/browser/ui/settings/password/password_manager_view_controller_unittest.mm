@@ -205,6 +205,7 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
 
   // Adds a form to PasswordManagerViewController.
   void AddPasswordForm(std::unique_ptr<password_manager::PasswordForm> form) {
+    form->in_store = password_manager::PasswordForm::Store::kProfileStore;
     GetTestStore().AddLogin(*form);
     RunUntilIdle();
   }

@@ -242,6 +242,7 @@ TEST_F(SavedPasswordsPresenterTest, AddPasswordUnblocklistsOrigin) {
 // notifications.
 TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   PasswordForm form;
+  form.in_store = PasswordForm::Store::kProfileStore;
   // Make sure the form has some issues and expect that they are cleared
   // because of the password change.
   form.password_issues = {
@@ -255,11 +256,6 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   store().AddLogin(form);
   RunUntilIdle();
   EXPECT_FALSE(store().IsEmpty());
-
-  // When |form| is read back from the store, its |in_store| member will be set,
-  // and SavedPasswordsPresenter::EditPassword() actually depends on that. So
-  // set it here too.
-  form.in_store = PasswordForm::Store::kProfileStore;
 
   const std::u16string new_password = u"new_password";
 
@@ -1935,43 +1931,22 @@ TEST_F(SavedPasswordsPresenterInitializationTest, PendingUpdatesProfileStore) {
   SavedPasswordsPresenter presenter{&affiliation_service(), profile_store(),
                                     account_store()};
   presenter.Init();
-  ProcessBackendTasks(profile_store_backend_runner());
-  ProcessBackendTasks(account_store_backend_runner());
-  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
-
-  // Adding a new credential to the profile store will cause new pending
-  // updates.
-  PasswordForm form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
-
-  profile_store()->AddLogin(form);
+  EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
   ProcessBackendTasks(profile_store_backend_runner());
   EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
-  EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
-  ProcessBackendTasks(profile_store_backend_runner());
+  ProcessBackendTasks(account_store_backend_runner());
   EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
-  EXPECT_THAT(presenter.GetSavedPasswords(), Contains(CredentialUIEntry(form)));
 }
 
 TEST_F(SavedPasswordsPresenterInitializationTest, PendingUpdatesAccountStore) {
   SavedPasswordsPresenter presenter{&affiliation_service(), profile_store(),
                                     account_store()};
   presenter.Init();
-  ProcessBackendTasks(profile_store_backend_runner());
-  ProcessBackendTasks(account_store_backend_runner());
-  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
-
-  PasswordForm form =
-      CreateTestPasswordForm(PasswordForm::Store::kAccountStore);
-  EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
-  account_store()->AddLogin(form);
+  EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
   ProcessBackendTasks(account_store_backend_runner());
   EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
-  EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
-  ProcessBackendTasks(account_store_backend_runner());
+  ProcessBackendTasks(profile_store_backend_runner());
   EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
-  EXPECT_THAT(presenter.GetSavedPasswords(), Contains(CredentialUIEntry(form)));
 }
 
 }  // namespace password_manager

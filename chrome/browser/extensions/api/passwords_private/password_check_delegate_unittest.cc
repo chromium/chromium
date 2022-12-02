@@ -216,6 +216,7 @@ PasswordForm MakeSavedAndroidPassword(
   form.app_display_name = std::string(app_display_name);
   form.affiliated_web_realm = std::string(affiliated_web_realm);
   form.password_value = std::u16string(password);
+  form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
 

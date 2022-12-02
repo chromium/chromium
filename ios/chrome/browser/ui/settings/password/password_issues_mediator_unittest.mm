@@ -122,6 +122,7 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
         {password_manager::InsecureType::kLeaked,
          password_manager::InsecurityMetadata(
              base::Time::Now(), password_manager::IsMuted(false))}};
+    form.in_store = PasswordForm::Store::kProfileStore;
     store()->AddLogin(form);
   }
 

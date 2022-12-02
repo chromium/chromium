@@ -218,6 +218,10 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // exist, the unblocklist operation is a no-op.
   void UnblocklistBothStores(const CredentialUIEntry& credential);
 
+  // Helper functions to update local cache of PasswordForms.
+  void RemoveForms(const std::vector<PasswordForm>& forms);
+  void AddForms(const std::vector<PasswordForm>& forms);
+
   // The password stores containing the saved passwords.
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
