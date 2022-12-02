@@ -122,8 +122,6 @@ def main():
     driver.CheckEnv(not args.no_checks)
     driver.SetMainDisplayBrightness(args.brightness_level)
 
-    driver.WaitBatteryNotFull()
-
     # Measure or Profile all defined scenarios.
     def BrowserFactory(browser_name, variation):
       return browsers.MakeBrowserDriver(
@@ -148,6 +146,13 @@ def main():
         logging.info(f'Profiling scenario {scenario.name} ...')
         driver.Profile(scenario, profile_mode=args.profile_mode)
       else:
+        # This returns immediately after an IOPMPowerSource notification, which
+        # is required for power measurements that cover precisely the benchmark
+        # interval (if the benchmark starts n seconds after an IOPMPowerSource
+        # notification, power measurements will implicitly include these n
+        # seconds during which the benchmark wasn't running).
+        driver.WaitBatteryNotFull()
+
         logging.info(f'Recording scenario {scenario.name} ...')
         driver.Record(scenario)
 
