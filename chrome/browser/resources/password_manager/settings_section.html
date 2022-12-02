@@ -61,14 +61,16 @@
       label="$i18n{exportPasswords}"
       sub-label="$i18n{exportPasswordsDescription}" hide-icon>
   </cr-link-row>
-  <cr-link-row id="addShortcut" class="cr-row"
-      label="$i18n{addShortcut}"
-      sub-label="$i18n{addShortcutDescription}" hide-icon>
-    <cr-button class="header-aligned-button"
-        on-click="onAddShortcutClick_" aria-label="$i18n{addShortcut}">
-      $i18n{addShortcut}
-    </cr-button>
-  </cr-link-row>
+  <template is="dom-if" if="[[!isPasswordManagerShortcutInstalled_]]" restamp>
+    <cr-link-row id="addShortcutBanner" class="cr-row" 
+        label="$i18n{addShortcut}" 
+        sub-label="$i18n{addShortcutDescription}" hide-icon>
+      <cr-button class="header-aligned-button"
+          on-click="onAddShortcutClick_" aria-label="$i18n{addShortcut}">
+        $i18n{addShortcut}
+      </cr-button>
+    </cr-link-row>
+  </template>
 </div>
 <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>
 <div class="card" id="blockedSites">

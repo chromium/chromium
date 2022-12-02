@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -19,6 +20,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -30,7 +32,8 @@
 
 namespace {
 
-content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
+content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile,
+                                                      content::WebUI* web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       password_manager::kChromeUIPasswordManagerHost);
 
@@ -102,6 +105,11 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
           IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
           base::ASCIIToUTF16(chrome::kPasswordManagerLearnMoreURL)));
 
+  source->AddBoolean("isPasswordManagerShortcutInstalled",
+                     web_app::FindInstalledAppWithUrlInScope(
+                         profile, web_ui->GetWebContents()->GetURL())
+                         .has_value());
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Overwrite ubranded logo for Chrome-branded builds.
   // This path is used in the manifest of the PasswordManager web app
@@ -136,7 +144,7 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   // Set up the chrome://password-manager/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
-  auto* source = CreatePasswordsUIHTMLSource(profile);
+  auto* source = CreatePasswordsUIHTMLSource(profile, web_ui);
   AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);
   content::WebUIDataSource::Add(profile, source);
