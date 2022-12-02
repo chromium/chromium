@@ -6,13 +6,18 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalueorstringsequence_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline_options.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -104,16 +109,29 @@ const CSSValue* ParseInset(const InsetValueSequence& array,
   const CSSPrimitiveValue* css_value =
       DynamicTo<CSSPrimitiveValue>(numeric_value->ToCSSValue());
   if (!css_value || (!css_value->IsLength() && !css_value->IsPercentage())) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Unsupported inset: value must be length or percent");
+    exception_state.ThrowTypeError("Invalid inset");
     return nullptr;
   }
 
   return css_value;
 }
 
-bool IsStyleDependant(const CSSValue* value) {
+const CSSValuePair* ParseInsetPair(Document& document, const String str_value) {
+  const CSSValue* value = CSSParser::ParseSingleValue(
+      CSSPropertyID::kViewTimelineInset, str_value,
+      document.ElementSheet().Contents()->ParserContext());
+
+  auto* value_list = DynamicTo<CSSValueList>(value);
+  if (!value_list || value_list->length() != 1)
+    return nullptr;
+
+  return &To<CSSValuePair>(value_list->Item(0));
+}
+
+bool IsStyleDependent(const CSSValue* value) {
+  if (!value)
+    return false;
+
   if (const CSSPrimitiveValue* css_primitive_value =
           DynamicTo<CSSPrimitiveValue>(value)) {
     return !css_primitive_value->IsPx() && !css_primitive_value->IsPercentage();
@@ -172,30 +190,45 @@ ViewTimeline* ViewTimeline::Create(Document& document,
   }
 
   // Parse insets.
-  const InsetValueSequence inset_array = options->inset();
-  if (inset_array.size() > 2) {
-    exception_state.ThrowTypeError("Invalid inset");
-    return nullptr;
+  const V8UnionCSSNumericValueOrStringSequenceOrString* v8_inset =
+      options->inset();
+
+  absl::optional<const CSSValue*> start_inset_value;
+  absl::optional<const CSSValue*> end_inset_value;
+  if (v8_inset && v8_inset->IsCSSNumericValueOrStringSequence()) {
+    const InsetValueSequence inset_array =
+        v8_inset->GetAsCSSNumericValueOrStringSequence();
+    if (inset_array.size() > 2) {
+      exception_state.ThrowTypeError("Invalid inset");
+      return nullptr;
+    }
+
+    start_inset_value = ParseInset(inset_array, 0, exception_state);
+    end_inset_value = ParseInset(inset_array, 1, exception_state);
+  } else if (v8_inset && v8_inset->IsString()) {
+    const CSSValuePair* value_pair =
+        ParseInsetPair(document, v8_inset->GetAsString());
+    if (!value_pair) {
+      exception_state.ThrowTypeError("Invalid inset");
+      return nullptr;
+    }
+    start_inset_value = &value_pair->First();
+    end_inset_value = &value_pair->Second();
   }
 
   Inset inset;
-  const CSSValue* start_inset_value =
-      ParseInset(inset_array, 0, exception_state);
-  const CSSValue* end_inset_value = ParseInset(inset_array, 1, exception_state);
-
-  inset.start_side = InsetValueToLength(start_inset_value, subject,
-                                        Length(Length::Type::kFixed));
-
-  inset.end_side =
-      InsetValueToLength(end_inset_value, subject, inset.start_side);
+  inset.start_side = InsetValueToLength(start_inset_value.value_or(nullptr),
+                                        subject, Length(Length::Type::kFixed));
+  inset.end_side = InsetValueToLength(end_inset_value.value_or(nullptr),
+                                      subject, inset.start_side);
 
   ViewTimeline* view_timeline =
       MakeGarbageCollected<ViewTimeline>(&document, subject, axis, inset);
 
-  if (IsStyleDependant(start_inset_value))
-    view_timeline->style_dependant_start_inset_ = start_inset_value;
-  if (IsStyleDependant(end_inset_value))
-    view_timeline->style_dependant_end_inset_ = end_inset_value;
+  if (start_inset_value && IsStyleDependent(start_inset_value.value()))
+    view_timeline->style_dependant_start_inset_ = start_inset_value.value();
+  if (end_inset_value && IsStyleDependent(end_inset_value.value()))
+    view_timeline->style_dependant_end_inset_ = end_inset_value.value();
 
   view_timeline->UpdateSnapshot();
   return view_timeline;
