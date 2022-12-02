@@ -2104,7 +2104,7 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
       Alerta: não delegue o controle da versão do <ph name="PRODUCT_OS_NAME" /> para um aplicativo de quiosque, porque isso pode impedir que o dispositivo receba atualizações de software e correções de segurança críticas. Delegar o controle da versão do <ph name="PRODUCT_OS_NAME" /> pode colocar os usuários em risco.</translation>
 <translation id="299446489108785864">A lista de URLs especificando para quais URLs a <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> é válida. Esta política não tem impacto em valores de abertura automática definidos pelo usuário.
 
-      Se esta política for definida, os arquivos serão abertos automaticamente se o URL fizer parte deste conjunto e o tipo de arquivo estiver listado em <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Se alguma das condições for falsa, o download não será aberto automaticamente pela política.
+      Se esta política for definida, os arquivos serão abertos automaticamente se o URL fizer parte deste conjunto e o tipo de arquivo estiver listado em <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Se alguma das condições for falsa, o download não será aberto automaticamente por padrão.
 
       Se a política não for definida, todos os downloads em que o tipo de arquivo estiver em <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> serão abertos automaticamente.
 
