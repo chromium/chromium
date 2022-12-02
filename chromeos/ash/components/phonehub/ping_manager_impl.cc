@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/ping_manager_impl.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/message_receiver_impl.h"
 #include "chromeos/ash/components/phonehub/message_sender.h"
@@ -45,9 +46,11 @@ void PingManagerImpl::OnPhoneStatusUpdateReceived(
 }
 
 void PingManagerImpl::OnPingResponseReceived() {
-  // TODO(b/229432201): Include metrics to track latency distribution.
   is_waiting_for_response_ = false;
   ping_timeout_timer_.AbandonAndStop();
+  base::UmaHistogramBoolean("PhoneHub.PhoneAvailabilityCheck.Result", true);
+  base::UmaHistogramTimes("PhoneHub.PhoneAvailabilityCheck.Latency",
+                          base::TimeTicks::Now() - ping_sent_timestamp_);
   PA_LOG(INFO) << "Ping Response received";
 }
 
@@ -63,6 +66,7 @@ void PingManagerImpl::SendPingRequest() {
   PA_LOG(INFO) << "Sending Ping Request";
   message_sender_->SendPingRequest(kDefaultPingRequest);
 
+  ping_sent_timestamp_ = base::TimeTicks::Now();
   ping_timeout_timer_.Start(FROM_HERE, kPingTimeout,
                             base::BindOnce(&PingManagerImpl::OnPingTimerFired,
                                            base::Unretained(this)));
@@ -73,6 +77,7 @@ void PingManagerImpl::OnPingTimerFired() {
   PA_LOG(WARNING) << "Ping response never received. Disconnecting.";
   is_waiting_for_response_ = false;
   connection_manager_->Disconnect();
+  base::UmaHistogramBoolean("PhoneHub.PhoneAvailabilityCheck.Result", false);
 }
 
 void PingManagerImpl::UpdatePhoneSupport(

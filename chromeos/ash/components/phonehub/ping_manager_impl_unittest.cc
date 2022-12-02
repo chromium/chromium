@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/phonehub/ping_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/phonehub/fake_message_receiver.h"
@@ -14,6 +15,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::phonehub {
+
+namespace {
+
+constexpr auto kLatencyDelta = base::Milliseconds(123u);
+constexpr char kPingManagerLatencyHistogramName[] =
+    "PhoneHub.PhoneAvailabilityCheck.Latency";
+constexpr char kPingManagerPingResultHistogramName[] =
+    "PhoneHub.PhoneAvailabilityCheck.Result";
+
+}  // namespace
 
 class PingManagerImplTest : public testing::Test {
  public:
@@ -136,11 +147,16 @@ TEST_F(PingManagerImplTest, OnPhoneStatusUpdateReceivedNoFeatureSetupConfig) {
 }
 
 TEST_F(PingManagerImplTest, OnPingResponseReceived) {
+  base::HistogramTester histogram_tester;
+
   ping_manager_->set_is_waiting_for_response(true);
   EXPECT_TRUE(ping_manager_->is_waiting_for_response());
 
   // Simulate receiving a message
   fake_message_receiver_.NotifyPingResponseReceived();
+
+  histogram_tester.ExpectBucketCount(kPingManagerPingResultHistogramName, true,
+                                     1);
 
   EXPECT_FALSE(ping_manager_->is_waiting_for_response());
   EXPECT_FALSE(ping_manager_->IsPingTimeoutTimerRunning());
@@ -177,6 +193,8 @@ TEST_F(PingManagerImplTest, SendPingRequestWaitingForResponse) {
 }
 
 TEST_F(PingManagerImplTest, OnPingTimerFired) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_EQ(0u, fake_connection_manager_->num_disconnect_calls());
   EXPECT_FALSE(ping_manager_->is_waiting_for_response());
   EXPECT_FALSE(ping_manager_->IsPingTimeoutTimerRunning());
@@ -190,12 +208,17 @@ TEST_F(PingManagerImplTest, OnPingTimerFired) {
 
   task_environment_.FastForwardBy(base::Seconds(3));
 
+  histogram_tester.ExpectBucketCount(kPingManagerPingResultHistogramName, false,
+                                     1);
+
   EXPECT_EQ(1u, fake_connection_manager_->num_disconnect_calls());
   EXPECT_FALSE(ping_manager_->is_waiting_for_response());
   EXPECT_FALSE(ping_manager_->IsPingTimeoutTimerRunning());
 }
 
 TEST_F(PingManagerImplTest, SendAndReceivePing) {
+  base::HistogramTester histogram_tester;
+
   EXPECT_FALSE(ping_manager_->is_waiting_for_response());
   EXPECT_FALSE(ping_manager_->IsPingTimeoutTimerRunning());
 
@@ -206,8 +229,15 @@ TEST_F(PingManagerImplTest, SendAndReceivePing) {
   EXPECT_TRUE(ping_manager_->is_waiting_for_response());
   EXPECT_TRUE(ping_manager_->IsPingTimeoutTimerRunning());
 
+  task_environment_.FastForwardBy(kLatencyDelta);
+
   // Simulate receiving a message.
   fake_message_receiver_.NotifyPingResponseReceived();
+
+  histogram_tester.ExpectTimeBucketCount(kPingManagerLatencyHistogramName,
+                                         kLatencyDelta, 1);
+  histogram_tester.ExpectBucketCount(kPingManagerPingResultHistogramName, true,
+                                     1);
 
   EXPECT_FALSE(ping_manager_->is_waiting_for_response());
   EXPECT_FALSE(ping_manager_->IsPingTimeoutTimerRunning());

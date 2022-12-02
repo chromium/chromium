@@ -53,6 +53,7 @@ class PingManagerImpl : public PingManager, public MessageReceiver::Observer {
   void UpdatePhoneSupport(proto::PhoneProperties phone_properties);
 
   base::OneShotTimer ping_timeout_timer_;
+  base::TimeTicks ping_sent_timestamp_;
   secure_channel::ConnectionManager* connection_manager_;
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;
