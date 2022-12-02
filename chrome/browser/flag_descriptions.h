@@ -2759,6 +2759,9 @@ extern const char kAutoFramingOverrideDescription[];
 extern const char kAutocompleteExtendedSuggestionsName[];
 extern const char kAutocompleteExtendedSuggestionsDescription[];
 
+extern const char kAutocorrectByDefaultName[];
+extern const char kAutocorrectByDefaultDescription[];
+
 extern const char kAutocorrectParamsTuningName[];
 extern const char kAutocorrectParamsTuningDescription[];
 

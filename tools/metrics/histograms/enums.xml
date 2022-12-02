@@ -61131,6 +61131,7 @@ from previous Chrome versions.
   <int value="223662457" label="BackgroundLoadingForDownloads:enabled"/>
   <int value="224019823" label="CompositeAfterPaint:enabled"/>
   <int value="224065816" label="SuppressToolbarCaptures:enabled"/>
+  <int value="224221928" label="AutocorrectByDefault:disabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
   <int value="226590039" label="OverviewButton:disabled"/>
   <int value="228107154"
@@ -62266,6 +62267,7 @@ from previous Chrome versions.
       label="ThreadedScrollPreventRenderingStarvation:enabled"/>
   <int value="896506516"
       label="enable-canvas-context-lost-in-background (obsolete)"/>
+  <int value="897457037" label="AutocorrectByDefault:enabled"/>
   <int value="897695337" label="TabStripRedesign:enabled"/>
   <int value="898311758" label="ReaderMode:disabled"/>
   <int value="899347105" label="NearbySharingWifiLan:enabled"/>

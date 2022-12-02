@@ -4796,6 +4796,10 @@ const char kAutocompleteExtendedSuggestionsName[] =
 const char kAutocompleteExtendedSuggestionsDescription[] =
     "Enables extended autocomplete suggestions experiment on ChromeOS.";
 
+const char kAutocorrectByDefaultName[] = "CrOS autocorrect by default";
+const char kAutocorrectByDefaultDescription[] =
+    "Enables autocorrect by default experiment on ChromeOS";
+
 const char kAutocorrectParamsTuningName[] = "CrOS autocorrect params tuning";
 const char kAutocorrectParamsTuningDescription[] =
     "Enables params tuning experiment for autocorrect on ChromeOS.";
