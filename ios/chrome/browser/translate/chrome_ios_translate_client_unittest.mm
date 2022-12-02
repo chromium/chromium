@@ -88,6 +88,7 @@ TEST_F(ChromeIOSTranslateClientTest, NewMetricsOnPageLoadCommits) {
       ChromeIOSTranslateClient::FromWebState(&web_state_);
 
   web::FakeNavigationContext context;
+  context.SetUrl(GURL("http://load.test"));
   translate_client->DidStartNavigation(&web_state_, &context);
   translate_client->DidFinishNavigation(&web_state_, &context);
   base::RunLoop().RunUntilIdle();
@@ -111,7 +112,8 @@ TEST_F(ChromeIOSTranslateClientTest, NoNewMetricsOnErrorPage) {
       ChromeIOSTranslateClient::FromWebState(&web_state_);
 
   web::FakeNavigationContext context;
-  translate_client->DidStartNavigation(&web_state_, &context);  // needed?
+  context.SetUrl(GURL("http://load.test"));
+  translate_client->DidStartNavigation(&web_state_, &context);
   context.SetError([NSError
       errorWithDomain:@"commm"
                  code:200
@@ -134,6 +136,7 @@ TEST_F(ChromeIOSTranslateClientTest, PageTranslationCorrectlyUpdatesMetrics) {
   histogram_tester_.ExpectTotalCount("Translate.PageLoad.NumTranslations", 0);
 
   web::FakeNavigationContext context;
+  context.SetUrl(GURL("http://load.test"));
   translate_client->DidStartNavigation(&web_state_, &context);
   translate_client->DidFinishNavigation(&web_state_, &context);
   translate_client->translate_metrics_logger_->LogInitialSourceLanguage(

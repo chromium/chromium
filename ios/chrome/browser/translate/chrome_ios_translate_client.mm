@@ -156,6 +156,13 @@ void ChromeIOSTranslateClient::DidStartNavigation(
     return;
 
   DidPageLoadComplete();
+  if (!IsTranslatableURL(navigation_context->GetUrl())) {
+    // If URL is not translatable, do not record metrics as this would skew the
+    // data.
+    translate_metrics_logger_.reset();
+    translate_manager_->RegisterTranslateMetricsLogger(nullptr);
+    return;
+  }
   // Lifetime of TranslateMetricsLogger should be each page load. So, we need to
   // detect the page load completion, i.e. the tab was closed, new navigation
   // replaced the page load, etc, and clear the logger.
