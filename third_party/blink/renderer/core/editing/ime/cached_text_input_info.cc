@@ -86,14 +86,16 @@ void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
   // <div style="contain:strict; ...">abc</div> reaches here.
   if (!container_)
     return;
-  Node* const node = layout_object.NonPseudoNode();
-  if (!node)
-    return;
-  const ContainerNode* const container =
-      RootEditableElementOrTreeScopeRootNodeOf(Position(node, 0));
-  if (container != container_)
-    return;
-  Clear();
+
+  if (layout_object_->IsDescendantOf(&layout_object)) {
+    // `<span contenteditable>...</span>` reaches here.
+    return Clear();
+  }
+
+  if (layout_object.IsDescendantOf(layout_object_)) {
+    // CachedTextInputInfoTest.RelayoutBoundary reaches here.
+    return Clear();
+  }
 }
 
 void CachedTextInputInfo::DidUpdateLayout(const LayoutObject& layout_object) {

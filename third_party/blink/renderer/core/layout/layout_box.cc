@@ -533,10 +533,6 @@ void LayoutBox::WillBeDestroyed() {
 
   if (!DocumentBeingDestroyed()) {
     DisassociatePhysicalFragments();
-    GetDocument()
-        .GetFrame()
-        ->GetInputMethodController()
-        .LayoutObjectWillBeDestroyed(*this);
     if (IsFixedPositioned())
       GetFrameView()->RemoveFixedPositionObject(*this);
   }

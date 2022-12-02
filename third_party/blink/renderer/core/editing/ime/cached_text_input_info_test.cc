@@ -44,6 +44,23 @@ TEST_F(CachedTextInputInfoTest, Basic) {
   EXPECT_EQ("abX", GetCachedTextInputInfo().GetText());
 }
 
+// http://crbug.com/1382425
+TEST_F(CachedTextInputInfoTest, InlineElementEditable) {
+  GetFrame().Selection().SetSelectionAndEndTyping(
+      SetSelectionTextToBody("<span contenteditable><img>|a</img></span>"));
+
+  EXPECT_EQ(PlainTextRange(1, 1),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ(String(u"\uFFFCa"), GetCachedTextInputInfo().GetText());
+
+  auto& span = *GetDocument().QuerySelector("span");
+  span.replaceChild(Text::Create(GetDocument(), "12345"), span.firstChild());
+
+  EXPECT_EQ(PlainTextRange(5, 5),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("12345a", GetCachedTextInputInfo().GetText());
+}
+
 // http://crbug.com/1194349
 TEST_F(CachedTextInputInfoTest, PlaceholderBRInTextArea) {
   SetBodyContent("<textarea id=target>abc\n</textarea>");
