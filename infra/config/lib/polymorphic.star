@@ -20,7 +20,24 @@ def _builder_ref_to_builder_id(ref):
         builder = builder,
     )
 
-def launcher(
+def _target_builder(*, builder, dimensions = {}):
+    """Details for a target builder for a polymorphic launcher.
+
+    Args:
+        builder: (str) The bucket-qualified reference to the builder that
+            performs the polymoprhic runs.
+        dimensions: (dict[str, str]) Additional dimensions to set for the target
+            builder. Any dimensions specified here will override dimensions on
+            the runner builder. An empty dimension value will remove the
+            dimension when the runner builder is triggered for the target
+            builder.
+    """
+    return struct(
+        builder = builder,
+        dimensions = dimensions,
+    )
+
+def _launcher(
         *,
         name,
         runner,
@@ -36,8 +53,10 @@ def launcher(
         name: (str) The name of the builder.
         runner: (str) Bucket-qualified reference to the builder that performs
             the polymorphic runs.
-        target_builders: (list[str]) Bucket-qualified references to the target
-            builders.
+        target_builders: (list[str|target_builder]) The target builders that the
+            runner builder should be triggered for. Can either be an object
+            returned by polymorphic.target_builder or a string with the
+            bucket-qualified reference to the target builder.
         **kwargs: Additional keyword arguments to be passed onto
             `builders.builder`.
 
@@ -46,6 +65,7 @@ def launcher(
     """
     if not target_builders:
         fail("target_builders must not be empty")
+    target_builders = [_target_builder(builder = t) if type(t) == type("") else t for t in target_builders]
     bucket = defaults.get_value_from_kwargs("bucket", kwargs)
 
     launcher_key = _LAUNCHER.add(bucket, name)
@@ -56,15 +76,18 @@ def launcher(
     # exist).
     _RUNNER.link(launcher_key, runner)
     for t in target_builders:
-        _TARGET_BUILDER.link(launcher_key, t)
+        _TARGET_BUILDER.link(launcher_key, t.builder)
+
+    def _target_builder_prop(t):
+        p = {"builder_id": _builder_ref_to_builder_id(t.builder)}
+        if t.dimensions:
+            p["dimensions"] = t.dimensions
+        return p
 
     properties = dict(kwargs.pop("properties", {}))
     properties.update({
         "runner_builder": _builder_ref_to_builder_id(runner),
-        "target_builders": [
-            {"builder_id": _builder_ref_to_builder_id(t)}
-            for t in target_builders
-        ],
+        "target_builders": [_target_builder_prop(t) for t in target_builders],
     })
 
     kwargs.setdefault("executable", "recipe:chromium_polymorphic/launcher")
@@ -77,5 +100,6 @@ def launcher(
     )
 
 polymorphic = struct(
-    launcher = launcher,
+    launcher = _launcher,
+    target_builder = _target_builder,
 )
