@@ -14,7 +14,6 @@
 (define bundle-id "BUNDLE_ID")
 (define bundle-path "BUNDLE_PATH")
 (define component-path "COMPONENT_PATH")
-(define current-pid "CURRENT_PID")
 (define disable-sandbox-denial-logging "DISABLE_SANDBOX_DENIAL_LOGGING")
 (define enable-logging "ENABLE_LOGGING")
 (define executable-path "EXECUTABLE_PATH")
@@ -43,6 +42,9 @@
 
 ; Allow sending signals to self - https://crbug.com/20370
 (allow signal (target self))
+
+; TODO(rsesek): Lock down `(deny process-info*)`.
+(allow process-info-pidinfo (target self))
 
 ; Consumes a subpath and appends it to the user's homedir path.
 (define (user-homedir-path subpath)
@@ -254,7 +256,6 @@
   (sysctl-name "kern.usrstack64")
   (sysctl-name "kern.version")
   (sysctl-name "sysctl.proc_cputype")
-  (sysctl-name (string-append "kern.proc.pid." (param current-pid)))
 )
 
 (allow network-outbound

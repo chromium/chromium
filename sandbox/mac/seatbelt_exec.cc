@@ -200,8 +200,7 @@ SeatbeltExecServer::CreateFromArguments(const char* executable_path,
 
   auto server = std::make_unique<SeatbeltExecServer>(seatbelt_client_fd);
   // These parameters are provided for every profile to use.
-  if (!server->SetParameter("EXECUTABLE_PATH", full_exec_path) ||
-      !server->SetParameter("CURRENT_PID", std::to_string(getpid()))) {
+  if (!server->SetParameter("EXECUTABLE_PATH", full_exec_path)) {
     logging::Error("Failed to set up parameters for sandbox.");
     return result;
   }

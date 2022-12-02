@@ -70,8 +70,6 @@ void SetParametersForTest(sandbox::SandboxCompiler* compiler,
                                     logging_path.value()));
 
   // Parameters normally set by the main executable.
-  CHECK(compiler->InsertStringParam(sandbox::policy::kParamCurrentPid,
-                                    std::to_string(getpid())));
   CHECK(compiler->InsertStringParam(sandbox::policy::kParamExecutablePath,
                                     executable_path.value()));
 
@@ -166,6 +164,8 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
   size_t data_size = sysctl_data.size();
   CHECK_EQ(0,
            sysctlbyname("hw.ncpu", sysctl_data.data(), &data_size, nullptr, 0));
+
+  CHECK(!base::Process::Current().CreationTime().is_null());
 
   return 0;
 }

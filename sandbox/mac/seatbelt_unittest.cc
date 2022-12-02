@@ -4,9 +4,13 @@
 
 #include "sandbox/mac/seatbelt.h"
 
+#include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/sysctl.h>
 #include <unistd.h>
+
+#include <iterator>
 
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
@@ -106,6 +110,44 @@ TEST_F(SeatbeltTest, Ftruncate) {
     EXPECT_EQ(15, exit_code);
     EXPECT_GT(file.GetLength(), static_cast<int64_t>(contents.length()));
   }
+}
+
+MULTIPROCESS_TEST_MAIN(ProcessSelfInfo) {
+  const char* profile = R"(
+    (version 1)
+    (deny default (with no-log))
+    ; `process-info` is default-allowed.
+    (deny process-info*)
+    (allow process-info-pidinfo (target self))
+    (deny sysctl-read)
+  )";
+
+  std::string error;
+  CHECK(Seatbelt::Init(profile, 0, &error)) << error;
+
+  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+  kinfo_proc proc;
+  size_t size = sizeof(proc);
+
+  int rv = sysctl(mib, std::size(mib), &proc, &size, nullptr, 0);
+  PCHECK(rv == 0);
+
+  mib[std::size(mib) - 1] = getppid();
+  errno = 0;
+  rv = sysctl(mib, std::size(mib), &proc, &size, nullptr, 0);
+  PCHECK(rv == -1);
+  PCHECK(errno == EPERM);
+
+  return 0;
+}
+
+TEST_F(SeatbeltTest, ProcessSelfInfo) {
+  base::Process process = SpawnChild("ProcessSelfInfo");
+  ASSERT_TRUE(process.IsValid());
+  int exit_code = 42;
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
+                                             &exit_code));
+  EXPECT_EQ(exit_code, 0);
 }
 
 }  // namespace sandbox
