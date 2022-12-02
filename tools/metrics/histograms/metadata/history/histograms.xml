@@ -662,7 +662,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.ClusterContainsSearch"
-    enum="BooleanContained" expires_after="2023-04-16">
+    enum="BooleanContained" expires_after="2022-12-01">
+  <obsolete>
+    Obsolete in 12/22
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -705,7 +708,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.ClusterSize.{ClusterStatistic}"
-    units="number visits" expires_after="2023-10-01">
+    units="number visits" expires_after="2022-12-01">
+  <obsolete>
+    Obsolete in 12/22
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -919,7 +925,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.NumKeywordsPerCluster"
-    units="number keywords" expires_after="2023-03-26">
+    units="number keywords" expires_after="2022-12-01">
+  <obsolete>
+    Obsolete in 12/22
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -933,7 +942,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.NumKeywordsPerCluster.{KeywordStatistic}"
-    units="number keywords" expires_after="2023-10-01">
+    units="number keywords" expires_after="2022-12-01">
+  <obsolete>
+    Obsolete in 12/22
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -950,7 +962,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.NumVisitsPerCluster"
-    units="number visits" expires_after="2023-03-26">
+    units="number visits" expires_after="2022-12-01">
+  <obsolete>
+    Obsolete in 12/22
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>

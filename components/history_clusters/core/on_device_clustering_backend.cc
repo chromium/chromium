@@ -26,7 +26,6 @@
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/keyword_cluster_finalizer.h"
 #include "components/history_clusters/core/label_cluster_finalizer.h"
-#include "components/history_clusters/core/metrics_cluster_finalizer.h"
 #include "components/history_clusters/core/noisy_cluster_finalizer.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
@@ -371,12 +370,6 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>(
         &entity_id_to_entity_metadata_map));
   }
-  if (clustering_request_source ==
-      ClusteringRequestSource::kKeywordCacheGeneration) {
-    // Only log metrics for whole clusters when it is a query-less state to get
-    // a better lay of the land. We estimate this by using the request source.
-    cluster_finalizers.push_back(std::make_unique<MetricsClusterFinalizer>());
-  }
 
   // Group visits into clusters.
   base::ElapsedThreadTimer clusterer_timer;
@@ -398,41 +391,14 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   // Run finalizers that dedupe and score visits within a cluster and
   // log several metrics about the result.
   base::ElapsedThreadTimer cluster_finalizers_timer;
-  std::vector<int> keyword_sizes;
-  std::vector<int> visits_in_clusters;
-  keyword_sizes.reserve(clusters.size());
-  visits_in_clusters.reserve(clusters.size());
   for (auto& cluster : clusters) {
     for (const auto& finalizer : cluster_finalizers) {
       finalizer->FinalizeCluster(cluster);
     }
-    visits_in_clusters.emplace_back(cluster.visits.size());
-    keyword_sizes.emplace_back(cluster.keyword_to_data_map.size());
   }
   base::UmaHistogramTimes(
       "History.Clusters.Backend.ClusterFinalizers.ThreadTime",
       cluster_finalizers_timer.Elapsed());
-
-  if (!visits_in_clusters.empty()) {
-    // We check for empty to ensure the below code doesn't crash, but
-    // realistically this vector should never be empty.
-    base::UmaHistogramCounts1000("History.Clusters.Backend.ClusterSize.Min",
-                                 *std::min_element(visits_in_clusters.begin(),
-                                                   visits_in_clusters.end()));
-    base::UmaHistogramCounts1000("History.Clusters.Backend.ClusterSize.Max",
-                                 *std::max_element(visits_in_clusters.begin(),
-                                                   visits_in_clusters.end()));
-  }
-  if (!keyword_sizes.empty()) {
-    // We check for empty to ensure the below code doesn't crash, but
-    // realistically this vector should never be empty.
-    base::UmaHistogramCounts100(
-        "History.Clusters.Backend.NumKeywordsPerCluster.Min",
-        *std::min_element(keyword_sizes.begin(), keyword_sizes.end()));
-    base::UmaHistogramCounts100(
-        "History.Clusters.Backend.NumKeywordsPerCluster.Max",
-        *std::max_element(keyword_sizes.begin(), keyword_sizes.end()));
-  }
 
   base::UmaHistogramTimes("History.Clusters.Backend.ComputeClusters.ThreadTime",
                           cluster_visits_timer.Elapsed());
