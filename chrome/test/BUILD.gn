@@ -3380,7 +3380,6 @@ if (!is_android) {
         "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.cc",
         "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.h",
         "../browser/ui/views/autofill/payments/credit_card_access_manager_browsertest.cc",
-        "../browser/ui/views/autofill/payments/local_card_migration_browsertest.cc",
         "../browser/ui/views/autofill/payments/offer_notification_bubble_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/save_card_bubble_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/virtual_card_selection_dialog_browsertest.cc",
@@ -9536,6 +9535,7 @@ if (!is_android) {
       "../browser/ui/thumbnails/thumbnail_tab_helper_interactive_uitest.cc",
       "../browser/ui/translate/translate_bubble_test_utils.h",
       "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc",
+      "../browser/ui/views/autofill/payments/local_card_migration_uitest.cc",
       "../browser/ui/views/collected_cookies_view_interactive_uitest.cc",
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
@@ -9562,6 +9562,7 @@ if (!is_android) {
 
     data = [
       "data/",
+      "//components/test/data/autofill/",
       "//content/test/data/",
       "//net/tools/testserver/",
       "//third_party/mocha/mocha.js",
@@ -9584,6 +9585,7 @@ if (!is_android) {
     ]
 
     deps = [
+      ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
       ":webrtc_browser_tests_base",
