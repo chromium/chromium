@@ -27,6 +27,11 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
+#endif
+
 DEFINE_UI_CLASS_PROPERTY_TYPE(chromeos::ImmersiveFullscreenController*)
 
 namespace chromeos {
@@ -280,7 +285,14 @@ void ImmersiveFullscreenController::UnlockRevealedState() {
 // static
 void ImmersiveFullscreenController::EnableForWidget(views::Widget* widget,
                                                     bool enabled) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* wayland_extension = views::DesktopWindowTreeHostLacros::From(
+                                widget->GetNativeWindow()->GetHost())
+                                ->GetWaylandExtension();
+  wayland_extension->SetImmersiveFullscreenStatus(enabled);
+#else
   widget->GetNativeWindow()->SetProperty(kImmersiveIsActive, enabled);
+#endif
 }
 
 // static

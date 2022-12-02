@@ -48,6 +48,7 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(GetOwnedWindowAnchorAndRectInDIP,
                absl::optional<OwnedWindowAnchor>());
   MOCK_METHOD0(OnMouseEnter, void());
+  MOCK_METHOD1(OnImmersiveModeChanged, void(bool immersive));
 };
 
 bool operator==(const PlatformWindowDelegate::BoundsChange& a,

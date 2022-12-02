@@ -8,6 +8,7 @@ include_rules = [
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
+  "+ui/platform_window",
   "+ui/strings/grit/ui_strings.h",
   "+ui/views",
   "+ui/wm/public",

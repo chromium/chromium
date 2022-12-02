@@ -139,6 +139,8 @@ class WaylandTest : public WaylandTestBase,
 
   void SetUp() override;
   void TearDown() override;
+
+  bool IsAuraShellEnabled();
 };
 
 // Version of WaylandTest that uses simple test fixtures (TEST_F).

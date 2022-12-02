@@ -245,6 +245,10 @@ void WaylandTest::TearDown() {
   WaylandTestBase::TearDown();
 }
 
+bool WaylandTest::IsAuraShellEnabled() {
+  return GetParam().enable_aura_shell == wl::EnableAuraShellProtocol::kEnabled;
+}
+
 WaylandTestSimple::WaylandTestSimple() : WaylandTestBase({}) {}
 
 WaylandTestSimple::~WaylandTestSimple() = default;

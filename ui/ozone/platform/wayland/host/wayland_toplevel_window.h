@@ -157,7 +157,9 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // WaylandExtension:
   void StartWindowDraggingSessionIfNeeded(bool allow_system_drag) override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetImmersiveFullscreenStatus(bool status) override;
+#endif
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;
   void CommitSnap(WaylandWindowSnapDirection snap) override;
@@ -243,6 +245,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool is_active_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool is_immersive_fullscreen_ = false;
+
   // Unique ID for this window. May be shared over non-Wayland IPC transports
   // (e.g. mojo) to identify the window.
   std::string window_unique_id_;
