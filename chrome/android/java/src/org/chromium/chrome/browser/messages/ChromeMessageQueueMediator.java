@@ -56,6 +56,8 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     private int mUrlFocusToken = TokenHolder.INVALID_TOKEN;
     private Handler mQueueHandler;
 
+    private boolean mIsDestroyed;
+
     private LayoutStateObserver mLayoutStateObserver = new LayoutStateObserver() {
         private int mToken = TokenHolder.INVALID_TOKEN;
 
@@ -148,6 +150,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     }
 
     public void destroy() {
+        mIsDestroyed = true;
         mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
         mActivityLifecycleDispatcher = null;
         mCallbackController.destroy();
@@ -194,11 +197,16 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
 
     @Override
     public void onAnimationStart() {
+        if (mContainerCoordinator == null) return;
         mContainerCoordinator.onAnimationStart();
     }
 
     @Override
     public void onAnimationEnd() {
+        if (mContainerCoordinator == null) {
+            assert mIsDestroyed;
+            return;
+        }
         mContainerCoordinator.onAnimationEnd();
     }
 
