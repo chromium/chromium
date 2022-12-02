@@ -717,9 +717,10 @@ IN_PROC_BROWSER_TEST_F(
                 kGetFromStorageAPI));
 }
 
+// TODO(crbug.com/1395435): Re-enable this test
 IN_PROC_BROWSER_TEST_F(
     KioskDeviceOwnedTest,
-    AccessibilityExtensionsResetTheirStateUponSessionRestart) {
+    DISABLED_AccessibilityExtensionsResetTheirStateUponSessionRestart) {
   test::SpeechMonitor speech_monitor;
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
