@@ -8,7 +8,6 @@
 #include "base/no_destructor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
-#include "ui/accessibility/ax_live_region_tracker.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 
@@ -211,7 +210,6 @@ void AXEventGenerator::SetTree(AXTree* new_tree) {
   if (tree_) {
     DCHECK(tree_event_observation_.IsObservingSource(tree_.get()));
     tree_event_observation_.Reset();
-    live_region_tracker_.reset();
   }
   tree_ = new_tree;
   if (tree_)
@@ -221,13 +219,6 @@ void AXEventGenerator::SetTree(AXTree* new_tree) {
 void AXEventGenerator::ReleaseTree() {
   tree_event_observation_.Reset();
   tree_ = nullptr;
-}
-
-AXLiveRegionTracker* AXEventGenerator::GetOrCreateLiveRegionTracker() {
-  DCHECK(tree_->root());
-  if (!live_region_tracker_)
-    live_region_tracker_ = std::make_unique<AXLiveRegionTracker>(*tree_);
-  return live_region_tracker_.get();
 }
 
 bool AXEventGenerator::empty() const {
@@ -492,7 +483,7 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
       // If it's in a live region, fire live region events.
       if (node->HasStringAttribute(
               ax::mojom::StringAttribute::kContainerLiveStatus)) {
-        FireLiveRegionEvents(node);
+        FireLiveRegionEvents(node, /* is_removal */ false);
       }
 
       FireValueInTextFieldChangedEventIfNecessary(tree, node);
@@ -781,14 +772,10 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
   }
 }
 
-void AXEventGenerator::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
-  DCHECK_EQ(tree_, tree);
-  GetOrCreateLiveRegionTracker()->OnNodeWillBeDeleted(*node);
-  FireValueInTextFieldChangedEventIfNecessary(tree, node);
-}
-
 void AXEventGenerator::OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) {
   DCHECK_EQ(tree_, tree);
+  FireValueInTextFieldChangedEventIfNecessary(tree, node);
+  FireLiveRegionEvents(node, /* removal */ true);
 }
 
 void AXEventGenerator::OnNodeWillBeReparented(AXTree* tree, AXNode* node) {
@@ -833,15 +820,6 @@ void AXEventGenerator::OnAtomicUpdateFinished(
   for (const auto& change : changes) {
     DCHECK(change.node);
 
-    if ((change.type == NODE_CREATED || change.type == SUBTREE_CREATED ||
-         change.type == NODE_REPARENTED || change.type == SUBTREE_REPARENTED)) {
-      if (change.node->HasStringAttribute(
-              ax::mojom::StringAttribute::kContainerLiveStatus)) {
-        GetOrCreateLiveRegionTracker()->UpdateCachedLiveRootForNode(
-            *change.node);
-      }
-    }
-
     if (change.type == SUBTREE_CREATED) {
       AddEvent(change.node, Event::SUBTREE_CREATED);
     } else if (change.type != NODE_CREATED) {
@@ -854,28 +832,11 @@ void AXEventGenerator::OnAtomicUpdateFinished(
     else if (change.node->data().IsActiveLiveRegionRoot())
       AddEvent(change.node, Event::LIVE_REGION_CREATED);
     else if (change.node->data().IsContainedInActiveLiveRegion())
-      FireLiveRegionEvents(change.node);
+      FireLiveRegionEvents(change.node, /* is_removal */ false);
   }
 
   FireActiveDescendantEvents();
   nodes_to_suppress_parent_changed_on_.clear();
-
-  // If we queued any live region change events during node deletion, add them
-  // here. It's necessary to wait to add these events, because an update might
-  // destroy and recreate live region roots after OnNodeWillBeDeleted is called.
-  // TODO(mrobinson): Consider designing AXEventGenerator to have a more
-  // resilient way to queue up events for nodes that might be destroyed and
-  // recreated in a single update.
-  for (auto& id :
-       GetOrCreateLiveRegionTracker()->live_region_roots_with_changes()) {
-    // If node is null, the live region root with a change was deleted during
-    // the course of this update and we should not trigger an event.
-    if (AXNode* node = tree_->GetFromId(id)) {
-      AddEvent(node, Event::LIVE_REGION_CHANGED);
-    }
-  }
-
-  GetOrCreateLiveRegionTracker()->OnAtomicUpdateFinished();
 
   PostprocessEvents();
 }
@@ -886,22 +847,42 @@ void AXEventGenerator::AddEventsForTesting(
   tree_events_[node.id()] = events;
 }
 
-void AXEventGenerator::FireLiveRegionEvents(AXNode* node) {
-  AXNode* live_root =
-      GetOrCreateLiveRegionTracker()->GetLiveRootIfNotBusy(*node);
+bool AXEventGenerator::IsRemovalRelevantInLiveRegion(AXNode* node) {
+  std::string aria_relevant = node->GetStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveRelevant);
+  if (aria_relevant.empty())
+    return false;
+  std::vector<std::string> tokens = base::SplitString(
+      aria_relevant, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return std::any_of(tokens.begin(), tokens.end(), [](std::string token) {
+    return token == "all" || token == "removals";
+  });
+}
 
-  // Note that |live_root| might be nullptr if a live region was just added,
-  // or if it has aria-busy="true".
-  if (!live_root)
+void AXEventGenerator::FireLiveRegionEvents(AXNode* node, bool is_removal) {
+  AXNode* live_root = node;
+  std::string container_live = node->GetStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus);
+  // Return early if not in a live region.
+  if (container_live.empty() || container_live == "off")
     return;
 
-  // Fire LIVE_REGION_NODE_CHANGED on each node that changed.
-  if (!node->GetStringAttribute(ax::mojom::StringAttribute::kName).empty()) {
-    AddEvent(node, Event::LIVE_REGION_NODE_CHANGED);
-  }
+  if (is_removal && !IsRemovalRelevantInLiveRegion(node))
+    return;
 
-  // Fire LIVE_REGION_CHANGED on the root of the live region.
-  AddEvent(live_root, Event::LIVE_REGION_CHANGED);
+  while (live_root &&
+         live_root->GetStringAttribute(
+             ax::mojom::StringAttribute::kLiveStatus) != container_live)
+    live_root = live_root->parent();
+
+  if (live_root &&
+      !live_root->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy)) {
+    // Fire LIVE_REGION_NODE_CHANGED on each node that changed.
+    if (!node->GetStringAttribute(ax::mojom::StringAttribute::kName).empty())
+      AddEvent(node, Event::LIVE_REGION_NODE_CHANGED);
+    // Fire LIVE_REGION_NODE_CHANGED on the root of the live region.
+    AddEvent(live_root, Event::LIVE_REGION_CHANGED);
+  }
 }
 
 void AXEventGenerator::FireActiveDescendantEvents() {
