@@ -85,10 +85,49 @@ class ApnListItem extends ApnListItemBase {
 
   /**
    * Disables the selected APN.
-   * TODO(b/162365553): Implement.
    * @private
    */
-  onDisableClicked_() {}
+  onDisableClicked_() {
+    assert(this.guid);
+    assert(this.apn);
+    if (!this.apn.id) {
+      console.error('Only custom APNs can be modified.');
+      return;
+    }
+
+    if (this.apn.state !== ApnState.kEnabled) {
+      console.error('Only an APN that is enabled can be disabled.');
+      return;
+    }
+
+    const apn =
+        /** @type {!ApnProperties} */ (Object.assign({}, this.apn));
+    apn.state = ApnState.kDisabled;
+    this.networkConfig_.modifyCustomApn(this.guid, apn);
+  }
+
+  /**
+   * Enables the selected APN.
+   * @private
+   */
+  onEnableClicked_() {
+    assert(this.guid);
+    assert(this.apn);
+    if (!this.apn.id) {
+      console.error('Only custom APNs can be modified.');
+      return;
+    }
+
+    if (this.apn.state !== ApnState.kDisabled) {
+      console.error('Only an APN that is diabled can be enabled.');
+      return;
+    }
+
+    const apn =
+        /** @type {!ApnProperties} */ (Object.assign({}, this.apn));
+    apn.state = ApnState.kEnabled;
+    this.networkConfig_.modifyCustomApn(this.guid, apn);
+  }
 
   /**
    * Removes the selected APN.
@@ -118,12 +157,20 @@ class ApnListItem extends ApnListItemBase {
 
   /**
    * Returns true if disable menu button should be shown.
-   * TODO(b/162365553): Implement.
    * @return {boolean}
    * @private
    */
   shouldShowDisableMenuItem_() {
-    return true;
+    return !!this.apn.id && this.apn.state === ApnState.kEnabled;
+  }
+
+  /**
+   * Returns true if enable menu button should be shown.
+   * @return {boolean}
+   * @private
+   */
+  shouldShowEnableMenuItem_() {
+    return !!this.apn.id && this.apn.state === ApnState.kDisabled;
   }
 
   /**
@@ -132,7 +179,7 @@ class ApnListItem extends ApnListItemBase {
    * @private
    */
   shouldShowRemoveMenuItem_() {
-    return !!this.apn && !!this.apn.id;
+    return !!this.apn.id;
   }
 
   /**

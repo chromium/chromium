@@ -148,7 +148,8 @@ export class FakeNetworkConfig {
      'setProperties', 'setCellularSimState', 'startConnect', 'startDisconnect',
      'configureNetwork', 'getAlwaysOnVpn', 'getSupportedVpnTypes',
      'requestTrafficCounters', 'resetTrafficCounters',
-     'setTrafficCountersAutoReset', 'removeCustomApn', 'createCustomApn']
+     'setTrafficCountersAutoReset', 'removeCustomApn', 'createCustomApn',
+     'modifyCustomApn']
         .forEach((methodName) => {
           this.resolverMap_.set(methodName, new PromiseResolver());
         });
@@ -797,5 +798,25 @@ export class FakeNetworkConfig {
               apn => apn.id !== apnId);
     }
     this.methodCalled('removeCustomApn');
+  }
+
+  /**
+   * @param {string} guid
+   * @param {ApnProperties} apn
+   */
+  modifyCustomApn(guid, apn) {
+    assert(guid);
+    assert(apn);
+    const managed = this.managedProperties_.get(guid);
+    if (!!managed && !!managed.typeProperties &&
+        !!managed.typeProperties.cellular &&
+        Array.isArray(managed.typeProperties.cellular.customApnList)) {
+      const index = managed.typeProperties.cellular.customApnList.findIndex(
+          currentApn => currentApn.id === apn.id);
+      if (index !== -1) {
+        managed.typeProperties.cellular.customApnList[index] = apn;
+      }
+    }
+    this.methodCalled('modifyCustomApn');
   }
 }

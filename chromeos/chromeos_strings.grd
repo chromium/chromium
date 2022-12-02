@@ -3652,6 +3652,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SETTINGS_APN_MENU_DISABLE" desc="Disable button in three dotted menu for APNs">
         Disable
       </message>
+      <message name="IDS_SETTINGS_APN_MENU_ENABLE" desc="Enable button in three dotted menu for APNs">
+        Enable
+      </message>
       <message name="IDS_SETTINGS_APN_MENU_REMOVE" desc="Remove button in three dotted menu for APNs">
         Remove
       </message>

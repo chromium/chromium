@@ -93,7 +93,7 @@ suite('ApnListItemTest', function() {
     assertTrue(apnListItem.hasAttribute('is-disabled_'));
   });
 
-  test('Remove APN', async function() {
+  test('Check if three dot menu remove APN works', async function() {
     const guid = 'cellular_guid';
     await openThreeDotMenu();
     const getRemoveButton = () =>
@@ -119,5 +119,53 @@ suite('ApnListItemTest', function() {
     managedProps = await mojoApi_.getManagedProperties(guid);
     assertEquals(
         0, managedProps.result.typeProperties.cellular.customApnList.length);
+  });
+
+  test('Check if three dot menu disable/enable APN works', async function() {
+    const guid = 'cellular_guid';
+    await openThreeDotMenu();
+    const getEnableButton = () =>
+        apnListItem.$.dotsMenu.querySelector('#enableButton');
+    const getDisableButton = () =>
+        apnListItem.$.dotsMenu.querySelector('#disableButton');
+    assertTrue(getEnableButton().hidden);
+    assertTrue(getDisableButton().hidden);
+
+    const getApn = (disabled) => {
+      return {
+        name: 'name1',
+        id: '1',
+        state: disabled ? ApnState.kDisabled : ApnState.kEnabled,
+      };
+    };
+
+    mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+    const props = OncMojo.getDefaultManagedProperties(
+        NetworkType.kCellular, guid, 'cellular');
+
+    props.typeProperties.cellular = {customApnList: [getApn(true)]};
+    mojoApi_.setManagedPropertiesForTest(props);
+
+    apnListItem.apn = getApn(true);
+    await flushTasks();
+    assertFalse(getEnableButton().hidden);
+    assertTrue(getDisableButton().hidden);
+    getEnableButton().click();
+    await mojoApi_.whenCalled('modifyCustomApn');
+    let managedProps = await mojoApi_.getManagedProperties(guid);
+    assertEquals(
+        ApnState.kEnabled,
+        managedProps.result.typeProperties.cellular.customApnList[0].state);
+
+    apnListItem.apn = getApn(false);
+    await flushTasks();
+    assertFalse(getDisableButton().hidden);
+    assertTrue(getEnableButton().hidden);
+    getDisableButton().click();
+    await mojoApi_.whenCalled('modifyCustomApn');
+    managedProps = await mojoApi_.getManagedProperties(guid);
+    assertEquals(
+        ApnState.kDisabled,
+        managedProps.result.typeProperties.cellular.customApnList[0].state);
   });
 });

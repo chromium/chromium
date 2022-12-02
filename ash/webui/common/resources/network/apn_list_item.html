@@ -49,7 +49,6 @@
       [[i18n('apnAutoDetected')]]
     </div>
   </div>
-  <!-- TODO(b/162365553): Implement isConnected logic. -->
   <div id="subLabel" class="cr-secondary-text" aria-hidden="true"
       hidden="[[!isConnected]]">
     [[i18n('NetworkHealthStateConnected')]]
@@ -61,6 +60,7 @@
     focus-row-control focus-type="menu">
 </cr-icon-button>
 
+<!-- TODO(b/162365553): Change from using hidden attribute to using dom-ifs -->
 <cr-action-menu id="dotsMenu" role-description="[[i18n('menu')]]">
   <button id="detailsButton" class="dropdown-item"
       hidden="[[!shouldShowDetailsMenuItem_(apn)]]"
@@ -71,6 +71,11 @@
       hidden="[[!shouldShowDisableMenuItem_(apn)]]"
       on-click="onDisableClicked_">
     [[i18n('apnMenuDisable')]]
+  </button>
+  <button id="enableButton" class="dropdown-item"
+      hidden="[[!shouldShowEnableMenuItem_(apn)]]"
+      on-click="onEnableClicked_">
+    [[i18n('apnMenuEnable')]]
   </button>
   <button id="removeButton" class="dropdown-item"
       hidden="[[!shouldShowRemoveMenuItem_(apn)]]"
