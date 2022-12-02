@@ -43,6 +43,9 @@
   <message name="IDS_OS_SETTINGS_SEARCH_FEEDBACK_BUTTON" desc="Text description of feedback button in search.">
     Report this search result
   </message>
+  <message name="IDS_OS_SETTINGS_SEARCH_FEEDBACK_DESCRIPTION_TEMPLATE" desc="Template description of pre-populated search feedback description.">
+    <ph name="HASHTAG_SETTINGS">#Settings</ph> No search results returned for <ph name="SEARCH_QUERY">'$1'<ex>query</ex></ph>
+  </message>
 
   <!-- About (OS Settings) -->
   <message name="IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS" desc="Label of the row button that clicks into Build details">

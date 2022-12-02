@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -29,6 +30,10 @@ class TestAboutHandler : public ::settings::AboutHandler {
 
   // Make public for testing.
   using AboutHandler::set_web_ui;
+
+  MOCK_METHOD(void,
+              OpenFeedbackDialogWrapper,
+              (const std::string& description_template));
 };
 
 class AboutHandlerTest : public testing::Test {
@@ -134,6 +139,19 @@ TEST_F(AboutHandlerTest, DeferredUpdateMessageInAboutPage) {
   EXPECT_EQ(0, fake_update_engine_client_->apply_deferred_update_count());
   web_ui_.HandleReceivedMessage("applyDeferredUpdate", base::Value::List());
   EXPECT_EQ(1, fake_update_engine_client_->apply_deferred_update_count());
+}
+
+TEST_F(AboutHandlerTest, TestHandleOpenFeedbackDialog) {
+  base::Value::List args;
+  std::string description_template = "#Settings foo bar";
+  args.Append(description_template);
+  EXPECT_CALL(*handler_, OpenFeedbackDialogWrapper(description_template))
+      .Times(1);
+  web_ui_.HandleReceivedMessage("openFeedbackDialog", args);
+
+  base::Value::List emptyArgs;
+  EXPECT_CALL(*handler_, OpenFeedbackDialogWrapper("")).Times(1);
+  web_ui_.HandleReceivedMessage("openFeedbackDialog", emptyArgs);
 }
 
 }  // namespace

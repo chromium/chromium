@@ -536,7 +536,12 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
 
   // <if expr="_google_chrome">
   private onSendFeedbackClick_() {
-    this.aboutPageBrowserProxy_.openFeedbackDialog();
+    const descriptionTemplate =
+        this.i18nAdvanced('searchFeedbackDescriptionTemplate', {
+              substitutions: [this.getCurrentQuery_()],
+            })
+            .toString();
+    this.aboutPageBrowserProxy_.openFeedbackDialog(descriptionTemplate);
   }
   // </if>
 

@@ -819,11 +819,19 @@ suite('OSSettingsSearchBox', () => {
 
       test('clicking the button opens feedback dialog', async () => {
         settingsSearchHandler.setFakeResults([]);
-        await simulateSearch('query 1');
+        const searchQuery = 'query 1';
+        await simulateSearch(searchQuery);
         const feedbackReportResults =
             searchBox.shadowRoot.querySelector('#reportSearchResultButton');
         feedbackReportResults.click();
-        return browserProxy.whenCalled('openFeedbackDialog');
+        const descriptionTemplate =
+            searchBox
+                .i18nAdvanced('searchFeedbackDescriptionTemplate', {
+                  substitutions: [searchQuery],
+                })
+                .toString();
+        return browserProxy.whenCalled(
+            'openFeedbackDialog', descriptionTemplate);
       });
     });
 
