@@ -9,7 +9,6 @@
         "trigger_data": "1"
       },
       "intended_report_time": "1645831173000",
-      "report_time": "1645831173000",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {
         "randomized_trigger": false

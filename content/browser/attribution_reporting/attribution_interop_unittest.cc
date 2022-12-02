@@ -107,10 +107,14 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
       .noise_mode = AttributionNoiseMode::kNone,
       .config = config,
       .delay_mode = AttributionDelayMode::kDefault,
-      .remove_report_ids = true,
-      .report_time_format =
-          AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch,
-      .remove_assembled_report = true,
+      .output_options =
+          AttributionSimulationOutputOptions{
+              .remove_report_ids = true,
+              .report_time_format =
+                  AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch,
+              .remove_assembled_report = true,
+              .remove_actual_report_times = true,
+          },
   };
 
   base::Value simulator_output =

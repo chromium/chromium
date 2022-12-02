@@ -96,11 +96,12 @@ void ParseOptions(const base::Value& dict,
   if (const std::string* report_time_format =
           dict.FindStringKey("report_time_format")) {
     if (*report_time_format == "iso8601") {
-      options.report_time_format = AttributionReportTimeFormat::kISO8601;
+      options.output_options.report_time_format =
+          AttributionReportTimeFormat::kISO8601;
     } else {
       ASSERT_EQ(*report_time_format, "milliseconds_since_unix_epoch")
           << "unknown report time format: " << *report_time_format;
-      options.report_time_format =
+      options.output_options.report_time_format =
           AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch;
     }
   }
@@ -122,10 +123,14 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
   AttributionSimulationOptions options{
       .noise_mode = AttributionNoiseMode::kNone,
       .delay_mode = AttributionDelayMode::kDefault,
-      .remove_report_ids = true,
-      .report_time_format =
-          AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch,
-      .remove_assembled_report = true,
+      .output_options =
+          AttributionSimulationOutputOptions{
+              .remove_report_ids = true,
+              .report_time_format =
+                  AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch,
+              .remove_assembled_report = true,
+              .remove_actual_report_times = true,
+          },
   };
 
   const base::FilePath options_path = OptionsPath(input_path);

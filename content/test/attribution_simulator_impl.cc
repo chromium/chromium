@@ -111,24 +111,19 @@ class AlwaysSetCookieChecker : public AttributionCookieChecker {
 };
 
 struct AttributionReportJsonConverter {
-  AttributionReportJsonConverter(bool remove_report_ids,
-                                 AttributionReportTimeFormat report_time_format,
-                                 bool remove_assembled_report,
+  AttributionReportJsonConverter(AttributionSimulationOutputOptions options,
                                  base::Time time_origin)
-      : remove_report_ids(remove_report_ids),
-        report_time_format(report_time_format),
-        remove_assembled_report(remove_assembled_report),
-        time_origin(time_origin) {}
+      : options(options), time_origin(time_origin) {}
 
   base::Value::Dict ToJson(
       const AttributionReport& report,
       bool is_debug_report,
       const absl::optional<base::GUID>& replaced_by = absl::nullopt) const {
     base::Value::Dict report_body = report.ReportBody();
-    if (remove_report_ids)
+    if (options.remove_report_ids)
       report_body.Remove("report_id");
 
-    if (remove_assembled_report &&
+    if (options.remove_assembled_report &&
         absl::holds_alternative<AttributionReport::AggregatableAttributionData>(
             report.data())) {
       // Output attribution_destination from the shared_info field.
@@ -162,8 +157,11 @@ struct AttributionReportJsonConverter {
               FormatTime(is_debug_report ? report.attribution_info().time
                                          : report.report_time()));
 
-    value.Set(replaced_by ? "replacement_time" : "report_time",
-              FormatTime(base::Time::Now()));
+    if (replaced_by) {
+      value.Set("replacement_time", FormatTime(base::Time::Now()));
+    } else if (!options.remove_actual_report_times) {
+      value.Set("report_time", FormatTime(base::Time::Now()));
+    }
 
     base::Value::Dict test_info;
     if (absl::holds_alternative<AttributionReport::EventLevelData>(
@@ -188,7 +186,7 @@ struct AttributionReportJsonConverter {
     }
     value.Set("test_info", std::move(test_info));
 
-    if (!remove_report_ids && replaced_by) {
+    if (!options.remove_report_ids && replaced_by) {
       value.Set("replaced_by", replaced_by->AsLowercaseString());
     }
 
@@ -198,7 +196,7 @@ struct AttributionReportJsonConverter {
   base::Value::Dict ToJson(const AttributionDebugReport& report,
                            base::Time time) const {
     base::Value::List report_body = report.ReportBody();
-    if (remove_report_ids) {
+    if (options.remove_report_ids) {
       for (auto& value : report_body) {
         base::Value::Dict* dict = value.GetIfDict();
         DCHECK(dict);
@@ -216,7 +214,7 @@ struct AttributionReportJsonConverter {
   std::string FormatTime(base::Time time) const {
     base::TimeDelta time_delta = time - time_origin;
 
-    switch (report_time_format) {
+    switch (options.report_time_format) {
       case AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch:
         return base::NumberToString(time_delta.InMilliseconds());
       case AttributionReportTimeFormat::kISO8601:
@@ -224,9 +222,7 @@ struct AttributionReportJsonConverter {
     }
   }
 
-  const bool remove_report_ids;
-  const AttributionReportTimeFormat report_time_format;
-  const bool remove_assembled_report;
+  const AttributionSimulationOutputOptions options;
   const base::Time time_origin;
 };
 
@@ -604,9 +600,7 @@ base::Value RunAttributionSimulation(
 
   AttributionEventHandler handler(
       manager.get(), storage_partition,
-      AttributionReportJsonConverter(
-          options.remove_report_ids, options.report_time_format,
-          options.remove_assembled_report, time_origin));
+      AttributionReportJsonConverter(options.output_options, time_origin));
 
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())

@@ -9,7 +9,6 @@
         "trigger_data": "5"
       },
       "intended_report_time": "1643411973000",
-      "report_time": "1643411973000",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {
         "randomized_trigger": true
@@ -24,7 +23,6 @@
         "trigger_data": "1"
       },
       "intended_report_time": "1643411973000",
-      "report_time": "1643411973000",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {
         "randomized_trigger": true
@@ -39,7 +37,6 @@
         "trigger_data": "3"
       },
       "intended_report_time": "1645831173000",
-      "report_time": "1645831173000",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
       "test_info": {
         "randomized_trigger": true

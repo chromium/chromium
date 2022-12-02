@@ -41,6 +41,7 @@ constexpr char kSwitchRandomizedResponseRateNavigation[] =
     "randomized_response_rate_navigation";
 constexpr char kSwitchRandomizedResponseRateEvent[] =
     "randomized_response_rate_event";
+constexpr char kSwitchRemoveActualReportTimes[] = "remove_actual_report_times";
 constexpr char kSwitchRemoveAssembledReport[] = "remove_assembled_report";
 constexpr char kSwitchSkipDebugCookieChecks[] = "skip_debug_cookie_checks";
 
@@ -60,6 +61,7 @@ constexpr const char* kAllowedSwitches[] = {
     kSwitchRandomizedResponseRateNavigation,
     kSwitchRandomizedResponseRateEvent,
     kSwitchSkipDebugCookieChecks,
+    kSwitchRemoveActualReportTimes,
 };
 
 constexpr char kHelpMsg[] = R"(
@@ -75,6 +77,7 @@ attribution_reporting_simulator
   [--report_time_format=<format>]
   [--remove_assembled_report]
   [--skip_debug_cookie_checks]
+  [--remove_actual_report_times]
 
 attribution_reporting_simulator is a command-line tool that simulates the
 Attribution Reporting API for for sources and triggers specified in an input
@@ -172,6 +175,11 @@ Switches:
 
   --skip_debug_cookie_checks
                             - Optional. If present, skips debug cookie checks.
+
+  --remove_actual_report_times
+                            - Optional. If present, removes the `report_time`
+                              field from reports, as they are subject to
+                              implementation details.
 
   --version                 - Outputs the tool version and exits.
 
@@ -371,12 +379,18 @@ int main(int argc, char* argv[]) {
       .noise_seed = noise_seed,
       .config = config,
       .delay_mode = delay_mode,
-      .remove_report_ids = command_line.HasSwitch(kSwitchRemoveReportIds),
-      .report_time_format = report_time_format,
-      .remove_assembled_report =
-          command_line.HasSwitch(kSwitchRemoveAssembledReport),
       .skip_debug_cookie_checks =
           command_line.HasSwitch(kSwitchSkipDebugCookieChecks),
+      .output_options =
+          content::AttributionSimulationOutputOptions{
+              .remove_report_ids =
+                  command_line.HasSwitch(kSwitchRemoveReportIds),
+              .report_time_format = report_time_format,
+              .remove_assembled_report =
+                  command_line.HasSwitch(kSwitchRemoveAssembledReport),
+              .remove_actual_report_times =
+                  command_line.HasSwitch(kSwitchRemoveActualReportTimes),
+          },
   });
 
   content::AttributionSimulatorEnvironment env(argc, argv);
