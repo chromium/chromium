@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+attribution_reporting_promise_test(async t => {
+  const host = `https://{{host}}`;
+
+  await registerAttributionSrc(t, {
+    source: {
+      destination: host,
+      source_event_id: '333',
+      filter_data: {a: ['b']},
+    },
+  });
+
+  await registerAttributionSrc(t, {
+    trigger: {
+      filters: {a: ['c']},
+      debug_reporting: true,
+    },
+    cookie: attributionDebugCookie,
+  });
+
+  const payload = await pollVerboseDebugReports();
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
+  assert_equals(report.length, 1);
+  assert_equals(report[0].type, 'trigger-no-matching-filter-data');
+  assert_own_property(report[0], 'body');
+  const reportBody = report[0].body;
+  assert_equals(reportBody.attribution_destination, host);
+  assert_equals(reportBody.source_event_id, '333');
+  assert_equals(reportBody.source_site, host);
+  assert_not_own_property(reportBody, 'source_debug_key');
+  assert_not_own_property(reportBody, 'trigger_debug_key');
+}, 'Verbose debug report is received due to no matching filter data');
+
+</script>
