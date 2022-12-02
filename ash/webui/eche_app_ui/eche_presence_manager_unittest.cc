@@ -58,7 +58,7 @@ class EchePresenceManagerTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheSWA},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
     fake_multidevice_setup_client_.SetHostStatusWithDevice(
         std::make_pair(multidevice_setup::mojom::HostStatus::kHostVerified,

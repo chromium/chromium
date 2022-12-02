@@ -27,10 +27,10 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kEnableHostnameSetting',
+        'ash::features::kEnableHostnameSetting',
         // TODO(b/217560706): Remove this explicit enabled flag when rollout
         // completed.
-        'chromeos::features::kDiacriticsOnPhysicalKeyboardLongpress',
+        'ash::features::kDiacriticsOnPhysicalKeyboardLongpress',
       ],
     };
   }
@@ -46,7 +46,7 @@ var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kAudioSettingsPage',
+        'ash::features::kAudioSettingsPage',
         'features::kAllowDisableTouchpadHapticFeedback',
         'features::kAllowTouchpadHapticClickSettings',
       ],
@@ -71,7 +71,7 @@ var OSSettingsPeoplePageAccountManagerV3Test =
   get featureList() {
     return {
       disabled: [
-        'chromeos::features::kLacrosSupport',
+        'ash::features::kLacrosSupport',
       ],
     };
   }
@@ -90,7 +90,7 @@ var OSSettingsPeoplePageAccountManagerWithArcAccountRestrictionsEnabledV3Test =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kLacrosSupport',
+        'ash::features::kLacrosSupport',
       ],
     };
   }

@@ -1132,10 +1132,8 @@ AudioDevice CrasAudioHandler::ConvertAudioNodeWithModifiedPriority(
       (device.type == AudioDeviceType::kBluetooth))
     device.priority = 0;
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kRobustAudioDeviceSelectLogic)) {
+  if (base::FeatureList::IsEnabled(features::kRobustAudioDeviceSelectLogic))
     device.user_priority = audio_pref_handler_->GetUserPriority(device);
-  }
 
   return device;
 }
@@ -1265,14 +1263,14 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
       &CrasAudioHandler::GetNodes, weak_ptr_factory_.GetWeakPtr()));
   GetNumberOfOutputStreams();
   GetNumberOfInputStreamsWithPermissionInternal();
-  CrasAudioClient::Get()->SetFixA2dpPacketSize(base::FeatureList::IsEnabled(
-      chromeos::features::kBluetoothFixA2dpPacketSize));
+  CrasAudioClient::Get()->SetFixA2dpPacketSize(
+      base::FeatureList::IsEnabled(features::kBluetoothFixA2dpPacketSize));
 
   // When the BluetoothWbsDogfood feature flag is enabled, don't bother
   // calling GetDeprioritizeBtWbsMic().
   // Otherwise override the Bluetooth WBS mic's priority according to the
   // |deprioritize_bt_wbs_mic| value returned by CRAS.
-  if (!base::FeatureList::IsEnabled(chromeos::features::kBluetoothWbsDogfood)) {
+  if (!base::FeatureList::IsEnabled(features::kBluetoothWbsDogfood)) {
     CrasAudioClient::Get()->GetDeprioritizeBtWbsMic(
         base::BindOnce(&CrasAudioHandler::HandleGetDeprioritizeBtWbsMic,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -1427,8 +1425,7 @@ bool CrasAudioHandler::ChangeActiveDevice(
   }
 
   // Update user priority whenever the audio device is activated.
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kRobustAudioDeviceSelectLogic)) {
+  if (base::FeatureList::IsEnabled(features::kRobustAudioDeviceSelectLogic)) {
     const AudioDevice* current_active_device =
         GetDeviceFromId(current_active_node_id);
     audio_pref_handler_->SetUserPriorityHigherThan(new_active_device,
@@ -1699,8 +1696,7 @@ void CrasAudioHandler::HandleHotPlugDeviceByUserPriority(
 void CrasAudioHandler::HandleHotPlugDevice(
     const AudioDevice& hotplug_device,
     const AudioDevicePriorityQueue& device_priority_queue) {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kRobustAudioDeviceSelectLogic)) {
+  if (base::FeatureList::IsEnabled(features::kRobustAudioDeviceSelectLogic)) {
     return HandleHotPlugDeviceByUserPriority(hotplug_device);
   }
 

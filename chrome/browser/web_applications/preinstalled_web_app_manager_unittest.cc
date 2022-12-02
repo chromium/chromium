@@ -110,7 +110,7 @@ class PreinstalledWebAppManagerTest : public testing::Test,
       disabled_features.push_back(features::kUseWebAppDBInsteadOfExternalPrefs);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     disabled_features.push_back(features::kWebAppsCrosapi);
-    disabled_features.push_back(chromeos::features::kLacrosPrimary);
+    disabled_features.push_back(ash::features::kLacrosPrimary);
 #endif
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

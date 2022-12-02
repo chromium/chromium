@@ -318,8 +318,7 @@ TEST_F(ChromeShelfPrefsTest, LacrosPrimaryPinnedApp) {
   // Enable lacros-only.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {chromeos::features::kLacrosPrimary, chromeos::features::kLacrosSupport},
-      {});
+      {ash::features::kLacrosPrimary, ash::features::kLacrosSupport}, {});
   AddRegularUser("test@test.com");
 
   ASSERT_TRUE(shelf_prefs_->ShouldPerformConsistencyMigrations());
@@ -345,8 +344,8 @@ TEST_F(ChromeShelfPrefsTest, LacrosOnlyPinnedApp) {
   // Enable lacros-only.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {chromeos::features::kLacrosOnly, chromeos::features::kLacrosPrimary,
-       chromeos::features::kLacrosSupport},
+      {ash::features::kLacrosOnly, ash::features::kLacrosPrimary,
+       ash::features::kLacrosSupport},
       {});
   AddRegularUser("test@test.com");
 
@@ -385,8 +384,8 @@ TEST_F(ChromeShelfPrefsTest, ShelfPositionAfterLacrosMigration) {
   // Enable lacros-only.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {chromeos::features::kLacrosOnly, chromeos::features::kLacrosPrimary,
-       chromeos::features::kLacrosSupport},
+      {ash::features::kLacrosOnly, ash::features::kLacrosPrimary,
+       ash::features::kLacrosSupport},
       {});
   AddRegularUser("test@test.com");
 
@@ -420,8 +419,8 @@ TEST_F(ChromeShelfPrefsTest, EnableSideBySideLacrosDisable) {
   // Disable lacros.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {}, {chromeos::features::kLacrosOnly, chromeos::features::kLacrosPrimary,
-           chromeos::features::kLacrosSupport});
+      {}, {ash::features::kLacrosOnly, ash::features::kLacrosPrimary,
+           ash::features::kLacrosSupport});
   AddRegularUser("test@test.com");
 
   // Perform migration

@@ -164,11 +164,9 @@ class LoginAuthUserViewUnittest : public LoginAuthUserViewTestBase,
   void SetUpFeatures() {
     autosubmit_feature_enabled_ = GetParam();
     if (autosubmit_feature_enabled_) {
-      feature_list_.InitWithFeatures(
-          {chromeos::features::kQuickUnlockPinAutosubmit}, {});
+      feature_list_.InitWithFeatures({features::kQuickUnlockPinAutosubmit}, {});
     } else {
-      feature_list_.InitWithFeatures(
-          {}, {chromeos::features::kQuickUnlockPinAutosubmit});
+      feature_list_.InitWithFeatures({}, {features::kQuickUnlockPinAutosubmit});
     }
   }
 
@@ -190,8 +188,7 @@ class LoginAuthUserViewAutosumbitUnittest : public LoginAuthUserViewTestBase {
   // LoginTestBase:
   void SetUp() override {
     LoginAuthUserViewTestBase::SetUp();
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kQuickUnlockPinAutosubmit);
+    feature_list_.InitAndEnableFeature(features::kQuickUnlockPinAutosubmit);
     InitializeViewForUser(CreateUser("user@domain.com"));
   }
 };

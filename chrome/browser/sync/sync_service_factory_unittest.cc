@@ -138,7 +138,7 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::OS_PREFERENCES);
     datatypes.Put(syncer::OS_PRIORITY_PREFERENCES);
     datatypes.Put(syncer::PRINTERS);
-    if (chromeos::features::IsOAuthIppEnabled()) {
+    if (ash::features::IsOAuthIppEnabled()) {
       datatypes.Put(syncer::PRINTERS_AUTHORIZATION_SERVERS);
     }
     datatypes.Put(syncer::WIFI_CONFIGURATIONS);

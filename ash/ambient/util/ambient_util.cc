@@ -80,20 +80,19 @@ gfx::ShadowValues GetTextShadowValues(const ui::ColorProvider* color_provider,
 bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic_type) {
   switch (topic_type) {
     case ::ambient::TopicType::kCurated:
-      return chromeos::features::kAmbientModeDefaultFeedEnabled.Get();
+      return features::kAmbientModeDefaultFeedEnabled.Get();
     case ::ambient::TopicType::kCapturedOnPixel:
-      return chromeos::features::kAmbientModeCapturedOnPixelPhotosEnabled.Get();
+      return features::kAmbientModeCapturedOnPixelPhotosEnabled.Get();
     case ::ambient::TopicType::kCulturalInstitute:
-      return chromeos::features::kAmbientModeCulturalInstitutePhotosEnabled
-          .Get();
+      return features::kAmbientModeCulturalInstitutePhotosEnabled.Get();
     case ::ambient::TopicType::kFeatured:
-      return chromeos::features::kAmbientModeFeaturedPhotosEnabled.Get();
+      return features::kAmbientModeFeaturedPhotosEnabled.Get();
     case ::ambient::TopicType::kGeo:
-      return chromeos::features::kAmbientModeGeoPhotosEnabled.Get();
+      return features::kAmbientModeGeoPhotosEnabled.Get();
     case ::ambient::TopicType::kPersonal:
-      return chromeos::features::kAmbientModePersonalPhotosEnabled.Get();
+      return features::kAmbientModePersonalPhotosEnabled.Get();
     case ::ambient::TopicType::kRss:
-      return chromeos::features::kAmbientModeRssPhotosEnabled.Get();
+      return features::kAmbientModeRssPhotosEnabled.Get();
     case ::ambient::TopicType::kOther:
       return false;
   }

@@ -24,8 +24,7 @@ AshDBusServices::AshDBusServices(dbus::Bus* system_bus) {
                               dbus::ObjectPath(chromeos::kDisplayServicePath),
                               CrosDBusService::CreateServiceProviderList(
                                   std::make_unique<DisplayServiceProvider>()));
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kGesturePropertiesDBusService)) {
+  if (base::FeatureList::IsEnabled(features::kGesturePropertiesDBusService)) {
     gesture_properties_service_ = CrosDBusService::Create(
         system_bus, chromeos::kGesturePropertiesServiceName,
         dbus::ObjectPath(chromeos::kGesturePropertiesServicePath),

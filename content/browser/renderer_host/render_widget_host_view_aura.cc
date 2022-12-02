@@ -2629,8 +2629,8 @@ void RenderWidgetHostViewAura::CreateSelectionController() {
   tsc_config.tap_slop = ui::GestureConfiguration::GetInstance()
                             ->max_touch_move_in_pixels_for_click();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  tsc_config.enable_longpress_drag_selection = base::FeatureList::IsEnabled(
-      chromeos::features::kTouchTextEditingRedesign);
+  tsc_config.enable_longpress_drag_selection =
+      base::FeatureList::IsEnabled(ash::features::kTouchTextEditingRedesign);
 #else
   tsc_config.enable_longpress_drag_selection = false;
 #endif

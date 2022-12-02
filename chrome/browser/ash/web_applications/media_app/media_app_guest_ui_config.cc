@@ -48,8 +48,7 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("pdfReadonly",
                      !pref_service->GetBoolean(prefs::kPdfAnnotationsEnabled));
   version_info::Channel channel = chrome::GetChannel();
-  source->AddBoolean("colorThemes",
-                     chromeos::features::IsDarkLightModeEnabled());
+  source->AddBoolean("colorThemes", ash::features::IsDarkLightModeEnabled());
   base::Version min_photos_version("6.12");
   bool photos_available = photos_installed && photos_version.IsValid() &&
                           photos_version >= min_photos_version;

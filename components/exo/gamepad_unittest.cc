@@ -84,8 +84,7 @@ class GamepadTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     // Allow test to signal to gamepad that it can vibrate.
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kGamepadVibration);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kGamepadVibration);
     gamepad_->OnGamepadFocused();
   }
 

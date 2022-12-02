@@ -553,7 +553,7 @@ void AboutHandler::OnGetVersionInfoReady(std::string callback_id,
 }
 
 void AboutHandler::HandleGetFirmwareUpdateCount(const base::Value::List& args) {
-  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
+  DCHECK(base::FeatureList::IsEnabled(ash::features::kFirmwareUpdaterApp));
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
   auto* firmware_update_manager = ash::FirmwareUpdateManager::Get();

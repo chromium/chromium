@@ -1452,7 +1452,7 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (command_id == Textfield::kSelectAll) {
     return base::FeatureList::IsEnabled(
-        chromeos::features::kTouchTextEditingRedesign);
+        ash::features::kTouchTextEditingRedesign);
   }
 #endif
   if (command_id == Textfield::kPaste)

@@ -1366,7 +1366,7 @@ void WizardController::OnThemeSelectionScreenExit(
                ThemeSelectionScreen::GetResultString(result));
 
   // Stop CHOOBE after exiting the last optional screen.
-  if (chromeos::features::IsOobeChoobeEnabled()) {
+  if (features::IsOobeChoobeEnabled()) {
     GetChoobeFlowController()->Stop(
         *ProfileManager::GetActiveUserProfile()->GetPrefs());
   }
@@ -2005,7 +2005,7 @@ void WizardController::OnOobeFlowFinished() {
                                            version_info::GetVersion());
   known_user.RemovePendingOnboardingScreen(account_id);
 
-  if (chromeos::features::IsOobeChoobeEnabled()) {
+  if (features::IsOobeChoobeEnabled()) {
     // Additional cleanup of the pref kChoobeSelectedScreens in case it was not
     // already cleared.
     ProfileManager::GetActiveUserProfile()->GetPrefs()->ClearPref(

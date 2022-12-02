@@ -5020,7 +5020,7 @@ class ShelfLayoutManagerWithEcheTest : public ShelfLayoutManagerTestBase {
   explicit ShelfLayoutManagerWithEcheTest(TaskEnvironmentTraits&&... traits)
       : ShelfLayoutManagerTestBase(
             std::forward<TaskEnvironmentTraits>(traits)...) {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kEcheSWA);
+    scoped_feature_list_.InitAndEnableFeature(features::kEcheSWA);
   }
 
  protected:

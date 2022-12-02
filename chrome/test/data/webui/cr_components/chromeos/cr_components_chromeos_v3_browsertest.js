@@ -112,7 +112,7 @@ function registerTest(componentName, webuiHost, testName, module) {
     get featureList() {
       return {
         enabled: [
-          'chromeos::features::kSimLockPolicy',
+          'ash::features::kSimLockPolicy',
         ],
       };
     }
@@ -137,7 +137,7 @@ function registerWebUiTest(componentName, webuiHost, testName, module) {
     get featureList() {
       return {
         enabled: [
-          'chromeos::features::kSimLockPolicy',
+          'ash::features::kSimLockPolicy',
         ],
       };
     }

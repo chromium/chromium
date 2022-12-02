@@ -30,8 +30,7 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
   // here to take into account the delay caused by the consumer (e.g. display or
   // video encoder).
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kMoreVideoCaptureBuffers)) {
+    if (base::FeatureList::IsEnabled(ash::features::kMoreVideoCaptureBuffers)) {
       // Some devices might need more buffers to enable advanced features and
       // might report pipeline depth as 8 for preview, 8 for video snapshot and
       // 36 for recording. And some extra buffers are needed for the possible

@@ -124,7 +124,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         {
             features::kWebAppsCrosapi,
-            chromeos::features::kLacrosPrimary,
+            ash::features::kLacrosPrimary,
         }
 #else
         {}

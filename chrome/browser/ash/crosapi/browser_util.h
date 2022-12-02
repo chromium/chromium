@@ -203,7 +203,7 @@ enum class PolicyInitState {
 bool IsLacrosEnabledForMigration(const user_manager::User* user,
                                  PolicyInitState policy_init_state);
 
-// Returns true if |chromeos::features::kLacrosSupport| flag is allowed.
+// Returns true if `ash::features::kLacrosSupport` flag is allowed.
 bool IsLacrosSupportFlagAllowed();
 
 // Returns true if Ash browser is enabled. Returns false iff Lacros is
@@ -245,14 +245,14 @@ bool IsLacrosPrimaryBrowserAllowedForMigration(
     const user_manager::User* user,
     LacrosAvailability lacros_availability);
 
-// Returns true if |chromeos::features::kLacrosPrimary| flag is allowed.
+// Returns true if `ash::features::kLacrosPrimary` flag is allowed.
 bool IsLacrosPrimaryFlagAllowed();
 
 // Returns true if the lacros can be used as a only browser
 // for the current session.
 bool IsLacrosOnlyBrowserAllowed();
 
-// Returns true if |chromeos::features::kLacrosOnly| flag is allowed.
+// Returns true if `ash::features::kLacrosOnly` flag is allowed.
 bool IsLacrosOnlyFlagAllowed();
 
 // Returns true if Lacros is allowed to launch and show a window. This can

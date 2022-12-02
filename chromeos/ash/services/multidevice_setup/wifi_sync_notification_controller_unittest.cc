@@ -50,8 +50,7 @@ class MultiDeviceSetupWifiSyncNotificationControllerTest
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kWifiSyncAndroid);
+    scoped_feature_list_.InitAndEnableFeature(features::kWifiSyncAndroid);
     SetWifiSyncSupportedInDeviceSyncClient();
 
     fake_host_status_provider_ = std::make_unique<FakeHostStatusProvider>();

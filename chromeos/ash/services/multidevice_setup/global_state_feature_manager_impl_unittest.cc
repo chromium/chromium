@@ -41,7 +41,7 @@ const multidevice::SoftwareFeature kTestClientFeature =
 const std::string& kFeatureAllowedPrefName = kWifiSyncAllowedPrefName;
 const char kPendingStatePrefName[] =
     "multidevice_setup.pending_set_wifi_sync_enabled_request";
-const base::Feature& kTestFeatureFlag = chromeos::features::kWifiSyncAndroid;
+const base::Feature& kTestFeatureFlag = features::kWifiSyncAndroid;
 
 enum PendingState {
   kPendingNone = 0,
@@ -251,15 +251,13 @@ class MultiDeviceSetupGlobalStateFeatureManagerImplTest
     // These flags have no direct effect of on the GlobalStateFeatureManager;
     // however, v2 Enrollment and DeviceSync must be enabled before v1
     // DeviceSync can be disabled.
-    enabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
-    enabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+    enabled_features.push_back(features::kCryptAuthV2Enrollment);
+    enabled_features.push_back(features::kCryptAuthV2DeviceSync);
 
     if (use_v1_devicesync) {
-      disabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      disabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     } else {
-      enabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      enabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     }
 
     if (enable_feature_flag) {

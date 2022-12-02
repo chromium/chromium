@@ -291,7 +291,7 @@ void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
 }
 
 void NonClientFrameViewAsh::AddedToWidget() {
-  if (!chromeos::features::IsDarkLightModeEnabled())
+  if (!features::IsDarkLightModeEnabled())
     return;
 
   if (highlight_border_overlay_ ||

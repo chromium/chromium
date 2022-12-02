@@ -1301,7 +1301,7 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
 class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
  public:
   ChromeShelfControllerLacrosTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
     crosapi::browser_util::SetProfileMigrationCompletedForTest(true);
   }
   ChromeShelfControllerLacrosTest(const ChromeShelfControllerLacrosTest&) =
@@ -1469,8 +1469,8 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     // Legacy multi profile feature. `kMediaRouter` is disabled because it has
     // unmet dependencies and is unrelated to this unit test.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/{}, /*disabled=*/{chromeos::features::kLacrosSupport,
-                                      media_router::kMediaRouter});
+        /*enabled_features=*/{}, /*disabled_features=*/{
+            ash::features::kLacrosSupport, media_router::kMediaRouter});
   }
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest(
       const MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest&) =

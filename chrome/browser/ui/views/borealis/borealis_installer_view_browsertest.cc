@@ -57,7 +57,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
  public:
   BorealisInstallerViewBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kBorealis, chromeos::features::kBorealisPermitted}, {});
+        {features::kBorealis, ash::features::kBorealisPermitted}, {});
   }
 
   // Disallow copy and assign.

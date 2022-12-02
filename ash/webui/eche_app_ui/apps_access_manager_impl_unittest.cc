@@ -80,7 +80,7 @@ class AppsAccessManagerImplTest : public testing::Test {
     multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
 
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheSWA},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
 
     fake_eche_connector_ = std::make_unique<FakeEcheConnector>();

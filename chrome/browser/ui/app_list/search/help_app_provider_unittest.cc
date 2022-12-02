@@ -84,7 +84,7 @@ class HelpAppProviderTest : public AppListTestBase {
         mock_handler_(&search_tag_registry_,
                       local_search_service_proxy_.get()) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kReleaseNotesSuggestionChip},
+        /*enabled_features=*/{ash::features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{});
   }
   ~HelpAppProviderTest() override = default;

@@ -20,7 +20,7 @@
 namespace ash {
 
 bool AudioUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(chromeos::features::kAudioUrl);
+  return base::FeatureList::IsEnabled(features::kAudioUrl);
 }
 
 AudioUI::AudioUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {

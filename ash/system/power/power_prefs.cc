@@ -329,8 +329,7 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
   // poorly with delay scaling, resulting in the system staying awake for a long
   // time if a prediction is wrong. https://crbug.com/888392.
   if (prefs->GetBoolean(prefs::kPowerSmartDimEnabled) &&
-      base::FeatureList::IsEnabled(
-          chromeos::features::kUserActivityPrediction)) {
+      base::FeatureList::IsEnabled(features::kUserActivityPrediction)) {
     values.presentation_screen_dim_delay_factor = 1.0;
     values.user_activity_screen_dim_delay_factor = 1.0;
   } else {

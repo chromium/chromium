@@ -179,7 +179,7 @@ LoginPinInputView::LoginPinInputView(const LoginPalette& palette)
 LoginPinInputView::~LoginPinInputView() = default;
 
 bool LoginPinInputView::IsAutosubmitSupported(int length) {
-  return chromeos::features::IsPinAutosubmitFeatureEnabled() &&
+  return features::IsPinAutosubmitFeatureEnabled() &&
          length >= kPinAutosubmitMinLength && length <= kPinAutosubmitMaxLength;
 }
 

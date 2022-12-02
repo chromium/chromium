@@ -469,7 +469,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("isSimLockPolicyEnabled",
-                          chromeos::features::IsSimLockPolicyEnabled());
+                          ash::features::IsSimLockPolicyEnabled());
   html_source->AddBoolean("isApnRevampEnabled",
                           ash::features::IsApnRevampEnabled());
 }

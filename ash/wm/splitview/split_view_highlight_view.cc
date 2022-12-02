@@ -9,6 +9,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/i18n/rtl.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"

@@ -1355,8 +1355,7 @@ TEST_F(PointerTest, OnPointerRelativeMotion) {
 class PointerOrdinalMotionTest : public PointerTest {
  public:
   PointerOrdinalMotionTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kExoOrdinalMotion);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kExoOrdinalMotion);
   }
 
  private:

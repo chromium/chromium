@@ -729,7 +729,7 @@ TEST_F(AppContextMenuTest, InternalAppMenu) {
 class AppContextMenuLacrosTest : public AppContextMenuTest {
  public:
   AppContextMenuLacrosTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
     crosapi::browser_util::SetProfileMigrationCompletedForTest(true);
   }
   AppContextMenuLacrosTest(const AppContextMenuLacrosTest&) = delete;

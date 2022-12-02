@@ -1300,7 +1300,7 @@ void RootWindowController::CreateContainers() {
   overlay_container->SetLayoutManager(
       std::make_unique<OverlayLayoutManager>(overlay_container));
 
-  if (chromeos::features::IsAmbientModeEnabled()) {
+  if (features::IsAmbientModeEnabled()) {
     aura::Window* ambient_container =
         CreateContainer(kShellWindowId_AmbientModeContainer,
                         "AmbientModeContainer", lock_screen_related_containers);

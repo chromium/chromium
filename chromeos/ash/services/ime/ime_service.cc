@@ -161,42 +161,35 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   // AssistEmojiEnhanced in internal code for consistency.
   // Then remove the AssistiveEmojiEnhanced check.
   if (strcmp(feature_name, "AssistiveEmojiEnhanced") == 0 ||
-      strcmp(feature_name, chromeos::features::kAssistEmojiEnhanced.name) ==
-          0) {
-    return base::FeatureList::IsEnabled(
-        chromeos::features::kAssistEmojiEnhanced);
+      strcmp(feature_name, features::kAssistEmojiEnhanced.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kAssistEmojiEnhanced);
   }
   // TODO(b/218815885): Replace refs of AssistiveMultiWord with
   // AssistMultiWord in internal code for consistency.
   // Then remove the AssistiveMultiWord check.
   if (strcmp(feature_name, "AssistiveMultiWord") == 0 ||
-      strcmp(feature_name, chromeos::features::kAssistMultiWord.name) == 0) {
-    return chromeos::features::IsAssistiveMultiWordEnabled();
+      strcmp(feature_name, features::kAssistMultiWord.name) == 0) {
+    return features::IsAssistiveMultiWordEnabled();
   }
   // TODO(b/218815885): Replace refs of this with true internally and delete.
   if (strcmp(feature_name, "AssistiveMultiWordLacrosSupport") == 0) {
     return true;
   }
-  if (strcmp(feature_name, chromeos::features::kAutocorrectParamsTuning.name) ==
-      0) {
-    return base::FeatureList::IsEnabled(
-        chromeos::features::kAutocorrectParamsTuning);
+  if (strcmp(feature_name, features::kAutocorrectParamsTuning.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning);
   }
-  if (strcmp(feature_name,
-             chromeos::features::kFirstPartyVietnameseInput.name) == 0) {
-    return base::FeatureList::IsEnabled(
-        chromeos::features::kFirstPartyVietnameseInput);
+  if (strcmp(feature_name, features::kFirstPartyVietnameseInput.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput);
   }
-  if (strcmp(feature_name, chromeos::features::kLacrosSupport.name) == 0) {
-    return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
+  if (strcmp(feature_name, features::kLacrosSupport.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kLacrosSupport);
   }
   if (strcmp(feature_name, "SystemChinesePhysicalTyping") == 0) {
     return true;
   }
-  if (strcmp(feature_name,
-             chromeos::features::kSystemJapanesePhysicalTyping.name) == 0) {
+  if (strcmp(feature_name, features::kSystemJapanesePhysicalTyping.name) == 0) {
     return base::FeatureList::IsEnabled(
-        chromeos::features::kSystemJapanesePhysicalTyping);
+        features::kSystemJapanesePhysicalTyping);
   }
   if (strcmp(feature_name, "SystemTransliterationPhysicalTyping") == 0) {
     return true;
@@ -209,11 +202,10 @@ const char* ImeService::GetFieldTrialParamValueByFeature(
     const char* param_name) {
   char* c_string_value;
 
-  if (strcmp(feature_name, chromeos::features::kAutocorrectParamsTuning.name) ==
-      0) {
+  if (strcmp(feature_name, features::kAutocorrectParamsTuning.name) == 0) {
     std::string string_value =
         field_trial_params_retriever_->GetFieldTrialParamValueByFeature(
-            chromeos::features::kAutocorrectParamsTuning, param_name);
+            features::kAutocorrectParamsTuning, param_name);
     c_string_value =
         new char[string_value.length() + 1];  // extra slot for NULL '\0' char
     strcpy(c_string_value, string_value.c_str());

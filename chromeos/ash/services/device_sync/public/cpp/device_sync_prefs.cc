@@ -24,8 +24,7 @@ namespace device_sync {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   CryptAuthGCMManager::RegisterPrefs(registry);
   CryptAuthDeviceManager::RegisterPrefs(registry);
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCryptAuthV2Enrollment)) {
+  if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
     CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(registry);
     CryptAuthKeyRegistryImpl::RegisterPrefs(registry);
     CryptAuthSchedulerImpl::RegisterPrefs(registry);
@@ -39,7 +38,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
     SyncedBluetoothAddressTrackerImpl::RegisterPrefs(registry);
   }
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
+  if (base::FeatureList::IsEnabled(features::kEcheSWA)) {
     AttestationCertificatesSyncerImpl::RegisterPrefs(registry);
   }
 }

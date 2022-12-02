@@ -575,7 +575,7 @@ void ShowDiagnosticsApp(Profile* profile) {
 
 void ShowFirmwareUpdatesApp(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
+  DCHECK(base::FeatureList::IsEnabled(ash::features::kFirmwareUpdaterApp));
   ShowSystemAppInternal(profile, ash::SystemWebAppType::FIRMWARE_UPDATE);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   ShowSystemAppInternal(profile, GURL(kOsUIFirmwareUpdaterAppURL));

@@ -92,7 +92,7 @@ class WebAppInstallManagerTest
     if (GetParam() == SyncParam::kWithSync) {
       // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
       scoped_feature_list_.InitWithFeatures(
-          {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+          {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
     } else {
       // Enable WebAppsCrosapi, so that Web Apps don't get synced in the Ash
       // browser.

@@ -259,15 +259,13 @@ class MultiDeviceSetupHostBackendDelegateImplTest
     // These flags have no direct effect of on the host backend delegate;
     // however, v2 Enrollment and DeviceSync must be enabled before v1
     // DeviceSync can be disabled.
-    enabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
-    enabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+    enabled_features.push_back(features::kCryptAuthV2Enrollment);
+    enabled_features.push_back(features::kCryptAuthV2DeviceSync);
 
     if (use_v1_devicesync) {
-      disabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      disabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     } else {
-      enabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      enabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

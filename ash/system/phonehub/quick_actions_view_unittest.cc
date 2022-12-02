@@ -31,7 +31,7 @@ class QuickActionsViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
+    feature_list_.InitAndEnableFeature(features::kPhoneHub);
     AshTestBase::SetUp();
 
     quick_actions_view_ =

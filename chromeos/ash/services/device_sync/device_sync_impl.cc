@@ -816,8 +816,7 @@ void DeviceSyncImpl::RunNextInitializationStep() {
       RegisterWithGcm();
       break;
     case InitializationStatus::kWaitingForGcmRegistration:
-      if (base::FeatureList::IsEnabled(
-              chromeos::features::kCryptAuthV2Enrollment)) {
+      if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
         FetchClientAppMetadata();
       } else {
         WaitForValidEnrollment();
@@ -926,8 +925,7 @@ void DeviceSyncImpl::OnGCMRegistrationResult(bool success) {
 }
 
 void DeviceSyncImpl::FetchClientAppMetadata() {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kCryptAuthV2Enrollment));
+  DCHECK(base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment));
   status_ = InitializationStatus::kWaitingForClientAppMetadata;
 
   timer_->Start(FROM_HERE, kWaitingForClientAppMetadataTimeout,
@@ -1014,8 +1012,7 @@ void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
 
   // Initialize |cryptauth_enrollment_manager_| and start observing, then call
   // Start() immediately to schedule enrollment.
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCryptAuthV2Enrollment)) {
+  if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
     cryptauth_key_registry_ =
         CryptAuthKeyRegistryImpl::Factory::Create(profile_prefs_);
 

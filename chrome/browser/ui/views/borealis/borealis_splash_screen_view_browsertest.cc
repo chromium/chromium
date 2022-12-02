@@ -59,7 +59,7 @@ class BorealisSplashScreenViewBrowserTest : public DialogBrowserTest {
  public:
   BorealisSplashScreenViewBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kBorealis, chromeos::features::kBorealisPermitted}, {});
+        {features::kBorealis, ash::features::kBorealisPermitted}, {});
   }
 
   // DialogBrowserTest:

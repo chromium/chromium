@@ -548,58 +548,54 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "handwritinggesture",
       base::FeatureList::IsEnabled(features::kHandwritingGesture)));
-  features.Append(
-      GenerateFeatureFlag("handwritinggestureediting",
-                          base::FeatureList::IsEnabled(
-                              chromeos::features::kHandwritingGestureEditing)));
   features.Append(GenerateFeatureFlag(
-      "handwritinglegacyrecognition",
-      base::FeatureList::IsEnabled(
-          chromeos::features::kHandwritingLegacyRecognition)));
+      "handwritinggestureediting",
+      base::FeatureList::IsEnabled(ash::features::kHandwritingGestureEditing)));
+  features.Append(
+      GenerateFeatureFlag("handwritinglegacyrecognition",
+                          base::FeatureList::IsEnabled(
+                              ash::features::kHandwritingLegacyRecognition)));
   features.Append(GenerateFeatureFlag(
       "handwritinglegacyrecognitionall",
       base::FeatureList::IsEnabled(
-          chromeos::features::kHandwritingLegacyRecognitionAllLang)));
+          ash::features::kHandwritingLegacyRecognitionAllLang)));
   features.Append(GenerateFeatureFlag(
       "hindiinscriptlayout",
-      base::FeatureList::IsEnabled(chromeos::features::kHindiInscriptLayout)));
+      base::FeatureList::IsEnabled(ash::features::kHindiInscriptLayout)));
   features.Append(GenerateFeatureFlag(
-      "multiword", chromeos::features::IsAssistiveMultiWordEnabled()));
+      "multiword", ash::features::IsAssistiveMultiWordEnabled()));
   features.Append(GenerateFeatureFlag(
       "stylushandwriting",
-      base::FeatureList::IsEnabled(chromeos::features::kImeStylusHandwriting)));
+      base::FeatureList::IsEnabled(ash::features::kImeStylusHandwriting)));
   features.Append(GenerateFeatureFlag(
       "darkmode",
       base::FeatureList::IsEnabled(chromeos::features::kDarkLightMode)));
-  features.Append(
-      GenerateFeatureFlag("touchtexteditingredesign",
-                          base::FeatureList::IsEnabled(
-                              chromeos::features::kTouchTextEditingRedesign)));
   features.Append(GenerateFeatureFlag(
-      "newheader", base::FeatureList::IsEnabled(
-                       chromeos::features::kVirtualKeyboardNewHeader)));
+      "touchtexteditingredesign",
+      base::FeatureList::IsEnabled(ash::features::kTouchTextEditingRedesign)));
   features.Append(GenerateFeatureFlag(
-      "multitouch", base::FeatureList::IsEnabled(
-                        chromeos::features::kVirtualKeyboardMultitouch)));
+      "newheader",
+      base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardNewHeader)));
+  features.Append(GenerateFeatureFlag(
+      "multitouch",
+      base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardMultitouch)));
   features.Append(GenerateFeatureFlag(
       "roundCorners", base::FeatureList::IsEnabled(
-                          chromeos::features::kVirtualKeyboardRoundCorners)));
+                          ash::features::kVirtualKeyboardRoundCorners)));
   features.Append(GenerateFeatureFlag("systemchinesephysicaltyping", true));
-  features.Append(GenerateFeatureFlag(
-      "systemjapanesephysicaltyping",
-      base::FeatureList::IsEnabled(
-          chromeos::features::kSystemJapanesePhysicalTyping)));
+  features.Append(
+      GenerateFeatureFlag("systemjapanesephysicaltyping",
+                          base::FeatureList::IsEnabled(
+                              ash::features::kSystemJapanesePhysicalTyping)));
   features.Append(GenerateFeatureFlag(
       "multilingualtyping",
-      base::FeatureList::IsEnabled(chromeos::features::kMultilingualTyping)));
-  features.Append(
-      GenerateFeatureFlag("autocorrectparamstuning",
-                          base::FeatureList::IsEnabled(
-                              chromeos::features::kAutocorrectParamsTuning)));
-  features.Append(
-      GenerateFeatureFlag("handwritinglibrarydlc",
-                          base::FeatureList::IsEnabled(
-                              chromeos::features::kHandwritingLibraryDlc)));
+      base::FeatureList::IsEnabled(ash::features::kMultilingualTyping)));
+  features.Append(GenerateFeatureFlag(
+      "autocorrectparamstuning",
+      base::FeatureList::IsEnabled(ash::features::kAutocorrectParamsTuning)));
+  features.Append(GenerateFeatureFlag(
+      "handwritinglibrarydlc",
+      base::FeatureList::IsEnabled(ash::features::kHandwritingLibraryDlc)));
 
   results.Set("features", std::move(features));
 

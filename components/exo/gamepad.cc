@@ -131,8 +131,7 @@ void Gamepad::RemoveObserver(GamepadObserver* observer) {
 }
 
 void Gamepad::OnGamepadFocused() {
-  can_vibrate_ =
-      base::FeatureList::IsEnabled(chromeos::features::kGamepadVibration);
+  can_vibrate_ = base::FeatureList::IsEnabled(ash::features::kGamepadVibration);
 }
 
 void Gamepad::OnGamepadFocusLost() {

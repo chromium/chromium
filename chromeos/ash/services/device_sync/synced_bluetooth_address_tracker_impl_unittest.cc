@@ -61,7 +61,7 @@ class DeviceSyncSyncedBluetoothAddressTrackerImplTest : public testing::Test {
   void Initialize(bool is_flag_enabled,
                   const std::string& initial_bluetooth_pref_value) {
     static const std::vector<base::test::FeatureRef> kPhoneHubFeatureVector{
-        chromeos::features::kPhoneHub};
+        features::kPhoneHub};
     static const std::vector<base::test::FeatureRef> kNoFeaturesVector;
 
     scoped_feature_list_.InitWithFeatures(

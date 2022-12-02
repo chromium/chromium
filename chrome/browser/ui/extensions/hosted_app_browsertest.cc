@@ -186,7 +186,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     scoped_feature_list_.InitWithFeatures({}, {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary,
+      features::kWebAppsCrosapi, ash::features::kLacrosPrimary,
 #endif
           predictors::kSpeculativePreconnectFeature
     });

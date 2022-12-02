@@ -1179,7 +1179,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::diagnostics::mojom::InputDataProvider, ash::DiagnosticsDialogUI>(
       map);
 
-  if (chromeos::features::IsNetworkingInDiagnosticsAppEnabled()) {
+  if (ash::features::IsNetworkingInDiagnosticsAppEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         ash::diagnostics::mojom::NetworkHealthProvider,
         ash::DiagnosticsDialogUI>(map);

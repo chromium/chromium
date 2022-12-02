@@ -884,7 +884,7 @@ TEST_F(DriveFsHostTest, OnMirrorSyncingStatusUpdate_ForwardToObservers) {
 
 TEST_F(DriveFsHostTest, OnSyncingStatusUpdate_SyncStatusTracksStatus) {
   base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kFilesInlineSyncStatus);
+      ash::features::kFilesInlineSyncStatus);
 
   ASSERT_NO_FATAL_FAILURE(DoMount());
   auto first_status = mojom::SyncingStatus::New();

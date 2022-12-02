@@ -92,10 +92,9 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
-         chromeos::features::kPhoneHubCameraRoll,
-         chromeos::features::kPhoneHubMonochromeNotificationIcons,
-         chromeos::features::kNotificationsRefresh},
+        {features::kPhoneHub, features::kEcheSWA, features::kPhoneHubCameraRoll,
+         features::kPhoneHubMonochromeNotificationIcons,
+         features::kNotificationsRefresh},
         {});
     AshTestBase::SetUp();
 
@@ -522,13 +521,11 @@ TEST_F(PhoneHubNotificationControllerTest,
        MonochromeIconNotificationRefreshFeatureOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kPhoneHub,
-                            chromeos::features::kEcheSWA,
-                            chromeos::features::kPhoneHubCameraRoll},
-      /*disabled_features=*/{
-          chromeos::features::kPhoneHubMonochromeNotificationIcons,
-          chromeos::features::kNotificationsRefresh,
-          chromeos::features::kDarkLightMode});
+      /*enabled_features=*/{features::kPhoneHub, features::kEcheSWA,
+                            features::kPhoneHubCameraRoll},
+      /*disabled_features=*/{features::kPhoneHubMonochromeNotificationIcons,
+                             features::kNotificationsRefresh,
+                             chromeos::features::kDarkLightMode});
   notification_manager_->SetNotificationsInternal(fake_notifications_);
 
   phonehub::Notification updated_notification(

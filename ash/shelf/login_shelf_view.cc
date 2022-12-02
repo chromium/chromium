@@ -534,7 +534,7 @@ LoginShelfView::LoginShelfView(
                  },
                  this),
              IDS_ASH_SHELF_CANCEL_BUTTON, kShelfCancelButtonIcon);
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+  if (features::IsOobeConsolidatedConsentEnabled()) {
     add_button(kBrowseAsGuest,
                base::BindRepeating(
                    &LoginScreenController::ShowGuestTosScreen,

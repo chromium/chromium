@@ -2643,7 +2643,7 @@ bool IsScreenSaverPreviewEnabled() {
 
 bool IsSnoopingProtectionEnabled() {
   return base::FeatureList::IsEnabled(kSnoopingProtection) &&
-         ash::switches::HasHps();
+         switches::HasHps();
 }
 
 bool IsStartAssistantAudioDecoderOnDemandEnabled() {
@@ -2984,7 +2984,7 @@ bool IsProjectorAccountSwitchNotificationEnabled() {
 }
 
 bool IsQuickDimEnabled() {
-  return base::FeatureList::IsEnabled(kQuickDim) && ash::switches::HasHps();
+  return base::FeatureList::IsEnabled(kQuickDim) && switches::HasHps();
 }
 
 bool IsQuickSettingsNetworkRevampEnabled() {

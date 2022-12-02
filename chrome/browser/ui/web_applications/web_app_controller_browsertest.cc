@@ -45,7 +45,7 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest()
   os_hooks_suppress_.emplace();
   scoped_feature_list_.InitWithFeatures({}, {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary,
+    features::kWebAppsCrosapi, ash::features::kLacrosPrimary,
 #endif
         predictors::kSpeculativePreconnectFeature
   });

@@ -567,7 +567,7 @@ TEST_F(ExtensionRegistrarTest, DisableNotAshKeeplistedExtension) {
 TEST_F(ExtensionRegistrarTest,
        DisableNotAshKeeplistedForceInstalledExtensionIfAshDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kLacrosOnly);
+  feature_list.InitAndEnableFeature(ash::features::kLacrosOnly);
 
   auto set_lacros_primary =
       crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);

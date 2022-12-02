@@ -528,7 +528,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
       std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
           workspace_desk_delegate)));
 
-  if (chromeos::features::IsOAuthIppEnabled()) {
+  if (ash::features::IsOAuthIppEnabled()) {
     syncer::ModelTypeControllerDelegate*
         printers_authorization_servers_delegate =
             GetControllerDelegateForModelType(

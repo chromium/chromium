@@ -70,8 +70,8 @@ class AshAppsToggleSharingSyncTest : public SyncTest {
  public:
   AshAppsToggleSharingSyncTest() : SyncTest(SINGLE_CLIENT) {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kLacrosSupport,
-                              chromeos::features::kLacrosPrimary,
+        /*enabled_features=*/{ash::features::kLacrosSupport,
+                              ash::features::kLacrosPrimary,
                               syncer::kSyncChromeOSAppsToggleSharing},
         /*disabled_features=*/{});
   }

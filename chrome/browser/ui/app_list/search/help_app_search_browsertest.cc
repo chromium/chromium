@@ -39,7 +39,7 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
   HelpAppSearchBrowserTestBase() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ash::features::kProductivityLauncher, {{"enable_continue", "true"}}},
-         {{chromeos::features::kHelpAppLauncherSearch}, {}}},
+         {{ash::features::kHelpAppLauncherSearch}, {}}},
         {});
   }
 

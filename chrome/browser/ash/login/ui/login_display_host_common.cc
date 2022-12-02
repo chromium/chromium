@@ -63,6 +63,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
 namespace {
 
 // The delay of triggering initialization of the device policy subsystem
@@ -483,7 +484,7 @@ void LoginDisplayHostCommon::StartUserOnboarding() {
 void LoginDisplayHostCommon::ResumeUserOnboarding(OobeScreenId screen_id) {
   SetScreenAfterManagedTos(screen_id);
 
-  if (chromeos::features::IsOobeChoobeEnabled()) {
+  if (features::IsOobeChoobeEnabled()) {
     if (ChoobeFlowController::IsOptionalScreen(screen_id)) {
       GetWizardController()->GetChoobeFlowController()->MaybeResumeChoobe(
           *ProfileManager::GetActiveUserProfile()->GetPrefs());
@@ -516,7 +517,7 @@ void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
   if (PinSetupScreen::ShouldSkipBecauseOfPolicy() &&
-      !chromeos::features::IsCryptohomeRecoverySetupEnabled() &&
+      !features::IsCryptohomeRecoverySetupEnabled() &&
       RecoveryEligibilityScreen::ShouldSkipRecoverySetupBecauseOfPolicy())
     return;
 

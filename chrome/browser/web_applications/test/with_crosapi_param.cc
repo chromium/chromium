@@ -18,10 +18,10 @@ WithCrosapiParam::WithCrosapiParam() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetParam() == CrosapiParam::kEnabled) {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
+        {ash::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
   } else {
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+        {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

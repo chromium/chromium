@@ -3357,7 +3357,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(blink::features::kFileHandlingAPI);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   disabled_features.push_back(features::kWebAppsCrosapi);
-  disabled_features.push_back(chromeos::features::kLacrosPrimary);
+  disabled_features.push_back(ash::features::kLacrosPrimary);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.

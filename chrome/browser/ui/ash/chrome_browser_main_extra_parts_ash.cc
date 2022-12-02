@@ -150,7 +150,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       std::make_unique<CastConfigControllerMediaRouter>();
 
   // Needed by AmbientController in ash.
-  if (chromeos::features::IsAmbientModeEnabled())
+  if (ash::features::IsAmbientModeEnabled())
     ambient_client_ = std::make_unique<AmbientClientImpl>();
 
   // This controller MUST be initialized before the UI (AshShellInit) is

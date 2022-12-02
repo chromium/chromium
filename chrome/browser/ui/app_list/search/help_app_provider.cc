@@ -102,8 +102,7 @@ HelpAppProvider::HelpAppProvider(Profile* profile,
   Observe(&app_service_proxy_->AppRegistryCache());
   LoadIcon();
 
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kHelpAppLauncherSearch)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kHelpAppLauncherSearch)) {
     // Only get the help app manager if the launcher search feature is enabled.
     return;
   }

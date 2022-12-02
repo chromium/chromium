@@ -447,7 +447,7 @@ bool CanShowStylusTools() {
 }
 
 bool CanStartAmbientMode() {
-  return chromeos::features::IsAmbientModeEnabled();
+  return features::IsAmbientModeEnabled();
 }
 
 bool CanSwapPrimaryDisplay() {

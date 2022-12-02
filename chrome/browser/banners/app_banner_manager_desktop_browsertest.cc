@@ -53,7 +53,7 @@ namespace {
 
 std::vector<base::test::FeatureRef> GetDisabledFeatures() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary};
+  return {features::kWebAppsCrosapi, ash::features::kLacrosPrimary};
 #else
   return {};
 #endif

@@ -736,19 +736,18 @@ ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   base::DictionaryValue info;
   info.SetBoolKey("alternative_emulator",
                   base::FeatureList::IsEnabled(
-                      chromeos::features::kTerminalAlternativeEmulator));
-  info.SetBoolKey(
-      "multi_profile",
-      base::FeatureList::IsEnabled(chromeos::features::kTerminalMultiProfile));
-  info.SetBoolKey(
-      "sftp", base::FeatureList::IsEnabled(chromeos::features::kTerminalSftp));
+                      ash::features::kTerminalAlternativeEmulator));
+  info.SetBoolKey("multi_profile", base::FeatureList::IsEnabled(
+                                       ash::features::kTerminalMultiProfile));
+  info.SetBoolKey("sftp",
+                  base::FeatureList::IsEnabled(ash::features::kTerminalSftp));
   info.SetBoolKey("tast",
                   extensions::ExtensionRegistry::Get(browser_context())
                       ->enabled_extensions()
                       .Contains(extension_misc::kGuestModeTestExtensionId));
-  info.SetBoolKey("tmux_integration",
-                  base::FeatureList::IsEnabled(
-                      chromeos::features::kTerminalTmuxIntegration));
+  info.SetBoolKey(
+      "tmux_integration",
+      base::FeatureList::IsEnabled(ash::features::kTerminalTmuxIntegration));
   return RespondNow(OneArgument(std::move(info)));
 }
 

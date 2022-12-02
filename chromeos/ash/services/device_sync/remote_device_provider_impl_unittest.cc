@@ -273,20 +273,18 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
 
     // This flag has no direct effect of on the RemoteDeviceProvider; however,
     // v2 Enrollment is a prerequisite for v2 DeviceSync.
-    enabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
+    enabled_features.push_back(features::kCryptAuthV2Enrollment);
 
     if (use_v1) {
-      disabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      disabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     } else {
-      enabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      enabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     }
 
     if (use_v2) {
-      enabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+      enabled_features.push_back(features::kCryptAuthV2DeviceSync);
     } else {
-      disabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+      disabled_features.push_back(features::kCryptAuthV2DeviceSync);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

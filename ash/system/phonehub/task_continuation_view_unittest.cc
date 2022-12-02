@@ -40,7 +40,7 @@ class TaskContinuationViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
+    feature_list_.InitAndEnableFeature(features::kPhoneHub);
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
     delegate_provider_ =

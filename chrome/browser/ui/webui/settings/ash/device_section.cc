@@ -529,7 +529,7 @@ const std::vector<SearchConcept>& GetPowerWithAdaptiveChargingSearchConcepts() {
 }
 
 bool AreScrollSettingsAllowed() {
-  return base::FeatureList::IsEnabled(ash::features::kAllowScrollSettings);
+  return base::FeatureList::IsEnabled(features::kAllowScrollSettings);
 }
 
 bool IsUnifiedDesktopAvailable() {
@@ -1086,7 +1086,7 @@ void DeviceSection::TouchpadExists(bool exists) {
 
   if (exists) {
     updater.AddSearchTags(GetTouchpadSearchConcepts());
-    if (base::FeatureList::IsEnabled(ash::features::kAllowScrollSettings))
+    if (base::FeatureList::IsEnabled(features::kAllowScrollSettings))
       updater.AddSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
   }
 }

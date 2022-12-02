@@ -45,7 +45,7 @@ class PhoneHubUiControllerTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
-    feature_list_.InitWithFeatures({chromeos::features::kEcheSWA}, {});
+    feature_list_.InitWithFeatures({features::kEcheSWA}, {});
 
     AshTestBase::SetUp();
 

@@ -925,15 +925,13 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
 
     // These flags have no direct effect; however, v2 Enrollment and v2
     // DeviceSync are prerequisites for disabling v1 DeviceSync.
-    enabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
-    enabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+    enabled_features.push_back(features::kCryptAuthV2Enrollment);
+    enabled_features.push_back(features::kCryptAuthV2DeviceSync);
 
     if (use_v1) {
-      disabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      disabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     } else {
-      enabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      enabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

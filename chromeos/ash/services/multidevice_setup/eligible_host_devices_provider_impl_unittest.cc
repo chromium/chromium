@@ -51,32 +51,30 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
     always_use_active_eligible_devices_ = std::get<2>(GetParam());
     use_last_activity_time_to_dedup_ = std::get<3>(GetParam());
     if (use_get_devices_activity_status_) {
-      enabled_features.push_back(
-          chromeos::features::kCryptAuthV2DeviceActivityStatus);
+      enabled_features.push_back(features::kCryptAuthV2DeviceActivityStatus);
     } else {
-      disabled_features.push_back(
-          chromeos::features::kCryptAuthV2DeviceActivityStatus);
+      disabled_features.push_back(features::kCryptAuthV2DeviceActivityStatus);
     }
     if (use_connectivity_status_) {
       enabled_features.push_back(
-          chromeos::features::kCryptAuthV2DeviceActivityStatusUseConnectivity);
+          features::kCryptAuthV2DeviceActivityStatusUseConnectivity);
     } else {
       disabled_features.push_back(
-          chromeos::features::kCryptAuthV2DeviceActivityStatusUseConnectivity);
+          features::kCryptAuthV2DeviceActivityStatusUseConnectivity);
     }
     if (always_use_active_eligible_devices_) {
       enabled_features.push_back(
-          chromeos::features::kCryptAuthV2AlwaysUseActiveEligibleHosts);
+          features::kCryptAuthV2AlwaysUseActiveEligibleHosts);
     } else {
       disabled_features.push_back(
-          chromeos::features::kCryptAuthV2AlwaysUseActiveEligibleHosts);
+          features::kCryptAuthV2AlwaysUseActiveEligibleHosts);
     }
     if (use_last_activity_time_to_dedup_) {
       enabled_features.push_back(
-          chromeos::features::kCryptAuthV2DedupDeviceLastActivityTime);
+          features::kCryptAuthV2DedupDeviceLastActivityTime);
     } else {
       disabled_features.push_back(
-          chromeos::features::kCryptAuthV2DedupDeviceLastActivityTime);
+          features::kCryptAuthV2DedupDeviceLastActivityTime);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 

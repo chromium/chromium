@@ -46,7 +46,7 @@ class AshTtsApiTest : public AshRequiresLacrosExtensionApiTest,
     // in Ash in Lacros only mode.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeatures(
-        {}, {chromeos::features::kEnforceAshExtensionKeeplist,
+        {}, {ash::features::kEnforceAshExtensionKeeplist,
              ash::features::kDisableLacrosTtsSupport});
 
     content::TtsController::SkipAddNetworkChangeObserverForTests(true);

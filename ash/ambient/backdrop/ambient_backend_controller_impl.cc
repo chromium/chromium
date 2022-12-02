@@ -267,19 +267,19 @@ bool IsArtSettingVisible(const ArtSetting& art_setting) {
   const auto& album_id = art_setting.album_id;
 
   if (album_id == kAmbientModeStreetArtAlbumId)
-    return chromeos::features::kAmbientModeStreetArtAlbumEnabled.Get();
+    return features::kAmbientModeStreetArtAlbumEnabled.Get();
 
   if (album_id == kAmbientModeCapturedOnPixelAlbumId)
-    return chromeos::features::kAmbientModeCapturedOnPixelAlbumEnabled.Get();
+    return features::kAmbientModeCapturedOnPixelAlbumEnabled.Get();
 
   if (album_id == kAmbientModeEarthAndSpaceAlbumId)
-    return chromeos::features::kAmbientModeEarthAndSpaceAlbumEnabled.Get();
+    return features::kAmbientModeEarthAndSpaceAlbumEnabled.Get();
 
   if (album_id == kAmbientModeFeaturedPhotoAlbumId)
-    return chromeos::features::kAmbientModeFeaturedPhotoAlbumEnabled.Get();
+    return features::kAmbientModeFeaturedPhotoAlbumEnabled.Get();
 
   if (album_id == kAmbientModeFineArtAlbumId)
-    return chromeos::features::kAmbientModeFineArtAlbumEnabled.Get();
+    return features::kAmbientModeFineArtAlbumEnabled.Get();
 
   return false;
 }

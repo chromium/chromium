@@ -1149,7 +1149,7 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
   // should be able to override it.
   const bool use_search_key =
       base::FeatureList::IsEnabled(
-          ::chromeos::features::kUseSearchClickForRightClick) ||
+          ::ash::features::kUseSearchClickForRightClick) ||
       ::features::IsDeprecateAltClickEnabled();
   if (use_search_key) {
     if (AreFlagsSet(flags, kSearchLeftButton)) {

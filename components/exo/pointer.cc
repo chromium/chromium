@@ -508,7 +508,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     // indicated by the presence of a flag.
     absl::optional<gfx::Vector2dF> ordinal_motion = absl::nullopt;
     if (event->flags() & ui::EF_UNADJUSTED_MOUSE &&
-        base::FeatureList::IsEnabled(chromeos::features::kExoOrdinalMotion)) {
+        base::FeatureList::IsEnabled(ash::features::kExoOrdinalMotion)) {
       ordinal_motion = event->movement();
     }
 

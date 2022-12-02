@@ -40,8 +40,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheLauncher,
-                              chromeos::features::kEcheSWA},
+        /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA},
         /*disabled_features=*/{});
 
     phone_hub_recent_apps_view_ = std::make_unique<PhoneHubRecentAppsView>(

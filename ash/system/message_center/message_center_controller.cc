@@ -99,7 +99,7 @@ MessageCenterController::MessageCenterController() {
         std::make_unique<PopupNotificationBlocker>(MessageCenter::Get());
   }
 
-  if (chromeos::features::IsPhoneHubEnabled()) {
+  if (features::IsPhoneHubEnabled()) {
     phone_hub_notification_controller_ =
         std::make_unique<PhoneHubNotificationController>();
   }

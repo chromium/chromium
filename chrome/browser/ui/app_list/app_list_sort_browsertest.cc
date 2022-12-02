@@ -187,7 +187,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
 
     const int default_app_count = app_list_test_api_.GetTopListItemCount();
 
-    if (base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport)) {
+    if (base::FeatureList::IsEnabled(ash::features::kLacrosSupport)) {
       // Assume that there are three default apps, one being the Lacros browser.
       ASSERT_EQ(3, app_list_test_api_.GetTopListItemCount());
     } else {

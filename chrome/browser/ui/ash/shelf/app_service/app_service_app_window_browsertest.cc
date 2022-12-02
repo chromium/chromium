@@ -361,7 +361,7 @@ class AppServiceAppWindowLacrosBrowserTest
     : public AppServiceAppWindowBrowserTest {
  public:
   AppServiceAppWindowLacrosBrowserTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
   }
   ~AppServiceAppWindowLacrosBrowserTest() override = default;
 

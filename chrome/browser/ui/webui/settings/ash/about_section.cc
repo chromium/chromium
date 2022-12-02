@@ -446,11 +446,10 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "isFirmwareUpdaterAppEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
+      base::FeatureList::IsEnabled(features::kFirmwareUpdaterApp));
 
-  html_source->AddBoolean(
-      "isOsFeedbackEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kOsFeedback));
+  html_source->AddBoolean("isOsFeedbackEnabled",
+                          base::FeatureList::IsEnabled(features::kOsFeedback));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddString("aboutTermsURL", chrome::kChromeUITermsURL);
@@ -537,7 +536,7 @@ bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {
   if (account_info.capabilities.can_toggle_auto_updates() ==
       signin::Tribool::kTrue) {
     // Show toggle based on user's capabilities.
-    return chromeos::features::IsConsumerAutoUpdateToggleAllowed();
+    return features::IsConsumerAutoUpdateToggleAllowed();
   }
 
   return false;

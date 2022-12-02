@@ -17,9 +17,8 @@ namespace {
 class LacrosPrimaryAshSyncTest : public SyncTest {
  public:
   LacrosPrimaryAshSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures({chromeos::features::kLacrosSupport,
-                                    chromeos::features::kLacrosPrimary},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
   }
   ~LacrosPrimaryAshSyncTest() override = default;
 
@@ -32,8 +31,8 @@ class LacrosOnlyAshSyncTest : public SyncTest {
  public:
   LacrosOnlyAshSyncTest() : SyncTest(SINGLE_CLIENT) {
     feature_list_.InitWithFeatures(
-        {chromeos::features::kLacrosSupport, chromeos::features::kLacrosPrimary,
-         chromeos::features::kLacrosOnly},
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly},
         {});
   }
   ~LacrosOnlyAshSyncTest() override = default;

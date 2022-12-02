@@ -75,7 +75,7 @@ ClipboardNudgeController::ClipboardNudgeController(
   clipboard_history_->AddObserver(this);
   clipboard_history_controller_->AddObserver(this);
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
-  if (chromeos::features::IsClipboardHistoryNudgeSessionResetEnabled())
+  if (features::IsClipboardHistoryNudgeSessionResetEnabled())
     Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -83,7 +83,7 @@ ClipboardNudgeController::~ClipboardNudgeController() {
   clipboard_history_->RemoveObserver(this);
   clipboard_history_controller_->RemoveObserver(this);
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
-  if (chromeos::features::IsClipboardHistoryNudgeSessionResetEnabled())
+  if (features::IsClipboardHistoryNudgeSessionResetEnabled())
     Shell::Get()->session_controller()->RemoveObserver(this);
 }
 

@@ -1453,7 +1453,7 @@ void ArcAppListPrefs::AddAppAndShortcut(
     //                    fixed in Play Store.
     if (arc::IsRobotOrOfflineDemoAccountMode() &&
         !(ash::DemoSession::IsDeviceInDemoMode() &&
-          chromeos::features::ShouldShowPlayStoreInDemoMode())) {
+          ash::features::ShouldShowPlayStoreInDemoMode())) {
       return;
     }
   }

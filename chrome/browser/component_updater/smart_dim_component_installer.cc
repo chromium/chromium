@@ -43,7 +43,7 @@ const base::FilePath::CharType kSmartDimMetaJsonFileName[] =
 const char kDefaultVersion[] = "20210201.1";
 
 constexpr base::FeatureParam<std::string> kVersion{
-    &chromeos::features::kSmartDimExperimentalComponent,
+    &ash::features::kSmartDimExperimentalComponent,
     "smart_dim_experimental_version", kDefaultVersion};
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.

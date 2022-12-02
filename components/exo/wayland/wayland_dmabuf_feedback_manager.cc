@@ -306,14 +306,14 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(chromeos::features::kExoLinuxDmabufV3) &&
-      !base::FeatureList::IsEnabled(chromeos::features::kExoLinuxDmabufV4)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV3) &&
+      !base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV4)) {
     version_ = ZWP_LINUX_BUFFER_PARAMS_V1_CREATE_IMMED_SINCE_VERSION;
     return;
   }
 
   struct stat device_stat;
-  if (!base::FeatureList::IsEnabled(chromeos::features::kExoLinuxDmabufV4) ||
+  if (!base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV4) ||
       caps.drm_render_node.empty() ||
       stat(caps.drm_render_node.c_str(), &device_stat) != 0) {
     version_ = ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION;

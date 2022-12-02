@@ -318,8 +318,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
  protected:
   ShelfAppBrowserTest() {
     // TODO(crbug.com/1258445): Update expectations to support Lacros.
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kLacrosSupport);
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kLacrosSupport);
   }
   ShelfAppBrowserTest(const ShelfAppBrowserTest&) = delete;
   ShelfAppBrowserTest& operator=(const ShelfAppBrowserTest&) = delete;

@@ -34,7 +34,7 @@ AmbientModeMetricsProvider::~AmbientModeMetricsProvider() = default;
 
 void AmbientModeMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto_unused) {
-  if (!chromeos::features::IsAmbientModeEnabled())
+  if (!ash::features::IsAmbientModeEnabled())
     return;
 
   auto* ambient_client = ash::AmbientClient::Get();

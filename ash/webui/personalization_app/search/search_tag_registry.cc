@@ -34,8 +34,7 @@ namespace ash::personalization_app {
 namespace {
 
 bool IsAmbientModeAllowed() {
-  return chromeos::features::IsAmbientModeEnabled() &&
-         ash::AmbientClient::Get() &&
+  return features::IsAmbientModeEnabled() && ash::AmbientClient::Get() &&
          ash::AmbientClient::Get()->IsAmbientModeAllowed();
 }
 

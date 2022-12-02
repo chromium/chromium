@@ -44,7 +44,7 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
  public:
   HelpAppZeroStateProviderTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kReleaseNotesSuggestionChip},
+        /*enabled_features=*/{ash::features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{});
   }
   ~HelpAppZeroStateProviderTest() override = default;

@@ -78,7 +78,7 @@ var EduCoexistenceAppTestWithArcAccountRestrictionsEnabled =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kLacrosSupport',
+        'ash::features::kLacrosSupport',
       ],
     };
   }

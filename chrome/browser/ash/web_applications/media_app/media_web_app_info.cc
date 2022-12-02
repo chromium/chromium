@@ -260,7 +260,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
       },
       *info);
 
-  if (chromeos::features::IsDarkLightModeEnabled()) {
+  if (ash::features::IsDarkLightModeEnabled()) {
     info->theme_color = cros_styles::ResolveColor(
         cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
     info->dark_mode_theme_color = cros_styles::ResolveColor(

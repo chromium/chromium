@@ -229,8 +229,7 @@ void UpgradeDetectorChromeos::UpdateStatusChanged(
     toggled_update_flag_ = true;
     UpdateEngineClient::Get()->ToggleFeature(
         update_engine::kFeatureRepeatedUpdates,
-        base::FeatureList::IsEnabled(
-            chromeos::features::kAllowRepeatedUpdates));
+        base::FeatureList::IsEnabled(ash::features::kAllowRepeatedUpdates));
   }
 }
 

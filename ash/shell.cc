@@ -1340,7 +1340,7 @@ void Shell::Init(
 
   // |assistant_controller_| is put before |ambient_controller_| as it will be
   // used by the latter.
-  if (chromeos::features::IsAmbientModeEnabled()) {
+  if (features::IsAmbientModeEnabled()) {
     mojo::PendingRemote<device::mojom::Fingerprint> fingerprint;
     shell_delegate_->BindFingerprint(
         fingerprint.InitWithNewPipeAndPassReceiver());
@@ -1506,7 +1506,7 @@ void Shell::Init(
         glanceables_controller_.get()));
   }
 
-  if (chromeos::features::IsProjectorEnabled())
+  if (features::IsProjectorEnabled())
     projector_controller_ = std::make_unique<ProjectorControllerImpl>();
 
   if (chromeos::wm::features::IsFloatWindowEnabled())

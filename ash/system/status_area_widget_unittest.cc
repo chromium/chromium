@@ -681,7 +681,7 @@ class StatusAreaWidgetEcheTest : public AshTestBase {
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheSWA},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
     DCHECK(test_web_view_factory_.get());
     AshTestBase::SetUp();

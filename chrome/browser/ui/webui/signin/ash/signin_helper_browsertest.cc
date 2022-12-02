@@ -298,7 +298,7 @@ class SigninHelperTestWithArcAccountRestrictions
       public ::ash::AccountAppsAvailability::Observer {
  public:
   SigninHelperTestWithArcAccountRestrictions() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
   }
 
   ~SigninHelperTestWithArcAccountRestrictions() override = default;
@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
 class SigninHelperTestSecondaryGoogleAccountUsage : public SigninHelperTest {
  public:
   SigninHelperTestSecondaryGoogleAccountUsage() {
-    feature_list_.InitAndDisableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndDisableFeature(ash::features::kLacrosSupport);
   }
 
   ~SigninHelperTestSecondaryGoogleAccountUsage() override = default;

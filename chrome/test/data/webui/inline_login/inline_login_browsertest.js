@@ -64,7 +64,7 @@ var InlineLoginBrowserTestWithArcAccountRestrictionsEnabled =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kLacrosSupport',
+        'ash::features::kLacrosSupport',
       ],
     };
   }
@@ -130,7 +130,7 @@ var InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kLacrosSupport',
+        'ash::features::kLacrosSupport',
       ],
     };
   }
@@ -190,7 +190,7 @@ var InlineLoginArcAccountPickerBrowserTest =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kLacrosSupport',
+        'ash::features::kLacrosSupport',
       ],
     };
   }

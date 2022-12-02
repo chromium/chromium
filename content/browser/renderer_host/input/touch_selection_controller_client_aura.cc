@@ -456,7 +456,7 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::TouchEditable::kSelectAll:
       return readable && base::FeatureList::IsEnabled(
-                             chromeos::features::kTouchTextEditingRedesign);
+                             ash::features::kTouchTextEditingRedesign);
 #endif
     default:
       return false;

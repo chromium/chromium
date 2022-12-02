@@ -236,8 +236,7 @@ bool LessUserPriority(const AudioDevice& a, const AudioDevice& b) {
 
 bool AudioDeviceCompare::operator()(const AudioDevice& a,
                                     const AudioDevice& b) const {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kRobustAudioDeviceSelectLogic)) {
+  if (base::FeatureList::IsEnabled(features::kRobustAudioDeviceSelectLogic)) {
     return LessUserPriority(a, b);
   } else {
     return LessBuiltInPriority(a, b);

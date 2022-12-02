@@ -29,7 +29,7 @@ class PhoneStatusViewTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
+    feature_list_.InitAndEnableFeature(features::kPhoneHub);
     AshTestBase::SetUp();
     widget_ = CreateFramelessTestWidget();
     status_view_ = widget_->SetContentsView(

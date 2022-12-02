@@ -120,8 +120,7 @@ class ShimlessRmaServiceTest : public testing::Test {
   ~ShimlessRmaServiceTest() override {}
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kShimlessRMAOsUpdate}, {});
+    scoped_feature_list_.InitWithFeatures({features::kShimlessRMAOsUpdate}, {});
     chromeos::PowerManagerClient::InitializeFake();
     // VersionUpdater depends on UpdateEngineClient.
     UpdateEngineClient::InitializeFake();

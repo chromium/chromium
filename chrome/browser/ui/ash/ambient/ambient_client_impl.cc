@@ -109,7 +109,7 @@ AmbientClientImpl::AmbientClientImpl() = default;
 AmbientClientImpl::~AmbientClientImpl() = default;
 
 bool AmbientClientImpl::IsAmbientModeAllowed() {
-  DCHECK(chromeos::features::IsAmbientModeEnabled());
+  DCHECK(ash::features::IsAmbientModeEnabled());
 
   if (is_allowed_for_testing_.has_value()) {
     return is_allowed_for_testing_.value();
@@ -208,7 +208,7 @@ void AmbientClientImpl::RequestWakeLockProvider(
 }
 
 bool AmbientClientImpl::ShouldUseProdServer() {
-  if (chromeos::features::IsAmbientModeDevUseProdEnabled())
+  if (ash::features::IsAmbientModeDevUseProdEnabled())
     return true;
 
   auto channel = chrome::GetChannel();

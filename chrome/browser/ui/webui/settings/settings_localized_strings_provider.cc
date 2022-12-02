@@ -1541,7 +1541,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
 
 bool ShouldLinkSecureDnsOsSettings() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(chromeos::features::kEnableDnsProxy) &&
+  return base::FeatureList::IsEnabled(ash::features::kEnableDnsProxy) &&
          base::FeatureList::IsEnabled(::features::kDnsProxyEnableDOH);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return true;

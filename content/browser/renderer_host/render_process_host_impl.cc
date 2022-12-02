@@ -3252,8 +3252,7 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
                                     "--jitless");
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kTouchTextEditingRedesign)) {
+  if (base::FeatureList::IsEnabled(ash::features::kTouchTextEditingRedesign)) {
     command_line->AppendSwitchASCII(
         blink::switches::kTouchTextSelectionStrategy,
         blink::switches::kTouchTextSelectionStrategy_Direction);

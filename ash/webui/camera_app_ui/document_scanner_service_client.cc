@@ -44,7 +44,7 @@ bool IsEnabledOnRootfs() {
 
 // Returns true if switch kOndeviceDocumentScanner is set to use_dlc.
 bool IsEnabledOnDlc() {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kCameraAppDocScanDlc)) {
+  if (!base::FeatureList::IsEnabled(features::kCameraAppDocScanDlc)) {
     return false;
   }
   return HasCommandLineSwitch(kOndeviceDocumentScanner, "use_dlc");

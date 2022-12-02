@@ -886,12 +886,4 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebUITabStripEnabled();
 }  // namespace features
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace features {
-using namespace ::ash::features;
-}
-}  // namespace chromeos
-
 #endif  // ASH_CONSTANTS_ASH_FEATURES_H_

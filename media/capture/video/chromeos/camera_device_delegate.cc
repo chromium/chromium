@@ -1781,8 +1781,7 @@ std::pair<int32_t, int32_t> CameraDeviceDelegate::GetFrameRateRange() {
       std::round(chrome_capture_params_[ClientType::kPreviewClient]
                      .requested_format.frame_rate);
   bool prefer_constant_frame_rate =
-      base::FeatureList::IsEnabled(
-          chromeos::features::kPreferConstantFrameRate) ||
+      base::FeatureList::IsEnabled(ash::features::kPreferConstantFrameRate) ||
       (camera_app_device && camera_app_device->GetCaptureIntent() ==
                                 cros::mojom::CaptureIntent::VIDEO_RECORD);
   return GetTargetFrameRateRange(static_metadata_, requested_frame_rate,

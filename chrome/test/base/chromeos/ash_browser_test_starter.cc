@@ -42,8 +42,8 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kLacrosSupport, chromeos::features::kLacrosPrimary,
-       chromeos::features::kLacrosOnly},
+      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+       ash::features::kLacrosOnly},
       {});
   command_line->AppendSwitch(ash::switches::kAshEnableWaylandServer);
   command_line->AppendSwitch(ash::switches::kDisableLacrosKeepAliveForTesting);

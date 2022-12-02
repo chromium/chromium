@@ -34,7 +34,7 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
   disabled_features.push_back(features::kWebAppsCrosapi);
-  disabled_features.push_back(chromeos::features::kLacrosPrimary);
+  disabled_features.push_back(ash::features::kLacrosPrimary);
 #endif
 
   scoped_feature_list_.InitWithFeatures({}, disabled_features);

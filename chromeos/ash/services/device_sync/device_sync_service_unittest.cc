@@ -725,9 +725,9 @@ class DeviceSyncServiceTest
     // parameter provided by ::testing::TestWithParam<std::tuple<bool, bool,
     // bool>>.
     if (std::get<0>(GetParam())) {
-      enabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
+      enabled_features.push_back(features::kCryptAuthV2Enrollment);
     } else {
-      disabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
+      disabled_features.push_back(features::kCryptAuthV2Enrollment);
     }
 
     // Choose whether or not to enable v2 DeviceSync feature flag based on the
@@ -735,9 +735,9 @@ class DeviceSyncServiceTest
     // bool, bool>>. Even if the flag is enabled, v2 DeviceSync should only be
     // used if v2 Enrollment is also enabled.
     if (std::get<1>(GetParam())) {
-      enabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+      enabled_features.push_back(features::kCryptAuthV2DeviceSync);
     } else {
-      disabled_features.push_back(chromeos::features::kCryptAuthV2DeviceSync);
+      disabled_features.push_back(features::kCryptAuthV2DeviceSync);
     }
 
     // Choose whether or not to flip the flag to disable v1 DeviceSync based on
@@ -745,11 +745,9 @@ class DeviceSyncServiceTest
     // bool, bool>>. Even if the flag is flipped, v1 DeviceSync should only be
     // disabled if v2 Enrollment and v2 DeviceSync are enabled.
     if (std::get<2>(GetParam())) {
-      enabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      enabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     } else {
-      disabled_features.push_back(
-          chromeos::features::kDisableCryptAuthV1DeviceSync);
+      disabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -948,8 +946,7 @@ class DeviceSyncServiceTest
   }
 
   void SucceedClientAppMetadataFetch() {
-    if (!base::FeatureList::IsEnabled(
-            chromeos::features::kCryptAuthV2Enrollment)) {
+    if (!base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
       return;
     }
 

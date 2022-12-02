@@ -31,8 +31,8 @@ void ResultsWaiter::Wait() {
 }
 
 AppListSearchBrowserTest::AppListSearchBrowserTest() {
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kHelpAppLauncherSearch}, {});
+  scoped_feature_list_.InitWithFeatures({ash::features::kHelpAppLauncherSearch},
+                                        {});
 }
 
 void AppListSearchBrowserTest::SetUpOnMainThread() {

@@ -287,7 +287,7 @@ MediaClientImpl::MediaClientImpl() {
   // linux chromeos).
   if (base::SysInfo::IsRunningOnChromeOS() &&
       base::FeatureList::IsEnabled(
-          chromeos::features::kCameraPrivacySwitchNotifications) &&
+          ash::features::kCameraPrivacySwitchNotifications) &&
       media::ShouldUseCrosCameraService()) {
     device_id_to_camera_privacy_switch_state_ =
         media::CameraHalDispatcherImpl::GetInstance()
@@ -320,7 +320,7 @@ MediaClientImpl::~MediaClientImpl() {
 
   if (base::SysInfo::IsRunningOnChromeOS() &&
       base::FeatureList::IsEnabled(
-          chromeos::features::kCameraPrivacySwitchNotifications) &&
+          ash::features::kCameraPrivacySwitchNotifications) &&
       media::ShouldUseCrosCameraService()) {
     media::CameraHalDispatcherImpl::GetInstance()
         ->RemoveCameraPrivacySwitchObserver(this);

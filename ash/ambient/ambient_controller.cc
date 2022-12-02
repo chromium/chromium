@@ -140,7 +140,7 @@ class AmbientWidgetDelegate : public views::WidgetDelegate {
 
 // static
 void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  if (chromeos::features::IsAmbientModeEnabled()) {
+  if (features::IsAmbientModeEnabled()) {
     registry->RegisterStringPref(ash::ambient::prefs::kAmbientBackdropClientId,
                                  std::string());
 

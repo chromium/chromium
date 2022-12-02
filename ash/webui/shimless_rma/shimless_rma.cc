@@ -370,7 +370,7 @@ void AddDevicePlaceholderStrings(content::WebUIDataSource* html_source) {
 void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "osUpdateEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate));
+      base::FeatureList::IsEnabled(features::kShimlessRMAOsUpdate));
 }
 
 }  // namespace

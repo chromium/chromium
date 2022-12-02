@@ -820,7 +820,7 @@ class TwoClientTypedUrlsSyncTestWithoutLacrosSupport
   TwoClientTypedUrlsSyncTestWithoutLacrosSupport() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1263014): Update test to pass with Lacros enabled.
-    feature_list_.InitAndDisableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndDisableFeature(ash::features::kLacrosSupport);
 #endif
   }
   ~TwoClientTypedUrlsSyncTestWithoutLacrosSupport() override = default;

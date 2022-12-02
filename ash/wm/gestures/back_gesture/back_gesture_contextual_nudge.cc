@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/timer/timer.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"

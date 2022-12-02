@@ -299,7 +299,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   ManifestUpdateManagerBrowserTest() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+        {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
 #endif
   }
   ManifestUpdateManagerBrowserTest(const ManifestUpdateManagerBrowserTest&) =

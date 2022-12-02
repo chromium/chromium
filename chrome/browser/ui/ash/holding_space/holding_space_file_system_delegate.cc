@@ -496,7 +496,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
   // Get a list of the enabled Trash locations. Trash can be enabled and
   // disabled via policy, so ensure the latest list is retrieved.
   file_manager::trash::TrashPathsMap enabled_trash_locations;
-  if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+  if (base::FeatureList::IsEnabled(features::kFilesTrash)) {
     enabled_trash_locations =
         file_manager::trash::GenerateEnabledTrashLocationsForProfile(
             profile(), /*base_path=*/base::FilePath());
