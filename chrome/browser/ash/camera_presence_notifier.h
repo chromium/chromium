@@ -17,9 +17,14 @@ namespace ash {
 // callbacks on state changes after Start() is called until Stop().
 class CameraPresenceNotifier {
  public:
+  // |callback| for notification of camera count changes. Only one
+  // client may monitor per instance.
+  using CameraCountCallback = base::RepeatingCallback<void(int)>;
   // |callback| for notification of camera presence changes. Only one
   // client may monitor per instance.
   using CameraPresenceCallback = base::RepeatingCallback<void(bool)>;
+
+  explicit CameraPresenceNotifier(CameraCountCallback callback);
   explicit CameraPresenceNotifier(CameraPresenceCallback callback);
 
   CameraPresenceNotifier(const CameraPresenceNotifier&) = delete;
@@ -51,10 +56,10 @@ class CameraPresenceNotifier {
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   // Result of the last presence check.
-  bool camera_present_on_last_check_;
+  int camera_count_on_last_check_{0};
 
   // Callback for presence check results.
-  CameraPresenceCallback callback_;
+  CameraCountCallback callback_;
 
   // Timer for camera check cycle.
   base::RepeatingTimer camera_check_timer_;

@@ -18,10 +18,17 @@ namespace {
 // Interval between checks for camera presence.
 const int kCameraCheckIntervalSeconds = 3;
 
+// Adapts the CameraPresenceCallback as CameraCountCallback
+CameraPresenceNotifier::CameraCountCallback Adapt(
+    CameraPresenceNotifier::CameraPresenceCallback presence_callback) {
+  return base::BindRepeating([](int count) { return count > 0; })
+      .Then(presence_callback);
+}
+
 }  // namespace
 
-CameraPresenceNotifier::CameraPresenceNotifier(CameraPresenceCallback callback)
-    : camera_present_on_last_check_(false), callback_(callback) {
+CameraPresenceNotifier::CameraPresenceNotifier(CameraCountCallback callback)
+    : callback_(callback) {
   DCHECK(callback_) << "Notifier must be created with a non-null callback.";
 
   content::GetVideoCaptureService().ConnectToVideoSourceProvider(
@@ -30,6 +37,9 @@ CameraPresenceNotifier::CameraPresenceNotifier(CameraPresenceCallback callback)
       &CameraPresenceNotifier::VideoSourceProviderDisconnectHandler,
       weak_factory_.GetWeakPtr()));
 }
+
+CameraPresenceNotifier::CameraPresenceNotifier(CameraPresenceCallback callback)
+    : CameraPresenceNotifier(Adapt(callback)) {}
 
 CameraPresenceNotifier::~CameraPresenceNotifier() {
   // video_source_provider_remote_ expects to be released on the sequence where
@@ -68,18 +78,18 @@ void CameraPresenceNotifier::CheckCameraPresence() {
 void CameraPresenceNotifier::OnGotSourceInfos(
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool camera_presence = !devices.empty();
+  const int camera_count = devices.size();
 
-  bool presence_changed = camera_presence != camera_present_on_last_check_;
-  camera_present_on_last_check_ = camera_presence;
+  const bool count_changed = (camera_count != camera_count_on_last_check_);
+  camera_count_on_last_check_ = camera_count;
 
   if (state_ == State::kStopped)
     return;
 
-  bool run_callback = (state_ == State::kFirstRun || presence_changed);
+  bool run_callback = (state_ == State::kFirstRun || count_changed);
   state_ = State::kStarted;
   if (callback_ && run_callback)
-    callback_.Run(camera_present_on_last_check_);
+    callback_.Run(camera_count_on_last_check_);
 }
 
 }  // namespace ash

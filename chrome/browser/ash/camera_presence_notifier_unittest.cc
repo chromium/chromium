@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/camera_presence_notifier.h"
 
+#include <string>
+
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -31,13 +33,18 @@ class FakeVideoCaptureService
   ~FakeVideoCaptureService() override = default;
 
   void AddFakeCamera() {
+    const std::string camera_id =
+        kFakeCameraDeviceId + base::NumberToString(next_id_++);
+    used_ids_.push_back(camera_id);
     fake_provider_.AddFakeCameraWithoutNotifying(
-        kFakeCameraDeviceId, kFakeCameraDisplayName, kFakeCameraModelId,
+        camera_id, kFakeCameraDisplayName, kFakeCameraModelId,
         media::MEDIA_VIDEO_FACING_NONE);
   }
 
   void RemoveFakeCamera() {
-    fake_provider_.RemoveFakeCameraWithoutNotifying(kFakeCameraDeviceId);
+    ASSERT_FALSE(used_ids_.empty());
+    fake_provider_.RemoveFakeCameraWithoutNotifying(used_ids_.back());
+    used_ids_.pop_back();
   }
 
   // mojom::VideoCaptureService:
@@ -67,6 +74,8 @@ class FakeVideoCaptureService
 
  private:
   FakeVideoSourceProvider fake_provider_;
+  std::vector<std::string> used_ids_;
+  int next_id_{0};
 };
 
 class CameraPresenceNotifierTest : public testing::Test {
@@ -102,8 +111,8 @@ class CameraPresenceNotifierTest : public testing::Test {
 };
 
 // Tests that the observer of CameraPresenceNotifier works correctly when the
-// camera is added/removed.
-TEST_F(CameraPresenceNotifierTest, TestObservers) {
+// camera is added/removed (using the presence callback).
+TEST_F(CameraPresenceNotifierTest, TestPresenceObserver) {
   std::vector<bool> values;
   CameraPresenceNotifier::CameraPresenceCallback callback = base::BindRepeating(
       [](std::vector<bool>* values, bool camera_is_present) {
@@ -137,6 +146,66 @@ TEST_F(CameraPresenceNotifierTest, TestObservers) {
   StepClock();
   ASSERT_EQ(3U, values.size());
   EXPECT_FALSE(values.back());
+}
+
+// Tests that the observer of CameraPresenceNotifier works correctly when the
+// cameras are added/removed (using the count callback).
+TEST_F(CameraPresenceNotifierTest, TestCountObserver) {
+  std::vector<int> values;
+  CameraPresenceNotifier::CameraCountCallback callback = base::BindRepeating(
+      [](std::vector<int>* values, int camera_count) {
+        values->push_back(camera_count);
+      },
+      &values);
+
+  CameraPresenceNotifier notifier(callback);
+
+  // No events before start.
+  ASSERT_TRUE(values.empty());
+  notifier.Start();
+  StepClock();
+  // The first result should be 0 since there are no available cameras.
+  ASSERT_EQ(1U, values.size());
+  EXPECT_EQ(0, values.back());
+
+  // Advance clock to verify that unchanged values don't cause callbacks.
+  StepClock();
+  ASSERT_EQ(1U, values.size());
+
+  // Add a camera.
+  AddFakeCamera();
+  StepClock();
+  ASSERT_EQ(2U, values.size());
+  // There is a camera now.
+  EXPECT_EQ(1, values.back());
+
+  // Camera removed.
+  RemoveFakeCamera();
+  StepClock();
+  ASSERT_EQ(3U, values.size());
+  EXPECT_EQ(0, values.back());
+
+  // Add 1 camera.
+  AddFakeCamera();
+  StepClock();
+  ASSERT_EQ(4U, values.size());
+  EXPECT_EQ(1, values.back());
+  // Add 2nd camera.
+  AddFakeCamera();
+  StepClock();
+  ASSERT_EQ(5U, values.size());
+  EXPECT_EQ(2, values.back());
+
+  // Remove 2nd camera
+  RemoveFakeCamera();
+  StepClock();
+  ASSERT_EQ(6U, values.size());
+  EXPECT_EQ(1, values.back());
+  // Remove 1st camera
+  RemoveFakeCamera();
+  StepClock();
+  ASSERT_EQ(7U, values.size());
+  EXPECT_EQ(0, values.back());
 }
 
 }  // namespace ash
