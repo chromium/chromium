@@ -698,6 +698,16 @@ class AutotestPrivateRefreshEnterprisePoliciesFunction
   void RefreshDone();
 };
 
+class AutotestPrivateRefreshRemoteCommandsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.refreshRemoteCommands",
+                             AUTOTESTPRIVATE_REFRESHREMOTECOMMANDS)
+
+ private:
+  ~AutotestPrivateRefreshRemoteCommandsFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateBootstrapMachineLearningServiceFunction
     : public ExtensionFunction {
  public:

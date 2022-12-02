@@ -1287,6 +1287,16 @@ var policyTests = [
 
 ];
 
+var remoteCommandsTests = [
+  function refreshRemoteCommands() {
+    chrome.autotestPrivate.refreshRemoteCommands(
+      chrome.test.callbackPass(function () {
+        chrome.test.succeed();
+      })
+    );
+  },
+];
+
 var arcPerformanceTracingTests = [
   function arcAppTracingNormal() {
     chrome.autotestPrivate.arcAppTracingStart(async function() {
@@ -1574,6 +1584,7 @@ var systemWebAppsTests = [
       'arcEnabled': arcEnabledTests,
       'arcProcess': arcProcessTests,
       'enterprisePolicies': policyTests,
+      'remoteCommands': remoteCommandsTests,
       'arcPerformanceTracing': arcPerformanceTracingTests,
       'overviewDefault': overviewTests,
       'overviewDrag': overviewDragTests,

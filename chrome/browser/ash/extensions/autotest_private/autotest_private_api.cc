@@ -105,6 +105,8 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
@@ -168,7 +170,9 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/policy/core/browser/policy_conversions.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -1469,6 +1473,39 @@ AutotestPrivateRefreshEnterprisePoliciesFunction::Run() {
 
 void AutotestPrivateRefreshEnterprisePoliciesFunction::RefreshDone() {
   Respond(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateRefreshRemoteCommandsFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateRefreshRemoteCommandsFunction::
+    ~AutotestPrivateRefreshRemoteCommandsFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateRefreshRemoteCommandsFunction::Run() {
+  DVLOG(1) << "AutotestPrivateRefreshRemoteCommandsFunction";
+  // Allow tests to manually fetch remote commands. Useful for testing or when
+  // the invalidation service is not working properly.
+  policy::CloudPolicyManager* const device_manager =
+      g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->GetDeviceCloudPolicyManager();
+  policy::CloudPolicyManager* const user_manager =
+      Profile::FromBrowserContext(browser_context())
+          ->GetUserCloudPolicyManagerAsh();
+
+  // Fetch both device and user remote commands.
+  for (policy::CloudPolicyManager* manager : {device_manager, user_manager}) {
+    if (manager) {
+      policy::RemoteCommandsService* const remote_commands_service =
+          manager->core()->remote_commands_service();
+      if (remote_commands_service)
+        remote_commands_service->FetchRemoteCommands();
+    }
+  }
+  // TODO(b/260972611): Wait till remote commands are fetched.
+  return RespondNow(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

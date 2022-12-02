@@ -830,6 +830,9 @@ namespace autotestPrivate {
     [supportsPromises] static void refreshEnterprisePolicies(
         VoidCallback callback);
 
+    // Refreshes the remote commands.
+    [supportsPromises] static void refreshRemoteCommands(VoidCallback callback);
+
     // Simulates a memory access bug for asan testing.
     static void simulateAsanMemoryBug();
 
