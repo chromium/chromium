@@ -152,6 +152,8 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   if (!sent_initial_payload_) {
     sent_initial_payload_ = true;
     int tab_count = 0;
+    for (const auto& window : profile_tabs->windows)
+      tab_count += window->tabs.size();
     base::UmaHistogramCounts100("Tabs.TabSearch.NumWindowsOnOpen",
                                 profile_tabs->windows.size());
     base::UmaHistogramCounts10000("Tabs.TabSearch.NumTabsOnOpen", tab_count);
