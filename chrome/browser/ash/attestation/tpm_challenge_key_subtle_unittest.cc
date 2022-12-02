@@ -435,10 +435,9 @@ class KioskTpmChallengeKeySubtleTest : public TpmChallengeKeySubtleTestBase {
 
   void SetUp() override {
     TpmChallengeKeySubtleTestBase::SetUp();
-    chromeos::LoginState::Initialize();
-    chromeos::LoginState::Get()->SetLoggedInState(
-        chromeos::LoginState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LOGGED_IN_USER_KIOSK);
+    LoginState::Initialize();
+    LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
+                                        LoginState::LOGGED_IN_USER_KIOSK);
   }
 };
 

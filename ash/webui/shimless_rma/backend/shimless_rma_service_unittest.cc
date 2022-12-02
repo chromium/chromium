@@ -148,13 +148,13 @@ class ShimlessRmaServiceTest : public testing::Test {
     RmadClient::Shutdown();
     NetworkHandler::Shutdown();
     cros_network_config_test_helper_.reset();
-    chromeos::LoginState::Shutdown();
+    LoginState::Shutdown();
     UpdateEngineClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
   void SetupFakeNetwork() {
-    chromeos::LoginState::Initialize();
+    LoginState::Initialize();
 
     cros_network_config_test_helper_ =
         std::make_unique<network_config::CrosNetworkConfigTestHelper>(false);

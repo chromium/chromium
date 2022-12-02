@@ -1425,7 +1425,7 @@ TEST_F(PrivacySandboxServiceTest, DeviceLocalAccountUser) {
                         /*confirmation_not_shown=*/false});
   // No prompt should be shown for a public session account.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedTestPublicSessionLoginState login_state;
+  ash::ScopedTestPublicSessionLoginState login_state;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::BrowserInitParamsPtr init_params =
       crosapi::mojom::BrowserInitParams::New();

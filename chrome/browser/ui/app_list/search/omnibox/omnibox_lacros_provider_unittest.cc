@@ -164,7 +164,7 @@ class OmniboxLacrosProviderTest : public testing::Test {
     crosapi::IdleServiceAsh::DisableForTesting();
 
     // The crosapi manager reads the global login state.
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
 
     crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 
@@ -188,7 +188,7 @@ class OmniboxLacrosProviderTest : public testing::Test {
     search_controller_.reset();
     search_producer_.reset();
     crosapi_manager_.reset();
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
   }

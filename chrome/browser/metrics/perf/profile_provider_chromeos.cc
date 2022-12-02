@@ -38,7 +38,7 @@ enum class JankinessTriggerStatus {
 // Returns true if a normal user is logged in. Returns false otherwise (e.g. if
 // logged in as a guest or as a kiosk app).
 bool IsNormalUserLoggedIn() {
-  return chromeos::LoginState::Get()->IsUserAuthenticated();
+  return ash::LoginState::Get()->IsUserAuthenticated();
 }
 
 }  // namespace
@@ -54,7 +54,7 @@ ProfileProvider::ProfileProvider()
 }
 
 ProfileProvider::~ProfileProvider() {
-  chromeos::LoginState::Get()->RemoveObserver(this);
+  ash::LoginState::Get()->RemoveObserver(this);
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   if (jank_monitor_) {
     jank_monitor_->RemoveObserver(this);
@@ -68,7 +68,7 @@ void ProfileProvider::Init() {
   }
 
   // Register as an observer of login state changes.
-  chromeos::LoginState::Get()->AddObserver(this);
+  ash::LoginState::Get()->AddObserver(this);
 
   // Register as an observer of power manager events.
   chromeos::PowerManagerClient::Get()->AddObserver(this);

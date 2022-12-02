@@ -230,7 +230,7 @@ base::Value TranslateNetworkStateToONC(const NetworkState* network) {
   // of what profile is associated with the page that calls this method. We do
   // not expose any sensitive properties in the resulting dictionary, it is
   // only used to show connection state and icons.
-  std::string user_id_hash = chromeos::LoginState::Get()->primary_user_hash();
+  std::string user_id_hash = LoginState::Get()->primary_user_hash();
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
   NetworkHandler::Get()
       ->managed_network_configuration_handler()

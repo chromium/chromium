@@ -123,13 +123,13 @@ class ChromeOSSystemProfileProviderTest : public testing::Test {
         &fake_statistics_provider_);
 
     // Initialize the login state trackers.
-    if (!chromeos::LoginState::IsInitialized())
-      chromeos::LoginState::Initialize();
+    if (!ash::LoginState::IsInitialized())
+      ash::LoginState::Initialize();
   }
 
   void TearDown() override {
     // Destroy the login state tracker if it was initialized.
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory::

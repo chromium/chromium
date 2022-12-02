@@ -2759,12 +2759,11 @@ class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
       : session_type_(session_type), user_manager_(new ash::MockUserManager) {}
 
   void SetUpOnMainThread() {
-    chromeos::LoginState::Get()->SetLoggedInState(
-        chromeos::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+    ash::LoginState::Get()->SetLoggedInState(
+        ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
         session_type_ == DeviceLocalAccountSessionType::kPublic
-            ? chromeos::LoginState::LoggedInUserType::
-                  LOGGED_IN_USER_PUBLIC_ACCOUNT
-            : chromeos::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
+            ? ash::LoginState::LoggedInUserType::LOGGED_IN_USER_PUBLIC_ACCOUNT
+            : ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
     EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
         .WillRepeatedly(
             Return(session_type_ == DeviceLocalAccountSessionType::kAppKiosk));

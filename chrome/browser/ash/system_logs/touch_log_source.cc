@@ -157,7 +157,7 @@ void OnStatusLogCollected(
   // Collect touch event logs.
   // The user-specific log directory will not exist if we are not logged in
   // yet, so choose the location based on that.
-  base::FilePath base_log_path(chromeos::LoginState::Get()->IsUserLoggedIn()
+  base::FilePath base_log_path(ash::LoginState::Get()->IsUserLoggedIn()
                                    ? kTouchEventLogDir
                                    : kNotLoggedInTouchEventLogDir);
   ui::InputController* input_controller =

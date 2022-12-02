@@ -89,7 +89,7 @@ bool GetPrimaryUserIdHash(content::BrowserContext* browser_context,
 
   // Currently Chrome OS only configures networks for the primary user.
   // Configuration attempts from other browser contexts should fail.
-  if (context_user_hash != chromeos::LoginState::Get()->primary_user_hash()) {
+  if (context_user_hash != ash::LoginState::Get()->primary_user_hash()) {
     // Disallow class requiring a user id hash from a non-primary user context
     // to avoid complexities with the policy code.
     LOG(ERROR) << "networkingPrivate API call from non primary user: "

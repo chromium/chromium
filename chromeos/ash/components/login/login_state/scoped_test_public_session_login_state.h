@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_LOGIN_STATE_SCOPED_TEST_PUBLIC_SESSION_LOGIN_STATE_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_LOGIN_STATE_SCOPED_TEST_PUBLIC_SESSION_LOGIN_STATE_H_
 
-namespace chromeos {
+namespace ash {
 
 // A class to start and shutdown public session state for a test. Only one
 // instance is allowed to exist at a given time. To be instantiated on the stack
@@ -23,6 +23,11 @@ class ScopedTestPublicSessionLoginState {
   bool needs_shutdown_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ScopedTestPublicSessionLoginState;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_LOGIN_STATE_SCOPED_TEST_PUBLIC_SESSION_LOGIN_STATE_H_

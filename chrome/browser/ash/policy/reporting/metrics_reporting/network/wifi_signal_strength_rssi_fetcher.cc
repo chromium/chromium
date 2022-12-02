@@ -72,7 +72,7 @@ void FetchNextWifiSignalStrengthRssi(
   ::ash::NetworkHandler::Get()
       ->managed_network_configuration_handler()
       ->GetProperties(
-          ::chromeos::LoginState::Get()->primary_user_hash(), service_path,
+          ash::LoginState::Get()->primary_user_hash(), service_path,
           base::BindOnce(&OnGetProperties, std::move(service_path_queue),
                          std::move(path_rssi_map), std::move(cb)));
 }

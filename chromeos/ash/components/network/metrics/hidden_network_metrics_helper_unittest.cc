@@ -65,8 +65,8 @@ class HiddenNetworkMetricsHelperTest : public testing::Test {
   ~HiddenNetworkMetricsHelperTest() override = default;
 
   void SetUp() override {
-    chromeos::LoginState::Initialize();
-    chromeos::LoginState::Get()->set_always_logged_in(false);
+    LoginState::Initialize();
+    LoginState::Get()->set_always_logged_in(false);
 
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -78,7 +78,7 @@ class HiddenNetworkMetricsHelperTest : public testing::Test {
     network_handler_test_helper_->ClearServices();
     network_handler_test_helper_.reset();
 
-    chromeos::LoginState::Shutdown();
+    LoginState::Shutdown();
   }
 
   void SetLoggedIn(bool logged_in) const {

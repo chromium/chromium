@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 // that the app is in a normal window or fullscreen mode.
 IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                        PublicSessionNoImmersiveModeWhenFullscreen) {
-  chromeos::ScopedTestPublicSessionLoginState login_state;
+  ash::ScopedTestPublicSessionLoginState login_state;
 
   InitWindow();
   ASSERT_TRUE(window());
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 // fullscreen mode under different conditions. (Window API)
 IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                        BubbleInsidePublicSessionWindow) {
-  chromeos::ScopedTestPublicSessionLoginState state;
+  ash::ScopedTestPublicSessionLoginState state;
   std::unique_ptr<ExtensionTestMessageListener> launched_listener =
       LaunchPlatformAppWithFocusedWindow();
   WaitFullscreenChange(launched_listener.get());
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 // fullscreen mode under different conditions. (DOM)
 IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                        BubbleInsidePublicSessionDom) {
-  chromeos::ScopedTestPublicSessionLoginState state;
+  ash::ScopedTestPublicSessionLoginState state;
   std::unique_ptr<ExtensionTestMessageListener> launched_listener =
       LaunchPlatformAppWithFocusedWindow();
   WaitFullscreenChangeUntilKeyFocus(launched_listener.get());

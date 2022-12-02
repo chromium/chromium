@@ -153,10 +153,10 @@ class ProfileProviderTest : public testing::Test {
   ProfileProviderTest& operator=(const ProfileProviderTest&) = delete;
 
   void SetUp() override {
-    // ProfileProvider requires chromeos::LoginState and
+    // ProfileProvider requires ash::LoginState and
     // chromeos::PowerManagerClient to be initialized.
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
 
     profile_provider_ = std::make_unique<TestProfileProvider>();
     profile_provider_->Init();
@@ -164,7 +164,7 @@ class ProfileProviderTest : public testing::Test {
 
   void TearDown() override {
     profile_provider_.reset();
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -196,9 +196,9 @@ TEST_F(ProfileProviderTest, UserLoginLogout) {
 
   // Simulate a user log in, which should activate periodic collection for all
   // collectors.
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
 
   // Run all pending tasks. SetLoggedInState has activated timers for periodic
   // collection causing timer based pending tasks.
@@ -210,9 +210,8 @@ TEST_F(ProfileProviderTest, UserLoginLogout) {
 
   // Periodic collection is deactivated when user logs out. Simulate a user
   // logout event.
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_NONE,
-      chromeos::LoginState::LOGGED_IN_USER_NONE);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_NONE, ash::LoginState::LOGGED_IN_USER_NONE);
   // Run all pending tasks.
   task_environment_.FastForwardBy(kPeriodicCollectionInterval);
   // We should find no new profiles.
@@ -235,9 +234,9 @@ TEST_F(ProfileProviderTest, SuspendDone_NoUserLoggedIn_NoCollection) {
 TEST_F(ProfileProviderTest, CanceledSuspend_NoCollection) {
   // Set user state as logged in. This activates periodic collection, but we can
   // deactivate it for each collector.
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
   for (auto& collector : profile_provider_->collectors_) {
     collector->Deactivate();
   }
@@ -256,9 +255,9 @@ TEST_F(ProfileProviderTest, CanceledSuspend_NoCollection) {
 TEST_F(ProfileProviderTest, SuspendDone) {
   // Set user state as logged in. This activates periodic collection, but other
   // triggers like SUSPEND_DONE take precedence.
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
 
   // Trigger a resume from suspend.
   profile_provider_->SuspendDone(base::Minutes(10));
@@ -286,9 +285,9 @@ TEST_F(ProfileProviderTest, OnSessionRestoreDone_NoUserLoggedIn_NoCollection) {
 TEST_F(ProfileProviderTest, OnSessionRestoreDone) {
   // Set user state as logged in. This activates periodic collection, but we can
   // deactivate it for each collector.
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
   for (auto& collector : profile_provider_->collectors_) {
     collector->Deactivate();
   }
@@ -307,9 +306,9 @@ TEST_F(ProfileProviderTest, OnSessionRestoreDone) {
 // Test profile collection triggered when a jank starts.
 TEST_F(ProfileProviderTest, JankMonitorCallbacks) {
   // Jankiness collection requires that the user is logged in.
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
 
   // Trigger a jankiness collection.
   profile_provider_->OnJankStarted();
@@ -327,9 +326,9 @@ TEST_F(ProfileProviderTest, JankMonitorCallbacks) {
 // jankiness_collection_min_interval().
 TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
   // Jankiness collection requires that the user is logged in.
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
 
   // The first JANKY_TASK collection should succeed.
   profile_provider_->OnJankStarted();
@@ -380,9 +379,9 @@ class ProfileProviderJankinessTest : public ProfileProviderTest {
   void SetUp() override {
     ProfileProviderTest::SetUp();
     // Jankiness collection requires that the user is logged in.
-    chromeos::LoginState::Get()->SetLoggedInState(
-        chromeos::LoginState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+    ash::LoginState::Get()->SetLoggedInState(
+        ash::LoginState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LOGGED_IN_USER_REGULAR);
     // Deactivate each collectors to disable periodic collections.
     for (auto& collector : profile_provider_->collectors_) {
       collector->Deactivate();
@@ -448,14 +447,14 @@ class ProfileProviderStockTest : public testing::Test {
   ProfileProviderStockTest& operator=(const ProfileProviderStockTest&) = delete;
 
   void SetUp() override {
-    // ProfileProvider requires chromeos::LoginState and
+    // ProfileProvider requires ash::LoginState and
     // chromeos::PowerManagerClient to be initialized.
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
   }
 
   void TearDown() override {
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 

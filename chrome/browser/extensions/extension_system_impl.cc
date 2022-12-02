@@ -261,7 +261,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   // Skip loading session extensions if we are not in a user session or if the
   // profile is the sign-in or lock screen app profile, which don't correspond
   // to a user session.
-  skip_session_extensions = !chromeos::LoginState::Get()->IsUserLoggedIn() ||
+  skip_session_extensions = !ash::LoginState::Get()->IsUserLoggedIn() ||
                             !ash::ProfileHelper::IsUserProfile(profile_);
   if (chrome::IsRunningInForcedAppMode()) {
     extension_service_->component_loader()->

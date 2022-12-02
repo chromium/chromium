@@ -60,7 +60,7 @@ class WallpaperAshTest : public testing::Test {
 
   void SetUp() override {
     // Log in user.
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     testing_profile_ = testing_profile_manager_.CreateTestingProfile("profile");
     user_manager_->AddUser(user_manager::StubAccountId());
@@ -75,7 +75,7 @@ class WallpaperAshTest : public testing::Test {
   }
 
   void TearDown() override {
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     wallpaper_controller_client_.reset();
   }
 

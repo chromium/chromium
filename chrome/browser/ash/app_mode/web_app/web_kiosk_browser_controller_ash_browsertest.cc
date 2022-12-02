@@ -110,9 +110,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskBrowserControllerAshTest,
   const GURL start_url =
       https_server()->GetURL("/banners/manifest_test_page.html");
 
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_KIOSK);
+  LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
+                                      LoginState::LOGGED_IN_USER_KIOSK);
 
   web_app::AppId app_id;
   {

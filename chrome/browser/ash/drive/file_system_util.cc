@@ -79,7 +79,7 @@ bool IsDriveAvailableForProfile(Profile* profile) {
           ash::switches::kDisableGaiaServices)) {
     return false;
   }
-  if (!chromeos::LoginState::IsInitialized())
+  if (!ash::LoginState::IsInitialized())
     return false;
   // Disable Drive for incognito profiles.
   if (profile->IsOffTheRecord())

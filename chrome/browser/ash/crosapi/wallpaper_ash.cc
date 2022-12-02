@@ -90,7 +90,7 @@ void WallpaperAsh::SetWallpaper(mojom::WallpaperSettingsPtr wallpaper_settings,
                                 const std::string& extension_name,
                                 SetWallpaperCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
+  CHECK(ash::LoginState::Get()->IsUserLoggedIn());
   // Prevent any in progress decodes from changing wallpaper.
   weak_ptr_factory_.InvalidateWeakPtrs();
   // Notify the last pending request, if any, that it is canceled.

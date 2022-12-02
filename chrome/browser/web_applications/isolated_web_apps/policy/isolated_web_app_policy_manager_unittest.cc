@@ -176,10 +176,10 @@ void StartManagedGuestSession() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::LoginState::Initialize();
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
+  ash::LoginState::Initialize();
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -190,8 +190,8 @@ void ShutdownManagedGuestSession() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized())
-    chromeos::LoginState::Shutdown();
+  if (ash::LoginState::IsInitialized())
+    ash::LoginState::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

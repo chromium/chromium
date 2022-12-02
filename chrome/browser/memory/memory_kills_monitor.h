@@ -21,7 +21,7 @@ namespace memory {
 // For Low memory kills events, chrome calls the single global instance of
 // MemoryKillsMonitor synchronously. Note that it must be called on the browser
 // UI thread.
-class MemoryKillsMonitor : public chromeos::LoginState::Observer {
+class MemoryKillsMonitor : public ash::LoginState::Observer {
  public:
   MemoryKillsMonitor();
 

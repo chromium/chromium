@@ -85,7 +85,7 @@ ash::NetworkProfileHandler* GetNetworkProfileHandler() {
 
 const ash::NetworkProfile* GetNetworkProfile() {
   return GetNetworkProfileHandler()->GetProfileForUserhash(
-      chromeos::LoginState::Get()->primary_user_hash());
+      ash::LoginState::Get()->primary_user_hash());
 }
 
 std::vector<const ash::NetworkState*> GetHostActiveNetworks() {
@@ -809,7 +809,7 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
         base::Value::FromUniquePtrValue(std::move(ipconfig_dict)));
   }
 
-  std::string user_id_hash = chromeos::LoginState::Get()->primary_user_hash();
+  std::string user_id_hash = ash::LoginState::Get()->primary_user_hash();
   // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -1072,7 +1072,7 @@ void ArcNetHostImpl::AndroidVpnConnected(
     return;
   }
 
-  std::string user_id_hash = chromeos::LoginState::Get()->primary_user_hash();
+  std::string user_id_hash = ash::LoginState::Get()->primary_user_hash();
   GetManagedConfigurationHandler()->CreateConfiguration(
       user_id_hash, *properties,
       base::BindOnce(&ArcNetHostImpl::ConnectArcVpn,

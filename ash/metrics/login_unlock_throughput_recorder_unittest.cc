@@ -250,9 +250,8 @@ class LoginUnlockThroughputRecorderTestBase
 
   void LoginOwner() {
     CreateUserSessions(1);
-    LoginState::Get()->SetLoggedInState(
-        LoginState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LOGGED_IN_USER_OWNER);
+    LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
+                                        LoginState::LOGGED_IN_USER_OWNER);
   }
 
   void LockScreenAndAnimate() {

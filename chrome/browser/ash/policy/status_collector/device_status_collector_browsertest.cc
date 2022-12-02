@@ -891,7 +891,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     ash::AttestationClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
     ash::cros_healthd::FakeCrosHealthd::Initialize();
     ash::FakeSpacedClient::InitializeFake();
 
@@ -910,7 +910,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     testing_profile_.reset();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
     ash::AttestationClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
@@ -1287,9 +1287,8 @@ TEST_F(DeviceStatusCollectorTest, MixedStatesForKiosk) {
       ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_ACTIVE,
       ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_IDLE,
   };
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_KIOSK);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE, ash::LoginState::LOGGED_IN_USER_KIOSK);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   status_collector_->Simulate(test_states,
@@ -1306,9 +1305,8 @@ TEST_F(DeviceStatusCollectorTest, MixedStatesForArcKiosk) {
       ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_ACTIVE,
       ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE,
   };
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_KIOSK);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE, ash::LoginState::LOGGED_IN_USER_KIOSK);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   status_collector_->Simulate(test_states,

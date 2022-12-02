@@ -119,9 +119,9 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // but it breaks many tests.
     fake_user_manager_->SwitchActiveUser(account_id);
 
-    chromeos::LoginState::Get()->SetLoggedInState(
-        chromeos::LoginState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+    ash::LoginState::Get()->SetLoggedInState(
+        ash::LoginState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LOGGED_IN_USER_REGULAR);
 
     arc_session_manager_->SetProfile(profile());
     arc_session_manager_->Initialize();

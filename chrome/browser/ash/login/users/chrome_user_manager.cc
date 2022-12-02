@@ -34,7 +34,6 @@ bool ChromeUserManager::IsCurrentUserNew() const {
 void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
                                          const user_manager::User* primary_user,
                                          bool is_current_user_owner) const {
-  using chromeos::LoginState;
   if (!LoginState::IsInitialized())
     return;  // LoginState may be uninitialized in tests.
 

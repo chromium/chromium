@@ -83,10 +83,10 @@ class NetworkEventsObserverTest
   void SetUp() override {
     ash::DebugDaemonClient::InitializeFake();
 
-    ::chromeos::LoginState::Initialize();
-    ::chromeos::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
-        ::chromeos::LoginState::LOGGED_IN_ACTIVE,
-        ::chromeos::LoginState::LOGGED_IN_USER_REGULAR,
+    ash::LoginState::Initialize();
+    ash::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
+        ash::LoginState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LOGGED_IN_USER_REGULAR,
         network_handler_test_helper_.UserHash());
 
     network_handler_test_helper_.AddDefaultProfiles();
@@ -110,13 +110,13 @@ class NetworkEventsObserverTest
   }
 
   void TearDown() override {
-    ::chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     ash::DebugDaemonClient::Shutdown();
   }
 
   base::test::TaskEnvironment task_environment_;
 
-  ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
 TEST_F(NetworkEventsObserverTest, WifiSignalStrength_InitiallyLowSignal) {

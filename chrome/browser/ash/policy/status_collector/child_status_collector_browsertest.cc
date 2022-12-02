@@ -206,13 +206,13 @@ class ChildStatusCollectorTest : public testing::Test {
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
 
     MockChildUser(AccountId::FromUserEmail("user0@gmail.com"));
   }
 
   ~ChildStatusCollectorTest() override {
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::SeneschalClient::Shutdown();
     // |testing_profile_| must be destructed while ConciergeClient is alive.

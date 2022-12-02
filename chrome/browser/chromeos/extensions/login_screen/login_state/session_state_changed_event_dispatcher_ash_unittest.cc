@@ -108,7 +108,7 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
         profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
 
     crosapi::IdleServiceAsh::DisableForTesting();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
     manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 
     dispatcher_ =
@@ -124,7 +124,7 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
     manager_.reset();
     testing_profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
   }
 
  protected:

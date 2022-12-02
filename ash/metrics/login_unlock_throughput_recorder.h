@@ -27,9 +27,8 @@ namespace ash {
 
 class ShelfModel;
 
-class ASH_EXPORT LoginUnlockThroughputRecorder
-    : public SessionObserver,
-      public chromeos::LoginState::Observer {
+class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
+                                                 public LoginState::Observer {
  public:
   enum RestoreWindowType {
     kBrowser,
@@ -45,7 +44,7 @@ class ASH_EXPORT LoginUnlockThroughputRecorder
   // ShellObserver:
   void OnLockStateChanged(bool locked) override;
 
-  // chromeos::LoginState::Observer:
+  // LoginState::Observer:
   void LoggedInStateChanged() override;
 
   // Adds "restore_window_id" to the list of potentially restored windows.

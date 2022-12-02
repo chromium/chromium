@@ -90,7 +90,7 @@ bool ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
 
 base::FilePath ChromeCaptureModeDelegate::GetUserDefaultDownloadsFolder()
     const {
-  DCHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
+  DCHECK(ash::LoginState::Get()->IsUserLoggedIn());
 
   auto* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
@@ -205,7 +205,7 @@ void ChromeCaptureModeDelegate::OnServiceRemoteReset() {}
 
 bool ChromeCaptureModeDelegate::GetDriveFsMountPointPath(
     base::FilePath* result) const {
-  if (!chromeos::LoginState::Get()->IsUserLoggedIn())
+  if (!ash::LoginState::Get()->IsUserLoggedIn())
     return false;
 
   drive::DriveIntegrationService* integration_service =
@@ -241,7 +241,7 @@ void ChromeCaptureModeDelegate::ConnectToVideoSourceProvider(
 
 void ChromeCaptureModeDelegate::GetDriveFsFreeSpaceBytes(
     ash::OnGotDriveFsFreeSpace callback) {
-  DCHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
+  DCHECK(ash::LoginState::Get()->IsUserLoggedIn());
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(

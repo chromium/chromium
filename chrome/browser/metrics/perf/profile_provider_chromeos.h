@@ -23,7 +23,7 @@ class SampledProfile;
 // It detects certain system triggers, such as device resuming from suspend
 // mode, or user logging in, which it forwards to the registered collectors.
 class ProfileProvider : public chromeos::PowerManagerClient::Observer,
-                        public chromeos::LoginState::Observer,
+                        public ash::LoginState::Observer,
                         public content::JankMonitor::Observer {
  public:
   ProfileProvider();

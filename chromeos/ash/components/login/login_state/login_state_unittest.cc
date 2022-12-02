@@ -12,7 +12,7 @@ namespace {
 const char kTestUserHash[] = "testuserhash";
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class LoginStateTest : public testing::Test, public LoginState::Observer {
  public:
@@ -148,4 +148,4 @@ TEST_F(LoginStateTest, TestPrimaryUser) {
   EXPECT_EQ(LoginState::LOGGED_IN_USER_REGULAR, logged_in_user_type_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

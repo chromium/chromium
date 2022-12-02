@@ -6,7 +6,7 @@
 
 #include "chromeos/ash/components/login/login_state/login_state.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -38,4 +38,4 @@ ScopedTestPublicSessionLoginState::~ScopedTestPublicSessionLoginState() {
   g_instance_exists = false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

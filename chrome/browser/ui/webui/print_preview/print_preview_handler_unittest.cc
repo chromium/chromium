@@ -388,7 +388,7 @@ class PrintPreviewHandlerTest : public testing::Test {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     local_printer_ = std::make_unique<TestLocalPrinterAsh>(&profile_, nullptr);
     crosapi::IdleServiceAsh::DisableForTesting();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
     manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 #endif
     initiator_web_contents_ = content::WebContents::Create(
@@ -430,7 +430,7 @@ class PrintPreviewHandlerTest : public testing::Test {
   void TearDown() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     manager_.reset();
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
 #endif
     PrintViewManager::FromWebContents(initiator_web_contents_.get())
         ->PrintPreviewDone();

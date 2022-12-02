@@ -168,7 +168,7 @@ void AshTestHelper::TearDown() {
   // CompositorFrameSinkClient::ReclaimResources()
   base::RunLoop().RunUntilIdle();
 
-  chromeos::LoginState::Shutdown();
+  LoginState::Shutdown();
 
   CrasAudioHandler::Shutdown();
   CrasAudioClient::Shutdown();
@@ -279,7 +279,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   if (!views::ViewsDelegate::GetInstance())
     test_views_delegate_ = MakeTestViewsDelegate();
 
-  chromeos::LoginState::Initialize();
+  LoginState::Initialize();
 
   ambient_ash_test_helper_ = std::make_unique<AmbientAshTestHelper>();
 

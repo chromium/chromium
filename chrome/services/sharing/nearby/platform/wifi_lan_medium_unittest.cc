@@ -99,7 +99,7 @@ class WifiLanMediumTest : public ::testing::Test {
     // Sets up a test Wi-Fi network to varying degrees depending on |state|.
     // This is needed in order to fetch the local IP address during server
     // socket creation.
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
     switch (state) {
       case WifiInitState::kComplete:
         InitializeCrosNetworkConfig(/*use_managed_config_handler=*/true);
@@ -143,7 +143,7 @@ class WifiLanMediumTest : public ::testing::Test {
     ui_proxy_config_service_.reset();
     network_configuration_handler_.reset();
     network_profile_handler_.reset();
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
   }
 
   // Calls ConnectToService()/ListenForService() from |num_threads|, which will

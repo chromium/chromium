@@ -409,7 +409,7 @@ void OwnerSettingsServiceAsh::IsOwnerForSafeModeAsync(
     const std::string& user_hash,
     const scoped_refptr<OwnerKeyUtil>& owner_key_util,
     IsOwnerCallback callback) {
-  CHECK(chromeos::LoginState::Get()->IsInSafeMode());
+  CHECK(LoginState::Get()->IsInSafeMode());
 
   // Make sure NSS is initialized and NSS DB is loaded for the user before
   // searching for the owner key.

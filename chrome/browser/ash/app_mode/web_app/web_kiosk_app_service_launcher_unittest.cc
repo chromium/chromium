@@ -92,9 +92,8 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    chromeos::LoginState::Get()->SetLoggedInState(
-        chromeos::LoginState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LOGGED_IN_USER_KIOSK);
+    LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
+                                        LoginState::LOGGED_IN_USER_KIOSK);
 
     app_service_test_.UninstallAllApps(profile());
     app_service_test_.SetUp(profile());

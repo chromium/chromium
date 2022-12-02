@@ -95,7 +95,7 @@ class RestrictedMGSPolicyProviderAshTest : public ash::DeviceSettingsTestBase {
  public:
   void SetUp() override {
     ash::DeviceSettingsTestBase::SetUp();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
     cros_settings_ = std::make_unique<ash::CrosSettings>(
         device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
@@ -109,7 +109,7 @@ class RestrictedMGSPolicyProviderAshTest : public ash::DeviceSettingsTestBase {
     cros_settings_.reset();
     cros_settings_helper_.reset();
     ash::DeviceSettingsTestBase::TearDown();
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
   }
 
   std::unique_ptr<ash::CrosSettings> cros_settings_;
@@ -118,16 +118,16 @@ class RestrictedMGSPolicyProviderAshTest : public ash::DeviceSettingsTestBase {
 
 TEST_F(RestrictedMGSPolicyProviderAshTest, CreateRestrictedMGSPolicyProvider) {
   // Doesn't get created for a regular user.
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_REGULAR);
   auto policy_provider = RestrictedMGSPolicyProvider::Create();
   EXPECT_FALSE(policy_provider);
 
   // Gets created for a Managed Guest Session.
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
   policy_provider = RestrictedMGSPolicyProvider::Create();
   EXPECT_TRUE(policy_provider);
 }
@@ -142,9 +142,9 @@ TEST_F(RestrictedMGSPolicyProviderAshTest,
   expected_policy_bundle.Get(PolicyNamespace(
       POLICY_DOMAIN_CHROME, std::string())) = expected_policy_map.Clone();
 
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
   auto policy_provider = RestrictedMGSPolicyProvider::Create();
   ASSERT_TRUE(policy_provider);
   EXPECT_TRUE(expected_policy_bundle.Equals(policy_provider->policies()));
@@ -156,9 +156,9 @@ TEST_F(RestrictedMGSPolicyProviderAshTest,
       ash::kDeviceRestrictedManagedGuestSessionEnabled, true);
   auto expected_policy_bundle = BuildRestrictedPolicyBundle();
 
-  chromeos::LoginState::Get()->SetLoggedInState(
-      chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LOGGED_IN_ACTIVE,
+      ash::LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
   auto policy_provider = RestrictedMGSPolicyProvider::Create();
   ASSERT_TRUE(policy_provider);
   EXPECT_TRUE(expected_policy_bundle->Equals(policy_provider->policies()));

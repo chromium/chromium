@@ -69,10 +69,10 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   void SetUp() override {
     ApiUnitTest::SetUp();
 
-    chromeos::LoginState::Initialize();
-    chromeos::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
-        chromeos::LoginState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LOGGED_IN_USER_KIOSK, kUserHash);
+    ash::LoginState::Initialize();
+    ash::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
+        ash::LoginState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LOGGED_IN_USER_KIOSK, kUserHash);
     base::RunLoop().RunUntilIdle();
 
     device_test()->ClearDevices();
@@ -85,7 +85,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   void TearDown() override {
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
 
     ApiUnitTest::TearDown();
   }

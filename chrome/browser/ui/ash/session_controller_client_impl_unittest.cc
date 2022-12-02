@@ -110,7 +110,7 @@ class SessionControllerClientImplTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
 
     // Initialize the UserManager singleton.
     user_manager_ = new TestChromeUserManager;
@@ -141,7 +141,7 @@ class SessionControllerClientImplTest : public testing::Test {
     // PolicyCertService::Shutdown()).
     base::RunLoop().RunUntilIdle();
 
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     testing::Test::TearDown();
   }
 

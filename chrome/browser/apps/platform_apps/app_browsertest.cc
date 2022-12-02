@@ -1364,9 +1364,9 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
   }
 
   void EnterKioskSession() {
-    chromeos::LoginState::Get()->SetLoggedInState(
-        chromeos::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
+    ash::LoginState::Get()->SetLoggedInState(
+        ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
   }
 
  private:

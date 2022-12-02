@@ -277,8 +277,8 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
 
 bool IsPublicSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::LoginState::IsInitialized() &&
-         chromeos::LoginState::Get()->IsPublicSessionUser();
+  return ash::LoginState::IsInitialized() &&
+         ash::LoginState::Get()->IsPublicSessionUser();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->SessionType() ==
          crosapi::mojom::SessionType::kPublicSession;
@@ -289,8 +289,8 @@ bool IsPublicSession() {
 
 bool IsKioskSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::LoginState::IsInitialized() &&
-         chromeos::LoginState::Get()->IsKioskSession();
+  return ash::LoginState::IsInitialized() &&
+         ash::LoginState::Get()->IsKioskSession();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::SessionType session_type =
       chromeos::BrowserParamsProxy::Get()->SessionType();

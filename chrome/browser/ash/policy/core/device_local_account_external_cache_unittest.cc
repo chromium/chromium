@@ -201,7 +201,7 @@ void DeviceLocalAccountExternalCacheTest::SetUp() {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir_));
 
   ASSERT_TRUE(testing_profile_manager_.SetUp());
-  chromeos::LoginState::Initialize();
+  ash::LoginState::Initialize();
   crosapi::IdleServiceAsh::DisableForTesting();
   Profile* profile = testing_profile_manager_.CreateTestingProfile("Default");
   crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
@@ -220,7 +220,7 @@ void DeviceLocalAccountExternalCacheTest::SetUp() {
 void DeviceLocalAccountExternalCacheTest::TearDown() {
   crosapi_manager_.reset();
   testing_profile_manager_.DeleteAllTestingProfiles();
-  chromeos::LoginState::Shutdown();
+  ash::LoginState::Shutdown();
   TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
 }
 

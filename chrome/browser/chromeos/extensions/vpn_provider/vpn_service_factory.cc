@@ -30,8 +30,8 @@ bool IsContextForMainProfile(content::BrowserContext* context) {
   std::string user_hash =
       extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
           context);
-  if (!chromeos::LoginState::IsInitialized() ||
-      user_hash != chromeos::LoginState::Get()->primary_user_hash()) {
+  if (!ash::LoginState::IsInitialized() ||
+      user_hash != ash::LoginState::Get()->primary_user_hash()) {
     return false;
   }
 #endif

@@ -50,15 +50,15 @@ SystemClock::SystemClock() {
       base::BindRepeating(&SystemClock::OnSystemPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  if (chromeos::LoginState::IsInitialized())
-    chromeos::LoginState::Get()->AddObserver(this);
+  if (LoginState::IsInitialized())
+    LoginState::Get()->AddObserver(this);
 
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
 }
 
 SystemClock::~SystemClock() {
-  if (chromeos::LoginState::IsInitialized())
-    chromeos::LoginState::Get()->RemoveObserver(this);
+  if (LoginState::IsInitialized())
+    LoginState::Get()->RemoveObserver(this);
 
   if (user_manager::UserManager::IsInitialized())
     user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
@@ -152,10 +152,9 @@ bool SystemClock::ShouldUse24HourClock() const {
     return scoped_hour_clock_type_ == base::k24HourClock;
   // default is used for kUse24HourClock preference on login screen and whenever
   // set so in user's preference
-  const chromeos::LoginState::LoggedInUserType status =
-      chromeos::LoginState::IsInitialized()
-          ? chromeos::LoginState::Get()->GetLoggedInUserType()
-          : chromeos::LoginState::LOGGED_IN_USER_NONE;
+  const LoginState::LoggedInUserType status =
+      LoginState::IsInitialized() ? LoginState::Get()->GetLoggedInUserType()
+                                  : LoginState::LOGGED_IN_USER_NONE;
 
   const CrosSettings* const cros_settings = CrosSettings::Get();
   bool system_use_24_hour_clock = true;
@@ -165,14 +164,12 @@ bool SystemClock::ShouldUse24HourClock() const {
       system_value_found ? system_use_24_hour_clock
                          : (base::GetHourClockType() == base::k24HourClock);
 
-  if ((status == chromeos::LoginState::LOGGED_IN_USER_NONE) ||
-      !user_pref_registrar_)
+  if ((status == LoginState::LOGGED_IN_USER_NONE) || !user_pref_registrar_)
     return default_value;
 
   const PrefService::Preference* user_pref =
       user_pref_registrar_->prefs()->FindPreference(prefs::kUse24HourClock);
-  if (status == chromeos::LoginState::LOGGED_IN_USER_GUEST &&
-      user_pref->IsDefaultValue())
+  if (status == LoginState::LOGGED_IN_USER_GUEST && user_pref->IsDefaultValue())
     return default_value;
 
   user_manager::User* active_user =
@@ -184,7 +181,7 @@ bool SystemClock::ShouldUse24HourClock() const {
           user_profile->GetPrefs()->FindPreference(prefs::kUse24HourClock);
     }
   }
-  if (status != chromeos::LoginState::LOGGED_IN_USER_REGULAR &&
+  if (status != LoginState::LOGGED_IN_USER_REGULAR &&
       user_pref->IsDefaultValue()) {
     return default_value;
   }

@@ -27,8 +27,7 @@ namespace crosapi {
 // API call will be resolved. If Lacros-Chrome is restarted, it will call
 // GetCertDatabaseInfo again and receive a cached result from the first call.
 // The cached result is reset on login state change (i.e. sign in / sign out).
-class CertDatabaseAsh : public mojom::CertDatabase,
-                        chromeos::LoginState::Observer {
+class CertDatabaseAsh : public mojom::CertDatabase, ash::LoginState::Observer {
  public:
   CertDatabaseAsh();
   CertDatabaseAsh(const CertDatabaseAsh&) = delete;
@@ -56,7 +55,7 @@ class CertDatabaseAsh : public mojom::CertDatabase,
   void NotifyCertsChangedInAsh();
 
  private:
-  // chromeos::LoginState::Observer
+  // ash::LoginState::Observer
   void LoggedInStateChanged() override;
 
   void WaitForCertDatabaseReady(GetCertDatabaseInfoCallback callback);

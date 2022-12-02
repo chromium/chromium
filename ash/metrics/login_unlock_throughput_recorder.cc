@@ -137,20 +137,19 @@ void OnRestoredWindowPresentationTimeReceived(
 
 LoginUnlockThroughputRecorder::LoginUnlockThroughputRecorder() {
   Shell::Get()->session_controller()->AddObserver(this);
-  chromeos::LoginState::Get()->AddObserver(this);
+  LoginState::Get()->AddObserver(this);
 }
 
 LoginUnlockThroughputRecorder::~LoginUnlockThroughputRecorder() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  chromeos::LoginState::Get()->RemoveObserver(this);
+  LoginState::Get()->RemoveObserver(this);
 }
 
 void LoginUnlockThroughputRecorder::OnLockStateChanged(bool locked) {
-  auto logged_in_user = chromeos::LoginState::Get()->GetLoggedInUserType();
+  auto logged_in_user = LoginState::Get()->GetLoggedInUserType();
 
-  if (!locked &&
-      (logged_in_user == chromeos::LoginState::LOGGED_IN_USER_OWNER ||
-       logged_in_user == chromeos::LoginState::LOGGED_IN_USER_REGULAR)) {
+  if (!locked && (logged_in_user == LoginState::LOGGED_IN_USER_OWNER ||
+                  logged_in_user == LoginState::LOGGED_IN_USER_REGULAR)) {
     auto* primary_root = Shell::GetPrimaryRootWindow();
     new ui::TotalAnimationThroughputReporter(
         primary_root->GetHost()->compositor(),
@@ -160,7 +159,7 @@ void LoginUnlockThroughputRecorder::OnLockStateChanged(bool locked) {
 }
 
 void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
-  auto* login_state = chromeos::LoginState::Get();
+  auto* login_state = LoginState::Get();
   auto logged_in_user = login_state->GetLoggedInUserType();
 
   if (user_logged_in_)
@@ -169,8 +168,8 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   if (!login_state->IsUserLoggedIn())
     return;
 
-  if (logged_in_user != chromeos::LoginState::LOGGED_IN_USER_OWNER &&
-      logged_in_user != chromeos::LoginState::LOGGED_IN_USER_REGULAR) {
+  if (logged_in_user != LoginState::LOGGED_IN_USER_OWNER &&
+      logged_in_user != LoginState::LOGGED_IN_USER_REGULAR) {
     return;
   }
 

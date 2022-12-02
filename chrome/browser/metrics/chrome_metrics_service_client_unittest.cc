@@ -88,13 +88,13 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     // ChromeOs Metrics Provider require g_login_state and power manager client
     // initialized before they can be instantiated.
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void TearDown() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // ChromeMetricsServiceClient::Initialize() initializes

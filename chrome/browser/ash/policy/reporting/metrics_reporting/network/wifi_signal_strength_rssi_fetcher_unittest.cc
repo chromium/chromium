@@ -36,17 +36,17 @@ class WifiSignalStrengthRssiFetcherTest : public ::testing::Test {
   ~WifiSignalStrengthRssiFetcherTest() override = default;
 
   void SetUp() override {
-    ::chromeos::LoginState::Initialize();
-    ::chromeos::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
-        ::chromeos::LoginState::LOGGED_IN_ACTIVE,
-        ::chromeos::LoginState::LOGGED_IN_USER_REGULAR,
+    ash::LoginState::Initialize();
+    ash::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
+        ash::LoginState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LOGGED_IN_USER_REGULAR,
         network_handler_test_helper_.UserHash());
 
     network_handler_test_helper_.AddDefaultProfiles();
     network_handler_test_helper_.ResetDevicesAndServices();
   }
 
-  void TearDown() override { ::chromeos::LoginState::Shutdown(); }
+  void TearDown() override { ash::LoginState::Shutdown(); }
 
  protected:
   base::test::TaskEnvironment task_environment_;

@@ -64,7 +64,7 @@ StandaloneBrowserExtensionApps::StandaloneBrowserExtensionApps(
   }
   PublisherBase::Initialize(app_service,
                             apps::ConvertAppTypeToMojomAppType(app_type_));
-  login_observation_.Observe(chromeos::LoginState::Get());
+  login_observation_.Observe(ash::LoginState::Get());
   // Check now in case login has already happened.
   LoggedInStateChanged();
 }
@@ -422,7 +422,7 @@ void StandaloneBrowserExtensionApps::OnCapabilityAccesses(
 }
 
 void StandaloneBrowserExtensionApps::LoggedInStateChanged() {
-  if (chromeos::LoginState::Get()->IsUserLoggedIn()) {
+  if (ash::LoginState::Get()->IsUserLoggedIn()) {
     if (!keep_alive_) {
       if (app_type_ == AppType::kStandaloneBrowserChromeApp) {
         keep_alive_ = crosapi::BrowserManager::Get()->KeepAlive(

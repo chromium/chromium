@@ -141,10 +141,10 @@ class ProfileProviderRealCollectionTest : public testing::Test {
 
   void SetUp() override {
     ash::DBusThreadManager::Initialize();
-    // ProfileProvider requires chromeos::LoginState and
+    // ProfileProvider requires ash::LoginState and
     // chromeos::PowerManagerClient to be initialized.
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
 
     // The constructor of ProfileProvider uses g_browser_process thus requiring
     // it to be not null, so initialize it here.
@@ -169,9 +169,9 @@ class ProfileProviderRealCollectionTest : public testing::Test {
 
     // Set user state as logged in. This activates periodic collection, but
     // other triggers like SUSPEND_DONE take precedence.
-    chromeos::LoginState::Get()->SetLoggedInState(
-        chromeos::LoginState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LOGGED_IN_USER_REGULAR);
+    ash::LoginState::Get()->SetLoggedInState(
+        ash::LoginState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LOGGED_IN_USER_REGULAR);
 
     // Finishes Init() on the dedicated sequence.
     task_environment_.RunUntilIdle();
@@ -184,7 +184,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
 
     profile_provider_.reset();
     TestingBrowserProcess::DeleteInstance();
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::DBusThreadManager::Shutdown();
     variations::testing::ClearAllVariationParams();

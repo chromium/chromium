@@ -30,8 +30,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using chromeos::LoginState;
-
 namespace {
 
 const char kCellularDevicePath[] = "/device/stub_cellular_device1";

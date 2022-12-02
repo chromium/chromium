@@ -35,7 +35,7 @@ void MemoryKillsMonitor::Initialize() {
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto* login_state = chromeos::LoginState::Get();
+  auto* login_state = ash::LoginState::Get();
   if (login_state)
     login_state->AddObserver(g_memory_kills_monitor_instance.Pointer());
   else
@@ -53,7 +53,7 @@ void MemoryKillsMonitor::LogLowMemoryKill(const std::string& type,
 
 void MemoryKillsMonitor::LoggedInStateChanged() {
   VLOG(2) << "LoggedInStateChanged";
-  auto* login_state = chromeos::LoginState::Get();
+  auto* login_state = ash::LoginState::Get();
   if (login_state) {
     // Note: LoginState never fires a notification when logged out.
     if (login_state->IsUserLoggedIn()) {

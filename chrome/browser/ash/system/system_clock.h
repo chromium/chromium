@@ -31,7 +31,7 @@ class SystemClockObserver;
 // that is responsible for correct time formatting. It listens to events that
 // modify on-screen time representation (like ActiveUserChanged) and notifies
 // observers.
-class SystemClock : public chromeos::LoginState::Observer,
+class SystemClock : public LoginState::Observer,
                     public ProfileObserver,
                     public user_manager::UserManager::UserSessionStateObserver {
  public:

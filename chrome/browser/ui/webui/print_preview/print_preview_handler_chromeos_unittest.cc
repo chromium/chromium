@@ -104,7 +104,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     crosapi::IdleServiceAsh::DisableForTesting();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
     manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 #endif
     preview_web_contents_ = content::WebContents::Create(
@@ -127,7 +127,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   void TearDown() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     manager_.reset();
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
 #endif
   }
 

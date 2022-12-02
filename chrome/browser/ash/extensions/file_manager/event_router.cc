@@ -670,8 +670,8 @@ void EventRouter::Shutdown() {
 void EventRouter::ObserveEvents() {
   DCHECK(profile_);
 
-  if (!chromeos::LoginState::IsInitialized() ||
-      !chromeos::LoginState::Get()->IsUserLoggedIn()) {
+  if (!ash::LoginState::IsInitialized() ||
+      !ash::LoginState::Get()->IsUserLoggedIn()) {
     return;
   }
 

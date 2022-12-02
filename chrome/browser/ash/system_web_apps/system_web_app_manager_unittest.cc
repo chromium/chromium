@@ -1603,14 +1603,13 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    chromeos::LoginState::Initialize();
-    chromeos::LoginState::Get()->SetLoggedInState(
-        chromeos::LoginState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LOGGED_IN_USER_KIOSK);
+    LoginState::Initialize();
+    LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
+                                        LoginState::LOGGED_IN_USER_KIOSK);
   }
 
   void TearDown() override {
-    chromeos::LoginState::Shutdown();
+    LoginState::Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 };

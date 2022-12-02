@@ -10,7 +10,7 @@
 #include "base/system/sys_info.h"
 #include "components/device_event_log/device_event_log.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -135,4 +135,4 @@ void LoginState::NotifyObservers() {
     observer.LoggedInStateChanged();
 }
 
-}  // namespace chromeos
+}  // namespace ash

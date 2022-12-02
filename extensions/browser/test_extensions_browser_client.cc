@@ -120,9 +120,9 @@ content::BrowserContext* TestExtensionsBrowserClient::GetRegularProfile(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string TestExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
-  if (context != main_context_ || !chromeos::LoginState::IsInitialized())
+  if (context != main_context_ || !ash::LoginState::IsInitialized())
     return "";
-  return chromeos::LoginState::Get()->primary_user_hash();
+  return ash::LoginState::Get()->primary_user_hash();
 }
 #endif
 

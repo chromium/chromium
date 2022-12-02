@@ -194,9 +194,9 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   content::BrowserTaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::IO};
 
-  chromeos::LoginState::Initialize();
+  ash::LoginState::Initialize();
   base::ScopedClosureRunner login_state_teardown(
-      base::BindOnce(&chromeos::LoginState::Shutdown));
+      base::BindOnce(&ash::LoginState::Shutdown));
 
   // Constructing CrosapiManager requires ProfileManager.
   // Also, constructing BrowserInitParams requires local state prefs.

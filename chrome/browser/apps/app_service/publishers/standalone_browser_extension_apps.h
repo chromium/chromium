@@ -58,7 +58,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                                        public apps::PublisherBase,
                                        public AppPublisher,
                                        public crosapi::mojom::AppPublisher,
-                                       public chromeos::LoginState::Observer {
+                                       public ash::LoginState::Observer {
  public:
   StandaloneBrowserExtensionApps(AppServiceProxy* proxy, AppType app_type);
   ~StandaloneBrowserExtensionApps() override;
@@ -132,7 +132,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
       mojo::PendingRemote<crosapi::mojom::AppController> controller) override;
   void OnCapabilityAccesses(std::vector<CapabilityAccessPtr> deltas) override;
 
-  // chromeos::LoginState::Observer
+  // ash::LoginState::Observer
   void LoggedInStateChanged() override;
 
   // Called when the crosapi termination is terminated [e.g. Lacros is closed].
@@ -174,7 +174,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
 
   std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
 
-  base::ScopedObservation<chromeos::LoginState, chromeos::LoginState::Observer>
+  base::ScopedObservation<ash::LoginState, ash::LoginState::Observer>
       login_observation_{this};
 
   base::WeakPtrFactory<StandaloneBrowserExtensionApps> weak_factory_{this};

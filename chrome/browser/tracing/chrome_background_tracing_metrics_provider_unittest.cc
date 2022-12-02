@@ -136,13 +136,13 @@ class ChromeBackgroundTracingMetricsProviderChromeOSTest
     chromeos::TpmManagerClient::InitializeFake();
     ash::DemoSession::SetDemoConfigForTesting(
         ash::DemoSession::DemoModeConfig::kNone);
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
   }
 
   void TearDown() override {
     ChromeBackgroundTracingMetricsProviderTest::TearDown();
 
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     ash::DemoSession::ResetDemoConfigForTesting();
     chromeos::TpmManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();

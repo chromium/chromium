@@ -129,7 +129,7 @@ bool ProjectorClientImpl::GetBaseStoragePath(base::FilePath* result) const {
 }
 
 bool ProjectorClientImpl::IsDriveFsMounted() const {
-  if (!chromeos::LoginState::Get()->IsUserLoggedIn())
+  if (!ash::LoginState::Get()->IsUserLoggedIn())
     return false;
 
   if (ash::ProjectorController::AreExtendedProjectorFeaturesDisabled()) {

@@ -88,10 +88,10 @@ std::string DevicePath(const std::string& interface_name) {
 class NetworkTelemetrySamplerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    ::chromeos::LoginState::Initialize();
-    ::chromeos::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
-        ::chromeos::LoginState::LOGGED_IN_ACTIVE,
-        ::chromeos::LoginState::LOGGED_IN_USER_REGULAR,
+    ash::LoginState::Initialize();
+    ash::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
+        ash::LoginState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LOGGED_IN_USER_REGULAR,
         network_handler_test_helper_.UserHash());
 
     network_handler_test_helper_.AddDefaultProfiles();
@@ -102,7 +102,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    ::chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
   }
 

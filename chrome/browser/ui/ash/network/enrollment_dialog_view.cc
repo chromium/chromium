@@ -207,7 +207,7 @@ bool EnrollmentDialogAllowed(Profile* profile) {
   if (ProfileHelper::IsSigninProfile(profile))
     return false;
 
-  chromeos::LoginState::LoggedInUserType user_type =
+  LoginState::LoggedInUserType user_type =
       LoginState::Get()->GetLoggedInUserType();
   switch (user_type) {
     case LoginState::LOGGED_IN_USER_NONE:

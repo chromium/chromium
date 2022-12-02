@@ -99,7 +99,7 @@ class EnterpriseDeviceAttributesApiAshTest
     device_attributes_->SetFakeDeviceHostname(kFakeHostname);
 
     crosapi::IdleServiceAsh::DisableForTesting();
-    chromeos::LoginState::Initialize();
+    ash::LoginState::Initialize();
     manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
     manager_->crosapi_ash()
         ->device_attributes_ash()
@@ -109,7 +109,7 @@ class EnterpriseDeviceAttributesApiAshTest
   void TearDown() override {
     manager_.reset();
     ash::DeviceSettingsTestBase::TearDown();
-    chromeos::LoginState::Shutdown();
+    ash::LoginState::Shutdown();
   }
 
   void AddUser(bool is_affiliated = true) {

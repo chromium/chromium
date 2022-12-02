@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 
-namespace chromeos {
+namespace ash {
 
 // Tracks the login state of chrome, accessible to Ash and other chromeos code.
 class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
@@ -116,11 +116,11 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
   bool always_logged_in_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace ash {
-using ::chromeos::LoginState;
+namespace chromeos {
+using ::ash::LoginState;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_LOGIN_STATE_LOGIN_STATE_H_

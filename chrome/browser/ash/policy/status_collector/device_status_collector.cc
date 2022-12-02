@@ -480,8 +480,8 @@ int ConvertWifiSignalStrength(int signal_strength) {
 }
 
 bool IsKioskSession() {
-  return chromeos::LoginState::Get()->GetLoggedInUserType() ==
-         chromeos::LoginState::LOGGED_IN_USER_KIOSK;
+  return ash::LoginState::Get()->GetLoggedInUserType() ==
+         ash::LoginState::LOGGED_IN_USER_KIOSK;
 }
 
 // Utility method to turn cpu_temp_fetcher_ to OnceCallback
