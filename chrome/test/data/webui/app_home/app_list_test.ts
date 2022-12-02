@@ -5,10 +5,11 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://apps/app_list.js';
 
-import {AppInfo} from 'chrome://apps/app_home.mojom-webui.js';
+import {AppInfo, PageRemote} from 'chrome://apps/app_home.mojom-webui.js';
 import {AppListElement} from 'chrome://apps/app_list.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestAppHomeBrowserProxy} from './test_app_home_browser_proxy.js';
@@ -17,10 +18,12 @@ interface AppList {
   appList: AppInfo[];
 }
 
-suite('AppTest', () => {
+suite('AppListTest', () => {
   let appListElement: AppListElement;
   let apps: AppList;
-  let testProxy: TestAppHomeBrowserProxy;
+  let testBrowserProxy: TestAppHomeBrowserProxy;
+  let callbackRouterRemote: PageRemote;
+  let testAppInfo: AppInfo;
 
   setup(async () => {
     apps = {
@@ -45,8 +48,18 @@ suite('AppTest', () => {
         },
       ],
     };
-    testProxy = new TestAppHomeBrowserProxy(apps);
-    BrowserProxy.setInstance(testProxy);
+
+    testAppInfo = {
+      id: 'mmfbcljfglbokpmkimbfghdkjmjhdgbg',
+      startUrl: {url: 'https://test.google.com/testapp3'},
+      name: 'Test App 3',
+      iconUrl: {
+        url: 'chrome://extension-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/128/1',
+      },
+    };
+    testBrowserProxy = new TestAppHomeBrowserProxy(apps);
+    callbackRouterRemote = testBrowserProxy.callbackRouterRemote;
+    BrowserProxy.setInstance(testBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     appListElement = document.createElement('app-list');
@@ -65,5 +78,25 @@ suite('AppTest', () => {
         appListElement.shadowRoot!.querySelectorAll('.element-container')
             .length;
     assertEquals(apps.appList.length, elementLength);
+  });
+
+  test('add/remove app', async () => {
+    // Test adding an app.
+    callbackRouterRemote.addApp(testAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    let appNameList = Array.from(
+        appListElement.shadowRoot!.querySelectorAll('.text-container'));
+    assertTrue(!!appNameList.find(
+        appName => appName.textContent === testAppInfo.name));
+
+    // Test removing an app
+    callbackRouterRemote.removeApp(testAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    appNameList = Array.from(
+        appListElement.shadowRoot!.querySelectorAll('.text-container'));
+    assertFalse(!!appNameList.find(
+        appName => appName.textContent === testAppInfo.name));
   });
 });

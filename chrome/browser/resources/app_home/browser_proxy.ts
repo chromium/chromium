@@ -27,10 +27,6 @@ export class BrowserProxy {
     instance = obj;
   }
 
-  registerAppRemoveEvent(callback: Function) {
-    this.callbackRouter.removeApp.addListener(callback);
-  }
-
   registerAppEnableEvent(callback: Function) {
     this.callbackRouter.enableExtensionApp.addListener(callback);
   }
