@@ -54,6 +54,9 @@ struct ValueInRange {
 // the actual low entropy source's hash would fall in the sorted list of all
 // those hashes, and uses that as the final value. For more info, see:
 // https://docs.google.com/document/d/1cPF5PruriWNP2Z5gSkq4MBTm0wSZqLyIJkUO9ekibeo
+//
+// Note: this class should be kept consistent with
+// NormalizedMurmurHashEntropyProvider on the Java side.
 class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider final
     : public base::FieldTrial::EntropyProvider {
  public:
@@ -69,6 +72,7 @@ class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider final
   double GetEntropyForTrial(base::StringPiece trial_name,
                             uint32_t randomization_seed) const override;
 
+  uint32_t entropy_value() const { return entropy_value_.value; }
   uint32_t entropy_domain() const { return entropy_value_.range; }
 
  private:
@@ -108,6 +112,7 @@ class COMPONENT_EXPORT(VARIATIONS) EntropyProviders {
     return high_entropy_.has_value();
   }
 
+  size_t low_entropy_value() const { return low_entropy_.entropy_value(); }
   size_t low_entropy_domain() const { return low_entropy_.entropy_domain(); }
 
   bool benchmarking_enabled() const { return benchmarking_enabled_; }

@@ -8,6 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "components/variations/platform_field_trials.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/variations/variations_associated_data.h"
+#endif
+
 class PrefService;
 
 namespace base {
@@ -38,6 +42,14 @@ class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
 
   // Weak pointer to the local state prefs store.
   const raw_ptr<PrefService> local_state_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // VariationID to be used for FREMobileIdentityConsistencySynthetic.
+  // Set by SetUpClientSideTrials(...) and then used by
+  // RegisterSyntheticTrials().
+  variations::VariationID fre_consistency_trial_variation_id_ =
+      variations::EMPTY_ID;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_FIELD_TRIALS_H_
