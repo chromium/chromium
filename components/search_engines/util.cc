@@ -183,7 +183,7 @@ TemplateURL* FindURLByPrepopulateID(
 
 void MergeIntoEngineData(const TemplateURL* original_turl,
                          TemplateURLData* url_to_update,
-                         MergeOptions merge_option) {
+                         TemplateURLMergeOption merge_option) {
   DCHECK(original_turl->prepopulate_id() == 0 ||
          original_turl->prepopulate_id() == url_to_update->prepopulate_id);
   DCHECK(original_turl->starter_pack_id() == 0 ||
@@ -192,7 +192,7 @@ void MergeIntoEngineData(const TemplateURL* original_turl,
   // imported from Play API data we need to preserve certain search engine
   // properties from overriding with prepopulated data.
   bool preserve_user_edits =
-      (merge_option != MergeOptions::kOverwriteUserEdits &&
+      (merge_option != TemplateURLMergeOption::kOverwriteUserEdits &&
        (!original_turl->safe_for_autoreplace() ||
         original_turl->created_from_play_api()));
   if (preserve_user_edits) {
@@ -321,7 +321,7 @@ void MergeEnginesFromStarterPackData(
     TemplateURLService::OwnedTemplateURLVector* template_urls,
     TemplateURL* default_search_provider,
     std::set<std::string>* removed_keyword_guids,
-    MergeOptions merge_option) {
+    TemplateURLMergeOption merge_option) {
   DCHECK(template_urls);
 
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_urls =
@@ -337,7 +337,7 @@ void MergeEnginesFromStarterPackData(
 ActionsFromCurrentData CreateActionsFromCurrentStarterPackData(
     std::vector<std::unique_ptr<TemplateURLData>>* starter_pack_urls,
     const TemplateURLService::OwnedTemplateURLVector& existing_urls,
-    MergeOptions merge_option) {
+    TemplateURLMergeOption merge_option) {
   // Create a map to hold all provided |template_urls| that originally came from
   // starter_pack data (i.e. have a non-zero starter_pack_id()).
   std::map<int, TemplateURL*> id_to_turl;
@@ -507,8 +507,8 @@ void GetSearchProvidersUsingLoadedEngines(
   if (*resource_starter_pack_version < starter_pack_data_version) {
     MergeEnginesFromStarterPackData(
         service, template_urls, default_search_provider, removed_keyword_guids,
-        (overwrite_user_edits ? MergeOptions::kOverwriteUserEdits
-                              : MergeOptions::kDefault));
+        (overwrite_user_edits ? TemplateURLMergeOption::kOverwriteUserEdits
+                              : TemplateURLMergeOption::kDefault));
     *resource_starter_pack_version = starter_pack_data_version;
   } else {
     *resource_starter_pack_version = 0;

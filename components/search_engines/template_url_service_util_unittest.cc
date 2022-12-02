@@ -164,7 +164,7 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData) {
   // modified fields.  `url_to_update` should keep the default keyword and name
   // values as well as safe_for_autoreplace being true.
   MergeIntoEngineData(original_turl.get(), url_to_update.get(),
-                      MergeOptions::kOverwriteUserEdits);
+                      TemplateURLMergeOption::kOverwriteUserEdits);
 
   EXPECT_TRUE(url_to_update->safe_for_autoreplace);
   EXPECT_EQ(url_to_update->short_name(), u"Search engine name");
@@ -174,7 +174,7 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData) {
   // keyword and title fields from original_turl and update url_to_update
   // accordingly.
   MergeIntoEngineData(original_turl.get(), url_to_update.get(),
-                      MergeOptions::kDefault);
+                      TemplateURLMergeOption::kDefault);
 
   EXPECT_FALSE(url_to_update->safe_for_autoreplace);
   EXPECT_EQ(url_to_update->short_name(), u"modified name");
