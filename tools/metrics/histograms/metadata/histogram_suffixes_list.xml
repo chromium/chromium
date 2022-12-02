@@ -5980,6 +5980,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="Cellular" label="Cellular connection"/>
   <suffix name="Wifi" label="WiFi connection"/>
   <affected-histogram name="Network.Shill.CumulativeTimeOnline"/>
+  <obsolete>
+    Obsoleted Dec 2022, histograms were renamed (b/254170385).
+  </obsolete>
 </histogram_suffixes>
 
 <histogram_suffixes name="ShillWiFiRememberedNetworkSecurityMode" separator=".">
