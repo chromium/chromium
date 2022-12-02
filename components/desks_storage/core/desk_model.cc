@@ -118,22 +118,15 @@ void DeskModel::HandleTemplateConversionToPolicyJson(
     std::unique_ptr<ash::DeskTemplate> entry) {
   if (status != GetEntryByUuidStatus::kOk) {
     std::move(callback).Run(ConvertGetEntryStatusToTemplateJsonStatus(status),
-                            "");
+                            {});
     return;
   }
 
-  std::string raw_json;
   base::Value template_list(base::Value::Type::LIST);
   template_list.Append(desk_template_conversion::SerializeDeskTemplateAsPolicy(
       entry.get(), app_cache));
 
-  const bool conversion_success =
-      base::JSONWriter::Write(template_list, &raw_json);
-
-  if (conversion_success)
-    std::move(callback).Run(GetTemplateJsonStatus::kOk, raw_json);
-  else
-    std::move(callback).Run(GetTemplateJsonStatus::kFailure, "");
+  std::move(callback).Run(GetTemplateJsonStatus::kOk, template_list);
 }
 
 }  // namespace desks_storage

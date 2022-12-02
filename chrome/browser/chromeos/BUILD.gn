@@ -805,8 +805,6 @@ source_set("chromeos") {
     "extensions/login_screen/login/shared_session_handler.h",
     "extensions/wallpaper_api.cc",
     "extensions/wallpaper_api.h",
-    "extensions/wm/wm_desks_private_api.cc",
-    "extensions/wm/wm_desks_private_api.h",
   ]
 
   defines = []

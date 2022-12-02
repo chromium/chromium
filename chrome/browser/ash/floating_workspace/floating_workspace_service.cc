@@ -239,7 +239,7 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
 }
 
 void FloatingWorkspaceService::OnTemplateCaptured(
-    std::string error,
+    absl::optional<DesksClient::DeskActionError> error,
     std::unique_ptr<DeskTemplate> desk_template) {
   // Desk capture was not successful, nothing to upload.
   if (!desk_template)
@@ -286,8 +286,9 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
       desk_template->template_name());
 }
 
-void FloatingWorkspaceService::OnTemplateLaunched(std::string error,
-                                                  const base::GUID& desk_uuid) {
+void FloatingWorkspaceService::OnTemplateLaunched(
+    absl::optional<DesksClient::DeskActionError> error,
+    const base::GUID& desk_uuid) {
   // Disable future floating workspace restore.
   should_run_restore_ = false;
 }

@@ -14,6 +14,7 @@
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/sessions/core/session_id.h"
 
@@ -47,6 +48,25 @@ class DesksClient : public ash::SessionObserver {
 
   static DesksClient* Get();
 
+  enum class DeskActionError {
+    // Storage error.
+    kStorageError,
+    // Therer is no active profile.
+    kNoCurrentUserError,
+    // Either the profile is not valid or there is not an active proflile.
+    kBadProfileError,
+    // The resource cannot be found.
+    kResourceNotFoundError,
+    // The identifier is not valid.
+    kInvalidIdError,
+    // The desks are currently being modified.
+    kDesksBeingModifiedError,
+    // The desk count requirement not met.
+    kDesksCountCheckFailedError,
+    // Unknown error.
+    kUnknownError,
+  };
+
   // ash::SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
@@ -54,7 +74,7 @@ class DesksClient : public ash::SessionObserver {
   // later when DesksTemplatesClient (or DesksController) hooks up with storage
   // and can hold an in-memory captured desk template instance.
   using CaptureActiveDeskAndSaveTemplateCallback =
-      base::OnceCallback<void(std::string error,
+      base::OnceCallback<void(absl::optional<DeskActionError> result,
                               std::unique_ptr<ash::DeskTemplate>)>;
   // Captures the active desk and saves it as template or saved desk for later
   // use. If such desk can be saved, `callback` will be invoked
@@ -66,33 +86,33 @@ class DesksClient : public ash::SessionObserver {
       ash::DeskTemplateType template_type);
 
   using DeleteDeskTemplateCallback =
-      base::OnceCallback<void(std::string error)>;
+      base::OnceCallback<void(absl::optional<DeskActionError> result)>;
   // Deletes a saved desk template from storage. If the template can't be
-  // deleted, |callback| will be invoked with a description of the error.
+  // deleted, |callback| will be invoked with the error code.
   // If it can be deleted successfully, or there is no such |template_uuid|
-  // to be removed,|callback| will be invoked with an empty error string.
+  // to be removed,|callback| will be invoked with the success result code.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
   void DeleteDeskTemplate(const base::GUID& template_uuid,
                           DeleteDeskTemplateCallback callback);
 
   using GetDeskTemplatesCallback =
-      base::OnceCallback<void(const std::vector<const ash::DeskTemplate*>&,
-                              std::string error)>;
+      base::OnceCallback<void(absl::optional<DeskActionError> result,
+                              const std::vector<const ash::DeskTemplate*>&)>;
   // Returns the current available saved desk templates.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
   void GetDeskTemplates(GetDeskTemplatesCallback callback);
 
   using GetAllDesksCallback =
-      base::OnceCallback<void(const std::vector<const ash::Desk*>&,
-                              std::string error)>;
+      base::OnceCallback<void(absl::optional<DeskActionError> result,
+                              const std::vector<const ash::Desk*>&)>;
   // Returns the current available desks.
   void GetAllDesks(GetAllDesksCallback callback);
 
   using GetTemplateJsonCallback =
-      base::OnceCallback<void(const std::string& template_json,
-                              std::string error)>;
+      base::OnceCallback<void(absl::optional<DeskActionError> result,
+                              const base::Value& template_json)>;
   // Takes in |uuid| and fetches the stringified json representation of a
   // desk template.
   void GetTemplateJson(const base::GUID& uuid,
@@ -100,15 +120,16 @@ class DesksClient : public ash::SessionObserver {
                        GetTemplateJsonCallback callback);
 
   using LaunchDeskCallback =
-      base::OnceCallback<void(std::string error, const base::GUID& desk_uuid)>;
+      base::OnceCallback<void(absl::optional<DeskActionError> result,
+                              const base::GUID& desk_uuid)>;
   // Launches the desk template with `template_uuid` as a new desk.
   // `template_uuid` should be the unique id for an existing desk template. If
   // no such id can be found or we are at the max desk limit (currently is 8)
   // so can't create new desk for the desk template, `callback` will be invoked
-  // with a description of the error and the new desk uuid. If
-  // `customized_desk_name` is provided, desk name will be set to
-  // `customized_desk_name` or `customized_desk_name ({counter})` to resolve
-  // naming conflicts. Otherwise, desk name will be set to auto generated name.
+  // with a the error code. If `customized_desk_name` is provided, desk name
+  // will be set to `customized_desk_name` or `customized_desk_name ({counter})`
+  // to resolve naming conflicts. Otherwise, desk name will be set to auto
+  // generated name.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
   void LaunchDeskTemplate(
@@ -122,7 +143,8 @@ class DesksClient : public ash::SessionObserver {
       LaunchDeskCallback callback,
       const std::u16string& customized_desk_name = std::u16string());
 
-  using ErrorHandlingCallBack = base::OnceCallback<void(std::string error)>;
+  using ErrorHandlingCallBack =
+      base::OnceCallback<void(absl::optional<DeskActionError> result)>;
   // Remove a desk, close all windows if `close_all` set to true, otherwise
   // combine the windows to the active desk to the left.
   void RemoveDesk(const base::GUID& desk_uuid,
@@ -155,7 +177,8 @@ class DesksClient : public ash::SessionObserver {
   base::GUID GetActiveDesk();
 
   // Switches to the target desk, returns error string if operation fails.
-  std::string SwitchDesk(const base::GUID& desk_uuid);
+  absl::optional<DesksClient::DeskActionError> SwitchDesk(
+      const base::GUID& desk_uuid);
 
  private:
   class LaunchPerformanceTracker;
@@ -196,7 +219,7 @@ class DesksClient : public ash::SessionObserver {
   // template.
   void OnGetTemplateJson(DesksClient::GetTemplateJsonCallback callback,
                          desks_storage::DeskModel::GetTemplateJsonStatus status,
-                         const std::string& json_representation);
+                         const base::Value& json_representation);
 
   // Callback function that clears the data associated with a specific launch.
   void OnLaunchComplete(int32_t launch_id);

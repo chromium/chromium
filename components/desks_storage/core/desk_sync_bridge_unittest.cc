@@ -1724,16 +1724,16 @@ TEST_F(DeskSyncBridgeTest, GetTemplateJsonShouldReturnList) {
   bridge()->GetTemplateJson(
       MakeTestUuid(TestUuidId(1)), app_cache(),
       base::BindLambdaForTesting([&](DeskModel::GetTemplateJsonStatus status,
-                                     const std::string& templates_json) {
+                                     const base::Value& templates_json) {
         EXPECT_EQ(DeskModel::GetTemplateJsonStatus::kOk, status);
 
-        EXPECT_TRUE(!templates_json.empty());
+        EXPECT_FALSE(templates_json.is_none());
 
-        auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-            base::StringPiece(templates_json));
+        std::string template_json_string;
+        bool parsed_result =
+            base::JSONWriter::Write(templates_json, &template_json_string);
 
-        EXPECT_TRUE(parsed_json.has_value());
-        EXPECT_TRUE(parsed_json->is_list());
+        EXPECT_TRUE(parsed_result);
 
         // Content of the conversion is tested in:
         // components/desks_storage/core/desk_template_conversion_unittests.cc

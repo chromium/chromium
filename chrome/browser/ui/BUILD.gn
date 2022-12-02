@@ -3133,6 +3133,7 @@ static_library("ui") {
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/extensions/vpn_provider",
+      "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/browser/enterprise/connectors/device_trust:prefs",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
@@ -3308,6 +3309,7 @@ static_library("ui") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos/extensions/wm",
     ]
 
     if (!is_official_build) {

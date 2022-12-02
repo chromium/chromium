@@ -5636,6 +5636,7 @@ static_library("browser") {
     deps += [
       ":dlp_policy_event_proto",
       "//chrome/browser/chromeos/extensions/vpn_provider",
+      "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/common/chromeos/extensions",
       "//chromeos/crosapi/cpp",

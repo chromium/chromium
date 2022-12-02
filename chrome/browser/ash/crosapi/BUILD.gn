@@ -85,6 +85,8 @@ source_set("crosapi") {
     "crosapi_manager.h",
     "crosapi_util.cc",
     "crosapi_util.h",
+    "desk_ash.cc",
+    "desk_ash.h",
     "desk_template_ash.cc",
     "desk_template_ash.h",
     "device_attributes_ash.cc",

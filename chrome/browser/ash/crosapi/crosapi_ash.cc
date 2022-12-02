@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_dependency_registry.h"
+#include "chrome/browser/ash/crosapi/desk_ash.h"
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
@@ -185,6 +186,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       clipboard_ash_(std::make_unique<ClipboardAsh>()),
       clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
+      desk_ash_(std::make_unique<DeskAsh>()),
       desk_template_ash_(std::make_unique<DeskTemplateAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_local_account_extension_service_ash_(
@@ -397,6 +399,10 @@ void CrosapiAsh::BindContentProtection(
 void CrosapiAsh::BindCrosDisplayConfigController(
     mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver) {
   ash::BindCrosDisplayConfigController(std::move(receiver));
+}
+
+void CrosapiAsh::BindDesk(mojo::PendingReceiver<mojom::Desk> receiver) {
+  desk_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDeskTemplate(

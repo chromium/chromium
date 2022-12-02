@@ -1,0 +1,141 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// Represents error code from ash desk feature implementation.
+[Stable, Extensible]
+enum DeskCrosApiError {
+  // Storage error.
+  kStorageError=0,
+  // Therer is no active profile.
+  kNoCurrentUserError,
+  // Either the profile is not valid or there is not an active proflile.
+  kBadProfileError,
+  // The resource cannot be found.
+  kResourceNotFoundError,
+  // The identifier is not valid.
+  kInvalidIdError,
+  // The desks are currently being modified.
+  kDesksBeingModifiedError,
+  // The desk count requirement not met.
+  kDesksCountCheckFailedError,
+  // Unknown error.
+  [Default]kUnknownError,
+};
+
+// A Struct represents an ash desk.
+[Stable]
+struct DeskModel {
+ // Unique identifier of a desk.
+ string desk_uuid@0;
+ // Humane readable name of a desk.
+ string desk_name@1;
+};
+
+// A Struct represents GUID.
+[Stable]
+struct GUID {
+// Lowercase string representation of GUID.
+string lowercase@0;
+};
+
+// The response from LaunchEmptyDesk API.
+[Stable]
+union LaunchEmptyDeskResult{
+  DeskCrosApiError error;
+  GUID desk_id;
+};
+
+// The response from RemoveDesk API.
+[Stable]
+union RemoveDeskResult {
+  DeskCrosApiError error;
+  bool succeeded;
+};
+
+// The response from RemoveDesk API.
+[Stable]
+union GetTemplateJsonResult{
+  DeskCrosApiError error;
+  mojo_base.mojom.Value template_json;
+};
+
+// The response from GetAllDesks API.
+[Stable]
+union GetAllDesksResult{
+  DeskCrosApiError error;
+  array<DeskModel> desks;
+};
+
+// The response from SaveActiveDesk API.
+[Stable]
+union SaveActiveDeskResult{
+  DeskCrosApiError error;
+  DeskModel saved_desk;
+};
+
+// The response from RecallSavedDesk API.
+[Stable]
+union RecallSavedDeskResult{
+  DeskCrosApiError error;
+  GUID desk_id;
+};
+
+// The response from DeleteSavedDesk API.
+[Stable]
+union DeleteSavedDeskResult {
+  DeskCrosApiError error;
+  bool succeeded;
+};
+
+// The response from SetAllDesksProperty API.
+[Stable]
+union SetAllDesksPropertyResult {
+  DeskCrosApiError error;
+  bool succeeded;
+};
+
+// Interface for desk operations. Implemented by ash-chrome. Used by
+// lacros-chrome to forward the desk operation to support wmDesksPrivate private
+// API.
+[Stable, Uuid="5fbc1ef6-3fb5-4553-a161-9f113370daf7"]
+interface Desk {
+  // Launch an empty desk from ash. Returns the `desk_id` if the operation
+  //succeeded. Returns `error` if the operation failed.
+  LaunchEmptyDesk@0(string desk_name)
+      => (LaunchEmptyDeskResult result);
+
+  // Remove a desk from ash, close all windows if `close_all` set to true,
+  // otherwise combine the windows to the active desk to the left. Returns
+  // `error` if the operation failed.
+  RemoveDesk@1(GUID desk_uuid, bool close_all) => (RemoveDeskResult result);
+
+  // Gets the template associated with the templateUuid and returns its JSON
+  // representation. Returns an error if either the template could not be
+  // found or the user profile is not valid.
+  GetTemplateJson@2(GUID desk_template_uuid)
+      => (GetTemplateJsonResult result);
+
+  // Returns all desks from ash.
+  GetAllDesks@3() => (GetAllDesksResult result);
+
+  // Saves the current active desk to the library and remove it from the desk
+  // bar.
+  SaveActiveDesk@4() => (SaveActiveDeskResult result);
+
+  // Deletes the saved desk from the library.
+  DeleteSavedDesk@5(GUID saved_desk_uuid) => (DeleteSavedDeskResult result);
+
+  // Launches a saved desk from the library back to active desk.
+  RecallSavedDesk@6(GUID saved_desk_uuid)
+      => (RecallSavedDeskResult result);
+
+  // Sets all-desk window property by the window app_restore_window_id.
+  SetAllDesksProperty@7(int32 app_restore_window_id, bool all_desk)
+      => (SetAllDesksPropertyResult result);
+
+};

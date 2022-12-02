@@ -1002,7 +1002,7 @@
   "wmDesksPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos","lacros"],
     "allowlist": [
       // Extension id hash for API test.
       "74801F84D31D23D08BEA48AB82C6A6120EDB4D45",

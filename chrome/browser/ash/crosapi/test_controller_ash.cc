@@ -305,6 +305,11 @@ void TestControllerAsh::LaunchAppFromAppList(const std::string& app_id) {
       app_id, /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromGrid);
 }
 
+void TestControllerAsh::AreDesksBeingModified(
+    AreDesksBeingModifiedCallback callback) {
+  std::move(callback).Run(ash::DesksController::Get()->AreDesksBeingModified());
+}
+
 void TestControllerAsh::PinOrUnpinItemInShelf(
     const std::string& item_id,
     bool pin,

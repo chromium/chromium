@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
@@ -112,11 +113,13 @@ class FloatingWorkspaceService : public KeyedService,
 
   // Callback function that is run after a floating workspace template
   // is downloaded and launched.
-  void OnTemplateLaunched(std::string error, const base::GUID& desk_uuid);
+  void OnTemplateLaunched(absl::optional<DesksClient::DeskActionError> error,
+                          const base::GUID& desk_uuid);
 
   // Callback function that is run after a floating workspace template is
   // captured by `desks_storage::DeskSyncBridge`.
-  void OnTemplateCaptured(std::string error, std::unique_ptr<DeskTemplate>);
+  void OnTemplateCaptured(absl::optional<DesksClient::DeskActionError> error,
+                          std::unique_ptr<DeskTemplate>);
 
   Profile* const profile_;
 

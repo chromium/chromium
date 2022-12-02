@@ -31,14 +31,14 @@ class WmDesksPrivateApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList scoped_feature_list;
 };
 
-// General API test for desk API.
+// Use API test for tests require other chrome API.
 // API test is flaky when involves animation. For APIs involving animation use
 // browser test instead.
 // TODO(crbug.com/1370233): Re-enable this test
 IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_WmDesksPrivateApiTest) {
   // This loads and runs an extension from
   // chrome/test/data/extensions/api_test/wm_desks_private.
-  ASSERT_TRUE(RunExtensionTest("wm_desks_private"));
+  ASSERT_TRUE(RunExtensionTest("wm_desks_private")) << message_;
 }
 
 // Tests launch and close a desk.
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest,
   // The RunFunctionAndReturnSingleResult already asserts no error
   auto error = extension_function_test_utils::RunFunctionAndReturnError(
       launch_desk_function.get(), R"([{"deskName":"test"}])", new_browser);
-  EXPECT_EQ(error, "The maximum number of desks is already open.");
+  EXPECT_EQ(error, "DesksCountCheckFailedError");
   histogram_tester.ExpectBucketCount("Ash.DeskApi.LaunchDesk.Result", 0, 1);
 }
 
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, RemoveDeskWithInvalidIdTest) {
   auto error = extension_function_test_utils::RunFunctionAndReturnError(
       remove_desk_function.get(), R"(["invalid-id"])", new_browser);
 
-  EXPECT_EQ(error, "The desk identifier is not valid.");
+  EXPECT_EQ(error, "InvalidIdError");
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 0, 1);
 }
 
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SwitchDeskWithInvalidIdTest) {
   auto error = extension_function_test_utils::RunFunctionAndReturnError(
       switch_desk_function.get(), R"(["invalid-id"])", new_browser);
 
-  EXPECT_EQ(error, "The desk identifier is not valid.");
+  EXPECT_EQ(error, "InvalidIdError");
   histogram_tester.ExpectBucketCount("Ash.DeskApi.SwitchDesk.Result", 0, 1);
 }
 
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest,
   auto error = extension_function_test_utils::RunFunctionAndReturnError(
       all_desk_function.get(), R"([123,{"allDesks":true}])", new_browser);
 
-  EXPECT_EQ(error, "The window cannot be found.");
+  EXPECT_EQ(error, "ResourceNotFoundError");
   histogram_tester.ExpectBucketCount("Ash.DeskApi.AllDesk.Result", 0, 1);
 }
 
@@ -307,6 +307,50 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndRecallDeskTest) {
   EXPECT_TRUE(result_1->GetList().front().GetDict().Find("savedDeskUuid"));
   EXPECT_TRUE(result_1->GetList().front().GetDict().Find("savedDeskName"));
   EXPECT_TRUE(result_1->GetList().front().GetDict().Find("savedDeskType"));
+  ash::DeskSwitchAnimationWaiter recall_desk_waiter;
+  // Recall a desk.
+  auto recall_desk_function =
+      base::MakeRefCounted<WmDesksPrivateRecallSavedDeskFunction>();
+  auto desk_id_1 =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          recall_desk_function.get(), R"([")" + desk_id + R"("])", new_browser);
+  EXPECT_TRUE(desk_id_1->is_string());
+  EXPECT_TRUE(
+      base::GUID::ParseCaseInsensitive(desk_id_1->GetString()).is_valid());
+
+  // Waiting for desk removal animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    recall_desk_waiter.Wait();
+  }
+}
+
+// Tests save and delete a desk.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndDeleteDeskTest) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+
+  // Save a desk.
+  auto save_desk_function =
+      base::MakeRefCounted<WmDesksPrivateSaveActiveDeskFunction>();
+
+  ash::DeskSwitchAnimationWaiter save_desk_waiter;
+  // Asserts no error.
+  auto result = extension_function_test_utils::RunFunctionAndReturnSingleResult(
+      save_desk_function.get(), R"([])", new_browser);
+  EXPECT_TRUE(result->is_dict());
+  auto desk_id = result->GetDict().Find("savedDeskUuid")->GetString();
+  EXPECT_TRUE(base::GUID::ParseCaseInsensitive(desk_id).is_valid());
+
+  // Waiting for desk launch animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    save_desk_waiter.Wait();
+  }
+
+  // Delete a saved desk.
+  auto deleted_saved_desk_function =
+      base::MakeRefCounted<WmDesksPrivateDeleteSavedDeskFunction>();
+  extension_function_test_utils::RunFunctionAndReturnSingleResult(
+      deleted_saved_desk_function.get(), R"([")" + desk_id + R"("])",
+      new_browser);
 }
 
 }  // namespace extensions

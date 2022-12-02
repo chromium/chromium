@@ -1,0 +1,67 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_CROSAPI_DESK_ASH_H_
+#define CHROME_BROWSER_ASH_CROSAPI_DESK_ASH_H_
+
+#include <cstdint>
+#include <memory>
+#include <string>
+
+#include "base/guid.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
+#include "chromeos/crosapi/mojom/desk.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+
+namespace ash {
+class Desk;
+}
+
+namespace crosapi {
+
+// Implement the crosapi interface for desk.
+class DeskAsh : public mojom::Desk {
+ public:
+  DeskAsh();
+  DeskAsh(const DeskAsh& desk) = delete;
+  DeskAsh& operator=(const DeskAsh& desk) = delete;
+  ~DeskAsh() override;
+  void BindReceiver(mojo::PendingReceiver<mojom::Desk> pending_receiver);
+
+  // mojom::Desk override.
+  void LaunchEmptyDesk(const std::string& desk_name,
+                       LaunchEmptyDeskCallback callback) override;
+  void RemoveDesk(const base::GUID& desk_uuid,
+                  bool close_all,
+                  RemoveDeskCallback callback) override;
+  void GetTemplateJson(const base::GUID& uuid,
+                       GetTemplateJsonCallback callback) override;
+  void GetAllDesks(GetAllDesksCallback callback) override;
+
+  void SaveActiveDesk(SaveActiveDeskCallback callback) override;
+
+  void DeleteSavedDesk(const base::GUID& uuid,
+                       DeleteSavedDeskCallback callback) override;
+
+  void RecallSavedDesk(const base::GUID& uuid,
+                       RecallSavedDeskCallback callback) override;
+
+  void SetAllDesksProperty(int32_t app_restore_window_id,
+                           bool all_desks,
+                           SetAllDesksPropertyCallback callback) override;
+
+ private:
+  // Returns the window pointer by app restore window Id.
+  aura::Window* GetWindowByAppRestoreWindowId(aura::Window* window,
+                                              int32_t app_restore_window_id);
+
+  mojo::ReceiverSet<mojom::Desk> receivers_;
+
+  base::WeakPtrFactory<DeskAsh> weak_ptr_factory_{this};
+};
+
+}  // namespace crosapi
+
+#endif  // CHROME_BROWSER_ASH_CROSAPI_DESK_ASH_H_

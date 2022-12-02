@@ -162,8 +162,8 @@ interface InputMethodTestInterface {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 23
-// Next method id: 34
+// Next version: 24
+// Next method id: 35
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -347,4 +347,11 @@ interface TestController {
   // Ash.
   [MinVersion=22]
   GetTtsUtteranceQueueSize@33() => (int32 size);
+
+  // Returns true is desk is being created or removed or desk animation is in
+  // progress. The result is only accurate on `false` result. Even if it returns
+  // `true`, given the async nature of CrosAPI the desk oepration might have
+  // been finished already.
+  [MinVersion=23]
+  AreDesksBeingModified@34()=>(bool are_desks_being_modified);
 };

@@ -134,7 +134,7 @@ class DeskModel {
 
   using GetTemplateJsonCallback =
       base::OnceCallback<void(GetTemplateJsonStatus status,
-                              const std::string& json_representation)>;
+                              const base::Value& json_representation)>;
   // Retrieves a template based on its `uuid`, if found returns a std::string
   // containing the json representation of the template queried.
   virtual void GetTemplateJson(const base::GUID& uuid,

@@ -94,6 +94,7 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
   // unsupported apps.
   if (!has_supported_apps) {
     calls_.erase(current_serial);
+    std::move(callback).Run(nullptr);
     return;
   }
 

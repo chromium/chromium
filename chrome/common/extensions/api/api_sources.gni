@@ -94,6 +94,7 @@ if (is_chromeos) {
     "shared_storage_private.idl",
     "vpn_provider.idl",
     "wallpaper.json",
+    "wm_desks_private.idl",
   ]
 
   if (use_cups) {
@@ -116,7 +117,6 @@ if (is_chromeos_ash) {
     "speech_recognition_private.idl",
     "terminal_private.json",
     "users_private.idl",
-    "wm_desks_private.idl",
   ]
 } else if (is_linux || is_chromeos || is_win) {
   schema_sources_ += [ "input_ime.json" ]

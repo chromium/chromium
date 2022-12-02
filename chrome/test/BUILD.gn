@@ -3301,6 +3301,7 @@ if (!is_android) {
           "//build/config/chromebox_for_meetings:buildflags",
           "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
           "//chrome/browser/chromeos/extensions/vpn_provider",
+          "//chrome/browser/chromeos/extensions/wm",
           "//chrome/browser/error_reporting:test_support",
           "//chromeos/dbus/dlp:dlp",
         ]
@@ -4854,6 +4855,7 @@ if (is_chromeos_lacros) {
       "../browser/apps/intent_helper/supported_links_infobar_delegate_browsertest.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
+      "../browser/chromeos/extensions/wm/wm_desks_private_apitest_lacros.cc",
       "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.cc",
       "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h",
       "../browser/chromeos/tablet_mode/tablet_mode_page_behavior_browsertest.cc",
@@ -4916,6 +4918,7 @@ if (is_chromeos_lacros) {
       ":webrtc_browser_tests_base",
       "//chrome/app:command_ids",
       "//chrome/browser/chromeos/extensions/vpn_provider",
+      "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:app_service_browser_tests",
