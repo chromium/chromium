@@ -13,6 +13,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/scoped_observation.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/gmock_callback_support.h"
@@ -817,6 +818,9 @@ class WebStateObserverTestBase : public WebIntTest {
     test_server_->RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/download",
         base::BindRepeating(::testing::HandleDownload)));
+    test_server_->RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/slow-response",
+        base::BindRepeating(::testing::HandleSlow)));
     RegisterDefaultHandlers(test_server_.get());
     test_server_->ServeFilesFromSourceDirectory(
         base::FilePath("ios/testing/data/http_server_files/"));
@@ -2101,10 +2105,8 @@ TEST_F(WebStateObserverTest, DownloadNavigation) {
 }
 
 // Tests failed load after the navigation is sucessfully finished.
-// TODO(crbug.com/954232): this test is flaky on device, and as of iOS14
-// simulator as well.
-TEST_F(WebStateObserverTest, DISABLED_FailedLoad) {
-  GURL url = test_server_->GetURL("/exabyte_response");
+TEST_F(WebStateObserverTest, FailedLoad) {
+  GURL url = test_server_->GetURL("/slow-response");
 
   NavigationContext* context = nullptr;
   int32_t nav_id = 0;
@@ -2128,23 +2130,29 @@ TEST_F(WebStateObserverTest, DISABLED_FailedLoad) {
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
   EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
-      .WillOnce(VerifyNewPageFinishedContext(web_state(), url, /*mime_type=*/"",
+      .WillOnce(VerifyNewPageFinishedContext(web_state(), url, "text/plain",
                                              /*content_is_html=*/false,
                                              &context, &nav_id));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
+
+  // Load error page for failed navigation.
+  EXPECT_CALL(observer_, DidStartLoading(web_state()));
+  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
 
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
 
   test::LoadUrl(web_state(), url);
 
-  // Server will never stop responding. Wait until the navigation is committed.
+  // Server will never stop responding. Wait only until the navigation is
+  // committed.
   EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return context && context->HasCommitted();
   }));
 
   // At this point the navigation should be finished. Shutdown the server and
-  // wait until web state stop loading.
+  // wait until web state stops loading.
   ASSERT_TRUE(test_server_->ShutdownAndWaitUntilComplete());
   ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
 }

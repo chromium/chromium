@@ -54,6 +54,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleForm(
 std::unique_ptr<net::test_server::HttpResponse> HandleDownload(
     const net::test_server::HttpRequest& request);
 
+// Returns a slow response that would take several hours to finish. This is
+// useful in scenarios where a test needs to interrupt a navigation after it
+// starts loading but before it finishes.
+std::unique_ptr<net::test_server::HttpResponse> HandleSlow(
+    const net::test_server::HttpRequest& request);
+
 }  // namespace testing
 
 #endif  // IOS_TESTING_EMBEDDED_TEST_SERVER_HANDLERS_H_
