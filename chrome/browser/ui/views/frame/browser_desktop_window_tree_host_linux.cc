@@ -70,8 +70,9 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
     scale_observation_.Observe(linux_ui);
 }
 
-BrowserDesktopWindowTreeHostLinux::~BrowserDesktopWindowTreeHostLinux() =
-    default;
+BrowserDesktopWindowTreeHostLinux::~BrowserDesktopWindowTreeHostLinux() {
+  native_frame_->set_host(nullptr);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostLinux,
