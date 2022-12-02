@@ -44,9 +44,10 @@ using ICompleteStatusPtr = ::Microsoft::WRL::ComPtr<ICompleteStatus>;
 
 // This class implements the IUpdaterObserver interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
-class UpdaterObserver : public DynamicIIDsImpl<IUpdaterObserver,
-                                               IUpdaterObserverUser,
-                                               IUpdaterObserverSystem> {
+class UpdaterObserver
+    : public DynamicIIDsImpl<IUpdaterObserver,
+                             __uuidof(IUpdaterObserverUser),
+                             __uuidof(IUpdaterObserverSystem)> {
  public:
   UpdaterObserver(UpdateService::StateChangeCallback state_update_callback,
                   UpdateService::Callback callback)
@@ -212,9 +213,10 @@ class UpdaterObserver : public DynamicIIDsImpl<IUpdaterObserver,
 
 // This class implements the IUpdaterCallback interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
-class UpdaterCallback : public DynamicIIDsImpl<IUpdaterCallback,
-                                               IUpdaterCallbackUser,
-                                               IUpdaterCallbackSystem> {
+class UpdaterCallback
+    : public DynamicIIDsImpl<IUpdaterCallback,
+                             __uuidof(IUpdaterCallbackUser),
+                             __uuidof(IUpdaterCallbackSystem)> {
  public:
   explicit UpdaterCallback(base::OnceCallback<void(LONG)> callback)
       : callback_(std::move(callback)) {}
@@ -261,8 +263,8 @@ class UpdateServiceProxyImpl
     : public base::RefCountedThreadSafe<UpdateServiceProxyImpl>,
       public ProxyImplBase<UpdateServiceProxyImpl,
                            IUpdater,
-                           IUpdaterUser,
-                           IUpdaterSystem> {
+                           __uuidof(IUpdaterUser),
+                           __uuidof(IUpdaterSystem)> {
  public:
   explicit UpdateServiceProxyImpl(UpdaterScope scope) : ProxyImplBase(scope) {}
 

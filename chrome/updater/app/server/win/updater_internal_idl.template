@@ -7,11 +7,10 @@ import "ocidl.idl";
 
 
 // Private interfaces for the Chromium Updater.
-// For documentation, see the similar types defined in updater::UpdateServiceInternal.
+// For documentation, see the similar types defined in
+// updater::UpdateServiceInternal.
 
 [
-  object,
-  dual,
   uuid(PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65),
   helpstring("IUpdaterInternalCallback Interface"),
   pointer_default(unique)
@@ -41,8 +40,6 @@ interface IUpdaterInternalCallbackSystem : IUpdaterInternalCallback {
 };
 
 [
-  object,
-  dual,
   uuid(PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA),
   helpstring("IUpdaterInternal Interface"),
   pointer_default(unique)

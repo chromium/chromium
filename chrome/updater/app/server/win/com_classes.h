@@ -30,8 +30,8 @@ namespace updater {
 // |UpdateService|. Instances of this class are typically passed as arguments
 // to RPC method calls which model COM events.
 class UpdateStateImpl : public DynamicIIDsImpl<IUpdateState,
-                                               IUpdateStateUser,
-                                               IUpdateStateSystem> {
+                                               __uuidof(IUpdateStateUser),
+                                               __uuidof(IUpdateStateSystem)> {
  public:
   explicit UpdateStateImpl(const UpdateService::UpdateState& update_state)
       : update_state_(update_state) {}
@@ -59,9 +59,10 @@ class UpdateStateImpl : public DynamicIIDsImpl<IUpdateState,
 
 // This class implements the ICompleteStatus interface and exposes it as a COM
 // object.
-class CompleteStatusImpl : public DynamicIIDsImpl<ICompleteStatus,
-                                                  ICompleteStatusUser,
-                                                  ICompleteStatusSystem> {
+class CompleteStatusImpl
+    : public DynamicIIDsImpl<ICompleteStatus,
+                             __uuidof(ICompleteStatusUser),
+                             __uuidof(ICompleteStatusSystem)> {
  public:
   CompleteStatusImpl(int code, const std::wstring& message)
       : code_(code), message_(message) {}
@@ -80,8 +81,9 @@ class CompleteStatusImpl : public DynamicIIDsImpl<ICompleteStatus,
 };
 
 // This class implements the IUpdater interface and exposes it as a COM object.
-class UpdaterImpl
-    : public DynamicIIDsImpl<IUpdater, IUpdaterUser, IUpdaterSystem> {
+class UpdaterImpl : public DynamicIIDsImpl<IUpdater,
+                                           __uuidof(IUpdaterUser),
+                                           __uuidof(IUpdaterSystem)> {
  public:
   UpdaterImpl() = default;
   UpdaterImpl(const UpdaterImpl&) = delete;
@@ -133,9 +135,10 @@ class UpdaterImpl
 
 // This class implements the IUpdaterInternal interface and exposes it as a COM
 // object.
-class UpdaterInternalImpl : public DynamicIIDsImpl<IUpdaterInternal,
-                                                   IUpdaterInternalUser,
-                                                   IUpdaterInternalSystem> {
+class UpdaterInternalImpl
+    : public DynamicIIDsImpl<IUpdaterInternal,
+                             __uuidof(IUpdaterInternalUser),
+                             __uuidof(IUpdaterInternalSystem)> {
  public:
   UpdaterInternalImpl() = default;
   UpdaterInternalImpl(const UpdaterInternalImpl&) = delete;

@@ -98,19 +98,19 @@ using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
 
 }  // namespace
 
-// Implements `DynamicIIDs` for interface `T`, where `T` is the implemented
-// interface. `user_iid` and `system_iid` are aliases for interface `T` for user
-// and system installs respectively.
+// Implements `DynamicIIDs` for interface `Interface`, where `Interface` is the
+// implemented interface. `iid_user` and `iid_system` are aliases for interface
+// `Interface` for user and system installs respectively.
 //
-// Usage: derive your COM class that implements interface `T` from
-// `DynamicIIDsImpl<T, user_iid, system_iid>`.
-template <typename T, typename TUser, typename TSystem>
-class DynamicIIDsImpl : public WrlRuntimeClass<T> {
+// Usage: derive your COM class that implements interface `Interface` from
+// `DynamicIIDsImpl<Interface, iid_user, iid_system>`.
+template <typename Interface, REFIID iid_user, REFIID iid_system>
+class DynamicIIDsImpl : public WrlRuntimeClass<Interface> {
  public:
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
-    return WrlRuntimeClass<T>::QueryInterface(
-        riid == (IsSystemInstall() ? __uuidof(TSystem) : __uuidof(TUser))
-            ? __uuidof(T)
+    return WrlRuntimeClass<Interface>::QueryInterface(
+        riid == (IsSystemInstall() ? iid_system : iid_user)
+            ? __uuidof(Interface)
             : riid,
         object);
   }

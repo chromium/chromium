@@ -27,10 +27,13 @@
 
 namespace updater {
 
+// `iid_user` and `iid_system` are the interface ids corresponding to
+// `Interface` for user and system. These interface ids must be different for
+// COM automation marshaling to work correctly.
 template <typename Derived,
           typename Interface,
-          typename InterfaceUser,
-          typename InterfaceSystem>
+          REFIID iid_user,
+          REFIID iid_system>
 class ProxyImplBase {
  public:
   // Releases `impl` on `task_runner_`.
@@ -72,10 +75,8 @@ class ProxyImplBase {
     }
 
     Microsoft::WRL::ComPtr<Interface> server_interface;
-    REFIID iid = IsSystemInstall(scope_) ? __uuidof(InterfaceSystem)
-                                         : __uuidof(InterfaceUser);
+    REFIID iid = IsSystemInstall(scope_) ? iid_system : iid_user;
     hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
-
     if (FAILED(hr)) {
       VLOG(2) << "Failed to query the interface: "
               << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;

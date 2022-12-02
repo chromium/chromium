@@ -756,12 +756,14 @@ the following steps need to be followed:
     `IUpdaterInternalCallbackSystem` respectively for the methods `Run` and
     `Hello` in `updater_internal_idl.template`.
 * Code changes:
-  * Derive the COM class that implements interface `T` from
-    `DynamicIIDsImpl<T, user_iid, system_iid>`. `user_iid` and `system_iid`
-    are aliases for interface `T` for user and system installs respectively.
+  * Derive the COM class that implements interface `Interface` from
+    `DynamicIIDsImpl<Interface, iid_user, iid_system>`. `iid_user` and
+    `iid_system` are the ids of the interface `Interface` for user and system
+    installs respectively.
 
     Example: class `UpdaterInternalImpl` derives from
-    `DynamicIIDsImpl<IUpdaterInternal, IUpdaterInternalUser, IUpdaterInternalSystem>`
+    `DynamicIIDsImpl<IUpdaterInternal, __uuidof(IUpdaterInternalUser),
+    __uuidof(IUpdaterInternalSystem)>`
 
   * Use the distinct `User` or `System` IID when querying for the non-suffixed interface.
 
@@ -769,8 +771,7 @@ the following steps need to be followed:
 
     ```
         Microsoft::WRL::ComPtr<Interface> server_interface;
-        REFIID iid = scope_ == UpdaterScope::kSystem ? __uuidof(InterfaceSystem)
-                                                     : __uuidof(InterfaceUser);
+        REFIID iid = scope_ == UpdaterScope::kSystem ? iid_system : iid_user;
         hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
     ```
   * Register either the `User` or the `System` interface (but not both) with COM

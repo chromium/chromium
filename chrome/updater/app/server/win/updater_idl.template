@@ -10,8 +10,6 @@ import "ocidl.idl";
 // For documentation, see the similar types defined in updater::UpdateService.
 
 [
-  object,
-  dual,
   uuid(PLACEHOLDER-GUID-46ACF70B-AC13-406D-B53B-B2C4BF091FF6),
   helpstring("IUpdateState Interface"),
   pointer_default(unique)
@@ -51,8 +49,6 @@ interface IUpdateStateSystem : IUpdateState {
 };
 
 [
-  object,
-  dual,
   uuid(PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B),
   helpstring("ICompleteStatus Interface"),
   pointer_default(unique)
@@ -83,8 +79,6 @@ interface ICompleteStatusSystem : ICompleteStatus {
 };
 
 [
-  object,
-  oleautomation,
   uuid(PLACEHOLDER-GUID-7B416CFD-4216-4FD6-BD83-7C586054676E),
   helpstring("IUpdaterObserver Interface"),
   pointer_default(unique)
@@ -119,8 +113,6 @@ interface IUpdaterObserverSystem : IUnknown {
 };
 
 [
-  object,
-  dual,
   uuid(PLACEHOLDER-GUID-8BAB6F84-AD67-4819-B846-CC890880FD3B),
   helpstring("IUpdaterCallback Interface"),
   pointer_default(unique)
@@ -150,8 +142,6 @@ interface IUpdaterCallbackSystem : IUpdaterCallback {
 };
 
 [
-  object,
-  dual,
   uuid(PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B),
   helpstring("IUpdater Interface"),
   pointer_default(unique)

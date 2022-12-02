@@ -167,7 +167,7 @@ extern "C"{
 #define __IUpdaterInternalCallback_INTERFACE_DEFINED__
 
 /* interface IUpdaterInternalCallback */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [object][unique][helpstring][uuid] */ 
 
 
 EXTERN_C const IID IID_IUpdaterInternalCallback;
@@ -415,7 +415,7 @@ EXTERN_C const IID IID_IUpdaterInternalCallbackSystem;
 #define __IUpdaterInternal_INTERFACE_DEFINED__
 
 /* interface IUpdaterInternal */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [object][unique][helpstring][uuid] */ 
 
 
 EXTERN_C const IID IID_IUpdaterInternal;

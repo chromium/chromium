@@ -286,7 +286,7 @@ extern "C"{
 #define __IUpdateState_INTERFACE_DEFINED__
 
 /* interface IUpdateState */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [object][unique][helpstring][uuid] */ 
 
 
 EXTERN_C const IID IID_IUpdateState;
@@ -804,7 +804,7 @@ EXTERN_C const IID IID_IUpdateStateSystem;
 #define __ICompleteStatus_INTERFACE_DEFINED__
 
 /* interface ICompleteStatus */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [object][unique][helpstring][uuid] */ 
 
 
 EXTERN_C const IID IID_ICompleteStatus;
@@ -1079,7 +1079,7 @@ EXTERN_C const IID IID_ICompleteStatusSystem;
 #define __IUpdaterObserver_INTERFACE_DEFINED__
 
 /* interface IUpdaterObserver */
-/* [unique][helpstring][uuid][oleautomation][object] */ 
+/* [object][unique][helpstring][uuid] */ 
 
 
 EXTERN_C const IID IID_IUpdaterObserver;
@@ -1364,7 +1364,7 @@ EXTERN_C const IID IID_IUpdaterObserverSystem;
 #define __IUpdaterCallback_INTERFACE_DEFINED__
 
 /* interface IUpdaterCallback */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [object][unique][helpstring][uuid] */ 
 
 
 EXTERN_C const IID IID_IUpdaterCallback;
@@ -1612,7 +1612,7 @@ EXTERN_C const IID IID_IUpdaterCallbackSystem;
 #define __IUpdater_INTERFACE_DEFINED__
 
 /* interface IUpdater */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [object][unique][helpstring][uuid] */ 
 
 
 EXTERN_C const IID IID_IUpdater;
