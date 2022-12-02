@@ -2158,6 +2158,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "enable-edid-based-display-ids",
+    "owners": [ "gildekel", "//ui/display/OWNERS", "chromeos-gfx-display@chromium.org" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-enhanced-safe-browsing",
     "owners": [ "ajuma", "joemerramos", "bling-flags@google.com"],
     "expiry_milestone": 110

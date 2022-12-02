@@ -2965,6 +2965,9 @@ extern const char kEnableCrOSActionRecorderDescription[];
 extern const char kEnableDnsProxyName[];
 extern const char kEnableDnsProxyDescription[];
 
+extern const char kEnableEdidBasedDisplayIdsName[];
+extern const char kEnableEdidBasedDisplayIdsDescription[];
+
 extern const char kDnsProxyEnableDOHName[];
 extern const char kDnsProxyEnableDOHDescription[];
 

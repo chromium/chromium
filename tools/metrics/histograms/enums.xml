@@ -60614,6 +60614,7 @@ from previous Chrome versions.
   <int value="-80501013" label="AutofillOffNoServerData:enabled"/>
   <int value="-80353187" label="disable-display-color-calibration"/>
   <int value="-80049694" label="HindiInscriptLayout:disabled"/>
+  <int value="-79467537" label="EnableEdidBasedDisplayIds:enabled"/>
   <int value="-79327236" label="ModeSpecificPowerButton:enabled"/>
   <int value="-79015588"
       label="ExperimentalAccessibilityDictationMoreCommands:enabled"/>
@@ -63646,6 +63647,7 @@ from previous Chrome versions.
   <int value="1718421370" label="SharingHubLinkToggle:enabled"/>
   <int value="1719189460" label="EnablePasswordSelection:disabled"/>
   <int value="1719958026" label="QueryTiles:enabled"/>
+  <int value="1721854955" label="EnableEdidBasedDisplayIds:disabled"/>
   <int value="1722748383" label="EnableAppReinstallZeroState:disabled"/>
   <int value="1723601083" label="enable-app-window-controls"/>
   <int value="1724247189" label="StylusHandwriting:enabled"/>

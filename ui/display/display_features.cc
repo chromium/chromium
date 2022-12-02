@@ -46,6 +46,17 @@ bool IsListAllDisplayModesEnabled() {
   return base::FeatureList::IsEnabled(kListAllDisplayModes);
 }
 
+// TODO(gildekel): A temporary flag to control whether EDID-based (vs.
+// port-based) display IDs are generated per display. Remove once the migration
+// process it complete (b/193019614).
+BASE_FEATURE(kEnableEdidBasedDisplayIds,
+             "EnableEdidBasedDisplayIds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsEdidBasedDisplayIdsEnabled() {
+  return base::FeatureList::IsEnabled(kEnableEdidBasedDisplayIds);
+}
+
 // A temporary flag to control hardware mirroring until it is decided whether to
 // permanently remove hardware mirroring support. See crbug.com/1161556 for
 // details.

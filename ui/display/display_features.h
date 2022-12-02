@@ -24,6 +24,10 @@ DISPLAY_EXPORT BASE_DECLARE_FEATURE(kListAllDisplayModes);
 
 DISPLAY_EXPORT bool IsListAllDisplayModesEnabled();
 
+DISPLAY_EXPORT BASE_DECLARE_FEATURE(kEnableEdidBasedDisplayIds);
+
+DISPLAY_EXPORT bool IsEdidBasedDisplayIdsEnabled();
+
 DISPLAY_EXPORT BASE_DECLARE_FEATURE(kEnableHardwareMirrorMode);
 
 DISPLAY_EXPORT bool IsHardwareMirrorModeEnabled();
