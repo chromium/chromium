@@ -55,6 +55,10 @@ class ChromeHidDelegate : public content::HidDelegate {
   bool IsFidoAllowedForOrigin(content::BrowserContext* browser_context,
                               const url::Origin& origin) override;
   bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) override;
+  void IncrementConnectionCount(content::BrowserContext* browser_context,
+                                const url::Origin& origin) override;
+  void DecrementConnectionCount(content::BrowserContext* browser_context,
+                                const url::Origin& origin) override;
 
  private:
   class ContextObservation;

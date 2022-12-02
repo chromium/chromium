@@ -221,3 +221,29 @@ ChromeHidDelegate::ContextObservation* ChromeHidDelegate::GetContextObserver(
   }
   return observations_[browser_context].get();
 }
+
+void ChromeHidDelegate::IncrementConnectionCount(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+  // Don't track connection when the feature isn't enabled or the connection
+  // isn't made by an extension origin.
+  if (!base::FeatureList::IsEnabled(
+          features::kEnableWebHidOnExtensionServiceWorker) ||
+      origin.scheme() != extensions::kExtensionScheme) {
+    return;
+  }
+  // TODO(crbug.com/1360981): Hook up HidConnectionTracker.
+}
+
+void ChromeHidDelegate::DecrementConnectionCount(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+  // Don't track connection when the feature isn't enabled or the connection
+  // isn't made by an extension origin.
+  if (!base::FeatureList::IsEnabled(
+          features::kEnableWebHidOnExtensionServiceWorker) ||
+      origin.scheme() != extensions::kExtensionScheme) {
+    return;
+  }
+  // TODO(crbug.com/1360981): Hook up HidConnectionTracker.
+}

@@ -101,6 +101,15 @@ class CONTENT_EXPORT HidDelegate {
   virtual const device::mojom::HidDeviceInfo* GetDeviceInfo(
       BrowserContext* browser_context,
       const std::string& guid) = 0;
+
+  // Notify the delegate a connection is created on |origin| by
+  // |browser_context|.
+  virtual void IncrementConnectionCount(BrowserContext* browser_context,
+                                        const url::Origin& origin) = 0;
+  // Notify the delegate a connection is closed on |origin| by
+  // |browser_context|.
+  virtual void DecrementConnectionCount(BrowserContext* browser_context,
+                                        const url::Origin& origin) = 0;
 };
 
 }  // namespace content

@@ -76,7 +76,7 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
              base::WeakPtr<ServiceWorkerContextCore> service_worker_context,
              const url::Origin& origin);
 
-  void OnWatcherRemoved(bool cleanup_watcher_ids);
+  void OnWatcherRemoved(bool cleanup_watcher_ids, size_t watchers_removed);
   void IncrementActiveFrameCount();
   void DecrementActiveFrameCount();
 

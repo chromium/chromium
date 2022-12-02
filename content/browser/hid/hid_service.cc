@@ -128,9 +128,9 @@ HidService::HidService(
     : render_frame_host_(render_frame_host),
       service_worker_context_(std::move(service_worker_context)),
       origin_(origin) {
-  watchers_.set_disconnect_handler(
-      base::BindRepeating(&HidService::OnWatcherRemoved, base::Unretained(this),
-                          /* cleanup_watcher_ids=*/true));
+  watchers_.set_disconnect_handler(base::BindRepeating(
+      &HidService::OnWatcherRemoved, base::Unretained(this),
+      /* cleanup_watcher_ids=*/true, /*watchers_removed=*/1));
 
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
   if (delegate)
@@ -154,9 +154,13 @@ HidService::~HidService() {
   if (delegate)
     delegate->RemoveObserver(GetBrowserContext(), this);
 
-  // The remaining watchers will be closed from this end.
+  // Update connection count and active frame count tracking as remaining
+  // watchers will be closed from this end.
   if (!watchers_.empty())
     DecrementActiveFrameCount();
+  for (size_t i = 0; i < watchers_.size(); i++) {
+    delegate->DecrementConnectionCount(GetBrowserContext(), origin_);
+  }
 }
 
 // static
@@ -262,12 +266,14 @@ void HidService::Connect(
     IncrementActiveFrameCount();
   }
 
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+  delegate->IncrementConnectionCount(browser_context, origin_);
+
   mojo::PendingRemote<device::mojom::HidConnectionWatcher> watcher;
   mojo::ReceiverId receiver_id =
       watchers_.Add(this, watcher.InitWithNewPipeAndPassReceiver());
   watcher_ids_.insert({device_guid, receiver_id});
 
-  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
   delegate->GetHidManager(browser_context)
       ->Connect(
           device_guid, std::move(client), std::move(watcher),
@@ -288,15 +294,24 @@ void HidService::Forget(device::mojom::HidDeviceInfoPtr device_info,
   std::move(callback).Run();
 }
 
-void HidService::OnWatcherRemoved(bool cleanup_watcher_ids) {
+void HidService::OnWatcherRemoved(bool cleanup_watcher_ids,
+                                  size_t watchers_removed) {
   if (watchers_.empty())
     DecrementActiveFrameCount();
 
+  // When |cleanup_watcher_ids| is true, it is the case like watcher disconnect
+  // handler where the entry in |watchers_| is removed but |watcher_ids_| isn't
+  // yet, so the entry in |watcher_ids_| needs to be removed.
   if (cleanup_watcher_ids) {
     // Clean up any associated |watchers_ids_| entries.
     base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
       return watcher_entry.second == watchers_.current_receiver();
     });
+  }
+
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+  for (size_t i = 0; i < watchers_removed; i++) {
+    delegate->DecrementConnectionCount(GetBrowserContext(), origin_);
   }
 }
 
@@ -347,7 +362,7 @@ void HidService::OnDeviceRemoved(
 
   // If needed, decrement the active frame count.
   if (watchers_removed > 0)
-    OnWatcherRemoved(/*cleanup_watcher_ids=*/false);
+    OnWatcherRemoved(/*cleanup_watcher_ids=*/false, watchers_removed);
 
   auto* browser_context = GetBrowserContext();
   auto* delegate = GetContentClient()->browser()->GetHidDelegate();
@@ -394,7 +409,7 @@ void HidService::OnDeviceChanged(
 
     // If needed, decrement the active frame count.
     if (watchers_removed > 0)
-      OnWatcherRemoved(/*cleanup_watcher_ids=*/false);
+      OnWatcherRemoved(/*cleanup_watcher_ids=*/false, watchers_removed);
 
     return;
   }
@@ -434,7 +449,7 @@ void HidService::OnPermissionRevoked(const url::Origin& origin) {
 
   // If needed decrement the active frame count.
   if (watchers_removed > 0)
-    OnWatcherRemoved(/*cleanup_watcher_ids=*/false);
+    OnWatcherRemoved(/*cleanup_watcher_ids=*/false, watchers_removed);
 }
 
 void HidService::FinishGetDevices(

@@ -73,6 +73,10 @@ class MockHidDelegate : public HidDelegate {
                     const url::Origin& origin));
   MOCK_METHOD1(IsServiceWorkerAllowedForOrigin,
                bool(const url::Origin& origin));
+  MOCK_METHOD2(IncrementConnectionCount,
+               void(BrowserContext*, const url::Origin&));
+  MOCK_METHOD2(DecrementConnectionCount,
+               void(BrowserContext*, const url::Origin&));
 
  private:
   base::ObserverList<Observer> observer_list_;
