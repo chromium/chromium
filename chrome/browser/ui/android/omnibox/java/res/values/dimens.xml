@@ -49,7 +49,6 @@ found in the LICENSE file.
     <dimen name="location_bar_url_action_padding">8dp</dimen>
 
     <dimen name="location_bar_status_view_left_space_width">8dp</dimen>
-    <dimen name="location_bar_vertical_padding_phase2_active_color">4dp</dimen>
 
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
 

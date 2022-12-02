@@ -320,7 +320,6 @@ public class LocationBarLayout extends FrameLayout {
     protected void setUrlFocusChangePercent(float percent) {
         setStatusViewLeftSpacePercent(percent);
         setStatusViewRightSpacePercent(percent);
-        setLocationBarPaddingPercent(percent);
     }
 
     /**
@@ -356,26 +355,6 @@ public class LocationBarLayout extends FrameLayout {
         ViewGroup.LayoutParams rightSpacingParams = mStatusViewRightSpace.getLayoutParams();
         rightSpacingParams.width = (int) (getEndPaddingPixelSizeOnFocusDelta() * percent);
         mStatusViewRightSpace.setLayoutParams(rightSpacingParams);
-    }
-
-    /**
-     * Set the location bar's padding based on current animation progress percent.
-     *
-     * @param percent The current animation progress percent.
-     */
-    protected void setLocationBarPaddingPercent(float percent) {
-        // The height increase should only be applied to omnibox phase 2 feature enabled and active
-        // color parameter enabled at the same time
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
-            return;
-        }
-
-        int verticalPadding =
-                (int) (getResources().getDimensionPixelSize(
-                               R.dimen.location_bar_vertical_padding_phase2_active_color)
-                        * percent);
-
-        setPaddingRelative(getPaddingStart(), verticalPadding, getPaddingEnd(), verticalPadding);
     }
 
     public void notifyVoiceRecognitionCanceled() {}
