@@ -5,12 +5,14 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_MAC_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_MAC_H_
 
+#include "base/component_export.h"
 #include "ui/accessibility/platform/inspect/ax_call_statement_invoker_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 namespace ui {
 
-class AX_EXPORT AXTreeFormatterMac : public AXTreeFormatterBase {
+class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterMac
+    : public AXTreeFormatterBase {
  public:
   AXTreeFormatterMac();
   ~AXTreeFormatterMac() override;

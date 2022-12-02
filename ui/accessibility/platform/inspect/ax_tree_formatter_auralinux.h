@@ -8,14 +8,15 @@
 #include <atk/atk.h>
 #include <atspi/atspi.h>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 namespace ui {
 
 class AXPlatformNodeAuraLinux;
 
-class AX_EXPORT AXTreeFormatterAuraLinux : public AXTreeFormatterBase {
+class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterAuraLinux
+    : public AXTreeFormatterBase {
  public:
   AXTreeFormatterAuraLinux();
   ~AXTreeFormatterAuraLinux() override;

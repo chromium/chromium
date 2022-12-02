@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/values.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
@@ -18,7 +19,8 @@ class AXPropertyNode;
 // for use in testing, debugging, and developer tools.
 // This is extended by a subclass for each platform where accessibility is
 // implemented.
-class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
+class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
+    : public AXTreeFormatter {
  public:
   AXTreeFormatterBase();
 

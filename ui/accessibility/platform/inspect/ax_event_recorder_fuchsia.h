@@ -5,15 +5,16 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_FUCHSIA_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_FUCHSIA_H_
 
+#include "base/component_export.h"
 #include "base/process/process_handle.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 
 namespace ui {
 
 struct AXTreeSelector;
 
-class AX_EXPORT AXEventRecorderFuchsia : public AXEventRecorder {
+class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderFuchsia
+    : public AXEventRecorder {
  public:
   AXEventRecorderFuchsia(base::ProcessId pid, const AXTreeSelector& selector);
 

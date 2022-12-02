@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
@@ -16,7 +16,7 @@ namespace ui {
 // built by a pre-defined tree type like Chromium to indicate that Chromium
 // browser tree should be traversed and/or by a string pattern which matches
 // an accessible name of a root of some accessible subtree.
-struct AX_EXPORT AXTreeSelector {
+struct COMPONENT_EXPORT(AX_PLATFORM) AXTreeSelector {
   enum Type {
     None = 0,
     ActiveTab = 1 << 0,
@@ -65,7 +65,7 @@ struct AX_EXPORT AXTreeSelector {
 // will query a AXDOMClassList attribute on accessible objects placed at 1st
 // and 3rd lines in the output accessible tree.
 // Also see AXInspectScenario::From() for more information.
-struct AX_EXPORT AXPropertyFilter {
+struct COMPONENT_EXPORT(AX_PLATFORM) AXPropertyFilter {
   enum Type { ALLOW, ALLOW_EMPTY, DENY, SCRIPT };
 
   std::string match_str;
@@ -85,7 +85,7 @@ struct AX_EXPORT AXPropertyFilter {
 // example to exclude all inlineTextBox nodes under blink we would use a
 // NodeFilter of the form:
 //   {property='internalRole', pattern='inlineTextBox'};
-struct AX_EXPORT AXNodeFilter {
+struct COMPONENT_EXPORT(AX_PLATFORM) AXNodeFilter {
   std::string property;
   std::string pattern;
 

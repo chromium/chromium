@@ -9,9 +9,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
 
 namespace ui {
 
@@ -29,7 +29,7 @@ struct AXAnnouncementSpec {
 
 }  // namespace ui
 
-AX_EXPORT
+COMPONENT_EXPORT(AX_PLATFORM)
 @interface AXPlatformNodeCocoa : NSAccessibilityElement <NSAccessibility>
 
 // Determines if this object is alive, i.e. it hasn't been detached.

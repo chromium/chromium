@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/stack.h"
+#include "base/export_template.h"
 #include "base/i18n/break_iterator.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -39,6 +40,9 @@
 #include "ui/gfx/utf16_indexing.h"
 
 namespace ui {
+
+class AXNodePosition;
+class AXNode;
 
 // Defines the type of position in the accessibility tree.
 // A tree position is used when referring to a specific child of a node in the
@@ -5668,6 +5672,9 @@ std::ostream& operator<<(
     const AXPosition<AXPositionType, AXNodeType>& position) {
   return stream << position.ToString();
 }
+
+extern template class EXPORT_TEMPLATE_DECLARE(AX_EXPORT)
+    AXPosition<AXNodePosition, AXNode>;
 
 }  // namespace ui
 

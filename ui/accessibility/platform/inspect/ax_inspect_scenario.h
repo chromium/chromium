@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace base {
@@ -35,7 +35,7 @@ class AXScriptInstruction;
 // @BLINK-ALLOW:container*
 // @AURALINUX-ALLOW:live*
 // -->
-class AX_EXPORT AXInspectScenario {
+class COMPONENT_EXPORT(AX_PLATFORM) AXInspectScenario {
  public:
   explicit AXInspectScenario(
       const std::vector<AXPropertyFilter>& default_filters = {});

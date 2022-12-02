@@ -7,9 +7,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 
 // Private WebKit accessibility roles.
-AX_EXPORT constexpr NSString* const NSAccessibilityWebAreaRole = @"AXWebArea";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityWebAreaRole = @"AXWebArea";
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ROLES_MAC_H_

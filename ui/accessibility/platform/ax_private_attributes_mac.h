@@ -7,105 +7,136 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 
 // Private WebKit accessibility attributes.
-AX_EXPORT constexpr NSString* const
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const
     NSAccessibilityAttributedStringForTextMarkerRangeParameterizedAttribute =
         @"AXAttributedStringForTextMarkerRange";
-AX_EXPORT constexpr NSString* const NSAccessibilityAccessKeyAttribute =
-    @"AXAccessKey";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIAAtomicAttribute =
-    @"AXARIAAtomic";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIABusyAttribute =
-    @"AXARIABusy";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIAColumnCountAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityAccessKeyAttribute = @"AXAccessKey";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIAAtomicAttribute = @"AXARIAAtomic";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIABusyAttribute = @"AXARIABusy";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIAColumnCountAttribute =
     @"AXARIAColumnCount";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIAColumnIndexAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIAColumnIndexAttribute =
     @"AXARIAColumnIndex";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIACurrentAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIACurrentAttribute =
     @"AXARIACurrent";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIALiveAttribute =
-    @"AXARIALive";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIAPosInSetAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIALiveAttribute = @"AXARIALive";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIAPosInSetAttribute =
     @"AXARIAPosInSet";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIARelevantAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIARelevantAttribute =
     @"AXARIARelevant";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIARowCountAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIARowCountAttribute =
     @"AXARIARowCount";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIARowIndexAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIARowIndexAttribute =
     @"AXARIARowIndex";
-AX_EXPORT constexpr NSString* const NSAccessibilityARIASetSizeAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityARIASetSizeAttribute =
     @"AXARIASetSize";
-AX_EXPORT constexpr NSString* const NSAccessibilityAutocompleteValueAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityAutocompleteValueAttribute =
     @"AXAutocompleteValue";
-AX_EXPORT constexpr NSString* const NSAccessibilityBrailleLabelAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityBrailleLabelAttribute =
     @"AXBrailleLabel";
-AX_EXPORT constexpr NSString* const NSAccessibilityBrailleRoleDescription =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityBrailleRoleDescription =
     @"AXBrailleRoleDescription";
 
-AX_EXPORT constexpr NSString* const NSAccessibilityBlockQuoteLevelAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityBlockQuoteLevelAttribute =
     @"AXBlockQuoteLevel";
-AX_EXPORT constexpr NSString* const NSAccessibilityChromeAXNodeIdAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityChromeAXNodeIdAttribute =
     @"ChromeAXNodeId";
-AX_EXPORT constexpr NSString* const NSAccessibilityDetailsElementsAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityDetailsElementsAttribute =
     @"AXDetailsElements";
-AX_EXPORT constexpr NSString* const NSAccessibilityDOMClassList =
-    @"AXDOMClassList";
-AX_EXPORT constexpr NSString* const NSAccessibilityDOMIdentifierAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityDOMClassList = @"AXDOMClassList";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityDOMIdentifierAttribute =
     @"AXDOMIdentifier";
-AX_EXPORT constexpr NSString* const NSAccessibilityDropEffectsAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityDropEffectsAttribute =
     @"AXDropEffects";
-AX_EXPORT constexpr NSString* const NSAccessibilityEditableAncestorAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityEditableAncestorAttribute =
     @"AXEditableAncestor";
-AX_EXPORT constexpr NSString* const NSAccessibilityElementBusyAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityElementBusyAttribute =
     @"AXElementBusy";
-AX_EXPORT constexpr NSString* const NSAccessibilityFocusableAncestorAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityFocusableAncestorAttribute =
     @"AXFocusableAncestor";
-AX_EXPORT constexpr NSString* const NSAccessibilityGrabbedAttribute =
-    @"AXGrabbed";
-AX_EXPORT constexpr NSString* const NSAccessibilityHasPopupAttribute =
-    @"AXHasPopup";
-AX_EXPORT constexpr NSString* const
-    NSAccessibilityHighestEditableAncestorAttribute =
-        @"AXHighestEditableAncestor";
-AX_EXPORT constexpr NSString* const NSAccessibilityInvalidAttribute =
-    @"AXInvalid";
-AX_EXPORT constexpr NSString* const NSAccessibilityIsMultiSelectable =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityGrabbedAttribute = @"AXGrabbed";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityHasPopupAttribute = @"AXHasPopup";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityHighestEditableAncestorAttribute =
+    @"AXHighestEditableAncestor";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityInvalidAttribute = @"AXInvalid";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityIsMultiSelectable =
     @"AXIsMultiSelectable";
-AX_EXPORT constexpr NSString* const NSAccessibilityKeyShortcutsValueAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityKeyShortcutsValueAttribute =
     @"AXKeyShortcutsValue";
-AX_EXPORT constexpr NSString* const NSAccessibilityLoadedAttribute =
-    @"AXLoaded";
-AX_EXPORT constexpr NSString* const NSAccessibilityLoadingProgressAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityLoadedAttribute = @"AXLoaded";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityLoadingProgressAttribute =
     @"AXLoadingProgress";
-AX_EXPORT constexpr NSString* const
-    NSAccessibilityMathFractionNumeratorAttribute = @"AXMathFractionNumerator";
-AX_EXPORT constexpr NSString* const
-    NSAccessibilityMathFractionDenominatorAttribute =
-        @"AXMathFractionDenominator";
-AX_EXPORT constexpr NSString* const NSAccessibilityMathRootRadicandAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathFractionNumeratorAttribute =
+    @"AXMathFractionNumerator";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathFractionDenominatorAttribute =
+    @"AXMathFractionDenominator";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathRootRadicandAttribute =
     @"AXMathRootRadicand";
-AX_EXPORT constexpr NSString* const NSAccessibilityMathRootIndexAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathRootIndexAttribute =
     @"AXMathRootIndex";
-AX_EXPORT constexpr NSString* const NSAccessibilityMathBaseAttribute =
-    @"AXMathBase";
-AX_EXPORT constexpr NSString* const NSAccessibilityMathSubscriptAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathBaseAttribute = @"AXMathBase";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathSubscriptAttribute =
     @"AXMathSubscript";
-AX_EXPORT constexpr NSString* const NSAccessibilityMathSuperscriptAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathSuperscriptAttribute =
     @"AXMathSuperscript";
-AX_EXPORT constexpr NSString* const NSAccessibilityMathUnderAttribute =
-    @"AXMathUnder";
-AX_EXPORT constexpr NSString* const NSAccessibilityMathOverAttribute =
-    @"AXMathOver";
-AX_EXPORT constexpr NSString* const NSAccessibilityMathPostscriptsAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathUnderAttribute = @"AXMathUnder";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathOverAttribute = @"AXMathOver";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathPostscriptsAttribute =
     @"AXMathPostscripts";
-AX_EXPORT constexpr NSString* const NSAccessibilityMathPrescriptsAttribute =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMathPrescriptsAttribute =
     @"AXMathPrescripts";
-AX_EXPORT constexpr NSString* const NSAccessibilityOwnsAttribute = @"AXOwns";
-AX_EXPORT constexpr NSString* const NSAccessibilityPopupValueAttribute =
-    @"AXPopupValue";
-AX_EXPORT constexpr NSString* const NSAccessibilityVisitedAttribute =
-    @"AXVisited";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityOwnsAttribute = @"AXOwns";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityPopupValueAttribute = @"AXPopupValue";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityVisitedAttribute = @"AXVisited";
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ATTRIBUTES_MAC_H_

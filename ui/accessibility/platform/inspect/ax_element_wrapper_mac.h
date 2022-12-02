@@ -8,8 +8,8 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/callback_forward.h"
+#include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/accessibility/platform/inspect/ax_optional.h"
 
@@ -19,7 +19,7 @@ namespace ui {
 using AXOptionalNSObject = AXOptional<id>;
 
 // A wrapper around AXUIElement or NSAccessibilityElement object.
-class AX_EXPORT AXElementWrapper final {
+class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
  public:
   // Returns true if the object is either NSAccessibilityElement or
   // AXUIElement.

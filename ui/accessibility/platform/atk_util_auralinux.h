@@ -7,8 +7,8 @@
 
 #include <atk/atk.h>
 
+#include "base/component_export.h"
 #include "base/memory/singleton.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
 namespace ui {
@@ -32,7 +32,7 @@ enum DiscardAtkKeyEvent { Discard, Retain };
 // This singleton class initializes ATK (accessibility toolkit) and
 // registers an implementation of the AtkUtil class, a global class that
 // every accessible application needs to register once.
-class AX_EXPORT AtkUtilAuraLinux {
+class COMPONENT_EXPORT(AX_PLATFORM) AtkUtilAuraLinux {
  public:
   // Get the single instance of this class.
   static AtkUtilAuraLinux* GetInstance();

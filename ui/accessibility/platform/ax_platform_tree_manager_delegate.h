@@ -6,9 +6,9 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_TREE_MANAGER_DELEGATE_H_
 
 #include "base/callback_forward.h"
+#include "base/component_export.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/gfx/geometry/point.h"
@@ -23,7 +23,7 @@ namespace ui {
 //
 // TODO(nektar): Change `AXPlatformTreeManager` to take this delegate in its
 // constructor and store it as a member variable.
-class AX_EXPORT AXPlatformTreeManagerDelegate {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
  public:
   virtual ~AXPlatformTreeManagerDelegate() = default;
   AXPlatformTreeManagerDelegate(const AXPlatformTreeManagerDelegate&) = delete;

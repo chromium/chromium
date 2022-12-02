@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,7 +27,8 @@ namespace ui {
 // return a default value. Useful for classes that want to implement
 // AXPlatformNodeDelegate but don't need to override much of its
 // behavior.
-class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegateBase
+    : public AXPlatformNodeDelegate {
  public:
   AXPlatformNodeDelegateBase();
 

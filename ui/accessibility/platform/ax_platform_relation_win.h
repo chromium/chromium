@@ -10,10 +10,10 @@
 #include <set>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/win/atl.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 

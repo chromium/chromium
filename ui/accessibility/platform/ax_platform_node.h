@@ -9,12 +9,12 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #include "ui/gfx/native_widget_types.h"
@@ -28,7 +28,7 @@ class AXPlatformNodeDelegate;
 // An object that wants to be accessible can derive from AXPlatformNodeDelegate
 // and then call AXPlatformNode::Create. The delegate implementation should
 // own the AXPlatformNode instance (or otherwise manage its lifecycle).
-class AX_EXPORT AXPlatformNode {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
  public:
   using NativeWindowHandlerCallback =
       base::RepeatingCallback<AXPlatformNode*(gfx::NativeWindow)>;

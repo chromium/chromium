@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/values.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -25,7 +26,7 @@ class AXInspectScenario;
 // for use in testing, debugging, and developer tools.
 // This is extended by a subclass for each platform where accessibility is
 // implemented.
-class AX_EXPORT AXTreeFormatter {
+class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
  public:
   using AXTreeSelector = ui::AXTreeSelector;
   using AXPropertyFilter = ui::AXPropertyFilter;

@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_POSITION_H_
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_POSITION_H_
 
+#include "base/component_export.h"
 #include "gin/wrappable.h"
 #include "ui/accessibility/ax_node_position.h"
 
@@ -19,7 +20,7 @@ namespace ui {
 // For new additions, consider whether it should be public to the
 // chrome.automation extension api. If so, please update
 // extensions/common/api/automation.idl.
-class AX_EXPORT AutomationPosition final
+class COMPONENT_EXPORT(AX_PLATFORM) AutomationPosition final
     : public gin::Wrappable<AutomationPosition> {
  public:
   AutomationPosition(const ui::AXNode& node, int offset, bool is_upstream);

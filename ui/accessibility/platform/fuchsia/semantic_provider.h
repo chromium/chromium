@@ -7,7 +7,7 @@
 
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -17,7 +17,7 @@ namespace ui {
 // Fuchsia semantic tree in a valid state, they are committed. Please see
 // |fuchsia.accessibility.semantics| API for more documentation on valid
 // semantic trees.
-class AX_EXPORT AXFuchsiaSemanticProvider {
+class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProvider {
  public:
   // Fuchsia root node id.
   static constexpr uint32_t kFuchsiaRootNodeId = 0u;

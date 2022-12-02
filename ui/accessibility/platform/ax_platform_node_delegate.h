@@ -16,13 +16,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/strings/string_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_coordinate_system.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_offscreen_result.h"
@@ -69,7 +69,7 @@ using TextAttributeMap = std::map<int, TextAttributeList>;
 // and GetFocus all return a gfx::NativeViewAccessible - so you can return a
 // native accessible if necessary, and AXPlatformNode::GetNativeViewAccessible
 // otherwise.
-class AX_EXPORT AXPlatformNodeDelegate {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
  public:
   using AXPosition = ui::AXNodePosition::AXPositionInstance;
   using SerializedPosition = ui::AXNodePosition::SerializedPosition;

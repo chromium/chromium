@@ -14,53 +14,66 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/win/scoped_variant.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "third_party/isimpledom/ISimpleDOMNode.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace ui {
 struct AXTreeSelector;
 
-AX_EXPORT std::wstring IAccessibleRoleToString(int32_t ia_role);
-AX_EXPORT std::wstring IAccessible2RoleToString(int32_t ia_role);
-AX_EXPORT std::wstring IAccessibleStateToString(int32_t ia_state);
-AX_EXPORT void IAccessibleStateToStringVector(
-    int32_t ia_state,
-    std::vector<std::wstring>* result);
-AX_EXPORT std::wstring IAccessible2StateToString(int32_t ia2_state);
-AX_EXPORT void IAccessible2StateToStringVector(
-    int32_t ia_state,
-    std::vector<std::wstring>* result);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring IAccessibleRoleToString(int32_t ia_role);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring IAccessible2RoleToString(int32_t ia_role);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring IAccessibleStateToString(int32_t ia_state);
+COMPONENT_EXPORT(AX_PLATFORM)
+void IAccessibleStateToStringVector(int32_t ia_state,
+                                    std::vector<std::wstring>* result);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring IAccessible2StateToString(int32_t ia2_state);
+COMPONENT_EXPORT(AX_PLATFORM)
+void IAccessible2StateToStringVector(int32_t ia_state,
+                                     std::vector<std::wstring>* result);
 
 // Handles both IAccessible/MSAA events and IAccessible2 events.
-AX_EXPORT std::wstring AccessibilityEventToString(int32_t event_id);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring AccessibilityEventToString(int32_t event_id);
 
-AX_EXPORT std::wstring UiaIdentifierToString(int32_t identifier);
-AX_EXPORT std::wstring UiaOrientationToString(int32_t identifier);
-AX_EXPORT std::wstring UiaLiveSettingToString(int32_t identifier);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring UiaIdentifierToString(int32_t identifier);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring UiaOrientationToString(int32_t identifier);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring UiaLiveSettingToString(int32_t identifier);
 
-AX_EXPORT std::string BstrToUTF8(BSTR bstr);
-AX_EXPORT std::string UiaIdentifierToStringUTF8(int32_t id);
+COMPONENT_EXPORT(AX_PLATFORM) std::string BstrToUTF8(BSTR bstr);
+COMPONENT_EXPORT(AX_PLATFORM) std::string UiaIdentifierToStringUTF8(int32_t id);
 
-AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid);
+COMPONENT_EXPORT(AX_PLATFORM) HWND GetHwndForProcess(base::ProcessId pid);
 
 // Returns HWND of window matching a given tree selector.
-AX_EXPORT HWND GetHWNDBySelector(const ui::AXTreeSelector& selector);
+COMPONENT_EXPORT(AX_PLATFORM)
+HWND GetHWNDBySelector(const ui::AXTreeSelector& selector);
 
-AX_EXPORT std::u16string RoleVariantToU16String(
-    const base::win::ScopedVariant& role);
-AX_EXPORT std::string RoleVariantToString(const base::win::ScopedVariant& role);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::u16string RoleVariantToU16String(const base::win::ScopedVariant& role);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::string RoleVariantToString(const base::win::ScopedVariant& role);
 
-AX_EXPORT absl::optional<std::string> GetIAccessible2Attribute(
+COMPONENT_EXPORT(AX_PLATFORM)
+absl::optional<std::string> GetIAccessible2Attribute(
     Microsoft::WRL::ComPtr<IAccessible2> element,
     std::string attribute);
-AX_EXPORT std::string GetDOMId(Microsoft::WRL::ComPtr<IAccessible> element);
-AX_EXPORT std::vector<Microsoft::WRL::ComPtr<IAccessible>>
-IAccessibleChildrenOf(Microsoft::WRL::ComPtr<IAccessible> parent);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::string GetDOMId(Microsoft::WRL::ComPtr<IAccessible> element);
+COMPONENT_EXPORT(AX_PLATFORM)
+std::vector<Microsoft::WRL::ComPtr<IAccessible>> IAccessibleChildrenOf(
+    Microsoft::WRL::ComPtr<IAccessible> parent);
 
 // Returns IA2 Interfaces
 template <typename ServiceType>
@@ -76,7 +89,7 @@ HRESULT IA2QueryInterface(IAccessible* accessible,
 }
 
 // Represent MSAA child, either as IAccessible object or as VARIANT.
-class AX_EXPORT MSAAChild final {
+class COMPONENT_EXPORT(AX_PLATFORM) MSAAChild final {
  public:
   MSAAChild();
   MSAAChild(IAccessible* parent, VARIANT&& child);
@@ -97,7 +110,7 @@ class AX_EXPORT MSAAChild final {
 };
 
 // Represents MSAA children of an IAccessible object.
-class AX_EXPORT MSAAChildren final {
+class COMPONENT_EXPORT(AX_PLATFORM) MSAAChildren final {
  public:
   MSAAChildren(IAccessible* parent);
   MSAAChildren(const Microsoft::WRL::ComPtr<IAccessible>& parent);
@@ -106,7 +119,7 @@ class AX_EXPORT MSAAChildren final {
   const MSAAChild& ChildAt(LONG index) const { return children_[index]; }
   IAccessible* Parent() const { return parent_.Get(); }
 
-  class AX_EXPORT Iterator final {
+  class COMPONENT_EXPORT(AX_PLATFORM) Iterator final {
    public:
     using iterator_category = std::input_iterator_tag;
     using value_type = MSAAChild;

@@ -7,6 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/component_export.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/process/process_handle.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
@@ -16,7 +17,8 @@ namespace ui {
 
 // Implementation of AXEventRecorder that uses AXObserver to watch for
 // NSAccessibility events.
-class AX_EXPORT AXEventRecorderMac : public AXEventRecorder {
+class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderMac
+    : public AXEventRecorder {
  public:
   AXEventRecorderMac(base::ProcessId pid, const AXTreeSelector& selector);
 

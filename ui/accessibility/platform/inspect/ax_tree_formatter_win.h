@@ -8,12 +8,13 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 namespace ui {
 
-class AX_EXPORT AXTreeFormatterWin : public AXTreeFormatterBase {
+class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterWin
+    : public AXTreeFormatterBase {
  public:
   AXTreeFormatterWin();
   ~AXTreeFormatterWin() override;

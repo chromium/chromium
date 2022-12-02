@@ -7,9 +7,9 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "ui/accessibility/ax_export.h"
 
 // Used for template specialization.
 template <typename T>
@@ -24,7 +24,7 @@ namespace ui {
 // Implements stateful value_s. Similar to absl::optional, but multi-state
 // allowing nullable value_s.
 template <typename ValueType>
-class AX_EXPORT AXOptional final {
+class COMPONENT_EXPORT(AX_PLATFORM) AXOptional final {
  public:
   static constexpr AXOptional Unsupported() { return AXOptional(kUnsupported); }
   static constexpr AXOptional Error(const char* error_text = nullptr) {

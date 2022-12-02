@@ -7,13 +7,13 @@
 
 #include <wrl/client.h>
 
-
+#include "base/component_export.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 namespace ui {
 
-class AX_EXPORT __declspec(uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca"))
-    AXPlatformNodeTextProviderWin
+class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
+    uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca")) AXPlatformNodeTextProviderWin
     : public CComObjectRootEx<CComMultiThreadModel>,
       public ITextEditProvider {
  public:

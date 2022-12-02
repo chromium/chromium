@@ -15,12 +15,13 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/win/scoped_variant.h"
-#include "ui/accessibility/ax_export.h"
 
 namespace ui {
 
-class AX_EXPORT AXTreeFormatterUia : public ui::AXTreeFormatterBase {
+class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterUia
+    : public ui::AXTreeFormatterBase {
  public:
   AXTreeFormatterUia();
   ~AXTreeFormatterUia() override;

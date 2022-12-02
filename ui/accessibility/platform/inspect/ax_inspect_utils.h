@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 
 namespace base {
 class Value;
@@ -18,13 +18,14 @@ namespace ui {
 /**
  * Constructs a const formattable value. Refers to FormatValue.
  */
-std::string AX_EXPORT AXMakeConst(const std::string& value);
+std::string COMPONENT_EXPORT(AX_PLATFORM) AXMakeConst(const std::string& value);
 
 /**
  * Constructs a key for a formattable set represented by dictionary. It adds
  * the _setkey_ prefix to a string key.  Refers to FormatValue.
  */
-std::string AX_EXPORT AXMakeSetKey(const std::string& key_name);
+std::string COMPONENT_EXPORT(AX_PLATFORM)
+    AXMakeSetKey(const std::string& key_name);
 
 /**
  * Constructs an ordered key for a formattable dictionary by appending position
@@ -32,13 +33,14 @@ std::string AX_EXPORT AXMakeSetKey(const std::string& key_name);
  * according to their position when the dictionary is formatted. Refers to
  * FormatValue.
  */
-std::string AX_EXPORT AXMakeOrderedKey(const std::string& key_name,
-                                       int position);
+std::string COMPONENT_EXPORT(AX_PLATFORM)
+    AXMakeOrderedKey(const std::string& key_name, int position);
 
 /**
  * Formats a value.
  */
-std::string AX_EXPORT AXFormatValue(const base::Value& value);
+std::string COMPONENT_EXPORT(AX_PLATFORM)
+    AXFormatValue(const base::Value& value);
 
 }  // namespace ui
 

@@ -6,7 +6,7 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_WEBKIT_CONSTANTS_MAC_H_
 
 #import <Cocoa/Cocoa.h>
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -88,10 +88,10 @@ NSString* const NSAccessibilityTextChangeValueLength =
     @"AXTextChangeValueLength";
 NSString* const NSAccessibilityTextChangeValues = @"AXTextChangeValues";
 
-AX_EXPORT const char* ToString(AXTextStateChangeType);
-AX_EXPORT const char* ToString(AXTextSelectionDirection);
-AX_EXPORT const char* ToString(AXTextSelectionGranularity);
-AX_EXPORT const char* ToString(AXTextEditType);
+COMPONENT_EXPORT(AX_PLATFORM) const char* ToString(AXTextStateChangeType);
+COMPONENT_EXPORT(AX_PLATFORM) const char* ToString(AXTextSelectionDirection);
+COMPONENT_EXPORT(AX_PLATFORM) const char* ToString(AXTextSelectionGranularity);
+COMPONENT_EXPORT(AX_PLATFORM) const char* ToString(AXTextEditType);
 
 }  // namespace ui
 

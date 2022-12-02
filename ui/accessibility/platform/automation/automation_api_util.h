@@ -5,24 +5,28 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_API_UTIL_H_
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_API_UTIL_H_
 
+#include "base/component_export.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
 
 namespace ui {
 
-bool AX_EXPORT ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type);
+bool COMPONENT_EXPORT(AX_PLATFORM)
+    ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type);
 
-bool AX_EXPORT
-ShouldIgnoreGeneratedEventForAutomation(AXEventGenerator::Event event_type);
+bool COMPONENT_EXPORT(AX_PLATFORM)
+    ShouldIgnoreGeneratedEventForAutomation(AXEventGenerator::Event event_type);
 
-std::tuple<ax::mojom::Event, AXEventGenerator::Event> AX_EXPORT
-MakeTupleForAutomationFromEventTypes(
-    const ax::mojom::Event& ax_event,
-    const AXEventGenerator::Event& generated_event);
+std::tuple<ax::mojom::Event, AXEventGenerator::Event> COMPONENT_EXPORT(
+    AX_PLATFORM)
+    MakeTupleForAutomationFromEventTypes(
+        const ax::mojom::Event& ax_event,
+        const AXEventGenerator::Event& generated_event);
 
 // Parses a string representing an event type into an Event tuple.
-std::tuple<ax::mojom::Event, AXEventGenerator::Event> AX_EXPORT
-AutomationEventTypeToAXEventTuple(const char* event_type_string);
+std::tuple<ax::mojom::Event, AXEventGenerator::Event> COMPONENT_EXPORT(
+    AX_PLATFORM)
+    AutomationEventTypeToAXEventTuple(const char* event_type_string);
 
 // Possible tree changes to listen to using addTreeChangeObserver. Note that
 // listening to all tree changes can be expensive.

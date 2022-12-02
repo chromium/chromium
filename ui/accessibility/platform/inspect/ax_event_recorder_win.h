@@ -7,14 +7,15 @@
 
 #include <oleacc.h>
 
+#include "base/component_export.h"
 #include "base/process/process_handle.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {
 
-class AX_EXPORT AXEventRecorderWin : public ui::AXEventRecorder {
+class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWin
+    : public ui::AXEventRecorder {
  public:
   // Flag values that specify the way events are handled.
   enum ListenerType {

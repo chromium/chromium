@@ -16,13 +16,13 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/win/atl.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
@@ -340,7 +340,7 @@ class AXPlatformRelationWin;
 // A simple interface for a class that wants to be notified when Windows
 // accessibility APIs are used by a client, a strong indication that full
 // accessibility support should be enabled.
-class AX_EXPORT WinAccessibilityAPIUsageObserver {
+class COMPONENT_EXPORT(AX_PLATFORM) WinAccessibilityAPIUsageObserver {
  public:
   WinAccessibilityAPIUsageObserver();
   virtual ~WinAccessibilityAPIUsageObserver();
@@ -358,50 +358,52 @@ class AX_EXPORT WinAccessibilityAPIUsageObserver {
 
 // Get an observer list that allows modules across the codebase to
 // listen to when usage of Windows accessibility APIs is detected.
-extern AX_EXPORT
-    base::ObserverList<WinAccessibilityAPIUsageObserver>::Unchecked&
-    GetWinAccessibilityAPIUsageObserverList();
+extern COMPONENT_EXPORT(
+    AX_PLATFORM) base::ObserverList<WinAccessibilityAPIUsageObserver>::
+    Unchecked& GetWinAccessibilityAPIUsageObserverList();
 
 // Used to simplify calling StartFiringUIAEvents and EndFiringEvents
-class AX_EXPORT WinAccessibilityAPIUsageScopedUIAEventsNotifier {
+class COMPONENT_EXPORT(AX_PLATFORM)
+    WinAccessibilityAPIUsageScopedUIAEventsNotifier {
  public:
   WinAccessibilityAPIUsageScopedUIAEventsNotifier();
   ~WinAccessibilityAPIUsageScopedUIAEventsNotifier();
 };
 
 // TODO(nektar): Remove multithread superclass since we don't support it.
-class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
-    AXPlatformNodeWin : public CComObjectRootEx<CComMultiThreadModel>,
-                        public IDispatchImpl<IAccessible2_4,
-                                             &IID_IAccessible2_4,
-                                             &LIBID_IAccessible2Lib>,
-                        public IAccessibleEx,
-                        public IAccessibleHypertext,
-                        public IAccessibleTable,
-                        public IAccessibleTable2,
-                        public IAccessibleTableCell,
-                        public IAccessibleTextSelectionContainer,
-                        public IAccessibleValue,
-                        public IAnnotationProvider,
-                        public IExpandCollapseProvider,
-                        public IGridItemProvider,
-                        public IGridProvider,
-                        public IInvokeProvider,
-                        public IRangeValueProvider,
-                        public IRawElementProviderFragment,
-                        public IRawElementProviderSimple2,
-                        public IScrollItemProvider,
-                        public IScrollProvider,
-                        public ISelectionItemProvider,
-                        public ISelectionProvider,
-                        public IServiceProvider,
-                        public ITableItemProvider,
-                        public ITableProvider,
-                        public IToggleProvider,
-                        public IValueProvider,
-                        public IWindowProvider,
-                        public IChromeAccessible,
-                        public AXPlatformNodeBase {
+class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
+    uuid("26f5641a-246d-457b-a96d-07f3fae6acf2")) AXPlatformNodeWin
+    : public CComObjectRootEx<CComMultiThreadModel>,
+      public IDispatchImpl<IAccessible2_4,
+                           &IID_IAccessible2_4,
+                           &LIBID_IAccessible2Lib>,
+      public IAccessibleEx,
+      public IAccessibleHypertext,
+      public IAccessibleTable,
+      public IAccessibleTable2,
+      public IAccessibleTableCell,
+      public IAccessibleTextSelectionContainer,
+      public IAccessibleValue,
+      public IAnnotationProvider,
+      public IExpandCollapseProvider,
+      public IGridItemProvider,
+      public IGridProvider,
+      public IInvokeProvider,
+      public IRangeValueProvider,
+      public IRawElementProviderFragment,
+      public IRawElementProviderSimple2,
+      public IScrollItemProvider,
+      public IScrollProvider,
+      public ISelectionItemProvider,
+      public ISelectionProvider,
+      public IServiceProvider,
+      public ITableItemProvider,
+      public ITableProvider,
+      public IToggleProvider,
+      public IValueProvider,
+      public IWindowProvider,
+      public IChromeAccessible,
+      public AXPlatformNodeBase {
   using IDispatchImpl::Invoke;
 
  public:

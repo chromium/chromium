@@ -7,7 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 namespace ui {
@@ -24,39 +24,43 @@ class AXPlatformNodeCocoa;
 // AXTextMarker its memory storage is managed by the system.
 
 // Uses a system API to verify that the given object is an AXTextMarker object.
-AX_EXPORT bool IsAXTextMarker(id text_marker);
+COMPONENT_EXPORT(AX_PLATFORM) bool IsAXTextMarker(id text_marker);
 
 // Uses a system API to verify that the given object is an AXTextMarkerRange
 // object.
-AX_EXPORT bool IsAXTextMarkerRange(id marker_range);
+COMPONENT_EXPORT(AX_PLATFORM) bool IsAXTextMarkerRange(id marker_range);
 
 // Returns the AXNodePosition representing the given AXTextMarker.
-AX_EXPORT AXPlatformNodeDelegate::AXPosition AXTextMarkerToAXPosition(
-    id text_marker);
+COMPONENT_EXPORT(AX_PLATFORM)
+AXPlatformNodeDelegate::AXPosition AXTextMarkerToAXPosition(id text_marker);
 
 // Returns the AXRange representing the given AXTextMarkerRange.
-AX_EXPORT AXPlatformNodeDelegate::AXRange AXTextMarkerRangeToAXRange(
-    id marker_range);
+COMPONENT_EXPORT(AX_PLATFORM)
+AXPlatformNodeDelegate::AXRange AXTextMarkerRangeToAXRange(id marker_range);
 
 // Returns the AXTextMarker representing the given AXNodePosition.
-AX_EXPORT id AXPositionToAXTextMarker(AXPlatformNodeDelegate::AXPosition);
+COMPONENT_EXPORT(AX_PLATFORM)
+id AXPositionToAXTextMarker(AXPlatformNodeDelegate::AXPosition);
 
 // Returns the AXTextMarkerRange representing the given AXRange.
-AX_EXPORT id AXRangeToAXTextMarkerRange(AXPlatformNodeDelegate::AXRange);
+COMPONENT_EXPORT(AX_PLATFORM)
+id AXRangeToAXTextMarkerRange(AXPlatformNodeDelegate::AXRange);
 
 // Returns the AXTextMarker representing the position within the given node.
-AX_EXPORT id AXTextMarkerFrom(const AXPlatformNodeCocoa* anchor,
-                              int offset,
-                              ax::mojom::TextAffinity affinity);
+COMPONENT_EXPORT(AX_PLATFORM)
+id AXTextMarkerFrom(const AXPlatformNodeCocoa* anchor,
+                    int offset,
+                    ax::mojom::TextAffinity affinity);
 
 // Returns the AXTextMarkerRange representing the given AXTextMarker objects.
-AX_EXPORT id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
+COMPONENT_EXPORT(AX_PLATFORM)
+id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
 
 // Returns the start text marker from the given AXTextMarkerRange.
-AX_EXPORT id AXTextMarkerRangeStart(id text_marker_range);
+COMPONENT_EXPORT(AX_PLATFORM) id AXTextMarkerRangeStart(id text_marker_range);
 
 // Returns the end text marker from the given AXTextMarkerRange.
-AX_EXPORT id AXTextMarkerRangeEnd(id text_marker_range);
+COMPONENT_EXPORT(AX_PLATFORM) id AXTextMarkerRangeEnd(id text_marker_range);
 
 }  // namespace ui
 

@@ -11,14 +11,15 @@
 #include <tuple>
 #include <vector>
 
+#include "base/component_export.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 namespace ui {
-class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
-    AXPlatformNodeTextRangeProviderWin
+class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
+    "3071e40d-a10d-45ff-a59f-6e8e1138e2c1")) AXPlatformNodeTextRangeProviderWin
     : public CComObjectRootEx<CComMultiThreadModel>,
       public ITextRangeProvider {
  public:

@@ -10,8 +10,8 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
@@ -26,7 +26,8 @@ class AXPlatformNodeWin;
 // Windows. This is required because Chrome doesn't use the standard system
 // caret and because some assistive software still relies on specific
 // accessibility APIs to retrieve the caret position.
-class AX_EXPORT AXSystemCaretWin : private AXPlatformNodeDelegateBase {
+class COMPONENT_EXPORT(AX_PLATFORM) AXSystemCaretWin
+    : private AXPlatformNodeDelegateBase {
  public:
   explicit AXSystemCaretWin(gfx::AcceleratedWidget event_target);
 

@@ -5,7 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_TREE_MANAGER_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_TREE_MANAGER_H_
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -18,7 +18,8 @@ class AXPlatformNodeDelegate;
 // Abstract interface for a class that owns an AXTree and manages its
 // connections to other AXTrees in the same page or desktop (parent and child
 // trees).
-class AX_EXPORT AXPlatformTreeManager : public AXTreeManager {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
+    : public AXTreeManager {
  public:
   // Returns an AXPlatformNode with the specified and |node_id|.
   virtual AXPlatformNode* GetPlatformNodeFromTree(

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -34,7 +35,7 @@ struct AXNodeData;
 
 // TODO(nektar): Move this struct over to AXNode so that it can be accessed by
 // AXPosition.
-struct AX_EXPORT AXLegacyHypertext {
+struct COMPONENT_EXPORT(AX_PLATFORM) AXLegacyHypertext {
   using OffsetToIndex = std::map<int32_t, int32_t>;
 
   AXLegacyHypertext();
@@ -61,7 +62,7 @@ struct AX_EXPORT AXLegacyHypertext {
   std::u16string hypertext;
 };
 
-class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
  public:
   using AXPosition = AXNodePosition::AXPositionInstance;
 

@@ -14,19 +14,20 @@
 #include <vector>
 
 #include "base/atomicops.h"
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/atl.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {
 
-class AX_EXPORT AXEventRecorderWinUia : public AXEventRecorder {
+class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
+    : public AXEventRecorder {
  public:
   AXEventRecorderWinUia(const AXTreeSelector& selector);
 

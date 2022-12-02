@@ -8,9 +8,9 @@
 #include <atk/atk.h>
 #include <atspi/atspi.h>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
@@ -27,7 +27,8 @@ class AXPlatformTreeManager;
 // TODO(crbug.com/1133330) AT-SPI2 should be capable of intercepting events
 // in-process as well, thus it should be possible to remove the ATK code path
 // entirely.
-class AX_EXPORT AXEventRecorderAuraLinux : public AXEventRecorder {
+class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderAuraLinux
+    : public AXEventRecorder {
  public:
   AXEventRecorderAuraLinux(AXPlatformTreeManager* manager,
                            base::ProcessId pid,

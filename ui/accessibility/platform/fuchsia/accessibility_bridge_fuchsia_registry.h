@@ -5,8 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_FUCHSIA_ACCESSIBILITY_BRIDGE_FUCHSIA_REGISTRY_H_
 #define UI_ACCESSIBILITY_PLATFORM_FUCHSIA_ACCESSIBILITY_BRIDGE_FUCHSIA_REGISTRY_H_
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/aura/window.h"
 
@@ -17,7 +17,7 @@ namespace ui {
 // This class manages a mapping between aura root windows and their respective
 // accessibility bridge instances. This class does NOT own the accessibility
 // bridge instances themselves.
-class AX_EXPORT AccessibilityBridgeFuchsiaRegistry {
+class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaRegistry {
  public:
   // Get the global instance of this class.
   static AccessibilityBridgeFuchsiaRegistry* GetInstance();

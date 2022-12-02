@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -21,7 +21,7 @@ namespace ui {
 //
 // These ids must not be conflated with the int id, that comes with web node
 // data, which are only unique within their source frame.
-class AX_EXPORT AXUniqueId {
+class COMPONENT_EXPORT(AX_PLATFORM) AXUniqueId {
  public:
   AXUniqueId();
 

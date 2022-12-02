@@ -8,7 +8,7 @@
 #include <objbase.h>
 #include <uiautomation.h>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -37,7 +37,7 @@ static const GUID kUiaPropertyVirtualContentGuid = {
     0x4FE4,
     {0xB7, 0xC6, 0x1E, 0x0F, 0x08, 0x9A, 0x72, 0xA5}};
 
-class AX_EXPORT UiaRegistrarWin {
+class COMPONENT_EXPORT(AX_PLATFORM) UiaRegistrarWin {
  public:
   UiaRegistrarWin();
   ~UiaRegistrarWin();

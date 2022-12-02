@@ -66,7 +66,8 @@ BOOL CALLBACK EnumWindowsProcPid(HWND hwnd, LPARAM lParam) {
 #define QUOTE(X) \
   { X, #X }
 
-AX_EXPORT std::wstring IAccessibleRoleToString(int32_t ia_role) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring IAccessibleRoleToString(int32_t ia_role) {
   // MSAA / IAccessible roles. Each one of these is also a valid
   // IAccessible2 role.
   static const PlatformConstantToNameEntry ia_table[] = {
@@ -107,7 +108,8 @@ AX_EXPORT std::wstring IAccessibleRoleToString(int32_t ia_role) {
   return GetNameForPlatformConstant(ia_table, std::size(ia_table), ia_role);
 }
 
-AX_EXPORT std::wstring IAccessible2RoleToString(int32_t ia2_role) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring IAccessible2RoleToString(int32_t ia2_role) {
   std::wstring result = IAccessibleRoleToString(ia2_role);
   if (!result.empty())
     return result;
@@ -171,7 +173,8 @@ AX_EXPORT std::wstring IAccessible2RoleToString(int32_t ia2_role) {
   return GetNameForPlatformConstant(ia2_table, std::size(ia2_table), ia2_role);
 }
 
-AX_EXPORT std::wstring AccessibilityEventToString(int32_t event) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring AccessibilityEventToString(int32_t event) {
   static const PlatformConstantToNameEntry event_table[] = {
       QUOTE(EVENT_OBJECT_CREATE),
       QUOTE(EVENT_OBJECT_DESTROY),
@@ -328,7 +331,8 @@ std::wstring IAccessible2StateToString(int32_t ia2_state) {
   return base::JoinString(strings, L",");
 }
 
-AX_EXPORT std::wstring UiaIdentifierToString(int32_t identifier) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring UiaIdentifierToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       // Patterns
       QUOTE(UIA_InvokePatternId),
@@ -671,30 +675,33 @@ AX_EXPORT std::wstring UiaIdentifierToString(int32_t identifier) {
   return GetNameForPlatformConstant(id_table, std::size(id_table), identifier);
 }
 
-AX_EXPORT std::wstring UiaOrientationToString(int32_t identifier) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring UiaOrientationToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       QUOTE(OrientationType_None), QUOTE(OrientationType_Horizontal),
       QUOTE(OrientationType_Vertical)};
   return GetNameForPlatformConstant(id_table, std::size(id_table), identifier);
 }
 
-AX_EXPORT std::wstring UiaLiveSettingToString(int32_t identifier) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::wstring UiaLiveSettingToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       QUOTE(LiveSetting::Off), QUOTE(LiveSetting::Polite),
       QUOTE(LiveSetting::Assertive)};
   return GetNameForPlatformConstant(id_table, std::size(id_table), identifier);
 }
 
-AX_EXPORT std::string BstrToUTF8(BSTR bstr) {
+COMPONENT_EXPORT(AX_PLATFORM) std::string BstrToUTF8(BSTR bstr) {
   std::wstring str(bstr, SysStringLen(bstr));
   return base::WideToUTF8(str);
 }
 
-AX_EXPORT std::string UiaIdentifierToStringUTF8(int32_t id) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::string UiaIdentifierToStringUTF8(int32_t id) {
   return base::WideToUTF8(UiaIdentifierToString(id));
 }
 
-AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid) {
+COMPONENT_EXPORT(AX_PLATFORM) HWND GetHwndForProcess(base::ProcessId pid) {
   HwndWithProcId hwnd_with_proc_id(pid);
   EnumWindows(&EnumWindowsProcPid, (LPARAM)&hwnd_with_proc_id);
   return hwnd_with_proc_id.hwnd;
@@ -729,7 +736,8 @@ BOOL CALLBACK MatchWindow(HWND hwnd, LPARAM lParam) {
   return TRUE;
 }
 
-AX_EXPORT HWND GetHWNDBySelector(const AXTreeSelector& selector) {
+COMPONENT_EXPORT(AX_PLATFORM)
+HWND GetHWNDBySelector(const AXTreeSelector& selector) {
   if (selector.widget) {
     return selector.widget;
   }
@@ -777,8 +785,8 @@ AX_EXPORT HWND GetHWNDBySelector(const AXTreeSelector& selector) {
   return info.matched_hwnd;
 }
 
-AX_EXPORT std::u16string RoleVariantToU16String(
-    const base::win::ScopedVariant& role) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::u16string RoleVariantToU16String(const base::win::ScopedVariant& role) {
   if (role.type() == VT_I4)
     return base::WideToUTF16(IAccessible2RoleToString(V_I4(role.ptr())));
   if (role.type() == VT_BSTR)
@@ -786,8 +794,8 @@ AX_EXPORT std::u16string RoleVariantToU16String(
   return std::u16string();
 }
 
-AX_EXPORT std::string RoleVariantToString(
-    const base::win::ScopedVariant& role) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::string RoleVariantToString(const base::win::ScopedVariant& role) {
   if (role.type() == VT_I4)
     return base::WideToUTF8(IAccessible2RoleToString(V_I4(role.ptr())));
   if (role.type() == VT_BSTR)
@@ -796,7 +804,8 @@ AX_EXPORT std::string RoleVariantToString(
   return std::string();
 }
 
-AX_EXPORT absl::optional<std::string> GetIAccessible2Attribute(
+COMPONENT_EXPORT(AX_PLATFORM)
+absl::optional<std::string> GetIAccessible2Attribute(
     Microsoft::WRL::ComPtr<IAccessible2> element,
     std::string attribute) {
   base::win::ScopedBstr bstr;
@@ -819,7 +828,8 @@ AX_EXPORT absl::optional<std::string> GetIAccessible2Attribute(
   return absl::nullopt;
 }
 
-AX_EXPORT std::string GetDOMId(Microsoft::WRL::ComPtr<IAccessible> element) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::string GetDOMId(Microsoft::WRL::ComPtr<IAccessible> element) {
   Microsoft::WRL::ComPtr<IAccessible2> ia2;
   if (S_OK != IA2QueryInterface<IAccessible2>(element.Get(), &ia2))
     return "";
@@ -831,8 +841,9 @@ AX_EXPORT std::string GetDOMId(Microsoft::WRL::ComPtr<IAccessible> element) {
   return "";
 }
 
-AX_EXPORT std::vector<Microsoft::WRL::ComPtr<IAccessible>>
-IAccessibleChildrenOf(Microsoft::WRL::ComPtr<IAccessible> parent) {
+COMPONENT_EXPORT(AX_PLATFORM)
+std::vector<Microsoft::WRL::ComPtr<IAccessible>> IAccessibleChildrenOf(
+    Microsoft::WRL::ComPtr<IAccessible> parent) {
   auto children = std::vector<Microsoft::WRL::ComPtr<IAccessible>>();
   for (const ui::MSAAChild& msaa_child : ui::MSAAChildren(parent)) {
     Microsoft::WRL::ComPtr<IAccessible> child = msaa_child.AsIAccessible();

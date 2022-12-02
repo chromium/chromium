@@ -5,14 +5,15 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_DELEGATE_UTILS_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_DELEGATE_UTILS_WIN_H_
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 class AXPlatformNodeDelegate;
 
 // Returns true if the value pattern is supported
-AX_EXPORT bool IsValuePatternSupported(AXPlatformNodeDelegate*);
+COMPONENT_EXPORT(AX_PLATFORM)
+bool IsValuePatternSupported(AXPlatformNodeDelegate*);
 
 }  // namespace ui
 

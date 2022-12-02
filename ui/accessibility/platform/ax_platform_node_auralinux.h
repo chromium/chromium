@@ -11,10 +11,10 @@
 #include <string>
 #include <utility>
 
+#include "base/component_export.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
 // This deleter is used in order to ensure that we properly always free memory
@@ -62,7 +62,7 @@ struct FindInPageResultInfo {
 // AtkTableCellIface below are overridden by the runtime version.
 // TODO(accessibility) Remove AtkTableCellInterface when 2.12 is the minimum
 // supported version.
-struct AX_EXPORT AtkTableCellInterface {
+struct COMPONENT_EXPORT(AX_PLATFORM) AtkTableCellInterface {
   typedef struct _AtkTableCell AtkTableCell;
   static GType GetType();
   static GPtrArray* GetColumnHeaderCells(AtkTableCell* cell);
@@ -110,7 +110,8 @@ class ImplementedAtkInterfaces {
 };
 
 // Implements accessibility on Aura Linux using ATK.
-class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
+    : public AXPlatformNodeBase {
  public:
   ~AXPlatformNodeAuraLinux() override;
   AXPlatformNodeAuraLinux(const AXPlatformNodeAuraLinux&) = delete;

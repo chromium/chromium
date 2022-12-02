@@ -21,7 +21,7 @@ class AutomationTreeManagerOwner;
 // Class that creates V8 bindings for Automation. This class should contain
 // logic about converting to/from V8 values but should not contain logic about
 // accessibility.
-class AX_EXPORT AutomationV8Bindings {
+class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
  public:
   AutomationV8Bindings(AutomationTreeManagerOwner* owner,
                        AutomationV8Router* router);

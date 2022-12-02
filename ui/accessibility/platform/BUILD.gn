@@ -26,8 +26,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-source_set("platform") {
-  defines = [ "AX_IMPLEMENTATION" ]
+component("platform") {
+  output_name = "accessibility_platform"
+
+  defines = [ "IS_AX_PLATFORM_IMPL" ]
 
   visibility = [ "//ui/accessibility" ]
 
@@ -92,6 +94,7 @@ source_set("platform") {
   ]
 
   public_deps = [
+    "//ui/accessibility:accessibility_internal",
     "//ui/accessibility:ax_base",
     "//ui/base:buildflags",
     "//ui/display",

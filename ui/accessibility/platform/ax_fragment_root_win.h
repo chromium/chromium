@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
 
@@ -27,7 +28,8 @@ class AXFragmentRootPlatformNodeWin;
 // Since UIA derives some information from the underlying HWND hierarchy, we
 // expose one fragment root per HWND. The class that owns the HWND is expected
 // to own the corresponding AXFragmentRootWin.
-class AX_EXPORT AXFragmentRootWin : public ui::AXPlatformNodeDelegateBase {
+class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
+    : public ui::AXPlatformNodeDelegateBase {
  public:
   AXFragmentRootWin(gfx::AcceleratedWidget widget,
                     AXFragmentRootDelegateWin* delegate);

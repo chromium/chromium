@@ -5,15 +5,16 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_FUCHSIA_AX_PLATFORM_NODE_FUCHSIA_H_
 #define UI_ACCESSIBILITY_PLATFORM_FUCHSIA_AX_PLATFORM_NODE_FUCHSIA_H_
 
+#include "base/component_export.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
 namespace ui {
 
 // Backing entity for chrome objects that want to be accessible on fuchsia.
 // This class bridges between the chrome and fuchsia node representations.
-class AX_EXPORT AXPlatformNodeFuchsia : public AXPlatformNodeBase {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeFuchsia
+    : public AXPlatformNodeBase {
  public:
   AXPlatformNodeFuchsia();
   ~AXPlatformNodeFuchsia() override;

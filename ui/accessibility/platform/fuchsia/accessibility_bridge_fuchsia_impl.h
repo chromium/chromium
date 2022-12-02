@@ -10,16 +10,16 @@
 #include <lib/inspect/cpp/vmo/types.h>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider.h"
 #include "ui/aura/window.h"
 
 namespace ui {
 
-class AX_EXPORT AccessibilityBridgeFuchsiaImpl final
+class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaImpl final
     : public ui::AccessibilityBridgeFuchsia,
       public ui::AXFuchsiaSemanticProvider::Delegate {
  public:

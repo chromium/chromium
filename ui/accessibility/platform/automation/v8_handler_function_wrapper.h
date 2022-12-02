@@ -5,8 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AUTOMATION_V8_HANDLER_FUNCTION_WRAPPER_H_
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_V8_HANDLER_FUNCTION_WRAPPER_H_
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "ui/accessibility/ax_export.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-value.h"
 
@@ -19,7 +19,7 @@ namespace ui {
 // Virtual class which can wrap a handler function passed to V8 either with
 // Gin or V8 function callbacks. This enables some AutomationV8Routers to
 // use V8 bindings and others to use gin.
-class AX_EXPORT V8HandlerFunctionWrapper
+class COMPONENT_EXPORT(AX_PLATFORM) V8HandlerFunctionWrapper
     : public base::RefCountedThreadSafe<V8HandlerFunctionWrapper> {
  public:
   V8HandlerFunctionWrapper() = default;

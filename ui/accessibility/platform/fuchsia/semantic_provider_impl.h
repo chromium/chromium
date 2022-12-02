@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider.h"
 
 namespace ui {
@@ -23,7 +23,7 @@ namespace ui {
 // Clients instantiate this class, which connects to the Fuchsia semantics API.
 // This object must remain alive across the entire lifespan of the corresponding
 // fuchsia view.
-class AX_EXPORT AXFuchsiaSemanticProviderImpl
+class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProviderImpl
     : public AXFuchsiaSemanticProvider,
       public fuchsia::accessibility::semantics::SemanticListener {
  public:

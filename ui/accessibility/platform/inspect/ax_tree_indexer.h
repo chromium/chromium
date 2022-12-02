@@ -8,8 +8,8 @@
 #include <map>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/strings/string_number_conversions.h"
-#include "ui/accessibility/ax_export.h"
 
 namespace ui {
 
@@ -27,7 +27,7 @@ template <typename AccessibilityObject,
           typename ChildrenContainer,
           ChildrenContainer (*GetChildren)(const AccessibilityObject),
           typename Compare = std::less<AccessibilityObject>>
-class AX_EXPORT AXTreeIndexer final {
+class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer final {
  public:
   explicit AXTreeIndexer(const AccessibilityObject node) {
     int counter = 0;

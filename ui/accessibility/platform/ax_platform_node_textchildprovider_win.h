@@ -7,11 +7,11 @@
 
 #include <wrl/client.h>
 
-#include "ui/accessibility/ax_export.h"
+#include "base/component_export.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 namespace ui {
-class AX_EXPORT AXPlatformNodeTextChildProviderWin
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeTextChildProviderWin
     : public CComObjectRootEx<CComMultiThreadModel>,
       public ITextChildProvider {
  public:

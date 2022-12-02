@@ -17,7 +17,7 @@ namespace ui {
 // Pure virtual class that allows Automation to route information in and
 // out of V8. This should be implemented by each V8 version of Automation,
 // for example in Extensions and in the AccessibilityService.
-class AX_EXPORT AutomationV8Router {
+class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Router {
  public:
   // Throws an invalid argument exception in V8.
   virtual void ThrowInvalidArgumentsException(bool is_fatal = true) const = 0;

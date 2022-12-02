@@ -117,7 +117,14 @@ component("ax_base") {
 #  }
 #}
 
-component("accessibility") {
+group("accessibility") {
+  public_deps = [
+    ":accessibility_internal",
+    "//ui/accessibility/platform",
+  ]
+}
+
+component("accessibility_internal") {
   defines = [ "AX_IMPLEMENTATION" ]
 
   sources = [
@@ -145,6 +152,7 @@ component("accessibility") {
     "ax_node_position.cc",
     "ax_node_position.h",
     "ax_offscreen_result.h",
+    "ax_position.cc",
     "ax_position.h",
     "ax_range.h",
     "ax_selection.cc",
@@ -186,12 +194,7 @@ component("accessibility") {
   public_deps = [
     ":ax_base",
     "//skia",
-    "//ui/accessibility/platform",
   ]
-
-  # Allows the files from //ui/accessibility/platform includes headers
-  # from this directory.
-  allow_circular_includes_from = [ "//ui/accessibility/platform" ]
 
   if (!is_ios) {
     sources += [
