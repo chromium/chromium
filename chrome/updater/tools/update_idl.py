@@ -115,6 +115,9 @@ def check_running_environment() -> None:
         raise IDLUpdateError(f'This tool must run from project root folder. '
                              f'CWD: [{cwd}] vs ACTUAL:[{source_root}]')
 
+    # Build performance output interferes with error parsing. Silence it.
+    os.environ['NINJA_SUMMARIZE_BUILD'] = '0'
+
 
 def main():
     check_running_environment()
