@@ -59,7 +59,9 @@ class StatusIconLinuxWrapper : public StatusIcon,
 
  private:
   enum StatusIconType {
+#if defined(USE_DBUS)
     kTypeDbus,
+#endif
     kTypeWindowed,
     kTypeNone,
   };
@@ -80,17 +82,17 @@ class StatusIconLinuxWrapper : public StatusIcon,
                          const gfx::ImageSkia& image,
                          const std::u16string& tool_tip);
 
+  ui::StatusIconLinux* GetStatusIcon();
+
   // Notification balloon.
   DesktopNotificationBalloon notification_;
 
   // The status icon may be ref-counted (via |status_icon_dbus_|) or owned by
-  // |this| (via |status_icon_linux_|).  Either way, |status_icon_| points to
-  // the underlying object.
+  // |this| (via |status_icon_linux_|).
 #if defined(USE_DBUS)
   scoped_refptr<StatusIconLinuxDbus> status_icon_dbus_;
 #endif
   std::unique_ptr<ui::StatusIconLinux> status_icon_linux_;
-  raw_ptr<ui::StatusIconLinux, DanglingUntriaged> status_icon_;
   StatusIconType status_icon_type_;
 
   gfx::ImageSkia image_;
