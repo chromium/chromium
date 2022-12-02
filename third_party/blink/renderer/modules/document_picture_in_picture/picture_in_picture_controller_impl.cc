@@ -429,9 +429,8 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     ScriptPromiseResolver* resolver,
     ExceptionState& exception_state) {
   if (!LocalFrame::ConsumeTransientUserActivation(opener.GetFrame())) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError,
-        "Document PiP requires user activation"));
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "Document PiP requires user activation");
     return;
   }
 
@@ -442,12 +441,9 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   auto* dom_window = opener.openPictureInPictureWindow(
       script_state->GetIsolate(), web_options, exception_state);
 
-  // If we can't create a window then reject the promise with the exception
-  // state.
-  if (!dom_window || exception_state.HadException()) {
-    resolver->Reject();
+  // If we can't create a window, reject the promise with the exception state.
+  if (!dom_window || exception_state.HadException())
     return;
-  }
 
   auto* local_dom_window = dom_window->ToLocalDOMWindow();
   DCHECK(local_dom_window);

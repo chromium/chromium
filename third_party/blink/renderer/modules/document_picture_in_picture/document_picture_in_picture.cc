@@ -61,17 +61,13 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
     return ScriptPromise();
   }
 
-  // TODO(https://crbug.com/1253970): Check if PiP is allowed (e.g. user
-  // gesture, permissions, etc).
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  auto promise = resolver->Promise();
-
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "Document not attached");
-    return promise;
+    return ScriptPromise();
   }
 
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   // |dom_window->document()| should always exist after document construction.
   auto* document = dom_window->document();
   DCHECK(document);
@@ -80,7 +76,7 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
       .CreateDocumentPictureInPictureWindow(script_state, *dom_window, options,
                                             resolver, exception_state);
 
-  return promise;
+  return resolver->Promise();
 }
 
 DOMWindow* DocumentPictureInPicture::window(ScriptState* script_state) const {
