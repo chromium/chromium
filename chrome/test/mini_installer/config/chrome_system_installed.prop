@@ -52,7 +52,7 @@
       },
       "wow_key": "KEY_WOW64_32KEY"
     },
-    "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY\\Commands\\rename-chrome-exe": {
+    "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY\\Commands\\cmd": {
       "exists": "forbidden",
       "wow_key": "KEY_WOW64_32KEY"
     },
