@@ -1766,6 +1766,13 @@ bool HTMLDocumentParser::ShouldPumpTokenizerNowForFinishAppend() const {
       return false;
   }
 
+  if (GetDocument()->IsInOutermostMainFrame()) {
+    if (!features::kProcessHtmlDataImmediatelyMainFrame.Get())
+      return false;
+  } else if (!features::kProcessHtmlDataImmediatelyChildFrame.Get()) {
+    return false;
+  }
+
   return did_pump_tokenizer_
              ? features::kProcessHtmlDataImmediatelySubsequentChunks.Get()
              : features::kProcessHtmlDataImmediatelyFirstChunk.Get();
