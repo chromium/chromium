@@ -31,6 +31,24 @@ suite('ApnListTest', function() {
     name: 'AP-name-2',
   };
 
+  /** @type {ApnProperties} */
+  const customApn1 = {
+    accessPointName: 'Custom Access Point 1',
+    name: 'AP-name-custom-1',
+  };
+
+  /** @type {ApnProperties} */
+  const customApn2 = {
+    accessPointName: 'Custom Access Point 2',
+    name: 'AP-name-custom-2',
+  };
+
+  /** @type {ApnProperties} */
+  const customApn3 = {
+    accessPointName: 'Custom Access Point 3',
+    name: 'AP-name-custom-3',
+  };
+
   setup(async function() {
     apnList = document.createElement('apn-list');
     document.body.appendChild(apnList);
@@ -59,18 +77,93 @@ suite('ApnListTest', function() {
         apnList.shadowRoot.querySelectorAll('apn-list-item').length, 0);
   });
 
-  test('Connected APN is inside apnList', async function() {
+  test('There is no Connected APN and no custom APNs', async function() {
+    apnList.managedCellularProperties = {};
+    await flushTasks();
+    const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertEquals(apns.length, 0);
+  });
+
+  test(
+      'There are custom APNs and there is no Connected APN ', async function() {
+        apnList.managedCellularProperties = {
+          customApnList: [customApn1, customApn2],
+        };
+        await flushTasks();
+        const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+        assertEquals(apns.length, 2);
+        assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
+        assertTrue(OncMojo.apnMatch(apns[1].apn, customApn2));
+        assertFalse(apns[0].isConnected);
+        assertFalse(apns[0].isAutoDetected);
+      });
+
+  test(
+      'Connected APN is inside apnList and there are no custom APNs',
+      async function() {
+        apnList.managedCellularProperties = {
+          connectedApn: connectedApn,
+          apnList: {
+            activeValue: [apn1, apn2, connectedApn],
+          },
+        };
+        await flushTasks();
+        const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+        assertEquals(apns.length, 1);
+        assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
+        assertTrue(apns[0].isConnected);
+        assertTrue(apns[0].isAutoDetected);
+      });
+
+  test(
+      'Connected APN is inside apnList and there are custom APNs.',
+      async function() {
+        apnList.managedCellularProperties = {
+          connectedApn: connectedApn,
+          apnList: {
+            activeValue: [apn1, apn2, connectedApn],
+          },
+          customApnList: [customApn1, customApn2],
+        };
+        await flushTasks();
+        const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+        assertEquals(apns.length, 3);
+        assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
+        assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
+        assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
+        assertTrue(apns[0].isConnected);
+        assertTrue(apns[0].isAutoDetected);
+      });
+
+  test('Connected APN is inside custom APN list.', async function() {
     apnList.managedCellularProperties = {
       connectedApn: connectedApn,
       apnList: {
-        activeValue: [apn1, apn2, connectedApn],
+        activeValue: [apn1, apn2],
       },
+      customApnList: [customApn1, customApn2, customApn3, connectedApn],
+    };
+    await flushTasks();
+    const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertEquals(apns.length, 4);
+    assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
+    assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
+    assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
+    assertTrue(OncMojo.apnMatch(apns[3].apn, customApn3));
+    assertTrue(apns[0].isConnected);
+    assertFalse(apns[0].isAutoDetected);
+  });
+
+  test('Connected APN is the only apn in custom APN list.', async function() {
+    apnList.managedCellularProperties = {
+      connectedApn: connectedApn,
+      customApnList: [connectedApn],
     };
     await flushTasks();
     const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
     assertEquals(apns.length, 1);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
     assertTrue(apns[0].isConnected);
-    assertTrue(apns[0].isAutoDetected);
+    assertFalse(apns[0].isAutoDetected);
   });
 });
