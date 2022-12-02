@@ -8000,8 +8000,10 @@ grit("resources") {
   }
 
   if (is_android) {
-    deps +=
-        [ "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings_js" ]
+    deps += [
+      "//chrome/browser/resources/offline_pages:build_ts",
+      "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings_js",
+    ]
   }
   if (!is_android) {
     deps += [

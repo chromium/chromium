@@ -144,7 +144,6 @@ if (enable_js_type_check) {
         "internals/lens:closure_compile",
         "internals/notifications:closure_compile",
         "internals/query_tiles:closure_compile",
-        "offline_pages:closure_compile",
         "video_tutorials:closure_compile",
       ]
     }

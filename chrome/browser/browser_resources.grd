@@ -55,8 +55,8 @@
         <include name="IDR_EXPLORE_SITES_INTERNALS_MOJO_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\explore_sites_internals\explore_sites_internals.mojom-webui.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_OFFLINE_INTERNALS_HTML" file="resources\offline_pages\offline_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_OFFLINE_INTERNALS_CSS" file="resources\offline_pages\offline_internals.css" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_JS" file="resources\offline_pages\offline_internals.js" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_BROWSER_PROXY_JS" file="resources\offline_pages\offline_internals_browser_proxy.js" type="BINDATA" />
+        <include name="IDR_OFFLINE_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\offline_pages\tsc\offline_internals.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_OFFLINE_INTERNALS_BROWSER_PROXY_JS" file="${root_gen_dir}\chrome\browser\resources\offline_pages\tsc\offline_internals_browser_proxy.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_VIDEO_PLAYER_HTML" file="resources\video_tutorials\video_player.html" type="BINDATA" />
         <include name="IDR_VIDEO_PLAYER_CSS" file="resources\video_tutorials\video_player.css" type="BINDATA" />
         <include name="IDR_VIDEO_PLAYER_JS" file="resources\video_tutorials\video_player.js" type="BINDATA" />
