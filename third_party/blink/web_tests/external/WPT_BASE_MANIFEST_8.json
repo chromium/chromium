@@ -2149,6 +2149,13 @@
         {}
        ]
       ],
+      "multicol-column-change-crash.html": [
+       "6f0a05be296162053dbe6bee889e899ee582b6db",
+       [
+        null,
+        {}
+       ]
+      ],
       "multicol-dynamic-contain-crash.html": [
        "e20a6e70e32c911856b2ef44cc4c1e8ac1694d18",
        [
@@ -218780,6 +218787,19 @@
        {}
       ]
      ],
+     "set-current-time.html": [
+      "efb5ffb8ae1b762f163cf3921102dec23d51436b",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/set-current-time-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "set-universal-specificity.html": [
       "80dc8272b5427bfa62100fa63eb5fca8e6f369a4",
       [
@@ -323497,6 +323517,10 @@
       "6febe257cc5f807cbed816b1a0d0cf2aab27e65c",
       []
      ],
+     "set-current-time-ref.html": [
+      "2cf8742768aa3591e2c2a0a1befaf72afbd93e60",
+      []
+     ],
      "set-universal-specificity-ref.html": [
       "e6afd805fbb0167fc9ab7de4417d00ec70c55397",
       []
@@ -337737,11 +337761,7 @@
        []
       ],
       "window-location.https.sub-expected.txt": [
-       "95049d041b24e840974d9fed8ae68973d311b03b",
-       []
-      ],
-      "window-location.https.sub.html.ini": [
-       "b4ba657d2ef1b738ba56a394dab7fe82953856ae",
+       "62cc48f4a7c45bf6432a27175f30aeb818486e15",
        []
       ],
       "worker-dedicated-constructor.sub.html.ini": [
@@ -594190,7 +594210,7 @@
      ]
     ],
     "requestStorageAccess.sub.https.window.js": [
-     "b8c5e5d20901d0366531d0e35613bcef582b4dd1",
+     "ad1c7a2af6d4e04d679c488456e8f30df379fe90",
      [
       "storage-access-api/requestStorageAccess.sub.https.window.html",
       {
