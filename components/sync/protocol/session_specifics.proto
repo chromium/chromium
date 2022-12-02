@@ -36,7 +36,9 @@ message SessionHeader {
   // A non-unique but human-readable name to describe this client.
   optional string client_name = 3;
   // The type of device.
-  optional SyncEnums.DeviceType device_type = 4;
+  // Deprecated in M110, but still populated for backwards compatibility.
+  // Replaced by device_form_factor.
+  optional SyncEnums.DeviceType device_type = 4 [deprecated = true];
   // The form factor of device.
   optional SyncEnums.DeviceFormFactor device_form_factor = 5;
 }

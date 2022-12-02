@@ -139,15 +139,18 @@ message SyncEnums {
   }
 
   // Please keep in sync with chrome/android/java/.../ForeignSessionHelper.java
+  // New enums to describe the device type  were introduced; OsType and
+  // FormFactor. Deprecated 12/2022.
+  // TODO(1395353): Remove deprecated values from DeviceType enum.
   enum DeviceType {
-    TYPE_UNSET = 0;
-    TYPE_WIN = 1;
-    TYPE_MAC = 2;
-    TYPE_LINUX = 3;
-    TYPE_CROS = 4;
-    TYPE_OTHER = 5;
-    TYPE_PHONE = 6;
-    TYPE_TABLET = 7;
+    TYPE_UNSET = 0 [deprecated = true];
+    TYPE_WIN = 1 [deprecated = true];
+    TYPE_MAC = 2 [deprecated = true];
+    TYPE_LINUX = 3 [deprecated = true];
+    TYPE_CROS = 4 [deprecated = true];
+    TYPE_OTHER = 5 [deprecated = true];
+    TYPE_PHONE = 6 [deprecated = true];
+    TYPE_TABLET = 7 [deprecated = true];
   }
 
   // Types of device OS.

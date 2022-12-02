@@ -29,7 +29,9 @@ message DeviceInfoSpecifics {
   optional string client_name = 2;
 
   // The platform of the device.
-  optional SyncEnums.DeviceType device_type = 3;
+  // Deprecated in M110, but still populated for backwards compatibility.
+  // Replaced by os_type + device_form_factor.
+  optional SyncEnums.DeviceType device_type = 3 [deprecated = true];
 
   // The UserAgent used when contacting the Chrome Sync server.
   // Only present when talking to the HTTP server.
