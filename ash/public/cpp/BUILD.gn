@@ -166,6 +166,7 @@ component("cpp") {
     "ime_info.cc",
     "ime_info.h",
     "in_session_auth_dialog_client.h",
+    "in_session_auth_dialog_controller.cc",
     "in_session_auth_dialog_controller.h",
     "in_session_auth_token_provider.h",
     "keyboard/arc/arc_input_method_bounds_tracker.cc",

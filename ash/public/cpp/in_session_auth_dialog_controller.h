@@ -22,6 +22,9 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
     kModifyAuthFactorsMultidevice
   };
 
+  // Returns the singleton instance.
+  static InSessionAuthDialogController* Get();
+
   // Callback passed from clients of the dialog
   // `success`: Whether or not the authentication was successful.
   // `token`: If the authentication was successful, a token is returned from
@@ -33,9 +36,6 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
       base::OnceCallback<void(bool success,
                               const base::UnguessableToken& token,
                               base::TimeDelta timeout)>;
-
-  InSessionAuthDialogController() = default;
-  virtual ~InSessionAuthDialogController() = default;
 
   // Summons a native UI dialog that authenticates the user, providing a
   // token, timeout and status in return.
@@ -49,6 +49,10 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   // for generating an `AuthToken` after successful authentication.
   virtual void SetTokenProvider(
       InSessionAuthTokenProvider* auth_token_provider) = 0;
+
+ protected:
+  InSessionAuthDialogController();
+  virtual ~InSessionAuthDialogController();
 };
 
 }  // namespace ash
