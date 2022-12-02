@@ -7338,7 +7338,7 @@ test("unit_tests") {
       "../browser/enterprise/reporting/android_app_info_generator_unittest.cc",
       "../browser/extensions/api/terminal/startup_status_unittest.cc",
       "../browser/lifetime/application_lifetime_chromeos_unittest.cc",
-      "../browser/media/webrtc/chrome_screen_enumerator_unittest.cc",
+      "../browser/media/webrtc/chrome_screen_enumerator_ash_unittest.cc",
       "../browser/media/webrtc/desktop_media_list_ash_unittest.cc",
       "../browser/metrics/per_user_state_manager_chromeos_unittest.cc",
       "../browser/metrics/perf/metric_collector_unittest.cc",
