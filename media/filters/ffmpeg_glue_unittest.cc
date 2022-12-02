@@ -326,11 +326,6 @@ TEST_F(FFmpegGlueContainerTest, AVI) {
   InitializeAndOpen("bear.avi");
   ExpectContainer(container_names::CONTAINER_AVI);
 }
-
-TEST_F(FFmpegGlueContainerTest, AMR) {
-  InitializeAndOpen("bear.amr");
-  ExpectContainer(container_names::CONTAINER_AMR);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
