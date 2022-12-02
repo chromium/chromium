@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_RESULT_TRACKER_H_
-#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_RESULT_TRACKER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_RESOLVER_WITH_TRACKER_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_RESOLVER_WITH_TRACKER_H_
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 
 namespace blink {
 
-// ScriptPromiseResultTracker is a wrapper around ScriptPromiseResolver which
-// simplifies recording UMA metric and latency for APIs.
+// ScriptPromiseResolverWithTracker is a wrapper around ScriptPromiseResolver
+// which simplifies recording UMA metric and latency for APIs.
 
 // Callers should ensure that the ResultEnumType has kOk and kTimedOut as
 // values.
 template <typename ResultEnumType>
-class CORE_EXPORT ScriptPromiseResultTracker
-    : public GarbageCollected<ScriptPromiseResultTracker<ResultEnumType>> {
+class CORE_EXPORT ScriptPromiseResolverWithTracker
+    : public GarbageCollected<
+          ScriptPromiseResolverWithTracker<ResultEnumType>> {
  public:
   // If the targeted histograms are "WebRTC.EnumerateDevices.Result" and
   // "WebRTC.EnumerateDevices.Latency", the input to |metric_name_prefix| should
@@ -29,7 +30,7 @@ class CORE_EXPORT ScriptPromiseResultTracker
   // This creates/accesses the Latency histogram which has |n_buckets_| buckets
   // and the range of the buckets are from (min_latency_bucket,
   // max_latency_bucket).
-  ScriptPromiseResultTracker(
+  ScriptPromiseResolverWithTracker(
       ScriptState* script_state,
       std::string metric_name_prefix,
       base::TimeDelta timeout_interval,
@@ -48,15 +49,16 @@ class CORE_EXPORT ScriptPromiseResultTracker
           ->GetTaskRunner(TaskType::kInternalDefault)
           ->PostDelayedTask(
               FROM_HERE,
-              WTF::BindOnce(&ScriptPromiseResultTracker::RecordResult,
+              WTF::BindOnce(&ScriptPromiseResolverWithTracker::RecordResult,
                             WrapPersistent(this), ResultEnumType::kTimedOut),
               timeout_interval);
     }
   }
-  ScriptPromiseResultTracker(const ScriptPromiseResultTracker&) = delete;
-  ScriptPromiseResultTracker& operator=(const ScriptPromiseResultTracker&) =
+  ScriptPromiseResolverWithTracker(const ScriptPromiseResolverWithTracker&) =
       delete;
-  ~ScriptPromiseResultTracker() = default;
+  ScriptPromiseResolverWithTracker& operator=(
+      const ScriptPromiseResolverWithTracker&) = delete;
+  ~ScriptPromiseResolverWithTracker() = default;
 
   template <typename T>
   void Resolve(T value, ResultEnumType result = ResultEnumType::kOk) {
@@ -71,6 +73,8 @@ class CORE_EXPORT ScriptPromiseResultTracker
     RecordLatency();
     resolver_->Reject(value);
   }
+
+  void Resolve() { Resolve(ToV8UndefinedGenerator()); }
 
   void RecordResult(ResultEnumType result) {
     if (is_result_recorded_)
@@ -110,4 +114,4 @@ class CORE_EXPORT ScriptPromiseResultTracker
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_RESULT_TRACKER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_RESOLVER_WITH_TRACKER_H_

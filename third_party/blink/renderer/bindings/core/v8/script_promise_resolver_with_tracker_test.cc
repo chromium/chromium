@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_result_tracker.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver_with_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,13 +38,15 @@ enum class TestEnum {
   kMaxValue = kTimedOut
 };
 
-class ScriptPromiseResultTrackerTest : public testing::Test {
+class ScriptPromiseResolverWithTrackerTest : public testing::Test {
  public:
-  ScriptPromiseResultTrackerTest()
+  ScriptPromiseResolverWithTrackerTest()
       : metric_name_prefix_("Histogram.TestEnum"),
         page_holder_(std::make_unique<DummyPageHolder>()) {}
 
-  ~ScriptPromiseResultTrackerTest() override { PerformMicrotaskCheckpoint(); }
+  ~ScriptPromiseResolverWithTrackerTest() override {
+    PerformMicrotaskCheckpoint();
+  }
 
   ScriptState* GetScriptState() const {
     return ToScriptStateForMainWorld(&page_holder_->GetFrame());
@@ -56,13 +58,13 @@ class ScriptPromiseResultTrackerTest : public testing::Test {
         GetScriptState()->GetIsolate());
   }
 
-  ScriptPromiseResultTracker<TestEnum>* CreateResultTracker(
+  ScriptPromiseResolverWithTracker<TestEnum>* CreateResultTracker(
       String& on_fulfilled,
       String& on_rejected,
       base::TimeDelta timeout_delay = base::Minutes(1)) {
     ScriptState::Scope scope(GetScriptState());
     auto* result_tracker =
-        MakeGarbageCollected<ScriptPromiseResultTracker<TestEnum>>(
+        MakeGarbageCollected<ScriptPromiseResolverWithTracker<TestEnum>>(
             GetScriptState(), metric_name_prefix_, timeout_delay);
 
     ScriptPromise promise = result_tracker->Promise();
@@ -96,7 +98,7 @@ class ScriptPromiseResultTrackerTest : public testing::Test {
   std::unique_ptr<DummyPageHolder> page_holder_;
 };
 
-TEST_F(ScriptPromiseResultTrackerTest, resolve) {
+TEST_F(ScriptPromiseResolverWithTrackerTest, resolve) {
   String on_fulfilled, on_rejected;
   auto* result_tracker = CreateResultTracker(on_fulfilled, on_rejected);
   result_tracker->Resolve(/*value=*/"hello", /*result=*/TestEnum::kOk);
@@ -108,7 +110,7 @@ TEST_F(ScriptPromiseResultTrackerTest, resolve) {
   CheckLatencyHistogram(/*expected_count=*/1);
 }
 
-TEST_F(ScriptPromiseResultTrackerTest, reject) {
+TEST_F(ScriptPromiseResolverWithTrackerTest, reject) {
   String on_fulfilled, on_rejected;
   auto* result_tracker = CreateResultTracker(on_fulfilled, on_rejected);
   result_tracker->Reject(/*value=*/"hello",
@@ -121,7 +123,7 @@ TEST_F(ScriptPromiseResultTrackerTest, reject) {
   CheckLatencyHistogram(/*expected_count=*/1);
 }
 
-TEST_F(ScriptPromiseResultTrackerTest, resolve_reject_again) {
+TEST_F(ScriptPromiseResolverWithTrackerTest, resolve_reject_again) {
   String on_fulfilled, on_rejected;
   auto* result_tracker = CreateResultTracker(on_fulfilled, on_rejected);
   result_tracker->Reject(/*value=*/"hello",
@@ -146,7 +148,7 @@ TEST_F(ScriptPromiseResultTrackerTest, resolve_reject_again) {
   CheckLatencyHistogram(/*expected_count=*/1);
 }
 
-TEST_F(ScriptPromiseResultTrackerTest, timeout) {
+TEST_F(ScriptPromiseResolverWithTrackerTest, timeout) {
   String on_fulfilled, on_rejected;
   base::TimeDelta timeout_delay = base::Milliseconds(200);
   auto* result_tracker =
