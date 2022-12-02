@@ -144,6 +144,7 @@ non_preprocessed_files = [
   "test_site_settings_permissions_browser_proxy.ts",
   "test_site_settings_prefs_browser_proxy.ts",
   "test_util.ts",
+  "unused_site_permissions_test.ts",
   "zoom_levels_tests.ts",
 ]
 

@@ -812,10 +812,29 @@ var CrSettingsReviewNotificationPermissionsTest =
   }
 };
 
-TEST_F(
-    'CrSettingsReviewNotificationPermissionsTest', 'All', function() {
-      mocha.run();
-    });
+TEST_F('CrSettingsReviewNotificationPermissionsTest', 'All', function() {
+  mocha.run();
+});
+
+var CrSettingsUnusedSitePermissionsTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/unused_site_permissions_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kSafetyCheckUnusedSitePermissions',
+      ],
+    };
+  }
+};
+
+TEST_F('CrSettingsUnusedSitePermissionsTest', 'All', function() {
+  mocha.run();
+});
 
 var CrSettingsSiteSettingsPageTest = class extends CrSettingsBrowserTest {
   /** @override */

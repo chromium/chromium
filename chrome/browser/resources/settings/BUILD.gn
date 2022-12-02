@@ -239,6 +239,7 @@ build_webui("build") {
     "site_settings_page/recent_site_permissions.ts",
     "site_settings_page/site_settings_list.ts",
     "site_settings_page/site_settings_page.ts",
+    "site_settings_page/unused_site_permissions.ts",
     "site_settings/pdf_documents.ts",
     "site_settings/protocol_handlers.ts",
     "site_settings/settings_category_default_radio_group.ts",
@@ -418,9 +419,10 @@ build_webui("build") {
 
     # subfolder files
     "autofill_page/passwords_shared.css",
+    "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "search_engines_page/search_engine_entry.css",
     "site_settings/clear_storage_dialog_shared.css",
-    "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
+    "site_settings_page/site_review_shared.css",
   ]
 
   ts_composite = true

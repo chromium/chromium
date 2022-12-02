@@ -1,0 +1,58 @@
+<style include="cr-shared-style settings-shared site-review-shared">
+  :host {
+    display: block;
+    padding: 0 var(--cr-section-padding);
+  }
+</style>
+<template is="dom-if" if="[[!shouldShowCompletionInfo_]]">
+  <div class="header-with-icon">
+    <iron-icon role="img" icon="cr:info-outline" class="header-icon">
+    </iron-icon>
+    <cr-expand-button class="header-group-wrapper" no-hover
+        expanded="{{unusedSitePermissionsReviewListExpanded_}}">
+      <h2>[[headerString_]]</h2>
+      <div class="secondary">
+        <!-- TODO(crbug.com/1345920): Add secondary string. -->
+      </div>
+    </cr-expand-button>
+  </div>
+  <iron-collapse class="site-list"
+      opened="[[unusedSitePermissionsReviewListExpanded_]]">
+    <template is="dom-repeat" items="[[sites_]]">
+      <div class$="cr-row site-entry [[getRowClass_(item.visible)]]">
+        <site-favicon url="[[item.origin]]"></site-favicon>
+        <div class="display-name cr-padded-text">
+          <div class="site-representation">[[item.origin]]</div>
+          <div class="secondary">
+            <!-- TODO(crbug.com/1345920): Add secondary string. -->
+          </div>
+        </div>
+        <!-- TODO(crbug.com/1345920): Use appropriate icon from design. -->
+        <cr-icon-button iron-icon="cr20:block" on-click="onAllowAgainClick_"
+            actionable on-mouseenter="onShowTooltip_" on-focus="onShowTooltip_">
+        </cr-icon-button>
+      </div>
+    </template>
+    <div class="cr-row first">
+      <cr-button class="bulk-action-button">
+        <!-- TODO(crbug.com/1345920): Add 'Got it' string. -->
+      </cr-button>
+    </div>
+  </iron-collapse>
+  <paper-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
+    <!-- TODO(crbug.com/1345920): Add 'Allow again' string. -->
+  </paper-tooltip>
+</template>
+<template is="dom-if" if="[[shouldShowCompletionInfo_]]">
+  <div class="header-with-icon">
+    <iron-icon role="img" icon="cr:check"></iron-icon>
+    <div class="header-group-wrapper">
+      <!-- TODO(crbug.com/1345920): Add 'All done for now' string. -->
+    </div>
+  </div>
+</template>
+<cr-toast duration="5000">
+  [[toastText_]]
+  <!-- TODO(crbug.com/1345920): Add 'Undo' string and aria label. -->
+  <cr-button aria-label=""></cr-button>
+</cr-toast>

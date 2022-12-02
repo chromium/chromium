@@ -1,134 +1,24 @@
-<style include="cr-shared-style settings-shared">
-  site-favicon {
-    /** Pad the difference between --cr-link-row-icon-width and
-        site-favicon width to align with link rows */
-    padding-inline-end: 24px;
-  }
-
-  .display-name {
-    flex: 1;
-    max-width: 100%;
-  }
-
-  .header-with-icon {
-    align-items: center;
-    display: flex;
-    padding-top: 15px;
-  }
-
-  .header-with-icon h2 {
-    padding-bottom: 5px;
-    padding-top: 0;
-  }
-
-  .header-with-icon iron-icon {
-    border-radius: 50%;
-    height: 20px;
-    padding: 6px;
-    width: 20px;
-  }
-
-  .header-group-wrapper {
-    flex: 1;
-    margin-inline-start: 15px;
-  }
-
-  .notification-permissions-list {
-    margin-inline-start: 32px;
-  }
-
-  /* TODO(crbug.com/1345920): Use a .list-item instead of .cr-row. */
-  .notification-permissions-list .cr-row {
-    border-top-width: 0;
-    padding-inline-end: 0;
-  }
-
-  #tooltip {
-    --paper-tooltip-min-width: max-content;
-  }
-
-  iron-icon[icon='settings:notifications-none'] {
-    background-color: var(--google-blue-50);
-    fill: var(--google-blue-600);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    iron-icon[icon='settings:notifications-none'] {
-      background-color: var(--google-blue-300);
-      fill: var(--grey-900-white-4-percent);
-    }
-  }
-
-  iron-icon[icon='cr:check'] {
-    background-color: var(--google-green-50);
-    fill: var(--google-green-700);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    iron-icon[icon='cr:check'] {
-      background-color: var(--google-green-300);
-      fill: var(--grey-900-white-4-percent);
-    }
-  }
-
-  /**
-   * |cr-link-row| defines a line height of 154%. Our rows contains two
-   * lines (2em) plus a vertical padding on both sides. We slightly increase
-   * the coefficient to 160% to avoid that the height immediately contracts
-   * at the beginning of the animation in case of rounding error. Note that
-   * erring on the side of a slightly larger height is not a problem since
-   * this animation uses |max-height| and not |height| directly.
-   */
-  @keyframes removed-animation {
-    0% {
-      max-height: calc(1.6 * 2em + 2 * var(--cr-section-vertical-padding));
-      opacity: 1;
-    }
-    20% {
-      max-height: calc(1.6 * 2em + 2 * var(--cr-section-vertical-padding));
-      opacity: 0;
-    }
-    100% {
-      max-height: 0;
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-
-  .removed {
-    /**
-     * The |animation-duration| parameter corresponds to MODEL_UPDATE_DELAY_MS
-     * in review_notification_permissions.ts.
-     */
-    animation-duration: 300ms;
-    animation-fill-mode: forwards;
-    animation-iteration-count: 1;
-    animation-name: removed-animation;
-    min-height: 0;
-  }
-
-  #blockAllButton {
-    margin-inline-start: auto;
-  }
+<style include="cr-shared-style settings-shared site-review-shared">
 </style>
 <template is="dom-if" if="[[!shouldShowCompletionInfo_]]">
   <div id="review-header" class="header-with-icon">
-    <iron-icon role="img" icon="settings:notifications-none"></iron-icon>
+    <iron-icon role="img" icon="settings:notifications-none"
+        class="header-icon">
+    </iron-icon>
     <div class="header-group-wrapper">
       <h2>[[headerString_]]</h2>
       <div class="secondary">[[subtitleString_]]</div>
     </div>
-    <cr-expand-button id="expandButton" no-hover
+    <cr-expand-button no-hover
         expanded="{{notificationPermissionReviewListExpanded_}}">
     </cr-expand-button>
   </div>
-  <iron-collapse class="notification-permissions-list"
+  <iron-collapse class="site-list"
       opened="[[notificationPermissionReviewListExpanded_]]">
-    <template id="notificationPermissionReviewList" is="dom-repeat"
-        items="[[sites_]]">
+    <template is="dom-repeat" items="[[sites_]]">
       <div class="cr-row site-entry">
         <site-favicon url="[[item.origin]]"></site-favicon>
-        <div id="displayName_[[index]]" class="display-name cr-padded-text">
+        <div class="display-name cr-padded-text">
           <div class="site-representation">[[item.origin]]</div>
           <div class="second-line secondary">[[item.notificationInfoString]]
           </div>
@@ -136,23 +26,23 @@
         <cr-icon-button iron-icon="cr20:block" id="block"
             on-click="onBlockNotificationPermissionClick_"
             aria-label$="[[getBlockAriaLabelForOrigin(item.origin)]]"
-            focus-row-control focus-type="show-detail"
             on-mouseenter="onShowTooltip_" on-focus="onShowTooltip_" actionable>
         </cr-icon-button>
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
             on-click="onShowActionMenuClick_"
             aria-label$="[[getMoreActionsAriaLabel_(item.origin]]"
-            title="$i18n{moreActions}" focus-row-control focus-type="menu">
+            title="$i18n{moreActions}">
         </cr-icon-button>
       </div>
     </template>
     <div class="cr-row first">
-      <cr-button id="blockAllButton" on-click="onBlockAllClick_">
+      <cr-button id="blockAllButton" on-click="onBlockAllClick_"
+          class="bulk-action-button">
         $i18n{safetyCheckNotificationPermissionReviewBlockAllLabel}
       </cr-button>
     </div>
   </iron-collapse>
-  <paper-tooltip id="tooltip" fit-to-visible-bounds manual-mode position="top"
+  <paper-tooltip fit-to-visible-bounds manual-mode position="top"
       offset="3">
     $i18n{safetyCheckNotificationPermissionReviewDontAllowLabel}
   </paper-tooltip>

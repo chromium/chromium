@@ -1,0 +1,210 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import '../settings_shared.css.js';
+import '../site_favicon.js';
+import '../i18n_setup.js';
+import './site_review_shared.css.js';
+
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
+import {SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from '../site_settings/site_settings_permissions_browser_proxy.js';
+
+import {getTemplate} from './unused_site_permissions.html.js';
+
+export interface SettingsUnusedSitePermissionsElement {
+  $: {
+    undoToast: CrToastElement,
+  };
+}
+
+/**
+ * Information about unused site permissions with an additional flag controlling
+ * the removal animation.
+ */
+interface UnusedSitePermissionsDisplay extends UnusedSitePermissions {
+  visible: boolean;
+}
+
+const SettingsUnusedSitePermissionsElementBase =
+    WebUiListenerMixin(SiteSettingsMixin(PolymerElement));
+
+export class SettingsUnusedSitePermissionsElement extends
+    SettingsUnusedSitePermissionsElementBase {
+  static get is() {
+    return 'settings-unused-site-permissions';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /* The string for the primary header label. */
+      headerString_: String,
+
+      /* The last origin that the user interacted with. */
+      lastOrigin_: {
+        type: String,
+        observer: 'updateUndoToastText_',
+      },
+
+      /**
+       * List of unused sites where permissions have been removed. This list
+       * being null indicates it has not loaded yet.
+       */
+      sites_: {
+        type: Array,
+        value: null,
+        observer: 'onSitesChanged_',
+      },
+
+      /**
+       * Indicates whether to show completion info after user has finished the
+       * review process.
+       */
+      shouldShowCompletionInfo_: {
+        type: Boolean,
+        computed: 'computeShouldShowCompletionInfo_(sites_.*)',
+      },
+
+      /* The text that will be shown in the undo toast element. */
+      toastText_: String,
+
+      /* If the list of unused site permissions is expanded or collapsed. */
+      unusedSitePermissionsReviewListExpanded_: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
+
+  private browserProxy_: SiteSettingsPermissionsBrowserProxy =
+      SiteSettingsPermissionsBrowserProxyImpl.getInstance();
+  private headerString_: string;
+  private lastOrigin_: string;
+  private sites_: UnusedSitePermissionsDisplay[]|null;
+  private shouldShowCompletionInfo_: boolean;
+  private toastText_: string|null;
+  private unusedSitePermissionsReviewListExpanded_: boolean;
+
+  override async connectedCallback() {
+    super.connectedCallback();
+
+    this.addWebUiListener(
+        'unused-permission-review-list-maybe-changed',
+        (sites: UnusedSitePermissions[]) =>
+            this.onUnusedSitePermissionListChanged_(sites));
+
+    const sites =
+        await this.browserProxy_.getRevokedUnusedSitePermissionsList();
+    this.onUnusedSitePermissionListChanged_(sites);
+  }
+
+  /** Show info that review is completed when there are no permissions left. */
+  private computeShouldShowCompletionInfo_(): boolean {
+    return this.sites_ != null && this.sites_.length === 0;
+  }
+
+  private getRowClass_(visible: boolean): string {
+    return visible ? '' : 'removed';
+  }
+
+  // TODO(crbug.com/1393005): Refactor common code across this and
+  // review_notification_permissions.ts.
+  private hideItem_(origin?: string) {
+    assert(this.sites_ !== null);
+    for (const [index, site] of this.sites_.entries()) {
+      if (!origin || site.origin === origin) {
+        // Update site property through Polymer's array mutation method so
+        // that the corresponding row in the dom-repeat for the list of sites
+        // gets notified.
+        this.set(['sites_', index, 'visible'], false);
+        if (origin) {
+          break;
+        }
+      }
+    }
+  }
+
+  private onAllowAgainClick_(event: DomRepeatEvent<UnusedSitePermissions>) {
+    event.stopPropagation();
+    const item = event.model.item;
+    this.lastOrigin_ = item.origin;
+    this.showUndoToast_();
+    this.hideItem_(this.lastOrigin_);
+    // TODO(crbug.com/1345920): Trigger action in backend.
+  }
+
+  /* Repopulate the list when unused site permission list is updated. */
+  private onUnusedSitePermissionListChanged_(sites: UnusedSitePermissions[]) {
+    this.sites_ = sites.map(
+        (site: UnusedSitePermissions): UnusedSitePermissionsDisplay => {
+          return {...site, visible: true};
+        });
+  }
+
+  private onShowTooltip_(e: Event) {
+    e.stopPropagation();
+    const target = e.target!;
+    const tooltip = this.shadowRoot!.querySelector('paper-tooltip');
+    assert(tooltip);
+    tooltip.target = target;
+    tooltip.updatePosition();
+    const hide = () => {
+      tooltip.hide();
+      target.removeEventListener('mouseleave', hide);
+      target.removeEventListener('blur', hide);
+      target.removeEventListener('click', hide);
+      tooltip.removeEventListener('mouseenter', hide);
+    };
+    target.addEventListener('mouseleave', hide);
+    target.addEventListener('blur', hide);
+    target.addEventListener('click', hide);
+    tooltip.addEventListener('mouseenter', hide);
+    tooltip.show();
+  }
+
+  private onSitesChanged_() {
+    // TODO(crbug.com/1345920): Replace dummy string with i18n string based on
+    // number of sites.
+    this.headerString_ = '';
+  }
+
+  private showUndoToast_() {
+    // Re-open the toast if one was already open; this resets the timer.
+    if (this.$.undoToast.open) {
+      this.$.undoToast.hide();
+    }
+    this.$.undoToast.show();
+  }
+
+  private updateUndoToastText_() {
+    // TODO(crbug.com/1345920): Replace dummy text with i18n string depending on
+    // lastOrigin.
+    this.toastText_ = '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-unused-site-permissions': SettingsUnusedSitePermissionsElement;
+  }
+}
+
+customElements.define(
+    SettingsUnusedSitePermissionsElement.is,
+    SettingsUnusedSitePermissionsElement);

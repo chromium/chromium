@@ -14,6 +14,10 @@
       <img id="banner" alt=""
           src="chrome://settings/images/permissions_banner.svg">
     </picture>
+    <template is="dom-if" if="[[showUnusedSitePermissions_]]">
+      <settings-unused-site-permissions>
+      </settings-unused-site-permissions>
+    </template>
     <div class="cr-row first">
       <h2>$i18n{siteSettingsRecentPermissionsSectionLabel}</h2>
     </div>

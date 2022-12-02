@@ -125,8 +125,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   }
 
   function getEntries() {
-    return testElement.shadowRoot!.querySelectorAll(
-        '.notification-permissions-list .site-entry');
+    return testElement.shadowRoot!.querySelectorAll('.site-list .site-entry');
   }
 
   test('Notification Permission strings', async function() {
@@ -412,7 +411,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
     // Before review, header and list of permissions are visible.
     assertTrue(isChildVisible(testElement, '#review-header'));
-    assertTrue(isChildVisible(testElement, '.notification-permissions-list'));
+    assertTrue(isChildVisible(testElement, '.site-list'));
     assertFalse(isChildVisible(testElement, '#done-header'));
 
     // Through reviewing permissions the permission list is empty and only the
@@ -421,7 +420,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
         'notification-permission-review-list-maybe-changed', []);
     await flushTasks();
     assertFalse(isChildVisible(testElement, '#review-header'));
-    assertFalse(isChildVisible(testElement, '.notification-permissions-list'));
+    assertFalse(isChildVisible(testElement, '.site-list'));
     assertTrue(isChildVisible(testElement, '#done-header'));
 
     // The element returns to showing the list of permissions when new items are
@@ -430,11 +429,11 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
         'notification-permission-review-list-maybe-changed', mockData);
     await flushTasks();
     assertTrue(isChildVisible(testElement, '#review-header'));
-    assertTrue(isChildVisible(testElement, '.notification-permissions-list'));
+    assertTrue(isChildVisible(testElement, '.site-list'));
     assertFalse(isChildVisible(testElement, '#done-header'));
   });
 
-  test('Collapsible List', async function() {
+  test('Collapsible List', function() {
     const expandButton =
         testElement.shadowRoot!.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
