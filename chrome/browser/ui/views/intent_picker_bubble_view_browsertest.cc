@@ -210,10 +210,17 @@ IN_PROC_BROWSER_TEST_P(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// TODO(crbug.com/1395393): This test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IconVisibilityAfterTabSwitching \
+  DISABLED_IconVisibilityAfterTabSwitching
+#else
+#define MAYBE_IconVisibilityAfterTabSwitching IconVisibilityAfterTabSwitching
+#endif
 // Tests that the intent icon updates its visibility when switching between
 // tabs.
 IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
-                       IconVisibilityAfterTabSwitching) {
+                       MAYBE_IconVisibilityAfterTabSwitching) {
   InstallTestWebApp();
 
   const GURL in_scope_url =
