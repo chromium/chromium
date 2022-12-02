@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.test.util;
+package org.chromium.chrome.browser.bookmarks;
 
 import android.support.test.InstrumentationRegistry;
 
@@ -15,7 +15,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
