@@ -8,6 +8,7 @@ found in the LICENSE file.
 <resources>
   <dimen name="authenticator_option_details_margin_start">24dp</dimen>
   <dimen name="authenticator_option_description_margin_top">3dp</dimen>
+  <dimen name="authenticator_option_vertical_margin">8dp</dimen>
   <dimen name="otp_verification_dialog_resend_message_margin_top">12dp</dimen>
   <dimen name="progress_bar_size">36dp</dimen>
   <dimen name="progress_bar_margin_top">16dp</dimen>

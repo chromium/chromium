@@ -10,7 +10,9 @@ found in the LICENSE file.
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_height="wrap_content"
   android:layout_width="wrap_content"
-  android:orientation="horizontal">
+  android:orientation="horizontal"
+  android:layout_marginTop="@dimen/authenticator_option_vertical_margin"
+  android:layout_marginBottom="@dimen/authenticator_option_vertical_margin">
   <RadioButton
     android:id="@+id/authenticator_option_radio_btn"
     android:layout_width="wrap_content"
