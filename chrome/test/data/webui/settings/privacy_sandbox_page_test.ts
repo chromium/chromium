@@ -5,9 +5,9 @@
 import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {SettingsPrivacySandboxPageElement} from 'chrome://settings/lazy_load.js';
+import {SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -109,5 +109,72 @@ suite('PrivacySandboxPageTests', function() {
     assertEquals(
         routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
         Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('PrivacySandboxAdMeasurementSubpageTests', function() {
+  let page: SettingsPrivacySandboxAdMeasurementSubpageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement(
+        'settings-privacy-sandbox-ad-measurement-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('enableAdMeasurementToggle', async function() {
+    page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', false);
+    await flushTasks();
+    assertTrue(isVisible(page.$.adMeasurementToggle));
+    assertFalse(page.$.adMeasurementToggle.checked);
+    assertEquals(
+        loadTimeData.getString('adMeasurementPageToggleSubLabel'),
+        page.$.adMeasurementToggle.subLabel);
+
+    page.$.adMeasurementToggle.click();
+    await flushTasks();
+    assertTrue(isVisible(page.$.adMeasurementToggle));
+    assertTrue(page.$.adMeasurementToggle.checked);
+    assertEquals(
+        loadTimeData.getString('adMeasurementPageToggleSubLabel'),
+        page.$.adMeasurementToggle.subLabel);
+    assertTrue(
+        !!page.getPref('privacy_sandbox.m1.ad_measurement_enabled.value'));
+  });
+
+  test('disableAdMeasurementToggle', async function() {
+    page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', true);
+    await flushTasks();
+    assertTrue(isVisible(page.$.adMeasurementToggle));
+    assertTrue(page.$.adMeasurementToggle.checked);
+    assertEquals(
+        loadTimeData.getString('adMeasurementPageToggleSubLabel'),
+        page.$.adMeasurementToggle.subLabel);
+
+    page.$.adMeasurementToggle.click();
+    await flushTasks();
+    assertTrue(isVisible(page.$.adMeasurementToggle));
+    assertFalse(page.$.adMeasurementToggle.checked);
+    assertEquals(
+        loadTimeData.getString('adMeasurementPageToggleSubLabel'),
+        page.$.adMeasurementToggle.subLabel);
+    assertFalse(
+        !!page.getPref('privacy_sandbox.m1.ad_measurement_enabled.value'));
   });
 });

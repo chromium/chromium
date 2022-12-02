@@ -614,6 +614,12 @@ TEST_F(
       runMochaSuite('PrivacySandboxPageTests');
     });
 
+TEST_F(
+    'CrSettingsPrivacySandboxPageTest', 'AdMeasurementSubpageTests',
+    function() {
+      runMochaSuite('PrivacySandboxAdMeasurementSubpageTests');
+    });
+
 var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
