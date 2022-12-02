@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
 #define MAYBE_MouseToIncognitoWindowAndDoActionsInSameContext \
   MouseToIncognitoWindowAndDoActionsInSameContext
 #endif
-IN_PROC_BROWSER_TEST_F(InteractiveBrowserTest,
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        MAYBE_MouseToIncognitoWindowAndDoActionsInSameContext) {
   constexpr char kIncognitoAppMenuButton[] = "AppMenu";
   auto* const incognito = CreateIncognitoBrowser();
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTest,
   MouseToIncognitoWindowAndDoActionsInSpecificContext
 #endif
 IN_PROC_BROWSER_TEST_F(
-    InteractiveBrowserTest,
+    InteractiveBrowserTestUiTest,
     MAYBE_MouseToIncognitoWindowAndDoActionsInSpecificContext) {
   auto* const incognito = CreateIncognitoBrowser();
 

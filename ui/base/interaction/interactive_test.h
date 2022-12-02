@@ -395,7 +395,7 @@ template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::InContext(
     ElementContext context,
     T&& step) {
-  return InContext(Steps(std::forward(step)));
+  return std::move(step.SetContext(context));
 }
 
 // static
