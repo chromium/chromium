@@ -62,7 +62,7 @@ class NetErrorHelperCore {
         bool can_show_network_diagnostics_dialog,
         content::mojom::AlternativeErrorPageOverrideInfoPtr
             alternative_error_page_info,
-        std::string* html) const = 0;
+        std::string* html) = 0;
 
     // Create extra Javascript bindings in the error page. Will only be invoked
     // after an error page has finished loading.

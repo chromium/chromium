@@ -796,8 +796,13 @@
     "expiry_milestone": 120
   },
   {
+    "name": "captive-portal-error-page",
+    "owners": [ "stevenjb", "cros-network-health-team@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "captive-portal-ui-2022",
-    "owners": [ "michaelrygiel", "stevenjb", "cros-network-health@google.com" ],
+    "owners": [ "michaelrygiel", "stevenjb", "cros-network-health-team@google.com" ],
     "expiry_milestone": 110
   },
   {

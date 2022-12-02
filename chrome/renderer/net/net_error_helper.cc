@@ -19,7 +19,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_resource_request_blocked_reason.h"
@@ -220,13 +219,17 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
     bool can_show_network_diagnostics_dialog,
     content::mojom::AlternativeErrorPageOverrideInfoPtr
         alternative_error_page_info,
-    std::string* error_html) const {
+    std::string* error_html) {
   error_html->clear();
   int resource_id = IDR_NET_ERROR_HTML;
   LocalizedError::PageState page_state;
   // If the user is viewing an offline web app then a default page is shown
   // rather than the dino.
-  if (alternative_error_page_info) {
+
+  if (alternative_error_page_info &&
+      alternative_error_page_info->alternative_error_page_params
+          .FindBool(error_page::kOverrideErrorPage)
+          .value_or(false)) {
     DCHECK(base::FeatureList::IsEnabled(features::kPWAsDefaultOfflinePage));
     base::UmaHistogramSparse("Net.ErrorPageCounts.WebAppAlternativeErrorPage",
                              -error.reason());
@@ -236,6 +239,12 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         error.reason(), error.domain(), error.url(),
         RenderThread::Get()->GetLocale());
   } else {
+    if (alternative_error_page_info) {
+      error_page_params_ =
+          alternative_error_page_info->alternative_error_page_params.Clone();
+    } else {
+      error_page_params_.clear();
+    }
     page_state = LocalizedError::GetPageState(
         error.reason(), error.domain(), error.url(), is_failed_post,
         error.resolve_error_info().is_secure_network_error,
@@ -243,7 +252,8 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         ChromeRenderThreadObserver::is_incognito_process(),
         IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
         IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
-        IsExtensionExtendedErrorCode(error.extended_reason()));
+        IsExtensionExtendedErrorCode(error.extended_reason()),
+        &error_page_params_);
   }
   std::string extracted_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -274,7 +284,8 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       ChromeRenderThreadObserver::is_incognito_process(),
       IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
       IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
-      IsExtensionExtendedErrorCode(error.extended_reason()));
+      IsExtensionExtendedErrorCode(error.extended_reason()),
+      &error_page_params_);
 
   std::string json;
   JSONWriter::Write(page_state.strings, &json);

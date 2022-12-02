@@ -3692,6 +3692,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"captive-portal-ui-2022", flag_descriptions::kCaptivePortalUI2022Name,
      flag_descriptions::kCaptivePortalUI2022Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCaptivePortalUI2022)},
+    {"captive-portal-error-page",
+     flag_descriptions::kCaptivePortalErrorPageName,
+     flag_descriptions::kCaptivePortalErrorPageDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kCaptivePortalErrorPage)},
     {"cellular-bypass-esim-installation-connectivity-check",
      flag_descriptions::kCellularBypassESimInstallationConnectivityCheckName,
      flag_descriptions::

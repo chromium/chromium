@@ -13,6 +13,13 @@
 
 namespace error_page {
 
+// If this property set to true, override the default error page.
+static constexpr const char kOverrideErrorPage[] = "override_error_page";
+
+// Set to true when the device may be in a portal state. Will be used to show a
+// suggestion in the error page where appropriate.
+static constexpr const char kIsPortalStateKey[] = "is_portal_state";
+
 class LocalizedError {
  public:
   // Information about elements shown on the error page.
@@ -52,7 +59,8 @@ class LocalizedError {
                                 bool auto_fetch_feature_enabled,
                                 bool is_kiosk_mode,
                                 const std::string& locale,
-                                bool is_blocked_by_extension);
+                                bool is_blocked_by_extension,
+                                const base::Value::Dict* error_page_params);
 
   // Returns a |PageState| that describes the elements that should be shown on
   // when default offline page is shown.

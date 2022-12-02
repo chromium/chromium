@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/net/net_error_page_support.mojom.h"
 #include "chrome/common/network_diagnostics.mojom.h"
@@ -89,7 +90,7 @@ class NetErrorHelper
       bool can_use_local_diagnostics_service,
       content::mojom::AlternativeErrorPageOverrideInfoPtr
           alternative_error_page_info,
-      std::string* html) const override;
+      std::string* html) override;
 
   void EnablePageHelperFunctions() override;
   error_page::LocalizedError::PageState UpdateErrorPage(
@@ -130,6 +131,8 @@ class NetErrorHelper
       remote_network_easter_egg_;
   mojo::AssociatedRemote<chrome::mojom::NetErrorPageSupport>
       remote_net_error_page_support_;
+
+  base::Value::Dict error_page_params_;
 
   // Weak factories for vending weak pointers to PageControllers. Weak
   // pointers are invalidated on each commit, to prevent getting messages from

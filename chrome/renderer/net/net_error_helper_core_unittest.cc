@@ -97,7 +97,8 @@ error_page::LocalizedError::PageState GetErrorPageState(int error_code,
       /*offline_content_feature_enabled=*/false,
       /*auto_fetch_feature_enabled=*/false, /*is_kiosk_mode=*/is_kiosk_mode,
       /*locale=*/"",
-      /*is_blocked_by_extension=*/false);
+      /*is_blocked_by_extension=*/false,
+      /*error_page_params=*/nullptr);
 }
 
 class NetErrorHelperCoreTest : public testing::Test,
@@ -218,7 +219,7 @@ class NetErrorHelperCoreTest : public testing::Test,
       bool can_show_network_diagnostics_dialog,
       content::mojom::AlternativeErrorPageOverrideInfoPtr
           alternative_error_page_info,
-      std::string* html) const override {
+      std::string* html) override {
     last_can_show_network_diagnostics_dialog_ =
         can_show_network_diagnostics_dialog;
 

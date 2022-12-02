@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/services/network_health/in_process_instance.h"
 #include "chromeos/services/network_health/network_health_service.h"
+#include "chromeos/services/network_health/public/cpp/network_health_helper.h"
 
 namespace ash {
 namespace network_health {
@@ -19,6 +20,10 @@ NetworkHealthManager::NetworkHealthManager() {
   network_diagnostics_ =
       std::make_unique<network_diagnostics::NetworkDiagnostics>(
           DebugDaemonClient::Get());
+
+  // Initialize the network health helper providing synchronous access to
+  // network health state.
+  helper_ = std::make_unique<chromeos::network_health::NetworkHealthHelper>();
 }
 
 mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>

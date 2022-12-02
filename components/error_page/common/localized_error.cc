@@ -68,6 +68,7 @@ enum NAV_SUGGESTIONS {
   SUGGEST_REPOST_RELOAD = 1 << 11,
   SUGGEST_NAVIGATE_TO_ORIGIN = 1 << 12,
   SUGGEST_SECURE_DNS_CONFIG = 1 << 13,
+  SUGGEST_CAPTIVE_PORTAL_SIGNIN = 1 << 14,
 };
 
 enum SHOW_BUTTONS {
@@ -91,47 +92,49 @@ const LocalizedErrorMap net_error_options[] = {
    IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
    IDS_ERRORPAGES_SUMMARY_TIMED_OUT,
    SUGGEST_CHECK_CONNECTION | SUGGEST_FIREWALL_CONFIG | SUGGEST_PROXY_CONFIG |
-       SUGGEST_DIAGNOSE_TOOL,
+       SUGGEST_DIAGNOSE_TOOL | SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_CONNECTION_TIMED_OUT,
    IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
    IDS_ERRORPAGES_SUMMARY_TIMED_OUT,
    SUGGEST_CHECK_CONNECTION | SUGGEST_FIREWALL_CONFIG | SUGGEST_PROXY_CONFIG |
-       SUGGEST_DIAGNOSE_TOOL,
+       SUGGEST_DIAGNOSE_TOOL | SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_CONNECTION_CLOSED,
    IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
    IDS_ERRORPAGES_SUMMARY_CONNECTION_CLOSED,
    SUGGEST_CHECK_CONNECTION | SUGGEST_FIREWALL_CONFIG | SUGGEST_PROXY_CONFIG |
-       SUGGEST_DIAGNOSE_TOOL,
+       SUGGEST_DIAGNOSE_TOOL | SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_CONNECTION_RESET,
    IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
    IDS_ERRORPAGES_SUMMARY_CONNECTION_RESET,
    SUGGEST_CHECK_CONNECTION | SUGGEST_FIREWALL_CONFIG | SUGGEST_PROXY_CONFIG |
-       SUGGEST_DIAGNOSE_TOOL,
+       SUGGEST_DIAGNOSE_TOOL | SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_CONNECTION_REFUSED,
    IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
    IDS_ERRORPAGES_SUMMARY_CONNECTION_REFUSED,
-   SUGGEST_CHECK_CONNECTION | SUGGEST_FIREWALL_CONFIG | SUGGEST_PROXY_CONFIG,
+   SUGGEST_CHECK_CONNECTION | SUGGEST_FIREWALL_CONFIG | SUGGEST_PROXY_CONFIG |
+       SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_CONNECTION_FAILED,
    IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
    IDS_ERRORPAGES_SUMMARY_CONNECTION_FAILED,
-   SUGGEST_DIAGNOSE_TOOL,
+   SUGGEST_DIAGNOSE_TOOL | SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_NAME_NOT_RESOLVED,
    IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
    IDS_ERRORPAGES_SUMMARY_NAME_NOT_RESOLVED,
    SUGGEST_CHECK_CONNECTION | SUGGEST_DNS_CONFIG | SUGGEST_FIREWALL_CONFIG |
-       SUGGEST_PROXY_CONFIG | SUGGEST_DIAGNOSE_TOOL,
+   SUGGEST_DIAGNOSE_TOOL | SUGGEST_CAPTIVE_PORTAL_SIGNIN |
+       SUGGEST_PROXY_CONFIG,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_ICANN_NAME_COLLISION,
@@ -143,26 +146,29 @@ const LocalizedErrorMap net_error_options[] = {
   {net::ERR_ADDRESS_UNREACHABLE,
    IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
    IDS_ERRORPAGES_SUMMARY_ADDRESS_UNREACHABLE,
-   SUGGEST_DIAGNOSE_TOOL,
+   SUGGEST_DIAGNOSE_TOOL | SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_NETWORK_ACCESS_DENIED,
    IDS_ERRORPAGES_HEADING_NETWORK_ACCESS_DENIED,
    IDS_ERRORPAGES_SUMMARY_NETWORK_ACCESS_DENIED,
    SUGGEST_CHECK_CONNECTION | SUGGEST_FIREWALL_CONFIG |
-       SUGGEST_ANTIVIRUS_CONFIG | SUGGEST_DIAGNOSE_TOOL,
+       SUGGEST_ANTIVIRUS_CONFIG | SUGGEST_DIAGNOSE_TOOL |
+       SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_NO_BUTTONS,
   },
   {net::ERR_PROXY_CONNECTION_FAILED,
    IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED,
    IDS_ERRORPAGES_SUMMARY_PROXY_CONNECTION_FAILED,
-   SUGGEST_PROXY_CONFIG | SUGGEST_CONTACT_ADMINISTRATOR | SUGGEST_DIAGNOSE_TOOL,
+   SUGGEST_PROXY_CONFIG | SUGGEST_CONTACT_ADMINISTRATOR |
+       SUGGEST_DIAGNOSE_TOOL | SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_NO_BUTTONS,
   },
   {net::ERR_INTERNET_DISCONNECTED,
    IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED,
    IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED,
-   SUGGEST_OFFLINE_CHECKS | SUGGEST_DIAGNOSE_TOOL,
+   SUGGEST_OFFLINE_CHECKS | SUGGEST_DIAGNOSE_TOOL |
+       SUGGEST_CAPTIVE_PORTAL_SIGNIN,
    SHOW_NO_BUTTONS,
   },
   {net::ERR_FILE_NOT_FOUND,
@@ -454,7 +460,7 @@ const LocalizedErrorMap dns_probe_error_options[] = {
         error_page::DNS_PROBE_FINISHED_NXDOMAIN,
         IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
         IDS_ERRORPAGES_CHECK_TYPO_SUMMARY,
-        SUGGEST_DIAGNOSE_TOOL,
+        SUGGEST_DIAGNOSE_TOOL | SUGGEST_CAPTIVE_PORTAL_SIGNIN,
         SHOW_BUTTON_RELOAD,
     },
 };
@@ -587,12 +593,18 @@ void GetSuggestionsSummaryList(int error_code,
                                const std::string& locale,
                                base::Value::List& suggestions_summary_list,
                                bool can_show_network_diagnostics_dialog,
-                               const GURL& failed_url) {
+                               const GURL& failed_url,
+                               const base::Value::Dict* error_page_params) {
   // Remove the diagnostic tool suggestion if the platform doesn't support it
   // or the url isn't valid.
   if (!can_show_network_diagnostics_dialog || !failed_url.is_valid() ||
       !failed_url.SchemeIsHTTPOrHTTPS()) {
     suggestions &= ~SUGGEST_DIAGNOSE_TOOL;
+  }
+  // Remove the captive portal signin suggestion if not in a portal state.
+  if (!error_page_params ||
+      !error_page_params->FindBool(kIsPortalStateKey).value_or(false)) {
+    suggestions &= ~SUGGEST_CAPTIVE_PORTAL_SIGNIN;
   }
 
   if (suggestions == SUGGEST_NONE)
@@ -649,6 +661,11 @@ void GetSuggestionsSummaryList(int error_code,
   if (IsSuggested(suggestions, SUGGEST_LEARNMORE)) {
     AddLinkedSuggestionToList(error_code, locale, suggestions_summary_list,
                               false);
+  }
+
+  if (suggestions & SUGGEST_CAPTIVE_PORTAL_SIGNIN) {
+    suggestions_summary_list.Append(SingleEntryDictionary(
+        "summary", IDS_ERRORPAGES_SUGGESTION_CAPTIVE_PORTAL_SIGNIN));
   }
 
   if (suggestions & SUGGEST_DISABLE_EXTENSION) {
@@ -862,7 +879,8 @@ LocalizedError::PageState LocalizedError::GetPageState(
     bool auto_fetch_feature_enabled,
     bool is_kiosk_mode,
     const std::string& locale,
-    bool is_blocked_by_extension) {
+    bool is_blocked_by_extension,
+    const base::Value::Dict* error_page_params) {
   LocalizedError::PageState result;
   if (LocalizedError::IsOfflineError(error_domain, error_code)) {
     result.is_offline_error = true;
@@ -1052,7 +1070,8 @@ LocalizedError::PageState LocalizedError::GetPageState(
   // Add default suggestions and any relevant supporting details.
   GetSuggestionsSummaryList(error_code, result.strings, options.suggestions,
                             locale, suggestions_summary_list,
-                            can_show_network_diagnostics_dialog, failed_url);
+                            can_show_network_diagnostics_dialog, failed_url,
+                            error_page_params);
   AddSuggestionsDetails(error_code, options.suggestions, suggestions_details);
 
 #if BUILDFLAG(IS_ANDROID)

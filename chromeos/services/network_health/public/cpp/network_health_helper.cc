@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
@@ -79,32 +77,15 @@ void NetworkHealthHelper::RequestNetworks() {
       &NetworkHealthHelper::NetworkListReceived, base::Unretained(this)));
 }
 
-void NetworkHealthHelper::RequestDefaultNetwork(
-    base::OnceCallback<void(mojom::NetworkPtr&)> callback) {
-  if (networks_received_) {
-    std::move(callback).Run(default_network_);
-  } else {
-    received_networks_callbacks_.push_back(std::move(callback));
+bool NetworkHealthHelper::IsPortalState() {
+  if (!default_network_) {
+    return false;
   }
-}
-
-void NetworkHealthHelper::RequestIsPortalState(
-    base::OnceCallback<void(bool)> callback) {
-  RequestDefaultNetwork(base::BindOnce(
-      [](base::OnceCallback<void(bool)> callback,
-         mojom::NetworkPtr& default_network) {
-        if (!default_network) {
-          std::move(callback).Run(false);
-          return;
-        }
-        using PortalState = chromeos::network_config::mojom::PortalState;
-        auto portal_state = default_network->portal_state;
-        bool is_portal_state = portal_state == PortalState::kPortal ||
-                               portal_state == PortalState::kPortalSuspected ||
-                               portal_state == PortalState::kProxyAuthRequired;
-        std::move(callback).Run(is_portal_state);
-      },
-      std::move(callback)));
+  using PortalState = chromeos::network_config::mojom::PortalState;
+  auto portal_state = default_network_->portal_state;
+  return portal_state == PortalState::kPortal ||
+         portal_state == PortalState::kPortalSuspected ||
+         portal_state == PortalState::kProxyAuthRequired;
 }
 
 void NetworkHealthHelper::NetworkListReceived(
@@ -114,11 +95,6 @@ void NetworkHealthHelper::NetworkListReceived(
   } else {
     default_network_ = nullptr;
   }
-  for (auto& cb : received_networks_callbacks_) {
-    std::move(cb).Run(default_network_);
-  }
-  received_networks_callbacks_.clear();
-  networks_received_ = true;
 }
 
 void NetworkHealthHelper::OnMojoError() {

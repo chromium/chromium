@@ -34,6 +34,7 @@ class NetworkHealthHelperTest : public ::testing::Test {
     network_health_service_ = std::make_unique<NetworkHealthService>();
     helper_ =
         NetworkHealthHelper::CreateForTesting(network_health_service_.get());
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
@@ -63,58 +64,29 @@ class NetworkHealthHelperTest : public ::testing::Test {
 };
 
 TEST_F(NetworkHealthHelperTest, RequestDefaultNetworkNone) {
-  mojom::NetworkPtr result_ptr;
-  base::RunLoop run_loop;
-  helper()->RequestDefaultNetwork(
-      base::BindLambdaForTesting([&](mojom::NetworkPtr& default_network) {
-        result_ptr = default_network.Clone();
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  EXPECT_FALSE(result_ptr);
+  mojom::Network* default_network = helper()->default_network();
+  // NetworkHealth provides state for every available technology type (WiFi is
+  // enabled by default in tests).
+  ASSERT_TRUE(default_network);
+  // The default state should be not connected.
+  EXPECT_EQ(default_network->state, mojom::NetworkState::kNotConnected);
 }
 
 TEST_F(NetworkHealthHelperTest, RequestDefaultNetworkOnline) {
   SetupWiFiService(shill::kStateOnline);
-
-  mojom::NetworkPtr result_ptr;
-  base::RunLoop run_loop;
-  helper()->RequestDefaultNetwork(
-      base::BindLambdaForTesting([&](mojom::NetworkPtr& default_network) {
-        result_ptr = default_network.Clone();
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  ASSERT_TRUE(result_ptr);
-  EXPECT_EQ(result_ptr->state, mojom::NetworkState::kOnline);
+  mojom::Network* default_network = helper()->default_network();
+  ASSERT_TRUE(default_network);
+  EXPECT_EQ(default_network->state, mojom::NetworkState::kOnline);
 }
 
 TEST_F(NetworkHealthHelperTest, RequestIsPortalState) {
+  EXPECT_FALSE(helper()->IsPortalState());
+
   std::string path = SetupWiFiService(shill::kStateOnline);
-  {
-    bool result;
-    base::RunLoop run_loop;
-    helper()->RequestIsPortalState(
-        base::BindLambdaForTesting([&](bool is_portal_state) {
-          result = is_portal_state;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    EXPECT_FALSE(result);
-  }
+  EXPECT_FALSE(helper()->IsPortalState());
 
   SetWiFiState(path, shill::kStateRedirectFound);
-  {
-    bool result;
-    base::RunLoop run_loop;
-    helper()->RequestIsPortalState(
-        base::BindLambdaForTesting([&](bool is_portal_state) {
-          result = is_portal_state;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    EXPECT_TRUE(result);
-  }
+  EXPECT_TRUE(helper()->IsPortalState());
 }
 
 }  // namespace chromeos::network_health

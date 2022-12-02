@@ -57,7 +57,8 @@ NSString* GetErrorPage(const GURL& url,
           /*auto_fetch_feature_enabled=*/false,
           /*is_kiosk_mode=*/false,
           GetApplicationContext()->GetApplicationLocale(),
-          /*is_blocked_by_extension=*/false);
+          /*is_blocked_by_extension=*/false,
+          /*error_page_params=*/nullptr);
 
   ui::ResourceScaleFactor scale_factor =
       ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor();

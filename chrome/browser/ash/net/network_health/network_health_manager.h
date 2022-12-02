@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos::network_health {
+class NetworkHealthHelper;
 class NetworkHealthService;
 }
 
@@ -46,8 +47,13 @@ class NetworkHealthManager {
       mojo::PendingRemote<
           chromeos::network_health::mojom::NetworkEventsObserver> observer);
 
+  chromeos::network_health::NetworkHealthHelper* helper() {
+    return helper_.get();
+  }
+
  private:
   std::unique_ptr<network_diagnostics::NetworkDiagnostics> network_diagnostics_;
+  std::unique_ptr<chromeos::network_health::NetworkHealthHelper> helper_;
 };
 
 }  // namespace network_health

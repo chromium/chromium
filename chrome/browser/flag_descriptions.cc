@@ -5969,6 +5969,12 @@ const char kCaptivePortalUI2022Description[] =
     "notifications, network details page, quick settings, and portal signin "
     "UI.";
 
+const char kCaptivePortalErrorPageName[] =
+    "Enables Captive Portal error page suggestions.";
+const char kCaptivePortalErrorPageDescription[] =
+    "Enables Captive Portal error page suggestions when a page fails to load "
+    "and ChromeOS has detected a captive portal.";
+
 const char kTerminalAlternativeEmulatorName[] = "Terminal alternative emulator";
 const char kTerminalAlternativeEmulatorDescription[] =
     "Enable the alternative emulator for the Terminal app. You will also get "

@@ -5252,6 +5252,7 @@ static_library("browser") {
       "//chromeos/services/network_config",
       "//chromeos/services/network_config:in_process_instance",
       "//chromeos/services/network_config/public/mojom",
+      "//chromeos/services/network_health/public/cpp",
       "//chromeos/services/network_health/public/mojom:mojom",
       "//chromeos/strings",
       "//chromeos/system",

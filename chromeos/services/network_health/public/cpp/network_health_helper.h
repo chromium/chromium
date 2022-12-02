@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,12 +27,8 @@ class NetworkHealthHelper : public mojom::NetworkEventsObserver {
   NetworkHealthHelper& operator=(const NetworkHealthHelper&) = delete;
   ~NetworkHealthHelper() override;
 
-  // Asynchronous getters. If a cached result is available, |callback| will be
-  // invoked immediately. Otherwise the properties will be requested and
-  // |callback| will be invoked when they are available.
-  void RequestDefaultNetwork(
-      base::OnceCallback<void(mojom::NetworkPtr&)> callback);
-  void RequestIsPortalState(base::OnceCallback<void(bool)> callback);
+  // Returns the portal state of the default network if set, or false.
+  bool IsPortalState();
 
   // ash::network_health::mojom::NetworkEventsObserver:
   void OnConnectionStateChanged(const std::string& guid,
@@ -41,6 +36,8 @@ class NetworkHealthHelper : public mojom::NetworkEventsObserver {
   void OnSignalStrengthChanged(const std::string& guid,
                                mojom::UInt32ValuePtr signal_strength) override;
   void OnNetworkListChanged(std::vector<mojom::NetworkPtr> networks) override;
+
+  mojom::Network* default_network() { return default_network_.get(); }
 
   static std::unique_ptr<NetworkHealthHelper> CreateForTesting(
       NetworkHealthService* network_health_service);
@@ -59,9 +56,6 @@ class NetworkHealthHelper : public mojom::NetworkEventsObserver {
   mojo::Receiver<mojom::NetworkEventsObserver> observer_receiver_{this};
 
   mojom::NetworkPtr default_network_;
-  bool networks_received_ = false;
-  std::vector<base::OnceCallback<void(mojom::NetworkPtr&)>>
-      received_networks_callbacks_;
 };
 
 }  // namespace chromeos::network_health

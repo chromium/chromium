@@ -3437,6 +3437,9 @@ extern const char kQuickSettingsNetworkRevampDescription[];
 extern const char kCaptivePortalUI2022Name[];
 extern const char kCaptivePortalUI2022Description[];
 
+extern const char kCaptivePortalErrorPageName[];
+extern const char kCaptivePortalErrorPageDescription[];
+
 extern const char kTerminalAlternativeEmulatorName[];
 extern const char kTerminalAlternativeEmulatorDescription[];
 

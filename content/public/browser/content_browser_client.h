@@ -2313,9 +2313,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // embedder to call content::FirstPartySetsHandler::SetPublicFirstPartySets.
   virtual bool WillProvidePublicFirstPartySets();
 
-  // Gets information required for an alternative error page from web app's
-  // manifest for |url|, including theme color, background color and app short
-  // name. The |error_code| is the network error as specified in
+  // This returns a dictionary that an embedder can use to pass data from the
+  // browser to the renderer for error pages.
+  // The |error_code| is the network error as specified in
   // `net/base/net_error_list.h`. Information is returned in a struct. Default
   // implementation returns nullptr.
   virtual mojom::AlternativeErrorPageOverrideInfoPtr
