@@ -9,29 +9,18 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
-
 namespace {
-
-void NavigateBackInOneSecond(
-    base::WeakPtr<FirstRunFlowControllerDice> flow_controller) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&FirstRunFlowControllerDice::OnNavigateBackRequested,
-                     flow_controller),
-      base::Milliseconds(1000));
-}
 
 class IntroStepController : public ProfileManagementStepController {
  public:
@@ -102,29 +91,38 @@ class IntroStepController : public ProfileManagementStepController {
   base::WeakPtrFactory<IntroStepController> weak_ptr_factory_{this};
 };
 
-// Placeholder step added to exercise the "back" behaviour.
-// TODO(crbug.com/1375277): Replace with the real step for Dice sign in.
-class PlaceholderStep : public ProfileManagementStepController {
+// Instance allowing `TurnSyncOnHelper` to  drive the interface in the
+// `kPostSignIn` step.
+//
+// Not following the `*SignedInFlowController` naming pattern to avoid confusion
+// with `*StepController` and `*FlowController` that we also have here.
+// `ProfilePickerSignedInFlowController` should eventually be renamed.
+class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
  public:
-  PlaceholderStep(ProfilePickerWebContentsHost* host,
-                  GURL url,
-                  std::unique_ptr<content::WebContents> contents)
-      : ProfileManagementStepController(host),
-        step_url_(url),
-        contents_(std::move(contents)) {}
-  void Show(base::OnceCallback<void(bool success)> step_shown_callback,
-            bool reset_state) override {
-    host()->ShowScreen(contents_.get(), step_url_,
-                       base::BindOnce(std::move(step_shown_callback), true));
+  FirstRunPostSignInAdapter(ProfilePickerWebContentsHost* host,
+                            Profile* profile,
+                            std::unique_ptr<content::WebContents> contents,
+                            FinishFlowCallback finish_flow_callback)
+      : ProfilePickerSignedInFlowController(host,
+                                            profile,
+                                            std::move(contents),
+                                            /*profile_color=*/absl::nullopt),
+        finish_flow_callback_(std::move(finish_flow_callback)) {
+    DCHECK(finish_flow_callback_.value());
   }
 
-  void OnNavigateBackRequested() override {
-    NavigateBackInternal(contents_.get());
+  void FinishAndOpenBrowser(PostHostClearedCallback callback) override {
+    // Do nothing if this has already been called. Note that this can get called
+    // first time from a special case handling (such as the Settings link) and
+    // than second time when the TurnSyncOnHelper finishes.
+    if (finish_flow_callback_->is_null())
+      return;
+
+    std::move(finish_flow_callback_.value()).Run(std::move(callback));
   }
 
  private:
-  const GURL step_url_;
-  const std::unique_ptr<content::WebContents> contents_;
+  FinishFlowCallback finish_flow_callback_;
 };
 
 }  // namespace
@@ -142,9 +140,12 @@ FirstRunFlowControllerDice::FirstRunFlowControllerDice(
     ClearHostClosure clear_host_callback,
     Profile* profile,
     ProfilePicker::FirstRunExitedCallback first_run_exited_callback)
-    : ProfileManagementFlowController(host, std::move(clear_host_callback)),
+    : ProfileManagementFlowControllerImpl(host, std::move(clear_host_callback)),
       profile_(profile),
-      first_run_exited_callback_(std::move(first_run_exited_callback)) {}
+      first_run_exited_callback_(std::move(first_run_exited_callback)) {
+  DCHECK(profile_);
+  DCHECK(first_run_exited_callback_);
+}
 
 FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
   if (first_run_exited_callback_) {
@@ -166,6 +167,17 @@ void FirstRunFlowControllerDice::Init(
                std::move(step_switch_finished_callback));
 }
 
+void FirstRunFlowControllerDice::CancelPostSignInFlow() {
+  // TODO(crbug.com/1375277): If on enterprise profile welcome, sign the user
+  // out and continue with a local profile. Probably would just consist in
+  // aborting the TSOH's flow, which should remove the account. Maybe we'd need
+  // to advance to a separate step to allow deleting all the objects and getting
+  // the account fully removed before opening the browser?
+  NOTIMPLEMENTED();
+
+  FinishFlowAndRunInBrowser(profile_, PostHostClearedCallback());
+}
+
 bool FirstRunFlowControllerDice::PreFinishWithBrowser() {
   DCHECK(first_run_exited_callback_);
   std::move(first_run_exited_callback_)
@@ -179,24 +191,23 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(bool sign_in) {
     return;
   }
 
-  RegisterStep(ProfileManagementFlowController::Step::kAccountSelection,
-               std::make_unique<PlaceholderStep>(
-                   host(), GURL(url::kAboutBlankURL),
-                   content::WebContents::Create(
-                       content::WebContents::CreateParams(profile_))));
+  SwitchToIdentityStepsFromAccountSelection(
+      /*step_switch_finished_callback=*/base::DoNothing());
+}
 
-  auto pop_closure = base::BindOnce(
-      &ProfileManagementFlowController::SwitchToStep,
-      // Binding as Unretained as `this` outlives the step
-      // controllers.
-      base::Unretained(this), ProfileManagementFlowController::Step::kIntro,
-      /*reset_state=*/false,
-      /*step_switch_finished_callback=*/StepSwitchFinishedCallback(),
-      /*pop_step_callback=*/base::OnceClosure());
-  SwitchToStep(ProfileManagementFlowController::Step::kAccountSelection,
-               /*reset_state=*/true,
-               /*step_switch_finished_callback=*/
-               base::IgnoreArgs<bool>(base::BindOnce(
-                   &NavigateBackInOneSecond, weak_ptr_factory_.GetWeakPtr())),
-               /*pop_step_callback=*/std::move(pop_closure));
+std::unique_ptr<ProfilePickerDiceSignInProvider>
+FirstRunFlowControllerDice::CreateDiceSignInProvider() {
+  return std::make_unique<ProfilePickerDiceSignInProvider>(host(),
+                                                           profile_->GetPath());
+}
+
+std::unique_ptr<ProfilePickerSignedInFlowController>
+FirstRunFlowControllerDice::CreateSignedInFlowController(
+    Profile* signed_in_profile,
+    std::unique_ptr<content::WebContents> contents,
+    FinishFlowCallback finish_flow_callback) {
+  DCHECK_EQ(profile_, signed_in_profile);
+  return std::make_unique<FirstRunPostSignInAdapter>(
+      host(), signed_in_profile, std::move(contents),
+      std::move(finish_flow_callback));
 }

@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FLOW_CONTROLLER_H_
 
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
+#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 class ProfilePickerSignedInFlowController;
 
-class ProfilePickerFlowController : public ProfileManagementFlowController {
+class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
  public:
   ProfilePickerFlowController(ProfilePickerWebContentsHost* host,
                               ClearHostClosure clear_host_callback,
@@ -26,25 +25,32 @@ class ProfilePickerFlowController : public ProfileManagementFlowController {
   void SwitchToDiceSignIn(absl::optional<SkColor> profile_color,
                           StepSwitchFinishedCallback switch_finished_callback);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SwitchToPostSignIn(Profile* signed_in_profile,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-                          bool is_saml,
-#endif
+                          absl::optional<SkColor> profile_color,
                           std::unique_ptr<content::WebContents> contents);
+#endif
 
-  // Cancel the signed-in profile setup and returns back to the main picker
-  // screen (if the original EntryPoint was to open the picker).
-  void CancelPostSignInFlow();
+  void CancelPostSignInFlow() override;
 
   base::FilePath GetSwitchProfilePathOrEmpty() const;
 
-  void set_profile_color(absl::optional<SkColor> profile_color) {
-    profile_color_ = profile_color;
-  }
-
  private:
-  ProfilePicker::EntryPoint entry_point_;
-  absl::optional<SkColor> profile_color_ = absl::nullopt;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
+      override;
+
+  absl::optional<SkColor> GetProfileColor() override;
+#endif
+
+  std::unique_ptr<ProfilePickerSignedInFlowController>
+  CreateSignedInFlowController(
+      Profile* signed_in_profile,
+      std::unique_ptr<content::WebContents> contents,
+      FinishFlowCallback finish_flow_callback) override;
+
+  const ProfilePicker::EntryPoint entry_point_;
+  absl::optional<SkColor> profile_color_;
 
   // TODO(crbug.com/1359352): To be refactored out.
   // This is used for `ProfilePicker::GetSwitchProfilePath()`. The information

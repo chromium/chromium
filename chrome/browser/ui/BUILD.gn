@@ -3552,6 +3552,8 @@ static_library("ui") {
       "views/profiles/profile_customization_bubble_view.h",
       "views/profiles/profile_management_flow_controller.cc",
       "views/profiles/profile_management_flow_controller.h",
+      "views/profiles/profile_management_flow_controller_impl.cc",
+      "views/profiles/profile_management_flow_controller_impl.h",
       "views/profiles/profile_management_step_controller.cc",
       "views/profiles/profile_management_step_controller.h",
       "views/profiles/profile_management_utils.cc",

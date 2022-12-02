@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
@@ -201,10 +201,8 @@ void ProfilePicker::SwitchToDiceSignIn(
 void ProfilePicker::SwitchToSignedInFlow(absl::optional<SkColor> profile_color,
                                          Profile* signed_in_profile) {
   if (g_profile_picker_view) {
-    g_profile_picker_view->GetProfilePickerFlowController()->set_profile_color(
-        profile_color);
     g_profile_picker_view->SwitchToSignedInFlow(
-        signed_in_profile,
+        signed_in_profile, profile_color,
         content::WebContents::Create(
             content::WebContents::CreateParams(signed_in_profile)));
   }
@@ -214,8 +212,7 @@ void ProfilePicker::SwitchToSignedInFlow(absl::optional<SkColor> profile_color,
 // static
 void ProfilePicker::CancelSignedInFlow() {
   if (g_profile_picker_view) {
-    g_profile_picker_view->GetProfilePickerFlowController()
-        ->CancelPostSignInFlow();
+    g_profile_picker_view->flow_controller_.get()->CancelPostSignInFlow();
   }
 }
 
@@ -719,10 +716,11 @@ void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfilePickerView::SwitchToSignedInFlow(
     Profile* signed_in_profile,
+    absl::optional<SkColor> profile_color,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK(!signin_util::IsForceSigninEnabled());
-  GetProfilePickerFlowController()->SwitchToPostSignIn(signed_in_profile,
-                                                       std::move(contents));
+  GetProfilePickerFlowController()->SwitchToPostSignIn(
+      signed_in_profile, profile_color, std::move(contents));
 }
 #endif
 

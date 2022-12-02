@@ -7,9 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 
-class FirstRunFlowControllerLacros : public ProfileManagementFlowController {
+class FirstRunFlowControllerLacros
+    : public ProfileManagementFlowControllerImpl {
  public:
   // Profile management flow controller that will run the FRE for `profile` in
   // `host`.
@@ -27,11 +28,18 @@ class FirstRunFlowControllerLacros : public ProfileManagementFlowController {
 
   ~FirstRunFlowControllerLacros() override;
 
-  // ProfileManagementFlowController:
+  // ProfileManagementFlowControllerImpl:
   void Init(StepSwitchFinishedCallback step_switch_finished_callback) override;
+  void CancelPostSignInFlow() override;
 
  protected:
   bool PreFinishWithBrowser() override;
+
+  std::unique_ptr<ProfilePickerSignedInFlowController>
+  CreateSignedInFlowController(
+      Profile* signed_in_profile,
+      std::unique_ptr<content::WebContents> contents,
+      FinishFlowCallback finish_flow_callback) override;
 
  private:
   void MarkSyncConfirmationSeen();

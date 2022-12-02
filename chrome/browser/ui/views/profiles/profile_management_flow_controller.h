@@ -83,6 +83,10 @@ class ProfileManagementFlowController {
   void OnReloadRequested();
 #endif
 
+  // Cancel the signed-in profile setup and returns back to the main picker
+  // screen (if the original EntryPoint was to open the picker).
+  virtual void CancelPostSignInFlow() = 0;
+
  protected:
   void RegisterStep(Step step,
                     std::unique_ptr<ProfileManagementStepController>);
@@ -91,11 +95,12 @@ class ProfileManagementFlowController {
 
   bool IsStepInitialized(Step step) const;
 
-  // Clears the flow, causing the `host()` to be deleted.
+  // Closes the flow, calling `clear_host_callback_`, which would cause the
+  // `host()` to be deleted.
   void ExitFlow();
 
   // Opens a browser window for `profile`, closes the flow and then runs
-  // `callback`.
+  // `callback` (if it's non-null).
   //
   // Since the flow and its host will be destroyed by the time `callback` runs,
   // it should be longer lived than these.

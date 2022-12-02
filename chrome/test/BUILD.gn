@@ -2858,6 +2858,7 @@ if (!is_android) {
         "../browser/signin/signin_ui_util_browsertest.cc",
         "../browser/ui/signin_intercept_first_run_experience_dialog_browsertest.cc",
         "../browser/ui/signin_reauth_view_controller_browsertest.cc",
+        "../browser/ui/views/profiles/first_run_flow_controller_dice_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
       ]
@@ -9380,7 +9381,7 @@ if (!is_android) {
         "../browser/password_manager/password_manager_signin_intercept_test_helper.h",
       ]
     }
-    if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+    if (enable_dice_support || is_chromeos_lacros) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_test_base.cc",
         "../browser/ui/views/profiles/profile_picker_test_base.h",
