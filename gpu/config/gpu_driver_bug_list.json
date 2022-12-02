@@ -4200,6 +4200,26 @@
       "features": [
         "disable_rendering_to_rgb_external_texture"
       ]
+    },
+    {
+      "id": 408,
+      "description": "Disable Media Foundation Clear Playback on older AMD drivers.",
+      "comment": [
+        "We see an increased frequency of crashes with Media Foundation for Clear",
+        "playback on older AMD drivers. Disabling the feature for all drivers upto",
+        "the highest observed driver for the failure."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "driver_version": {
+        "op": "<=",
+        "value": "26.20.15002.61 "
+      },
+      "features": [
+        "disable_media_foundation_clear_playback"
+      ]
     }
   ]
 }

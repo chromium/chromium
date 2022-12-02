@@ -126,6 +126,7 @@
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
 #include "content/renderer/media/win/overlay_state_observer_impl.h"
 #include "content/renderer/media/win/overlay_state_service_provider.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
@@ -679,7 +680,17 @@ MediaFactory::CreateRendererFactorySelector(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  bool use_mf_for_clear = media::SupportMediaFoundationClearPlayback();
+  // Enable Media Foundation for Clear if it is supported & there are no GPU
+  // workarounds enabled.
+  bool use_mf_for_clear = false;
+  if (media::SupportMediaFoundationClearPlayback()) {
+    if (auto gpu_channel_host = render_thread->EstablishGpuChannelSync()) {
+      use_mf_for_clear =
+          !gpu_channel_host->gpu_feature_info().IsWorkaroundEnabled(
+              gpu::DISABLE_MEDIA_FOUNDATION_CLEAR_PLAYBACK);
+    }
+  }
+
   // Only use MediaFoundationRenderer when MediaFoundationCdm is available or
   // MediaFoundation for Clear is supported.
   if (media::MediaFoundationCdm::IsAvailable() || use_mf_for_clear) {
