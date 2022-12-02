@@ -532,7 +532,8 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   // The .example and .test TLDs are special-cased as known TLDs due to
   // https://tools.ietf.org/html/rfc6761. Unlike localhost, these are not valid
   // host names, so they must have at least one subdomain to be a URL.
-  for (const base::StringPiece domain : {"example", "test"}) {
+  // .local is used for Multicast DNS in https://www.rfc-editor.org/rfc/rfc6762.
+  for (const base::StringPiece domain : {"example", "test", "local"}) {
     // The +1 accounts for a possible trailing period.
     if (canonicalized_url->DomainIs(domain) &&
         (canonicalized_url->host().length() > (domain.length() + 1)))
