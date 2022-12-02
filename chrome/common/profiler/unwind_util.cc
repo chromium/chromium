@@ -47,7 +47,6 @@
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/profiler/arm_cfi_table.h"
 #include "base/profiler/chrome_unwinder_android.h"
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
 
