@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -30,6 +31,7 @@
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/shortcuts_database.h"
+#include "components/omnibox/browser/tailored_word_break_iterator.h"
 
 namespace {
 
@@ -81,18 +83,14 @@ const ACMatchClassifications& GetDescriptionClass(
              : match.description_class_for_shortcuts;
 }
 
-// Expand the last word in `text` to a full word in `match`'s description.
-// E.g., if `text` is 'Cha Aznav' and the match description is
-// 'Charles Aznavour', will return 'Ch Aznavour'.
+// Expand the last word in `text` to a full word in `match_text`. E.g., if
+// `text` is 'Cha Aznav' and the `match_text` is 'Charles Aznavour', will return
+// 'Cha Aznavour'.
 std::u16string ExpandToFullWord(const std::u16string& text,
-                                const AutocompleteMatch& match) {
+                                const std::u16string& match_text) {
   DCHECK(!text.empty());
 
-  // Look at the description (i.e. title) only. Contents (i.e. URLs) and
-  // destination URLs both contain garble often; e.g.,
-  // 'docs.google.com/d/3SyB0Y83dG_WuxX'.
-  const auto description_words =
-      String16VectorFromString16(GetDescription(match), nullptr);
+  const auto match_words = String16VectorFromString16(match_text, nullptr);
 
   // Trim the `text` to:
   // 1) Avoid expanding, e.g., the `text` 'Cha Aznav ' to 'Cha Aznav ur'.
@@ -103,10 +101,47 @@ std::u16string ExpandToFullWord(const std::u16string& text,
   const auto trimmed_text = std::u16string(
       base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING));
 
+  // Use the lower cased text for string insensitive comparisons. Use the
+  // original case to construct the returned expanded text.
+  const auto trimmed_lower_text = base::i18n::ToLower(trimmed_text);
+
+  // There may be multiple matching match words `text` can be expanded to. E.g.
+  // with `text` 'x' and `match_text` 'x1 x2', 'x' matches both 'x1' and 'x2'.
+  // 1) If `text` is a prefix of `match_text` (after trimming `text` whitespace
+  //    and ignoring case), then pick the next match word.
+  //    - E.g., 'x1 x' will expand to 'x1 x2', not 'x1 x1'.
+  // 2) Otherwise, pick the 1st match word at least 3 chars long.
+  //    - Prefer the 1st match word because the alternatives (e.g., the longest,
+  //      shortest, or match closest to the previous word) all have undesirable
+  //      edge cases. E.g., if using the longest match, the `text` 'singer C',
+  //      with match description 'Singer Charles Aznavour Performs Les
+  //      Comediens', would expand to 'singer Comédiens'.
+  //    - Prefer words at least 3 chars long to avoid expanding to 'a', 'at',
+  //      'to', etc when a more likely candidate exists.
+  //    - E.g., 'x1 x x' will expand to 'x1 x x1', not 'x1 x x2'.
+  // 3) Otherwise, resort to the 1st match word of any length.
+  //    - E.g, With `match_text` 'a ab xy xyz mn'
+  //      'x' will expand to 'xyz', not 'xy'.
+  //      'a' will expand to 'a', not 'ab'.
+  //      'm' will expand to 'mn'.
+
+  // This handles case (1) from the above comment.
+  if (base::StartsWith(base::i18n::ToLower(match_text), trimmed_lower_text,
+                       base::CompareCase::SENSITIVE)) {
+    // Cut off the common prefix.
+    const auto cut_match_text = match_text.substr(trimmed_lower_text.length());
+    // Find the 1st word of the cut `match_text`.
+    TailoredWordBreakIterator iter(cut_match_text,
+                                   base::i18n::BreakIterator::BREAK_WORD);
+    // Append that word to the text.
+    if (iter.Init() && iter.Advance() && iter.IsWord())
+      return base::StrCat({trimmed_text, iter.GetString()});
+  }
+
   // Find the last word in `text` to expand.
   WordStarts text_word_starts;
   const auto text_words =
-      String16VectorFromString16(trimmed_text, &text_word_starts);
+      String16VectorFromString16(trimmed_lower_text, &text_word_starts);
   // `String16VectorFromString16()` only considers the 1st 200
   // (`kMaxSignificantChars`) chars for word starts while it considers the full
   // text for words.
@@ -117,31 +152,22 @@ std::u16string ExpandToFullWord(const std::u16string& text,
   // avoid expanding, e.g., the text 'Cha*' to 'Cha*rles'.
   if (text_word_starts.empty() ||
       text_word_starts.back() + text_words.back().length() !=
-          trimmed_text.length()) {
+          trimmed_lower_text.length()) {
     return trimmed_text;
   }
-  // Lower case `text` for case-insensitive matching with `description_words`.
-  const auto text_last_word = base::i18n::ToLower(text_words.back());
+  const auto& text_last_word = text_words.back();
 
-  // Prioritize the 1st match that's at least 3 chars long. If none are found,
-  // fallback to the 1st match of any length. Don't simply find the 1st match of
-  // any length, as that could end up matching 'a', 'at', 'the', etc when a more
-  // likely candidate exists. Alternative approaches, e.g., longest match,
-  // shortest match, or the match closest to the previous word all have
-  // undesirable edge cases. E.g. if using longest match, the `text` 'singer C',
-  // with match description 'Singer Charles Aznavour Performs Les Comediens',
-  // would expand to 'singer Comédiens'.
+  // This handles cases (2) and (3) from the above comment.
   std::u16string best_word;
   // Iterate up to 100 `description_words` for performance.
   for (size_t i = 0;
-       i < description_words.size() && i < 100 && best_word.length() < 3u;
-       ++i) {
-    if (description_words[i].length() < 3u && !best_word.empty())
+       i < match_words.size() && i < 100 && best_word.length() < 3u; ++i) {
+    if (match_words[i].length() < 3u && !best_word.empty())
       continue;
-    if (!base::StartsWith(base::i18n::ToLower(description_words[i]),
-                          text_last_word, base::CompareCase::SENSITIVE))
+    if (!base::StartsWith(base::i18n::ToLower(match_words[i]), text_last_word,
+                          base::CompareCase::SENSITIVE))
       continue;
-    best_word = description_words[i];
+    best_word = match_words[i];
   }
 
   // Add on the missing letters of `text_last_word`, rather than replace it with
@@ -255,9 +281,10 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
       // typing 'go', the shortcut text should be updated to 'googl'.
       const auto text_and_3_chars = base::StrCat(
           {text_trimmed, it->second.text.substr(text_trimmed.length(), 3)});
-      const auto expanded_text = OmniboxFieldTrial::IsShortcutExpandingEnabled()
-                                     ? ExpandToFullWord(text_and_3_chars, match)
-                                     : text_and_3_chars;
+      const auto expanded_text =
+          OmniboxFieldTrial::IsShortcutExpandingEnabled()
+              ? ExpandToFullWord(text_and_3_chars, it->second.text)
+              : text_and_3_chars;
       UpdateShortcut(ShortcutsDatabase::Shortcut(
           it->second.id, expanded_text,
           MatchToMatchCore(match, template_url_service_,
@@ -268,8 +295,20 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   }
 
   // If no shortcuts to `match` prefixed by `text` were found, create one.
+
+  // The match contents (i.e. URLs) and destination URLs often contain garble,
+  // e.g., 'docs.google.com/d/3SyB0Y83dG_WuxX'. So `text` only expands to the
+  // match description (i.e., page or bookmark title). Built in suggestions are
+  // an exception because their descriptions are empty and their contents are
+  // meaningful.
+  // TODO(manukh): Also consider URL hosts. Otherwise, 'stacko' won't expand to
+  //  'stackoverflow.com' since the page title is 'stack overflow...'.
+  const auto& match_text =
+      match.provider->type() == AutocompleteProvider::Type::TYPE_BUILTIN
+          ? match.contents
+          : GetDescription(match);
   const auto expanded_text = OmniboxFieldTrial::IsShortcutExpandingEnabled()
-                                 ? ExpandToFullWord(text, match)
+                                 ? ExpandToFullWord(text, match_text)
                                  : text;
   AddShortcut(ShortcutsDatabase::Shortcut(
       base::GenerateGUID(), expanded_text,

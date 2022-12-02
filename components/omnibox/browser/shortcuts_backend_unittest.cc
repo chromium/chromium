@@ -17,6 +17,8 @@
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/shortcuts_constants.h"
 #include "components/omnibox/browser/shortcuts_database.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -409,9 +411,15 @@ TEST_F(ShortcutsBackendTest, DeleteShortcuts) {
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {
+  scoped_feature_list().InitAndEnableFeature(omnibox::kShortcutExpanding);
   InitBackend();
 
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(
+          AutocompleteProvider::Type::TYPE_HISTORY_QUICK);
+
   AutocompleteMatch match;
+  match.provider = provider.get();
   match.destination_url = GURL("https://www.google.com");
 
   // Should not have a shortcut initially.
@@ -434,38 +442,43 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {
   // Should shorten shortcut when a shorter input is used for the match.
   backend()->AddOrUpdateShortcut(u"we need very long", match);
   EXPECT_EQ(shortcuts_map().size(), 1u);
-  EXPECT_TRUE(ShortcutExists(u"we need very long te"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text"));
   EXPECT_FALSE(ShortcutExists(u"we need very long text for this test"));
 
   // Should add new shortcut when a longer input is used for the match.
   backend()->AddOrUpdateShortcut(u"we need very long text for this test",
                                  match);
   EXPECT_EQ(shortcuts_map().size(), 2u);
-  EXPECT_TRUE(ShortcutExists(u"we need very long te"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text"));
   EXPECT_TRUE(ShortcutExists(u"we need very long text for this test"));
 
   // Should shorten shortcut when a shorter input is used for the match. The
   // shorter shortcut to the same match should remain.
-  backend()->AddOrUpdateShortcut(u"we need very long text", match);
+  backend()->AddOrUpdateShortcut(u"we need very long text fo", match);
   EXPECT_EQ(shortcuts_map().size(), 2u);
-  EXPECT_TRUE(ShortcutExists(u"we need very long te"));
-  EXPECT_TRUE(ShortcutExists(u"we need very long text fo"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text for this"));
   EXPECT_FALSE(ShortcutExists(u"we need very long text for this test"));
 
   // Should only touch the shortest shortcut. The longer shortcut to the same
   // match should remain.
   backend()->AddOrUpdateShortcut(u"we", match);
   EXPECT_EQ(shortcuts_map().size(), 2u);
-  EXPECT_TRUE(ShortcutExists(u"we ne"));
-  EXPECT_FALSE(ShortcutExists(u"we need very long te"));
-  EXPECT_TRUE(ShortcutExists(u"we need very long text fo"));
+  EXPECT_TRUE(ShortcutExists(u"we need"));
+  EXPECT_FALSE(ShortcutExists(u"we need very long text"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text for this"));
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   scoped_feature_list().InitAndEnableFeature(omnibox::kShortcutExpanding);
   InitBackend();
 
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(
+          AutocompleteProvider::Type::TYPE_HISTORY_QUICK);
+
   AutocompleteMatch match;
+  match.provider = provider.get();
   match.destination_url = GURL("https://www.google.com");
   match.contents = u"https://www.google.com";
   match.description = u"a an app apple i it word ZaZaaZZ symbols(╯°□°）╯";
@@ -569,10 +582,78 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
 
   // Should not expand when match description is empty.
   AutocompleteMatch match_without_description;
+  match_without_description.provider = provider.get();
   match_without_description.destination_url = GURL("https://www.google.com");
   match_without_description.contents = u"https://www.google.com";
   match_without_description.contents_class.emplace_back(0, 0);
-  backend()->AddOrUpdateShortcut(u"xyz", match_without_description);
-  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"xyz"));
+  backend()->AddOrUpdateShortcut(u"goo", match_without_description);
+  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"goo"));
   ClearShortcutsMap();
+
+  // Should expand with contents for built in suggestion.
+  provider->SetType(AutocompleteProvider::Type::TYPE_BUILTIN);
+  AutocompleteMatch built_in_match;
+  built_in_match.provider = provider.get();
+  built_in_match.destination_url = GURL("https://www.google.com");
+  built_in_match.contents = u"https://www.googlecontents.com";
+  built_in_match.description = u"googledescription";
+  built_in_match.contents_class.emplace_back(0, 0);
+  built_in_match.description_class.emplace_back(0, 0);
+  backend()->AddOrUpdateShortcut(u"goo", built_in_match);
+  EXPECT_THAT(ShortcutsMapKeys(), testing::ElementsAre(u"googlecontents"));
+  ClearShortcutsMap();
+}
+
+TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Prefix) {
+  // Test `ExpandToFullWord`, specifically focussing on detecting and handling
+  // the cases when `text` is a prefix of `match_text`.
+
+  scoped_feature_list().InitAndEnableFeature(omnibox::kShortcutExpanding);
+  InitBackend();
+
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(
+          AutocompleteProvider::Type::TYPE_HISTORY_QUICK);
+
+  const auto test = [&](const std::string& text, const std::string& match_text,
+                        const std::string& expected_expanded_text) {
+    SCOPED_TRACE("Text: " + text + ", match_text: " + match_text);
+    AutocompleteMatch match;
+    match.provider = provider.get();
+    match.description = base::UTF8ToUTF16(match_text);
+    match.description_class.emplace_back(0, 0);
+
+    // Should expand last word when creating shortcuts.
+    backend()->AddOrUpdateShortcut(base::UTF8ToUTF16(text), match);
+    EXPECT_THAT(
+        ShortcutsMapKeys(),
+        testing::ElementsAre(base::UTF8ToUTF16(expected_expanded_text)));
+
+    ClearShortcutsMap();
+  };
+
+  // When `text` does prefix `match_text`, should expand to the next word in
+  // `match_text` instead of the 1st matching word.
+  test("x", "x1 x2", "x1");
+  test("x1 x", "x1 x2", "x1 x2");
+
+  // When `text` doesn't prefix `match_text`, should expand to the 1st matching
+  // word in `match_text`.
+  test("x2 x", "x1 x2", "x2 x1");
+  // Even if that produces repeated words. (It'd be too complicated to avoid
+  // this without introducing even greater edge cases).
+  test("x1 x", "x1 y x2", "x1 x1");
+
+  // When prefix matching, should use the next word even if its short.
+  test("x1 x", "x1 y x2 xyz", "x1 xyz");
+  // When not prefix matching, should use the 1st word at least 3 chars long if
+  // available.
+  test("x1 x", "x1 x2 xyz", "x1 x2");
+
+  // Both prefix and non prefix matching should handle trailing whitespace.
+  // Trailing whitespace should not prompt expansion to the next `match_text`.
+  test("x1 ", "x1 x2", "x1");
+  // Trailing whitespace should not prevent expansion of the last `text` word.
+  test("x1 xy ", "x1 xyz", "x1 xyz");
+  test("x1 xyz ", "x1 xyz", "x1 xyz");
 }
