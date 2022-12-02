@@ -154,6 +154,7 @@
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/security/address_space_feature.h"
@@ -7653,27 +7654,62 @@ bool NavigationRequest::CoopCoepSanityCheck() {
   return true;
 }
 
+bool NavigationRequest::IsFencedFrameRequiredPolicyFeatureAllowed(
+    const url::Origin& origin,
+    const blink::mojom::PermissionsPolicyFeature feature) {
+  const blink::PermissionsPolicyFeatureList& feature_list =
+      blink::GetPermissionsPolicyFeatureList();
+
+  // Check if the outer document's permissions policies allow all of the
+  // required policies for `origin`.
+  if (GetParentFrameOrOuterDocument()
+          ->permissions_policy()
+          ->GetAllowlistForFeatureIfExists(feature) &&
+      !GetParentFrameOrOuterDocument()
+           ->permissions_policy()
+           ->IsFeatureEnabledForOrigin(feature, origin)) {
+    return false;
+  }
+
+  // Check if the container policies to be committed allow all of the required
+  // policies for `origin`. This means that the policy must be either
+  // explicitly enabled for `origin`, or the policy must by default
+  // be enabled for all origins. Note: because the policies have not been
+  // read into a RenderFrameHost's permissions_policy_ yet, we need to check
+  // the ParsedPermissionsPolicyDeclaration object directly.
+  auto policy_iter = std::find_if(
+      commit_params_->frame_policy.container_policy.begin(),
+      commit_params_->frame_policy.container_policy.end(),
+      [feature](const blink::ParsedPermissionsPolicyDeclaration& d) {
+        return d.feature == feature;
+      });
+  if (policy_iter == commit_params_->frame_policy.container_policy.end()) {
+    return feature_list.at(feature) ==
+           blink::PermissionsPolicyFeatureDefault::EnableForAll;
+  }
+
+  return policy_iter->Contains(origin);
+}
+
 bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
     const url::Origin& origin) {
   // These checks only apply to fenced frames.
   if (!frame_tree_node_->IsFencedFrameRoot())
     return true;
 
+  // Check that all of the required policies for a new document with origin
+  // `origin` in the fenced frame are allowed. This looks at the outer
+  // document's policies and the "allow" attribute. Note that the document will
+  // eventually only use the required policies without policy inheritance, so
+  // extra policies defined in the outer document/"allow" attribute won't have
+  // any effect.
   for (const blink::mojom::PermissionsPolicyFeature feature :
        blink::kFencedFrameOpaqueAdsDefaultAllowedFeatures) {
-    // Only check if the feature is enabled for this origin if
-    // a policy was explicitly specified.
-    if (GetParentFrameOrOuterDocument()
-            ->permissions_policy()
-            ->GetAllowlistForFeatureIfExists(feature) &&
-        !GetParentFrameOrOuterDocument()
-             ->permissions_policy()
-             ->IsFeatureEnabledForOrigin(feature, origin)) {
+    if (!IsFencedFrameRequiredPolicyFeatureAllowed(origin, feature)) {
       const blink::PermissionsPolicyFeatureToNameMap& feature_to_name_map =
           blink::GetPermissionsPolicyFeatureToNameMap();
-      const std::string feature_string(
-          (feature_to_name_map.find(feature))->second);
-      AddDeferredConsoleMessage(
+      const std::string feature_string(feature_to_name_map.at(feature));
+      frame_tree_node_->current_frame_host()->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           base::StringPrintf(
               "Refused to frame '%s' as a fenced frame because permissions "

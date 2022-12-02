@@ -480,6 +480,15 @@ void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
     pending_frame_policy_.required_document_policy =
         frame_policy.required_document_policy;
   }
+
+  // Fenced frame roots do not have a parent, so add an extra check here to
+  // still allow a fenced frame to properly set its container policy. The
+  // required document policy and sandbox flags should stay unmodified.
+  if (IsFencedFrameRoot()) {
+    DCHECK(pending_frame_policy_.required_document_policy.empty());
+    DCHECK_EQ(pending_frame_policy_.sandbox_flags, frame_policy.sandbox_flags);
+    pending_frame_policy_.container_policy = frame_policy.container_policy;
+  }
 }
 
 void FrameTreeNode::SetAttributes(

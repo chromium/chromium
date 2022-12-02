@@ -72,7 +72,6 @@ mojom("mojom_platform") {
     "drag/drag.mojom",
     "favicon/favicon_url.mojom",
     "feature_observer/feature_observer.mojom",
-    "fenced_frame/fenced_frame.mojom",
     "fetch/fetch_api_request.mojom",
     "fetch/fetch_api_response.mojom",
     "file/file_utilities.mojom",
@@ -1110,6 +1109,7 @@ mojom("mojom_core") {
     "messaging/user_activation_snapshot.mojom",
 
     # Depends on frame_policy.mojom.
+    "fenced_frame/fenced_frame.mojom",
     "navigation/navigation_params.mojom",
 
     # Depends on transferable_message.mojom.

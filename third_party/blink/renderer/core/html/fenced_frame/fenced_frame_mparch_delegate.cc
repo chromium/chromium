@@ -72,4 +72,10 @@ void FencedFrameMPArchDelegate::FreezeFrameSize() {
   GetElement().StopResizeObserver();
 }
 
+void FencedFrameMPArchDelegate::DidChangeFramePolicy(
+    const FramePolicy& frame_policy) {
+  DCHECK(remote_);
+  remote_->DidChangeFramePolicy(frame_policy);
+}
+
 }  // namespace blink

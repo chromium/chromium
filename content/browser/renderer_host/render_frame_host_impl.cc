@@ -636,8 +636,11 @@ DetermineWhetherToForbidTrustTokenRedemption(
     const url::Origin& subframe_origin) {
   std::unique_ptr<blink::PermissionsPolicy> subframe_policy;
   if (frame->IsNestedWithinFencedFrame()) {
-    // In Fenced Frames, all permission policy gated features must be disabled
-    // for privacy reasons.
+    // Fenced frames have a list of required permission policies to load and
+    // can't be granted extra policies, so use the required policies instead of
+    // inheriting from its parent. Note that the parent policies must allow the
+    // required policies, which is checked separately in
+    // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
     subframe_policy = blink::PermissionsPolicy::CreateForFencedFrame(
         subframe_origin,
         frame->frame_tree_node()->GetFencedFrameMode().value());
@@ -10195,8 +10198,11 @@ void RenderFrameHostImpl::CreateWebUsbService(
 
 void RenderFrameHostImpl::ResetPermissionsPolicy() {
   if (IsNestedWithinFencedFrame()) {
-    // In Fenced Frames, all permission policy gated features must be disabled
-    // for privacy reasons.
+    // Fenced frames have a list of required permission policies to load and
+    // can't be granted extra policies, so use the required policies instead of
+    // inheriting from its parent. Note that the parent policies must allow the
+    // required policies, which is checked separately in
+    // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
     permissions_policy_ = blink::PermissionsPolicy::CreateForFencedFrame(
         last_committed_origin_,
         frame_tree_node()->GetFencedFrameMode().value());

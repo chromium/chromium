@@ -277,4 +277,13 @@ WebContents* FencedFrame::DeprecatedGetWebContents() {
 
 void FencedFrame::UpdateOverridingUserAgent() {}
 
+void FencedFrame::DidChangeFramePolicy(const blink::FramePolicy& frame_policy) {
+  FrameTreeNode* inner_root = frame_tree_->root();
+  const blink::FramePolicy& current_frame_policy =
+      inner_root->pending_frame_policy();
+  inner_root->SetPendingFramePolicy(blink::FramePolicy(
+      current_frame_policy.sandbox_flags, frame_policy.container_policy,
+      current_frame_policy.required_document_policy));
+}
+
 }  // namespace content

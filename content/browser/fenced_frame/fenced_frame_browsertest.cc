@@ -379,6 +379,10 @@ class NavigationDelayerInterceptor
       fenced_frame_->Navigate(url, navigation_start_time);
     }
 
+    void DidChangeFramePolicy(const blink::FramePolicy& frame_policy) override {
+      fenced_frame_->DidChangeFramePolicy(frame_policy);
+    }
+
    private:
     mojo::AssociatedRemote<blink::mojom::FencedFrameOwnerHost> original_remote_;
     mojo::AssociatedReceiver<blink::mojom::FencedFrameOwnerHost> receiver_{

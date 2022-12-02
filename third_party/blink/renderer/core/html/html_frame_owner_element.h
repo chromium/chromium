@@ -168,6 +168,10 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // changes.
   void UpdateContainerPolicy();
 
+  // Called when the container policy changes. Typically used to sync a
+  // container policy update to the browser process.
+  virtual void DidChangeContainerPolicy();
+
   // Return a document policy required policy for this frame, based on the
   // frame attributes.
   virtual DocumentPolicyFeatureState ConstructRequiredPolicy() const {

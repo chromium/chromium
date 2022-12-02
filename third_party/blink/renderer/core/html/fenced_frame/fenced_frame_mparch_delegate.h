@@ -28,6 +28,7 @@ class CORE_EXPORT FencedFrameMPArchDelegate
   void AttachLayoutTree() override;
   bool SupportsFocus() override;
   void FreezeFrameSize() override;
+  void DidChangeFramePolicy(const FramePolicy&) override;
 
  private:
   mojo::AssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;

@@ -7,18 +7,18 @@
 // <script src="resources/utils.js"></script>
 // <script src="/common/get-host-info.sub.js"></script>
 
-async function runDefaultEnabledFeaturesTest(t, should_load, fenced_origin) {
+async function runDefaultEnabledFeaturesTest(t, should_load, fenced_origin, allow="") {
   const fencedframe = attachFencedFrameContext({
-      attributes: [["mode", "opaque-ads"]],
+      attributes: [["mode", "opaque-ads"], ["allow", allow]],
       origin: fenced_origin});
 
   if (!should_load) {
     const fencedframe_blocked = new Promise(r => t.step_timeout(r, 1000));
     const fencedframe_loaded = fencedframe.execute(() => {});
-    assert_equals("blocked", await Promise.any([
+    assert_equals(await Promise.any([
       fencedframe_blocked.then(() => "blocked"),
       fencedframe_loaded.then(() => "loaded"),
-    ]), "The fenced frame should not be loaded.");
+    ]), "blocked", "The fenced frame should not be loaded.");
     return;
   }
 

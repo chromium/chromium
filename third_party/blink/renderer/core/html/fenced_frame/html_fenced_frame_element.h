@@ -58,6 +58,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     virtual void AttachLayoutTree() {}
     virtual bool SupportsFocus() { return false; }
     virtual void FreezeFrameSize() {}
+    virtual void DidChangeFramePolicy(const FramePolicy& frame_policy) {}
 
    protected:
     HTMLFencedFrameElement& GetElement() const { return *outer_element_; }
@@ -75,11 +76,9 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   FrameOwnerElementType OwnerType() const override {
     return FrameOwnerElementType::kFencedframe;
   }
-  ParsedPermissionsPolicy ConstructContainerPolicy() const override {
-    NOTREACHED();
-    return ParsedPermissionsPolicy();
-  }
+  ParsedPermissionsPolicy ConstructContainerPolicy() const override;
   void SetCollapsed(bool) override;
+  void DidChangeContainerPolicy() override;
 
   // HTMLElement overrides.
   bool IsHTMLFencedFrameElement() const final { return true; }
@@ -188,6 +187,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // set after being frozen. This ensures that multiple logs don't happen
   // for one fenced frame if it's constantly being resized.
   bool size_set_after_freeze_ = false;
+  // Attributes that are modeled off of their iframe equivalents
+  AtomicString allow_;
 
   friend class FencedFrameMPArchDelegate;
   friend class FencedFrameShadowDOMDelegate;

@@ -11,11 +11,13 @@
 <body>
 <script>
 promise_test(async(t) => {
-  await runDefaultEnabledFeaturesTest(t, true, get_host_info().ORIGIN);
+  await runDefaultEnabledFeaturesTest(t, /*should_load=*/true,
+      get_host_info().ORIGIN);
 }, 'Same-origin fenced frame loads when feature policies are unset');
 
 promise_test(async(t) => {
-  await runDefaultEnabledFeaturesTest(t, true, get_host_info().REMOTE_ORIGIN);
+  await runDefaultEnabledFeaturesTest(t, /*should_load=*/true,
+      get_host_info().REMOTE_ORIGIN);
 }, 'Cross-origin fenced frame loads when feature policies are unset');
 
 </script>

@@ -5,15 +5,8 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "url/mojom/url.mojom";
-
-// These values represent the `mode` attribute of the fenced frame element. Keep
-// this values in sync with the conditions in `GetModeAttributeValue()` in
-// `html_fenced_frame_element.cc`.
-enum FencedFrameMode {
-  kDefault = 0,
-  kOpaqueAds = 1,
-};
 
 // The `FencedFrameOwnerHost` interface is used by the HTMLFencedFrameElement in
 // the renderer process that hosts the "outer" frame tree. It is used to
@@ -24,6 +17,11 @@ interface FencedFrameOwnerHost {
   // TODO(crbug.com/1243568): Document the restrictions on the types of URLs
   // that `url` can represent, once these restrictions are made.
   Navigate(url.mojom.Url url, mojo_base.mojom.TimeTicks navigation_start_time);
+  // Updates the container policy on the browser side. Note: right now, this
+  // does not change the sandbox flags or the required document policy. We use
+  // this instead of RenderFrameHostImpl::DidChangeFramePolicy to avoid doing
+  // iframe-only checks that would break for fenced frames.
+  DidChangeFramePolicy(blink.mojom.FramePolicy frame_policy);
 };
 
 enum ReportingDestination {

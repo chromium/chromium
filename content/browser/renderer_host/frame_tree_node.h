@@ -228,8 +228,10 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // this frame. This includes flags inherited from parent frames and the latest
   // flags from the <iframe> element hosting this frame. The returned policies
   // may not yet have taken effect, since "sandbox" and "allow" attribute
-  // updates in an <iframe> element take effect on next navigation. To retrieve
-  // the currently active policy for this frame, use effective_frame_policy().
+  // updates in an <iframe> element take effect on next navigation. For
+  // <fencedframe> elements, not everything in the frame policy might actually
+  // take effect after the navigation. To retrieve the currently active policy
+  // for this frame, use effective_frame_policy().
   const blink::FramePolicy& pending_frame_policy() const {
     return pending_frame_policy_;
   }
