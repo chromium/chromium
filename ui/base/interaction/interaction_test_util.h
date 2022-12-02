@@ -21,6 +21,10 @@ namespace ui::test {
 // actions to framework-specific handlers. Use so you can write your
 // interaction tests without having to worry about framework specifics.
 //
+// Simulators are checked in the order they are added, so if more than one
+// simulator can handle a particular action, add the one that has the more
+// specific/desired behavior first.
+//
 // Example usage:
 //
 // class MyTest {
@@ -203,7 +207,9 @@ class InteractionTestUtil {
 
 #if !BUILDFLAG(IS_IOS)
   // Sends `accelerator` to the surface containing `element`. May not work if
-  // the surface is not active.
+  // the surface is not active. Prefer to use only in single-process test
+  // fixtures like interactive_ui_tests, especially for app/browser
+  // accelerators.
   void SendAccelerator(TrackedElement* element, Accelerator accelerator);
 #endif
 

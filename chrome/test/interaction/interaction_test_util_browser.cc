@@ -11,12 +11,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/webview/webview.h"
@@ -80,6 +82,26 @@ class InteractionTestUtilSimulatorBrowser
   InteractionTestUtilSimulatorBrowser() = default;
   ~InteractionTestUtilSimulatorBrowser() override = default;
 
+#if BUILDFLAG(IS_MAC)
+  // Browser accelerators must be sent via key events to the window on Mac or
+  // they don't work properly. Dialog accelerators still appear to work the same
+  // as on other platforms.
+  bool SendAccelerator(ui::TrackedElement* element,
+                       const ui::Accelerator& accelerator) override {
+    Browser* const browser =
+        InteractionTestUtilBrowser::GetBrowserFromContext(element->context());
+    if (!browser)
+      return false;
+
+    CHECK(ui_controls::SendKeyPress(
+        browser->window()->GetNativeWindow(), accelerator.key_code(),
+        accelerator.IsCtrlDown(), accelerator.IsShiftDown(),
+        accelerator.IsAltDown(), accelerator.IsCmdDown()));
+
+    return true;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   bool SelectTab(ui::TrackedElement* tab_collection,
                  size_t index,
                  InputType input_type) override {
@@ -132,12 +154,12 @@ class InteractionTestUtilSimulatorBrowser
 }  // namespace
 
 InteractionTestUtilBrowser::InteractionTestUtilBrowser() {
+  AddSimulator(std::make_unique<InteractionTestUtilSimulatorBrowser>());
   AddSimulator(
       std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
 #if BUILDFLAG(IS_MAC)
   AddSimulator(std::make_unique<ui::test::InteractionTestUtilSimulatorMac>());
 #endif
-  AddSimulator(std::make_unique<InteractionTestUtilSimulatorBrowser>());
 }
 
 InteractionTestUtilBrowser::~InteractionTestUtilBrowser() = default;

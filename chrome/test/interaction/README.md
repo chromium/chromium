@@ -110,7 +110,9 @@ Verbs fall into a number of different categories:
     - `EnsureNotPresent()`
 - **Action** verbs simulate input to specific UI elements. You can often specify
   the type of input you want to simulate (keyboard, mouse, etc.) but you don't
-  have to. Examples:
+  have to. Some of these (`ActivateSurface()`, `SendAccelerator()`) may flake in
+  environments where the test fixture is not running as the only process, so
+  prefer to use those in interactive_ui_tests. Examples:
     - `PressButton()`
     - `SelectMenuItem()`
     - `SelectTab()`
