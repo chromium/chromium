@@ -3133,7 +3133,9 @@ CSSValue* ConsumeImage(CSSParserTokenRange& range,
     return CreateCSSImageValueWithReferrer(uri, context);
   if (range.Peek().GetType() == kFunctionToken) {
     CSSValueID id = range.Peek().FunctionId();
-    if (id == CSSValueID::kWebkitImageSet || id == CSSValueID::kImageSet)
+    if (id == CSSValueID::kWebkitImageSet ||
+        (id == CSSValueID::kImageSet &&
+         RuntimeEnabledFeatures::CSSImageSetEnabled()))
       return ConsumeImageSet(range, context);
     if (generated_image == ConsumeGeneratedImagePolicy::kAllow &&
         IsGeneratedImage(id)) {

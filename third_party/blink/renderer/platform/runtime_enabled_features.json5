@@ -705,6 +705,14 @@
       status: "stable",
     },
     {
+      // If enabled,
+      // image-set values without the `-webkit-` prefix
+      // will be parsed.
+      name: "CSSImageSet",
+      status: "experimental",
+      base_feature: "CSSImageSet",
+    },
+    {
       name: "CSSIndependentTransformProperties",
       status: "stable",
     },
