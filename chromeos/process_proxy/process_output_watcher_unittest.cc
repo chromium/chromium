@@ -271,7 +271,8 @@ TEST_F(ProcessOutputWatcherTest, HasThreeByteUTF8Character) {
   RunTest(test_cases);
 }
 
-TEST_F(ProcessOutputWatcherTest, MulitByteUTF8CharNullTerminated) {
+// TODO(crbug.com/1395483) Re-enable test
+TEST_F(ProcessOutputWatcherTest, DISABLED_MultiByteUTF8CharNullTerminated) {
   std::vector<TestCase> test_cases;
   test_cases.push_back(TestCase("test\xe2\x82\xac", true, "test\xe2\x82\xac"));
 
@@ -302,7 +303,8 @@ TEST_F(ProcessOutputWatcherTest, InvalidUTF8SeriesOfTrailingBytes) {
   RunTest(test_cases);
 }
 
-TEST_F(ProcessOutputWatcherTest, EndsWithInvalidUTF8) {
+// TODO(crbug.com/1395483) Re-enable test
+TEST_F(ProcessOutputWatcherTest, DISABLED_EndsWithInvalidUTF8) {
   std::vector<TestCase> test_cases;
   test_cases.push_back(TestCase("\xff", false, "\xff"));
 
@@ -320,7 +322,8 @@ TEST_F(ProcessOutputWatcherTest, DISABLED_FourByteUTF8) {
 
 // Verifies that sending '\0' generates PROCESS_OUTPUT_TYPE_OUT event and does
 // not terminate output watcher.
-TEST_F(ProcessOutputWatcherTest, SendNull) {
+// TODO(crbug.com/1395483) Re-enable test
+TEST_F(ProcessOutputWatcherTest, DISABLED_SendNull) {
   std::vector<TestCase> test_cases;
   // This will send '\0' to output watcher.
   test_cases.push_back(TestCase("", true));
