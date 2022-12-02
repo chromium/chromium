@@ -25,9 +25,8 @@ js_injection::mojom::JsWebMessageDataView::Tag UnionTraits<
             return js_injection::mojom::JsWebMessageDataView::Tag::kStringValue;
           },
           [](const std::unique_ptr<blink::WebMessageArrayBufferPayload>&) {
-            // TODO(crrev.com/1374142): Add support for ArrayBuffer.
-            NOTREACHED() << "ArrayBufferPayload is not supported";
-            return js_injection::mojom::JsWebMessageDataView::Tag::kStringValue;
+            return js_injection::mojom::JsWebMessageDataView::Tag::
+                kArrayBufferValue;
           }},
       payload);
 }

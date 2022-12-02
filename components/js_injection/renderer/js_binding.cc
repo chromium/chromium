@@ -115,15 +115,21 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
   try_catch.SetVerbose(true);
 
   v8::Local<v8::Value> v8_message;
-  if (message->is_string_value()) {
+  if (absl::holds_alternative<std::u16string>(message)) {
     v8_message = gin::ConvertToV8(
         isolate, std::move(absl::get<std::u16string>(message)));
-  } else if (message->is_array_buffer_value()) {
-    auto& big_buffer = message->get_array_buffer_value();
+  } else if (absl::holds_alternative<
+                 std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
+                 message)) {
+    auto& array_buffer =
+        absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
+            message);
     auto backing_store =
-        v8::ArrayBuffer::NewBackingStore(isolate, big_buffer.size());
-    CHECK(backing_store->ByteLength() == big_buffer.size());
-    memcpy(backing_store->Data(), big_buffer.data(), big_buffer.size());
+        v8::ArrayBuffer::NewBackingStore(isolate, array_buffer->GetLength());
+    CHECK(backing_store->ByteLength() == array_buffer->GetLength());
+    array_buffer->CopyInto(
+        base::make_span(static_cast<uint8_t*>(backing_store->Data()),
+                        backing_store->ByteLength()));
     v8_message = v8::ArrayBuffer::New(isolate, std::move(backing_store));
   } else {
     NOTREACHED() << "Unknown JsWebMessage type.";

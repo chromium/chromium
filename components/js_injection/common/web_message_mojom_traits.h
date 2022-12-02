@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/js_injection/common/interfaces.mojom-shared.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
@@ -16,8 +17,15 @@ namespace mojo {
 template <>
 struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
                    blink::WebMessagePayload> {
-  static std::u16string string_value(const blink::WebMessagePayload& payload) {
+  static std::u16string string_value(blink::WebMessagePayload& payload) {
     return absl::get<std::u16string>(payload);
+  }
+
+  static std::unique_ptr<blink::WebMessageArrayBufferPayload>
+  array_buffer_value(blink::WebMessagePayload& payload) {
+    return std::move(
+        absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
+            payload));
   }
 
   static js_injection::mojom::JsWebMessageDataView::Tag GetTag(
