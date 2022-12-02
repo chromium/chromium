@@ -273,13 +273,6 @@ export class BrowsingContextProcessor {
     return {result: {}};
   }
 
-  async process_PROTO_browsingContext_findElement(
-    params: BrowsingContext.PROTO.FindElementParameters
-  ): Promise<BrowsingContext.PROTO.FindElementResult> {
-    const context = BrowsingContextStorage.getKnownContext(params.context);
-    return await context.findElement(params.selector);
-  }
-
   async process_browsingContext_close(
     commandParams: BrowsingContext.CloseParameters
   ): Promise<BrowsingContext.CloseResult> {

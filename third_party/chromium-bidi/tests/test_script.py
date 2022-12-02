@@ -18,7 +18,7 @@ from _helpers import *
 
 @pytest.mark.asyncio
 async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
-      context_id):
+                                                                  context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -67,7 +67,7 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
 
 @pytest.mark.asyncio
 async def test_script_evaluateThrowingError_exceptionReturned(websocket,
-      context_id):
+                                                              context_id):
     exception_details = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -117,7 +117,7 @@ async def test_script_evaluateThrowingError_exceptionReturned(websocket,
 
 @pytest.mark.asyncio
 async def test_script_evaluateDontWaitPromise_promiseReturned(websocket,
-      context_id):
+                                                              context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -179,7 +179,7 @@ async def test_script_evaluateWaitPromise_resultReturned(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_script_evaluateChangingObject_resultObjectDidNotChange(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -215,7 +215,7 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(
 
 @pytest.mark.asyncio
 async def test_script_evaluateInteractsWithDom_resultReceived(websocket,
-      context_id):
+                                                              context_id):
     result = await execute_command(websocket, {
         "id": 32,
         "method": "script.evaluate",
@@ -294,7 +294,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -320,7 +320,7 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
@@ -352,7 +352,7 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultReturned(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -375,7 +375,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultRe
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_promiseReturned(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -398,7 +398,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_pro
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_resultReturned(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -421,7 +421,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_result
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_promiseReturned(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -444,7 +444,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_p
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnoredAndWindowUsedInstead(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -467,7 +467,7 @@ async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnore
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -491,7 +491,7 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
 @pytest.mark.asyncio
 # TODO(sadym): fix test. Serialize Number, String etc classes properly.
 async def _ignore_test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
-      websocket, context_id):
+        websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
@@ -514,18 +514,20 @@ async def _ignore_test_script_callFunctionWithClassicFunctionAndThisParameter_th
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithNode_resultReceived(websocket,
-      context_id):
+                                                          context_id):
     # 1. Get element.
     # 2. Evaluate script on it.
     await goto_url(websocket, context_id,
                    "data:text/html,<h2>test</h2>")
 
-    # 1. Get element.`
+    # 1. Get element.
     result = await execute_command(websocket, {
-        "method": "PROTO.browsingContext.findElement",
+        "method": "script.evaluate",
         "params": {
-            "selector": "body > h2",
-            "context": context_id}})
+            "expression": "document.querySelector('body > h2');",
+            "target": {"context": context_id},
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     handle = result["result"]["handle"]
 
@@ -550,7 +552,7 @@ async def test_script_callFunctionWithNode_resultReceived(websocket,
 
 @pytest.mark.asyncio
 async def test_script_evaluate_windowOpen_windowOpened(websocket,
-      context_id):
+                                                       context_id):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {

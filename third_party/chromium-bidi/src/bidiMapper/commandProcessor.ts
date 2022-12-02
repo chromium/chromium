@@ -176,11 +176,6 @@ export class CommandProcessor {
           Script.parseDisownParams(commandData.params)
         );
 
-      case 'PROTO.browsingContext.findElement':
-        return await this.#contextProcessor.process_PROTO_browsingContext_findElement(
-          BrowsingContext.PROTO.parseFindElementParams(commandData.params)
-        );
-
       case 'cdp.sendCommand':
         return await this.#contextProcessor.process_cdp_sendCommand(
           CDP.parseSendCommandParams(commandData.params)

@@ -16,7 +16,7 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {BrowsingContext, Script} from '../protocol/bidiProtocolTypes';
+import {BrowsingContext} from '../protocol/bidiProtocolTypes';
 import {CdpClient} from '../../cdp';
 import {IEventManager} from '../events/EventManager';
 import {Deferred} from '../../../utils/deferred';
@@ -484,34 +484,6 @@ export class BrowsingContextImpl {
         url: url,
       },
     };
-  }
-
-  async findElement(
-    selector: string
-  ): Promise<BrowsingContext.PROTO.FindElementResult> {
-    await this.#targetDefers.targetUnblocked;
-
-    const functionDeclaration = `
-      (resultsSelector) => document.querySelector(resultsSelector)
-    `;
-    const _arguments: Script.ArgumentValue[] = [
-      {type: 'string', value: selector},
-    ];
-
-    // TODO: execute in isolated world.
-    // TODO(sadym): handle not found exception.
-    const result = await this.#defaultRealm.callFunction(
-      functionDeclaration,
-      {
-        type: 'undefined',
-      },
-      _arguments,
-      true,
-      'root'
-    );
-
-    // TODO(sadym): handle type properly.
-    return result as any as BrowsingContext.PROTO.FindElementResult;
   }
 
   async getOrCreateSandbox(sandbox: string | undefined): Promise<Realm> {

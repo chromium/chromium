@@ -382,14 +382,14 @@ async def test_serialization_node(websocket, context_id):
                    ">some text<h2>some another text</h2></div>")
 
     result = await execute_command(websocket, {
-        "method": "PROTO.browsingContext.findElement",
+        "method": "script.evaluate",
         "params": {
-            "selector": "body > div",
-            "context": context_id}})
+            "expression": "document.querySelector('body > div');",
+            "target": {"context": context_id},
+            "awaitPromise": True}})
 
     recursive_compare({
         "type": "node",
-        "handle": any_string,
         "value": {
             "nodeType": 1,
             "nodeValue": "",

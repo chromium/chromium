@@ -652,14 +652,12 @@ export namespace BrowsingContext {
     | GetTreeCommand
     | NavigateCommand
     | CreateCommand
-    | CloseCommand
-    | PROTO.FindElementCommand;
+    | CloseCommand;
   export type CommandResult =
     | GetTreeResult
     | NavigateResult
     | CreateResult
-    | CloseResult
-    | PROTO.FindElementResult;
+    | CloseResult;
   export type Event =
     | LoadEvent
     | DomContentLoadedEvent
@@ -810,36 +808,6 @@ export namespace BrowsingContext {
     constructor(params: BrowsingContext.Info) {
       super(ContextDestroyedEvent.method, params);
     }
-  }
-
-  // proto
-  export namespace PROTO {
-    // `browsingContext.findElement`:
-    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/67
-    export type FindElementCommand = {
-      method: 'PROTO.browsingContext.findElement';
-      params: FindElementParameters;
-    };
-
-    const FindElementParametersSchema = zod.object({
-      context: CommonDataTypes.BrowsingContextSchema,
-      selector: zod.string(),
-    });
-    export type FindElementParameters = zod.infer<
-      typeof FindElementParametersSchema
-    >;
-
-    export function parseFindElementParams(
-      params: unknown
-    ): FindElementParameters {
-      return parseObject(params, FindElementParametersSchema);
-    }
-
-    export type FindElementResult = FindElementSuccessResult;
-
-    export type FindElementSuccessResult = {
-      result: CommonDataTypes.NodeRemoteValue;
-    };
   }
 
   export const EventNames = [
