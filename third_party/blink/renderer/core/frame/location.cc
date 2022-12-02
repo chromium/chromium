@@ -280,7 +280,11 @@ void Location::SetLocation(const String& url,
     activity_logger->LogEvent("blinkSetAttribute", argv.size(), argv.data());
   }
 
-  FrameLoadRequest request(incumbent_window, ResourceRequest(completed_url));
+  ResourceRequestHead resource_request(completed_url);
+  resource_request.SetHasUserGesture(
+      LocalFrame::HasTransientUserActivation(incumbent_window->GetFrame()));
+
+  FrameLoadRequest request(incumbent_window, resource_request);
   request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
   WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
   if (set_location_policy == SetLocationPolicy::kReplaceThisFrame)

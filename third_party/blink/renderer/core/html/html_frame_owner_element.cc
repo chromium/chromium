@@ -670,6 +670,8 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   KURL url_to_request = url.IsNull() ? BlankURL() : url;
   ResourceRequestHead request(url_to_request);
   request.SetReferrerPolicy(ReferrerPolicyAttribute());
+  request.SetHasUserGesture(
+      LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
 
   network::mojom::blink::TrustTokenParamsPtr trust_token_params =
       ConstructTrustTokenParams();
