@@ -182,7 +182,7 @@ base::expected<Aliases, ParseError> ParseCctlds(
           ParseSiteAndValidate(item, set_entries, elements, emit_errors);
       if (!alias_or_error.has_value()) {
         return base::unexpected(
-            ParseError(alias_or_error.error(), {kCCTLDsField, site, i}));
+            ParseError(alias_or_error.error(), {kCCTLDsField, site, static_cast<int>(i)}));
       }
 
       const net::SchemefulSite alias = alias_or_error.value();
@@ -195,7 +195,7 @@ base::expected<Aliases, ParseError> ParseCctlds(
         if (warnings) {
           warnings->push_back(
               ParseWarning(ParseWarningType::kAliasNotCctldVariant,
-                           {kCCTLDsField, site, i}));
+                           {kCCTLDsField, site, static_cast<int>(i)}));
         }
         continue;
       }
@@ -229,7 +229,7 @@ absl::optional<ParseError> ParseSubset(
     base::expected<net::SchemefulSite, ParseErrorType> site_or_error =
         ParseSiteAndValidate(item, set_entries, other_sets_sites, emit_errors);
     if (!site_or_error.has_value())
-      return ParseError(site_or_error.error(), {descriptor.field_name, index});
+      return ParseError(site_or_error.error(), {descriptor.field_name, static_cast<int>(index)});
     if (!descriptor.size_limit.has_value() ||
         static_cast<int>(index) < descriptor.size_limit.value()) {
       set_entries.emplace_back(
