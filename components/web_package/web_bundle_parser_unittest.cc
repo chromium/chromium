@@ -224,12 +224,11 @@ void CheckIfSignatureStackEntryIsValid(
     const Ed25519PublicKey& public_key) {
   EXPECT_EQ(entry->public_key, public_key);
 
-  EXPECT_EQ(entry->signature.size(), 64ul);
   // The signature should also be present at the very end of
   // `complete_entry_cbor`.
-  EXPECT_TRUE(
-      std::equal(entry->signature.begin(), entry->signature.end(),
-                 entry->complete_entry_cbor.end() - entry->signature.size()));
+  EXPECT_TRUE(std::equal(
+      entry->signature.bytes().begin(), entry->signature.bytes().end(),
+      entry->complete_entry_cbor.end() - entry->signature.bytes().size()));
 
   // The attributes should also be part of `complete_entry_cbor`.
   EXPECT_NE(

@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-shared.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/ed25519_signature.h"
 
 namespace mojo {
 
@@ -22,6 +23,19 @@ class StructTraits<web_package::mojom::Ed25519PublicKeyDataView,
 
   static bool Read(web_package::mojom::Ed25519PublicKeyDataView data,
                    web_package::Ed25519PublicKey* public_key);
+};
+
+template <>
+class StructTraits<web_package::mojom::Ed25519SignatureDataView,
+                   web_package::Ed25519Signature> {
+ public:
+  static base::span<const uint8_t, web_package::Ed25519Signature::kLength>
+  bytes(const web_package::Ed25519Signature& signature) {
+    return signature.bytes();
+  }
+
+  static bool Read(web_package::mojom::Ed25519SignatureDataView data,
+                   web_package::Ed25519Signature* signature);
 };
 
 }  // namespace mojo

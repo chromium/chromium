@@ -88,6 +88,11 @@ struct Ed25519PublicKey {
   array<uint8, 32> bytes;
 };
 
+// Mapped to `web_package::Ed25519Signature`
+struct Ed25519Signature {
+  array<uint8, 64> bytes;
+};
+
 struct BundleIntegrityBlockSignatureStackEntry {
   // The CBOR of this signature stack entry.
   // This is needed for verification of more than one signature later, because
@@ -99,7 +104,7 @@ struct BundleIntegrityBlockSignatureStackEntry {
   // The public key of this signature stack entry.
   Ed25519PublicKey public_key;
   // The signature of this signature stack entry.
-  array<uint8> signature;
+  Ed25519Signature signature;
 };
 
 // Bundle's metadata, i.e. information in sections other than "responses".

@@ -97,7 +97,7 @@ mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
   raw_signature_stack_entry->public_key =
       *web_package::Ed25519PublicKey::Create(public_key);
   raw_signature_stack_entry->signature =
-      std::vector(std::begin(signature), std::end(signature));
+      *web_package::Ed25519Signature::Create(signature);
   raw_signature_stack_entry->complete_entry_cbor = std::vector(
       std::begin(complete_entry_cbor), std::end(complete_entry_cbor));
   raw_signature_stack_entry->attributes_cbor =

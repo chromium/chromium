@@ -13,15 +13,9 @@ namespace web_package {
 base::expected<SignedWebBundleSignatureStackEntry, std::string>
 SignedWebBundleSignatureStackEntry::Create(
     const mojom::BundleIntegrityBlockSignatureStackEntryPtr entry) {
-  auto signature = Ed25519Signature::Create(entry->signature);
-  if (!signature.has_value()) {
-    return base::unexpected(
-        base::StringPrintf("Invalid signature: %s", signature.error().c_str()));
-  }
-
-  return SignedWebBundleSignatureStackEntry(entry->complete_entry_cbor,
-                                            entry->attributes_cbor,
-                                            entry->public_key, *signature);
+  return SignedWebBundleSignatureStackEntry(
+      entry->complete_entry_cbor, entry->attributes_cbor, entry->public_key,
+      entry->signature);
 }
 
 SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(

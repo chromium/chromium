@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/ed25519_signature.h"
 
 namespace mojo {
 
@@ -20,6 +21,22 @@ bool StructTraits<web_package::mojom::Ed25519PublicKeyDataView,
   }
 
   *public_key = web_package::Ed25519PublicKey::Create(
+      base::as_bytes(base::make_span(bytes)));
+
+  return true;
+}
+
+// static
+bool StructTraits<web_package::mojom::Ed25519SignatureDataView,
+                  web_package::Ed25519Signature>::
+    Read(web_package::mojom::Ed25519SignatureDataView data,
+         web_package::Ed25519Signature* signature) {
+  std::array<uint8_t, web_package::Ed25519Signature::kLength> bytes;
+  if (!data.ReadBytes(&bytes)) {
+    return false;
+  }
+
+  *signature = web_package::Ed25519Signature::Create(
       base::as_bytes(base::make_span(bytes)));
 
   return true;
