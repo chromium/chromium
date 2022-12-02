@@ -813,8 +813,7 @@ void FocusFakebox() {
 // displayed. Paste button should be hidden when pasteboard is empty otherwise
 // it should be displayed. Select & SelectAll buttons should be hidden when the
 // omnibox is empty.
-// TODO(crbug.com/1209342): test failing on device
-- (void)DISABLED_testEmptyOmnibox {
+- (void)testEmptyOmnibox {
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
