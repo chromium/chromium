@@ -8,6 +8,7 @@
  */
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {DefaultUserImage, UserImage} from '../personalization_app.mojom-webui.js';
@@ -361,13 +362,20 @@ export class AvatarList extends WithPersonalizationStore {
   }
 
   /**
-   * Creates style string with static background image url. Static image loads
-   * faster and will provide a smooth experience when the animated image
-   * complete loading.
+   * Creates style string with static background image url for default
+   * avatar images. Static image loads faster and will provide a
+   * smooth experience when the animated image completes loading.
    */
-  private getImgBackgroudStyle_(url: string): string {
-    // Append staticEncode attribute to the background image url.
-    return `background-image: url('` + url + `&staticEncode=true')`;
+  private getImgBackgroundStyle_(url: string, defaultImageIndex: number|null):
+      string {
+    // If the image is a default avatar loaded from gstatic resources,
+    // return a static encoded background image.
+    if (loadTimeData.getBoolean('isAvatarsCloudMigrationEnabled') &&
+        defaultImageIndex) {
+      return `background-image: url('` + url + `&staticEncode=true')`;
+    }
+
+    return '';
   }
 }
 
