@@ -32,19 +32,8 @@ source_set("updater_executable") {
     "updater.rc",
   ]
 
-  # `updater.rc` does not process `#if BUILDFLAG(GOOGLE_CHROME_BRANDING)`
-  # correctly sometimes, especially seen with the `win-rel` builder. Explicitly
-  # defining `CHROME_BRANDED_TLB` is being done here as a workaround.
-  if (is_chrome_branded) {
-    defines = [ "CHROME_BRANDED_TLB=1" ]
-  } else {
-    defines = [ "CHROME_BRANDED_TLB=0" ]
-  }
-
   deps = [
-    "//build:branding_buildflags",
     "//chrome/updater:base",
-    "//chrome/updater/app/server/win:updater_legacy_idl_idl",
     "//chrome/updater/win/ui/resources",
   ]
 

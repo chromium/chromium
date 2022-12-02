@@ -8,10 +8,5 @@
 
 1 TYPELIB "chrome/updater/app/server/win/updater_idl.tlb"
 2 TYPELIB "chrome/updater/app/server/win/updater_internal_idl.tlb"
-
-#if CHROME_BRANDED_TLB == 1
-3 TYPELIB "chrome/updater/app/server/win/updater_legacy_idl_chrome_branded.tlb"
-#elif CHROME_BRANDED_TLB == 0
-3 TYPELIB "chrome/updater/app/server/win/updater_legacy_idl_open_source.tlb"
-#endif  // CHROME_BRANDED_TLB == 1
+3 TYPELIB "chrome/updater/app/server/win/updater_legacy_idl.tlb"
 

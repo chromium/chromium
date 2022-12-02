@@ -6,8 +6,8 @@
  /* File created by MIDL compiler version 8.xx.xxxx */
 /* at a redacted point in time
  */
-/* Compiler settings for gen/chrome/updater/updater_legacy_idl_open_source.template:
-    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.xx.xxxx 
+/* Compiler settings for gen/chrome/updater/app/server/win/updater_legacy_idl.idl:
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -36,8 +36,8 @@
 #include "ole2.h"
 #endif /*COM_NO_WINDOWS_H*/
 
-#ifndef __updater_legacy_idl_open_source_h__
-#define __updater_legacy_idl_open_source_h__
+#ifndef __updater_legacy_idl_h__
+#define __updater_legacy_idl_h__
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -276,7 +276,7 @@ extern "C"{
 #endif 
 
 
-/* interface __MIDL_itf_updater_legacy_idl_open_source_0000_0000 */
+/* interface __MIDL_itf_updater_legacy_idl_0000_0000 */
 /* [local] */ 
 
 typedef 
@@ -311,8 +311,8 @@ enum AppCommandStatus
     } ;
 
 
-extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_open_source_0000_0000_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_open_source_0000_0000_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_0000_0000_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_0000_0000_v0_0_s_ifspec;
 
 #ifndef __ICurrentState_INTERFACE_DEFINED__
 #define __ICurrentState_INTERFACE_DEFINED__
@@ -325,7 +325,7 @@ EXTERN_C const IID IID_ICurrentState;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("BE5D3E90-A66C-4A0A-9B7B-1A6B9BF3971E")
+    MIDL_INTERFACE("A643508B-B1E3-4457-9769-32C953BD1D57")
     ICurrentState : public IDispatch
     {
     public:
@@ -639,7 +639,7 @@ EXTERN_C const IID IID_IGoogleUpdate3Web;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("027234BD-61BB-4F5C-9386-7FE804171C8C")
+    MIDL_INTERFACE("A35E1C5E-0A18-4FF1-8C4D-DD8ED07B0BD0")
     IGoogleUpdate3Web : public IDispatch
     {
     public:
@@ -777,7 +777,7 @@ EXTERN_C const IID IID_IAppBundleWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("D734C877-21F4-496E-B857-3E5B2E72E4CC")
+    MIDL_INTERFACE("0569DBB9-BAA0-48D5-8543-0F3BE30A1648")
     IAppBundleWeb : public IDispatch
     {
     public:
@@ -1085,7 +1085,7 @@ EXTERN_C const IID IID_IAppWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("2C6218B9-088D-4D25-A4F8-570558124142")
+    MIDL_INTERFACE("63D941DE-F67B-4E15-8A90-27881DA9EF4A")
     IAppWeb : public IDispatch
     {
     public:
@@ -1318,7 +1318,7 @@ EXTERN_C const IID IID_IAppCommandWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("87DBF75E-F590-4802-93FD-F8D07800E2E9")
+    MIDL_INTERFACE("10A2D03F-8BC7-49DB-A21E-A7D4429D2759")
     IAppCommandWeb : public IDispatch
     {
     public:
@@ -1505,7 +1505,7 @@ EXTERN_C const IID IID_IPolicyStatus;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("7D908375-C9D0-44C5-BB98-206F3C24A74C")
+    MIDL_INTERFACE("6A54FE75-EDC8-404E-A41B-4278C0557151")
     IPolicyStatus : public IDispatch
     {
     public:
@@ -1745,7 +1745,7 @@ EXTERN_C const IID IID_IPolicyStatusValue;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("47C8886A-A4B5-4F6C-865A-41A207074DFA")
+    MIDL_INTERFACE("2A7D2AE7-8EEE-45B4-B17F-31DAAC82CCBB")
     IPolicyStatusValue : public IDispatch
     {
     public:
@@ -1927,7 +1927,7 @@ EXTERN_C const IID IID_IPolicyStatus2;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("9D31EA63-2E06-4D41-98C7-CB1F307DB597")
+    MIDL_INTERFACE("06A6AA1E-2680-4076-A7CD-6053722CF454")
     IPolicyStatus2 : public IDispatch
     {
     public:
@@ -2240,7 +2240,7 @@ EXTERN_C const IID IID_IPolicyStatus3;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("5C674FC1-80E3-48D2-987B-79D9D286065B")
+    MIDL_INTERFACE("029BD175-5035-4E2A-8724-C9D47F4FAEA3")
     IPolicyStatus3 : public IPolicyStatus2
     {
     public:
@@ -2514,7 +2514,7 @@ EXTERN_C const IID IID_IProcessLauncher;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("EED70106-3604-4385-866E-6D540E99CA1A")
+    MIDL_INTERFACE("4779D540-F6A3-455F-A929-7ADFE85B6F09")
     IProcessLauncher : public IUnknown
     {
     public:
@@ -2628,7 +2628,7 @@ EXTERN_C const IID IID_IProcessLauncher2;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("BAEE6326-C925-4FA4-AFE9-5FA69902B021")
+    MIDL_INTERFACE("74F243B8-75D1-4E2D-BC89-5689798EEF3E")
     IProcessLauncher2 : public IProcessLauncher
     {
     public:
@@ -2761,7 +2761,7 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebUserClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("75828ED1-7BE8-45D0-8950-AA85CBF74510")
+class DECLSPEC_UUID("A0FEB7CB-E0D8-4035-A4C9-5620A8C725AD")
 GoogleUpdate3WebUserClass;
 #endif
 
@@ -2769,7 +2769,7 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebSystemClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("283209B7-C761-41CA-BE8D-B5321CD78FD6")
+class DECLSPEC_UUID("FAC5C548-84EC-474C-A4B3-CD414E09B14C")
 GoogleUpdate3WebSystemClass;
 #endif
 
@@ -2777,7 +2777,7 @@ EXTERN_C const CLSID CLSID_PolicyStatusUserClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("4DAC24AB-B340-4B7E-AD01-1504A7F59EEA")
+class DECLSPEC_UUID("E432DCFE-6A32-4C07-B038-9D74AC80D6AB")
 PolicyStatusUserClass;
 #endif
 
@@ -2785,7 +2785,7 @@ EXTERN_C const CLSID CLSID_PolicyStatusSystemClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("83FE19AC-72A6-4A72-B136-724444121586")
+class DECLSPEC_UUID("F675D224-BD54-40E9-AECB-AA3B64EB9863")
 PolicyStatusSystemClass;
 #endif
 
@@ -2793,7 +2793,7 @@ EXTERN_C const CLSID CLSID_ProcessLauncherClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("811A664F-703E-407C-A323-E6E31D1EFFA0")
+class DECLSPEC_UUID("CEC2877D-4856-460E-BE73-11DD7CC7C821")
 ProcessLauncherClass;
 #endif
 #endif /* __UpdaterLegacyLib_LIBRARY_DEFINED__ */

@@ -46,6 +46,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/win_util.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/test/base/process_inspector_win.h"
 #include "chrome/updater/app/server/win/com_classes.h"

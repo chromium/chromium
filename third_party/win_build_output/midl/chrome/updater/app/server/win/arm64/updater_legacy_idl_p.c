@@ -6,7 +6,7 @@
  /* File created by MIDL compiler version 8.xx.xxxx */
 /* at a redacted point in time
  */
-/* Compiler settings for gen/chrome/updater/updater_legacy_idl_chrome_branded.template:
+/* Compiler settings for gen/chrome/updater/app/server/win/updater_legacy_idl.idl:
     Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
@@ -44,7 +44,7 @@
 #endif /* __RPCPROXY_H_VERSION__ */
 
 
-#include "updater_legacy_idl_chrome_branded.h"
+#include "updater_legacy_idl.h"
 
 #define TYPE_FORMAT_STRING_SIZE   1089                              
 #define PROC_FORMAT_STRING_SIZE   3205                              
@@ -52,23 +52,23 @@
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   2            
 
-typedef struct _updater_legacy_idl_chrome_branded_MIDL_TYPE_FORMAT_STRING
+typedef struct _updater_legacy_idl_MIDL_TYPE_FORMAT_STRING
     {
     short          Pad;
     unsigned char  Format[ TYPE_FORMAT_STRING_SIZE ];
-    } updater_legacy_idl_chrome_branded_MIDL_TYPE_FORMAT_STRING;
+    } updater_legacy_idl_MIDL_TYPE_FORMAT_STRING;
 
-typedef struct _updater_legacy_idl_chrome_branded_MIDL_PROC_FORMAT_STRING
+typedef struct _updater_legacy_idl_MIDL_PROC_FORMAT_STRING
     {
     short          Pad;
     unsigned char  Format[ PROC_FORMAT_STRING_SIZE ];
-    } updater_legacy_idl_chrome_branded_MIDL_PROC_FORMAT_STRING;
+    } updater_legacy_idl_MIDL_PROC_FORMAT_STRING;
 
-typedef struct _updater_legacy_idl_chrome_branded_MIDL_EXPR_FORMAT_STRING
+typedef struct _updater_legacy_idl_MIDL_EXPR_FORMAT_STRING
     {
     long          Pad;
     unsigned char  Format[ EXPR_FORMAT_STRING_SIZE ];
-    } updater_legacy_idl_chrome_branded_MIDL_EXPR_FORMAT_STRING;
+    } updater_legacy_idl_MIDL_EXPR_FORMAT_STRING;
 
 
 static const RPC_SYNTAX_IDENTIFIER  _RpcTransferSyntax = 
@@ -127,9 +127,9 @@ ObjectType ## _unbind((ObjectType) pObject, ServerHandle);\
 #endif
 
 
-extern const updater_legacy_idl_chrome_branded_MIDL_TYPE_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_TypeFormatString;
-extern const updater_legacy_idl_chrome_branded_MIDL_PROC_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_ProcFormatString;
-extern const updater_legacy_idl_chrome_branded_MIDL_EXPR_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_ExprFormatString;
+extern const updater_legacy_idl_MIDL_TYPE_FORMAT_STRING updater_legacy_idl__MIDL_TypeFormatString;
+extern const updater_legacy_idl_MIDL_PROC_FORMAT_STRING updater_legacy_idl__MIDL_ProcFormatString;
+extern const updater_legacy_idl_MIDL_EXPR_FORMAT_STRING updater_legacy_idl__MIDL_ExprFormatString;
 
 
 extern const MIDL_STUB_DESC Object_StubDesc;
@@ -215,7 +215,7 @@ extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TA
 #error  Invalid build platform for this stub.
 #endif
 
-static const updater_legacy_idl_chrome_branded_MIDL_PROC_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_ProcFormatString =
+static const updater_legacy_idl_MIDL_PROC_FORMAT_STRING updater_legacy_idl__MIDL_ProcFormatString =
     {
         0,
         {
@@ -3046,7 +3046,7 @@ static const updater_legacy_idl_chrome_branded_MIDL_PROC_FORMAT_STRING updater_l
         }
     };
 
-static const updater_legacy_idl_chrome_branded_MIDL_TYPE_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_TypeFormatString =
+static const updater_legacy_idl_MIDL_TYPE_FORMAT_STRING updater_legacy_idl__MIDL_TypeFormatString =
     {
         0,
         {
@@ -3734,17 +3734,17 @@ static const updater_legacy_idl_chrome_branded_MIDL_TYPE_FORMAT_STRING updater_l
 /* 1058 */	
 			0x2f,		/* FC_IP */
 			0x5a,		/* FC_CONSTANT_IID */
-/* 1060 */	NdrFcLong( 0x27634814 ),	/* 660817940 */
-/* 1064 */	NdrFcShort( 0x8e41 ),	/* -29119 */
-/* 1066 */	NdrFcShort( 0x4c35 ),	/* 19509 */
-/* 1068 */	0x85,		/* 133 */
-			0x77,		/* 119 */
-/* 1070 */	0x98,		/* 152 */
-			0x1,		/* 1 */
-/* 1072 */	0x34,		/* 52 */
-			0xa9,		/* 169 */
-/* 1074 */	0x65,		/* 101 */
-			0x44,		/* 68 */
+/* 1060 */	NdrFcLong( 0x2a7d2ae7 ),	/* 712846055 */
+/* 1064 */	NdrFcShort( 0x8eee ),	/* -28946 */
+/* 1066 */	NdrFcShort( 0x45b4 ),	/* 17844 */
+/* 1068 */	0xb1,		/* 177 */
+			0x7f,		/* 127 */
+/* 1070 */	0x31,		/* 49 */
+			0xda,		/* 218 */
+/* 1072 */	0xac,		/* 172 */
+			0x82,		/* 130 */
+/* 1074 */	0xcc,		/* 204 */
+			0xbb,		/* 187 */
 /* 1076 */	
 			0x11, 0x8,	/* FC_RP [simple_pointer] */
 /* 1078 */	0x6,		/* FC_SHORT */
@@ -3790,7 +3790,7 @@ static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TA
 
 
 
-/* Standard interface: __MIDL_itf_updater_legacy_idl_chrome_branded_0000_0000, ver. 0.0,
+/* Standard interface: __MIDL_itf_updater_legacy_idl_0000_0000, ver. 0.0,
    GUID={0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}} */
 
 
@@ -3803,7 +3803,7 @@ static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TA
 
 
 /* Object interface: ICurrentState, ver. 0.0,
-   GUID={0x247954F9,0x9EDC,0x4E68,{0x8C,0xC3,0x15,0x0C,0x2B,0x89,0xEA,0xDF}} */
+   GUID={0xA643508B,0xB1E3,0x4457,{0x97,0x69,0x32,0xC9,0x53,0xBD,0x1D,0x57}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ICurrentState_FormatStringOffsetTable[] =
@@ -3834,7 +3834,7 @@ static const unsigned short ICurrentState_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO ICurrentState_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &ICurrentState_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3846,7 +3846,7 @@ static const MIDL_SERVER_INFO ICurrentState_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &ICurrentState_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3919,7 +3919,7 @@ CInterfaceStubVtbl _ICurrentStateStubVtbl =
 
 
 /* Object interface: IGoogleUpdate3Web, ver. 0.0,
-   GUID={0x494B20CF,0x282E,0x4BDD,{0x9F,0x5D,0xB7,0x0C,0xB0,0x9D,0x35,0x1E}} */
+   GUID={0xA35E1C5E,0x0A18,0x4FF1,{0x8C,0x4D,0xDD,0x8E,0xD0,0x7B,0x0B,0xD0}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IGoogleUpdate3Web_FormatStringOffsetTable[] =
@@ -3934,7 +3934,7 @@ static const unsigned short IGoogleUpdate3Web_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IGoogleUpdate3Web_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IGoogleUpdate3Web_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3946,7 +3946,7 @@ static const MIDL_SERVER_INFO IGoogleUpdate3Web_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IGoogleUpdate3Web_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3987,7 +3987,7 @@ CInterfaceStubVtbl _IGoogleUpdate3WebStubVtbl =
 
 
 /* Object interface: IAppBundleWeb, ver. 0.0,
-   GUID={0xDD42475D,0x6D46,0x496A,{0x92,0x4E,0xBD,0x56,0x30,0xB4,0xCB,0xBA}} */
+   GUID={0x0569DBB9,0xBAA0,0x48D5,{0x85,0x43,0x0F,0x3B,0xE3,0x0A,0x16,0x48}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IAppBundleWeb_FormatStringOffsetTable[] =
@@ -4018,7 +4018,7 @@ static const unsigned short IAppBundleWeb_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IAppBundleWeb_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IAppBundleWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4030,7 +4030,7 @@ static const MIDL_SERVER_INFO IAppBundleWeb_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IAppBundleWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4103,7 +4103,7 @@ CInterfaceStubVtbl _IAppBundleWebStubVtbl =
 
 
 /* Object interface: IAppWeb, ver. 0.0,
-   GUID={0x18D0F672,0x18B4,0x48E6,{0xAD,0x36,0x6E,0x6B,0xF0,0x1D,0xBB,0xC4}} */
+   GUID={0x63D941DE,0xF67B,0x4E15,{0x8A,0x90,0x27,0x88,0x1D,0xA9,0xEF,0x4A}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IAppWeb_FormatStringOffsetTable[] =
@@ -4127,7 +4127,7 @@ static const unsigned short IAppWeb_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IAppWeb_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IAppWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4139,7 +4139,7 @@ static const MIDL_SERVER_INFO IAppWeb_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IAppWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4198,7 +4198,7 @@ CInterfaceStubVtbl _IAppWebStubVtbl =
 
 
 /* Object interface: IAppCommandWeb, ver. 0.0,
-   GUID={0x8476CE12,0xAE1F,0x4198,{0x80,0x5C,0xBA,0x0F,0x9B,0x78,0x3F,0x57}} */
+   GUID={0x10A2D03F,0x8BC7,0x49DB,{0xA2,0x1E,0xA7,0xD4,0x42,0x9D,0x27,0x59}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IAppCommandWeb_FormatStringOffsetTable[] =
@@ -4216,7 +4216,7 @@ static const unsigned short IAppCommandWeb_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IAppCommandWeb_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IAppCommandWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4228,7 +4228,7 @@ static const MIDL_SERVER_INFO IAppCommandWeb_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IAppCommandWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4275,7 +4275,7 @@ CInterfaceStubVtbl _IAppCommandWebStubVtbl =
 
 
 /* Object interface: IPolicyStatus, ver. 0.0,
-   GUID={0xF63F6F8B,0xACD5,0x413C,{0xA4,0x4B,0x04,0x09,0x13,0x6D,0x26,0xCB}} */
+   GUID={0x6A54FE75,0xEDC8,0x404E,{0xA4,0x1B,0x42,0x78,0xC0,0x55,0x71,0x51}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IPolicyStatus_FormatStringOffsetTable[] =
@@ -4298,7 +4298,7 @@ static const unsigned short IPolicyStatus_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IPolicyStatus_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IPolicyStatus_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4310,7 +4310,7 @@ static const MIDL_SERVER_INFO IPolicyStatus_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IPolicyStatus_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4367,7 +4367,7 @@ CInterfaceStubVtbl _IPolicyStatusStubVtbl =
 
 
 /* Object interface: IPolicyStatusValue, ver. 0.0,
-   GUID={0x27634814,0x8E41,0x4C35,{0x85,0x77,0x98,0x01,0x34,0xA9,0x65,0x44}} */
+   GUID={0x2A7D2AE7,0x8EEE,0x45B4,{0xB1,0x7F,0x31,0xDA,0xAC,0x82,0xCC,0xBB}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IPolicyStatusValue_FormatStringOffsetTable[] =
@@ -4386,7 +4386,7 @@ static const unsigned short IPolicyStatusValue_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IPolicyStatusValue_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IPolicyStatusValue_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4398,7 +4398,7 @@ static const MIDL_SERVER_INFO IPolicyStatusValue_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IPolicyStatusValue_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4447,7 +4447,7 @@ CInterfaceStubVtbl _IPolicyStatusValueStubVtbl =
 
 
 /* Object interface: IPolicyStatus2, ver. 0.0,
-   GUID={0x34527502,0xD3DB,0x4205,{0xA6,0x9B,0x78,0x9B,0x27,0xEE,0x04,0x14}} */
+   GUID={0x06A6AA1E,0x2680,0x4076,{0xA7,0xCD,0x60,0x53,0x72,0x2C,0xF4,0x54}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IPolicyStatus2_FormatStringOffsetTable[] =
@@ -4477,7 +4477,7 @@ static const unsigned short IPolicyStatus2_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IPolicyStatus2_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IPolicyStatus2_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4489,7 +4489,7 @@ static const MIDL_SERVER_INFO IPolicyStatus2_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IPolicyStatus2_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4560,7 +4560,7 @@ CInterfaceStubVtbl _IPolicyStatus2StubVtbl =
 
 
 /* Object interface: IPolicyStatus3, ver. 0.0,
-   GUID={0x05A30352,0xEB25,0x45B6,{0x84,0x49,0xBC,0xA7,0xB0,0x54,0x2C,0xE5}} */
+   GUID={0x029BD175,0x5035,0x4E2A,{0x87,0x24,0xC9,0xD4,0x7F,0x4F,0xAE,0xA3}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IPolicyStatus3_FormatStringOffsetTable[] =
@@ -4591,7 +4591,7 @@ static const unsigned short IPolicyStatus3_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IPolicyStatus3_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IPolicyStatus3_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4603,7 +4603,7 @@ static const MIDL_SERVER_INFO IPolicyStatus3_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IPolicyStatus3_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4676,7 +4676,7 @@ CInterfaceStubVtbl _IPolicyStatus3StubVtbl =
 
 
 /* Object interface: IProcessLauncher, ver. 0.0,
-   GUID={0x128C2DA6,0x2BC0,0x44C0,{0xB3,0xF6,0x4E,0xC2,0x2E,0x64,0x79,0x64}} */
+   GUID={0x4779D540,0xF6A3,0x455F,{0xA9,0x29,0x7A,0xDF,0xE8,0x5B,0x6F,0x09}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IProcessLauncher_FormatStringOffsetTable[] =
@@ -4689,7 +4689,7 @@ static const unsigned short IProcessLauncher_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IProcessLauncher_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IProcessLauncher_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4701,7 +4701,7 @@ static const MIDL_SERVER_INFO IProcessLauncher_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IProcessLauncher_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4730,7 +4730,7 @@ const CInterfaceStubVtbl _IProcessLauncherStubVtbl =
 
 
 /* Object interface: IProcessLauncher2, ver. 0.0,
-   GUID={0xD106AB5F,0xA70E,0x400E,{0xA2,0x1B,0x96,0x20,0x8C,0x1D,0x8D,0xBB}} */
+   GUID={0x74F243B8,0x75D1,0x4E2D,{0xBC,0x89,0x56,0x89,0x79,0x8E,0xEF,0x3E}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short IProcessLauncher2_FormatStringOffsetTable[] =
@@ -4744,7 +4744,7 @@ static const unsigned short IProcessLauncher2_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IProcessLauncher2_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IProcessLauncher2_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4756,7 +4756,7 @@ static const MIDL_SERVER_INFO IProcessLauncher2_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
+    updater_legacy_idl__MIDL_ProcFormatString.Format,
     &IProcessLauncher2_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4794,7 +4794,7 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0,
     0,
     0,
-    updater_legacy_idl_chrome_branded__MIDL_TypeFormatString.Format,
+    updater_legacy_idl__MIDL_TypeFormatString.Format,
     1, /* -error bounds_check flag */
     0x50002, /* Ndr library version */
     0,
@@ -4808,92 +4808,92 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0
     };
 
-const CInterfaceProxyVtbl * const _updater_legacy_idl_chrome_branded_ProxyVtblList[] = 
+const CInterfaceProxyVtbl * const _updater_legacy_idl_ProxyVtblList[] = 
 {
     ( CInterfaceProxyVtbl *) &_IPolicyStatus2ProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IAppCommandWebProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IPolicyStatusValueProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IPolicyStatus3ProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IAppBundleWebProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IProcessLauncher2ProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IAppWebProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_IPolicyStatusProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IProcessLauncherProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IGoogleUpdate3WebProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IPolicyStatus3ProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IPolicyStatusProxyVtbl,
     ( CInterfaceProxyVtbl *) &_ICurrentStateProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IProcessLauncher2ProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IAppBundleWebProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IAppWebProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IPolicyStatusValueProxyVtbl,
     0
 };
 
-const CInterfaceStubVtbl * const _updater_legacy_idl_chrome_branded_StubVtblList[] = 
+const CInterfaceStubVtbl * const _updater_legacy_idl_StubVtblList[] = 
 {
     ( CInterfaceStubVtbl *) &_IPolicyStatus2StubVtbl,
     ( CInterfaceStubVtbl *) &_IAppCommandWebStubVtbl,
-    ( CInterfaceStubVtbl *) &_IPolicyStatusValueStubVtbl,
-    ( CInterfaceStubVtbl *) &_IPolicyStatus3StubVtbl,
-    ( CInterfaceStubVtbl *) &_IAppBundleWebStubVtbl,
-    ( CInterfaceStubVtbl *) &_IProcessLauncher2StubVtbl,
-    ( CInterfaceStubVtbl *) &_IAppWebStubVtbl,
-    ( CInterfaceStubVtbl *) &_IPolicyStatusStubVtbl,
     ( CInterfaceStubVtbl *) &_IProcessLauncherStubVtbl,
     ( CInterfaceStubVtbl *) &_IGoogleUpdate3WebStubVtbl,
+    ( CInterfaceStubVtbl *) &_IPolicyStatus3StubVtbl,
+    ( CInterfaceStubVtbl *) &_IPolicyStatusStubVtbl,
     ( CInterfaceStubVtbl *) &_ICurrentStateStubVtbl,
+    ( CInterfaceStubVtbl *) &_IProcessLauncher2StubVtbl,
+    ( CInterfaceStubVtbl *) &_IAppBundleWebStubVtbl,
+    ( CInterfaceStubVtbl *) &_IAppWebStubVtbl,
+    ( CInterfaceStubVtbl *) &_IPolicyStatusValueStubVtbl,
     0
 };
 
-PCInterfaceName const _updater_legacy_idl_chrome_branded_InterfaceNamesList[] = 
+PCInterfaceName const _updater_legacy_idl_InterfaceNamesList[] = 
 {
     "IPolicyStatus2",
     "IAppCommandWeb",
-    "IPolicyStatusValue",
-    "IPolicyStatus3",
-    "IAppBundleWeb",
-    "IProcessLauncher2",
-    "IAppWeb",
-    "IPolicyStatus",
     "IProcessLauncher",
     "IGoogleUpdate3Web",
+    "IPolicyStatus3",
+    "IPolicyStatus",
     "ICurrentState",
+    "IProcessLauncher2",
+    "IAppBundleWeb",
+    "IAppWeb",
+    "IPolicyStatusValue",
     0
 };
 
-const IID *  const _updater_legacy_idl_chrome_branded_BaseIIDList[] = 
+const IID *  const _updater_legacy_idl_BaseIIDList[] = 
 {
     &IID_IDispatch,
     &IID_IDispatch,
+    0,
+    &IID_IDispatch,
     &IID_IDispatch,
     &IID_IDispatch,
     &IID_IDispatch,
     0,
     &IID_IDispatch,
-    &IID_IDispatch,
-    0,
     &IID_IDispatch,
     &IID_IDispatch,
     0
 };
 
 
-#define _updater_legacy_idl_chrome_branded_CHECK_IID(n)	IID_GENERIC_CHECK_IID( _updater_legacy_idl_chrome_branded, pIID, n)
+#define _updater_legacy_idl_CHECK_IID(n)	IID_GENERIC_CHECK_IID( _updater_legacy_idl, pIID, n)
 
-int __stdcall _updater_legacy_idl_chrome_branded_IID_Lookup( const IID * pIID, int * pIndex )
+int __stdcall _updater_legacy_idl_IID_Lookup( const IID * pIID, int * pIndex )
 {
     IID_BS_LOOKUP_SETUP
 
-    IID_BS_LOOKUP_INITIAL_TEST( _updater_legacy_idl_chrome_branded, 11, 8 )
-    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl_chrome_branded, 4 )
-    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl_chrome_branded, 2 )
-    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl_chrome_branded, 1 )
-    IID_BS_LOOKUP_RETURN_RESULT( _updater_legacy_idl_chrome_branded, 11, *pIndex )
+    IID_BS_LOOKUP_INITIAL_TEST( _updater_legacy_idl, 11, 8 )
+    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl, 4 )
+    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl, 2 )
+    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl, 1 )
+    IID_BS_LOOKUP_RETURN_RESULT( _updater_legacy_idl, 11, *pIndex )
     
 }
 
-const ExtendedProxyFileInfo updater_legacy_idl_chrome_branded_ProxyFileInfo = 
+const ExtendedProxyFileInfo updater_legacy_idl_ProxyFileInfo = 
 {
-    (PCInterfaceProxyVtblList *) & _updater_legacy_idl_chrome_branded_ProxyVtblList,
-    (PCInterfaceStubVtblList *) & _updater_legacy_idl_chrome_branded_StubVtblList,
-    (const PCInterfaceName * ) & _updater_legacy_idl_chrome_branded_InterfaceNamesList,
-    (const IID ** ) & _updater_legacy_idl_chrome_branded_BaseIIDList,
-    & _updater_legacy_idl_chrome_branded_IID_Lookup, 
+    (PCInterfaceProxyVtblList *) & _updater_legacy_idl_ProxyVtblList,
+    (PCInterfaceStubVtblList *) & _updater_legacy_idl_StubVtblList,
+    (const PCInterfaceName * ) & _updater_legacy_idl_InterfaceNamesList,
+    (const IID ** ) & _updater_legacy_idl_BaseIIDList,
+    & _updater_legacy_idl_IID_Lookup, 
     11,
     2,
     0, /* table of [async_uuid] interfaces */

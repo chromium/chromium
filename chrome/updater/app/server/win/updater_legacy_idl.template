@@ -54,7 +54,7 @@ enum AppCommandStatus {
 [
   object,
   dual,
-  uuid(ICURRENTSTATE_IID),
+  uuid(PLACEHOLDER-GUID-A643508B-B1E3-4457-9769-32C953BD1D57),
   helpstring("ICurrentState Interface"),
   pointer_default(unique)
 ]
@@ -146,7 +146,7 @@ interface ICurrentState : IDispatch {
 [
   object,
   dual,
-  uuid(IGOOGLEUPDATE3WEB_IID),
+  uuid(PLACEHOLDER-GUID-A35E1C5E-0A18-4FF1-8C4D-DD8ED07B0BD0),
   helpstring("IGoogleUpdate3Web Interface"),
   pointer_default(unique)
 ]
@@ -157,7 +157,7 @@ interface IGoogleUpdate3Web : IDispatch {
 [
   object,
   dual,
-  uuid(IAPPBUNDLEWEB_IID),
+  uuid(PLACEHOLDER-GUID-0569DBB9-BAA0-48D5-8543-0F3BE30A1648),
   helpstring("IAppBundleWeb Interface"),
   pointer_default(unique)
 ]
@@ -196,7 +196,7 @@ interface IAppBundleWeb : IDispatch {
 [
   object,
   dual,
-  uuid(IAPPWEB_IID),
+  uuid(PLACEHOLDER-GUID-63D941DE-F67B-4E15-8A90-27881DA9EF4A),
   helpstring("IAppWeb Interface"),
   pointer_default(unique)
 ]
@@ -225,7 +225,7 @@ interface IAppWeb : IDispatch {
 [
   object,
   dual,
-  uuid(IAPPCOMMANDWEB_IID),
+  uuid(PLACEHOLDER-GUID-10A2D03F-8BC7-49DB-A21E-A7D4429D2759),
   helpstring("IAppCommandWeb Interface"),
   pointer_default(unique)
 ]
@@ -248,7 +248,7 @@ interface IAppCommandWeb : IDispatch {
 [
   object,
   dual,
-  uuid(IPOLICYSTATUS_IID),
+  uuid(PLACEHOLDER-GUID-6A54FE75-EDC8-404E-A41B-4278C0557151),
   helpstring("IPolicyStatus Interface"),
   pointer_default(unique)
 ]
@@ -330,7 +330,7 @@ interface IPolicyStatus : IDispatch {
 [
   object,
   dual,
-  uuid(IPOLICYSTATUSVALUE_IID),
+  uuid(PLACEHOLDER-GUID-2A7D2AE7-8EEE-45B4-B17F-31DAAC82CCBB),
   helpstring("IPolicyStatusValue Interface"),
   pointer_default(unique)
 ]
@@ -354,7 +354,7 @@ interface IPolicyStatusValue : IDispatch {
 [
   object,
   dual,
-  uuid(IPOLICYSTATUS2_IID),
+  uuid(PLACEHOLDER-GUID-06A6AA1E-2680-4076-A7CD-6053722CF454),
   helpstring("IPolicyStatus2 Interface"),
   pointer_default(unique)
 ]
@@ -455,7 +455,7 @@ interface IPolicyStatus2 : IDispatch {
 [
   object,
   dual,
-  uuid(IPOLICYSTATUS3_IID),
+  uuid(PLACEHOLDER-GUID-029BD175-5035-4E2A-8724-C9D47F4FAEA3),
   helpstring("IPolicyStatus3 Interface"),
   pointer_default(unique)
 ]
@@ -470,7 +470,7 @@ interface IPolicyStatus3 : IPolicyStatus2 {
 [
   object,
   oleautomation,
-  uuid(IPROCESSLAUNCHER_IID),
+  uuid(PLACEHOLDER-GUID-4779D540-F6A3-455F-A929-7ADFE85B6F09),
   helpstring("Google Update IProcessLauncher Interface"),
   pointer_default(unique)
 ]
@@ -487,7 +487,7 @@ interface IProcessLauncher : IUnknown {
 [
   object,
   oleautomation,
-  uuid(IPROCESSLAUNCHER2_IID),
+  uuid(PLACEHOLDER-GUID-74F243B8-75D1-4E2D-BC89-5689798EEF3E),
   helpstring("Google Update IProcessLauncher2 Interface"),
   pointer_default(unique)
 ]
@@ -503,7 +503,7 @@ interface IProcessLauncher2 : IProcessLauncher {
 };
 
 [
-  uuid(UPDATER_LEGACY_LIB_UUID),
+  uuid(PLACEHOLDER-GUID-7A1FDE1F-AAA9-441B-B9AA-95B31D78592B),
   version(1.0),
   helpstring("Chromium Updater legacy type library.")
 ]
@@ -511,7 +511,7 @@ library UpdaterLegacyLib {
   importlib("stdole2.tlb");
 
   [
-    uuid(GOOGLEUPDATE3WEBUSERCLASS_CLSID),
+    uuid(PLACEHOLDER-GUID-A0FEB7CB-E0D8-4035-A4C9-5620A8C725AD),
     helpstring("GoogleUpdate3WebUserClass Class")
   ]
   coclass GoogleUpdate3WebUserClass
@@ -520,7 +520,7 @@ library UpdaterLegacyLib {
   }
 
   [
-    uuid(GOOGLEUPDATE3WEBSYSTEMCLASS_CLSID),
+    uuid(PLACEHOLDER-GUID-FAC5C548-84EC-474C-A4B3-CD414E09B14C),
     helpstring("GoogleUpdate3WebSystemClass")
   ]
   coclass GoogleUpdate3WebSystemClass {
@@ -528,7 +528,7 @@ library UpdaterLegacyLib {
   }
 
   [
-    uuid(POLICYSTATUSUSERCLASS_CLSID),
+    uuid(PLACEHOLDER-GUID-E432DCFE-6A32-4C07-B038-9D74AC80D6AB),
     helpstring("Policy Status for per-user applications.")
   ]
   coclass PolicyStatusUserClass {
@@ -536,7 +536,7 @@ library UpdaterLegacyLib {
   }
 
   [
-    uuid(POLICYSTATUSSYSTEMCLASS_CLSID),
+    uuid(PLACEHOLDER-GUID-F675D224-BD54-40E9-AECB-AA3B64EB9863),
     helpstring("Policy Status for system applications.")
   ]
   coclass PolicyStatusSystemClass {
@@ -544,7 +544,7 @@ library UpdaterLegacyLib {
   }
 
   [
-    uuid(PROCESSLAUNCHERCLASS_CLSID),
+    uuid(PLACEHOLDER-GUID-CEC2877D-4856-460E-BE73-11DD7CC7C821),
     helpstring("ProcessLauncherClass Class")
   ]
   coclass ProcessLauncherClass {

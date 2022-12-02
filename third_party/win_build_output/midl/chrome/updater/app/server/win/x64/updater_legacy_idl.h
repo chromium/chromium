@@ -6,7 +6,7 @@
  /* File created by MIDL compiler version 8.xx.xxxx */
 /* at a redacted point in time
  */
-/* Compiler settings for gen/chrome/updater/updater_legacy_idl_chrome_branded.template:
+/* Compiler settings for gen/chrome/updater/app/server/win/updater_legacy_idl.idl:
     Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.xx.xxxx 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
@@ -36,8 +36,8 @@
 #include "ole2.h"
 #endif /*COM_NO_WINDOWS_H*/
 
-#ifndef __updater_legacy_idl_chrome_branded_h__
-#define __updater_legacy_idl_chrome_branded_h__
+#ifndef __updater_legacy_idl_h__
+#define __updater_legacy_idl_h__
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -276,7 +276,7 @@ extern "C"{
 #endif 
 
 
-/* interface __MIDL_itf_updater_legacy_idl_chrome_branded_0000_0000 */
+/* interface __MIDL_itf_updater_legacy_idl_0000_0000 */
 /* [local] */ 
 
 typedef 
@@ -311,8 +311,8 @@ enum AppCommandStatus
     } ;
 
 
-extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_chrome_branded_0000_0000_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_chrome_branded_0000_0000_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_0000_0000_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_0000_0000_v0_0_s_ifspec;
 
 #ifndef __ICurrentState_INTERFACE_DEFINED__
 #define __ICurrentState_INTERFACE_DEFINED__
@@ -325,7 +325,7 @@ EXTERN_C const IID IID_ICurrentState;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("247954F9-9EDC-4E68-8CC3-150C2B89EADF")
+    MIDL_INTERFACE("A643508B-B1E3-4457-9769-32C953BD1D57")
     ICurrentState : public IDispatch
     {
     public:
@@ -639,7 +639,7 @@ EXTERN_C const IID IID_IGoogleUpdate3Web;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("494B20CF-282E-4BDD-9F5D-B70CB09D351E")
+    MIDL_INTERFACE("A35E1C5E-0A18-4FF1-8C4D-DD8ED07B0BD0")
     IGoogleUpdate3Web : public IDispatch
     {
     public:
@@ -777,7 +777,7 @@ EXTERN_C const IID IID_IAppBundleWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("DD42475D-6D46-496A-924E-BD5630B4CBBA")
+    MIDL_INTERFACE("0569DBB9-BAA0-48D5-8543-0F3BE30A1648")
     IAppBundleWeb : public IDispatch
     {
     public:
@@ -1085,7 +1085,7 @@ EXTERN_C const IID IID_IAppWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("18D0F672-18B4-48E6-AD36-6E6BF01DBBC4")
+    MIDL_INTERFACE("63D941DE-F67B-4E15-8A90-27881DA9EF4A")
     IAppWeb : public IDispatch
     {
     public:
@@ -1318,7 +1318,7 @@ EXTERN_C const IID IID_IAppCommandWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("8476CE12-AE1F-4198-805C-BA0F9B783F57")
+    MIDL_INTERFACE("10A2D03F-8BC7-49DB-A21E-A7D4429D2759")
     IAppCommandWeb : public IDispatch
     {
     public:
@@ -1505,7 +1505,7 @@ EXTERN_C const IID IID_IPolicyStatus;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("F63F6F8B-ACD5-413C-A44B-0409136D26CB")
+    MIDL_INTERFACE("6A54FE75-EDC8-404E-A41B-4278C0557151")
     IPolicyStatus : public IDispatch
     {
     public:
@@ -1745,7 +1745,7 @@ EXTERN_C const IID IID_IPolicyStatusValue;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("27634814-8E41-4C35-8577-980134A96544")
+    MIDL_INTERFACE("2A7D2AE7-8EEE-45B4-B17F-31DAAC82CCBB")
     IPolicyStatusValue : public IDispatch
     {
     public:
@@ -1927,7 +1927,7 @@ EXTERN_C const IID IID_IPolicyStatus2;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("34527502-D3DB-4205-A69B-789B27EE0414")
+    MIDL_INTERFACE("06A6AA1E-2680-4076-A7CD-6053722CF454")
     IPolicyStatus2 : public IDispatch
     {
     public:
@@ -2240,7 +2240,7 @@ EXTERN_C const IID IID_IPolicyStatus3;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("05A30352-EB25-45B6-8449-BCA7B0542CE5")
+    MIDL_INTERFACE("029BD175-5035-4E2A-8724-C9D47F4FAEA3")
     IPolicyStatus3 : public IPolicyStatus2
     {
     public:
@@ -2514,7 +2514,7 @@ EXTERN_C const IID IID_IProcessLauncher;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("128C2DA6-2BC0-44C0-B3F6-4EC22E647964")
+    MIDL_INTERFACE("4779D540-F6A3-455F-A929-7ADFE85B6F09")
     IProcessLauncher : public IUnknown
     {
     public:
@@ -2628,7 +2628,7 @@ EXTERN_C const IID IID_IProcessLauncher2;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("D106AB5F-A70E-400E-A21B-96208C1D8DBB")
+    MIDL_INTERFACE("74F243B8-75D1-4E2D-BC89-5689798EEF3E")
     IProcessLauncher2 : public IProcessLauncher
     {
     public:
@@ -2761,7 +2761,7 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebUserClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("22181302-A8A6-4F84-A541-E5CBFC70CC43")
+class DECLSPEC_UUID("A0FEB7CB-E0D8-4035-A4C9-5620A8C725AD")
 GoogleUpdate3WebUserClass;
 #endif
 
@@ -2769,7 +2769,7 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebSystemClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("8A1D4361-2C08-4700-A351-3EAA9CBFF5E4")
+class DECLSPEC_UUID("FAC5C548-84EC-474C-A4B3-CD414E09B14C")
 GoogleUpdate3WebSystemClass;
 #endif
 
@@ -2777,7 +2777,7 @@ EXTERN_C const CLSID CLSID_PolicyStatusUserClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("6DDCE70D-A4AE-4E97-908C-BE7B2DB750AD")
+class DECLSPEC_UUID("E432DCFE-6A32-4C07-B038-9D74AC80D6AB")
 PolicyStatusUserClass;
 #endif
 
@@ -2785,7 +2785,7 @@ EXTERN_C const CLSID CLSID_PolicyStatusSystemClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("521FDB42-7130-4806-822A-FC5163FAD983")
+class DECLSPEC_UUID("F675D224-BD54-40E9-AECB-AA3B64EB9863")
 PolicyStatusSystemClass;
 #endif
 
@@ -2793,7 +2793,7 @@ EXTERN_C const CLSID CLSID_ProcessLauncherClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("ABC01078-F197-4B0B-ADBC-CFE684B39C82")
+class DECLSPEC_UUID("CEC2877D-4856-460E-BE73-11DD7CC7C821")
 ProcessLauncherClass;
 #endif
 #endif /* __UpdaterLegacyLib_LIBRARY_DEFINED__ */

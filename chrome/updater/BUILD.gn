@@ -236,7 +236,6 @@ if (is_win || is_mac || is_linux) {
         "app/server/win/server.h",
         "app/server/win/service_main.cc",
         "app/server/win/service_main.h",
-        "app/server/win/updater_legacy_idl.h",
         "app/server/win/wrl_classes.cc",
         "device_management/dm_storage_win.cc",
         "ipc/update_service_internal_proxy_win.cc",
