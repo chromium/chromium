@@ -4865,6 +4865,17 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, NameConstraintsNotMatching) {
   }
 }
 
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, ValidityExpired) {
+  chain_[0]->SetValidity(base::Time::Now() - base::Days(14),
+                         base::Time::Now() - base::Days(7));
+
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_DATE_INVALID));
+  }
+}
+
 // A set of tests that check how various constraints are enforced when they
 // are applied to a directly trusted self-signed leaf certificate.
 class CertVerifyProcConstraintsTrustedSelfSignedTest
@@ -4945,6 +4956,13 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
                                     /*excluded_dns_names=*/{});
 
   EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, ValidityExpired) {
+  cert_->SetValidity(base::Time::Now() - base::Days(14),
+                     base::Time::Now() - base::Days(7));
+
+  EXPECT_THAT(Verify(), IsError(ERR_CERT_DATE_INVALID));
 }
 
 TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
