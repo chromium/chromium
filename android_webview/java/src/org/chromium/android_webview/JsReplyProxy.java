@@ -10,6 +10,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
@@ -31,10 +32,12 @@ public class JsReplyProxy extends AwSupportLibIsomorphic {
      *
      * @param message a non-null String message post to the JavaScript object.
      */
-    public void postMessage(@NonNull final String message) {
+    public void postMessage(@NonNull final MessagePayload payload) {
         if (mNativeJsReplyProxy == 0) return;
-        PostTask.runOrPostTask(UiThreadTaskTraits.USER_VISIBLE,
-                () -> JsReplyProxyJni.get().postMessage(mNativeJsReplyProxy, message));
+        PostTask.runOrPostTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
+            if (mNativeJsReplyProxy == 0) return;
+            JsReplyProxyJni.get().postMessage(mNativeJsReplyProxy, payload);
+        });
     }
 
     @CalledByNative
@@ -49,6 +52,6 @@ public class JsReplyProxy extends AwSupportLibIsomorphic {
 
     @NativeMethods
     interface Natives {
-        void postMessage(long nativeJsReplyProxy, String message);
+        void postMessage(long nativeJsReplyProxy, MessagePayload payload);
     }
 }

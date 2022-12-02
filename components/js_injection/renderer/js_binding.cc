@@ -23,6 +23,8 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_message_port_converter.h"
+#include "v8-local-handle.h"
+#include "v8-value.h"
 #include "v8/include/v8.h"
 
 namespace {
@@ -110,12 +112,25 @@ void JsBinding::OnPostMessage(mojom::JsWebMessagePtr message) {
   v8::TryCatch try_catch(isolate);
   try_catch.SetVerbose(true);
 
+  v8::Local<v8::Value> v8_message;
+  if (message->is_string_value()) {
+    v8_message =
+        gin::ConvertToV8(isolate, std::move(message->get_string_value()));
+  } else if (message->is_array_buffer_value()) {
+    auto& big_buffer = message->get_array_buffer_value();
+    auto backing_store =
+        v8::ArrayBuffer::NewBackingStore(isolate, big_buffer.size());
+    CHECK(backing_store->ByteLength() == big_buffer.size());
+    memcpy(backing_store->Data(), big_buffer.data(), big_buffer.size());
+    v8_message = v8::ArrayBuffer::New(isolate, std::move(backing_store));
+  } else {
+    NOTREACHED() << "Unknown JsWebMessage type.";
+  }
+
   // Simulate MessageEvent's data property. See
   // https://html.spec.whatwg.org/multipage/comms.html#messageevent
   v8::Local<v8::Object> event =
-      gin::DataObjectBuilder(isolate)
-          .Set("data", std::move(message->get_string_value()))
-          .Build();
+      gin::DataObjectBuilder(isolate).Set("data", v8_message).Build();
   v8::Local<v8::Value> argv[] = {event};
 
   v8::Local<v8::Object> self = GetWrapper(isolate).ToLocalChecked();

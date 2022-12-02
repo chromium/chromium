@@ -33,6 +33,8 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -55,6 +57,10 @@ public class JsJavaInteractionTest {
             RESOURCE_PATH + "/post_message_repeat.html";
     private static final String POST_MESSAGE_REPLY_HTML =
             RESOURCE_PATH + "/post_message_receives_reply.html";
+    private static final String POST_MESSAGE_ARRAYBUFFER_REPLY_HTML =
+            RESOURCE_PATH + "/post_message_array_buffer_reply.html";
+    private static final String POST_MESSAGE_ARRAYBUFFER_TITLE_HTML =
+            RESOURCE_PATH + "/post_message_array_buffer_title.html";
     private static final String FILE_URI = "file:///android_asset/asset_file.html";
     private static final String HELLO_WORLD_HTML = RESOURCE_PATH + "/hello_world.html";
 
@@ -668,12 +674,71 @@ public class JsJavaInteractionTest {
         final OnReceivedTitleHelper onReceivedTitleHelper =
                 mContentsClient.getOnReceivedTitleHelper();
         final int titleCallCount = onReceivedTitleHelper.getCallCount();
-        data.mReplyProxy.postMessage(NEW_TITLE);
+        data.mReplyProxy.postMessage(new MessagePayload(NEW_TITLE));
         onReceivedTitleHelper.waitForCallback(titleCallCount);
 
         Assert.assertEquals(NEW_TITLE, onReceivedTitleHelper.getTitle());
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testPostArrayBufferEncodeToString() throws Throwable {
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+
+        final String url = loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_TITLE_HTML);
+
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        final String messageStr = HELLO + "FromJava";
+
+        final OnReceivedTitleHelper onReceivedTitleHelper =
+                mContentsClient.getOnReceivedTitleHelper();
+        final int titleCallCount = onReceivedTitleHelper.getCallCount();
+        data.mReplyProxy.postMessage(
+                new MessagePayload(messageStr.getBytes(StandardCharsets.UTF_8)));
+        onReceivedTitleHelper.waitForCallback(titleCallCount);
+
+        Assert.assertEquals(messageStr, onReceivedTitleHelper.getTitle());
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+    }
+
+    private void verifyPostArrayBufferWorks(byte[] content) throws Exception {
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+        final String url = loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_REPLY_HTML);
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        data.mReplyProxy.postMessage(new MessagePayload(content));
+        data = mListener.waitForOnPostMessage();
+        // TODO(crbug.com/1374142): Add support for ArrayBuffer message from
+        // JS to Java. Right now we only check length.
+        Assert.assertEquals(content.length, Integer.parseInt(data.mMessage));
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testPostArrayBufferWorks() throws Throwable {
+        final byte[] content = (HELLO + "FromJava").getBytes(StandardCharsets.UTF_8);
+        verifyPostArrayBufferWorks(content);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testPostEmptyArrayBuffer() throws Throwable {
+        final byte[] content = new byte[0];
+        verifyPostArrayBufferWorks(content);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testPostLargeArrayBuffer() throws Throwable {
+        final byte[] content = new byte[500 * 1000]; // 500 Kib
+        new Random(42).nextBytes(content);
+        verifyPostArrayBufferWorks(content);
     }
 
     @Test
@@ -713,9 +778,9 @@ public class JsJavaInteractionTest {
         Assert.assertEquals(message, data2.mMessage);
 
         // Targeting myObject.
-        data.mReplyProxy.postMessage(HELLO);
+        data.mReplyProxy.postMessage(new MessagePayload(HELLO));
         // Targeting myObject2.
-        data2.mReplyProxy.postMessage(HELLO);
+        data2.mReplyProxy.postMessage(new MessagePayload(HELLO));
 
         TestWebMessageListener.Data replyData1 = mListener.waitForOnPostMessage();
         TestWebMessageListener.Data replyData2 = webMessageListener2.waitForOnPostMessage();
@@ -744,7 +809,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data2 = mListener.waitForOnPostMessage();
 
         // Use the previous JsReplyProxy to send message. It should drop the message.
-        proxy.postMessage(NEW_TITLE);
+        proxy.postMessage(new MessagePayload(NEW_TITLE));
 
         // Call evaluateJavascript to make sure the previous postMessage() call is reached to
         // renderer if it should, since these messages are in sequence.
@@ -790,7 +855,7 @@ public class JsJavaInteractionTest {
                 mContentsClient);
 
         // Post message to test both listeners receive message.
-        proxy.postMessage(HELLO);
+        proxy.postMessage(new MessagePayload(HELLO));
 
         TestWebMessageListener.Data replyData1 = mListener.waitForOnPostMessage();
         TestWebMessageListener.Data replyData2 = mListener.waitForOnPostMessage();
@@ -802,7 +867,7 @@ public class JsJavaInteractionTest {
                 "listener2", JS_OBJECT_NAME, mActivityTestRule, mAwContents, mContentsClient);
 
         // Post message again to test if remove works.
-        proxy.postMessage(HELLO);
+        proxy.postMessage(new MessagePayload(HELLO));
 
         // listener 1 should add message again.
         TestWebMessageListener.Data replyData3 = mListener.waitForOnPostMessage();
@@ -827,7 +892,7 @@ public class JsJavaInteractionTest {
         final OnReceivedTitleHelper onReceivedTitleHelper =
                 mContentsClient.getOnReceivedTitleHelper();
         final int titleCallCount = onReceivedTitleHelper.getCallCount();
-        data.mReplyProxy.postMessage(NEW_TITLE);
+        data.mReplyProxy.postMessage(new MessagePayload(NEW_TITLE));
         onReceivedTitleHelper.waitForCallback(titleCallCount);
 
         Assert.assertEquals(NEW_TITLE, onReceivedTitleHelper.getTitle());

@@ -27,10 +27,12 @@ import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptReq
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -47,6 +49,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for pop up window flow.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class PopupWindowTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
@@ -526,13 +529,13 @@ public class PopupWindowTest {
         Assert.assertEquals("clicked", clicked.mMessage);
 
         // Step 6. Send an arbitrary message to call window.open on javascript: URI.
-        iframeReplyProxy.postMessage("hello");
+        iframeReplyProxy.postMessage(new MessagePayload("hello"));
         TestWebMessageListener.Data data = webMessageListener.waitForOnPostMessage();
         Assert.assertEquals("done", data.mMessage);
 
         // Step 7. Send an arbitrary message to trigger the check. Main frame will check if there is
         // an injected element by running |windowOpenJavaScript|.
-        mainFrameReplyProxy.postMessage("hello");
+        mainFrameReplyProxy.postMessage(new MessagePayload("hello"));
 
         // If |succeed| received, then there was no injection.
         TestWebMessageListener.Data data2 = webMessageListener.waitForOnPostMessage();

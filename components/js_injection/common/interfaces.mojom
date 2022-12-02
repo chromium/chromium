@@ -5,6 +5,7 @@
 module js_injection.mojom;
 
 import "components/js_injection/common/origin_matcher.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 
@@ -30,9 +31,9 @@ struct DocumentStartJavaScript {
 
 // JsWebMessage struct contains the message payload sent between
 // JavaScript and Browser.
-// TODO(crbug.com/1374142): Add ArrayBuffer support.
 union JsWebMessage {
   mojo_base.mojom.String16 string_value;
+  mojo_base.mojom.BigBuffer array_buffer_value;
 };
 
 // For JavaScript postMessage() API, implemented by browser.

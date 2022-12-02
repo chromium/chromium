@@ -1,0 +1,17 @@
+<html>
+
+<head>
+  <title>reply</title>
+  <script>
+    myObject.onmessage = function (event) {
+      document.title = new TextDecoder().decode(event.data);
+    };
+    myObject.postMessage("Hello");
+  </script>
+</head>
+
+<body>
+  <div>post message waiting for reply</div>
+</body>
+
+</html>

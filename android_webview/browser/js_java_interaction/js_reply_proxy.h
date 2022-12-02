@@ -27,7 +27,7 @@ class JsReplyProxy {
   base::android::ScopedJavaLocalRef<jobject> GetJavaPeer();
 
   void PostMessage(JNIEnv* env,
-                   const base::android::JavaParamRef<jstring>& message);
+                   const base::android::JavaParamRef<jobject>& payload);
 
  private:
   raw_ptr<js_injection::WebMessageReplyProxy> reply_proxy_;

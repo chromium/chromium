@@ -8,6 +8,7 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 
 import org.chromium.android_webview.AwSupportLibIsomorphic;
 import org.chromium.android_webview.JsReplyProxy;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.support_lib_boundary.JsReplyProxyBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
@@ -25,7 +26,8 @@ class SupportLibJsReplyProxyAdapter
     @Override
     public void postMessage(String message) {
         recordApiCall(ApiCall.JS_REPLY_POST_MESSAGE);
-        mReplyProxy.postMessage(message);
+        // TODO(crbug.com/1374142): Adopt MessagePayload in AndroidX.
+        mReplyProxy.postMessage(new MessagePayload(message));
     }
 
     @Override
