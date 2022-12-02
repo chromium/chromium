@@ -10,8 +10,8 @@
 #include "base/strings/strcat.h"
 #include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
+#include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
 #include "sql/error_delegate_util.h"
-#include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "url/origin.h"
@@ -94,7 +94,10 @@ PowerBookmarkDatabaseImpl::PowerBookmarkDatabaseImpl(
     : db_(sql::DatabaseOptions{.exclusive_locking = true,
                                .page_size = 4096,
                                .cache_size = 128}),
-      database_path_(database_dir.Append(kDatabaseName)) {}
+      database_path_(database_dir.Append(kDatabaseName)) {
+  sync_db_ =
+      std::make_unique<PowerBookmarkSyncMetadataDatabase>(&db_, &meta_table_);
+}
 
 PowerBookmarkDatabaseImpl::~PowerBookmarkDatabaseImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -133,6 +136,14 @@ bool PowerBookmarkDatabaseImpl::Init() {
     db_.Close();
     return false;
   }
+
+  if (!sync_db_->Init()) {
+    DLOG(ERROR) << "Failed to initialize sync metadata db: "
+                << db_.GetErrorMessage();
+    db_.Close();
+    return false;
+  }
+
   return true;
 }
 
@@ -158,8 +169,7 @@ void PowerBookmarkDatabaseImpl::DatabaseErrorCallback(int error,
 bool PowerBookmarkDatabaseImpl::InitSchema() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sql::MetaTable meta_table;
-  bool has_metatable = meta_table.DoesTableExist(&db_);
+  bool has_metatable = meta_table_.DoesTableExist(&db_);
   bool has_schema =
       db_.DoesTableExist(kSaveTableName) && db_.DoesTableExist(kBlobTableName);
 
@@ -169,21 +179,22 @@ bool PowerBookmarkDatabaseImpl::InitSchema() {
   }
 
   // Create the meta table if it doesn't exist.
-  if (!meta_table.Init(&db_, kCurrentVersionNumber, kCompatibleVersionNumber)) {
+  if (!meta_table_.Init(&db_, kCurrentVersionNumber,
+                        kCompatibleVersionNumber)) {
     return false;
   }
 
   // If DB and meta table already existed and current version is not compatible
   // with DB then it should fail.
-  if (meta_table.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
+  if (meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
     return false;
   }
   if (!has_schema && !CreateSchema()) {
     return false;
   }
 
-  meta_table.SetVersionNumber(kCurrentVersionNumber);
-  meta_table.SetCompatibleVersionNumber(kCompatibleVersionNumber);
+  meta_table_.SetVersionNumber(kCurrentVersionNumber);
+  meta_table_.SetCompatibleVersionNumber(kCompatibleVersionNumber);
   return true;
 }
 

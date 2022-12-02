@@ -11,11 +11,15 @@ static_library("storage") {
     "power_bookmark_database.h",
     "power_bookmark_database_impl.cc",
     "power_bookmark_database_impl.h",
+    "power_bookmark_sync_metadata_database.cc",
+    "power_bookmark_sync_metadata_database.h",
   ]
 
   deps = [
     "//base",
     "//components/power_bookmarks/core:powers",
+    "//components/sync/model",
+    "//components/sync/protocol",
     "//sql",
     "//third_party/sqlite",
     "//url",
@@ -25,12 +29,17 @@ static_library("storage") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "power_bookmark_database_impl_unittest.cc" ]
+  sources = [
+    "power_bookmark_database_impl_unittest.cc",
+    "power_bookmark_sync_metadata_database_unittest.cc",
+  ]
 
   deps = [
     ":storage",
     "//base",
     "//components/power_bookmarks/core:powers",
+    "//components/sync/model",
+    "//components/sync/protocol",
     "//sql",
     "//sql:test_support",
     "//testing/gtest",

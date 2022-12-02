@@ -10,11 +10,13 @@
 #include "components/power_bookmarks/core/powers/power_overview.h"
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "url/gurl.h"
 
 namespace power_bookmarks {
 
 struct SearchParams;
+class PowerBookmarkSyncMetadataDatabase;
 
 constexpr base::FilePath::CharType kDatabaseName[] =
     FILE_PATH_LITERAL("PowerBookmarks.db");
@@ -45,6 +47,10 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
   bool DeletePowersForURL(const GURL& url,
                           const PowerType& power_type) override;
 
+  PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() {
+    return sync_db_.get();
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PowerBookmarkDatabaseImplTest,
                            InitDatabaseWithErrorCallback);
@@ -61,6 +67,8 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
       const base::GUID& id);
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
+  sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<PowerBookmarkSyncMetadataDatabase> sync_db_;
 
   const base::FilePath database_path_;
 

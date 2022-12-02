@@ -147,8 +147,8 @@ TEST_F(PowerBookmarkDatabaseImplTest, InitDatabaseError) {
     sql::Database db;
     EXPECT_TRUE(db.Open(db_file_path()));
 
-    // Database should have 2 tables: meta, saves.
-    EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
+    // Database should have 4 tables: meta, saves, blobs and sync_meta.
+    EXPECT_EQ(4u, sql::test::CountSQLTables(&db));
   }
 }
 
