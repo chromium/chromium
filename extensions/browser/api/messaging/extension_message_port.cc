@@ -326,7 +326,12 @@ void ExtensionMessagePort::IncrementLazyKeepaliveCount(
                                     PortIdToString(port_id_));
   }
 
-  for (const auto& worker_id : service_workers_) {
+  // Increment keepalive count for service workers of the extension managed by
+  // this port.
+  // TODO(richardzh): Add a check to only increment count if the port is in lazy
+  // context.
+  for (const auto& worker_id :
+       pm->GetServiceWorkersForExtension(extension_id_)) {
     std::string request_uuid = pm->IncrementServiceWorkerKeepaliveCount(
         worker_id,
         is_for_native_message_connect
@@ -351,11 +356,20 @@ void ExtensionMessagePort::DecrementLazyKeepaliveCount() {
     return;
   }
 
-  for (const auto& worker_id : service_workers_) {
-    auto& uuids = pending_keepalive_uuids_[worker_id];
-    DCHECK(!uuids.empty());
-    std::string request_uuid = std::move(uuids.back());
-    uuids.pop_back();
+  // Decrement keepalive count for service workers of the extension managed by
+  // this port.
+  // TODO(richardzh): Add a check to only decrement count if the port is in lazy
+  // context.
+  for (const auto& worker_id :
+       pm->GetServiceWorkersForExtension(extension_id_)) {
+    auto iter = pending_keepalive_uuids_.find(worker_id);
+    if (iter == pending_keepalive_uuids_.end()) {
+      // We may not have a pending keepalive if this worker wasn't created at
+      // the time the message channel opened.
+      continue;
+    }
+    std::string request_uuid = std::move(iter->second.back());
+    iter->second.pop_back();
     pm->DecrementServiceWorkerKeepaliveCount(worker_id, request_uuid,
                                              Activity::MESSAGE_PORT,
                                              PortIdToString(port_id_));
