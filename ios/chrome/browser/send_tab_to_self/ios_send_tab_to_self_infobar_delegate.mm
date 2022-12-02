@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
+#import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -95,6 +96,7 @@ int IOSSendTabToSelfInfoBarDelegate::GetIconId() const {
 }
 
 void IOSSendTabToSelfInfoBarDelegate::InfoBarDismissed() {
+  send_tab_to_self::RecordNotificationDismissed();
   Cancel();
 }
 
@@ -103,6 +105,7 @@ std::u16string IOSSendTabToSelfInfoBarDelegate::GetMessageText() const {
 }
 
 bool IOSSendTabToSelfInfoBarDelegate::Accept() {
+  send_tab_to_self::RecordNotificationOpened();
   model_->MarkEntryOpened(entry_->GetGUID());
   infobar()->owner()->OpenURL(entry_->GetURL(),
                               WindowOpenDisposition::NEW_FOREGROUND_TAB);

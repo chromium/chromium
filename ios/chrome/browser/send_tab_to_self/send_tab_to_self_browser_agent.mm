@@ -16,6 +16,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -145,6 +146,8 @@ void SendTabToSelfBrowserAgent::DisplayInfoBar(
   if (!infobar_manager) {
     return;
   }
+
+  send_tab_to_self::RecordNotificationShown();
 
   infobar_manager->AddInfoBar(CreateConfirmInfoBar(
       send_tab_to_self::IOSSendTabToSelfInfoBarDelegate::Create(entry,
