@@ -218,6 +218,9 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 
 - (void)setOmniboxSemanticContentAttribute:
     (UISemanticContentAttribute)omniboxSemanticContentAttribute {
+  if (omniboxSemanticContentAttribute == _omniboxSemanticContentAttribute) {
+    return;
+  }
   _omniboxSemanticContentAttribute = omniboxSemanticContentAttribute;
   self.contentView.semanticContentAttribute = omniboxSemanticContentAttribute;
   self.textStackView.semanticContentAttribute = omniboxSemanticContentAttribute;
@@ -225,6 +228,12 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   if (self.showingDeleteConfirmation) {
     [self unfreezeLayoutGuidePositions];
     [self freezeLayoutGuidePositions];
+  } else if (self.window) {
+    // The layout guides may have been repositioned, so remove the constraints
+    // and add them again.
+    [NSLayoutConstraint
+        deactivateConstraints:self.nonDeletingLayoutGuideConstraints];
+    [self attachToLayoutGuides];
   }
 }
 
