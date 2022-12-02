@@ -163,7 +163,7 @@ class CONTENT_EXPORT MediaWebContentsObserver
     ~MediaPlayerHostImpl() override;
 
     // Used to bind receivers via the BrowserInterfaceBroker.
-    void BindMediaPlayerHostReceiver(
+    void AddMediaPlayerHostReceiver(
         mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
             receiver);
 

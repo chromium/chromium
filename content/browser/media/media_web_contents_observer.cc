@@ -304,7 +304,7 @@ MediaWebContentsObserver::MediaPlayerHostImpl::MediaPlayerHostImpl(
 
 MediaWebContentsObserver::MediaPlayerHostImpl::~MediaPlayerHostImpl() = default;
 
-void MediaWebContentsObserver::MediaPlayerHostImpl::BindMediaPlayerHostReceiver(
+void MediaWebContentsObserver::MediaPlayerHostImpl::AddMediaPlayerHostReceiver(
     mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
@@ -637,13 +637,15 @@ void MediaWebContentsObserver::BindMediaPlayerHost(
     GlobalRenderFrameHostId frame_routing_id,
     mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
         player_receiver) {
-  if (!media_player_hosts_.contains(frame_routing_id)) {
-    media_player_hosts_[frame_routing_id] =
-        std::make_unique<MediaPlayerHostImpl>(frame_routing_id, this);
+  auto it = media_player_hosts_.find(frame_routing_id);
+  if (it == media_player_hosts_.end()) {
+    it = media_player_hosts_
+             .try_emplace(
+                 frame_routing_id,
+                 std::make_unique<MediaPlayerHostImpl>(frame_routing_id, this))
+             .first;
   }
-
-  media_player_hosts_[frame_routing_id]->BindMediaPlayerHostReceiver(
-      std::move(player_receiver));
+  it->second->AddMediaPlayerHostReceiver(std::move(player_receiver));
 }
 
 void MediaWebContentsObserver::OnMediaPlayerAdded(
@@ -651,22 +653,17 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
     mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
         media_player_observer,
     MediaPlayerId player_id) {
-  auto* const rfh = RenderFrameHost::FromID(player_id.frame_routing_id);
-  DCHECK(rfh);
-
-  if (media_player_remotes_.contains(player_id)) {
-    // Original remote associated with |player_id| will be overridden. If the
-    // original player is still alive, this will break our ability to control
-    // it from the browser process. We don't know that the original player is
-    // actually still alive.
-    // TODO(https://crbug.com/1172882): Determine the root cause of duplication
-    // and/or refactor to make ID purely a browser-side concept.
-    LOG(ERROR) << __func__ << " Duplicate media player id ("
-               << player_id.delegate_id << ")";
+  if (!RenderFrameHost::FromID(player_id.frame_routing_id) ||
+      media_player_remotes_.contains(player_id) ||
+      media_player_observer_hosts_.contains(player_id)) {
+    // If you see this, it's likely due to https://crbug.com/1392441
+    mojo::ReportBadMessage("Bad MediaPlayer request.");
+    return;
   }
 
-  media_player_remotes_[player_id].Bind(std::move(player_remote));
-  media_player_remotes_[player_id].set_disconnect_handler(base::BindOnce(
+  auto remote_it = media_player_remotes_.try_emplace(player_id);
+  remote_it.first->second.Bind(std::move(player_remote));
+  remote_it.first->second.set_disconnect_handler(base::BindOnce(
       [](MediaWebContentsObserver* observer, const MediaPlayerId& player_id) {
         observer->player_info_map_.erase(player_id);
         observer->media_player_remotes_.erase(player_id);
@@ -679,14 +676,10 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
       },
       base::Unretained(this), player_id));
 
-  // Create a new MediaPlayerObserverHostImpl for |player_id|, implementing the
-  // media::mojom::MediaPlayerObserver mojo interface, to handle messages sent
-  // from the MediaPlayer element in the renderer process.
-  if (!media_player_observer_hosts_.contains(player_id)) {
-    media_player_observer_hosts_[player_id] =
-        std::make_unique<MediaPlayerObserverHostImpl>(player_id, this);
-  }
-  media_player_observer_hosts_[player_id]->BindMediaPlayerObserverReceiver(
+  auto observer_it = media_player_observer_hosts_.try_emplace(
+      player_id,
+      std::make_unique<MediaPlayerObserverHostImpl>(player_id, this));
+  observer_it.first->second->BindMediaPlayerObserverReceiver(
       std::move(media_player_observer));
 }
 

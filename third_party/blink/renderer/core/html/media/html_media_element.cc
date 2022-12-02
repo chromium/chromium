@@ -658,6 +658,8 @@ void HTMLMediaElement::AttachToNewFrame() {
 }
 
 void HTMLMediaElement::ResetMojoState() {
+  if (media_player_host_remote_)
+    media_player_host_remote_->Value().reset();
   media_player_host_remote_ = MakeGarbageCollected<DisallowNewWrapper<
       HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerHost>>>(
       GetExecutionContext());
