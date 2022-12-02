@@ -340,7 +340,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
-  DIPSWebContentsObserver::CreateForWebContents(web_contents);
+  DIPSWebContentsObserver::MaybeCreateForWebContents(web_contents);
   ExternalProtocolObserver::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
   FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);

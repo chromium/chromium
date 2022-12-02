@@ -197,6 +197,8 @@ class DIPSWebContentsObserver
       public content::WebContentsUserData<DIPSWebContentsObserver>,
       public DIPSBounceDetectorDelegate {
  public:
+  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+
   ~DIPSWebContentsObserver() override;
 
   void SetRedirectHandlerForTesting(DIPSRedirectHandler handler) {

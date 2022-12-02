@@ -22,10 +22,8 @@ using UrlPredicate = base::RepeatingCallback<bool(const GURL&)>;
 // Manages the storage of DIPSState values.
 class DIPSStorage {
  public:
-  DIPSStorage();
+  explicit DIPSStorage(const absl::optional<base::FilePath>& path);
   ~DIPSStorage();
-
-  void Init(const absl::optional<base::FilePath>& path);
 
   DIPSState Read(const GURL& url);
 

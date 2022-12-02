@@ -17,6 +17,7 @@
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -25,6 +26,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-shared.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 using blink::mojom::EngagementLevel;
 using content::NavigationHandle;
@@ -87,6 +92,27 @@ inline void UmaHistogramTimeToBounce(base::TimeDelta sample) {
 }
 
 }  // namespace
+
+/* static */
+void DIPSWebContentsObserver::MaybeCreateForWebContents(
+    content::WebContents* web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  if (profile->IsSystemProfile())
+    return;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS creates various irregular profiles (login, lock screen...); they
+  // are of type kRegular (returns true for `Profile::IsRegular()`), that aren't
+  // used to browse the web and users can't configure. Don't collect metrics
+  // about them.
+  if (!ash::ProfileHelper::IsUserProfile(profile))
+    return;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  DIPSWebContentsObserver::CreateForWebContents(web_contents);
+}
 
 DIPSWebContentsObserver::DIPSWebContentsObserver(
     content::WebContents* web_contents)
