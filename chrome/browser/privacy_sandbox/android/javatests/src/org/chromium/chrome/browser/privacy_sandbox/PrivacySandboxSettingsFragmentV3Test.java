@@ -9,10 +9,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -28,6 +26,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.clickImageButtonNextToText;
+import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.withTopic;
+
 import android.os.Bundle;
 import android.view.View;
 
@@ -36,8 +37,6 @@ import androidx.annotation.StringRes;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +69,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/** Tests {@link PrivacySandboxSettingsFragment}. */
+/**
+ * Tests {@link PrivacySandboxSettingsFragment}.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -113,6 +114,11 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     public void setUp() {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+
+        mFakePrivacySandboxBridge.setCurrentTopTopics("Foo", "Bar");
+        mFakePrivacySandboxBridge.setBlockedTopics("BlockedFoo", "BlockedBar");
+        mFakePrivacySandboxBridge.setCurrentFledgeSites("example.com", "example2.com");
+        mFakePrivacySandboxBridge.setBlockedFledgeSites("blocked.com", "blocked2.com");
     }
 
     @After
@@ -135,12 +141,6 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         onView(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
         TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
         return view[0];
-    }
-
-    private void clickImageButtonNextToText(String text) {
-        // Click on the image_button of the preference with |text|.
-        onView(allOf(withId(R.id.image_button), withParent(hasSibling(withChild(withText(text))))))
-                .perform(click());
     }
 
     private void scrollToSetting(Matcher<View> matcher) {
@@ -444,19 +444,5 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         assertEquals("Cookies snackbar referrer histogram count wrong", 1,
                 mHistogramTestRule.getHistogramValueCount(
                         REFERRER_HISTOGRAM, PrivacySandboxReferrer.COOKIES_SNACKBAR));
-    }
-
-    private static Matcher<Topic> withTopic(String name) {
-        return new BaseMatcher<Topic>() {
-            @Override
-            public boolean matches(Object o) {
-                return ((Topic) o).getName().equals(name);
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Should contain " + name);
-            }
-        };
     }
 }

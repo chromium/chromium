@@ -26,13 +26,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private @PromptType int mPromptType = PromptType.NONE;
     private Integer mLastPromptAction;
 
-    public FakePrivacySandboxBridge() {
-        setCurrentTopTopics("Foo", "Bar");
-        setBlockedTopics("BlockedFoo", "BlockedBar");
-        setCurrentFledgeSites("example.com", "example2.com");
-        setBlockedFledgeSites("blocked.com", "blocked2.com");
-    }
-
     public void setCurrentTopTopics(String... topics) {
         mCurrentTopTopics.clear();
         for (String name : topics) {

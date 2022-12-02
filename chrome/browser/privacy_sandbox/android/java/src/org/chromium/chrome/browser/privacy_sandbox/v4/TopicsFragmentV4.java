@@ -13,8 +13,11 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
+import org.chromium.chrome.browser.privacy_sandbox.Topic;
+import org.chromium.chrome.browser.privacy_sandbox.TopicPreference;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -23,11 +26,13 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.util.List;
+
 /**
  * Fragment for the Privacy Sandbox -> Topic preferences.
  */
 public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
-        implements Preference.OnPreferenceChangeListener {
+        implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TOPICS_TOGGLE_PREFERENCE = "topics_toggle";
     private static final String CURRENT_TOPICS_PREFERENCE = "current_topics";
     private static final String EMPTY_TOPICS_PREFERENCE = "topics_empty";
@@ -36,7 +41,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private static final String TOPICS_PAGE_FOOTER_PREFERENCE = "topics_page_footer";
 
     private ChromeSwitchPreference mTopicsTogglePreference;
-    private PreferenceCategory mCurrentTopicsPreference;
+    private PreferenceCategory mCurrentTopicsCategory;
     private TextMessagePreference mEmptyTopicsPreference;
     private TextMessagePreference mDisabledTopicsPreference;
     private ChromeBasePreference mBlockedTopicsPreference;
@@ -59,7 +64,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference_v4);
 
         mTopicsTogglePreference = findPreference(TOPICS_TOGGLE_PREFERENCE);
-        mCurrentTopicsPreference = findPreference(CURRENT_TOPICS_PREFERENCE);
+        mCurrentTopicsCategory = findPreference(CURRENT_TOPICS_PREFERENCE);
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
         mDisabledTopicsPreference = findPreference(DISABLED_TOPICS_PREFERENCE);
         mBlockedTopicsPreference = findPreference(BLOCKED_TOPICS_PREFERENCE);
@@ -81,6 +86,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     @Override
     public void onResume() {
         super.onResume();
+        populateCurrentTopics();
         updatePreferenceVisibility();
     }
 
@@ -95,25 +101,46 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         return false;
     }
 
+    @Override
+    public boolean onPreferenceClick(@NonNull Preference preference) {
+        if (preference instanceof TopicPreference) {
+            PrivacySandboxBridge.setTopicAllowed(((TopicPreference) preference).getTopic(), false);
+            mCurrentTopicsCategory.removePreference(preference);
+            updatePreferenceVisibility();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void populateCurrentTopics() {
+        mCurrentTopicsCategory.removeAll();
+        List<Topic> currentTopics = PrivacySandboxBridge.getCurrentTopTopics();
+        for (Topic topic : currentTopics) {
+            TopicPreference preference = new TopicPreference(getContext(), topic);
+            preference.setImage(R.drawable.btn_close,
+                    getResources().getString(
+                            R.string.privacy_sandbox_remove_interest_button_description,
+                            topic.getName()));
+            preference.setDividerAllowedAbove(false);
+            preference.setOnPreferenceClickListener(this);
+            mCurrentTopicsCategory.addPreference(preference);
+        }
+    }
+
     private void updatePreferenceVisibility() {
-        if (!isTopicsPrefEnabled()) {
-            mDisabledTopicsPreference.setVisible(true);
+        boolean topicsEnabled = isTopicsPrefEnabled();
+        boolean topicsEmpty = mCurrentTopicsCategory.getPreferenceCount() == 0;
 
-            mCurrentTopicsPreference.setVisible(false);
-            mEmptyTopicsPreference.setVisible(false);
-            mTopicsPageFooterPreference.setVisible(false);
-            mBlockedTopicsPreference.setDividerAllowedBelow(false);
-            return;
-        }
+        // Visible when Topics are disabled.
+        mDisabledTopicsPreference.setVisible(!topicsEnabled);
 
-        if (mCurrentTopicsPreference.getPreferenceCount() == 0) {
-            mEmptyTopicsPreference.setVisible(true);
+        // Visible when Topics are enabled, but the current Topics list is empty.
+        mEmptyTopicsPreference.setVisible(topicsEnabled && topicsEmpty);
 
-            mCurrentTopicsPreference.setVisible(false);
-            mDisabledTopicsPreference.setVisible(false);
-            mTopicsPageFooterPreference.setVisible(false);
-            mBlockedTopicsPreference.setDividerAllowedBelow(false);
-            return;
-        }
+        // Visible when Topics are enabled and the current Topics list is not empty.
+        mCurrentTopicsCategory.setVisible(topicsEnabled && !topicsEmpty);
+        mTopicsPageFooterPreference.setVisible(topicsEnabled && !topicsEmpty);
+        mBlockedTopicsPreference.setDividerAllowedBelow(topicsEnabled && !topicsEmpty);
     }
 }
