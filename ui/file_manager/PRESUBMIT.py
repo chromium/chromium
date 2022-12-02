@@ -3,22 +3,30 @@
 # found in the LICENSE file.
 
 USE_PYTHON3 = True
+PRESUBMIT_VERSION = '2.0.0'
+
 TEST_PATTERNS = [r'.+_test.py$']
 
 
-def CheckChangeOnUpload(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
+def ChecksPatchFormatted(input_api, output_api):
+    return input_api.canned_checks.CheckPatchFormatted(input_api,
+                                                       output_api,
+                                                       check_js=True)
 
 
-def CheckChangeOnCommit(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
+def ChecksUnitTests(input_api, output_api):
+    # Run all unit tests under ui/file_manager/base folder.
+    return input_api.canned_checks.RunUnitTestsInDirectory(
+        input_api,
+        output_api,
+        'base',
+        files_to_check=TEST_PATTERNS,
+        run_on_python2=False,
+        skip_shebang_check=True)
 
 
-def _CommonChecks(input_api, output_api):
+def ChecksCommon(input_api, output_api):
     results = []
-    results += input_api.canned_checks.CheckPatchFormatted(input_api,
-                                                           output_api,
-                                                           check_js=True)
     try:
         import sys
         old_sys_path = sys.path[:]
@@ -33,15 +41,6 @@ def _CommonChecks(input_api, output_api):
         import styles.presubmit_support
         results += styles.presubmit_support._CheckSemanticColors(
             input_api, output_api)
-
-        # Run all unit tests under ui/file_manager/base folder.
-        results += input_api.canned_checks.RunUnitTestsInDirectory(
-            input_api,
-            output_api,
-            'base',
-            files_to_check=TEST_PATTERNS,
-            run_on_python2=False,
-            skip_shebang_check=True)
 
         sys.path += [input_api.os_path.join(cwd)]
         import base.presubmit_support

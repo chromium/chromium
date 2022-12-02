@@ -4,16 +4,9 @@
 
 
 USE_PYTHON3 = True
+PRESUBMIT_VERSION = '2.0.0'
 
-def CheckChangeOnUpload(input_api, output_api):
-  return _CommonChecks(input_api, output_api)
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  return _CommonChecks(input_api, output_api)
-
-
-def _CheckForTranslations(input_api, output_api):
+def CheckForTranslations(input_api, output_api):
   shared_keywords = ['i18n(']
   html_keywords = shared_keywords + ['$118n{']
   js_keywords = shared_keywords + ['I18nBehavior', 'loadTimeData.get']
@@ -51,7 +44,7 @@ translation from the place using the shared code. For an example: see
 <cr-dialog>#closeText (http://bit.ly/2eLEsqh).""")]
 
 
-def _CheckSvgsOptimized(input_api, output_api):
+def CheckSvgsOptimized(input_api, output_api):
   results = []
   try:
     import sys
@@ -65,7 +58,7 @@ def _CheckSvgsOptimized(input_api, output_api):
   return results
 
 
-def _CheckWebDevStyle(input_api, output_api):
+def CheckWebDevStyle(input_api, output_api):
   results = []
   try:
     import sys
@@ -78,7 +71,7 @@ def _CheckWebDevStyle(input_api, output_api):
     sys.path = old_sys_path
   return results
 
-def _CheckNoDisallowedJS(input_api, output_api):
+def CheckNoDisallowedJS(input_api, output_api):
   # Ignore legacy files from the js/ subfolder along with tools/.
   EXCLUDE_PATH_PREFIXES = [
     'ui/webui/resources/js/assert.js',
@@ -115,7 +108,7 @@ def _CheckNoDisallowedJS(input_api, output_api):
   return presubmit_support.DisallowNewJsFiles(input_api, output_api,
                                               lambda f: not allow_js(f))
 
-def _CheckJsModulizer(input_api, output_api):
+def CheckJsModulizer(input_api, output_api):
   affected = input_api.AffectedFiles()
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
 
@@ -129,7 +122,7 @@ def _CheckJsModulizer(input_api, output_api):
   return results
 
 
-def _CheckGenerateGrd(input_api, output_api):
+def CheckGenerateGrd(input_api, output_api):
   affected = input_api.AffectedFiles()
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
 
@@ -144,14 +137,6 @@ def _CheckGenerateGrd(input_api, output_api):
   return results
 
 
-def _CommonChecks(input_api, output_api):
-  results = []
-  results += _CheckForTranslations(input_api, output_api)
-  results += _CheckSvgsOptimized(input_api, output_api)
-  results += _CheckWebDevStyle(input_api, output_api)
-  results += _CheckNoDisallowedJS(input_api, output_api)
-  results += _CheckJsModulizer(input_api, output_api)
-  results += _CheckGenerateGrd(input_api, output_api)
-  results += input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
-                                                         check_js=True)
-  return results
+def CheckPatchFormatted(input_api, output_api):
+  return input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
+                                                     check_js=True)
