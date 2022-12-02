@@ -1945,8 +1945,16 @@ H265Parser::Result H265Parser::ParsePredWeightTable(
 
 H265Parser::Result H265Parser::ParseSEI(H265SEI* sei) {
   int byte;
-
-  // 7.3.2.4 Recursively parse SEI.
+  int num_parsed_sei_msg = 0;
+  // According to spec 7.3.2.4, we should loop parsing SEI NALU
+  // as long as `more_rbsp_data` condition is true, which means
+  // if the NALU's RBSP data is large enough and `more_rbsp_data`
+  // condition keeps true all the time, we are very likely have to
+  // loop the parsing millions of times.
+  //
+  // The spec doesn't provide any pattern to let us validate the
+  // the parsed SEI messages, so we have to set a limit here.
+  constexpr int kMaxParsedSEIMessages = 64;
   do {
     H265SEIMessage sei_msg;
     sei_msg.type = 0;
@@ -2041,6 +2049,9 @@ H265Parser::Result H265Parser::ParseSEI(H265SEI* sei) {
     // Only add parsed SEI messages.
     if (skip_bits_size < sei_msg.payload_size * 8)
       sei->msgs.push_back(sei_msg);
+    // In case the loop endless.
+    if (++num_parsed_sei_msg > kMaxParsedSEIMessages)
+      return kInvalidStream;
   } while (br_.HasMoreRBSPData());
 
   return kOk;
