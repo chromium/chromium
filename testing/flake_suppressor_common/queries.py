@@ -39,6 +39,20 @@ SUBMITTED_BUILDS_TEMPLATE = """\
                                     INTERVAL @sample_period DAY)
 """
 
+# Subquery for getting all ci builds that are in sheriff rotations in the past
+# |sample_period| days. Will be inserted into other queries.
+SHERIFF_ROTATIONS_CI_BUILDS_TEMPLATE = """\
+  SELECT DISTINCT builder.builder,
+  FROM
+    `cr-buildbucket.chrome.builds_30d`
+  WHERE
+    input.properties LIKE '%sheriff_rotations%'
+    AND JSON_VALUE_ARRAY(input.properties, '$.sheriff_rotations')[OFFSET(0)]
+      IN ("chromium", "android")
+    AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                    INTERVAL @sample_period DAY)
+"""
+
 
 class BigQueryQuerier():
   def __init__(self, sample_period: int, billing_project: str,
