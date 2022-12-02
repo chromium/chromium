@@ -15,6 +15,7 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -76,16 +77,30 @@ mojom::AcceleratorInfoPtr CreateAcceleratorInfo(
   return info_mojom;
 }
 
+std::u16string LookupAcceleratorDescription(mojom::AcceleratorSource source,
+                                            AcceleratorActionId action_id) {
+  switch (source) {
+    case mojom::AcceleratorSource::kAsh:
+      return l10n_util::GetStringUTF16(
+          kAcceleratorActionToStringIdMap.at(action_id));
+    case mojom::AcceleratorSource::kEventRewriter:
+    // TODO(longbowei): Add strings for Browser shortcuts.
+    case mojom::AcceleratorSource::kBrowser:
+    // TODO(michaelcheco): Add strings for Ambient shortcuts.
+    case mojom::AcceleratorSource::kAmbient:
+    case mojom::AcceleratorSource::kAndroid:
+      NOTREACHED();
+      return std::u16string();
+  }
+}
 mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
     AcceleratorLayoutDetails layout_details) {
   mojom::AcceleratorLayoutInfoPtr layout_info =
       mojom::AcceleratorLayoutInfo::New();
   layout_info->category = layout_details.category;
   layout_info->sub_category = layout_details.sub_category;
-  // TODO(michaelcheco): Description needs to switch which table it performs
-  // the lookup on depending on the accelerator source.
-  layout_info->description = l10n_util::GetStringUTF16(
-      kAcceleratorActionToStringIdMap.at(layout_details.action_id));
+  layout_info->description = LookupAcceleratorDescription(
+      layout_details.source, layout_details.action_id);
   layout_info->style = layout_details.layout_style;
   layout_info->source = layout_details.source;
   layout_info->action = static_cast<uint32_t>(layout_details.action_id);
