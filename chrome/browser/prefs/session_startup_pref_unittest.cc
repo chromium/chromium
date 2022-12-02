@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/values.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -29,9 +30,9 @@ class SessionStartupPrefTest : public testing::Test {
 };
 
 TEST_F(SessionStartupPrefTest, URLListIsFixedUp) {
-  auto url_pref_list = std::make_unique<base::ListValue>();
-  url_pref_list->Append("google.com");
-  url_pref_list->Append("chromium.org");
+  base::Value::List url_pref_list;
+  url_pref_list.Append("google.com");
+  url_pref_list.Append("chromium.org");
   pref_service_->SetUserPref(prefs::kURLsToRestoreOnStartup,
                              std::move(url_pref_list));
 
@@ -43,15 +44,15 @@ TEST_F(SessionStartupPrefTest, URLListIsFixedUp) {
 }
 
 TEST_F(SessionStartupPrefTest, URLListManagedOverridesUser) {
-  auto url_pref_list1 = std::make_unique<base::ListValue>();
-  url_pref_list1->Append("chromium.org");
+  base::Value::List url_pref_list1;
+  url_pref_list1.Append("chromium.org");
   pref_service_->SetUserPref(prefs::kURLsToRestoreOnStartup,
                              std::move(url_pref_list1));
 
-  auto url_pref_list2 = std::make_unique<base::ListValue>();
-  url_pref_list2->Append("chromium.org");
-  url_pref_list2->Append("chromium.org");
-  url_pref_list2->Append("chromium.org");
+  base::Value::List url_pref_list2;
+  url_pref_list2.Append("chromium.org");
+  url_pref_list2.Append("chromium.org");
+  url_pref_list2.Append("chromium.org");
   pref_service_->SetManagedPref(prefs::kURLsToRestoreOnStartup,
                                 std::move(url_pref_list2));
 
