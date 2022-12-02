@@ -40,6 +40,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_stub.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -47,6 +48,29 @@ using testing::AtLeast;
 
 namespace gpu {
 namespace {
+
+bool IsEglImageSupported() {
+  // Creating a context and making it current to initialize dynamic bindings
+  // which is needed to query extensions from current gl driver.
+  scoped_refptr<gl::GLSurface> surface = gl::init::CreateOffscreenGLSurface(
+      gl::GetDefaultDisplayEGL(), gfx::Size());
+  DCHECK(surface);
+  scoped_refptr<gl::GLContext> context =
+      gl::init::CreateGLContext(nullptr, surface.get(), gl::GLContextAttribs());
+  DCHECK(context);
+  bool result = context->MakeCurrent(surface.get());
+  DCHECK(result);
+
+  // Check the required extensions to support egl images.
+  auto* egl_display = gl::GetDefaultDisplayEGL();
+  if (egl_display && egl_display->ext->b_EGL_KHR_image_base &&
+      egl_display->ext->b_EGL_KHR_gl_texture_2D_image &&
+      egl_display->ext->b_EGL_KHR_fence_sync &&
+      gl::g_current_gl_driver->ext.b_GL_OES_EGL_image) {
+    return true;
+  }
+  return false;
+}
 
 void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
                          scoped_refptr<gl::GLSurface>& surface,
@@ -80,13 +104,20 @@ class EGLImageBackingFactoryThreadSafeTest
   ~EGLImageBackingFactoryThreadSafeTest() override {
     // |context_state_| and |context_state2_| must be destroyed on its own
     // context.
-    context_state2_->MakeCurrent(surface2_.get(), true /* needs_gl */);
-    context_state2_.reset();
-    context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
-    context_state_.reset();
+    if (context_state2_) {
+      context_state2_->MakeCurrent(surface2_.get(), true /* needs_gl */);
+      context_state2_.reset();
+    }
+    if (context_state_) {
+      context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
+      context_state_.reset();
+    }
   }
 
   void SetUp() override {
+    if (!IsEglImageSupported())
+      return;
+
     GpuDriverBugWorkarounds workarounds;
 
     scoped_refptr<gles2::FeatureInfo> feature_info;
@@ -162,6 +193,9 @@ class CreateAndValidateSharedImageRepresentations {
 // Intent of this test is to create at thread safe backing and test if all
 // representations are working.
 TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
+  if (!IsEglImageSupported())
+    return;
+
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), true /* is_thread_safe */,
       &mailbox_manager_, shared_image_manager_.get(),
@@ -172,6 +206,9 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
 // Intent of this test is to create at thread safe backing with initial pixel
 // data and test if all representations are working.
 TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicInitialData) {
+  if (!IsEglImageSupported())
+    return;
+
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), true /* is_thread_safe */,
       &mailbox_manager_, shared_image_manager_.get(),
@@ -184,6 +221,9 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicInitialData) {
 // group. One thread will be writing to the backing and other thread will be
 // reading from it.
 TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
+  if (!IsEglImageSupported())
+    return;
+
   // Create it on 1st SharedContextState |context_state_|.
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), true /* is_thread_safe */,

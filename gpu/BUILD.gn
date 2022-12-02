@@ -361,6 +361,10 @@ test("gl_tests") {
     "ipc/client/raster_in_process_context_tests.cc",
   ]
 
+  if (use_egl) {
+    sources += [ "command_buffer/service/shared_image/egl_image_backing_factory_unittest.cc" ]
+  }
+
   if (is_android) {
     sources += [ "command_buffer/tests/gl_unittests_android.cc" ]
   }
@@ -419,10 +423,7 @@ test("gl_tests") {
   if (is_android) {
     libs += [ "android" ]
     deps += [ "//ui/android:ui_java" ]
-    sources += [
-      "command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory_unittest.cc",
-      "command_buffer/service/shared_image/egl_image_backing_factory_unittest.cc",
-    ]
+    sources += [ "command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory_unittest.cc" ]
   } else if (is_mac) {
     frameworks = [ "IOSurface.framework" ]
     sources += [ "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc" ]

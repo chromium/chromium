@@ -297,6 +297,15 @@ target(link_target_type, "gles2_sources") {
     "webgpu_decoder.h",
   ]
 
+  if (use_egl) {
+    sources += [
+      "shared_image/egl_image_backing.cc",
+      "shared_image/egl_image_backing.h",
+      "shared_image/egl_image_backing_factory.cc",
+      "shared_image/egl_image_backing_factory.h",
+    ]
+  }
+
   if (use_dawn) {
     deps += [ "//gpu/webgpu:common" ]
     sources += [
@@ -504,10 +513,6 @@ target(link_target_type, "gles2_sources") {
       "shared_image/android_image_backing.h",
       "shared_image/android_video_image_backing.cc",
       "shared_image/android_video_image_backing.h",
-      "shared_image/egl_image_backing.cc",
-      "shared_image/egl_image_backing.h",
-      "shared_image/egl_image_backing_factory.cc",
-      "shared_image/egl_image_backing_factory.h",
       "shared_image/gl_texture_android_image_representation.cc",
       "shared_image/gl_texture_android_image_representation.h",
       "shared_image/gl_texture_passthrough_android_image_representation.cc",

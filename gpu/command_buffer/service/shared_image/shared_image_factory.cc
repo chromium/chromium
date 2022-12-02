@@ -70,8 +70,12 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if defined(USE_EGL)
 #include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
-#endif
+#include "ui/gl/gl_display.h"
+#endif  // defined(USE_EGL)
 
 namespace gpu {
 
@@ -221,12 +225,22 @@ SharedImageFactory::SharedImageFactory(
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
-#if BUILDFLAG(IS_ANDROID)
-  if (use_gl) {
+#if defined(USE_EGL)
+  // Create EGLImageBackingFactory if egl images are supported. Note that the
+  // factory creation is kept here to preserve the current preference of factory
+  // to be used.
+  auto* egl_display = gl::GetDefaultDisplayEGL();
+  if (use_gl && egl_display && egl_display->ext->b_EGL_KHR_image_base &&
+      egl_display->ext->b_EGL_KHR_gl_texture_2D_image &&
+      egl_display->ext->b_EGL_KHR_fence_sync &&
+      gl::g_current_gl_driver->ext.b_GL_OES_EGL_image) {
     auto egl_backing_factory = std::make_unique<EGLImageBackingFactory>(
         gpu_preferences, workarounds, feature_info.get());
     factories_.push_back(std::move(egl_backing_factory));
   }
+#endif  // defined(USE_EGL)
+
+#if BUILDFLAG(IS_ANDROID)
   bool is_ahb_supported =
       base::AndroidHardwareBufferCompat::IsSupportAvailable();
   if (gr_context_type_ == GrContextType::kVulkan) {

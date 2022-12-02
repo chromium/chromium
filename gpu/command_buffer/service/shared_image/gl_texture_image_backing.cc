@@ -50,10 +50,6 @@
 #include "ui/gl/shared_gl_fence_egl.h"
 #include "ui/gl/trace_util.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "gpu/command_buffer/service/shared_image/egl_image_backing.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 #endif
