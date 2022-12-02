@@ -60,12 +60,14 @@ bool DefaultDeleteFunction(const base::FilePath& file) {
 
 PasswordManagerExporter::PasswordManagerExporter(
     SavedPasswordsPresenter* presenter,
-    ProgressCallback on_progress)
+    ProgressCallback on_progress,
+    base::OnceClosure completion_callback)
     : presenter_(presenter),
       on_progress_(std::move(on_progress)),
       last_progress_status_(ExportProgressStatus::NOT_STARTED),
       write_function_(base::BindRepeating(&DefaultWriteFunction)),
       delete_function_(base::BindRepeating(&DefaultDeleteFunction)),
+      completion_callback_(std::move(completion_callback)),
 #if BUILDFLAG(IS_POSIX)
       set_permissions_function_(
           base::BindRepeating(base::SetPosixFilePermissions)),
@@ -127,6 +129,9 @@ void PasswordManagerExporter::Cancel() {
   // If we are currently writing to the disk, we will have to cleanup the file
   // once writing stops.
   Cleanup();
+
+  // Resets the unique pointer to the current object instance.
+  std::move(completion_callback_).Run();
 }
 
 ExportProgressStatus PasswordManagerExporter::GetProgressStatus() {
@@ -177,6 +182,9 @@ void PasswordManagerExporter::OnPasswordsExported(bool success) {
     // Don't leave partial password files, if we tell the user we couldn't write
     Cleanup();
   }
+
+  // Resets the unique pointer to the current object instance.
+  std::move(completion_callback_).Run();
 }
 
 void PasswordManagerExporter::OnProgress(ExportProgressStatus status,

@@ -34,7 +34,8 @@ class PasswordManagerExporter {
       base::RepeatingCallback<bool(const base::FilePath&, int)>;
 
   explicit PasswordManagerExporter(SavedPasswordsPresenter* presenter,
-                                   ProgressCallback on_progress);
+                                   ProgressCallback on_progress,
+                                   base::OnceClosure completion_callback);
 
   PasswordManagerExporter(const PasswordManagerExporter&) = delete;
   PasswordManagerExporter& operator=(const PasswordManagerExporter&) = delete;
@@ -119,6 +120,9 @@ class PasswordManagerExporter {
   // The function which does the actual deleting of a file. It should wrap
   // base::DeleteFile, unless it's changed for testing purposes.
   DeleteCallback delete_function_;
+
+  // Resets the unique pointer to the current object instance.
+  base::OnceClosure completion_callback_;
 
   // Set the file permissions on a file. It should wrap
   // base::SetPosixFilePermissions, unless this is not Posix or it's changed for

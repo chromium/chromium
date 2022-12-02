@@ -66,7 +66,9 @@ class PasswordManagerExporterTest : public testing::Test {
  public:
   PasswordManagerExporterTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
-        exporter_(&presenter_, mock_on_progress_.Get()),
+        exporter_(&presenter_,
+                  mock_on_progress_.Get(),
+                  mock_completion_callback_.Get()),
         destination_path_(kNullFileName) {
     exporter_.SetWriteForTesting(mock_write_file_.Get());
     exporter_.SetDeleteForTesting(mock_delete_file_.Get());
@@ -101,6 +103,7 @@ class PasswordManagerExporterTest : public testing::Test {
   base::MockCallback<
       base::RepeatingCallback<void(ExportProgressStatus, const std::string&)>>
       mock_on_progress_;
+  base::MockOnceClosure mock_completion_callback_;
   PasswordManagerExporter exporter_;
   StrictMock<base::MockCallback<WriteCallback>> mock_write_file_;
   StrictMock<base::MockCallback<DeleteCallback>> mock_delete_file_;
@@ -126,6 +129,7 @@ TEST_F(PasswordManagerExporterTest, PasswordExportSetPasswordListFirst) {
   exporter_.PreparePasswordsForExport();
   exporter_.SetDestination(destination_path_);
 
+  EXPECT_CALL(mock_completion_callback_, Run()).Times(1);
   task_environment_.RunUntilIdle();
 }
 
@@ -146,6 +150,7 @@ TEST_F(PasswordManagerExporterTest, WriteFileFailed) {
   exporter_.PreparePasswordsForExport();
   exporter_.SetDestination(destination_path_);
 
+  EXPECT_CALL(mock_completion_callback_, Run()).Times(1);
   task_environment_.RunUntilIdle();
 }
 
@@ -170,6 +175,7 @@ TEST_F(PasswordManagerExporterTest, GetProgressReturnsLastCallbackStatus) {
   exporter_.SetDestination(destination_path_);
   ASSERT_EQ(exporter_.GetProgressStatus(), status);
 
+  EXPECT_CALL(mock_completion_callback_, Run()).Times(1);
   task_environment_.RunUntilIdle();
   ASSERT_EQ(exporter_.GetProgressStatus(), status);
 }
@@ -183,6 +189,7 @@ TEST_F(PasswordManagerExporterTest, DontExportWithOnlyDestination) {
 
   exporter_.SetDestination(destination_path_);
 
+  EXPECT_CALL(mock_completion_callback_, Run()).Times(0);
   task_environment_.RunUntilIdle();
 }
 
@@ -194,6 +201,7 @@ TEST_F(PasswordManagerExporterTest, CancelAfterPasswords) {
               Run(ExportProgressStatus::FAILED_CANCELLED, IsEmpty()));
 
   exporter_.PreparePasswordsForExport();
+  EXPECT_CALL(mock_completion_callback_, Run()).Times(1);
   exporter_.Cancel();
 
   task_environment_.RunUntilIdle();
@@ -211,29 +219,7 @@ TEST_F(PasswordManagerExporterTest, CancelWhileExporting) {
 
   exporter_.PreparePasswordsForExport();
   exporter_.SetDestination(destination_path_);
-  exporter_.Cancel();
-
-  task_environment_.RunUntilIdle();
-}
-
-// The "Cancel" button may still be visible on the UI after we've completed
-// exporting. If they choose to cancel, we should clear the file.
-TEST_F(PasswordManagerExporterTest, CancelAfterExporting) {
-  SetPasswordList({CreateTestPassword()});
-
-  EXPECT_CALL(mock_write_file_, Run(_, _)).WillOnce(Return(true));
-  EXPECT_CALL(mock_delete_file_, Run(destination_path_));
-  EXPECT_CALL(mock_on_progress_,
-              Run(ExportProgressStatus::IN_PROGRESS, IsEmpty()));
-  EXPECT_CALL(mock_on_progress_,
-              Run(ExportProgressStatus::SUCCEEDED, IsEmpty()));
-  EXPECT_CALL(mock_on_progress_,
-              Run(ExportProgressStatus::FAILED_CANCELLED, IsEmpty()));
-
-  exporter_.PreparePasswordsForExport();
-  exporter_.SetDestination(destination_path_);
-
-  task_environment_.RunUntilIdle();
+  EXPECT_CALL(mock_completion_callback_, Run()).Times(1);
   exporter_.Cancel();
 
   task_environment_.RunUntilIdle();
@@ -251,6 +237,7 @@ TEST_F(PasswordManagerExporterTest, OutputHasRestrictedPermissions) {
   EXPECT_CALL(mock_on_progress_, Run(_, _)).Times(AnyNumber());
 
   exporter_.PreparePasswordsForExport();
+  EXPECT_CALL(mock_completion_callback_, Run()).Times(1);
   exporter_.SetDestination(destination_path_);
 
   task_environment_.RunUntilIdle();
@@ -282,6 +269,7 @@ TEST_F(PasswordManagerExporterTest, DeduplicatesAcrossPasswordStores) {
               Run(ExportProgressStatus::SUCCEEDED, IsEmpty()));
 
   exporter_.PreparePasswordsForExport();
+  EXPECT_CALL(mock_completion_callback_, Run()).Times(1);
   exporter_.SetDestination(destination_path_);
 
   task_environment_.RunUntilIdle();

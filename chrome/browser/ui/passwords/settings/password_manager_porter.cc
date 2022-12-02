@@ -81,7 +81,9 @@ bool PasswordManagerPorter::Export(content::WebContents* web_contents) {
   if (!exporter_) {
     // Set a new exporter for this request.
     exporter_ = std::make_unique<password_manager::PasswordManagerExporter>(
-        presenter_, on_export_progress_callback_);
+        presenter_, on_export_progress_callback_,
+        base::BindOnce(&PasswordManagerPorter::ExportDone,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Start serialising while the user selects a file.
@@ -219,6 +221,10 @@ void PasswordManagerPorter::FileSelectionCanceled(void* params) {
 
 void PasswordManagerPorter::ExportPasswordsToPath(const base::FilePath& path) {
   exporter_->SetDestination(path);
+}
+
+void PasswordManagerPorter::ExportDone() {
+  exporter_.reset();
 }
 
 void PasswordManagerPorter::ImportDone(
