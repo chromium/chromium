@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
@@ -48,6 +49,10 @@ class TouchToFillCreditCardController
   void OnDismissed(JNIEnv* env) override;
   // Calls credit card scanner
   void ScanCreditCard(JNIEnv* env) override;
+  // Called whenever a card gets selected.
+  void SuggestionSelected(
+      JNIEnv* env,
+      base::android::JavaParamRef<jstring> unique_id) override;
 
  private:
   // Called after the surface gets shown or hidden.

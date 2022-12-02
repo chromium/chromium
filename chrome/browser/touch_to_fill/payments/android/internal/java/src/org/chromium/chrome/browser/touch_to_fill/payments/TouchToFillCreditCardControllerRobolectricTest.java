@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
@@ -124,6 +125,20 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                 TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK);
         scanNewCardCallback.run();
         verify(mDelegateMock).scanCreditCard();
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID,
+            AutofillFeatures.AUTOFILL_ACROSS_IFRAMES})
+    public void
+    testCallsCallbackOnSelectingItem() {
+        mMediator.showSheet(new CreditCard[] {VISA}, false);
+        assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
+        assertNotNull(
+                mTouchToFillCreditCardModel.get(SHEET_ITEMS).get(0).model.get(ON_CLICK_ACTION));
+
+        mTouchToFillCreditCardModel.get(SHEET_ITEMS).get(0).model.get(ON_CLICK_ACTION).run();
+        verify(mDelegateMock).suggestionSelected(VISA.getGUID());
     }
 
     private static PersonalDataManager.CreditCard createLocalCreditCard(

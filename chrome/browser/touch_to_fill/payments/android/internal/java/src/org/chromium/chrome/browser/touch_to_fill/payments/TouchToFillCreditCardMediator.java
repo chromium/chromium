@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
@@ -64,6 +65,10 @@ class TouchToFillCreditCardMediator {
         mDelegate.scanCreditCard();
     }
 
+    private void onSelectedCreditCard(String uniqueId) {
+        mDelegate.suggestionSelected(uniqueId);
+    }
+
     private PropertyModel createCardModel(CreditCard card) {
         return new PropertyModel
                 .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
@@ -75,6 +80,7 @@ class TouchToFillCreditCardMediator {
                         mContext.getString(
                                         R.string.autofill_credit_card_two_line_label_from_card_number)
                                 .replace("$1", card.getFormattedExpirationDate(mContext)))
+                .with(ON_CLICK_ACTION, () -> { this.onSelectedCreditCard(card.getGUID()); })
                 .build();
     }
 }

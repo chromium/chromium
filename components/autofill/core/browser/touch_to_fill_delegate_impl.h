@@ -55,6 +55,7 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   bool ShouldShowScanCreditCard() override;
   void ScanCreditCard() override;
   void OnCreditCardScanned(const CreditCard& card) override;
+  void SuggestionSelected(std::string unique_id) override;
 
  private:
   base::WeakPtr<TouchToFillDelegateImpl> GetWeakPtr();

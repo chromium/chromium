@@ -27,6 +27,12 @@ interface TouchToFillCreditCardComponent {
          * Called when user requests to scan a new credit card.
          */
         void scanCreditCard();
+
+        /**
+         * Called when the user selects a card.
+         * @param uniqueId A backend id of the card.
+         */
+        void suggestionSelected(String uniqueId);
     }
 
     /**

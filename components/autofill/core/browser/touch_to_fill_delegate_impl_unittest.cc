@@ -383,4 +383,15 @@ TEST_F(TouchToFillDelegateImplUnitTest, ScanCreditCardIsCalled) {
   touch_to_fill_delegate_->OnCreditCardScanned(credit_card);
 }
 
+TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionClosesTheSheet) {
+  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  CreditCard credit_card = autofill::test::GetCreditCard();
+  autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
+
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard).Times(1);
+  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id());
+}
+
 }  // namespace autofill

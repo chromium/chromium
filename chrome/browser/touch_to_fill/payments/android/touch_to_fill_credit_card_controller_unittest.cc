@@ -69,9 +69,11 @@ class MockTouchToFillDelegateImpl : public autofill::TouchToFillDelegate {
                const autofill::FormData& form,
                const autofill::FormFieldData& field));
   MOCK_METHOD(autofill::AutofillDriver*, GetDriver, (), (override));
+  MOCK_METHOD(bool, HideTouchToFill, (), ());
   MOCK_METHOD(bool, ShouldShowScanCreditCard, (), (override));
   MOCK_METHOD(void, ScanCreditCard, (), (override));
   MOCK_METHOD(void, OnCreditCardScanned, (const CreditCard& card), (override));
+  MOCK_METHOD(void, SuggestionSelected, (std::string unique_id), (override));
 
  private:
   MockContentAutofillDriver driver_;

@@ -116,6 +116,12 @@ void TouchToFillDelegateImpl::OnCreditCardScanned(const CreditCard& card) {
                                    std::u16string(), query_id_);
 }
 
+void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
+  HideTouchToFill();
+  // TODO(crbug/1247698): Authenticate before using server cards.
+  // TODO(crbug/1247698): Fill the card data.
+}
+
 base::WeakPtr<TouchToFillDelegateImpl> TouchToFillDelegateImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

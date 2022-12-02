@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_controller.h"
+#include "base/android/jni_string.h"
 #include "chrome/browser/touch_to_fill/payments/android/jni_headers/TouchToFillCreditCardControllerBridge_jni.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -59,6 +60,12 @@ void TouchToFillCreditCardController::OnDismissed(JNIEnv* env) {
 
 void TouchToFillCreditCardController::ScanCreditCard(JNIEnv* env) {
   delegate_->ScanCreditCard();
+}
+
+void TouchToFillCreditCardController::SuggestionSelected(
+    JNIEnv* env,
+    base::android::JavaParamRef<jstring> unique_id) {
+  delegate_->SuggestionSelected(ConvertJavaStringToUTF8(env, unique_id));
 }
 
 base::android::ScopedJavaLocalRef<jobject>
