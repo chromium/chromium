@@ -78,7 +78,6 @@ enum DisplayType {
 enum DisplayPlatform {
   NONE = 0,
   EGL = 1,
-  X11 = 2,
 };
 
 GL_EXPORT void GetEGLInitDisplaysForTesting(
@@ -193,25 +192,6 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 #endif
 };
 #endif  // defined(USE_EGL)
-
-#if defined(USE_GLX)
-class GL_EXPORT GLDisplayX11 : public GLDisplay {
- public:
-  GLDisplayX11(const GLDisplayX11&) = delete;
-  GLDisplayX11& operator=(const GLDisplayX11&) = delete;
-
-  ~GLDisplayX11() override;
-
-  void* GetDisplay() const override;
-  void Shutdown() override;
-  bool IsInitialized() const override;
-
- private:
-  friend class GLDisplayManager<GLDisplayX11>;
-
-  explicit GLDisplayX11(uint64_t system_device_id);
-};
-#endif  // defined(USE_GLX)
 
 }  // namespace gl
 

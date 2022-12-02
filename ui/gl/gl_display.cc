@@ -27,10 +27,6 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 
-#if defined(USE_GLX)
-#include "ui/gl/glx_util.h"
-#endif  // defined(USE_GLX)
-
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/buildflags.h"
 #endif  // BUILDFLAG(IS_OZONE)
@@ -688,12 +684,6 @@ GLDisplayPlatform* GLDisplay::GetAs() {
       type_checked = std::is_same<GLDisplayPlatform, GLDisplayEGL>::value;
 #endif  // defined(USE_EGL)
       break;
-
-    case X11:
-#if defined(USE_GLX)
-      type_checked = std::is_same<GLDisplayPlatform, GLDisplayX11>::value;
-#endif  // defined(USE_GLX)
-      break;
   }
   if (type_checked)
     return static_cast<GLDisplayPlatform*>(this);
@@ -705,11 +695,6 @@ GLDisplayPlatform* GLDisplay::GetAs() {
 template EXPORT_TEMPLATE_DEFINE(GL_EXPORT)
     GLDisplayEGL* GLDisplay::GetAs<GLDisplayEGL>();
 #endif  // defined(USE_EGL)
-
-#if defined(USE_GLX)
-template EXPORT_TEMPLATE_DEFINE(GL_EXPORT)
-    GLDisplayX11* GLDisplay::GetAs<GLDisplayX11>();
-#endif  // defined(USE_GLX)
 
 #if defined(USE_EGL)
 GLDisplayEGL::EGLGpuSwitchingObserver::EGLGpuSwitchingObserver(
@@ -1032,22 +1017,5 @@ void GLDisplayEGL::InitializeCommon() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 #endif  // defined(USE_EGL)
-
-#if defined(USE_GLX)
-GLDisplayX11::GLDisplayX11(uint64_t system_device_id)
-    : GLDisplay(system_device_id, X11) {}
-
-GLDisplayX11::~GLDisplayX11() = default;
-
-void* GLDisplayX11::GetDisplay() const {
-  return x11::Connection::Get()->GetXlibDisplay();
-}
-
-void GLDisplayX11::Shutdown() {}
-
-bool GLDisplayX11::IsInitialized() const {
-  return true;
-}
-#endif  // defined(USE_GLX)
 
 }  // namespace gl

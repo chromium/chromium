@@ -143,8 +143,6 @@ source_set("vaapi") {
     sources += [
       "vaapi_picture_native_pixmap_angle.cc",
       "vaapi_picture_native_pixmap_angle.h",
-      "vaapi_picture_tfp.cc",
-      "vaapi_picture_tfp.h",
     ]
   }
 
@@ -407,7 +405,6 @@ executable("decode_test") {
       "test/h265_vaapi_wrapper.h",
     ]
   }
-
 
   deps = [
     ":libva_stubs",

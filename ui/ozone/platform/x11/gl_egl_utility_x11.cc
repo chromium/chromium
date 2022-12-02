@@ -41,23 +41,7 @@ void GLEGLUtilityX11::CollectGpuExtraInfo(
         ui::GpuMemoryBufferSupportX11::GetInstance()->supported_configs();
   }
 
-  if (gl::GetGLImplementation() == gl::kGLImplementationDesktopGL) {
-    // Create the VisualPickerGlx singleton now while the GbmSupportX11
-    // singleton is busy being created on another thread.
-    auto* visual_picker = ui::VisualPickerGlx::GetInstance();
-
-    // With GLX, only BGR(A) buffer formats are supported.  EGL does not have
-    // this restriction.
-    gpu_extra_info.gpu_memory_buffer_support_x11.erase(
-        std::remove_if(gpu_extra_info.gpu_memory_buffer_support_x11.begin(),
-                       gpu_extra_info.gpu_memory_buffer_support_x11.end(),
-                       [&](gfx::BufferUsageAndFormat usage_and_format) {
-                         return visual_picker->GetFbConfigForFormat(
-                                    usage_and_format.format) ==
-                                x11::Glx::FbConfig{};
-                       }),
-        gpu_extra_info.gpu_memory_buffer_support_x11.end());
-  } else if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
     // ANGLE does not yet support EGL_EXT_image_dma_buf_import[_modifiers].
     gpu_extra_info.gpu_memory_buffer_support_x11.clear();
   }

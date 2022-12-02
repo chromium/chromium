@@ -15,7 +15,6 @@
 #endif  // BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(USE_VAAPI_X11)
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap_angle.h"
-#include "media/gpu/vaapi/vaapi_picture_tfp.h"
 #endif  // BUILDFLAG(USE_VAAPI_X11)
 #if defined(USE_EGL)
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap_egl.h"
@@ -50,9 +49,6 @@ VaapiPictureFactory::VaapiPictureFactory() {
   vaapi_impl_pairs_.insert(
       std::make_pair(gl::kGLImplementationEGLANGLE,
                      VaapiPictureFactory::kVaapiImplementationAngle));
-  vaapi_impl_pairs_.insert(
-      std::make_pair(gl::kGLImplementationDesktopGL,
-                     VaapiPictureFactory::kVaapiImplementationX11));
 #elif BUILDFLAG(IS_OZONE)
   vaapi_impl_pairs_.insert(
       std::make_pair(gl::kGLImplementationEGLANGLE,
@@ -84,7 +80,6 @@ std::unique_ptr<VaapiPicture> VaapiPictureFactory::Create(
           ? picture_buffer.service_texture_ids()[0]
           : 0;
 
-  // Select DRM(egl) / TFP(glx) at runtime with --use-gl=egl / --use-gl=desktop
   return CreateVaapiPictureNative(vaapi_wrapper, make_context_current_cb,
                                   bind_image_cb, picture_buffer, visible_size,
                                   client_texture_id, service_texture_id);
@@ -124,12 +119,6 @@ void VaapiPictureFactory::DeterminePictureCreationAndDownloadingMechanism() {
       break;
 #endif  // BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(USE_VAAPI_X11)
-    case kVaapiImplementationX11:
-      create_picture_cb_ =
-          base::BindRepeating(&CreateVaapiPictureNativeImpl<VaapiTFPPicture>);
-      // Neither VaapiTFPPicture or VaapiPictureNativePixmapAngle needs the VPP.
-      needs_vpp_for_downloading_ = false;
-      break;
     case kVaapiImplementationAngle:
       create_picture_cb_ = base::BindRepeating(
           &CreateVaapiPictureNativeImpl<VaapiPictureNativePixmapAngle>);
