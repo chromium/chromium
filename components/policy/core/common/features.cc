@@ -28,7 +28,7 @@ BASE_FEATURE(kEnableUserCloudSigninRestrictionPolicyFetcher,
 
 BASE_FEATURE(kActivateMetricsReportingEnabledPolicyAndroid,
              "ActivateMetricsReportingEnabledPolicyAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDmTokenDeletion,
              "DmTokenDeletion",

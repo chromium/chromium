@@ -15,7 +15,6 @@ features:
   dynamic_refresh: false
   per_profile: false
 future_on:
-- android
 - fuchsia
 items:
 - caption: Enable reporting of usage and crash-related data
@@ -30,6 +29,7 @@ schema:
 supported_on:
 - chrome.*:8-
 - ios:88-
+- android:110-
 tags:
 - google-sharing
 type: main
