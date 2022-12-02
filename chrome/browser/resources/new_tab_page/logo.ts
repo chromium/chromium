@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import './iframe.js';
 import './doodle_share_dialog.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
@@ -175,9 +175,12 @@ export class LogoElement extends PolymerElement {
     super.connectedCallback();
     this.eventTracker_.add(window, 'message', ({data}: MessageEvent) => {
       if (data['cmd'] === 'resizeDoodle') {
-        this.duration_ = assert(data.duration);
-        this.height_ = assert(data.height);
-        this.width_ = assert(data.width);
+        assert(data.duration);
+        this.duration_ = data.duration;
+        assert(data.height);
+        this.height_ = data.height;
+        assert(data.width);
+        this.width_ = data.width;
         this.expanded_ = true;
       } else if (data['cmd'] === 'sendMode') {
         this.sendMode_();
