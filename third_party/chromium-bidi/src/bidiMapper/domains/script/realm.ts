@@ -20,7 +20,7 @@ import {CommonDataTypes, Script} from '../protocol/bidiProtocolTypes';
 import {ScriptEvaluator} from './scriptEvaluator';
 import {BrowsingContextStorage} from '../context/browsingContextStorage';
 import {NoSuchFrameException} from '../protocol/error';
-import {CdpClient} from '../../../cdp';
+import {CdpClient} from '../../cdp';
 
 export enum RealmType {
   window = 'window',

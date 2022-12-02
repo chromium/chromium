@@ -140,7 +140,7 @@ export class EventManager implements IEventManager {
     this.#bufferEvent(eventWrapper, eventName);
     // Send events to channels in the subscription priority.
     for (const channel of sortedChannels) {
-      await this.#bidiServer.sendMessage(
+      this.#bidiServer.sendMessage(
         BiDiMessageEntry.createFromPromise(event, channel)
       );
       this.#markEventSent(eventWrapper, channel, eventName);
@@ -168,7 +168,7 @@ export class EventManager implements IEventManager {
           channel
         )) {
           // The order of the events is important.
-          await this.#bidiServer.sendMessage(
+          this.#bidiServer.sendMessage(
             BiDiMessageEntry.createFromPromise(eventWrapper.event, channel)
           );
           this.#markEventSent(eventWrapper, channel, eventName);

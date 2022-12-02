@@ -104,7 +104,6 @@ export class BidiServer
    * Sends BiDi message.
    */
   sendMessage(messageEntry: Promise<BiDiMessageEntry>): void {
-    // messageEntry.then((m) => this.#sendMessage(m));
     this.#messageQueue.add(messageEntry);
   }
 

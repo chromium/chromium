@@ -16,7 +16,7 @@
  */
 
 import {log, LogType} from '../../../utils/log';
-import {CdpClient, CdpConnection} from '../../../cdp';
+import {CdpClient, CdpConnection} from '../../cdp';
 import {BrowsingContext, CDP, Script} from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import {IEventManager} from '../events/EventManager';
@@ -328,10 +328,12 @@ export class BrowsingContextProcessor {
   }
 
   async process_cdp_sendCommand(params: CDP.SendCommandParams) {
-    const sendCdpCommandResult = await this.#cdpConnection.sendCommand(
-      params.cdpMethod,
-      params.cdpParams,
-      params.cdpSession ?? null
+    const client = params.cdpSession
+      ? this.#cdpConnection.getCdpClient(params.cdpSession)
+      : this.#cdpConnection.browserClient();
+    const sendCdpCommandResult = await client.sendCommand(
+      params.cdpMethod as any,
+      params.cdpParams
     );
     return {
       result: sendCdpCommandResult,
