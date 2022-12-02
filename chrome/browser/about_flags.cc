@@ -464,6 +464,17 @@ const FeatureEntry::FeatureVariation kCctBrandTransparencyVariations[] = {
     {"Test friendly mode", kCCTBrandingTestFriendly,
      std::size(kCCTBrandingTestFriendly), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kCCTRealTimeEngagementSignalsParamRealValues[] = {{"real_values", "true"}};
+const FeatureEntry::FeatureParam
+    kCCTRealTimeEngagementSignalsParamFakeValues[] = {{"real_values", "false"}};
+
+const FeatureEntry::FeatureVariation kCCTRealTimeEngagementSignalsVariations[] =
+    {{"Send real values", kCCTRealTimeEngagementSignalsParamRealValues,
+      std::size(kCCTRealTimeEngagementSignalsParamRealValues), nullptr},
+     {"Send fake values", kCCTRealTimeEngagementSignalsParamFakeValues,
+      std::size(kCCTRealTimeEngagementSignalsParamFakeValues), nullptr}};
+
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
@@ -6688,7 +6699,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-real-time-engagement-signals",
      flag_descriptions::kCCTRealTimeEngagementSignalsName,
      flag_descriptions::kCCTRealTimeEngagementSignalsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTRealTimeEngagementSignals)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kCCTRealTimeEngagementSignals,
+         kCCTRealTimeEngagementSignalsVariations,
+         "CCTRealTimeEngagementSignals")},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
