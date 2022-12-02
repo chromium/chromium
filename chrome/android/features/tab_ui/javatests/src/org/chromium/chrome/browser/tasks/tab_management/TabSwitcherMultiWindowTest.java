@@ -40,10 +40,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -67,8 +65,7 @@ public class TabSwitcherMultiWindowTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }

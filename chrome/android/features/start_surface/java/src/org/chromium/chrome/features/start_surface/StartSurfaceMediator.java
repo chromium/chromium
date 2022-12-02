@@ -896,7 +896,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             }
         }
 
-        if (ReturnToChromeUtil.isStartSurfaceEnabled(mContext) && mIsStartSurfaceRefactorEnabled) {
+        if (mIsStartSurfaceRefactorEnabled && ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {
             return false;
         }
 
@@ -1364,7 +1364,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             }
         }
 
-        if (ReturnToChromeUtil.isStartSurfaceEnabled(mContext) && mIsStartSurfaceRefactorEnabled) {
+        if (mIsStartSurfaceRefactorEnabled && ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {
             return false;
         }
 

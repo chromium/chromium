@@ -2591,6 +2591,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && state != StartSurfaceState.SHOWING_TABSWITCHER
                 && !getTabModelSelector().isIncognitoSelected()) {
             layoutTypeToShow = LayoutType.START_SURFACE;
+            if (state == StartSurfaceState.SHOWING_PREVIOUS) {
+                ReturnToChromeUtil.recordBackNavigationToStart("FromTab");
+            }
         }
 
         // If we don't have a current tab, show the overview mode.

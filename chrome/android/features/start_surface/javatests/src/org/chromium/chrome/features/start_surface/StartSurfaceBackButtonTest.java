@@ -129,7 +129,7 @@ public class StartSurfaceBackButtonTest {
         if (isInstantReturn()) {
             // Assume start surface is shown immediately, and the LayoutStateObserver may miss the
             // first onFinishedShowing event.
-            mCurrentlyActiveLayout = LayoutType.TAB_SWITCHER;
+            mCurrentlyActiveLayout = StartSurfaceTestUtils.getStartSurfaceLayoutType();
         }
 
         mLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
@@ -162,7 +162,7 @@ public class StartSurfaceBackButtonTest {
         }
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         // Case 1:
@@ -170,7 +170,7 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
 
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         // Verifies the new Tab is deleted.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
@@ -224,7 +224,7 @@ public class StartSurfaceBackButtonTest {
         }
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         onViewWaiting(
                 allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container), isDisplayed()));
@@ -243,9 +243,9 @@ public class StartSurfaceBackButtonTest {
         // Enters the tab switcher, and choose the new tab. After the tab is opening, press back.
         waitForView(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_button));
         TabUiTestHelper.enterTabSwitcher(cta);
-        waitForView(withId(R.id.secondary_tasks_surface_view));
+        StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         waitForView(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view));
-        onView(allOf(withParent(withId(R.id.tasks_surface_body)),
+        onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
                        withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
@@ -258,7 +258,7 @@ public class StartSurfaceBackButtonTest {
 
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         // Verifies the new Tab isn't deleted, and Start surface is shown.
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
 
         // Verifies Chrome is closed.
@@ -286,7 +286,7 @@ public class StartSurfaceBackButtonTest {
             throws ExecutionException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
@@ -303,7 +303,7 @@ public class StartSurfaceBackButtonTest {
 
         // Tap the back on the "Recent tabs" should take us back to the start surface homepage, and
         // the Tab should be deleted.
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
     }
@@ -318,7 +318,7 @@ public class StartSurfaceBackButtonTest {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         UserActionTester actionTester = new UserActionTester();
@@ -330,7 +330,7 @@ public class StartSurfaceBackButtonTest {
                 cta.getActivityTabProvider().get().getLaunchType());
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         // Back gesture on the tab should take us back to the start surface homepage.
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         Assert.assertTrue(
                 actionTester.getActions().contains("StartSurface.ShownFromBackNavigation.FromTab"));
@@ -367,7 +367,7 @@ public class StartSurfaceBackButtonTest {
     public void testSwipeBackOnTabOfLaunchTypeStartSurface() throws ExecutionException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
@@ -378,7 +378,7 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.gestureNavigateBack(mActivityTestRule);
 
         // Back gesture on the tab should take us back to the start surface homepage.
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
     }
 
@@ -391,7 +391,7 @@ public class StartSurfaceBackButtonTest {
         // incognito tab opened from Start, the non-incognito homepage should show.
         Assume.assumeTrue(mImmediateReturn && !mUseInstantStart);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         onViewWaiting(withId(R.id.logo));
 
@@ -404,7 +404,7 @@ public class StartSurfaceBackButtonTest {
 
         // Go back to Start homepage.
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         // Open an incognito tab from Start again.
@@ -415,7 +415,7 @@ public class StartSurfaceBackButtonTest {
 
         // Press back button and Start homepage should show.
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        StartSurfaceTestUtils.waitForOverviewVisible(
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
         onViewWaiting(
@@ -439,7 +439,7 @@ public class StartSurfaceBackButtonTest {
         // work with a single event.
         Assume.assumeFalse(mImmediateReturn);
         StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        StartSurfaceTestUtils.waitForOverviewVisible(mLayoutChangedCallbackHelper,
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(mLayoutChangedCallbackHelper,
                 mCurrentlyActiveLayout, mActivityTestRule.getActivity());
 
         StartSurfaceTestUtils.gestureNavigateBack(mActivityTestRule);

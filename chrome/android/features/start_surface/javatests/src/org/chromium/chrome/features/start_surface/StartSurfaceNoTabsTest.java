@@ -130,7 +130,7 @@ public class StartSurfaceNoTabsTest {
 
         onView(withId(R.id.start_tab_switcher_button))
                 .perform(clickAndPressBackIfAccidentallyLongClicked());
-        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        StartSurfaceTestUtils.waitForTabSwitcherVisible(mActivityTestRule.getActivity());
         pressBack();
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
     }

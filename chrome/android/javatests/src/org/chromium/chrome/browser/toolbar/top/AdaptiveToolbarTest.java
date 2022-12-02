@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import static org.junit.Assert.assertTrue;
-
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.chrome.test.util.ToolbarTestUtils.TAB_SWITCHER_TOOLBAR;
@@ -27,11 +25,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -78,8 +75,7 @@ public class AdaptiveToolbarTest {
         // clang-format on
         setupFlagsAndLaunchActivity(true);
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Layout layout = cta.getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        TabUiTestHelper.verifyTabSwitcherLayoutType(cta);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -101,8 +97,7 @@ public class AdaptiveToolbarTest {
         // clang-format on
         setupFlagsAndLaunchActivity(true);
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Layout layout = cta.getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -129,8 +124,7 @@ public class AdaptiveToolbarTest {
         IncognitoUtils.setEnabledForTesting(false);
         setupFlagsAndLaunchActivity(true);
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Layout layout = cta.getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        TabUiTestHelper.verifyTabSwitcherLayoutType(cta);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
 

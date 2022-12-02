@@ -56,7 +56,9 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -66,6 +68,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -379,14 +382,17 @@ public class TabUiTestHelper {
      * @return View Id of GTS parent view.
      */
     public static int getTabSwitcherParentId(Context context) {
-        int viewHolder = getIsStartSurfaceEnabledFromUIThread(context)
-                ? org.chromium.chrome.R.id.tasks_surface_body
-                : org.chromium.chrome.R.id.compositor_view_holder;
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)) {
-            viewHolder = R.id.grid_tab_switcher_view_holder;
+            return R.id.grid_tab_switcher_view_holder;
         }
-        return viewHolder;
+
+        if (getIsStartSurfaceEnabledFromUIThread(context)
+                && !getIsStartSurfaceRefactorEnabledFromUIThread(context)) {
+            return org.chromium.chrome.R.id.tasks_surface_body;
+        }
+
+        return org.chromium.chrome.R.id.compositor_view_holder;
     }
 
     private static boolean getIsStartSurfaceEnabledFromUIThread(Context context) {
@@ -394,6 +400,15 @@ public class TabUiTestHelper {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> isStartSurfaceEnabled.set(ReturnToChromeUtil.isStartSurfaceEnabled(context)));
         return isStartSurfaceEnabled.get();
+    }
+
+    public static boolean getIsStartSurfaceRefactorEnabledFromUIThread(Context context) {
+        AtomicReference<Boolean> isStartSurfaceRefactorEnabled = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            isStartSurfaceRefactorEnabled.set(
+                    ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context));
+        });
+        return isStartSurfaceRefactorEnabled.get();
     }
 
     /**
@@ -731,6 +746,20 @@ public class TabUiTestHelper {
                 }
             }
             assertEquals(mExpectedCount, tabSuggestionMessageCount);
+        }
+    }
+
+    /**
+     * Verifies whether the correct layout is created for the tab switcher in LayoutManagerChrome.
+     */
+    public static void verifyTabSwitcherLayoutType(ChromeTabbedActivity cta) {
+        boolean isStartSurfaceRefactorEnabled = ChromeFeatureList.sStartSurfaceRefactor.isEnabled();
+        if (isStartSurfaceRefactorEnabled) {
+            Layout layout = cta.getLayoutManager().getTabSwitcherLayoutForTesting();
+            assertTrue(layout instanceof TabSwitcherLayout);
+        } else {
+            Layout layout = cta.getLayoutManager().getOverviewLayout();
+            assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
         }
     }
 }

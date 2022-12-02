@@ -21,7 +21,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
@@ -58,12 +57,10 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
-import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -107,8 +104,7 @@ public class TabGroupUiTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }

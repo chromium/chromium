@@ -113,6 +113,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherV
 import org.chromium.chrome.features.start_surface.StartSurfaceMediator.SecondaryTasksSurfaceInitializer;
 import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -1163,6 +1164,9 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
+    // When the refactoring is enabled, the StartSurfaceMediator is no longer responsible for
+    // showing the Grid tab switcher.
+    @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
     public void changeTopContentOffset() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
@@ -1572,6 +1576,8 @@ public class StartSurfaceMediatorUnitTest {
      * showing but Tab switcher hasn't been created yet.
      */
     @Test
+    // TODO(1347089): Fix the back operation behaviours when the refactoring is enabled.
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testBackPressHandlerOnStartSurfaceWithoutTabSwitcherCreated() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
@@ -1596,6 +1602,9 @@ public class StartSurfaceMediatorUnitTest {
      * showing and the Tab switcher has been created.
      */
     @Test
+    // TODO(1347089): Removes this test after the refactoring is enabled by default. This is because
+    // the SecondaryTasksSurface will go away.
+    @DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
     public void testBackPressHandlerOnStartSurfaceWithTabSwitcherCreated() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();

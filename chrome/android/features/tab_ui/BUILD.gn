@@ -341,6 +341,7 @@ android_library("test_support_javalib") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group:java",
     "//chrome/browser/tabmodel:java",

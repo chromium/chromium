@@ -15,7 +15,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.INSTANT_START_TEST_BASE_PARAMS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 
@@ -100,7 +99,7 @@ public class InstantStartToolbarTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
         TopToolbarCoordinator topToolbarCoordinator =
@@ -133,7 +132,7 @@ public class InstantStartToolbarTest {
     public void renderSingleAsHomepage_NoTab_scrollToolbarToTop() throws IOException {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
         // Initializes native.
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
@@ -191,7 +190,7 @@ public class InstantStartToolbarTest {
         StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1, 2});
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
         StartSurfaceTestUtils.waitForTabModel(cta);
 
@@ -222,7 +221,7 @@ public class InstantStartToolbarTest {
 
         // Update badge shouldn't show on tab switcher surface toolbar.
         TabUiTestHelper.enterTabSwitcher(cta);
-        waitForView(withId(org.chromium.chrome.test.R.id.secondary_tasks_surface_view));
+        StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         onViewWaiting(allOf(withId(org.chromium.chrome.test.R.id.menu_button),
                               isDescendantOfA(
                                       withId(org.chromium.chrome.test.R.id.tab_switcher_toolbar))))

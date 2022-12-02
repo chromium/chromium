@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.ReturnToChromeBackPressHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
@@ -135,9 +136,7 @@ public class ReturnToChromeUtilTest {
     @SmallTest
     @Feature({"ReturnToChrome"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/single/"
-            + "show_last_active_tab_only/true/open_ntp_instead_of_start/true"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
     public void testTabSwitcherModeTriggeredWithinThreshold_WarmStart_FromIncognito_NON_V2() throws Exception {
         // clang-format on
@@ -222,16 +221,18 @@ public class ReturnToChromeUtilTest {
         createTabStateFile(new int[] {0, 1});
         startMainActivityWithURLWithoutCurrentTab(null);
 
+        @LayoutType
+        int layoutType = StartSurfaceTestUtils.getStartSurfaceLayoutType();
         if (!mActivityTestRule.getActivity().isTablet()) {
             LayoutTestUtils.waitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+                    mActivityTestRule.getActivity().getLayoutManager(), layoutType);
         }
 
         waitTabModelRestoration();
         assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         if (!mActivityTestRule.getActivity().isTablet()) {
             LayoutTestUtils.waitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+                    mActivityTestRule.getActivity().getLayoutManager(), layoutType);
         }
     }
 

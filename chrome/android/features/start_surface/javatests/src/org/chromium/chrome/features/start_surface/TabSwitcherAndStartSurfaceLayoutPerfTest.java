@@ -38,7 +38,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.EnormousTest;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -55,6 +54,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -74,6 +74,9 @@ import java.util.concurrent.TimeoutException;
                 + ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
         "force-fieldtrials=Study/Group"})
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
+// TODO(1347089): make this test suite works for both TabSwitcherAndStartSurfaceLayout and
+// TabSwitcherLayout.
+@DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherAndStartSurfaceLayoutPerfTest {
@@ -102,9 +105,11 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mActivityTestRule.startMainActivityWithURL(NTP_URL);
 
-        Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
-        mTabSwitcherAndStartSurfaceLayout = (TabSwitcherAndStartSurfaceLayout) layout;
+        TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
+        mTabSwitcherAndStartSurfaceLayout =
+                (TabSwitcherAndStartSurfaceLayout) mActivityTestRule.getActivity()
+                        .getLayoutManager()
+                        .getOverviewLayout();
         mUrl = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         mRepeat = 1;
         mWaitingTime = 0;

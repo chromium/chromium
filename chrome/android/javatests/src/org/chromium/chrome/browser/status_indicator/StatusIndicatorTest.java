@@ -9,7 +9,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -44,10 +43,12 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -203,14 +204,15 @@ public class StatusIndicatorTest {
     @MediumTest
     // clang-format off
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:start_surface_variation/single"})
+    // TODO(https://crbug.com/1347089): Remove this test once the Start surface refactor is done.
+    // This is because the "secondary_tasks_surface_view" will go away, and testShowAfterHide() will
+    // cover the testing of grid tab switcher directly.
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testShowAndHideOnStartSurface() {
         // clang-format on
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
 
-        onView(withId(R.id.secondary_tasks_surface_view)).check(matches(isDisplayed()));
+        StartSurfaceTestUtils.waitForTabSwitcherVisible(mActivityTestRule.getActivity());
         // R.id.status_indicator won't be in the View tree until the indicator is shown for the
         // first time and the corresponding ViewStub is inflated.
         onView(withId(R.id.status_indicator)).check(doesNotExist());

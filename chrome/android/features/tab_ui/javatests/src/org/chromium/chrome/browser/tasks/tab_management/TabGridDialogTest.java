@@ -51,6 +51,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.c
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.finishActivity;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherParentId;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.prepareTabsWithThumbnail;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyAllTabsHaveThumbnail;
@@ -105,7 +106,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
@@ -113,7 +113,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -192,8 +191,7 @@ public class TabGridDialogTest {
         Intents.init();
         TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
-        Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }
@@ -1382,7 +1380,7 @@ public class TabGridDialogTest {
         // Tab switcher is created, and the dummy signal to hide dialog is sent. This line would
         // crash if the dummy signal is not properly handled. See crbug.com/1096358.
         enterTabSwitcher(cta);
-        onView(allOf(withParent(withId(org.chromium.chrome.R.id.tasks_surface_body)),
+        onView(allOf(withParent(withId(getTabSwitcherParentId(mActivityTestRule.getActivity()))),
                        withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         CriteriaHelper.pollUiThread(() -> isDialogShowing(mActivityTestRule.getActivity()));
@@ -1427,7 +1425,7 @@ public class TabGridDialogTest {
 
         // Test undo closure in dialog from StartSurface tab switcher.
         enterTabSwitcher(cta);
-        onView(allOf(withParent(withId(org.chromium.chrome.R.id.tasks_surface_body)),
+        onView(allOf(withParent(withId(getTabSwitcherParentId(mActivityTestRule.getActivity()))),
                        withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         CriteriaHelper.pollUiThread(() -> isDialogShowing(cta));

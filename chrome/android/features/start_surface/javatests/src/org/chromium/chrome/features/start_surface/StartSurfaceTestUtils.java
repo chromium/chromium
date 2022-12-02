@@ -188,27 +188,65 @@ public class StartSurfaceTestUtils {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         Assert.assertTrue(LibraryLoader.getInstance().isInitialized());
         ChromeTabbedActivity cta = activityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
     }
 
     /**
-     * Wait for the start surface homepage or tab switcher page visible.
+     * Wait for the start surface homepage visible.
      * @param cta The ChromeTabbedActivity under test.
      */
-    public static void waitForOverviewVisible(ChromeTabbedActivity cta) {
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+    public static void waitForStartSurfaceVisible(ChromeTabbedActivity cta) {
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), getStartSurfaceLayoutType());
     }
 
     /**
-     * Wait for the start surface homepage or tab switcher page visible.
+     * Wait for the tab switcher page visible.
+     * @param cta The ChromeTabbedActivity under test.
+     */
+    public static void waitForTabSwitcherVisible(ChromeTabbedActivity cta) {
+        if (ChromeFeatureList.sStartSurfaceRefactor.isEnabled()) {
+            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+        } else {
+            // TODO(1347089): Removes here when the Start surface refactoring is enabled by default.
+            onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        }
+    }
+
+    public static @LayoutType int getStartSurfaceLayoutType() {
+        return ChromeFeatureList.sStartSurfaceRefactor.isEnabled() ? LayoutType.START_SURFACE
+                                                                   : LayoutType.TAB_SWITCHER;
+    }
+
+    /**
+     * Wait for the start surface homepage visible.
      * @param layoutChangedCallbackHelper The call back function to help check whether layout is
      *         changed.
      * @param currentlyActiveLayout The current active layout.
      * @param cta The ChromeTabbedActivity under test.
      */
-    public static void waitForOverviewVisible(CallbackHelper layoutChangedCallbackHelper,
+    public static void waitForStartSurfaceVisible(CallbackHelper layoutChangedCallbackHelper,
             @LayoutType int currentlyActiveLayout, ChromeTabbedActivity cta) {
-        if (currentlyActiveLayout == LayoutType.TAB_SWITCHER) {
+        waitForLayoutVisible(layoutChangedCallbackHelper, currentlyActiveLayout, cta,
+                getStartSurfaceLayoutType());
+    }
+
+    /**
+     * Wait for the tab switcher page visible.
+     * @param layoutChangedCallbackHelper The call back function to help check whether layout is
+     *         changed.
+     * @param currentlyActiveLayout The current active layout.
+     * @param cta The ChromeTabbedActivity under test.
+     */
+    public static void waitForTabSwitcherVisible(CallbackHelper layoutChangedCallbackHelper,
+            @LayoutType int currentlyActiveLayout, ChromeTabbedActivity cta) {
+        waitForLayoutVisible(
+                layoutChangedCallbackHelper, currentlyActiveLayout, cta, LayoutType.TAB_SWITCHER);
+    }
+
+    private static void waitForLayoutVisible(CallbackHelper layoutChangedCallbackHelper,
+            @LayoutType int currentlyActiveLayout, ChromeTabbedActivity cta,
+            @LayoutType int layoutType) {
+        if (currentlyActiveLayout == layoutType) {
             StartSurfaceTestUtils.waitForTabModel(cta);
             return;
         }
@@ -441,17 +479,13 @@ public class StartSurfaceTestUtils {
     }
 
     /**
-     * Click "more_tabs" to navigate to tab switcher surface.
+     * Click the tab switcher button to navigate to tab switcher surface.
      * @param cta The ChromeTabbedActivity under test.
      */
-    public static void clickMoreTabs(ChromeTabbedActivity cta) {
-        // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
-        // percent of the view's area is displayed to the users. However, this view has negative
-        // margin which makes the percentage is less than 90.
-        // TODO(crbug.com/1186752): Investigate whether this would be a problem for real users.
+    public static void clickTabSwitcherButton(ChromeTabbedActivity cta) {
         try {
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> cta.findViewById(R.id.more_tabs).performClick());
+                    () -> cta.findViewById(R.id.start_tab_switcher_button).performClick());
         } catch (ExecutionException e) {
             fail("Failed to tap 'more tabs' " + e.toString());
         }

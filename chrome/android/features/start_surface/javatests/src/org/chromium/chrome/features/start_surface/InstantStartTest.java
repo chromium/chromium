@@ -210,12 +210,11 @@ public class InstantStartTest {
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
         assertThat(cta.getLayoutManager()).isInstanceOf(LayoutManagerChromePhone.class);
-        assertThat(cta.getLayoutManager().getOverviewLayout())
-                .isInstanceOf(TabSwitcherAndStartSurfaceLayout.class);
+        TabUiTestHelper.verifyTabSwitcherLayoutType(cta);
     }
 
     @Test
@@ -226,6 +225,9 @@ public class InstantStartTest {
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
             ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+    // TODO(https://crbug.com/1347089): Removes this test once the start surface refactoring is
+    // done, since the secondary tasks surface will go away.
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS + "/enable_launch_polish/true"})
     public void startSurfaceSinglePanePreNativeAndWithNativeTest() {
@@ -237,7 +239,7 @@ public class InstantStartTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
         assertThat(cta.getLayoutManager()).isInstanceOf(LayoutManagerChromePhone.class);
@@ -399,7 +401,7 @@ public class InstantStartTest {
 
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
         // Initializes native.
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);

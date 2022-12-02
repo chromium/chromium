@@ -73,8 +73,6 @@ import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -186,9 +184,10 @@ public class InstantStartTabSwitcherTest {
 
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
-        StartSurfaceTestUtils.clickMoreTabs(cta);
+        StartSurfaceTestUtils.clickTabSwitcherButton(cta);
 
-        onViewWaiting(allOf(withParent(withId(org.chromium.chrome.test.R.id.tasks_surface_body)),
+        onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
+                                    mActivityTestRule.getActivity()))),
                 withId(org.chromium.chrome.test.R.id.tab_list_view)));
         Assert.assertFalse(cta.findViewById(org.chromium.chrome.test.R.id.url_bar).isFocused());
     }
@@ -213,7 +212,7 @@ public class InstantStartTabSwitcherTest {
         // Must be after StartSurfaceTestUtils.createTabStateFile() to read these files.
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         RecyclerView recyclerView = cta.findViewById(org.chromium.chrome.test.R.id.tab_list_view);
         CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
         mRenderTestRule.render(recyclerView, "tabSwitcher_3tabs");
@@ -256,7 +255,7 @@ public class InstantStartTabSwitcherTest {
         // Must be after StartSurfaceTestUtils.createTabStateFile() to read these files.
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         RecyclerView recyclerView = cta.findViewById(org.chromium.chrome.test.R.id.tab_list_view);
         CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
         // TODO(crbug.com/1065314): Tab group cards should not have favicons.
@@ -313,7 +312,7 @@ public class InstantStartTabSwitcherTest {
         // Must be after StartSurfaceTestUtils.createTabStateFile() to read these files.
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
         RecyclerView recyclerView = cta.findViewById(org.chromium.chrome.test.R.id.tab_list_view);
         CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
@@ -335,7 +334,7 @@ public class InstantStartTabSwitcherTest {
 
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
         // Initializes native.
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
@@ -369,16 +368,17 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, null, 5);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
-        StartSurfaceTestUtils.clickMoreTabs(cta);
-        onViewWaiting(withId(org.chromium.chrome.test.R.id.secondary_tasks_surface_view));
+        StartSurfaceTestUtils.clickTabSwitcherButton(cta);
+        StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
 
+        int tabSwitcherParentViewId = TabUiTestHelper.getTabSwitcherParentId(cta);
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
         onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_view),
-                       withParent(withId(org.chromium.chrome.test.R.id.tasks_surface_body))))
+                       withParent(withId(tabSwitcherParentViewId))))
                 .check((v, noMatchException) -> {
                     if (noMatchException != null) throw noMatchException;
                     Assert.assertTrue(v instanceof RecyclerView);
@@ -394,10 +394,10 @@ public class InstantStartTabSwitcherTest {
 
         // Scroll the tab list a little bit and shadow should show.
         onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_view),
-                       withParent(withId(org.chromium.chrome.test.R.id.tasks_surface_body))))
+                       withParent(withId(tabSwitcherParentViewId))))
                 .perform(swipeUp());
         onView(allOf(withTagValue(is(SHADOW_VIEW_TAG)),
-                       isDescendantOfA(withId(org.chromium.chrome.test.R.id.tasks_surface_body))))
+                       isDescendantOfA(withId(tabSwitcherParentViewId))))
                 .check(matches(isDisplayed()));
     }
 
@@ -411,7 +411,7 @@ public class InstantStartTabSwitcherTest {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
         // Initializes native.
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
@@ -429,7 +429,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.pressHomePageButton(cta);
 
         // Wait for thumbnail to show.
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         onViewWaiting(allOf(withId(org.chromium.chrome.test.R.id.tab_thumbnail), isDisplayed()));
 
         View tabThumbnail = cta.findViewById(org.chromium.chrome.test.R.id.tab_thumbnail);
@@ -442,25 +442,25 @@ public class InstantStartTabSwitcherTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
-    public void testShowTabSwitcherWhenHomepageDisabled() throws IOException {
+    public void testShowStartWhenHomepageDisabledWithImmediateReturn() throws IOException {
         // clang-format on
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
-        testShowTabSwitcherWhenHomepageDisabledWithImmediateReturnImpl();
+        testShowStartWhenHomepageDisabledWithImmediateReturnImpl();
     }
 
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
-    public void testShowTabSwitcherWhenHomepageDisabled_NoInstant() throws IOException {
+    public void testShowStartWhenHomepageDisabledWithImmediateReturn_NoInstant()
+            throws IOException {
         Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(0, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
-        testShowTabSwitcherWhenHomepageDisabledWithImmediateReturnImpl();
+        testShowStartWhenHomepageDisabledWithImmediateReturnImpl();
     }
 
-    private void testShowTabSwitcherWhenHomepageDisabledWithImmediateReturnImpl()
-            throws IOException {
+    private void testShowStartWhenHomepageDisabledWithImmediateReturnImpl() throws IOException {
         StartSurfaceTestUtils.createTabStateFile(new int[] {0});
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
         TabAttributeCache.setTitleForTesting(0, "Google");
@@ -475,13 +475,17 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        StartSurfaceCoordinator startSurfaceCoordinator =
-                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(startSurfaceCoordinator.getStartSurfaceState(),
-                    StartSurfaceState.SHOWN_TABSWITCHER);
-        });
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
+        // After the Start surface refactoring is enabled, the StartSurfaceState.SHOWN_TABSWITCHER
+        // will go away.
+        if (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(cta)) {
+            StartSurfaceCoordinator startSurfaceCoordinator =
+                    StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                Assert.assertEquals(startSurfaceCoordinator.getStartSurfaceState(),
+                        StartSurfaceState.SHOWN_TABSWITCHER);
+            });
+        }
     }
 
     @Test
@@ -520,7 +524,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
 
         // Create a new search result tab by perform a query search in fake box.
@@ -538,7 +542,7 @@ public class InstantStartTabSwitcherTest {
         mActivityTestRule.resumeMainActivityFromLauncher();
 
         // Create a non search result tab and check the shared preferences.
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         StartSurfaceTestUtils.waitForTabModel(cta);
         StartSurfaceTestUtils.launchFirstMVTile(cta, 1);
 
@@ -563,7 +567,7 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
 
         Assert.assertEquals(1,
