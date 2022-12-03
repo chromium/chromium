@@ -4,8 +4,6 @@
 
 #include "media/mojo/clients/mojo_video_decoder.h"
 
-#include <atomic>
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -37,22 +35,6 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace media {
-
-namespace {
-// Number of functional instances of MojoVideoDecoder in the current process.
-std::atomic<int>& get_mojo_instance_counter() {
-  static std::atomic<int> instance_counter(0);
-  return instance_counter;
-}
-}  // namespace
-
-const char kMojoVideoDecoderInitialPlaybackSuccessCodecCounterUMA[] =
-    "Media.MojoVideoDecoder.InitialPlaybackSuccessCodecCounter";
-
-const char kMojoVideoDecoderInitialPlaybackErrorCodecCounterUMA[] =
-    "Media.MojoVideoDecoder.InitialPlaybackErrorCodecCounter";
-
-const int kMojoDecoderInitialPlaybackFrameCount = 150;
 
 // Provides a thread-safe channel for VideoFrame destruction events.
 class MojoVideoFrameHandleReleaser
@@ -124,8 +106,6 @@ MojoVideoDecoder::MojoVideoDecoder(
 
 MojoVideoDecoder::~MojoVideoDecoder() {
   DVLOG(1) << __func__;
-  if (remote_decoder_bound_)
-    get_mojo_instance_counter()--;
   if (request_overlay_info_cb_ && overlay_info_requested_)
     request_overlay_info_cb_.Run(false, base::NullCallback());
 }
@@ -260,7 +240,6 @@ void MojoVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   mojom::DecoderBufferPtr mojo_buffer =
       mojo_decoder_buffer_writer_->WriteDecoderBuffer(std::move(buffer));
   if (!mojo_buffer) {
-    ReportInitialPlaybackErrorUMA();
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(decode_cb),
@@ -308,17 +287,6 @@ void MojoVideoDecoder::OnVideoFrameDecoded(
   }
 
   output_cb_.Run(frame);
-  total_frames_decoded_++;
-  if (!initial_playback_outcome_reported_ &&
-      total_frames_decoded_ >= kMojoDecoderInitialPlaybackFrameCount) {
-    initial_playback_outcome_reported_ = true;
-    UMA_HISTOGRAM_COUNTS_100(
-        kMojoVideoDecoderInitialPlaybackSuccessCodecCounterUMA,
-        get_mojo_instance_counter());
-    DVLOG(3)
-        << "Report Media.MojoVideoDecoder.InitialPlaybackSuccessCodecCounter:"
-        << get_mojo_instance_counter();
-  }
 }
 
 void MojoVideoDecoder::OnDecodeDone(uint64_t decode_id,
@@ -332,9 +300,6 @@ void MojoVideoDecoder::OnDecodeDone(uint64_t decode_id,
     Stop();
     return;
   }
-
-  if (!status.is_ok() && status.code() != DecoderStatus::Codes::kAborted)
-    ReportInitialPlaybackErrorUMA();
 
   DecodeCB decode_cb = std::move(it->second);
   pending_decodes_.erase(it);
@@ -451,7 +416,6 @@ void MojoVideoDecoder::InitAndConstructRemoteDecoder(
                              std::move(video_frame_handle_releaser_receiver),
                              std::move(remote_consumer_handle),
                              std::move(command_buffer_id), target_color_space_);
-  get_mojo_instance_counter()++;
   std::move(complete_cb).Run();
 }
 
@@ -488,7 +452,6 @@ void MojoVideoDecoder::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   has_connection_error_ = true;
-  ReportInitialPlaybackErrorUMA();
 
   // |init_cb_| is likely to reentrantly destruct |this|, so we check for that
   // using an on-stack WeakPtr.
@@ -512,19 +475,6 @@ void MojoVideoDecoder::Stop() {
 
   if (reset_cb_)
     std::move(reset_cb_).Run();
-}
-
-void MojoVideoDecoder::ReportInitialPlaybackErrorUMA() {
-  if (initial_playback_outcome_reported_)
-    return;
-
-  DCHECK(get_mojo_instance_counter() > 0);
-  DVLOG(3) << "Report Media.MojoVideoDecoder.InitialPlaybackErrorCodecCounter:"
-           << get_mojo_instance_counter();
-
-  UMA_HISTOGRAM_COUNTS_100(kMojoVideoDecoderInitialPlaybackErrorCodecCounterUMA,
-                           get_mojo_instance_counter());
-  initial_playback_outcome_reported_ = true;
 }
 
 }  // namespace media

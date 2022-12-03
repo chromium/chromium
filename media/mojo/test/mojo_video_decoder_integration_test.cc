@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -546,68 +545,6 @@ TEST_F(MojoVideoDecoderIntegrationTest, ResetDuringDecode_ChunkedWrite) {
   client_->Reset(reset_cb.Get());
 
   RunUntilIdle();
-}
-
-TEST_F(MojoVideoDecoderIntegrationTest, InitialPlaybackUMASuccess) {
-  base::HistogramTester histogram_tester_;
-  const int frames_to_decode = kMojoDecoderInitialPlaybackFrameCount;
-
-  ASSERT_TRUE(Initialize());
-
-  StrictMock<base::MockCallback<VideoDecoder::DecodeCB>> decode_cb;
-
-  EXPECT_CALL(*decoder_, DidGetReleaseMailboxCB()).Times(AnyNumber());
-  EXPECT_CALL(output_cb_, Run(_)).Times(frames_to_decode);
-  EXPECT_CALL(*decoder_, Decode_(_, _)).Times(frames_to_decode);
-
-  EXPECT_CALL(decode_cb, Run(IsOkStatus())).Times(frames_to_decode);
-
-  for (int i = 0; i < frames_to_decode - 1; i++)
-    client_->Decode(CreateKeyframe(i * 16), decode_cb.Get());
-
-  RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      kMojoVideoDecoderInitialPlaybackSuccessCodecCounterUMA, 1, 0);
-
-  client_->Decode(CreateKeyframe(0), decode_cb.Get());
-
-  RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      kMojoVideoDecoderInitialPlaybackSuccessCodecCounterUMA, 1, 1);
-}
-
-TEST_F(MojoVideoDecoderIntegrationTest, InitialPlaybackUMAError) {
-  base::HistogramTester histogram_tester_;
-  const int frames_to_decode = kMojoDecoderInitialPlaybackFrameCount;
-
-  ASSERT_TRUE(Initialize());
-
-  StrictMock<base::MockCallback<VideoDecoder::DecodeCB>> decode_cb;
-
-  EXPECT_CALL(*decoder_, DidGetReleaseMailboxCB()).Times(AnyNumber());
-  EXPECT_CALL(output_cb_, Run(_)).Times(frames_to_decode - 1);
-  EXPECT_CALL(*decoder_, Decode_(_, _)).Times(frames_to_decode);
-
-  EXPECT_CALL(decode_cb, Run(IsOkStatus())).Times(frames_to_decode - 1);
-
-  EXPECT_CALL(decode_cb, Run(IsDecodeErrorStatus())).Times(1);
-
-  for (int i = 0; i < frames_to_decode - 1; i++)
-    client_->Decode(CreateKeyframe(i * 16), decode_cb.Get());
-
-  RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      kMojoVideoDecoderInitialPlaybackErrorCodecCounterUMA, 1, 0);
-  histogram_tester_.ExpectBucketCount(
-      kMojoVideoDecoderInitialPlaybackSuccessCodecCounterUMA, 1, 0);
-
-  client_->Decode(CreateErrorFrame(0), decode_cb.Get());
-
-  RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(
-      kMojoVideoDecoderInitialPlaybackErrorCodecCounterUMA, 1, 1);
-  histogram_tester_.ExpectBucketCount(
-      kMojoVideoDecoderInitialPlaybackSuccessCodecCounterUMA, 1, 0);
 }
 
 }  // namespace media
