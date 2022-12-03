@@ -226,6 +226,59 @@ export function searchPageTestSuite() {
   });
 
   /**
+   * Test that if an older query came back later than its next query, then its
+   * results are ignored.
+   */
+  test('IgnoreOutOfOrderSearchResults', async () => {
+    /** {?Element} */
+    let textAreaElement = null;
+
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+    textAreaElement = getElement('#descriptionText');
+    await flushTasks();
+
+    const iframe = /** @type {!HTMLIFrameElement} */ (getElement('iframe'));
+    assertTrue(!!iframe);
+    // Wait for the iframe completes loading.
+    await eventToPromise('load', iframe);
+
+    // The query seq no starts from 0. When page is initialized, it will fire a
+    // query with empty text.
+    assertEquals(1, page.getNextQuerySeqNoForTesting());
+    assertEquals(0, page.getLastPostedQuerySeqNoForTesting());
+
+    // Enter some chars.
+    textAreaElement.value = 'abc';
+    // Setting the value of the textarea in code does not trigger the
+    // input event. So we trigger it here.
+    textAreaElement.dispatchEvent(new Event('input'));
+    await flushTasks();
+
+    // Verify that query seq no has been incremented by 1.
+    assertEquals(2, page.getNextQuerySeqNoForTesting());
+    // Verify that last posted query seq no has been updated correctly.
+    assertEquals(1, page.getLastPostedQuerySeqNoForTesting());
+
+    // Reset the next query seq no to 0 (< 1) to simulate the out of order case.
+    // The result should be ignored.
+    page.setNextQuerySeqNoForTesting(0);
+    assertEquals(0, page.getNextQuerySeqNoForTesting());
+    assertEquals(1, page.getLastPostedQuerySeqNoForTesting());
+
+    // Update the text.
+    textAreaElement.value = 'a';
+    textAreaElement.dispatchEvent(new Event('input'));
+    await flushTasks();
+
+    // Verify that query seq no has been incremented by 1.
+    assertEquals(1, page.getNextQuerySeqNoForTesting());
+    // Verify that the last posted query sequence no was not updated to 0. This
+    // means the search results are ignored.
+    assertEquals(1, page.getLastPostedQuerySeqNoForTesting());
+  });
+
+  /**
    * Test that the search page can send help content to embedded untrusted page
    * via postMessage.
    */

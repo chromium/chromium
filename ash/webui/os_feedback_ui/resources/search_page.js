@@ -174,6 +174,23 @@ export class SearchPageElement extends SearchPageElementBase {
     this.searchTimerID_ = -1;
 
     /**
+     * The unique id of a query. Whenever a new query is scheduled, this number
+     * will be incremented by 1. New query will have a bigger sequence number
+     * than older queries.
+     * @private {number}
+     */
+    this.querySeqNo_ = 0;
+
+    /**
+     * The most recent query sequence number whose result has been posted to the
+     * iframe and thus seen by the user. Results for two queries fired at
+     * different times may come back in reverse order. By recording this number,
+     * we can prevent displaying the result from older queries.
+     * @private {number}
+     */
+    this.lastPostedQuerySeqNo_ = -1;
+
+    /**
      * Delay in milliseconds before firing a new search.
      *
      * This variable needs to remain public because the unit tests need to
@@ -189,7 +206,8 @@ export class SearchPageElement extends SearchPageElementBase {
     this.iframe_ = /** @type {HTMLIFrameElement} */ (
         this.shadowRoot.querySelector('iframe'));
     // Fetch popular help contents with empty query.
-    this.fetchHelpContent_(/* query= */ '');
+    this.fetchHelpContent_(
+        /* query= */ '', /* querySeqNo= */ this.getNextQuerySeqNo_());
 
     this.shadowRoot.querySelector('#descriptionText')
         .addEventListener(
@@ -215,16 +233,28 @@ export class SearchPageElement extends SearchPageElementBase {
     this.hideError_();
 
     const query = e.target.value;
+    const querySeqNo = this.getNextQuerySeqNo_();
     this.searchTimerID_ = setTimeout(() => {
-      this.fetchHelpContent_(query);
+      this.fetchHelpContent_(query, querySeqNo);
     }, this.searchTimoutInMs_);
   }
 
   /**
-   * @param {string} query
+   * @return {number}
    * @private
    */
-  async fetchHelpContent_(query) {
+  getNextQuerySeqNo_() {
+    return this.querySeqNo_++;
+  }
+
+  /**
+   * Fetches help content/popular search and notifies iframe if querySeqNo is
+   * greater than previous.
+   * @param {string} query
+   * @param {number} querySeqNo
+   * @private
+   */
+  async fetchHelpContent_(query, querySeqNo) {
     if (!this.iframe_) {
       console.warn('untrusted iframe is not found');
       return;
@@ -273,8 +303,14 @@ export class SearchPageElement extends SearchPageElementBase {
 
     // Wait for the iframe to complete loading before postMessage.
     await this.iframeLoaded_;
-    // TODO(xiangdongkong): Use Mojo to communicate with untrusted page.
-    this.iframe_.contentWindow.postMessage(data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
+
+    // Results from an older query will be ignored.
+    if (querySeqNo > this.lastPostedQuerySeqNo_) {
+      this.lastPostedQuerySeqNo_ = querySeqNo;
+      // TODO(xiangdongkong): Use Mojo to communicate with untrusted page.
+      this.iframe_.contentWindow.postMessage(
+          data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
+    }
   }
 
   /**
@@ -405,20 +441,6 @@ export class SearchPageElement extends SearchPageElementBase {
   }
 
   /**
-   * @return {!number}
-   */
-  getSearchResultCountForTesting() {
-    return this.helpContentSearchResultCount;
-  }
-
-  /**
-   * @return {!boolean}
-   */
-  getIsPopularContentForTesting_() {
-    return this.isPopularContentForTesting_;
-  }
-
-  /**
    * Checks if any keywords have associated questionnaire in a domain. If so,
    * we append the questionnaire to the text input box.
    * @param inputEvent The input event for the description textarea.
@@ -483,6 +505,41 @@ export class SearchPageElement extends SearchPageElementBase {
    */
   onContainerScroll_(event) {
     showScrollingEffects(event, this);
+  }
+
+  /**
+   * @return {!number}
+   */
+  getSearchResultCountForTesting() {
+    return this.helpContentSearchResultCount;
+  }
+
+  /**
+   * @return {!boolean}
+   */
+  getIsPopularContentForTesting_() {
+    return this.isPopularContentForTesting_;
+  }
+
+  /**
+   * @return {!number}
+   */
+  getNextQuerySeqNoForTesting() {
+    return this.querySeqNo_;
+  }
+
+  /**
+   * @param {!number} nextQuerySeqNo{!number}
+   */
+  setNextQuerySeqNoForTesting(nextQuerySeqNo) {
+    this.querySeqNo_ = nextQuerySeqNo;
+  }
+
+  /**
+   * @return {!number}
+   */
+  getLastPostedQuerySeqNoForTesting() {
+    return this.lastPostedQuerySeqNo_;
   }
 }
 
