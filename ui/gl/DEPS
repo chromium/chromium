@@ -21,6 +21,10 @@ specific_include_rules = {
   "delegated_ink_point_renderer_gpu_unittest.cc": [
     "+ui/base/win/hidden_window.h",
   ],
+  "dcomp_presenter_unittest.cc": [
+    "+ui/base/win/hidden_window.h",
+    "+ui/platform_window",
+  ],
   "direct_composition_surface_win_unittest.cc": [
     "+ui/base/win/hidden_window.h",
     "+ui/platform_window",
