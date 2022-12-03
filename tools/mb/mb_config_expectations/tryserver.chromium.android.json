@@ -650,19 +650,6 @@
       "use_goma": true
     }
   },
-  "android-oreo-arm64-cts-networkservice-dbg": {
-    "gn_args": {
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_goma": true
-    }
-  },
   "android-oreo-arm64-dbg": {
     "gn_args": {
       "debuggable_apks": false,

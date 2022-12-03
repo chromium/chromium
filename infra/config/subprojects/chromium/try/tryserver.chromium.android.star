@@ -373,10 +373,6 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "android-oreo-arm64-cts-networkservice-dbg",
-)
-
-try_.builder(
     name = "android-oreo-arm64-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
