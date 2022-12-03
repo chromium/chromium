@@ -10,6 +10,8 @@ source_set("feed_promos") {
   ]
   deps = [
     ":feed_promos_ui",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/common/ui/confirmation_alert",
   ]

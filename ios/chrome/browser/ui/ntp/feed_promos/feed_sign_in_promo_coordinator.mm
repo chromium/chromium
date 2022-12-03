@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_coordinator.h"
 
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/ntp/feed_promos/feed_sign_in_promo_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
@@ -54,10 +58,12 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
         UIModalPresentationFormSheet;
   }
 
-  [self.baseViewController presentViewController:signInPromoViewController
-                                        animated:YES
-                                      completion:^(){
-                                      }];
+  [self.baseViewController
+      presentViewController:signInPromoViewController
+                   animated:YES
+                 completion:^(){
+                     // TODO(crbug.com/1382615): add metrics.
+                 }];
 }
 
 - (void)stop {
@@ -69,11 +75,20 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  // TODO(crbug.com/1382615): implement.
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperationSigninAndSync
+            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN];
+  [handler showSignin:command baseViewController:self.baseViewController];
+  // TODO(crbug.com/1382615): add metrics.
 }
 
 - (void)confirmationAlertSecondaryAction {
-  // TODO(crbug.com/1382615): implement.
+  if (self.baseViewController.presentedViewController) {
+    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  }
+  // TODO(crbug.com/1382615): add metrics.
 }
 
 @end
