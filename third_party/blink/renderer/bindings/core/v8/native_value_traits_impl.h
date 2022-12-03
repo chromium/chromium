@@ -108,10 +108,11 @@ struct NativeValueTraits<IDLNullable<IDLAny>>;
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLOptional<IDLAny>>
     : public NativeValueTraitsBase<IDLOptional<IDLAny>> {
-  static ScriptValue NativeValue(v8::Isolate* isolate,
-                                 v8::Local<v8::Value> value,
-                                 ExceptionState& exception_state) {
-    return ScriptValue(isolate, value);
+  static bindings::NativeValueTraitsAnyAdapter NativeValue(
+      v8::Isolate* isolate,
+      v8::Local<v8::Value> value,
+      ExceptionState& exception_state) {
+    return bindings::NativeValueTraitsAnyAdapter(isolate, value);
   }
 };
 
