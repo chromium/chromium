@@ -10,10 +10,14 @@ mojom("mojo_bindings") {
   sources = [ "test.test-mojom" ]
 }
 
-js_type_check("closure_compile") {
-  deps = [ ":test" ]
-}
+# Lite style bindings, and closure compilation, are both only used for Mojo
+# WebUIs on ChromeOS Ash.
+if (is_chromeos_ash) {
+  js_type_check("closure_compile") {
+    deps = [ ":test" ]
+  }
 
-js_library("test") {
-  deps = [ ":mojo_bindings_js_library_for_compile" ]
+  js_library("test") {
+    deps = [ ":mojo_bindings_js_library_for_compile" ]
+  }
 }

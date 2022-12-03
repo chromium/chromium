@@ -1733,12 +1733,12 @@ if (enable_js_type_check) {
     data_deps = [
       "components/neterror/resources:closure_compile",
       "components/security_interstitials:closure_compile",
-      "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
       "ui/webui/resources:closure_compile",
     ]
     if (is_chromeos_ash) {
       data_deps += [
         "ash/webui:closure_compile",
+        "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
         "ui/file_manager:closure_compile",
       ]
     }
