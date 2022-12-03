@@ -55,7 +55,6 @@
 <translation id="1049743911850919806">Modo anônimo</translation>
 <translation id="1049795001945932310">&amp;Configurações de idioma</translation>
 <translation id="1050693411695664090">Insatisfatória</translation>
-<translation id="1053831338284186718">Confira o site e tente mudar sua senha.</translation>
 <translation id="1054048317165655285">Concluir a configuração no smartphone</translation>
 <translation id="1054153489933238809">Abrir &amp;imagem original em uma nova guia</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Atualize o <ph name="DEVICE_TYPE" /> em até 1 semana}one{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semana}other{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semanas}}</translation>
@@ -316,7 +315,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1285484354230578868">Armazenar dados em sua conta do Google Drive</translation>
 <translation id="1285625592773741684">A configuração atual de uso de dados é "Dados móveis"</translation>
-<translation id="1287512808202289801">O Google Assistente parou</translation>
 <translation id="1288037062697528143">O Modo noturno será ativado automaticamente ao anoitecer</translation>
 <translation id="1288300545283011870">Propriedades da fala</translation>
 <translation id="1289619947962767206">Essa opção não está mais disponível. Para fazer a apresentação de uma guia, use o <ph name="GOOGLE_MEET" />.</translation>
@@ -370,7 +368,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1340527397989195812">Fazer backup de mídia do dispositivo usando o aplicativo Arquivos.</translation>
 <translation id="1343865611738742294">Conceder aos apps Linux permissão para acessar dispositivos USB. O Linux não terá informações do dispositivo USB depois que ele for removido.</translation>
 <translation id="1343920184519992513">Continuar de onde parou e abrir um conjunto específico de páginas</translation>
-<translation id="1344377983938103876">Abrindo <ph name="URL" />...</translation>
 <translation id="134589511016534552">As guias de mídia também aparecem na seção "Guias abertas"</translation>
 <translation id="1346630054604077329">Confirmar e reiniciar</translation>
 <translation id="1346748346194534595">À direita</translation>
@@ -1398,7 +1395,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2251809247798634662">Nova janela anônima</translation>
 <translation id="2252017960592955005">Proteção de visualização (Beta)</translation>
 <translation id="225240747099314620">Permitir identificadores de conteúdo protegido (pode ser necessário reiniciar o computador)</translation>
-<translation id="2252617660166797081">Saiba mais sobre a mudança automática de senha</translation>
 <translation id="2255077166240162850">Este dispositivo foi bloqueado para um domínio ou modo diferente.</translation>
 <translation id="2255317897038918278">Carimbo de data/hora da Microsoft</translation>
 <translation id="2256115617011615191">Reiniciar agora</translation>
@@ -1793,7 +1789,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2587922766792651800">Tempo expirado</translation>
 <translation id="2588636910004461974">Dispositivos deste fornecedor: <ph name="VENDOR_NAME" /></translation>
 <translation id="25899519884572181">Sair do modo leitor</translation>
-<translation id="2591895621127187078">Confira sua caixa de entrada para escolher uma nova senha</translation>
 <translation id="2593499352046705383">Antes de começar, confira se você fez backup dos dados. A instalação do <ph name="DEVICE_OS" /> limpa todo o disco rígido. Saiba mais em g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Pesquisar no Google ou digitar o URL</translation>
 <translation id="25957578727513093">Para chegar aqui mais rapidamente, adicione um atalho ao Gerenciador de senhas do Google</translation>
@@ -2217,7 +2212,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2964245677645334031">Visibilidade do Compartilhar por proximidade</translation>
 <translation id="2966937470348689686">Gerenciar preferências do Android</translation>
 <translation id="2967926928600500959">Os URLs que corresponderem a essas regras vão ser forçados a abrir em um navegador específico.</translation>
-<translation id="2972266986002580503">Veja suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="2972581237482394796">&amp;Refazer</translation>
 <translation id="2973324205039581528">Desativar som do site</translation>
 <translation id="2973537811036309675">Painel lateral</translation>
@@ -2518,7 +2512,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3277214528693754078">Navegar com o cursor de texto (Caret Browsing)</translation>
 <translation id="3277594800340743211">Sombra grande</translation>
 <translation id="3278001907972365362">Suas Contas do Google requerem atenção</translation>
-<translation id="3279030509356143465">A senha comprometida foi modificada</translation>
 <translation id="3279092821516760512">Contatos selecionados podem compartilhar itens com você quando estão por perto. As transferências só são iniciadas depois que você as aceita.</translation>
 <translation id="3279230909244266691">O processo pode levar alguns minutos. Iniciando a máquina virtual.</translation>
 <translation id="3280237271814976245">Salvar &amp;como...</translation>
@@ -2975,7 +2968,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="370649949373421643">Ativar Wi-Fi</translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3707163604290651814">Você fez login como <ph name="NAME" /></translation>
-<translation id="3707414379011001517">Sua senha não mudou. Para criar uma nova, tente de novo e deixe esta guia e o painel lateral abertos. <ph name="LINK_TEXT" /></translation>
 <translation id="3708295717182051206">Legendas</translation>
 <translation id="3708684582558000260">Não permitir que os sites fechados terminem de enviar ou receber dados</translation>
 <translation id="3709244229496787112">O navegador foi fechado antes do término do download.</translation>
@@ -4490,7 +4482,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5130675701626084557">Não foi possível fazer o download do perfil. Tente novamente mais tarde ou entre em contato com a operadora para conseguir ajuda.</translation>
 <translation id="5131591206283983824">Arrastar com toque no touchpad</translation>
 <translation id="5135533361271311778">Não foi possível criar um item de favorito.</translation>
-<translation id="5135828720964881054">Mudança automática de senha</translation>
 <translation id="5136343472380336530">Verifique se os dois dispositivos estão desbloqueados, próximos um do outro e com o Bluetooth ativado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Excluir este item</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, pesquisa no <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -5833,7 +5824,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6406303162637086258">Simular reinicialização do navegador</translation>
 <translation id="6406506848690869874">Sincronizar</translation>
 <translation id="6406708970972405507">Configurações: <ph name="SECTION_TITLE" /></translation>
-<translation id="6407955178761087876">Permita que o Google Assistente ajude você a mudar sua senha</translation>
 <translation id="6408118934673775994">Ler e alterar seus dados em <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Arquivos de imagem</translation>
 <translation id="6410328738210026208">Mudar de canal e executar PowerWash</translation>
@@ -5941,6 +5931,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6508248480704296122">Relacionado a <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicativo: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licença de mídia</translation>
+<translation id="6511279028091289182">Determina como se conectar a sites por uma conexão segura. Este usa um provedor de serviços gerenciado em <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="6511827214781912955">Recomendamos que você exclua o arquivo <ph name="FILENAME" /> para que os outros usuários deste dispositivo não vejam suas senhas</translation>
 <translation id="6512808201725371249">Uma senha para essa conta já está salva no Gerenciador de senhas do Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Caso você não esteja conectado a outra rede, o Google Chrome utilizará dados móveis.</translation>
@@ -6010,6 +6001,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6568283005472142698">Pesquisa de guias</translation>
 <translation id="65711204837946324">É preciso ter permissão para fazer o download</translation>
 <translation id="6571772921213691236">Editar dados de login</translation>
+<translation id="657229725818377235">Tenha mais proteção contra sites e downloads perigosos</translation>
 <translation id="6573096386450695060">Sempre permitir</translation>
 <translation id="6573497332121198392">Falha ao remover o atalho</translation>
 <translation id="657402800789773160">&amp;Recarregar esta página</translation>
@@ -6231,7 +6223,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6783036716881942511">Esquecer este dispositivo?</translation>
 <translation id="6784523122863989144">O perfil é compatível</translation>
 <translation id="6785739405821760313">Mostrando os espaços de trabalho salvos. Pressione Tab para navegar.</translation>
-<translation id="6785872064505734160">O Google Assistente no Chrome pode concluir ações em sites para você</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787097042755590313">Outra guia</translation>
 <translation id="6787839852456839824">Atalhos do teclado</translation>
@@ -7271,7 +7262,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7753735457098489144">Falha na instalação devido à falta de espaço de armazenamento. Para liberar espaço, exclua arquivos do armazenamento do dispositivo.</translation>
 <translation id="7754347746598978109">Bloquear o uso do JavaScript</translation>
 <translation id="7754704193130578113">Perguntar onde salvar cada arquivo antes de fazer download</translation>
-<translation id="7755134875397410803">Para ajudar você com suas tarefas, o Google vai receber os URLs e o conteúdo de sites em que você usa o Google Assistente e também as informações que você envia por ele. Essas informações podem ser armazenadas na sua Conta do Google. É possível desativar o Google Assistente nas configurações do Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Seu responsável pode desbloqueá-lo para você</translation>
 <translation id="7757592200364144203">Mudar o nome do dispositivo</translation>
 <translation id="7757739382819740102">Os contatos por perto podem compartilhar com você. Será necessária a aprovação.</translation>
@@ -8583,7 +8573,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
 <translation id="8968527460726243404">Gravador de imagem do sistema Chrome OS</translation>
 <translation id="8968766641738584599">Salvar cartão</translation>
-<translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Verifique com seu administrador de rede se o firewall não está bloqueando downloads dos servidores do Google.</translation>
 <translation id="8973263196882835828">&amp;Ativar a Legenda instantânea</translation>

@@ -55,7 +55,6 @@
 <translation id="1049743911850919806">Ինկոգնիտո</translation>
 <translation id="1049795001945932310">&amp;Լեզվի կարգավորումներ</translation>
 <translation id="1050693411695664090">Վատ</translation>
-<translation id="1053831338284186718">Ստուգեք կայքը և փորձեք փոխել ձեր գաղտնաբառը։</translation>
 <translation id="1054048317165655285">Ավարտեք կարգավորումը ձեր հեռախոսում</translation>
 <translation id="1054153489933238809">Բացել &amp;պատկերի բնօրինակը նոր ներդիրով</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը 1 շաբաթվա ընթացքում}one{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_WEEKS} շաբաթվա ընթացքում}other{Թարմացրեք <ph name="DEVICE_TYPE" /> սարքը {NUM_WEEKS} շաբաթվա ընթացքում}}</translation>
@@ -314,7 +313,6 @@
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
 <translation id="1285484354230578868">Պահեստավորել տվյալները ձեր Google Drive հաշվում</translation>
 <translation id="1285625592773741684">Տվյալների փոխանցման ընթացիկ կարգավորումը՝ «Բջջային ինտերնետ»</translation>
-<translation id="1287512808202289801">Google Օգնականը կանգնեց</translation>
 <translation id="1288037062697528143">Մութն ընկնելուն պես գիշերային ռեժիմը ավտոմատ կմիանա</translation>
 <translation id="1288300545283011870">Ձայնի կարգավորումներ</translation>
 <translation id="1289619947962767206">Այս ընտրանքն այլևս չի աջակցվում։ Որևէ ներդիր գլխավոր էկրանին ցուցադրելու համար օգտագործեք <ph name="GOOGLE_MEET" />-ը։</translation>
@@ -368,7 +366,6 @@
 <translation id="1340527397989195812">Պահուստավորել սարքի վրայի մեդիա ֆայլերը Ֆայլեր հավելվածի միջոցով:</translation>
 <translation id="1343865611738742294">Լինուքսի հավելվածներին հասանելի դարձրեք USB սարքերը: Երբ USB սարքը հեռացվի, Լինուքսը չի պահի այն:</translation>
 <translation id="1343920184519992513">Շարունակել այն պահից, որտեղ կանգ եմ առել, և բացել էջերի որոշակի խումբ</translation>
-<translation id="1344377983938103876"><ph name="URL" /> կայքը բացվում է…</translation>
 <translation id="134589511016534552">Մեդիա բովանդակությամբ ներդիրները ցուցադրվում են նաև «Բաց ներդիրներ» բաժնում</translation>
 <translation id="1346630054604077329">Հաստատել և վերագործարկել</translation>
 <translation id="1346748346194534595">Աջ</translation>
@@ -1385,7 +1382,6 @@
 <translation id="2251809247798634662">Նոր ինկոգնիտո պատուհան</translation>
 <translation id="2252017960592955005">Անվտանգ դիտում (բետա)</translation>
 <translation id="225240747099314620">Օգտագործել նույնացուցիչները պաշտպանված բովանդակության համար (կարող է անհրաժեշտ լինել, որ համակարգիչը վերագործարկվի)</translation>
-<translation id="2252617660166797081">Իմանալ ավելին գաղտնաբառի ավտոմատ փոփոխության մասին</translation>
 <translation id="2255077166240162850">Այս սարքն արդեն կողպվել է այլ տիրույթում կամ ռեժիմում։</translation>
 <translation id="2255317897038918278">Microsoft ժամադրոշմ</translation>
 <translation id="2256115617011615191">Վերագործարկել հիմա</translation>
@@ -1777,7 +1773,6 @@
 <translation id="2587922766792651800">Ժամանակը սպառվել է</translation>
 <translation id="2588636910004461974">Սարքեր <ph name="VENDOR_NAME" /> մատակարարից</translation>
 <translation id="25899519884572181">Դուրս գալ ընթերցման ռեժիմից</translation>
-<translation id="2591895621127187078">Նոր գաղտնաբառ ընտրելու համար ստուգեք ձեր էլփոստը</translation>
 <translation id="2593499352046705383">Սկսելուց առաջ համոզվեք, որ ձեր տվյալները պահուստավորված են։ <ph name="DEVICE_OS" />-ը տեղադրելու դեպքում կոշտ սկավառակում առկա բոլոր տվյալները կվրագրվեն։ Իմացեք ավելին g.co/flex/InstallGuide էջում։</translation>
 <translation id="2594999711683503743">Որոնեք Google-ում կամ մուտքագրեք հասցեն</translation>
 <translation id="25957578727513093">Արագ բացելու համար դյուրանցում ավելացրեք Google գաղտնաբառերի կառավարչում։</translation>
@@ -2201,7 +2196,6 @@
 <translation id="2964245677645334031">«Փոխանակում մոտակա սարքերի հետ» գործառույթի տեսանելիություն</translation>
 <translation id="2966937470348689686">Android-ի կարգավորումների կառավարում</translation>
 <translation id="2967926928600500959">Այս կանոններին համապատասխանող URL-ները հարկադրաբար կբացվեն հատուկ դիտարկիչում։</translation>
-<translation id="2972266986002580503">Ձեր գաղտնաբառերը ցանկացած ժամանակ կարող եք ստուգել <ph name="GOOGLE_PASSWORD_MANAGER" />ում։</translation>
 <translation id="2972581237482394796">&amp;Վերարկել</translation>
 <translation id="2973324205039581528">Անջատել կայքի ձայնը</translation>
 <translation id="2973537811036309675">Կողային վահանակ</translation>
@@ -2500,7 +2494,6 @@
 <translation id="3277214528693754078">Նավիգացիա տեքստային նշորդի միջոցով (ակտիվ նշորդի ռեժիմ)</translation>
 <translation id="3277594800340743211">Մեծ շողք</translation>
 <translation id="3278001907972365362">Google հաշվի համար պահանջվում է գործողություն</translation>
-<translation id="3279030509356143465">Կոտրված գաղտնաբառը փոխվեց</translation>
 <translation id="3279092821516760512">Նշված կոնտակտները կարող են տվյալներով կիսվել ձեզ հետ, երբ մոտակայքում են։ Տվյալների փոխանցումը չի սկսվի, մինչև դուք չհաստատեք։</translation>
 <translation id="3279230909244266691">Այս գործընթացը կարող է տևել մի քանի րոպե: Վիրտուալ մեքենան գործարկվում է:</translation>
 <translation id="3280237271814976245">Պահել &amp;որպես…</translation>
@@ -2955,7 +2948,6 @@
 <translation id="370649949373421643">Միացնել Wi-Fi-ը</translation>
 <translation id="370665806235115550">Բեռնում…</translation>
 <translation id="3707163604290651814">Դուք մուտք եք գործել որպես <ph name="NAME" /></translation>
-<translation id="3707414379011001517">Գաղտնաբառը չփոխվեց։ Նորից փորձեք և մի՛ փակեք այս ներդիրն ու կողային վահանակը։ <ph name="LINK_TEXT" /></translation>
 <translation id="3708295717182051206">Ենթագրեր</translation>
 <translation id="3708684582558000260">Թույլ չտալ փակված կայքերին ավարտել տվյալների ուղարկումն ու ստացումը</translation>
 <translation id="3709244229496787112">Դիտարկիչը փակվել է նախքան ներբեռնման ավարտը:</translation>
@@ -4469,7 +4461,6 @@
 <translation id="5130675701626084557">Չհաջողվեց ներբեռնել պրոֆիլը։ Փորձեք մի փոքր ուշ կամ օգնության համար կապվեք օպերատորի հետ։</translation>
 <translation id="5131591206283983824">Հպումով քաշում հպահարթակին</translation>
 <translation id="5135533361271311778">Չհաջողվեց էջանիշ ստեղծել:</translation>
-<translation id="5135828720964881054">Գաղտնաբառի ավտոմատ փոփոխություն</translation>
 <translation id="5136343472380336530">Համոզվեք, որ երկու սարքերն ապակողպված են, միմյանց մոտ են, և սարքերում միացված է Bluetooth-ը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Ջնջել այս կետը</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, որոնում <ph name="DEFAULT_SEARCH_ENGINE_NAME" />-ում</translation>
@@ -5810,7 +5801,6 @@
 <translation id="6406303162637086258">Նմանակել դիտարկիչի վերագործարկումը</translation>
 <translation id="6406506848690869874">Համաժամացում</translation>
 <translation id="6406708970972405507">Կարգավորումներ – <ph name="SECTION_TITLE" /></translation>
-<translation id="6407955178761087876">Թույլատրեք Google Օգնականին օգնել ձեզ փոխել գաղտնաբառը</translation>
 <translation id="6408118934673775994">Կարդալ և փոխել ձեր տվյալները <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> և <ph name="WEBSITE_3" /> վեբկայքերում</translation>
 <translation id="6410257289063177456">Պատկերների ֆայլեր</translation>
 <translation id="6410328738210026208">Վարկածի փոփոխում և Powerwash</translation>
@@ -6207,7 +6197,6 @@
 <translation id="6783036716881942511">Հեռացնե՞լ այս սարքը</translation>
 <translation id="6784523122863989144">Պրոֆիլն աջակցվում է</translation>
 <translation id="6785739405821760313">Պահված աշխատասեղանների դիտում։ Անցնելու համար սեղմեք Tab։</translation>
-<translation id="6785872064505734160">Google Օգնականը Chrome-ում կարող է կայքերի հետ կապված գործողություններ կատարել</translation>
 <translation id="6786747875388722282">Ընդլայնումներ</translation>
 <translation id="6787097042755590313">Այլ ներդիր</translation>
 <translation id="6787839852456839824">Ստեղնային դյուրանցումներ</translation>
@@ -7245,7 +7234,6 @@
 <translation id="7753735457098489144">Չհաջողվեց տեղադրել։ Հիշողությունը բավարար չէ։ Տարածք ազատելու համար սարքի հիշողությունից ֆայլեր ջնջեք։</translation>
 <translation id="7754347746598978109">Չի թույլատրվում օգտագործել JavaScript</translation>
 <translation id="7754704193130578113">Յուրաքանչյուր ֆայլ ներբեռնելուց առաջ հարցնել որտեղ պահել</translation>
-<translation id="7755134875397410803">Որպեսզի կարողանաք կատարել առաջադրանքները, Google-ը կստանա կայքերի հասցեներն ու բովանդակությունը, որոնցում օգտվում եք Օգնականից, ինչպես նաև տվյալները, որոնք ուղարկում եք Օգնականի միջոցով։ Այս տեղեկությունները կարող են պահվել ձեր Google հաշվում։ Օգնականը կարող եք անջատել Chrome-ի կարգավորումներում։ <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">Այն կարող է արգելահանել ձեր ծնողը</translation>
 <translation id="7757592200364144203">Փոխել սարքի անունը</translation>
 <translation id="7757739382819740102">Մոտակայքում գտնվող կոնտակտները կարող են կիսվել ձեզ հետ բովանդակությամբ։ Կպահանջվի հաստատում։</translation>
@@ -8554,7 +8542,6 @@
 <translation id="8967427617812342790">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="8968527460726243404">ChromeOS Համակարգային պատկերի գրիչ</translation>
 <translation id="8968766641738584599">Պահել քարտը</translation>
-<translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Ճշտեք ձեր ցանցի ադմինիստրատորից՝ արդյոք հրապատը չի արգելափակում ներբեռնումները Google սերվերներից:</translation>
 <translation id="8973263196882835828">&amp;Միացնել Կենդանի ենթագրերը</translation>

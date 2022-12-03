@@ -336,6 +336,13 @@ Uzantıların kullanılabilirliği diğer politikalar tarafından kontrol edilme
 <translation id="1317658068839330898">Web'de <ph name="ASSISTANT_PRODUCT_NAME" /> kullanımına izin verme</translation>
 <translation id="1327466551276625742">Çevrimdışı iken ağ yapılandırma istemini etkinleştir</translation>
 <translation id="1330145147221172764">Ekran klavyesini etkinleştir</translation>
+<translation id="1330957570904024655">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa, indirilen dosyalar güvenilir bir kaynaktan olsa bile Güvenli Tarama tarafından analiz edilmeye gönderilir.
+
+Politika, Devre dışı değerine ayarlanırsa, indirilen dosyalar güvenilir bir kaynaktan olduğunda Güvenli Tarama tarafından analiz edilmeye gönderilmez.
+
+Bu kısıtlamalar hem web sayfası içeriğinden hem de Bağlantıyı indir menü seçeneğinden tetiklenen indirmeler için geçerlidir. Bu kısıtlamalar, görüntülenmekte olan sayfanın kaydedilmesi veya indirilmesinde ya da yazdırma seçeneklerinden PDF olarak kaydedilmesinde geçerli değildir.
+
+<ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="13356285923490863">Politika Adı</translation>
 <translation id="1338603603553894503">Profil seçicinin etkin olup olmadığını, devre dışı bırakılıp bırakılmadığını veya tarayıcı başlatılırken zorunlu tutulup tutulmadığını belirtir.
 

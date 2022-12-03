@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Google ड्राइव्ह मध्ये तुमचे स्वागत आहे!</translation>
 <translation id="1379911846207762492">तुमच्याकडे इंटरनेट कनेक्शन नसल्यास, तुम्ही फाइल ॲक्सेस करण्यासाठी त्या ऑफलाइन उपलब्ध करू शकता.</translation>
 <translation id="1383876407941801731">शोधा</translation>
+<translation id="1388045380422025115">सर्व प्रकार</translation>
 <translation id="1395262318152388157">स्लायाडर शोधा</translation>
 <translation id="1399511500114202393">वापरकर्ता सर्टिफिकेट नाही</translation>
 <translation id="1403008701842173542">कुठेही</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">विषयाच्या पर्यायी नावाच्या जुळणीची एंट्री चुकीची आहे</translation>
 <translation id="1838709767668011582">Google साइट</translation>
 <translation id="1853795129690976061">हे नेटवर्क Linux सोबत शेअर केलेले आहे</translation>
+<translation id="1859422890169495746">हे Chromebook</translation>
 <translation id="1864756863218646478">फाइल आढळू शकली नाही.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, कनेक्ट करा</translation>
 <translation id="1920670151694390848">मल्याळम लिप्यंतरण</translation>
@@ -134,6 +136,7 @@
 <translation id="2143778271340628265">व्यक्तिचलित प्रॉक्झी कॉंफिगरेशन</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2163152940313951844">चुकीचा वर्ण: <ph name="CHARACTER_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2184934335987813305">यूएस आंतरराष्ट्रीय पीसी कीबोर्डसह पोर्तुगीज</translation>
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> वापरली</translation>
 <translation id="2198315389084035571">सरलीकृत चीनी</translation>
@@ -153,6 +156,7 @@
 <translation id="2307462900900812319">नेटवर्क कॉंफिगर करा</translation>
 <translation id="2325650632570794183">हा फाइल प्रकार सपोर्टेड नाही. कृपया या प्रकारची फाइल उघडू शकणारे अ‍ॅप शोधण्यासाठी Chrome वेब स्टोअरला भेट द्या.</translation>
 <translation id="2326539130272988168">बल्गेरियन</translation>
+<translation id="2337715497728194187">Bruschetta सोबत शेअर करा</translation>
 <translation id="23721837607121582">मोबाइल प्रोफाइल डाउनलोड करा, <ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">सूची व्‍ह्यूवर स्विच करा</translation>
 <translation id="2377590462528165447">Linux सोबत शेअर केलेली <ph name="NUMBER_OF_ITEMS" /> फोल्डर</translation>
@@ -182,6 +186,7 @@
 <translation id="2544853746127077729">ऑथेंटिकेशन प्रमाणपत्र नेटवर्कद्वारे नाकारले</translation>
 <translation id="255937426064304553">यूएस आंतरराष्ट्रीय</translation>
 <translation id="2563185590376525700">बेडूक</translation>
+<translation id="2574327434504608656">Bruschetta सोबत एक फोल्डर शेअर केले</translation>
 <translation id="2578394532502990878">तमिळ फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटर ने ब्लॉक केलेले नेटवर्क, तपशील</translation>
@@ -275,6 +280,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्हेट करा</translation>
 <translation id="3408236822532681288">निओ 2 कीबोर्डसह जर्मन (जर्मनी)</translation>
 <translation id="3414856743105198592">काढता येणार्‍या मीडिआचे स्वरूपन सर्व डेटा पुसून टाकत आहे. तुम्ही सुरू ठेवू इच्छिता?</translation>
+<translation id="3435143625481187092">Bruschetta ला <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
 <translation id="3437801641691368414">तयार केल्याची वेळ</translation>
 <translation id="343907260260897561">इंस्टंट कॅमेरा</translation>
 <translation id="3455931012307786678">इस्टोनियन</translation>
@@ -354,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> हलवला.</translation>
 <translation id="4176286497474237543">आता ट्रॅश रिकामा करा</translation>
 <translation id="4179621117429069925">हा आयटम तुमच्या ट्रॅशमध्ये आहे</translation>
+<translation id="4181839429935094755">Bruschetta सोबत <ph name="NUMBER_OF_ITEMS" /> फोल्डर शेअर केली</translation>
 <translation id="4186579485882418952">ऑफलाइन हे एक्स्टेंशन सुरू करा</translation>
 <translation id="4193154014135846272">Google दस्तऐवज</translation>
 <translation id="4197674956721858839">झिप निवड</translation>
@@ -415,6 +422,7 @@
 <translation id="4646813851450205600">क्वर्टी कीबोर्डसह झेक</translation>
 <translation id="4656777537938206294">फाइल ऑफलाइन उपलब्ध करा</translation>
 <translation id="4658782175094886150">हिमवर्षावात उभी व्यक्ती</translation>
+<translation id="466782788172479199">तुमच्या Google Drive मधील फाइल अ‍ॅक्सेस करण्याची Bruschetta ला परवानगी द्या. बदल तुमच्या इतर डिव्हाइसवर सिंक होतील.</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' च्या सदस्यांशी हे आयटम शेअर केले जात नाही तोवर त्यांना ॲक्सेस असणार नाही.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">स्वीडिश</translation>
@@ -522,6 +530,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5330145655348521461">या फाइल एका भिन्न डेस्कटॉपवर उघडलेल्या आहेत. या पाहण्यासाठी <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) वर हलवा.</translation>
 <translation id="5330512191124428349">माहिती मिळवा</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> वगळता सर्व URL वरून फाइलचा ॲक्सेस</translation>
+<translation id="5344246330454251646">Bruschetta शेअरिंग व्यवस्थापित करा</translation>
 <translation id="535792325654997756">मांजरींसह व्यक्ती</translation>
 <translation id="5358764674931277">फ्रेम दर</translation>
 <translation id="5363339716524495120">इनपुट भाषा चीनी आहे</translation>
@@ -567,6 +576,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5700087501958648444">ऑडिओ माहिती</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ट्रॅश मध्ये हलवली आहे</translation>
 <translation id="5724172041621205163">पट्टाचोटे कीबोर्डसह थाई</translation>
+<translation id="57383366388012121">मागील महिना</translation>
 <translation id="5756666464756035725">हंगेरियन क्वर्टी कीबोर्ड</translation>
 <translation id="5763377084591234761">जर्मन (स्वित्झर्लंड)</translation>
 <translation id="5769519078756170258">वगळण्यासाठी होस्ट किंवा डोमेन</translation>
@@ -676,6 +686,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6710213216561001401">मागील</translation>
 <translation id="6732801395666424405">लोड न झालेली प्रमाणपत्रे</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Bruschetta सोबत फोल्डर शेअर करा</translation>
 <translation id="6751256176799620176">1 फोल्डर निवडले</translation>
 <translation id="6755827872271341378">ChromeOS Flex डिव्हाइस</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
@@ -704,6 +715,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6935521024859866267">उलट सुलट</translation>
 <translation id="6943836128787782965">HTTP अयशस्वी झाले</translation>
 <translation id="6949408524333579394">सर्बियन लिप्यंतरण</translation>
+<translation id="69548399407432279">मागील वर्ष</translation>
 <translation id="6960565108681981554">अ‍ॅक्टिव्हेट केलेले नाही. तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="696203921837389374">मोबाइल डेटावर सिंक सुरू करा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
@@ -847,6 +859,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ऑडिओ</translation>
 <translation id="8045462269890919536">रोमानियन</translation>
 <translation id="8049184478152619004">वैयक्तिक अनब्लॉक करण्याची की (PUK) एंटर करा</translation>
+<translation id="8055538340801153769">हे फोल्डर</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> काढत आहे...</translation>
 <translation id="8087576439476816834">डाउनलोड करा, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">माझ्याशी शेअर केलेले</translation>

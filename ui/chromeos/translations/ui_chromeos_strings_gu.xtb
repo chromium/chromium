@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Google ડ્રાઇવ પર આપનું સ્વાગત છે!</translation>
 <translation id="1379911846207762492">તમે કોઈ ઇન્ટરનેટ કનેક્શન ધરાવતા ન હો, ત્યારના માટે તમે ફાઇલોનો ઍક્સેસ ઑફલાઇન ઉપલબ્ધ કરાવી શકો છો.</translation>
 <translation id="1383876407941801731">શોધો</translation>
+<translation id="1388045380422025115">તમામ પ્રકારો</translation>
 <translation id="1395262318152388157">સ્લાઇડર શોધો</translation>
 <translation id="1399511500114202393">કોઈ વપરાશકર્તા પ્રમાણપત્ર નથી</translation>
 <translation id="1403008701842173542">ગમે ત્યાં</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">વિષયના વૈકલ્પિક નામના મેળની અમાન્ય એન્ટ્રી</translation>
 <translation id="1838709767668011582">Google સાઇટ</translation>
 <translation id="1853795129690976061">આ ફોલ્ડર Linux સાથે શેર થાય છે</translation>
+<translation id="1859422890169495746">આ Chromebook</translation>
 <translation id="1864756863218646478">ફાઇલ શોધી શકાઈ નથી.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, કનેક્ટ કરો</translation>
 <translation id="1920670151694390848">મલયાલમ લિપ્યંતર</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">નેટવર્ક ગોઠવો</translation>
 <translation id="2325650632570794183">આ ફાઇલ પ્રકાર સમર્થિત નથી. આ પ્રકારની ફાઇલ ખોલી શકે તે એપ્લિકેશનને શોધવા માટે કૃપા કરીને Chrome વેબ દુકાનની મુલાકાત લો.</translation>
 <translation id="2326539130272988168">બલ્ગેરિયન</translation>
+<translation id="2337715497728194187">Bruschetta સાથે શેર કરો</translation>
 <translation id="23721837607121582"><ph name="NETWORK_NAME" />ના નેટવર્ક <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> મોબાઇલ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="2377319039870049694">સૂચિ દૃશ્ય પર સ્વિચ કરો</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ફોલ્ડર Linux સાથે શેર કર્યા</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">નેટવર્ક દ્વારા પ્રમાણીકરણ પ્રમાણપત્ર નકારવામાં આવ્યું</translation>
 <translation id="255937426064304553">યુએસ આંતરરાષ્ટ્રીય</translation>
 <translation id="2563185590376525700">દેડકો</translation>
+<translation id="2574327434504608656">Bruschetta સાથે 1 ફોલ્ડર શેર કર્યું</translation>
 <translation id="2578394532502990878">તમિળ ફોનેટિક</translation>
 <translation id="2579959351793446050">ઉડિયા</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવ્યું છે, વિગતો</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> સક્રિય કરો</translation>
 <translation id="3408236822532681288">જર્મન (જર્મની), નીઓ 2 કીબોર્ડ સાથે</translation>
 <translation id="3414856743105198592">દૂર કરવા યોગ્ય મીડિયાને ફોર્મેટ કરવાથી તમામ ડેટા ભૂંસાઈ જાય છે. શું તમે ચાલુ રાખવા ઈચ્છો છો?</translation>
+<translation id="3435143625481187092">Bruschettaને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
 <translation id="3437801641691368414">બનાવ્યાનો સમય</translation>
 <translation id="343907260260897561">ઝટપટ કૅમેરા</translation>
 <translation id="3455931012307786678">એસ્ટોનિયન</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ખસેડી.</translation>
 <translation id="4176286497474237543">ટ્રેશને હમણાં ખાલી કરો</translation>
 <translation id="4179621117429069925">આ આઇટમ તમારા ટ્રેશમાં છે</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> ફોલ્ડરને Bruschetta સાથે શેર કર્યા</translation>
 <translation id="4186579485882418952">ઑફલાઇન સુવિધા ચાલુ કરો</translation>
 <translation id="4193154014135846272">Google દસ્તાવેજ</translation>
 <translation id="4197674956721858839">ઝિપ પસંદગી</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">ચેક, Qwerty કીબોર્ડ સાથે</translation>
 <translation id="4656777537938206294">ફાઇલોને ઑફલાઇન ઉપલબ્ધ કરાવો</translation>
 <translation id="4658782175094886150">હિમવર્ષામાં ઉભેલી વ્યક્તિ</translation>
+<translation id="466782788172479199">Bruschettaને તમારી Google Driveમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો. ફેરફારો તમારા અન્ય બધા ડિવાઇસ સાથે સિંક થશે.</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />'ના સભ્યો ઍક્સેસ ગુમાવશે સિવાય કે આ આઇટમને તેમની સાથે શેર કરવામાં ન આવી હોય.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">સ્વીડિશ</translation>
@@ -523,6 +530,7 @@
 <translation id="5330145655348521461">આ ફાઇલોને બીજા ડેસ્કટૉપ પર ખોલી હતી. એને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
 <translation id="5330512191124428349">માહિતી મેળવો</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> સિવાય તમામ URLs દ્વારા ફાઇલ ઍક્સેસ</translation>
+<translation id="5344246330454251646">Bruschettaનું શેરિંગ મેનેજ કરો</translation>
 <translation id="535792325654997756">બિલાડીઓ સાથે વ્યક્તિ</translation>
 <translation id="5358764674931277">ફ્રેમ રેટ</translation>
 <translation id="5363339716524495120">ઇનપુટ ભાષા ચીની છે</translation>
@@ -568,6 +576,7 @@
 <translation id="5700087501958648444">ઑડિઓ માહિતી</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ટ્રેશમાં ખસેડી</translation>
 <translation id="5724172041621205163">થાઇ, Pattachote કીબોર્ડ સાથે</translation>
+<translation id="57383366388012121">ગયો મહિનો</translation>
 <translation id="5756666464756035725">હંગેરિયન QWERTY</translation>
 <translation id="5763377084591234761">જર્મન (સ્વિટ્ઝર્લૅન્ડ)</translation>
 <translation id="5769519078756170258">બાકાત કરવા માટેનું હોસ્ટ અથવા ડોમેન</translation>
@@ -677,6 +686,7 @@
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6732801395666424405">પ્રમાણપત્રો લોડ કર્યાં નથી</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Bruschetta સાથે ફોલ્ડર શેર કરો</translation>
 <translation id="6751256176799620176">1 ફોલ્ડર પસંદ કર્યું</translation>
 <translation id="6755827872271341378">ChromeOS Flex ડિવાઇસ</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
@@ -705,6 +715,7 @@
 <translation id="6935521024859866267">ઊલટું</translation>
 <translation id="6943836128787782965">HTTP નિષ્ફળ ગયું</translation>
 <translation id="6949408524333579394">સર્બિયન લિપ્યંતર</translation>
+<translation id="69548399407432279">ગયા વર્ષના</translation>
 <translation id="6960565108681981554">સક્રિય કરેલું નથી. તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="696203921837389374">મોબાઇલ ડેટા પર સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
@@ -846,6 +857,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ઑડિયો</translation>
 <translation id="8045462269890919536">રોમાનિયન</translation>
 <translation id="8049184478152619004">પર્સનલ અનબ્લૉકિંગ કી (PUK) દાખલ કરો</translation>
+<translation id="8055538340801153769">આ ફોલ્ડર</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" />ને એક્સટ્રેક્ટ કરી રહ્યાં છીએ...</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> ડાઉનલોડ કરો</translation>
 <translation id="8106045200081704138">મારી સાથે શેર કરેલા</translation>

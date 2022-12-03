@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Velkommen til Google Disk</translation>
 <translation id="1379911846207762492">Du kan gjøre filer tilgjengelige uten nett, slik at du kan bruke dem når du ikke har noen internettilkobling.</translation>
 <translation id="1383876407941801731">Søk</translation>
+<translation id="1388045380422025115">Alle typer</translation>
 <translation id="1395262318152388157">Fremdriftsbryter</translation>
 <translation id="1399511500114202393">Ingen brukersertifikater</translation>
 <translation id="1403008701842173542">Overalt</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">Ugyldig oppføring i listen over samsvarende alternative emnenavn</translation>
 <translation id="1838709767668011582">Google-nettsted</translation>
 <translation id="1853795129690976061">Denne mappen deles med Linux</translation>
+<translation id="1859422890169495746">Denne Chromebooken</translation>
 <translation id="1864756863218646478">Kunne ikke finne filen.</translation>
 <translation id="1884013283844450420">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – koble til</translation>
 <translation id="1920670151694390848">Malayalam, translitterasjon</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">Konfigurer nettverket</translation>
 <translation id="2325650632570794183">Denne filtypen støttes ikke. Gå til Chrome Nettmarked for å finne en app som kan åpne denne filtypen.</translation>
 <translation id="2326539130272988168">Bulgarsk</translation>
+<translation id="2337715497728194187">Del med Bruschetta</translation>
 <translation id="23721837607121582">Last ned mobilprofilen, nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Bytt til listevisning</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Linux</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">Autentiseringssertifikatet ble avvist av nettverket</translation>
 <translation id="255937426064304553">USA internasjonalt</translation>
 <translation id="2563185590376525700">Frosk</translation>
+<translation id="2574327434504608656">1 mappe er delt med Bruschetta</translation>
 <translation id="2578394532502990878">Tamil, fonetisk</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2602810353103180630">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – blokkert av administratoren din – detaljer</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043">Aktivér, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Tysk (Tyskland) med NEO 2-tastatur</translation>
 <translation id="3414856743105198592">Hvis du formaterer den flyttbare medieenheten, blir alle dataene slettet. Vil du fortsette?</translation>
+<translation id="3435143625481187092">Gi Bruschetta tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Opprettet</translation>
 <translation id="343907260260897561">Instantkamera</translation>
 <translation id="3455931012307786678">Estisk</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> er flyttet.</translation>
 <translation id="4176286497474237543">Tøm papirkurven nå</translation>
 <translation id="4179621117429069925">Dette elementet ligger i papirkurven din</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Bruschetta</translation>
 <translation id="4186579485882418952">Gjør tilgjengelig uten nett</translation>
 <translation id="4193154014135846272">Google-dokument</translation>
 <translation id="4197674956721858839">Zip-utvalg</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">Tsjekkisk med QWERTY-tastatur</translation>
 <translation id="4656777537938206294">Gjør filer tilgjengelige uten nett</translation>
 <translation id="4658782175094886150">Person i snøen</translation>
+<translation id="466782788172479199">Gi Bruschetta tilgang til filer på Google Disk. Endringer synkroniseres med de andre enhetene dine.</translation>
 <translation id="4669606053856530811">Medlemmer av «<ph name="SOURCE_NAME" />» mister tilgangen, med mindre disse elementene deles med dem.</translation>
 <translation id="467809019005607715">Google Presentasjoner</translation>
 <translation id="4690246192099372265">Svensk</translation>
@@ -523,6 +530,7 @@
 <translation id="5330145655348521461">Disse filene ble åpnet på et annet skrivebord. Flytt til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for å se dem.</translation>
 <translation id="5330512191124428349">Få informasjon</translation>
 <translation id="5337538975554986899">Filtilgang for alle nettadresser unntatt <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">Administrer Bruschetta-deling</translation>
 <translation id="535792325654997756">Person med katter</translation>
 <translation id="5358764674931277">Bildefrekvens</translation>
 <translation id="5363339716524495120">Skrivespråket er kinesisk</translation>
@@ -568,6 +576,7 @@
 <translation id="5700087501958648444">Lydinformasjon</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> er lagt i papirkurven</translation>
 <translation id="5724172041621205163">Thai med Pattachote-tastatur</translation>
+<translation id="57383366388012121">Forrige måned</translation>
 <translation id="5756666464756035725">Ungarsk QWERTY</translation>
 <translation id="5763377084591234761">Tysk (Sveits)</translation>
 <translation id="5769519078756170258">Vert eller domene som skal ekskluderes</translation>
@@ -677,6 +686,7 @@
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6732801395666424405">Sertifikater er ikke lastet inn</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Del mappen med Bruschetta</translation>
 <translation id="6751256176799620176">1 mappe er valgt</translation>
 <translation id="6755827872271341378">ChromeOS Flex-enhet</translation>
 <translation id="6790428901817661496">Spill av</translation>
@@ -705,6 +715,7 @@
 <translation id="6935521024859866267">Opp-ned</translation>
 <translation id="6943836128787782965">Henting av HTTP mislyktes</translation>
 <translation id="6949408524333579394">Serbisk, translitterasjon</translation>
+<translation id="69548399407432279">I fjor</translation>
 <translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
 <translation id="696203921837389374">Aktivér synkronisering via mobildata</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -848,6 +859,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-lyd</translation>
 <translation id="8045462269890919536">Rumensk</translation>
 <translation id="8049184478152619004">Skriv inn PUK-kode</translation>
+<translation id="8055538340801153769">Denne mappen</translation>
 <translation id="807187749540895545">Pakker ut <ph name="FILE_NAME" /> …</translation>
 <translation id="8087576439476816834">Last ned, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Delt med meg</translation>

@@ -335,6 +335,13 @@ La disponibilidad de las extensiones seguirá estando controlada por otras polí
 <translation id="1317658068839330898">No permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
 <translation id="1327466551276625742">Habilitar mensaje de configuración de red si no hay conexión</translation>
 <translation id="1330145147221172764">Habilitar teclado en pantalla</translation>
+<translation id="1330957570904024655">Si la política se habilita o no se establece, los archivos que se descarguen se enviarán para que Navegación segura los analice, aunque provengan de una fuente de confianza.
+
+Si la política se inhabilita, los archivos que se descarguen no se enviarán para que Navegación segura los analice si provienen de una fuente de confianza.
+
+Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o a través de la opción "Descargar enlace" del menú. No se aplican a la opción para guardar o descargar de la página que se esté mostrando ni a la opción para guardar como PDF de las opciones de impresión.
+
+En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="13356285923490863">Nombre de la política</translation>
 <translation id="1338603603553894503">Especifica si el selector de perfil se habilita, se inhabilita o se fuerza al iniciar el navegador.
 

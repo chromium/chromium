@@ -55,7 +55,6 @@
 <translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
 <translation id="1049795001945932310">&amp;భాష సెట్టింగ్‌లు</translation>
 <translation id="1050693411695664090">బలహీనంగా ఉంది</translation>
-<translation id="1053831338284186718">సైట్‌ను చెక్ చేసి, మీ పాస్‌వర్డ్‌ను మార్చడానికి ట్రై చేయండి.</translation>
 <translation id="1054048317165655285">మీ ఫోన్‌లో సెటప్‌ను పూర్తి చేయండి</translation>
 <translation id="1054153489933238809">అసలు &amp;చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 వారంలోపు <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయండి}other{{NUM_WEEKS} వారాలలోపు <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయండి}}</translation>
@@ -314,7 +313,6 @@
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="1285484354230578868">మీ Google Drive ఖాతాలో డేటాను నిల్వ చేయండి</translation>
 <translation id="1285625592773741684">ప్రస్తుతం డేటా వినియోగం మొబైల్ డేటా ద్వారా జరిగేలా సెట్ చేయబడి ఉంది</translation>
-<translation id="1287512808202289801">Google Assistant పని చేయడం లేదు</translation>
 <translation id="1288037062697528143">రాత్రి కాంతి, సూర్యాస్తమయ సమయానికి ఆటోమేటిక్‌గా ఆన్ అవుతుంది</translation>
 <translation id="1288300545283011870">ప్రసంగ లక్షణాలు</translation>
 <translation id="1289619947962767206">ఈ ఆప్షన్ ఇకపై సపోర్ట్ చేయదు. ట్యాబ్‌ను ప్రెజెంట్ చేయడానికి, <ph name="GOOGLE_MEET" />ను ఉపయోగించండి.</translation>
@@ -368,7 +366,6 @@
 <translation id="1340527397989195812">'ఫైళ్లు' యాప్‌ను ఉపయోగించి పరికరం నుండి మీడియాను బ్యాకప్ చేయండి.</translation>
 <translation id="1343865611738742294">USB పరికరాలను యాక్సెస్ చేయడానికి Linux యాప్‌లకు అనుమతి ఇవ్వండి. USB పరికరాన్ని తీసివేసిన తర్వాత, దానిని Linux గుర్తుంచుకోదు.</translation>
 <translation id="1343920184519992513">మీరు ఆపివేసిన చోటు నుండి కొనసాగించండి, నిర్దిష్ట పేజీల సెట్‌ను తెరవండి</translation>
-<translation id="1344377983938103876"><ph name="URL" />‌ను తెరుస్తోంది...</translation>
 <translation id="134589511016534552">మీడియా ట్యాబ్‌లు కూడా తెరిచి ఉన్న ట్యాబ్‌ల విభాగంలో చూపబడతాయి</translation>
 <translation id="1346630054604077329">నిర్ధారించి, రీస్టార్ట్ చేయి</translation>
 <translation id="1346748346194534595">కుడి</translation>
@@ -1394,7 +1391,6 @@
 <translation id="2251809247798634662">కొత్త అజ్ఞాత విండో</translation>
 <translation id="2252017960592955005">వీక్షణ రక్షణ (బీటా)</translation>
 <translation id="225240747099314620">రక్షిత కంటెంట్ కోసం ఐడెంటిఫైయర్‌లను అనుమతించండి (కంప్యూటర్‌ను పునఃప్రారంభించాల్సి రావచ్చు)</translation>
-<translation id="2252617660166797081">పాస్‌వర్డ్‌ను ఆటోమేటిక్‌గా మార్చడం గురించి మరింత తెలుసుకోండి</translation>
 <translation id="2255077166240162850">వేరే డొమైన్ లేదా మోడ్‌కు ఈ పరికరం లాక్ చేయబడింది.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">ఇప్పుడే పునఃప్రారంభించు</translation>
@@ -1789,7 +1785,6 @@
 <translation id="2587922766792651800">సమయం ముగిసింది</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> నుండి పరికరాలు</translation>
 <translation id="25899519884572181">రీడర్ మోడ్ నుండి నిష్క్రమించండి</translation>
-<translation id="2591895621127187078">కొత్త పాస్‌వర్డ్‌ను ఎంచుకోవడానికి మీ ఈమెయిల్‌ను చెక్ చేయండి</translation>
 <translation id="2593499352046705383">ప్రారంభించడానికి ముందు, మీరు మీ డేటాను బ్యాకప్ చేశారని నిర్ధారించుకోండి. <ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేయడం వలన మీ హార్డ్ డ్రైవ్ ఓవర్‌రైట్ అవుతుంది. g.co/flex/InstallGuide లో మరింత తెలుసుకోండి.</translation>
 <translation id="2594999711683503743">Googleలో వెతకండి లేదా URLను టైప్ చేయండి</translation>
 <translation id="25957578727513093">ఇక్కడకు వేగంగా చేరుకోవడానికి, Google Password Managerకి షార్ట్‌కట్‌ని జోడించండి</translation>
@@ -2213,7 +2208,6 @@
 <translation id="2964245677645334031">సమీప షేరింగ్ విజిబిలిటీ</translation>
 <translation id="2966937470348689686">Android ప్రాధాన్యతలను నిర్వహించండి</translation>
 <translation id="2967926928600500959">ఈ నియమాలకు మ్యాచ్ అయ్యే URLలు నిర్దిష్ట బ్రౌజర్‌లో బలవంతంగా తెరవబడతాయి.</translation>
-<translation id="2972266986002580503"><ph name="GOOGLE_PASSWORD_MANAGER" />‌లో మీ పాస్‌వర్డ్‌లను ఎప్పుడైనా చెక్ చేసుకోండి.</translation>
 <translation id="2972581237482394796">&amp;పునరావృతం</translation>
 <translation id="2973324205039581528">సైట్‌ను మ్యూట్ చేయండి</translation>
 <translation id="2973537811036309675">సైడ్ ప్యానెల్</translation>
@@ -2512,7 +2506,6 @@
 <translation id="3277214528693754078">టెక్స్ట్ కర్సర్‌తో నావిగేట్ చేయండి (కేరెట్ బ్రౌజింగ్)</translation>
 <translation id="3277594800340743211">పెద్ద షాడో</translation>
 <translation id="3278001907972365362">మీ Google ఖాతా లేదా ఖాతాలను జాగ్రత్తగా గమనించాలి</translation>
-<translation id="3279030509356143465">చోరీకి గురైన పాస్‌వర్డ్ విజయవంతంగా మార్చబడింది</translation>
 <translation id="3279092821516760512">ఎంచుకున్న కాంటాక్ట్‌లు సమీపంలో ఉన్నప్పుడు వారు మీతో షేర్ చేయగలరు. మీరు అంగీకరించే వరకు బదిలీలు ప్రారంభం కావు.</translation>
 <translation id="3279230909244266691">ఈ ప్రాసెస్‌కు కొన్ని నిమిషాలు పట్టవచ్చు. వర్చ్యువల్ మెషీన్‌ను ప్రారంభిస్తోంది.</translation>
 <translation id="3280237271814976245">ఇలా సేవ్ &amp;చేయి...</translation>
@@ -2967,7 +2960,6 @@
 <translation id="370649949373421643">Wi-fiని ప్రారంభించు</translation>
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
 <translation id="3707163604290651814">ప్రస్తుతం <ph name="NAME" />గా సైన్ ఇన్ చేయబడి ఉన్నారు</translation>
-<translation id="3707414379011001517">మీ పాస్‌వర్డ్ మారలేదు. దీన్ని మార్చడానికి, మళ్లీ ట్రై చేయండి, అలాగే ఈ ట్యాబ్, సైడ్ ప్యానెల్‌ను తెరిచి ఉంచండి. <ph name="LINK_TEXT" /></translation>
 <translation id="3708295717182051206">క్యాప్షన్‌లు</translation>
 <translation id="3708684582558000260">డేటాను పంపడం లేదా అందుకోవడాన్ని ముగించడానికి మూసివేసిన సైట్‌లను అనుమతించకండి</translation>
 <translation id="3709244229496787112">డౌన్‌లోడ్ పూర్తి కావడానికి ముందే బ్రౌజర్ షట్‌డౌన్ చేయబడింది.</translation>
@@ -4481,7 +4473,6 @@
 <translation id="5130675701626084557">ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. దయచేసి తర్వాత మళ్లీ ట్రై చేయండి లేదా సహాయం కోసం క్యారియర్‌ను కాంటాక్ట్ చేయండి.</translation>
 <translation id="5131591206283983824">టచ్‌ప్యాడ్ కోసం ట్యాప్ చేసి లాగండి</translation>
 <translation id="5135533361271311778">బుక్‌మార్క్ అంశాన్ని సృష్టించలేకపోయాము.</translation>
-<translation id="5135828720964881054">పాస్‌వర్డ్‌ను ఆటోమేటిక్‌గా మార్చడం</translation>
 <translation id="5136343472380336530">పరికరాలు రెండూ అన్‌లాక్ చేయబడి ఉన్నాయని, ఒకదానికొకటి దగ్గరగా ఉన్నాయని, బ్లూటూత్ ఆన్ చేసి ఉందని నిర్ధారించుకోండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">ఈ అంశాన్ని తొలగించు</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> శోధన</translation>
@@ -5823,7 +5814,6 @@
 <translation id="6406303162637086258">బ్రౌజర్ పునఃప్రారంభాన్ని ప్రారంభించు</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6406708970972405507">సెట్టింగ్‌లు - <ph name="SECTION_TITLE" /></translation>
-<translation id="6407955178761087876">మీ పాస్‌వర్డ్‌ను మార్చడంలో Google Assistantను మీకు సహాయం చేయనివ్వండి</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> మరియు <ph name="WEBSITE_3" />లో ఉన్న మీ డేటాను చదవడం మరియు మార్చడం</translation>
 <translation id="6410257289063177456">చిత్రం ఫైళ్లు</translation>
 <translation id="6410328738210026208">ఛానెల్ మరియు పవర్‌వాష్‌ను మార్చు</translation>
@@ -6218,7 +6208,6 @@
 <translation id="6783036716881942511">ఈ పరికరాన్ని విస్మరించాలా?</translation>
 <translation id="6784523122863989144">ప్రొఫైల్ సపోర్ట్ చేస్తుంది</translation>
 <translation id="6785739405821760313">సేవ్ చేసిన డెస్క్‌లను చూస్తున్నారు. నావిగేట్ చేయడానికి Tabను నొక్కండి.</translation>
-<translation id="6785872064505734160">Chromeలో Google Assistant మీ కోసం వెబ్‌సైట్‌ల అంతటా చర్యలను పూర్తి చేయగలదు</translation>
 <translation id="6786747875388722282">ఎక్స్‌టెన్షన్‌లు</translation>
 <translation id="6787097042755590313">ఇతర ట్యాబ్</translation>
 <translation id="6787839852456839824">కీబోర్డ్ షార్ట్‌కట్‌లు</translation>
@@ -7256,7 +7245,6 @@
 <translation id="7753735457098489144">స్టోరేజ్ స్పేస్ లేనందున, ఇన్‌స్టాల్ చేయడం విఫలమైంది. స్పేస్‌ను ఖాళీ చేయడానికి, పరికర స్టోరేజ్ నుండి ఫైళ్లను తొలగించండి.</translation>
 <translation id="7754347746598978109">JavaScriptను ఉపయోగించడానికి అనుమతించబడలేదు</translation>
 <translation id="7754704193130578113">ప్రతి ఫైల్‌ను డౌన్‌లోడ్ చేసే ముందు ఎక్కడ సేవ్ చేయాలో అడుగు</translation>
-<translation id="7755134875397410803">టాస్క్‌లను పూర్తి చేయడంలో మీకు సహాయపడటానికి, మీరు Assistantను ఉపయోగించే సైట్‌ల URLలు, అలాగే వాటిలోని కంటెంట్‌లను, ఇంకా వీటితో పాటు మీరు Assistant ద్వారా సబ్మిట్ చేసే సమాచారాన్ని Google పొందుతుంది. ఈ సమాచారం మీ Google ఖాతాలో స్టోర్ చేయబడవచ్చు. మీరు Chrome సెట్టింగ్‌లలో Assistantను ఆఫ్ చేయవచ్చు. <ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">మీ తల్లి/తండ్రి దీన్ని మీ కోసం అన్‌బ్లాక్ చేయగలరు</translation>
 <translation id="7757592200364144203">పరికరం పేరు మార్చండి</translation>
 <translation id="7757739382819740102">సమీపంలోని కాంటాక్ట్‌లు మీతో షేర్ చేసుకోవచ్చు. ఆమోదం అవసరం.</translation>
@@ -8562,7 +8550,6 @@
 <translation id="8967427617812342790">పఠనా లిస్ట్‌కు జోడించు</translation>
 <translation id="8968527460726243404">ChromeOS సిస్టమ్ ఇమేజ్ రైటర్</translation>
 <translation id="8968766641738584599">కార్డ్‌ని సేవ్ చేయండి</translation>
-<translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>
 <translation id="89720367119469899">ఎస్కేప్</translation>
 <translation id="8972513834460200407">దయచేసి Google సర్వర్‌ల నుండి డౌన్‌లోడ్‌లను ఫైర్‌వాల్ బ్లాక్ చేయడం లేదని నిర్ధారించుకోవడానికి మీ నెట్‌వర్క్ నిర్వాహకుడిని సంప్రదించండి.</translation>
 <translation id="8973263196882835828">&amp;లైవ్ క్యాప్షన్‌ను ఎనేబుల్ చేయండి</translation>

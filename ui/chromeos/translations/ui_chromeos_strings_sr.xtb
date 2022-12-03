@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Добро дошли у Google диск!</translation>
 <translation id="1379911846207762492">Можете да омогућите да фајлови буду доступни офлајн када немате интернет везу.</translation>
 <translation id="1383876407941801731">Претражи</translation>
+<translation id="1388045380422025115">Сви типови</translation>
 <translation id="1395262318152388157">Клизач за тражење</translation>
 <translation id="1399511500114202393">Нема корисничког сертификата</translation>
 <translation id="1403008701842173542">Свуда</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">Неважећи унос подударања алтернативног назива субјекта</translation>
 <translation id="1838709767668011582">Google сајт</translation>
 <translation id="1853795129690976061">Овај директоријум се дели са Linux-ом</translation>
+<translation id="1859422890169495746">Овај Chromebook</translation>
 <translation id="1864756863218646478">Није могуће пронаћи датотеку.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, повежи</translation>
 <translation id="1920670151694390848">транслитерација малајалама</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">Конфигуриши мрежу</translation>
 <translation id="2325650632570794183">Овај тип датотеке није подржан. Посетите Chrome веб-продавницу и пронађите апликацију која може да отвара овај тип датотеке.</translation>
 <translation id="2326539130272988168">бугарски</translation>
+<translation id="2337715497728194187">Делите са виртуелном машином Bruschetta</translation>
 <translation id="23721837607121582">Преузмите профил за мобилне уређаје, <ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Пређи на приказ листе</translation>
 <translation id="2377590462528165447">Директоријуми (<ph name="NUMBER_OF_ITEMS" />) се деле са Linux-ом</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">Мрежа је одбила сертификат за потврду аутентичности</translation>
 <translation id="255937426064304553">међународна америчка</translation>
 <translation id="2563185590376525700">Жаба</translation>
+<translation id="2574327434504608656">1 фолдер се дели са виртуелном машином Bruschetta</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">орија</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, блокирао администратор, детаљи</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043">Активирајте мрежу <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">немачки (Немачка) са Neo 2 тастатуром</translation>
 <translation id="3414856743105198592">Форматирањем уклоњивих медија бришете све податке. Да ли желите да наставите?</translation>
+<translation id="3435143625481187092">Дозволите да Bruschetta приступа фајловима у фолдеру <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Време прављења</translation>
 <translation id="343907260260897561">Инстант фото-апарат</translation>
 <translation id="3455931012307786678">естонски</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892">Премештених ставки: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Одмах испразни отпад</translation>
 <translation id="4179621117429069925">Ова ставка је у отпаду</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> фолдера се дели са виртуелном машином Bruschetta</translation>
 <translation id="4186579485882418952">Омогући офлајн</translation>
 <translation id="4193154014135846272">Google документ</translation>
 <translation id="4197674956721858839">Избор за додавање у zip датотеку</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">чешки са Qwerty тастатуром</translation>
 <translation id="4656777537938206294">Учините фајлове доступним офлајн</translation>
 <translation id="4658782175094886150">Особа на снегу</translation>
+<translation id="466782788172479199">Дозволите да Bruschetta приступа фајловима на Google диску. Промене ће се синхронизовати са другим уређајима.</translation>
 <translation id="4669606053856530811">Чланови из „<ph name="SOURCE_NAME" />“ ће изгубити приступ ако се ове ставке не деле са њима.</translation>
 <translation id="467809019005607715">Google презентације</translation>
 <translation id="4690246192099372265">шведски</translation>
@@ -523,6 +530,7 @@
 <translation id="5330145655348521461">Ове датотеке су отворене на другом профилу. Пређите на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) да бисте их погледали.</translation>
 <translation id="5330512191124428349">Преузми податке</translation>
 <translation id="5337538975554986899">Приступ фајлу преко свих URL-ова осим <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">Управљајте дељењем са виртуелном машином Bruschetta</translation>
 <translation id="535792325654997756">Особа са мачкама</translation>
 <translation id="5358764674931277">Брзина кадрова</translation>
 <translation id="5363339716524495120">Језик уноса је кинески</translation>
@@ -568,6 +576,7 @@
 <translation id="5700087501958648444">Информације о аудио датотеци</translation>
 <translation id="5720028165859493293">Фајл <ph name="FILE_NAME" /> је премештен у отпад</translation>
 <translation id="5724172041621205163">тајски са паташоте тастатуром</translation>
+<translation id="57383366388012121">Прошлог месеца</translation>
 <translation id="5756666464756035725">Мађарска QWERTY</translation>
 <translation id="5763377084591234761">немачки (Швајцарска)</translation>
 <translation id="5769519078756170258">Хост или домен за изузимање</translation>
@@ -677,6 +686,7 @@
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6732801395666424405">Сертификати нису отпремљени</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Делите фолдер са виртуелном машином Bruschetta</translation>
 <translation id="6751256176799620176">Изабран је 1 директоријум</translation>
 <translation id="6755827872271341378">Chrome OS Flex уређај</translation>
 <translation id="6790428901817661496">Пусти</translation>
@@ -705,6 +715,7 @@
 <translation id="6935521024859866267">Наопачке</translation>
 <translation id="6943836128787782965">HTTP get није успео</translation>
 <translation id="6949408524333579394">транслитерација српског</translation>
+<translation id="69548399407432279">Прошле године</translation>
 <translation id="6960565108681981554">Није активирано. Обратите се мобилном оператеру.</translation>
 <translation id="696203921837389374">Омогући синхронизацију преко мобилне везе за пренос података</translation>
 <translation id="6965382102122355670">Потврди</translation>
@@ -848,6 +859,7 @@
 <translation id="8042602468072383151">Аудио датотека <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">румунски</translation>
 <translation id="8049184478152619004">Унесите личну шифру за откључавање (PUK)</translation>
+<translation id="8055538340801153769">Овај фолдер</translation>
 <translation id="807187749540895545">Издваја се <ph name="FILE_NAME" />...</translation>
 <translation id="8087576439476816834">Преузмите, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Дељено са мном</translation>

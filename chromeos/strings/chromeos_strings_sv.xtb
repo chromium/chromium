@@ -246,6 +246,7 @@
 <translation id="3413935475507503304">Klicka på Nästa om du vill fortsätta med uppdateringen.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
+<translation id="3435896845095436175">Aktivera</translation>
 <translation id="3456078764689556234">Sida <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" /> har skrivits ut.</translation>
 <translation id="345898999683440380">Skannar sida <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % har slutförts.</translation>
 <translation id="3459509316159669723">Skriva ut</translation>
@@ -768,6 +769,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8372477600026034341">Ytterligare värdar</translation>
 <translation id="8395584934117017006">Denna <ph name="DEVICE_TYPE" /> är företagshanterad</translation>
 <translation id="8398927464629426868">Hur fort enheten laddas eller laddas ur för närvarande</translation>
+<translation id="8410244574650205435">Identifierades automatiskt</translation>
 <translation id="8420955526972171689">Kör tester och felsök vid problem med maskinvara</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8431300646573772016">Nyheter i Chrome OS</translation>

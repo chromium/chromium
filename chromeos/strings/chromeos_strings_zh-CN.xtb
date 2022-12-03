@@ -246,6 +246,7 @@
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">安全</translation>
+<translation id="3435896845095436175">启用</translation>
 <translation id="3456078764689556234">已打印 <ph name="PRINTED_PAGES" /> 页（共 <ph name="TOTAL_PAGES" /> 页）。</translation>
 <translation id="345898999683440380">正在扫描第 <ph name="PAGE_NUM" /> 页。已完成 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">打印</translation>

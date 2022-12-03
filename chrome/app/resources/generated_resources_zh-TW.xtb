@@ -55,7 +55,6 @@
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1049795001945932310">語言設定(&amp;L)</translation>
 <translation id="1050693411695664090">不佳</translation>
-<translation id="1053831338284186718">請檢查該網站並嘗試變更密碼。</translation>
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{請在 1 週內更新 <ph name="DEVICE_TYPE" />}other{請在 {NUM_WEEKS} 週內更新 <ph name="DEVICE_TYPE" />}}</translation>
@@ -312,7 +311,6 @@
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
 <translation id="1285484354230578868">將資料儲存在 Google 雲端硬碟帳戶中</translation>
 <translation id="1285625592773741684">目前的數據用量設定是使用行動數據</translation>
-<translation id="1287512808202289801">Google 助理已停止</translation>
 <translation id="1288037062697528143">夜燈功能將於日落時自動開啟</translation>
 <translation id="1288300545283011870">語音屬性</translation>
 <translation id="1289619947962767206">系統已不支援此選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
@@ -366,7 +364,6 @@
 <translation id="1340527397989195812">使用「檔案」應用程式備份裝置上的媒體。</translation>
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住這部 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
-<translation id="1344377983938103876">正在開啟「<ph name="URL" />」...</translation>
 <translation id="134589511016534552">媒體分頁也會顯示在「開啟的分頁」部分</translation>
 <translation id="1346630054604077329">確認並重新啟動</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -1383,7 +1380,6 @@
 <translation id="2251809247798634662">新增無痕式視窗</translation>
 <translation id="2252017960592955005">檢視防護 (Beta 版)</translation>
 <translation id="225240747099314620">允許受保護內容的 ID (可能需要重新啟動電腦)</translation>
-<translation id="2252617660166797081">進一步瞭解自動密碼變更</translation>
 <translation id="2255077166240162850">這個裝置已鎖定使用其他網域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 時間戳記</translation>
 <translation id="2256115617011615191">立即重新啟動</translation>
@@ -1775,7 +1771,6 @@
 <translation id="2587922766792651800">作業逾時</translation>
 <translation id="2588636910004461974">來自 <ph name="VENDOR_NAME" /> 的裝置</translation>
 <translation id="25899519884572181">結束閱讀器模式</translation>
-<translation id="2591895621127187078">請查看電子郵件並選擇新密碼</translation>
 <translation id="2593499352046705383">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。如要瞭解詳情，請前往 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">搜尋 Google 或輸入網址</translation>
 <translation id="25957578727513093">只要新增 Google 密碼管理工具捷徑，即可更快地使用這項服務</translation>
@@ -2199,7 +2194,6 @@
 <translation id="2964245677645334031">鄰近分享瀏覽權限</translation>
 <translation id="2966937470348689686">管理 Android 偏好設定</translation>
 <translation id="2967926928600500959">符合這些規則的網址會在特定瀏覽器中強制開啟。</translation>
-<translation id="2972266986002580503">你隨時可以在 <ph name="GOOGLE_PASSWORD_MANAGER" />中檢查密碼。</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">關閉網站音訊</translation>
 <translation id="2973537811036309675">側邊面板</translation>
@@ -2498,7 +2492,6 @@
 <translation id="3277214528693754078">使用文字游標進行瀏覽 (鍵盤瀏覽)</translation>
 <translation id="3277594800340743211">大型陰影</translation>
 <translation id="3278001907972365362">你的 Google 帳戶有狀況需處理</translation>
-<translation id="3279030509356143465">已成功變更遭外洩的密碼</translation>
 <translation id="3279092821516760512">指定聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>
 <translation id="3279230909244266691">正在啟動虛擬機器，過程可能需要幾分鐘。</translation>
 <translation id="3280237271814976245">另存新檔(&amp;A)...</translation>
@@ -2953,7 +2946,6 @@
 <translation id="370649949373421643">啟用 Wi-Fi</translation>
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3707163604290651814">目前登入帳戶：<ph name="NAME" /></translation>
-<translation id="3707414379011001517">你的密碼並未變更。如要變更密碼，請讓這個分頁和側邊面板保持開啟，並再試一次。<ph name="LINK_TEXT" /></translation>
 <translation id="3708295717182051206">隱藏式輔助字幕</translation>
 <translation id="3708684582558000260">禁止已關閉的網站完成資料收發作業</translation>
 <translation id="3709244229496787112">瀏覽器在下載尚未完成時遭到關閉。</translation>
@@ -4465,7 +4457,6 @@
 <translation id="5130675701626084557">無法載入設定檔。請稍後再試，或向電信業者尋求協助。</translation>
 <translation id="5131591206283983824">觸控板輕觸拖曳</translation>
 <translation id="5135533361271311778">無法建立書籤項目。</translation>
-<translation id="5135828720964881054">自動密碼變更</translation>
 <translation id="5136343472380336530">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">刪除此項目</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />，「<ph name="DEFAULT_SEARCH_ENGINE_NAME" />」搜尋</translation>
@@ -5804,7 +5795,6 @@
 <translation id="6406303162637086258">模擬瀏覽器重新啟動</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
-<translation id="6407955178761087876">讓 Google 助理協助你變更密碼</translation>
 <translation id="6408118934673775994">讀取及變更你在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 網站上的資料</translation>
 <translation id="6410257289063177456">圖片檔</translation>
 <translation id="6410328738210026208">變更版本並執行 Powerwash</translation>
@@ -6199,7 +6189,6 @@
 <translation id="6783036716881942511">要刪除此裝置嗎？</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
 <translation id="6785739405821760313">正在查看已儲存的桌面，按下 Tab 鍵即可瀏覽。</translation>
-<translation id="6785872064505734160">Chrome 版 Google 助理可協助你在不同的網站上完成動作</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787097042755590313">其他分頁</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
@@ -7237,7 +7226,6 @@
 <translation id="7753735457098489144">儲存空間不足，無法安裝。如要釋出空間，請刪除裝置儲存空間中的檔案。</translation>
 <translation id="7754347746598978109">不得使用 JavaScript</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
-<translation id="7755134875397410803">為協助你完成工作，當你在網站上使用 Google 助理時，系統會將該網站的網址和內容，連同你透過 Google 助理提交的資訊，一併傳送給 Google。這類資訊可能會儲存在你的 Google 帳戶中。你可以在 Chrome 設定中停用 Google 助理。<ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">你的家長可以為你解除封鎖這個網站</translation>
 <translation id="7757592200364144203">變更裝置名稱</translation>
 <translation id="7757739382819740102">附近的聯絡人都能與你分享內容。必須經過核准。</translation>
@@ -8547,7 +8535,6 @@
 <translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8968527460726243404">Chrome 作業系統映像檔寫入工具</translation>
 <translation id="8968766641738584599">儲存卡片</translation>
-<translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">請與網路管理員聯絡，確認防火牆並未封鎖從 Google 伺服器下載的內容。</translation>
 <translation id="8973263196882835828">啟用即時字幕 (&amp;E)</translation>

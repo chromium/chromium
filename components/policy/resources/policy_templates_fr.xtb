@@ -335,6 +335,13 @@ La disponibilité des extensions est toujours contrôlée par d'autres règles.<
 <translation id="1317658068839330898">Ne pas autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
 <translation id="1327466551276625742">Activer l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="1330145147221172764">Activer le clavier à l'écran</translation>
+<translation id="1330957570904024655">Si cette règle est activée ou qu'elle n'est pas configurée, la navigation sécurisée analyse les fichiers téléchargés, même s'ils proviennent d'une source fiable.
+
+Si cette règle est désactivée, la navigation sécurisée n'analyse pas les fichiers téléchargés qui proviennent d'une source fiable.
+
+Ces restrictions concernent les téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée ni à son enregistrement au format PDF depuis les options d'impression.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="13356285923490863">Nom de stratégie</translation>
 <translation id="1338603603553894503">Indique si l'outil de sélection du profil est activé, désactivé ou forcé au démarrage du navigateur.
 

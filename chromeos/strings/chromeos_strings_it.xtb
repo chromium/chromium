@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
 <translation id="2407209115954268704">Stato di blocco della SIM</translation>
+<translation id="241419523391571119">Riapri il coperchio per eseguire il test</translation>
 <translation id="2414886740292270097">Scuro</translation>
 <translation id="2418150275289244458">Apri nelle impostazioni</translation>
 <translation id="2421798028054665193">Immagine <ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="2902312830803030883">Altre azioni</translation>
 <translation id="2926057806159140518">Inserisci il tuo nome utente e la password o scansiona il codice QR</translation>
+<translation id="2940811910881150316">Impossibile testare il dispositivo. Riapri il coperchio per testarlo.</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="3017079585324758401">Sfondo</translation>
@@ -246,6 +248,7 @@
 <translation id="3413935475507503304">Per continuare con l'aggiornamento, fai clic su Avanti.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
+<translation id="3435896845095436175">Abilita</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> pagina stampata su <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Scansione della pagina <ph name="PAGE_NUM" /> in corso. Completamento: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Stampa</translation>
@@ -284,6 +287,7 @@
 <translation id="3820172043799983114">PIN non valido.</translation>
 <translation id="3824259034819781947">Allega file</translation>
 <translation id="3838338534323494292">Nuova password</translation>
+<translation id="3845880861638660475">Premi <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> per chiudere la finestra di dialogo.</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3862598938296403232">La descrizione è obbligatoria</translation>
@@ -291,6 +295,7 @@
 <translation id="3866249974567520381">Descrizione</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
 <translation id="3885327323343477505">Cambia salvaschermo</translation>
+<translation id="391412459402535266">Impossibile testare il dispositivo. Passa alla modalità laptop per testarlo.</translation>
 <translation id="3923184630988645767">Utilizzo dei dati</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
@@ -303,6 +308,7 @@
 <translation id="39823212440917567">I processi di stampa risalenti a oltre <ph name="NUMBER_OF_DAYS" /> giorni fa verranno rimossi</translation>
 <translation id="3993704782688964914">Dispositivo (<ph name="DEVICE_NAME" />) aggiornato</translation>
 <translation id="4003384961948020559">Operazione non riuscita - Vassoio di uscita pieno</translation>
+<translation id="4021031199988160623">Passa alla modalità laptop per eseguire il test</translation>
 <translation id="4034824040120875894">Stampante</translation>
 <translation id="4044093238444069296">Impossibile contattare il gateway</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>

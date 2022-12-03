@@ -55,7 +55,6 @@
 <translation id="1049743911850919806">无痕</translation>
 <translation id="1049795001945932310">语言设置(&amp;L)</translation>
 <translation id="1050693411695664090">较差</translation>
-<translation id="1053831338284186718">请检查网站并尝试更改您的密码。</translation>
 <translation id="1054048317165655285">在您的手机上完成设置</translation>
 <translation id="1054153489933238809">在新标签页中打开原始图片(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{请在 1 周内更新 <ph name="DEVICE_TYPE" />}other{请在 {NUM_WEEKS} 周内更新 <ph name="DEVICE_TYPE" />}}</translation>
@@ -312,7 +311,6 @@
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1285484354230578868">将数据存储在您的 Google 云端硬盘帐号中</translation>
 <translation id="1285625592773741684">当前的流量使用设置是“移动数据”</translation>
-<translation id="1287512808202289801">Google 助理已停止运行</translation>
 <translation id="1288037062697528143">护眼模式将于日落时自动开启</translation>
 <translation id="1288300545283011870">语音属性</translation>
 <translation id="1289619947962767206">此选项不再受支持。若要演示某个标签页，请使用 <ph name="GOOGLE_MEET" />。</translation>
@@ -366,7 +364,6 @@
 <translation id="1340527397989195812">使用“文件”应用备份设备上的媒体。</translation>
 <translation id="1343865611738742294">授权 Linux 应用访问 USB 设备。Linux 不会记住已被拔出的 USB 设备。</translation>
 <translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
-<translation id="1344377983938103876">正在打开 <ph name="URL" />…</translation>
 <translation id="134589511016534552">媒体标签页也会显示在“打开的标签页”部分中</translation>
 <translation id="1346630054604077329">确认并重启</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -1376,7 +1373,6 @@
 <translation id="2251809247798634662">打开新的无痕式窗口</translation>
 <translation id="2252017960592955005">防查看（Beta 版）</translation>
 <translation id="225240747099314620">允许将标识符用于受保护内容（可能需要重新启动计算机）</translation>
-<translation id="2252617660166797081">详细了解自动更改密码</translation>
 <translation id="2255077166240162850">此设备已锁定到其他网域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 时间戳</translation>
 <translation id="2256115617011615191">立即重新启动</translation>
@@ -1767,7 +1763,6 @@
 <translation id="2587922766792651800">已超时</translation>
 <translation id="2588636910004461974">来自<ph name="VENDOR_NAME" />的设备</translation>
 <translation id="25899519884572181">退出阅读器模式</translation>
-<translation id="2591895621127187078">请查看您的电子邮件以设置新密码</translation>
 <translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">使用 Google 执行搜索，或者输入网址</translation>
 <translation id="25957578727513093">若要更快速地访问 Google 密码管理工具，请为它添加快捷方式</translation>
@@ -2191,7 +2186,6 @@
 <translation id="2964245677645334031">“附近分享”功能的设备可见范围</translation>
 <translation id="2966937470348689686">管理 Android 偏好设置</translation>
 <translation id="2967926928600500959">与这些规则匹配的网址将被强制在一款特定浏览器中打开。</translation>
-<translation id="2972266986002580503">您随时可在 <ph name="GOOGLE_PASSWORD_MANAGER" />中检查密码。</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">将网站静音</translation>
 <translation id="2973537811036309675">侧边栏</translation>
@@ -2490,7 +2484,6 @@
 <translation id="3277214528693754078">使用文本光标（光标浏览模式）进行导航</translation>
 <translation id="3277594800340743211">大阴影</translation>
 <translation id="3278001907972365362">您需要注意自己的 Google 帐号</translation>
-<translation id="3279030509356143465">成功更改了这个已泄露的密码</translation>
 <translation id="3279092821516760512">附近的所选联系人可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="3279230909244266691">此过程可能需要几分钟的时间。正在启动虚拟机。</translation>
 <translation id="3280237271814976245">另存为(&amp;A)...</translation>
@@ -2945,7 +2938,6 @@
 <translation id="370649949373421643">启用 Wi-Fi</translation>
 <translation id="370665806235115550">正在加载...</translation>
 <translation id="3707163604290651814">目前登录的帐号是 <ph name="NAME" /></translation>
-<translation id="3707414379011001517">您的密码未更改。若要更改，请重试并让此标签页和侧边栏保持打开状态。<ph name="LINK_TEXT" /></translation>
 <translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">不允许已关闭的网站完成数据收发操作</translation>
 <translation id="3709244229496787112">浏览器已在下载完成前关闭。</translation>
@@ -4455,7 +4447,6 @@
 <translation id="5130675701626084557">无法下载配置文件。请稍后再试，或向运营商求助。</translation>
 <translation id="5131591206283983824">触控板点按拖动</translation>
 <translation id="5135533361271311778">无法创建书签项。</translation>
-<translation id="5135828720964881054">自动更改密码</translation>
 <translation id="5136343472380336530">请确保这两部设备均已解锁、相距很近且均已开启蓝牙。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">删除此项</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />，用<ph name="DEFAULT_SEARCH_ENGINE_NAME" />执行搜索</translation>
@@ -5794,7 +5785,6 @@
 <translation id="6406303162637086258">模拟浏览器重启</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6406708970972405507">设置 - <ph name="SECTION_TITLE" /></translation>
-<translation id="6407955178761087876">让 Google 助理帮您更改密码</translation>
 <translation id="6408118934673775994">读取和更改您在<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />和<ph name="WEBSITE_3" />上的数据</translation>
 <translation id="6410257289063177456">图片文件</translation>
 <translation id="6410328738210026208">变更版本并执行 Powerwash</translation>
@@ -6189,7 +6179,6 @@
 <translation id="6783036716881942511">取消保存此设备？</translation>
 <translation id="6784523122863989144">个人资料必须受支持</translation>
 <translation id="6785739405821760313">正在查看已保存的桌面。按 Tab 键即可导航。</translation>
-<translation id="6785872064505734160">Chrome 中的 Google 助理可帮您在各网站上完成所需操作</translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6787097042755590313">另一标签页</translation>
 <translation id="6787839852456839824">键盘快捷键</translation>
@@ -7227,7 +7216,6 @@
 <translation id="7753735457098489144">存储空间不足，安装失败。如需释放空间，请从设备存储空间中删除文件。</translation>
 <translation id="7754347746598978109">不允许使用 JavaScript</translation>
 <translation id="7754704193130578113">下载前询问每个文件的保存位置</translation>
-<translation id="7755134875397410803">为了帮助您执行各种操作，Google 将会收到您使用 Google 助理时所在网站的网址和内容，以及您通过 Google 助理提交的信息。这些信息可能会存储在您的 Google 帐号中。您可在 Chrome 的“设置”中停用 Google 助理。<ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">您的父亲/母亲可为您取消屏蔽此网站</translation>
 <translation id="7757592200364144203">更改设备名称</translation>
 <translation id="7757739382819740102">附近的联系人可与您分享内容。必须经过批准。</translation>
@@ -8537,7 +8525,6 @@
 <translation id="8967427617812342790">添加到阅读清单</translation>
 <translation id="8968527460726243404">Chrome 操作系统映像写入工具</translation>
 <translation id="8968766641738584599">保存卡片</translation>
-<translation id="8970887620466824814">出了点问题。</translation>
 <translation id="89720367119469899">转义</translation>
 <translation id="8972513834460200407">请与您的网络管理员联系，确保防火墙没有阻止系统从 Google 服务器下载内容。</translation>
 <translation id="8973263196882835828">启用实时字幕(&amp;E)</translation>

@@ -55,7 +55,6 @@
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="1049795001945932310">言語設定(&amp;L)</translation>
 <translation id="1050693411695664090">悪い</translation>
-<translation id="1053831338284186718">サイトを確認し、パスワードを変更してみてください。</translation>
 <translation id="1054048317165655285">スマートフォンの設定を完了する</translation>
 <translation id="1054153489933238809">元の画像を新しいタブで開く(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 週間以内に <ph name="DEVICE_TYPE" />を更新してください}other{{NUM_WEEKS} 週間以内に <ph name="DEVICE_TYPE" />を更新してください}}</translation>
@@ -312,7 +311,6 @@
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
 <translation id="1285484354230578868">Google ドライブ アカウントでのデータの保存</translation>
 <translation id="1285625592773741684">現在のデータ使用設定はモバイルデータです</translation>
-<translation id="1287512808202289801">Google アシスタントは停止しました</translation>
 <translation id="1288037062697528143">夜間モードは日の入り時刻に自動的にオンになります</translation>
 <translation id="1288300545283011870">読み上げのプロパティ</translation>
 <translation id="1289619947962767206">このオプションのサポートは終了しました。タブを表示するには、<ph name="GOOGLE_MEET" /> を使用してください。</translation>
@@ -366,7 +364,6 @@
 <translation id="1340527397989195812">ファイルアプリを使用してデバイスからメディアをバックアップします。</translation>
 <translation id="1343865611738742294">Linux アプリに USB デバイスへのアクセスを許可します。USB デバイスを取り外した後は、Linux にデバイスのデータは残りません。</translation>
 <translation id="1343920184519992513">前回中断したところから再開して、特定のページを開く</translation>
-<translation id="1344377983938103876"><ph name="URL" /> を開いています...</translation>
 <translation id="134589511016534552">メディアタブは [開いているタブ] セクションにも表示されます</translation>
 <translation id="1346630054604077329">確定して再起動</translation>
 <translation id="1346748346194534595">右</translation>
@@ -1380,7 +1377,6 @@
 <translation id="2251809247798634662">新しいシークレット ウィンドウ</translation>
 <translation id="2252017960592955005">のぞき見防止（ベータ版）</translation>
 <translation id="225240747099314620">保護されたコンテンツの ID を許可する（パソコンの再起動が必要になる場合があります）</translation>
-<translation id="2252617660166797081">自動パスワード変更の詳細</translation>
 <translation id="2255077166240162850">このデバイスは別のドメインまたはモードにロックされています。</translation>
 <translation id="2255317897038918278">Microsoft タイム スタンプ</translation>
 <translation id="2256115617011615191">今すぐ再起動</translation>
@@ -1769,7 +1765,6 @@
 <translation id="2587922766792651800">タイムアウトしました</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> のデバイス</translation>
 <translation id="25899519884572181">リーダーモードを終了</translation>
-<translation id="2591895621127187078">メールを確認し、新しいパスワードを選択してください</translation>
 <translation id="2593499352046705383">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/flex/InstallGuide をご覧ください。</translation>
 <translation id="2594999711683503743">Google で検索、または URL を入力</translation>
 <translation id="25957578727513093">このページにすばやくアクセスするには、Google パスワード マネージャーにショートカットを追加してください</translation>
@@ -2193,7 +2188,6 @@
 <translation id="2964245677645334031">ニアバイシェアの検出設定</translation>
 <translation id="2966937470348689686">Android 設定を管理</translation>
 <translation id="2967926928600500959">これらのルールに一致する URL は、特定のブラウザで強制的に開かれます。</translation>
-<translation id="2972266986002580503">パスワードは <ph name="GOOGLE_PASSWORD_MANAGER" /> でいつでも確認できます。</translation>
 <translation id="2972581237482394796">やり直し(&amp;R)</translation>
 <translation id="2973324205039581528">サイトをミュート</translation>
 <translation id="2973537811036309675">サイドパネル</translation>
@@ -2492,7 +2486,6 @@
 <translation id="3277214528693754078">テキスト カーソルを使って移動する（カーソル ブラウジング）</translation>
 <translation id="3277594800340743211">大きいシャドウ</translation>
 <translation id="3278001907972365362">お使いの Google アカウントは対応が必要です</translation>
-<translation id="3279030509356143465">不正使用されたパスワードを変更しました</translation>
 <translation id="3279092821516760512">近くにいる選択した連絡先が共有できます。許可するまで転送は行われません。</translation>
 <translation id="3279230909244266691">この処理には数分かかることがあります。仮想マシンを起動します。</translation>
 <translation id="3280237271814976245">名前を付けて保存(&amp;A)...</translation>
@@ -2946,7 +2939,6 @@
 <translation id="370649949373421643">Wi-Fi を有効にする</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3707163604290651814">現在、<ph name="NAME" /> としてログインしています</translation>
-<translation id="3707414379011001517">パスワードは変更されませんでした。変更するには、このタブとサイドパネルを開いたまま、もう一度お試しください。<ph name="LINK_TEXT" /></translation>
 <translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">閉じたサイトにデータの送受信の完了を許可しない</translation>
 <translation id="3709244229496787112">ダウンロードの完了前に、ブラウザがシャットダウンされました。</translation>
@@ -4458,7 +4450,6 @@
 <translation id="5130675701626084557">プロファイルをダウンロードできませんでした。しばらくしてからもう一度試すか、携帯通信会社にお問い合わせください。</translation>
 <translation id="5131591206283983824">タッチパッドのタップによるドラッグ</translation>
 <translation id="5135533361271311778">ブックマークの項目を作成できませんでした。</translation>
-<translation id="5135828720964881054">自動パスワード変更</translation>
 <translation id="5136343472380336530">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">このアイテムを削除</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />、<ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 検索</translation>
@@ -5798,7 +5789,6 @@
 <translation id="6406303162637086258">ブラウザ再起動のシミュレート</translation>
 <translation id="6406506848690869874">同期</translation>
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
-<translation id="6407955178761087876">Google アシスタントがパスワードの変更をサポートします</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 上にある自分のデータの読み取りと変更</translation>
 <translation id="6410257289063177456">画像ファイル</translation>
 <translation id="6410328738210026208">チャンネルを変更して Powerwash</translation>
@@ -6191,7 +6181,6 @@
 <translation id="6783036716881942511">このデバイスを削除しますか？</translation>
 <translation id="6784523122863989144">プロファイルはサポートされています</translation>
 <translation id="6785739405821760313">保存したデスクを表示しています。Tab キーを押して移動できます。</translation>
-<translation id="6785872064505734160">Chrome の Google アシスタントは、ユーザーに代わってウェブサイトでの操作を完了できます</translation>
 <translation id="6786747875388722282">拡張機能</translation>
 <translation id="6787097042755590313">その他のタブ</translation>
 <translation id="6787839852456839824">キーボード ショートカット</translation>
@@ -7227,7 +7216,6 @@
 <translation id="7753735457098489144">ストレージの空き容量が不足しているため、インストールできませんでした。空き容量を確保するために、デバイスのストレージからファイルを削除してください。</translation>
 <translation id="7754347746598978109">JavaScript の使用を許可しないサイト</translation>
 <translation id="7754704193130578113">ダウンロード前に各ファイルの保存場所を確認する</translation>
-<translation id="7755134875397410803">タスクを完了するため、アシスタントを使用したサイトの URL とコンテンツ、およびアシスタントで送信した情報が Google に送られます。この情報は、Google アカウントに保存される可能性があります。アシスタントは、Chrome の設定で無効にできます。<ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">ブロックの解除は保護者が行うことができます</translation>
 <translation id="7757592200364144203">デバイス名の変更</translation>
 <translation id="7757739382819740102">近くにいる連絡先のユーザーが共有できます。承認が必要です。</translation>
@@ -8537,7 +8525,6 @@
 <translation id="8967427617812342790">リーディング リストに追加</translation>
 <translation id="8968527460726243404">ChromeOS システム イメージ ライター</translation>
 <translation id="8968766641738584599">カードを保存</translation>
-<translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">ファイアウォールが Google のサーバーからのダウンロードをブロックしていないかどうかをネットワーク管理者に確認してください。</translation>
 <translation id="8973263196882835828">自動字幕起こしをオンにする(&amp;E)</translation>
