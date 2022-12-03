@@ -16,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -32,7 +31,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
@@ -40,7 +38,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/permissions/api_permission.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/image/image_skia.h"
@@ -497,12 +494,6 @@ ExtensionActionViewController::GetIconImageSourceForTesting(
     content::WebContents* web_contents,
     const gfx::Size& size) {
   return GetIconImageSource(web_contents, size);
-}
-
-bool ExtensionActionViewController::HasBeenBlockedForTesting(
-    content::WebContents* web_contents) const {
-  return extensions::SitePermissionsHelper(browser_->profile())
-      .HasBeenBlocked(*extension(), web_contents);
 }
 
 ExtensionActionViewController*

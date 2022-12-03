@@ -118,7 +118,6 @@ class ExtensionActionViewController
   std::unique_ptr<IconWithBadgeImageSource> GetIconImageSourceForTesting(
       content::WebContents* web_contents,
       const gfx::Size& size);
-  bool HasBeenBlockedForTesting(content::WebContents* web_contents) const;
 
  private:
   // New instances should be instantiated with Create().
