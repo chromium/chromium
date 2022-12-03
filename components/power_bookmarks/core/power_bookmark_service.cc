@@ -15,6 +15,7 @@
 #include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
+#include "components/sync/protocol/power_bookmark_specifics.pb.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -43,16 +44,17 @@ PowerBookmarkService::~PowerBookmarkService() {
   backend_task_runner_ = nullptr;
 }
 
-void PowerBookmarkService::GetPowersForURL(const GURL& url,
-                                           const PowerType& power_type,
-                                           PowersCallback callback) {
+void PowerBookmarkService::GetPowersForURL(
+    const GURL& url,
+    const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
+    PowersCallback callback) {
   backend_.AsyncCall(&PowerBookmarkBackend::GetPowersForURL)
       .WithArgs(url, power_type)
       .Then(std::move(callback));
 }
 
 void PowerBookmarkService::GetPowerOverviewsForType(
-    const PowerType& power_type,
+    const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
     PowerOverviewsCallback callback) {
   backend_.AsyncCall(&PowerBookmarkBackend::GetPowerOverviewsForType)
       .WithArgs(power_type)
@@ -102,9 +104,10 @@ void PowerBookmarkService::DeletePower(const base::GUID& guid,
                            std::move(callback)));
 }
 
-void PowerBookmarkService::DeletePowersForURL(const GURL& url,
-                                              const PowerType& power_type,
-                                              SuccessCallback callback) {
+void PowerBookmarkService::DeletePowersForURL(
+    const GURL& url,
+    const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
+    SuccessCallback callback) {
   backend_.AsyncCall(&PowerBookmarkBackend::DeletePowersForURL)
       .WithArgs(url, power_type)
       .Then(base::BindOnce(&PowerBookmarkService::NotifyPowersChanged,

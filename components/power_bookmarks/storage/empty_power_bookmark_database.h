@@ -29,16 +29,17 @@ class EmptyPowerBookmarkDatabase : public PowerBookmarkDatabase {
   bool IsOpen() override;
   std::vector<std::unique_ptr<Power>> GetPowersForURL(
       const GURL& url,
-      const PowerType& power_type) override;
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
   std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForType(
-      const PowerType& power_type) override;
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
   std::vector<std::unique_ptr<Power>> GetPowersForSearchParams(
       const SearchParams& search_params) override;
   bool CreatePower(std::unique_ptr<Power> power) override;
   bool UpdatePower(std::unique_ptr<Power> power) override;
   bool DeletePower(const base::GUID& guid) override;
-  bool DeletePowersForURL(const GURL& url,
-                          const PowerType& power_type) override;
+  bool DeletePowersForURL(
+      const GURL& url,
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
 };
 
 }  // namespace power_bookmarks

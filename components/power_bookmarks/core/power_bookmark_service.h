@@ -15,7 +15,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
+#include "components/sync/protocol/power_bookmark_specifics.pb.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -62,14 +62,16 @@ class PowerBookmarkService : public KeyedService,
   // Returns a vector of Powers for the given `url` through the given
   // `callback`. Use `power_type` to restrict which type is returned or use
   // POWER_TYPE_UNSPECIFIED to return everything.
-  void GetPowersForURL(const GURL& url,
-                       const PowerType& power_type,
-                       PowersCallback callback);
+  void GetPowersForURL(
+      const GURL& url,
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
+      PowersCallback callback);
 
   // Returns a vector of PowerOverviews for the given `power_type` through the
   // given `callback`.
-  void GetPowerOverviewsForType(const PowerType& power_type,
-                                PowerOverviewsCallback callback);
+  void GetPowerOverviewsForType(
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
+      PowerOverviewsCallback callback);
 
   // Returns a vector of Powers matching the given `search_params`. The results
   // are ordered by the url they're associated with.
@@ -93,9 +95,10 @@ class PowerBookmarkService : public KeyedService,
   // Delete all powers for the given `url`. Success of the operation is
   // returned through the given `callback`. Use `power_type` to restrict which
   // type is deleted or use POWER_TYPE_UNSPECIFIED to delete everything.
-  void DeletePowersForURL(const GURL& url,
-                          const PowerType& power_type,
-                          SuccessCallback callback);
+  void DeletePowersForURL(
+      const GURL& url,
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
+      SuccessCallback callback);
 
   // Captures storage changes to forward along to observers. Returns the
   // result of the call to `callback` and notifies observers after.

@@ -32,11 +32,11 @@ class PowerBookmarkDatabase {
   // everything.
   virtual std::vector<std::unique_ptr<Power>> GetPowersForURL(
       const GURL& url,
-      const PowerType& power_type) = 0;
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) = 0;
 
   // Returns a vector of PowerOverviews for the given `power_type`.
   virtual std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForType(
-      const PowerType& power_type) = 0;
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) = 0;
 
   // Returns a vector of Powers for the given `search_params`.
   virtual std::vector<std::unique_ptr<Power>> GetPowersForSearchParams(
@@ -56,8 +56,9 @@ class PowerBookmarkDatabase {
 
   // Delete all powers for the given `url`. Use `power_type` to restrict which
   // type is deleted or use POWER_TYPE_UNSPECIFIED to delete everything.
-  virtual bool DeletePowersForURL(const GURL& url,
-                                  const PowerType& power_type) = 0;
+  virtual bool DeletePowersForURL(
+      const GURL& url,
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) = 0;
 };
 
 }  // namespace power_bookmarks

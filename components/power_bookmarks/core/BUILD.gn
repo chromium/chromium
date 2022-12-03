@@ -17,7 +17,10 @@ static_library("core") {
     "power_bookmark_utils.h",
   ]
 
-  public_deps = [ ":proto" ]
+  public_deps = [
+    ":proto",
+    "//components/sync/protocol",
+  ]
 
   deps = [
     ":features",
@@ -51,7 +54,7 @@ static_library("powers") {
     "powers/search_params.h",
   ]
 
-  public_deps = [ ":proto" ]
+  public_deps = [ "//components/sync/protocol" ]
 
   deps = [
     "//base",
@@ -62,9 +65,7 @@ static_library("powers") {
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [
-    "proto/note_specifics.proto",
     "proto/power_bookmark_meta.proto",
-    "proto/power_bookmark_specifics.proto",
     "proto/shopping_specifics.proto",
   ]
   deps = [ "//components/commerce/core:proto" ]

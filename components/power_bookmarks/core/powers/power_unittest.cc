@@ -6,17 +6,17 @@
 
 #include "base/guid.h"
 #include "base/time/time.h"
-#include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
+#include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace power_bookmarks {
 
 namespace {
-PowerBookmarkSpecifics CreatePowerBookmarkSpecifics() {
-  PowerBookmarkSpecifics specifics;
+sync_pb::PowerBookmarkSpecifics CreatePowerBookmarkSpecifics() {
+  sync_pb::PowerBookmarkSpecifics specifics;
   specifics.set_guid(base::GUID::GenerateRandomV4().AsLowercaseString());
   specifics.set_url("http://google.com/");
-  specifics.set_power_type(PowerType::POWER_TYPE_MOCK);
+  specifics.set_power_type(sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
   specifics.set_creation_time_usec(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   specifics.set_update_time_usec(
@@ -27,7 +27,7 @@ PowerBookmarkSpecifics CreatePowerBookmarkSpecifics() {
 }  // namespace
 
 TEST(PowerTest, CreateFromSpecifics) {
-  PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
+  sync_pb::PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
   Power power(specifics);
 
   EXPECT_EQ(power.guid(), base::GUID::ParseLowercase(specifics.guid()));
@@ -42,9 +42,9 @@ TEST(PowerTest, CreateFromSpecifics) {
 }
 
 TEST(PowerTest, ToAndFromSpecifics) {
-  PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
+  sync_pb::PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
   Power power(specifics);
-  PowerBookmarkSpecifics new_specifics;
+  sync_pb::PowerBookmarkSpecifics new_specifics;
   power.ToPowerBookmarkSpecifics(&new_specifics);
 
   EXPECT_EQ(specifics.guid(), new_specifics.guid());
@@ -55,19 +55,19 @@ TEST(PowerTest, ToAndFromSpecifics) {
 }
 
 TEST(PowerTest, ClonePower) {
-  PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
+  sync_pb::PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
   Power power(specifics);
   std::unique_ptr<Power> clone = power.Clone();
   EXPECT_EQ(power.guid(), clone->guid());
   EXPECT_EQ(power.url(), clone->url());
   EXPECT_EQ(power.time_added(), clone->time_added());
   EXPECT_EQ(power.time_modified(), clone->time_modified());
-  EXPECT_EQ(power.power_specifics()->SerializeAsString(),
-            clone->power_specifics()->SerializeAsString());
+  EXPECT_EQ(power.power_entity()->SerializeAsString(),
+            clone->power_entity()->SerializeAsString());
 }
 
 TEST(PowerTest, MergePower) {
-  PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
+  sync_pb::PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
   Power power(specifics);
   Power other(specifics);
   base::Time now = base::Time::Now();

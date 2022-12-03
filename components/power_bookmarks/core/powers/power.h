@@ -7,12 +7,10 @@
 
 #include "base/guid.h"
 #include "base/time/time.h"
-#include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
+#include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace power_bookmarks {
-
-class PowerSpecifics;
 
 // Class for the in-memory representation for Powers.
 // When writing to local storage or sync, this class is written to the
@@ -20,9 +18,9 @@ class PowerSpecifics;
 class Power {
  public:
   // ctor used for creating a Power in-memory.
-  explicit Power(std::unique_ptr<PowerSpecifics> power_specifics);
+  explicit Power(std::unique_ptr<sync_pb::PowerEntity> power_entity);
   // ctor used for creating a Power from the db.
-  explicit Power(const PowerBookmarkSpecifics& specifics);
+  explicit Power(const sync_pb::PowerBookmarkSpecifics& specifics);
 
   Power(const Power&) = delete;
   Power& operator=(const Power&) = delete;
@@ -35,8 +33,12 @@ class Power {
   const GURL& url() const { return url_; }
   void set_url(GURL url) { url_ = url; }
 
-  const PowerType& power_type() const { return power_type_; }
-  void set_power_type(PowerType power_type) { power_type_ = power_type; }
+  const sync_pb::PowerBookmarkSpecifics::PowerType& power_type() const {
+    return power_type_;
+  }
+  void set_power_type(sync_pb::PowerBookmarkSpecifics::PowerType power_type) {
+    power_type_ = power_type;
+  }
 
   const base::Time time_added() const { return time_added_; }
   void set_time_added(base::Time time_added) { time_added_ = time_added; }
@@ -46,18 +48,19 @@ class Power {
     time_modified_ = time_modified;
   }
 
-  // Used to get fields from PowerSpecifics.
-  const PowerSpecifics* power_specifics() const {
-    return power_specifics_.get();
+  // Used to get fields from PowerEntity.
+  const sync_pb::PowerEntity* power_entity() const {
+    return power_entity_.get();
   }
 
   // Write the properties held in this class to power_bookmark_specifics.proto.
   // `power_bookmark_specifics` will never be nullptr.
-  void ToPowerBookmarkSpecifics(PowerBookmarkSpecifics* save_specifics) const;
+  void ToPowerBookmarkSpecifics(
+      sync_pb::PowerBookmarkSpecifics* save_specifics) const;
 
-  // Merge the current power with the other one.
-  // guid, url and PowerType are not allowed to be different from the other
-  // power.
+  // Merge the curr sync_pb::PowerBookmarkSpecifics::PowerType other one.
+  // guid, url and sync_pb::PowerBookmarkSpecifics::PowerType are not allowed to
+  // be different from the other power.
   void Merge(const Power& other);
 
   // Clone a power. Every power should be independent to others.
@@ -67,10 +70,10 @@ class Power {
  private:
   base::GUID guid_;
   GURL url_;
-  PowerType power_type_;
+  sync_pb::PowerBookmarkSpecifics::PowerType power_type_;
   base::Time time_modified_;
   base::Time time_added_;
-  std::unique_ptr<PowerSpecifics> power_specifics_;
+  std::unique_ptr<sync_pb::PowerEntity> power_entity_;
 };
 
 }  // namespace power_bookmarks

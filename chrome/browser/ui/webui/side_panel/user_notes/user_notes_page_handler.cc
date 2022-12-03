@@ -12,7 +12,7 @@
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/power_bookmarks/core/powers/power.h"
 #include "components/power_bookmarks/core/powers/power_overview.h"
-#include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
+#include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "ui/base/l10n/time_format.h"
 
 namespace {
@@ -22,13 +22,14 @@ const int kCurrentVersionNumber = 1;
 side_panel::mojom::NoteOverviewPtr PowerOverviewToMojo(
     const power_bookmarks::PowerOverview& power_overview) {
   auto* power = power_overview.power();
-  DCHECK(power->power_type() == power_bookmarks::PowerType::POWER_TYPE_NOTE);
-  DCHECK(power->power_specifics()->has_note_specifics());
+  DCHECK(power->power_type() ==
+         sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE);
+  DCHECK(power->power_entity()->has_note_entity());
   auto result = side_panel::mojom::NoteOverview::New();
   result->url = power->url();
   // TODO(crbug.com/1378131): Get title from the corresponding bookmark.
   result->title = power->url().spec();
-  result->text = power->power_specifics()->note_specifics().plain_text();
+  result->text = power->power_entity()->note_entity().plain_text();
   result->num_notes = power_overview.count();
   result->is_current_tab = false;
   // TODO(crbug.com/1378131): Get the last_modification_time of the overview
@@ -37,9 +38,10 @@ side_panel::mojom::NoteOverviewPtr PowerOverviewToMojo(
 }
 
 side_panel::mojom::NotePtr PowerToMojo(const power_bookmarks::Power& power) {
-  DCHECK(power.power_type() == power_bookmarks::PowerType::POWER_TYPE_NOTE);
-  DCHECK(power.power_specifics()->has_note_specifics());
-  auto note_specifics = power.power_specifics()->note_specifics();
+  DCHECK(power.power_type() ==
+         sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE);
+  DCHECK(power.power_entity()->has_note_entity());
+  auto note_entity = power.power_entity()->note_entity();
   auto result = side_panel::mojom::Note::New();
   result->guid = power.guid().AsLowercaseString();
   result->url = power.url();
@@ -48,14 +50,15 @@ side_panel::mojom::NotePtr PowerToMojo(const power_bookmarks::Power& power) {
       base::UTF16ToUTF8(ui::TimeFormat::Simple(
           ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
           base::Time::Now() - power.time_modified()));
-  result->text = note_specifics.plain_text();
+  result->text = note_entity.plain_text();
   return result;
 }
 
 bool IsNoteVisible(const power_bookmarks::Power& power) {
-  DCHECK(power.power_type() == power_bookmarks::PowerType::POWER_TYPE_NOTE);
-  DCHECK(power.power_specifics()->has_note_specifics());
-  return power.power_specifics()->note_specifics().current_note_version() <=
+  DCHECK(power.power_type() ==
+         sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE);
+  DCHECK(power.power_entity()->has_note_entity());
+  return power.power_entity()->note_entity().current_note_version() <=
          kCurrentVersionNumber;
 }
 
@@ -63,17 +66,16 @@ std::unique_ptr<power_bookmarks::Power> MakePower(const std::string& guid,
                                                   const std::string& text,
                                                   GURL url,
                                                   bool is_create) {
-  auto power_specific = std::make_unique<power_bookmarks::PowerSpecifics>();
-  power_specific->mutable_note_specifics()->set_plain_text(text);
-  power_specific->mutable_note_specifics()->set_current_note_version(
+  auto power_entity = std::make_unique<sync_pb::PowerEntity>();
+  power_entity->mutable_note_entity()->set_plain_text(text);
+  power_entity->mutable_note_entity()->set_current_note_version(
       kCurrentVersionNumber);
-  power_specific->mutable_note_specifics()->set_target_type(
-      power_bookmarks::NoteSpecifics::TargetType::
-          NoteSpecifics_TargetType_TARGET_TYPE_PAGE);
+  power_entity->mutable_note_entity()->set_target_type(
+      sync_pb::NoteEntity::TARGET_TYPE_PAGE);
   auto result =
-      std::make_unique<power_bookmarks::Power>(std::move(power_specific));
+      std::make_unique<power_bookmarks::Power>(std::move(power_entity));
   result->set_guid(base::GUID::ParseLowercase(guid));
-  result->set_power_type(power_bookmarks::PowerType::POWER_TYPE_NOTE);
+  result->set_power_type(sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE);
   if (is_create)
     result->set_time_added(base::Time::Now());
   result->set_time_modified(base::Time::Now());
@@ -104,7 +106,7 @@ void UserNotesPageHandler::ShowUI() {
 void UserNotesPageHandler::GetNoteOverviews(const std::string& user_input,
                                             GetNoteOverviewsCallback callback) {
   service_->GetPowerOverviewsForType(
-      power_bookmarks::PowerType::POWER_TYPE_NOTE,
+      sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,
       base::BindOnce(
           [](GetNoteOverviewsCallback callback,
              std::vector<std::unique_ptr<power_bookmarks::PowerOverview>>
@@ -121,7 +123,7 @@ void UserNotesPageHandler::GetNoteOverviews(const std::string& user_input,
 void UserNotesPageHandler::GetNotesForCurrentTab(
     GetNotesForCurrentTabCallback callback) {
   service_->GetPowersForURL(
-      current_tab_url_, power_bookmarks::PowerType::POWER_TYPE_NOTE,
+      current_tab_url_, sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,
       base::BindOnce(
           [](GetNotesForCurrentTabCallback callback,
              std::vector<std::unique_ptr<power_bookmarks::Power>> powers) {
@@ -168,7 +170,7 @@ void UserNotesPageHandler::DeleteNotesForUrl(
     const ::GURL& url,
     DeleteNotesForUrlCallback callback) {
   service_->DeletePowersForURL(
-      url, power_bookmarks::PowerType::POWER_TYPE_NOTE,
+      url, sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,
       base::BindOnce([](DeleteNotesForUrlCallback callback,
                         bool success) { std::move(callback).Run(success); },
                      std::move(callback)));

@@ -36,16 +36,17 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
   bool IsOpen() override;
   std::vector<std::unique_ptr<Power>> GetPowersForURL(
       const GURL& url,
-      const PowerType& power_type) override;
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
   std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForType(
-      const PowerType& power_type) override;
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
   std::vector<std::unique_ptr<Power>> GetPowersForSearchParams(
       const SearchParams& search_params) override;
   bool CreatePower(std::unique_ptr<Power> power) override;
   bool UpdatePower(std::unique_ptr<Power> power) override;
   bool DeletePower(const base::GUID& guid) override;
-  bool DeletePowersForURL(const GURL& url,
-                          const PowerType& power_type) override;
+  bool DeletePowersForURL(
+      const GURL& url,
+      const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
 
   PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() {
     return sync_db_.get();
@@ -62,7 +63,7 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
   bool InitSchema();
   bool CreateSchema();
 
-  absl::optional<PowerBookmarkSpecifics> DeserializeOrDelete(
+  absl::optional<sync_pb::PowerBookmarkSpecifics> DeserializeOrDelete(
       const std::string& data,
       const base::GUID& id);
 

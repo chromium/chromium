@@ -45,13 +45,14 @@ void PowerBookmarkBackend::Shutdown() {
 
 std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetPowersForURL(
     const GURL& url,
-    const PowerType& power_type) {
+    const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->GetPowersForURL(url, power_type);
 }
 
 std::vector<std::unique_ptr<PowerOverview>>
-PowerBookmarkBackend::GetPowerOverviewsForType(const PowerType& power_type) {
+PowerBookmarkBackend::GetPowerOverviewsForType(
+    const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->GetPowerOverviewsForType(power_type);
 }
@@ -77,8 +78,9 @@ bool PowerBookmarkBackend::DeletePower(const base::GUID& guid) {
   return db_->DeletePower(guid);
 }
 
-bool PowerBookmarkBackend::DeletePowersForURL(const GURL& url,
-                                              const PowerType& power_type) {
+bool PowerBookmarkBackend::DeletePowersForURL(
+    const GURL& url,
+    const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->DeletePowersForURL(url, power_type);
 }

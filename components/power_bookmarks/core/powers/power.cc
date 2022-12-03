@@ -6,12 +6,12 @@
 
 namespace power_bookmarks {
 
-Power::Power(std::unique_ptr<PowerSpecifics> power_specifics) {
-  CHECK(power_specifics);
-  power_specifics_ = std::move(power_specifics);
+Power::Power(std::unique_ptr<sync_pb::PowerEntity> power_entity) {
+  CHECK(power_entity);
+  power_entity_ = std::move(power_entity);
 }
 
-Power::Power(const PowerBookmarkSpecifics& specifics) {
+Power::Power(const sync_pb::PowerBookmarkSpecifics& specifics) {
   guid_ = base::GUID::ParseLowercase(specifics.guid());
   url_ = GURL(specifics.url());
   power_type_ = specifics.power_type();
@@ -23,13 +23,14 @@ Power::Power(const PowerBookmarkSpecifics& specifics) {
   time_modified_ = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(specifics.update_time_usec()));
 
-  power_specifics_ = std::make_unique<PowerSpecifics>();
-  power_specifics_->CopyFrom(specifics.power_specifics());
+  power_entity_ = std::make_unique<sync_pb::PowerEntity>();
+  power_entity_->CopyFrom(specifics.power_entity());
 }
 
 Power::~Power() = default;
 
-void Power::ToPowerBookmarkSpecifics(PowerBookmarkSpecifics* specifics) const {
+void Power::ToPowerBookmarkSpecifics(
+    sync_pb::PowerBookmarkSpecifics* specifics) const {
   specifics->set_guid(guid_.AsLowercaseString());
   specifics->set_url(url_.spec());
   specifics->set_power_type(power_type_);
@@ -41,7 +42,7 @@ void Power::ToPowerBookmarkSpecifics(PowerBookmarkSpecifics* specifics) const {
   specifics->set_update_time_usec(
       time_modified_.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
-  specifics->mutable_power_specifics()->CopyFrom(*power_specifics_.get());
+  specifics->mutable_power_entity()->CopyFrom(*power_entity_.get());
 }
 
 void Power::Merge(const Power& other) {
@@ -53,11 +54,11 @@ void Power::Merge(const Power& other) {
   if (time_modified_ < other.time_modified_)
     time_modified_ = other.time_modified_;
   // TODO(1382835): Powers should be able to customize the merge logic.
-  power_specifics_->CopyFrom(*other.power_specifics_);
+  power_entity_->CopyFrom(*other.power_entity_);
 }
 
 std::unique_ptr<Power> Power::Clone() const {
-  PowerBookmarkSpecifics power_specifics;
+  sync_pb::PowerBookmarkSpecifics power_specifics;
   ToPowerBookmarkSpecifics(&power_specifics);
   return std::make_unique<Power>(power_specifics);
 }
