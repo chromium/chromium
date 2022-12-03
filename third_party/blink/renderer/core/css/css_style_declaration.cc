@@ -193,7 +193,7 @@ String CSSStyleDeclaration::AnonymousNamedGetter(const AtomicString& name) {
 NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
     ScriptState* script_state,
     const AtomicString& name,
-    const ScriptValue& value) {
+    v8::Local<v8::Value> value) {
   const ExecutionContext* execution_context =
       ExecutionContext::From(script_state);
   if (!execution_context)
@@ -215,7 +215,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   // the property name is a valid CSS attribute name (see bug 1310062).
   auto&& string_value =
       NativeValueTraits<IDLStringTreatNullAsEmptyString>::NativeValue(
-          script_state->GetIsolate(), value.V8Value(), exception_state);
+          script_state->GetIsolate(), value, exception_state);
   if (UNLIKELY(exception_state.HadException()))
     return NamedPropertySetterResult::kIntercepted;
   SetPropertyInternal(unresolved_property, String(), string_value, false,

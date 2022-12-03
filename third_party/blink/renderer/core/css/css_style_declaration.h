@@ -107,7 +107,7 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   // an argument (see bug 829408).
   NamedPropertySetterResult AnonymousNamedSetter(ScriptState*,
                                                  const AtomicString& name,
-                                                 const ScriptValue& value);
+                                                 v8::Local<v8::Value> value);
   NamedPropertyDeleterResult AnonymousNamedDeleter(const AtomicString& name);
   void NamedPropertyEnumerator(Vector<String>& names, ExceptionState&);
   bool NamedPropertyQuery(const AtomicString&, ExceptionState&);

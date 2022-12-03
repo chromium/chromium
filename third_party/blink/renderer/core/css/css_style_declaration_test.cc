@@ -75,7 +75,7 @@ TEST(CSSStyleDeclarationTest, ExposureCacheLeak) {
   ScriptState* script_state = v8_testing_scope.GetScriptState();
   v8::Isolate* isolate = v8_testing_scope.GetIsolate();
 
-  ScriptValue normal(isolate, V8String(isolate, "normal"));
+  v8::Local<v8::String> normal = V8String(isolate, "normal");
 
   DummyExceptionStateForTesting exception_state;
 
