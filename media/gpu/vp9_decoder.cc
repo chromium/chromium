@@ -443,6 +443,11 @@ VideoChromaSampling VP9Decoder::GetChromaSampling() const {
   return chroma_sampling_;
 }
 
+absl::optional<gfx::HDRMetadata> VP9Decoder::GetHDRMetadata() const {
+  // VP9 only allow HDR metadata exists in the container.
+  return absl::nullopt;
+}
+
 size_t VP9Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   return kPicsInPipeline + GetNumReferenceFrames();

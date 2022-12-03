@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/base/limits.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -190,6 +191,11 @@ VideoChromaSampling VP8Decoder::GetChromaSampling() const {
   // VP8 decoder currently does not rely on chroma sampling format for
   // creating/reconfiguring decoder, so return an unknown format.
   return VideoChromaSampling::kUnknown;
+}
+
+absl::optional<gfx::HDRMetadata> VP8Decoder::GetHDRMetadata() const {
+  // VP8 doesn't support HDR metadata.
+  return absl::nullopt;
 }
 
 size_t VP8Decoder::GetRequiredNumOfPictures() const {

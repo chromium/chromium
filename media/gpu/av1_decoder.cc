@@ -16,6 +16,7 @@
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/gav1/status_code.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 namespace {
@@ -90,6 +91,34 @@ VideoChromaSampling GetAV1ChromaSampling(
       return VideoChromaSampling::kUnknown;
     }
   }
+}
+
+void PopulateColorVolumeMetadata(
+    const libgav1::ObuMetadataHdrMdcv& mdcv,
+    gfx::ColorVolumeMetadata& color_volume_metadata) {
+  constexpr auto kChromaDenominator = 65536.0f;
+  constexpr auto kLumaMaxDenoninator = 256.0f;
+  constexpr auto kLumaMinDenoninator = 16384.0f;
+  // display primaries are in R/G/B order in metadata_hdr_mdcv OBU Metadata.
+  color_volume_metadata.primaries = {
+      mdcv.primary_chromaticity_x[0] / kChromaDenominator,
+      mdcv.primary_chromaticity_y[0] / kChromaDenominator,
+      mdcv.primary_chromaticity_x[1] / kChromaDenominator,
+      mdcv.primary_chromaticity_y[1] / kChromaDenominator,
+      mdcv.primary_chromaticity_x[2] / kChromaDenominator,
+      mdcv.primary_chromaticity_y[2] / kChromaDenominator,
+      mdcv.white_point_chromaticity_x / kChromaDenominator,
+      mdcv.white_point_chromaticity_y / kChromaDenominator};
+  color_volume_metadata.luminance_max =
+      mdcv.luminance_max / kLumaMaxDenoninator;
+  color_volume_metadata.luminance_min =
+      mdcv.luminance_min / kLumaMinDenoninator;
+}
+
+void PopulateHDRMetadata(const libgav1::ObuMetadataHdrCll& cll,
+                         gfx::HDRMetadata& hdr_metadata) {
+  hdr_metadata.max_content_light_level = cll.max_cll;
+  hdr_metadata.max_frame_average_light_level = cll.max_fall;
 }
 }  // namespace
 
@@ -379,6 +408,20 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       return kDecodeError;
     }
 
+    // AV1 HDR metadata may appears in the below places:
+    // 1. Container.
+    // 2. Bitstream.
+    // 3. Both container and bitstream.
+    // Thus we should also extract HDR metadata here in case we
+    // miss the information.
+    if (current_frame_->hdr_mdcv_set() && current_frame_->hdr_cll_set()) {
+      if (!hdr_metadata_)
+        hdr_metadata_ = gfx::HDRMetadata();
+      PopulateColorVolumeMetadata(current_frame_->hdr_mdcv(),
+                                  hdr_metadata_->color_volume_metadata);
+      PopulateHDRMetadata(current_frame_->hdr_cll(), hdr_metadata_.value());
+    }
+
     DCHECK(current_sequence_header_->film_grain_params_present ||
            !frame_header.film_grain_params.apply_grain);
     auto pic = accelerator_->CreateAV1Picture(
@@ -402,6 +445,9 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       pic->set_colorspace(cs);
     else if (container_color_space_.IsSpecified())
       pic->set_colorspace(container_color_space_);
+
+    if (hdr_metadata_)
+      pic->set_hdr_metadata(hdr_metadata_);
 
     pic->frame_header = frame_header;
     if (decrypt_config_)
@@ -512,6 +558,11 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
          current_frame_header_->refresh_frame_flags == 0xff);
   UpdateReferenceFrames(std::move(pic));
   return AV1Accelerator::Status::kOk;
+}
+
+absl::optional<gfx::HDRMetadata> AV1Decoder::GetHDRMetadata() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return hdr_metadata_;
 }
 
 gfx::Size AV1Decoder::GetPicSize() const {

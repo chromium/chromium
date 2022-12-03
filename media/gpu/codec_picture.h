@@ -12,6 +12,7 @@
 #include "media/base/video_color_space.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -49,6 +50,13 @@ class MEDIA_GPU_EXPORT CodecPicture
     colorspace_ = colorspace;
   }
 
+  const absl::optional<gfx::HDRMetadata>& hdr_metadata() const {
+    return hdr_metadata_;
+  }
+  void set_hdr_metadata(const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+    hdr_metadata_ = hdr_metadata;
+  }
+
  protected:
   friend class base::RefCountedThreadSafe<CodecPicture>;
   virtual ~CodecPicture();
@@ -58,6 +66,7 @@ class MEDIA_GPU_EXPORT CodecPicture
   gfx::Rect visible_rect_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
   VideoColorSpace colorspace_;
+  absl::optional<gfx::HDRMetadata> hdr_metadata_;
 };
 
 }  // namespace media

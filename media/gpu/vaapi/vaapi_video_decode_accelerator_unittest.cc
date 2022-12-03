@@ -20,6 +20,8 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/hdr_metadata.h"
 
 using base::test::RunClosure;
 using ::testing::_;
@@ -66,6 +68,7 @@ class MockAcceleratedVideoDecoder : public AcceleratedVideoDecoder {
   MOCK_CONST_METHOD0(GetProfile, VideoCodecProfile());
   MOCK_CONST_METHOD0(GetBitDepth, uint8_t());
   MOCK_CONST_METHOD0(GetChromaSampling, VideoChromaSampling());
+  MOCK_CONST_METHOD0(GetHDRMetadata, absl::optional<gfx::HDRMetadata>());
   MOCK_CONST_METHOD0(GetVisibleRect, gfx::Rect());
   MOCK_CONST_METHOD0(GetRequiredNumOfPictures, size_t());
   MOCK_CONST_METHOD0(GetNumReferenceFrames, size_t());

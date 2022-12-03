@@ -724,6 +724,8 @@ void VdaVideoDecoder::PictureReadyOnParentThread(Picture picture) {
     EnterErrorState();
     return;
   }
+  // Some streams may have varying metadata, so bitstream metadata should be
+  // preferred over metadata provide by the configuration.
   frame->set_hdr_metadata(picture.hdr_metadata() ? picture.hdr_metadata()
                                                  : config_.hdr_metadata());
 

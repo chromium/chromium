@@ -175,6 +175,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   VideoCodecProfile GetProfile() const override;
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
+  absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -336,6 +337,8 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   uint8_t bit_depth_ = 0;
   // Chroma sampling format of input bitstream
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
+  // HDR metadata in the bitstream.
+  absl::optional<gfx::HDRMetadata> hdr_metadata_;
 
   const std::unique_ptr<H265Accelerator> accelerator_;
 };

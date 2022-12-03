@@ -24,6 +24,7 @@
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.
 #include "third_party/libgav1/src/src/obu_parser.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace libgav1 {
 struct DecoderState;
@@ -126,6 +127,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   VideoCodecProfile GetProfile() const override;
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
+  absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -166,6 +168,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   VideoColorSpace container_color_space_;
   uint8_t bit_depth_ = 0;
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
+  absl::optional<gfx::HDRMetadata> hdr_metadata_;
 
   int32_t stream_id_ = 0;
   const uint8_t* stream_ = nullptr;

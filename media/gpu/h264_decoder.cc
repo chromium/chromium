@@ -1543,6 +1543,8 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
               return kRanOutOfSurfaces;
             if (current_decrypt_config_)
               curr_pic_->set_decrypt_config(current_decrypt_config_->Clone());
+            if (hdr_metadata_.has_value())
+              curr_pic_->set_hdr_metadata(hdr_metadata_);
 
             state_ = State::kTryNewFrame;
           }
@@ -1610,7 +1612,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
         break;
 
-      case H264NALU::kSEIMessage:
+      case H264NALU::kSEIMessage: {
         if (current_decrypt_config_) {
           // If there are encrypted SEI NALUs as part of CENCv1, then we also
           // need to save those so we can send them into the accelerator so it
@@ -1629,35 +1631,57 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
             break;
           }
         }
-        if (state_ == State::kAfterReset && !recovery_frame_cnt_ &&
-            !recovery_frame_num_) {
-          // If we are after reset, we can also resume from a SEI recovery point
-          // (spec D.2.8) if one is present. However, if we are already in the
-          // process of handling one, skip any subsequent ones until we are done
-          // processing.
-          H264SEI sei;
-          if (parser_.ParseSEI(&sei) != H264Parser::kOk)
-            SET_ERROR_AND_RETURN();
+        H264SEI sei;
+        if (parser_.ParseSEI(&sei) != H264Parser::kOk)
+          break;
 
-          for (auto& sei_msg : sei.msgs) {
-            if (sei_msg.type == H264SEIMessage::kSEIRecoveryPoint) {
-              recovery_frame_cnt_ = sei_msg.recovery_point.recovery_frame_cnt;
-              if (0 > *recovery_frame_cnt_ ||
-                  *recovery_frame_cnt_ >= max_frame_num_) {
-                DVLOG(1) << "Invalid recovery_frame_cnt="
-                         << *recovery_frame_cnt_
-                         << " (it must be [0, max_frame_num_-1="
-                         << max_frame_num_ - 1 << "])";
-                SET_ERROR_AND_RETURN();
+        for (auto& sei_msg : sei.msgs) {
+          switch (sei_msg.type) {
+            case H264SEIMessage::kSEIRecoveryPoint:
+              // If we are after reset, we can also resume from a SEI recovery
+              // point (spec D.2.8) if one is present. However, if we are
+              // already in the process of handling one, skip any subsequent
+              // ones until we are done processing.
+              if (state_ == State::kAfterReset && !recovery_frame_cnt_ &&
+                  !recovery_frame_num_) {
+                recovery_frame_cnt_ = sei_msg.recovery_point.recovery_frame_cnt;
+                if (0 > *recovery_frame_cnt_ ||
+                    *recovery_frame_cnt_ >= max_frame_num_) {
+                  DVLOG(1) << "Invalid recovery_frame_cnt="
+                           << *recovery_frame_cnt_
+                           << " (it must be [0, max_frame_num_-1="
+                           << max_frame_num_ - 1 << "])";
+                  SET_ERROR_AND_RETURN();
+                }
+                DVLOG(3) << "Recovery point SEI is found, recovery_frame_cnt_="
+                         << *recovery_frame_cnt_;
               }
-              DVLOG(3) << "Recovery point SEI is found, recovery_frame_cnt_="
-                       << *recovery_frame_cnt_;
               break;
-            }
+            case H264SEIMessage::kSEIContentLightLevelInfo:
+              // H264 HDR metadata may appears in the below places:
+              // 1. Container.
+              // 2. Bitstream.
+              // 3. Both container and bitstream.
+              // Thus we should also extract HDR metadata here in case we
+              // miss the information.
+              if (!hdr_metadata_)
+                hdr_metadata_ = gfx::HDRMetadata();
+              sei_msg.content_light_level_info.PopulateHDRMetadata(
+                  hdr_metadata_.value());
+              break;
+            case H264SEIMessage::kSEIMasteringDisplayInfo:
+              if (!hdr_metadata_)
+                hdr_metadata_ = gfx::HDRMetadata();
+              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
+                  hdr_metadata_->color_volume_metadata);
+              break;
+            default:
+              break;
           }
         }
+        break;
+      }
 
-        [[fallthrough]];
       default:
         DVLOG(4) << "Skipping NALU type: " << curr_nalu_->nal_unit_type;
         break;
@@ -1686,6 +1710,10 @@ uint8_t H264Decoder::GetBitDepth() const {
 
 VideoChromaSampling H264Decoder::GetChromaSampling() const {
   return chroma_sampling_;
+}
+
+absl::optional<gfx::HDRMetadata> H264Decoder::GetHDRMetadata() const {
+  return hdr_metadata_;
 }
 
 size_t H264Decoder::GetRequiredNumOfPictures() const {

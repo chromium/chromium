@@ -40,6 +40,7 @@
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "media/media_buildflags.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/hdr_metadata_helper_win.h"
@@ -740,9 +741,15 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
   DCHECK(texture_selector_);
   gfx::Size size = accelerated_video_decoder_->GetPicSize();
 
+  // Some streams may have varying metadata, so bitstream metadata should be
+  // preferred over metadata provide by the configuration.
+  auto hdr_metadata = accelerated_video_decoder_->GetHDRMetadata()
+                          ? accelerated_video_decoder_->GetHDRMetadata()
+                          : config_.hdr_metadata();
+
   gfx::HDRMetadata stream_metadata;
-  if (config_.hdr_metadata())
-    stream_metadata = *config_.hdr_metadata();
+  if (hdr_metadata)
+    stream_metadata = *hdr_metadata;
   // else leave |stream_metadata| default-initialized.  We might use it anyway.
 
   absl::optional<DXGI_HDR_METADATA_HDR10> display_metadata;
@@ -916,8 +923,13 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   frame->metadata().power_efficient = true;
   frame->set_color_space(output_color_space);
-  if (output_color_space.IsHDR())
-    frame->set_hdr_metadata(config_.hdr_metadata());
+  if (output_color_space.IsHDR()) {
+    // Some streams may have varying metadata, so bitstream metadata should be
+    // preferred over metadata provide by the configuration.
+    frame->set_hdr_metadata(picture->hdr_metadata() ? picture->hdr_metadata()
+                                                    : config_.hdr_metadata());
+  }
+
   output_cb_.Run(frame);
   return true;
 }

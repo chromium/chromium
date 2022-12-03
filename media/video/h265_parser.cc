@@ -96,6 +96,19 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
     *out = _out;                                                           \
   } while (0)
 
+#define READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(num_bits, out,             \
+                                                num_bits_remain)           \
+  do {                                                                     \
+    int _out;                                                              \
+    if (!br_.ReadBits(num_bits, &_out)) {                                  \
+      DVLOG(1)                                                             \
+          << "Error in stream: unexpected EOS while trying to read " #out; \
+      return kInvalidStream;                                               \
+    }                                                                      \
+    *num_bits_remain -= num_bits;                                          \
+    *out = _out;                                                           \
+  } while (0)
+
 #define SKIP_BITS_OR_RETURN(num_bits)                                       \
   do {                                                                      \
     int bits_left = num_bits;                                               \
@@ -117,6 +130,18 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
           << "Error in stream: unexpected EOS while trying to read " #out; \
       return kInvalidStream;                                               \
     }                                                                      \
+    *out = _out != 0;                                                      \
+  } while (0)
+
+#define READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(out, num_bits_remain)      \
+  do {                                                                     \
+    int _out;                                                              \
+    if (!br_.ReadBits(1, &_out)) {                                         \
+      DVLOG(1)                                                             \
+          << "Error in stream: unexpected EOS while trying to read " #out; \
+      return kInvalidStream;                                               \
+    }                                                                      \
+    *num_bits_remain -= 1;                                                 \
     *out = _out != 0;                                                      \
   } while (0)
 
@@ -1972,82 +1997,89 @@ H265Parser::Result H265Parser::ParseSEI(H265SEI* sei) {
       READ_BITS_OR_RETURN(8, &byte);
     }
     sei_msg.payload_size += byte;
-    int skip_bits_size = sei_msg.payload_size * 8;
+    int num_bits_remain = sei_msg.payload_size * 8;
 
     DVLOG(4) << "Found SEI message type: " << sei_msg.type
              << " payload size: " << sei_msg.payload_size;
 
     switch (sei_msg.type) {
       case H265SEIMessage::kSEIAlphaChannelInfo:
-        READ_BOOL_OR_RETURN(
-            &sei_msg.alpha_channel_info.alpha_channel_cancel_flag);
-        skip_bits_size -= 1;
+        READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
+            &sei_msg.alpha_channel_info.alpha_channel_cancel_flag,
+            &num_bits_remain);
         if (!sei_msg.alpha_channel_info.alpha_channel_cancel_flag) {
-          READ_BITS_OR_RETURN(
-              3, &sei_msg.alpha_channel_info.alpha_channel_use_idc);
-          READ_BITS_OR_RETURN(
-              3, &sei_msg.alpha_channel_info.alpha_channel_bit_depth_minus8);
-          READ_BITS_OR_RETURN(
+          READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
+              3, &sei_msg.alpha_channel_info.alpha_channel_use_idc,
+              &num_bits_remain);
+          READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
+              3, &sei_msg.alpha_channel_info.alpha_channel_bit_depth_minus8,
+              &num_bits_remain);
+          READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
               sei_msg.alpha_channel_info.alpha_channel_bit_depth_minus8 + 9,
-              &sei_msg.alpha_channel_info.alpha_transparent_value);
-          READ_BITS_OR_RETURN(
+              &sei_msg.alpha_channel_info.alpha_transparent_value,
+              &num_bits_remain);
+          READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
               sei_msg.alpha_channel_info.alpha_channel_bit_depth_minus8 + 9,
-              &sei_msg.alpha_channel_info.alpha_opaque_value);
-          READ_BOOL_OR_RETURN(
-              &sei_msg.alpha_channel_info.alpha_channel_incr_flag);
-          READ_BOOL_OR_RETURN(
-              &sei_msg.alpha_channel_info.alpha_channel_clip_flag);
-          skip_bits_size -=
-              8 +
-              2 * (sei_msg.alpha_channel_info.alpha_channel_bit_depth_minus8 +
-                   9);
+              &sei_msg.alpha_channel_info.alpha_opaque_value, &num_bits_remain);
+          READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
+              &sei_msg.alpha_channel_info.alpha_channel_incr_flag,
+              &num_bits_remain);
+          READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
+              &sei_msg.alpha_channel_info.alpha_channel_clip_flag,
+              &num_bits_remain);
           if (sei_msg.alpha_channel_info.alpha_channel_clip_flag) {
-            READ_BOOL_OR_RETURN(
-                &sei_msg.alpha_channel_info.alpha_channel_clip_type_flag);
-            skip_bits_size -= 1;
+            READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
+                &sei_msg.alpha_channel_info.alpha_channel_clip_type_flag,
+                &num_bits_remain);
           }
         }
         break;
       case H265SEIMessage::kSEIContentLightLevelInfo:
-        READ_BITS_OR_RETURN(
-            16, &sei_msg.content_light_level_info.max_content_light_level);
-        READ_BITS_OR_RETURN(
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
+            16, &sei_msg.content_light_level_info.max_content_light_level,
+            &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
             16,
-            &sei_msg.content_light_level_info.max_picture_average_light_level);
-        skip_bits_size -= 32;
+            &sei_msg.content_light_level_info.max_picture_average_light_level,
+            &num_bits_remain);
         break;
       case H265SEIMessage::kSEIMasteringDisplayInfo:
         for (auto& primary : sei_msg.mastering_display_info.display_primaries) {
           for (auto& component : primary) {
-            READ_BITS_OR_RETURN(16, &component);
-            skip_bits_size -= 16;
+            READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &component,
+                                                    &num_bits_remain);
           }
         }
-        READ_BITS_OR_RETURN(16,
-                            &sei_msg.mastering_display_info.white_points[0]);
-        READ_BITS_OR_RETURN(16,
-                            &sei_msg.mastering_display_info.white_points[1]);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
+            16, &sei_msg.mastering_display_info.white_points[0],
+            &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
+            16, &sei_msg.mastering_display_info.white_points[1],
+            &num_bits_remain);
         uint32_t luminace_high_31bits, luminance_low_1bit;
-        READ_BITS_OR_RETURN(31, &luminace_high_31bits);
-        READ_BITS_OR_RETURN(1, &luminance_low_1bit);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(31, &luminace_high_31bits,
+                                                &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(1, &luminance_low_1bit,
+                                                &num_bits_remain);
         sei_msg.mastering_display_info.max_luminance =
             (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
-        READ_BITS_OR_RETURN(31, &luminace_high_31bits);
-        READ_BITS_OR_RETURN(1, &luminance_low_1bit);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(31, &luminace_high_31bits,
+                                                &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(1, &luminance_low_1bit,
+                                                &num_bits_remain);
         sei_msg.mastering_display_info.min_luminance =
             (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
-        skip_bits_size -= 96;
         break;
       default:
         DVLOG(4) << "Unsupported SEI message";
         break;
     }
-    TRUE_OR_RETURN(skip_bits_size >= 0);
+    TRUE_OR_RETURN(num_bits_remain >= 0);
     // 7.2 More data in payload or unsupported SEI, skip bits.
-    if (skip_bits_size > 0)
-      SKIP_BITS_OR_RETURN(skip_bits_size);
+    if (num_bits_remain > 0)
+      SKIP_BITS_OR_RETURN(num_bits_remain);
     // Only add parsed SEI messages.
-    if (skip_bits_size < sei_msg.payload_size * 8)
+    if (num_bits_remain < sei_msg.payload_size * 8)
       sei->msgs.push_back(sei_msg);
     // In case the loop endless.
     if (++num_parsed_sei_msg > kMaxParsedSEIMessages)

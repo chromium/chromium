@@ -292,6 +292,8 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
               return kRanOutOfSurfaces;
             if (current_decrypt_config_)
               curr_pic_->set_decrypt_config(current_decrypt_config_->Clone());
+            if (hdr_metadata_.has_value())
+              curr_pic_->set_hdr_metadata(hdr_metadata_);
 
             curr_pic_->first_picture_ = first_picture_;
             first_picture_ = false;
@@ -362,6 +364,36 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       case H265NALU::UNSPEC55:
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
         break;
+      case H265NALU::PREFIX_SEI_NUT: {
+        H265SEI sei;
+        if (parser_.ParseSEI(&sei) != H265Parser::kOk)
+          break;
+        for (auto& sei_msg : sei.msgs) {
+          switch (sei_msg.type) {
+            case H265SEIMessage::kSEIContentLightLevelInfo:
+              // HEVC HDR metadata may appears in the below places:
+              // 1. Container.
+              // 2. Bitstream.
+              // 3. Both container and bitstream.
+              // Thus we should also extract HDR metadata here in case we
+              // miss the information.
+              if (!hdr_metadata_)
+                hdr_metadata_ = gfx::HDRMetadata();
+              sei_msg.content_light_level_info.PopulateHDRMetadata(
+                  hdr_metadata_.value());
+              break;
+            case H265SEIMessage::kSEIMasteringDisplayInfo:
+              if (!hdr_metadata_)
+                hdr_metadata_ = gfx::HDRMetadata();
+              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
+                  hdr_metadata_->color_volume_metadata);
+              break;
+            default:
+              break;
+          }
+        }
+        break;
+      }
       default:
         DVLOG(4) << "Skipping NALU type: " << curr_nalu_->nal_unit_type;
         break;
@@ -390,6 +422,10 @@ uint8_t H265Decoder::GetBitDepth() const {
 
 VideoChromaSampling H265Decoder::GetChromaSampling() const {
   return chroma_sampling_;
+}
+
+absl::optional<gfx::HDRMetadata> H265Decoder::GetHDRMetadata() const {
+  return hdr_metadata_;
 }
 
 size_t H265Decoder::GetRequiredNumOfPictures() const {
