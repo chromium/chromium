@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GL_DCOMP_PRESENTER_H_
 #define UI_GL_DCOMP_PRESENTER_H_
 
-#include <windows.h>
 #include <d3d11.h>
 #include <dcomp.h>
+#include <windows.h>
 #include <wrl/client.h>
 
 #include "base/containers/circular_deque.h"
@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/child_window_win.h"
+#include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/vsync_observer.h"
@@ -36,27 +37,19 @@ class DelegatedInkMetadata;
 namespace gl {
 class VSyncThreadWin;
 class DCLayerTree;
-class DirectCompositionChildSurfaceWin;
 
-class GL_EXPORT DCompPresenter : public GLSurfaceEGL, public VSyncObserver {
+// This class owns the DComp layer tree and its presentation. It does not own
+// the root surface.
+class GL_EXPORT DCompPresenter : public SurfacelessEGL, public VSyncObserver {
  public:
   using VSyncCallback =
       base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
   using OverlayHDRInfoUpdateCallback = base::RepeatingClosure;
 
-  struct Settings {
-    bool disable_nv12_dynamic_textures = false;
-    bool disable_vp_scaling = false;
-    bool disable_vp_super_resolution = false;
-    size_t max_pending_frames = 2;
-    bool use_angle_texture_offset = false;
-    bool no_downscaled_overlay_promotion = false;
-  };
-
   DCompPresenter(GLDisplayEGL* display,
                  HWND parent_window,
                  VSyncCallback vsync_callback,
-                 const DCompPresenter::Settings& settings);
+                 const DirectCompositionSurfaceWin::Settings& settings);
 
   DCompPresenter(const DCompPresenter&) = delete;
   DCompPresenter& operator=(const DCompPresenter&) = delete;
@@ -64,9 +57,7 @@ class GL_EXPORT DCompPresenter : public GLSurfaceEGL, public VSyncObserver {
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
   void Destroy() override;
-  gfx::Size GetSize() override;
   bool IsOffscreen() override;
-  void* GetHandle() override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,
@@ -80,15 +71,11 @@ class GL_EXPORT DCompPresenter : public GLSurfaceEGL, public VSyncObserver {
                                 PresentationCallback callback,
                                 FrameData data) override;
   gfx::VSyncProvider* GetVSyncProvider() override;
-  void SetVSyncEnabled(bool enabled) override;
-  bool SetEnableDCLayers(bool enable) override;
   gfx::SurfaceOrigin GetOrigin() const override;
   bool SupportsPostSubBuffer() override;
-  bool OnMakeCurrent(GLContext* context) override;
   bool SupportsDCLayers() const override;
   bool SupportsProtectedVideo() const override;
   bool SetDrawRectangle(const gfx::Rect& rect) override;
-  gfx::Vector2d GetDrawOffset() const override;
   bool SupportsGpuVSync() const override;
   void SetGpuVSyncEnabled(bool enabled) override;
   // This schedules an overlay plane to be displayed on the next SwapBuffers
@@ -116,12 +103,6 @@ class GL_EXPORT DCompPresenter : public GLSurfaceEGL, public VSyncObserver {
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> GetLayerSwapChainForTesting(
       size_t index) const;
-
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> GetBackbufferSwapChainForTesting()
-      const;
-
-  scoped_refptr<DirectCompositionChildSurfaceWin> GetRootSurfaceForTesting()
-      const;
 
   void GetSwapChainVisualInfoForTesting(size_t index,
                                         gfx::Transform* transform,
@@ -179,8 +160,12 @@ class GL_EXPORT DCompPresenter : public GLSurfaceEGL, public VSyncObserver {
   base::TimeTicks last_vsync_time_;
   base::TimeDelta last_vsync_interval_;
 
-  scoped_refptr<DirectCompositionChildSurfaceWin> root_surface_;
   std::unique_ptr<DCLayerTree> layer_tree_;
+
+  // Set in |SetDrawRectangle| and cleared in |SwapBuffers|. Used to determine
+  // if a D3D query should be created for this frame, due to a non-empty draw
+  // rectangle.
+  bool create_query_this_frame_ = false;
 
   base::WeakPtrFactory<DCompPresenter> weak_factory_{this};
 };
