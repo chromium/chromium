@@ -179,6 +179,7 @@
     on-keydown="onInputWrapperKeydown_">
   <input id="input" type="search" autocomplete="off" spellcheck="false"
       aria-live="[[inputAriaLive_]]" role="combobox"
+      aria-expanded="[[matchesAreVisible]]" aria-controls="matches"
       placeholder="$i18n{searchBoxHint}"
       on-copy="onInputCutCopy_" on-cut="onInputCutCopy_"
       on-focus="onInputFocus_" on-input="onInputInput_"
