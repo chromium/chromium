@@ -79,12 +79,14 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
 
     if (!is_in_projector_mode) {
       audio_input_menu_group_->AddOption(
+          /*option_icon=*/nullptr,
           l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
           kAudioOff);
     }
 
     if (!audio_capture_managed_by_policy) {
       audio_input_menu_group_->AddOption(
+          /*option_icon=*/nullptr,
           l10n_util::GetStringUTF16(
               IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE),
           kAudioMicrophone);
@@ -130,6 +132,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
         this, kCaptureModeFolderIcon,
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO)));
     save_to_menu_group_->AddOption(
+        /*option_icon=*/nullptr,
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DOWNLOADS),
         kDownloadsFolder);
     save_to_menu_group_->AddMenuItem(
@@ -191,7 +194,8 @@ void CaptureModeSettingsView::OnCaptureFolderMayHaveChanged() {
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_LINUX_FILES);
   }
 
-  save_to_menu_group_->AddOrUpdateExistingOption(folder_name, kCustomFolder);
+  save_to_menu_group_->AddOrUpdateExistingOption(
+      /*option_icon=*/nullptr, folder_name, kCustomFolder);
 
   controller->CheckFolderAvailability(
       custom_path,
@@ -354,6 +358,7 @@ void CaptureModeSettingsView::AddCameraOptions(const CameraInfoList& cameras,
   const bool has_cameras = !cameras.empty();
   if (has_cameras) {
     camera_menu_group_->AddOption(
+        /*option_icon=*/nullptr,
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA_OFF),
         kCameraOff);
     if (!managed_by_policy) {
@@ -361,6 +366,7 @@ void CaptureModeSettingsView::AddCameraOptions(const CameraInfoList& cameras,
       for (const CameraInfo& camera_info : cameras) {
         option_camera_id_map_[camera_option_id_begin] = camera_info.camera_id;
         camera_menu_group_->AddOption(
+            /*option_icon=*/nullptr,
             base::UTF8ToUTF16(camera_info.display_name),
             camera_option_id_begin++);
       }

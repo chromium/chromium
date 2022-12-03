@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -36,9 +37,11 @@ namespace {
 
 constexpr auto kMenuGroupPadding = gfx::Insets::VH(8, 0);
 
-constexpr auto kOptionPadding = gfx::Insets::TLBR(8, 52, 8, 16);
+constexpr auto kOptionPadding = gfx::Insets::VH(8, 16);
+constexpr auto kIndentedOptionPadding = gfx::Insets::TLBR(8, 52, 8, 16);
 
-constexpr auto kMenuItemPadding = gfx::Insets::TLBR(10, 52, 10, 16);
+constexpr auto kMenuItemPadding = gfx::Insets::VH(10, 16);
+constexpr auto kIndentedMenuItemPadding = gfx::Insets::TLBR(10, 52, 10, 16);
 
 constexpr int kSpaceBetweenMenuItem = 0;
 
@@ -47,6 +50,14 @@ void SetInkDropForButton(views::Button* button) {
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
   views::InstallRectHighlightPathGenerator(button);
+}
+
+// Configures the size and visibility of the given `icon_view`.
+void ConfigureIconView(views::ImageView* icon_view, bool is_visible) {
+  DCHECK(icon_view);
+  icon_view->SetImageSize(capture_mode::kSettingsIconSize);
+  icon_view->SetPreferredSize(capture_mode::kSettingsIconSize);
+  icon_view->SetVisible(is_visible);
 }
 
 }  // namespace
@@ -134,12 +145,18 @@ class CaptureModeMenuItem
  public:
   METADATA_HEADER(CaptureModeMenuItem);
 
+  // If `indented` is true, the content of this menu item will have some extra
+  // padding from the left so that it appears indented. This is useful when this
+  // item is added to a group that has a header, and it's desired to make it
+  // appear to be pushed inside under the header.
   CaptureModeMenuItem(views::Button::PressedCallback callback,
-                      std::u16string item_label)
+                      std::u16string item_label,
+                      bool indented)
       : views::Button(callback),
         label_view_(AddChildView(
             std::make_unique<views::Label>(std::move(item_label)))) {
-    SetBorder(views::CreateEmptyBorder(kMenuItemPadding));
+    SetBorder(views::CreateEmptyBorder(indented ? kIndentedMenuItemPadding
+                                                : kMenuItemPadding));
     capture_mode_util::ConfigLabelView(label_view_);
     capture_mode_util::CreateAndInitBoxLayoutForView(this);
     SetInkDropForButton(this);
@@ -174,20 +191,31 @@ class CaptureModeOption
  public:
   METADATA_HEADER(CaptureModeOption);
 
+  // If `indented` is true, the content of this option will have some extra
+  // padding from the left so that it appears indented. This is useful when this
+  // option is added to a group that has a header, and it's desired to make it
+  // appear to be pushed inside under the header.
   CaptureModeOption(views::Button::PressedCallback callback,
+                    const gfx::VectorIcon* option_icon,
                     std::u16string option_label,
                     int option_id,
                     bool checked,
-                    bool enabled)
+                    bool enabled,
+                    bool indented)
       : views::Button(callback),
+        option_icon_(option_icon),
+        option_icon_view_(
+            option_icon_ ? AddChildView(std::make_unique<views::ImageView>())
+                         : nullptr),
         label_view_(AddChildView(
             std::make_unique<views::Label>(std::move(option_label)))),
         checked_icon_view_(AddChildView(std::make_unique<views::ImageView>())),
         id_(option_id) {
-    checked_icon_view_->SetImageSize(capture_mode::kSettingsIconSize);
-    checked_icon_view_->SetPreferredSize(capture_mode::kSettingsIconSize);
-
-    SetBorder(views::CreateEmptyBorder(kOptionPadding));
+    if (option_icon_view_)
+      ConfigureIconView(option_icon_view_, /*is_visible=*/true);
+    ConfigureIconView(checked_icon_view_, /*is_visible=*/checked);
+    SetBorder(views::CreateEmptyBorder(indented ? kIndentedOptionPadding
+                                                : kOptionPadding));
     capture_mode_util::ConfigLabelView(label_view_);
     auto* box_layout = capture_mode_util::CreateAndInitBoxLayoutForView(this);
     box_layout->SetFlexForView(label_view_, 1);
@@ -195,7 +223,6 @@ class CaptureModeOption
     GetViewAccessibility().OverrideIsLeaf(true);
     SetAccessibleName(GetOptionLabel());
 
-    checked_icon_view_->SetVisible(checked);
     SetEnabled(enabled);
   }
 
@@ -207,6 +234,29 @@ class CaptureModeOption
 
   const std::u16string& GetOptionLabel() const {
     return label_view_->GetText();
+  }
+
+  // If `icon` is `nullptr`, removes the `option_icon_view_` (if any).
+  // Otherwise, a new image view will be created for the `option_icon_view_` (if
+  // needed), and the given `icon` will be set.
+  void SetOptionIcon(const gfx::VectorIcon* icon) {
+    option_icon_ = icon;
+
+    if (!option_icon_) {
+      if (option_icon_view_) {
+        RemoveChildViewT(option_icon_view_);
+        option_icon_view_ = nullptr;
+      }
+      return;
+    }
+
+    if (!option_icon_view_) {
+      option_icon_view_ =
+          AddChildViewAt(std::make_unique<views::ImageView>(), 0);
+      ConfigureIconView(option_icon_view_, /*is_visible=*/true);
+    }
+
+    MaybeUpdateOptionIconState();
   }
 
   void SetOptionLabel(std::u16string option_label) {
@@ -250,20 +300,40 @@ class CaptureModeOption
  private:
   // Dims out the label and the checked icon if this view is disabled.
   void UpdateState() {
+    MaybeUpdateOptionIconState();
+
+    const bool is_disabled = GetState() == STATE_DISABLED;
     const auto* color_provider = GetColorProvider();
     const auto label_enabled_color =
         color_provider->GetColor(kColorAshTextColorPrimary);
-    const auto icon_enabled_color =
-        color_provider->GetColor(kColorAshButtonLabelColorBlue);
-    const bool is_disabled = GetState() == STATE_DISABLED;
     label_view_->SetEnabledColor(
         is_disabled ? ColorUtil::GetDisabledColor(label_enabled_color)
                     : label_enabled_color);
+
+    const auto checked_icon_enabled_color =
+        color_provider->GetColor(kColorAshButtonLabelColorBlue);
     checked_icon_view_->SetImage(gfx::CreateVectorIcon(
         kHollowCheckCircleIcon,
-        is_disabled ? ColorUtil::GetDisabledColor(icon_enabled_color)
-                    : icon_enabled_color));
+        is_disabled ? ColorUtil::GetDisabledColor(checked_icon_enabled_color)
+                    : checked_icon_enabled_color));
   }
+
+  void MaybeUpdateOptionIconState() {
+    if (!option_icon_view_) {
+      DCHECK(!option_icon_);
+      return;
+    }
+
+    DCHECK(option_icon_);
+    const bool is_disabled = GetState() == STATE_DISABLED;
+    option_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        *option_icon_, is_disabled ? kColorAshButtonIconDisabledColor
+                                   : kColorAshButtonIconColor));
+  }
+
+  // An optional icon for the option. Non-null if present.
+  const gfx::VectorIcon* option_icon_ = nullptr;
+  views::ImageView* option_icon_view_ = nullptr;
 
   views::Label* label_view_;
   views::ImageView* checked_icon_view_;
@@ -276,38 +346,36 @@ END_METADATA
 // -----------------------------------------------------------------------------
 // CaptureModeMenuGroup:
 
+CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate)
+    : CaptureModeMenuGroup(delegate, /*menu_header=*/nullptr) {}
+
 CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate,
                                            const gfx::VectorIcon& header_icon,
                                            std::u16string header_label,
                                            bool managed_by_policy)
-    : delegate_(delegate),
-      menu_header_(AddChildView(
+    : CaptureModeMenuGroup(
+          delegate,
           std::make_unique<CaptureModeMenuHeader>(header_icon,
                                                   std::move(header_label),
-                                                  managed_by_policy))) {
-  options_container_ = AddChildView(std::make_unique<views::View>());
-  options_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kMenuGroupPadding,
-      kSpaceBetweenMenuItem));
-}
+                                                  managed_by_policy)) {}
 
 CaptureModeMenuGroup::~CaptureModeMenuGroup() = default;
 
 bool CaptureModeMenuGroup::IsManagedByPolicy() const {
-  return menu_header_->is_managed_by_policy();
+  return menu_header_ && menu_header_->is_managed_by_policy();
 }
 
-void CaptureModeMenuGroup::AddOption(std::u16string option_label,
+void CaptureModeMenuGroup::AddOption(const gfx::VectorIcon* option_icon,
+                                     std::u16string option_label,
                                      int option_id) {
   options_.push_back(
       options_container_->AddChildView(std::make_unique<CaptureModeOption>(
           base::BindRepeating(&CaptureModeMenuGroup::HandleOptionClick,
                               base::Unretained(this), option_id),
-          std::move(option_label), option_id,
+          option_icon, std::move(option_label), option_id,
           /*checked=*/delegate_->IsOptionChecked(option_id),
-          /*enabled=*/delegate_->IsOptionEnabled(option_id))));
+          /*enabled=*/delegate_->IsOptionEnabled(option_id),
+          /*indented=*/!!menu_header_)));
 }
 
 void CaptureModeMenuGroup::DeleteOptions() {
@@ -317,16 +385,18 @@ void CaptureModeMenuGroup::DeleteOptions() {
 }
 
 void CaptureModeMenuGroup::AddOrUpdateExistingOption(
+    const gfx::VectorIcon* option_icon,
     std::u16string option_label,
     int option_id) {
   auto* option = GetOptionById(option_id);
 
   if (option) {
+    option->SetOptionIcon(option_icon);
     option->SetOptionLabel(std::move(option_label));
     return;
   }
 
-  AddOption(std::move(option_label), option_id);
+  AddOption(option_icon, std::move(option_label), option_id);
 }
 
 void CaptureModeMenuGroup::RefreshOptionsSelections() {
@@ -348,7 +418,8 @@ void CaptureModeMenuGroup::RemoveOptionIfAny(int option_id) {
 void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
                                        std::u16string item_label) {
   menu_items_.push_back(views::View::AddChildView(
-      std::make_unique<CaptureModeMenuItem>(callback, std::move(item_label))));
+      std::make_unique<CaptureModeMenuItem>(callback, std::move(item_label),
+                                            /*indented=*/!!menu_header_)));
 }
 
 bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
@@ -369,7 +440,8 @@ void CaptureModeMenuGroup::AppendHighlightableItems(
   if (!GetVisible())
     return;
 
-  highlightable_items.push_back(menu_header_);
+  if (menu_header_)
+    highlightable_items.push_back(menu_header_);
   for (auto* option : options_) {
     if (option->GetEnabled())
       highlightable_items.push_back(option);
@@ -392,6 +464,21 @@ std::u16string CaptureModeMenuGroup::GetOptionLabelForTesting(
   auto* option = GetOptionById(option_id);
   DCHECK(option);
   return option->GetOptionLabel();
+}
+
+CaptureModeMenuGroup::CaptureModeMenuGroup(
+    Delegate* delegate,
+    std::unique_ptr<CaptureModeMenuHeader> menu_header)
+    : delegate_(delegate),
+      menu_header_(menu_header ? AddChildView(std::move(menu_header))
+                               : nullptr),
+      options_container_(AddChildView(std::make_unique<views::View>())) {
+  DCHECK(delegate_);
+  options_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, kMenuGroupPadding,
+      kSpaceBetweenMenuItem));
 }
 
 CaptureModeOption* CaptureModeMenuGroup::GetOptionById(int option_id) const {

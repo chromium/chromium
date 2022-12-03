@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_MENU_GROUP_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_MENU_GROUP_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -24,8 +25,8 @@ class CaptureModeMenuItem;
 class CaptureModeOption;
 
 // Defines a view that groups together related capture mode settings in an
-// independent section in the settings menu. Each group has a header icon and a
-// header label.
+// independent section in the settings menu. Each group can be created with a
+// header that has an icon and a label for the group, or be header-less.
 class ASH_EXPORT CaptureModeMenuGroup : public views::View {
  public:
   METADATA_HEADER(CaptureModeMenuGroup);
@@ -45,32 +46,46 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
     virtual ~Delegate() = default;
   };
 
+  // This version of the constructor creates a header-less menu group. Note that
+  // menu groups without headers is not designed for settings that are managed
+  // by policy.
+  explicit CaptureModeMenuGroup(Delegate* delegate);
+
   // If `managed_by_policy` is true, the header of this menu group will show an
   // enterprise-managed feature icon next to the `header_label`.
   CaptureModeMenuGroup(Delegate* delegate,
                        const gfx::VectorIcon& header_icon,
                        std::u16string header_label,
                        bool managed_by_policy = false);
+
   CaptureModeMenuGroup(const CaptureModeMenuGroup&) = delete;
   CaptureModeMenuGroup& operator=(const CaptureModeMenuGroup&) = delete;
+
   ~CaptureModeMenuGroup() override;
 
   // Returns true if this menu group is for a setting that is managed by a
   // policy set by admins.
   bool IsManagedByPolicy() const;
 
-  // Adds an option which has text and a checked image icon to the the menu
-  // group. When the option is selected, its checked icon is visible. Otherwise
-  // its checked icon is invisible. One and only one option's checked icon is
-  // visible all the time.
-  void AddOption(std::u16string option_label, int option_id);
+  // Adds an option which has an optional icon, label, and a checked image icon
+  // to the the menu group. `option_icon` can be provided as `nullptr` if no
+  // icon is desired for the option. When the option is selected, its checked
+  // icon is visible. Otherwise its checked icon is invisible. One and only one
+  // option's checked icon is visible in one menu group all the time.
+  void AddOption(const gfx::VectorIcon* option_icon,
+                 std::u16string option_label,
+                 int option_id);
 
   // Deletes all options in `options_`.
   void DeleteOptions();
 
-  // If an option with the given |option_id| exists, it will be updated with the
-  // given |option_label|. Otherwise, a new option will be added.
-  void AddOrUpdateExistingOption(std::u16string option_label, int option_id);
+  // If an option with the given `option_id` exists, it will be updated with the
+  // given `option_label`. Otherwise, a new option will be added. Note that
+  // `option_icon` is optional and can be provided as `nullptr` if no icon is
+  // desired for the option.
+  void AddOrUpdateExistingOption(const gfx::VectorIcon* option_icon,
+                                 std::u16string option_label,
+                                 int option_id);
 
   // Refreshes which options are currently selected and showing checked icons
   // next to their labels. This calls back into the |Delegate| to check each
@@ -110,6 +125,11 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
  private:
   friend class CaptureModeSettingsTestApi;
 
+  // Acts as a common constructor that's called by the above public
+  // constructors.
+  CaptureModeMenuGroup(Delegate* delegate,
+                       std::unique_ptr<CaptureModeMenuHeader> menu_header);
+
   // Returns the option whose ID is |option_id|, and nullptr if no such option
   // exists.
   CaptureModeOption* GetOptionById(int option_id) const;
@@ -122,8 +142,9 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // its views hierarchy.
   const Delegate* const delegate_;
 
-  // The menu header of `this`. It's owned by the views hierarchy.
-  CaptureModeMenuHeader* menu_header_;
+  // The menu header of `this`. It's owned by the views hierarchy. Can be null
+  // if this group is header-less.
+  CaptureModeMenuHeader* menu_header_ = nullptr;
 
   // Options added via calls "AddOption()". Options are owned by theirs views
   // hierarchy.
