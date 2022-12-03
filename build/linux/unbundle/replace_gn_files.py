@@ -15,7 +15,7 @@ import sys
 
 
 REPLACEMENTS = {
-  # Use system libabsl_2xxx. These 18 shims MUST be used together.
+  # Use system libabsl_2xxx. These 20 shims MUST be used together.
   'absl_algorithm': 'third_party/abseil-cpp/absl/algorithm/BUILD.gn',
   'absl_base': 'third_party/abseil-cpp/absl/base/BUILD.gn',
   'absl_cleanup': 'third_party/abseil-cpp/absl/cleanup/BUILD.gn',
@@ -24,6 +24,8 @@ REPLACEMENTS = {
   'absl_flags': 'third_party/abseil-cpp/absl/flags/BUILD.gn',
   'absl_functional': 'third_party/abseil-cpp/absl/functional/BUILD.gn',
   'absl_hash': 'third_party/abseil-cpp/absl/hash/BUILD.gn',
+  'absl_log': 'third_party/abseil-cpp/absl/log/BUILD.gn',
+  'absl_log_internal': 'third_party/abseil-cpp/absl/log/internal/BUILD.gn',
   'absl_memory': 'third_party/abseil-cpp/absl/memory/BUILD.gn',
   'absl_meta': 'third_party/abseil-cpp/absl/meta/BUILD.gn',
   'absl_numeric': 'third_party/abseil-cpp/absl/numeric/BUILD.gn',

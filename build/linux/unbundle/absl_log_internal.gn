@@ -1,0 +1,1 @@
+source_set("stderr_log_sink_test") {}
