@@ -12,8 +12,6 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -70,7 +68,6 @@ class UpdateFileHandlerCommandTest : public WebAppTest {
  private:
   raw_ptr<FakeWebAppProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(UpdateFileHandlerCommandTest, UserChoiceAllowPersisted) {

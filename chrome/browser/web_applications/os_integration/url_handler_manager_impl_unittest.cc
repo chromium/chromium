@@ -24,8 +24,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,8 +41,7 @@ constexpr char kOriginUrl2[] = "https://origin-2.com/abc";
 
 class UrlHandlerManagerImplTest : public WebAppTest {
  public:
-  UrlHandlerManagerImplTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
+  UrlHandlerManagerImplTest() {
     features_.InitAndEnableFeature(blink::features::kWebAppEnableUrlHandlers);
   }
   ~UrlHandlerManagerImplTest() override = default;
@@ -157,7 +154,6 @@ class UrlHandlerManagerImplTest : public WebAppTest {
   raw_ptr<FakeWebAppProvider> provider_;
   raw_ptr<UrlHandlerManagerImpl> url_handler_manager_;
   base::test::ScopedFeatureList features_;
-  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(UrlHandlerManagerImplTest, RegisterAndUnregisterApp) {

@@ -93,7 +93,7 @@ class WebAppCommandManagerTest : public WebAppTest {
   }
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    WebAppTest::SetUp();
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
     auto command_url_loader = std::make_unique<TestWebAppUrlLoader>();
     url_loader_ = command_url_loader.get();

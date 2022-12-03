@@ -6,18 +6,14 @@
 
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
-#include "base/path_service.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,28 +24,19 @@ namespace {
 const char kFakeChromeBundleId[] = "fake.cfbundleidentifier";
 }
 
-class WebAppShortcutManagerMacTest : public testing::Test {
+class WebAppShortcutManagerMacTest : public WebAppTest {
  public:
+  WebAppShortcutManagerMacTest()
+      : WebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
+    WebAppTest::SetUp();
+
     base::mac::SetBaseBundleID(kFakeChromeBundleId);
     // Put shortcuts somewhere under the home dir, as otherwise LaunchServices
     // won't be able to find them.
     override_registration_ =
         ShortcutOverrideForTesting::OverrideForTesting(base::GetHomeDir());
-
-    // Override user_data_dir, and create a testing profile inside that dir.
-    EXPECT_TRUE(temp_user_data_dir_.CreateUniqueTempDir());
-    user_data_dir_ = base::MakeAbsoluteFilePath(temp_user_data_dir_.GetPath());
-    EXPECT_TRUE(
-        base::PathService::Override(chrome::DIR_USER_DATA, user_data_dir_));
-    profile_ = TestingProfile::Builder()
-                   .SetProfileName("Default")
-                   .SetPath(user_data_dir_.AppendASCII("Default"))
-                   .Build();
-    // Simply creating a TestingProfile does not store its name to prefs. This
-    // could be done by calling ProfileManager::RegisterTestingProfile, but
-    // simpler is just to store the name directly.
-    profile_->GetPrefs()->SetString(prefs::kProfileName, "Default");
 
     provider_ = FakeWebAppProvider::Get(profile());
 
@@ -84,9 +71,10 @@ class WebAppShortcutManagerMacTest : public testing::Test {
       EXPECT_TRUE(override_registration_->shortcut_override->chrome_apps_folder
                       .Delete());
     override_registration_.reset();
+
+    WebAppTest::TearDown();
   }
 
-  Profile* profile() { return profile_.get(); }
   WebAppShortcutManager& shortcut_manager() {
     return provider_->os_integration_manager().shortcut_manager_for_testing();
   }
@@ -110,7 +98,7 @@ class WebAppShortcutManagerMacTest : public testing::Test {
   }
 
   void FastForwardBy(base::TimeDelta delta) {
-    task_environment_.FastForwardBy(delta);
+    task_environment()->FastForwardBy(delta);
   }
 
   const char* kTestApp1Name = "test app";
@@ -119,13 +107,6 @@ class WebAppShortcutManagerMacTest : public testing::Test {
   const GURL kTestApp2Url = GURL("https://example.com");
 
  private:
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestingProfile> profile_;
-
-  base::ScopedTempDir temp_user_data_dir_;
-  base::FilePath user_data_dir_;
   std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
       override_registration_;
 

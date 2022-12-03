@@ -75,13 +75,16 @@ class TestingProfileManager : public ProfileObserver {
       bool is_supervised_profile = false,
       absl::optional<bool> is_new_profile = absl::nullopt,
       absl::optional<std::unique_ptr<policy::PolicyService>> policy_service =
-          absl::nullopt);
+          absl::nullopt,
+      bool is_main_profile = false);
 
   // Small helpers for creating testing profiles. Just forward to above.
-  TestingProfile* CreateTestingProfile(const std::string& name);
+  TestingProfile* CreateTestingProfile(const std::string& name,
+                                       bool is_main_profile = false);
   TestingProfile* CreateTestingProfile(
       const std::string& name,
-      TestingProfile::TestingFactories testing_factories);
+      TestingProfile::TestingFactories testing_factories,
+      bool is_main_profile = false);
 
   // Creates a new guest TestingProfile whose data lives in the guest profile
   // test environment directory, as specified by the profile manager.
