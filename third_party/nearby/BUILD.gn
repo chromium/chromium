@@ -399,6 +399,7 @@ source_set("platform_api_comm") {
     "src/internal/platform/implementation/server_sync.h",
     "src/internal/platform/implementation/webrtc.h",
     "src/internal/platform/implementation/wifi.h",
+    "src/internal/platform/implementation/wifi_direct.h",
     "src/internal/platform/implementation/wifi_hotspot.h",
     "src/internal/platform/implementation/wifi_lan.h",
   ]
@@ -668,6 +669,7 @@ source_set("platform_public_comm") {
     "src/internal/platform/ble_v2.cc",
     "src/internal/platform/bluetooth_classic.cc",
     "src/internal/platform/file.cc",
+    "src/internal/platform/wifi_direct.cc",
     "src/internal/platform/wifi_hotspot.cc",
     "src/internal/platform/wifi_lan.cc",
     "src/internal/platform/wifi_utils.cc",
@@ -678,6 +680,7 @@ source_set("platform_public_comm") {
     "src/internal/platform/bluetooth_adapter.h",
     "src/internal/platform/bluetooth_classic.h",
     "src/internal/platform/webrtc.h",
+    "src/internal/platform/wifi_direct.h",
     "src/internal/platform/wifi_hotspot.h",
     "src/internal/platform/wifi_lan.h",
     "src/internal/platform/wifi_utils.h",
