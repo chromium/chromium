@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 
 namespace ash::quick_start {
 
@@ -111,6 +112,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   ResultCallback on_start_advertising_callback_;
   base::OnceClosure on_stop_advertising_callback_;
   std::unique_ptr<Connection> fake_connection_;
+  std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
 };
 
 }  // namespace ash::quick_start

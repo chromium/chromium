@@ -7,6 +7,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 
 namespace ash::quick_start {
 
@@ -60,8 +62,12 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
 void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
     const std::string& source_device_id) {
   fake_connection_.reset();
+  // TODO(b/234655072): Edit once we have implemented a way to set
+  // NearbyConnection at the Connection level.
+  fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
+  NearbyConnection* nearby_connection = fake_nearby_connection_.get();
   auto fake_authenticated_connection =
-      std::make_unique<FakeAuthenticatedConnection>();
+      std::make_unique<FakeAuthenticatedConnection>(nearby_connection);
   connection_lifecycle_listener_->OnConnectionAuthenticated(
       source_device_id, fake_authenticated_connection->AsWeakPtr());
 

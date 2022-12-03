@@ -63,7 +63,11 @@ source_set("decoder") {
 source_set("test_support") {
   testonly = true
   public_deps = [ ":connectivity" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/browser/nearby_sharing/public/cpp",
+    "//chrome/test:test_support",
+  ]
   sources = [
     "fake_target_device_connection_broker.cc",
     "fake_target_device_connection_broker.h",
@@ -87,6 +91,7 @@ source_set("unit_tests") {
     "//url",
   ]
   sources = [
+    "authenticated_connection_unittest.cc",
     "clients/target_forced_update_client_unittest.cc",
     "fast_pair_advertiser_unittest.cc",
     "incoming_connection_unittest.cc",
