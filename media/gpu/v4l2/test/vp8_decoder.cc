@@ -20,6 +20,24 @@
 #include "media/parsers/vp8_parser.h"
 
 namespace {
+constexpr size_t kVp8FrameLast = 0;
+constexpr size_t kVp8FrameGolden = 1;
+constexpr size_t kVp8FrameAltref = 2;
+
+using TypeOfVp8RefType = std::underlying_type_t<media::Vp8RefType>;
+
+static_assert(kVp8FrameLast ==
+                  base::strict_cast<TypeOfVp8RefType>(media::VP8_FRAME_LAST),
+              "Invalid index value for Last reference frame");
+
+static_assert(kVp8FrameGolden ==
+                  base::strict_cast<TypeOfVp8RefType>(media::VP8_FRAME_GOLDEN),
+              "Invalid index value for Golden reference frame");
+
+static_assert(kVp8FrameAltref ==
+                  base::strict_cast<TypeOfVp8RefType>(media::VP8_FRAME_ALTREF),
+              "Invalid index value for Altref reference frame");
+
 // Section 9.4. Loop filter type and levels syntax in VP8 specs.
 // https://datatracker.ietf.org/doc/rfc6386/
 struct v4l2_vp8_loop_filter FillV4L2VP8LoopFilterHeader(
@@ -149,21 +167,18 @@ bool IsBufferSlotInUse(
 
     bool is_frame_not_refreshed = false;
     switch (i) {
-      case media::VP8_FRAME_ALTREF:
-        if (!frame_hdr.refresh_alternate_frame &&
-            frame_hdr.copy_buffer_to_alternate ==
-                media::Vp8FrameHeader::NO_ALT_REFRESH)
-          is_frame_not_refreshed = true;
+      case kVp8FrameAltref:
+        is_frame_not_refreshed = !frame_hdr.refresh_alternate_frame &&
+                                 frame_hdr.copy_buffer_to_alternate ==
+                                     media::Vp8FrameHeader::NO_ALT_REFRESH;
         break;
-      case media::VP8_FRAME_GOLDEN:
-        if (!frame_hdr.refresh_golden_frame &&
-            frame_hdr.copy_buffer_to_golden ==
-                media::Vp8FrameHeader::NO_GOLDEN_REFRESH)
-          is_frame_not_refreshed = true;
+      case kVp8FrameGolden:
+        is_frame_not_refreshed = !frame_hdr.refresh_golden_frame &&
+                                 frame_hdr.copy_buffer_to_golden ==
+                                     media::Vp8FrameHeader::NO_GOLDEN_REFRESH;
         break;
-      case media::VP8_FRAME_LAST:
-        if (!frame_hdr.refresh_last)
-          is_frame_not_refreshed = true;
+      case kVp8FrameLast:
+        is_frame_not_refreshed = !frame_hdr.refresh_last;
         break;
       default:
         NOTREACHED() << "Invalid reference frame index";
@@ -345,18 +360,17 @@ struct v4l2_ctrl_vp8_frame Vp8Decoder::SetupFrameHeaders(
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#buffer-management-while-decoding
   constexpr size_t kTimestampToNanoSecs = 1000;
   v4l2_frame_headers.last_frame_ts =
-      ref_frames_[media::VP8_FRAME_LAST]
-          ? (ref_frames_[media::VP8_FRAME_LAST]->frame_number() *
-             kTimestampToNanoSecs)
+      ref_frames_[kVp8FrameLast]
+          ? (ref_frames_[kVp8FrameLast]->frame_number() * kTimestampToNanoSecs)
           : kInvalidSurface;
   v4l2_frame_headers.golden_frame_ts =
-      ref_frames_[media::VP8_FRAME_GOLDEN]
-          ? (ref_frames_[media::VP8_FRAME_GOLDEN]->frame_number() *
+      ref_frames_[kVp8FrameGolden]
+          ? (ref_frames_[kVp8FrameGolden]->frame_number() *
              kTimestampToNanoSecs)
           : kInvalidSurface;
   v4l2_frame_headers.alt_frame_ts =
-      ref_frames_[media::VP8_FRAME_ALTREF]
-          ? (ref_frames_[media::VP8_FRAME_ALTREF]->frame_number() *
+      ref_frames_[kVp8FrameAltref]
+          ? (ref_frames_[kVp8FrameAltref]->frame_number() *
              kTimestampToNanoSecs)
           : kInvalidSurface;
 
@@ -367,21 +381,22 @@ void Vp8Decoder::UpdateReusableReferenceBufferSlots(
     const Vp8FrameHeader& frame_hdr,
     const size_t curr_ref_frame_index,
     std::set<int>& reusable_buffer_slots) {
-  const uint16_t reusable_candidate_buffer_id =
+  const auto reusable_candidate_buffer_id =
       ref_frames_[curr_ref_frame_index]->buffer_id();
-  reusable_buffer_slots.insert(reusable_candidate_buffer_id);
+  reusable_buffer_slots.insert(
+      base::checked_cast<int>(reusable_candidate_buffer_id));
 
   bool is_buffer_slot_copied = false;
   switch (curr_ref_frame_index) {
-    case VP8_FRAME_ALTREF:
+    case kVp8FrameAltref:
       is_buffer_slot_copied =
           frame_hdr.copy_buffer_to_golden == Vp8FrameHeader::COPY_ALT_TO_GOLDEN;
       break;
-    case VP8_FRAME_GOLDEN:
+    case kVp8FrameGolden:
       is_buffer_slot_copied = frame_hdr.copy_buffer_to_alternate ==
                               Vp8FrameHeader::COPY_GOLDEN_TO_ALT;
       break;
-    case VP8_FRAME_LAST:
+    case kVp8FrameLast:
       is_buffer_slot_copied = (frame_hdr.copy_buffer_to_alternate ==
                                Vp8FrameHeader::COPY_LAST_TO_ALT) ||
                               (frame_hdr.copy_buffer_to_golden ==
@@ -394,7 +409,8 @@ void Vp8Decoder::UpdateReusableReferenceBufferSlots(
       IsBufferSlotInUse(frame_hdr, ref_frames_, curr_ref_frame_index);
 
   if (is_buffer_slot_copied || is_buffer_slot_in_use)
-    reusable_buffer_slots.erase(reusable_candidate_buffer_id);
+    reusable_buffer_slots.erase(
+        base::checked_cast<int>(reusable_candidate_buffer_id));
 }
 
 std::set<int> Vp8Decoder::RefreshReferenceSlots(
@@ -418,25 +434,25 @@ std::set<int> Vp8Decoder::RefreshReferenceSlots(
   }
 
   if (frame_hdr.refresh_alternate_frame) {
-    UpdateReusableReferenceBufferSlots(frame_hdr, VP8_FRAME_ALTREF,
+    UpdateReusableReferenceBufferSlots(frame_hdr, kVp8FrameAltref,
                                        reusable_buffer_slots);
-    ref_frames_[VP8_FRAME_ALTREF] = buffer;
+    ref_frames_[kVp8FrameAltref] = buffer;
   } else {
     switch (frame_hdr.copy_buffer_to_alternate) {
       case Vp8FrameHeader::COPY_LAST_TO_ALT:
-        DCHECK(ref_frames_[VP8_FRAME_LAST]);
-        UpdateReusableReferenceBufferSlots(frame_hdr, VP8_FRAME_ALTREF,
+        DCHECK(ref_frames_[kVp8FrameLast]);
+        UpdateReusableReferenceBufferSlots(frame_hdr, kVp8FrameAltref,
                                            reusable_buffer_slots);
-        ref_frames_[VP8_FRAME_ALTREF] = ref_frames_[VP8_FRAME_LAST];
+        ref_frames_[kVp8FrameAltref] = ref_frames_[kVp8FrameLast];
         break;
       case Vp8FrameHeader::COPY_GOLDEN_TO_ALT:
-        DCHECK(ref_frames_[VP8_FRAME_GOLDEN]);
-        UpdateReusableReferenceBufferSlots(frame_hdr, VP8_FRAME_ALTREF,
+        DCHECK(ref_frames_[kVp8FrameGolden]);
+        UpdateReusableReferenceBufferSlots(frame_hdr, kVp8FrameAltref,
                                            reusable_buffer_slots);
-        ref_frames_[VP8_FRAME_ALTREF] = ref_frames_[VP8_FRAME_GOLDEN];
+        ref_frames_[kVp8FrameAltref] = ref_frames_[kVp8FrameGolden];
         break;
       case Vp8FrameHeader::NO_ALT_REFRESH:
-        DCHECK(ref_frames_[VP8_FRAME_ALTREF]);
+        DCHECK(ref_frames_[kVp8FrameAltref]);
         break;
       default:
         NOTREACHED() << "Invalid flag to refresh altenate frame: "
@@ -445,25 +461,25 @@ std::set<int> Vp8Decoder::RefreshReferenceSlots(
   }
 
   if (frame_hdr.refresh_golden_frame) {
-    UpdateReusableReferenceBufferSlots(frame_hdr, VP8_FRAME_GOLDEN,
+    UpdateReusableReferenceBufferSlots(frame_hdr, kVp8FrameGolden,
                                        reusable_buffer_slots);
-    ref_frames_[VP8_FRAME_GOLDEN] = buffer;
+    ref_frames_[kVp8FrameGolden] = buffer;
   } else {
     switch (frame_hdr.copy_buffer_to_golden) {
       case Vp8FrameHeader::COPY_LAST_TO_GOLDEN:
-        DCHECK(ref_frames_[VP8_FRAME_LAST]);
-        UpdateReusableReferenceBufferSlots(frame_hdr, VP8_FRAME_GOLDEN,
+        DCHECK(ref_frames_[kVp8FrameLast]);
+        UpdateReusableReferenceBufferSlots(frame_hdr, kVp8FrameGolden,
                                            reusable_buffer_slots);
-        ref_frames_[VP8_FRAME_GOLDEN] = ref_frames_[VP8_FRAME_LAST];
+        ref_frames_[kVp8FrameGolden] = ref_frames_[kVp8FrameLast];
         break;
       case Vp8FrameHeader::COPY_ALT_TO_GOLDEN:
-        DCHECK(ref_frames_[VP8_FRAME_ALTREF]);
-        UpdateReusableReferenceBufferSlots(frame_hdr, VP8_FRAME_GOLDEN,
+        DCHECK(ref_frames_[kVp8FrameAltref]);
+        UpdateReusableReferenceBufferSlots(frame_hdr, kVp8FrameGolden,
                                            reusable_buffer_slots);
-        ref_frames_[VP8_FRAME_GOLDEN] = ref_frames_[VP8_FRAME_ALTREF];
+        ref_frames_[kVp8FrameGolden] = ref_frames_[kVp8FrameAltref];
         break;
       case Vp8FrameHeader::NO_GOLDEN_REFRESH:
-        DCHECK(ref_frames_[VP8_FRAME_GOLDEN]);
+        DCHECK(ref_frames_[kVp8FrameGolden]);
         break;
       default:
         NOTREACHED() << "Invalid flag to refresh golden frame: "
@@ -472,12 +488,12 @@ std::set<int> Vp8Decoder::RefreshReferenceSlots(
   }
 
   if (frame_hdr.refresh_last) {
-    UpdateReusableReferenceBufferSlots(frame_hdr, VP8_FRAME_LAST,
+    UpdateReusableReferenceBufferSlots(frame_hdr, kVp8FrameLast,
                                        reusable_buffer_slots);
-    ref_frames_[VP8_FRAME_LAST] = buffer;
+    ref_frames_[kVp8FrameLast] = buffer;
   }
 
-  DCHECK(ref_frames_[VP8_FRAME_LAST]);
+  DCHECK(ref_frames_[kVp8FrameLast]);
 
   return reusable_buffer_slots;
 }
