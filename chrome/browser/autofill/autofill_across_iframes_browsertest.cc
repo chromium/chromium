@@ -229,7 +229,7 @@ auto HasValue(base::StringPiece value) {
 // Test fixture for all tests of AutofillAcrossIframes. A particular goal is is
 // to test that ContentAutofillRouter and FormForest handle the race conditions
 // that arise during page load correctly; see
-// go/autofill-iframes-race-conditions for some explanation.
+// go/autofill-iframes-race-condition-explainer for some explanation.
 class AutofillAcrossIframesTest : public InProcessBrowserTest {
  public:
   AutofillAcrossIframesTest()
@@ -602,9 +602,9 @@ class AutofillAcrossIframesTest_Dynamic : public AutofillAcrossIframesTest {
     SetUrlContent("/cvc.html", "");
     SetUrlContent("/", base::StringPrintf(
                            R"(<iframe src="$1/name.html"></iframe>
-                         <iframe src="$1/num.html"></iframe>
-                         <iframe src="$1/exp.html"></iframe>
-                         <iframe src="$1/cvc.html"></iframe>)"));
+                              <iframe src="$1/num.html"></iframe>
+                              <iframe src="$1/exp.html"></iframe>
+                              <iframe src="$1/cvc.html"></iframe>)"));
     return NavigateToUrl("/", /*num_fields=*/3);
   }
 
