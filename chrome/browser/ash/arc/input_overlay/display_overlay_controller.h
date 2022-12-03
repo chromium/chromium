@@ -103,6 +103,9 @@ class DisplayOverlayController : public ui::EventHandler,
   // Display overlay is added for starting |display_mode|.
   void AddOverlay(DisplayMode display_mode);
   void RemoveOverlayIfAny();
+  // If |on_overlay| is true, set event target on overlay layer. Otherwise, set
+  // event target on the layer underneath the overlay layer.
+  void SetEventTarget(views::Widget* overlay_widget, bool on_overlay);
 
   // On charge of Add/Remove nudge view.
   void AddNudgeView(views::Widget* overlay_widget);
@@ -113,7 +116,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddMenuEntryView(views::Widget* overlay_widget);
   void RemoveMenuEntryView();
   void OnMenuEntryPressed();
-  void OnMenuEntryPositionChanged(gfx::Point location);
+  void OnMenuEntryDragEnd(absl::optional<gfx::Point> location);
   void FocusOnMenuEntry();
   void ClearFocusOnMenuEntry();
   void RemoveInputMenuView();

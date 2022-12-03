@@ -12,11 +12,10 @@
 
 namespace arc::input_overlay {
 
-MenuEntryView::MenuEntryView(
-    PressedCallback pressed_callback,
-    OnPositionChangedCallback on_position_changed_callback)
+MenuEntryView::MenuEntryView(PressedCallback pressed_callback,
+                             OnDragEndCallback on_drag_end_callback)
     : views::ImageButton(std::move(pressed_callback)),
-      on_position_changed_callback_(on_position_changed_callback) {}
+      on_drag_end_callback_(on_drag_end_callback) {}
 
 MenuEntryView::~MenuEntryView() = default;
 
@@ -81,8 +80,9 @@ void MenuEntryView::OnDragUpdate(const ui::LocatedEvent& event) {
 
 void MenuEntryView::OnDragEnd() {
   is_dragging_ = false;
-  if (origin() != start_drag_view_pos_)
-    on_position_changed_callback_.Run(origin());
+  on_drag_end_callback_.Run(origin() != start_drag_view_pos_
+                                ? absl::make_optional(origin())
+                                : absl::nullopt);
 }
 
 }  // namespace arc::input_overlay

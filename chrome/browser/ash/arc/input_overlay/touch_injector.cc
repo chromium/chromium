@@ -606,7 +606,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     // Release all active touches when the display mode is changed from |kView|
     // to |kMenu|.
     CleanupTouchEvents();
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kMenu);
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kPreMenu);
     return SendEvent(continuation, &event);
   }
 

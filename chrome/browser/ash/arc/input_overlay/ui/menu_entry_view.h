@@ -15,10 +15,11 @@ namespace arc::input_overlay {
 // MenuEntryView is for GIO menu entry button.
 class MenuEntryView : public views::ImageButton {
  public:
-  using OnPositionChangedCallback = base::RepeatingCallback<void(gfx::Point)>;
+  using OnDragEndCallback =
+      base::RepeatingCallback<void(absl::optional<gfx::Point>)>;
 
   MenuEntryView(PressedCallback pressed_callback,
-                OnPositionChangedCallback on_position_changed_callback);
+                OnDragEndCallback on_position_changed_callback);
   MenuEntryView(const MenuEntryView&) = delete;
   MenuEntryView& operator=(const MenuEntryView&) = delete;
   ~MenuEntryView() override;
@@ -38,8 +39,7 @@ class MenuEntryView : public views::ImageButton {
   void OnDragUpdate(const ui::LocatedEvent& event);
   void OnDragEnd();
 
-  // Saves the position of the menu entry view.
-  OnPositionChangedCallback on_position_changed_callback_;
+  OnDragEndCallback on_drag_end_callback_;
 
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;

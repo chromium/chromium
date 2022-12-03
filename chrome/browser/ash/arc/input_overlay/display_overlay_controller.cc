@@ -133,6 +133,13 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
   }
 }
 
+void DisplayOverlayController::SetEventTarget(views::Widget* overlay_widget,
+                                              bool on_overlay) {
+  overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
+      on_overlay ? aura::EventTargetingPolicy::kTargetAndDescendants
+                 : aura::EventTargetingPolicy::kNone);
+}
+
 void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
   if (nudge_view_)
     return;
@@ -198,7 +205,7 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   auto menu_entry = std::make_unique<MenuEntryView>(
       base::BindRepeating(&DisplayOverlayController::OnMenuEntryPressed,
                           base::Unretained(this)),
-      base::BindRepeating(&DisplayOverlayController::OnMenuEntryPositionChanged,
+      base::BindRepeating(&DisplayOverlayController::OnMenuEntryDragEnd,
                           base::Unretained(this)));
   menu_entry->SetImage(views::Button::STATE_NORMAL, game_icon);
   menu_entry->SetBackground(views::CreateRoundedRectBackground(
@@ -249,8 +256,15 @@ void DisplayOverlayController::OnMenuEntryPressed() {
   menu_entry_->SetVisible(false);
 }
 
-void DisplayOverlayController::OnMenuEntryPositionChanged(gfx::Point location) {
-  touch_injector_->SaveMenuEntryLocation(location);
+void DisplayOverlayController::OnMenuEntryDragEnd(
+    absl::optional<gfx::Point> location) {
+  // When menu entry is in dragging, input events target at overlay layer. When
+  // finishing drag, input events should target on the app content layer
+  // underneath the overlay. Set display mode to |kView| to make event target
+  // leave from the overlay layer.
+  SetDisplayMode(DisplayMode::kView);
+  if (location)
+    touch_injector_->SaveMenuEntryLocation(*location);
 }
 
 void DisplayOverlayController::FocusOnMenuEntry() {
@@ -483,8 +497,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       // Force recreating educational view as it is responsive to width changes.
       RemoveEducationalView();
       AddEducationalView();
-      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
-          aura::EventTargetingPolicy::kTargetAndDescendants);
+      SetEventTarget(overlay_widget, /*on_overlay=*/true);
       break;
     case DisplayMode::kView:
       RemoveEditMessage();
@@ -501,8 +514,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       ClearFocusOnMenuEntry();
       if (touch_injector_->show_nudge())
         AddNudgeView(overlay_widget);
-      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
-          aura::EventTargetingPolicy::kNone);
+      SetEventTarget(overlay_widget, /*on_overlay=*/false);
       break;
     case DisplayMode::kEdit:
       RemoveInputMenuView();
@@ -514,18 +526,15 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
         AddButtonForAddActionTap();
         AddButtonForAddActionMove();
       }
-      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
-          aura::EventTargetingPolicy::kTargetAndDescendants);
+      SetEventTarget(overlay_widget, /*on_overlay=*/true);
       break;
     case DisplayMode::kPreMenu:
       RemoveNudgeView();
-      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
-          aura::EventTargetingPolicy::kTargetAndDescendants);
+      SetEventTarget(overlay_widget, /*on_overlay=*/true);
       FocusOnMenuEntry();
       break;
     case DisplayMode::kMenu:
-      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
-          aura::EventTargetingPolicy::kTargetAndDescendants);
+      SetEventTarget(overlay_widget, /*on_overlay=*/true);
       break;
     default:
       NOTREACHED();
