@@ -159,7 +159,7 @@ class ReusingTextShaper final {
                                    unsigned end_offset) {
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("ReusingTextShaper::Shape %d %u",
-                         start_item.GetLayoutObject()->RecordReplayId(),
+                         start_item.GetLayoutObject() ? start_item.GetLayoutObject()->RecordReplayId() : 0,
                          end_offset);
 
     const unsigned start_offset = start_item.StartOffset();
@@ -248,7 +248,7 @@ class ReusingTextShaper final {
                                      unsigned end_offset) {
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("ReusingTextShaper::Reshape %d %u %u",
-                         start_item.GetLayoutObject()->RecordReplayId(),
+                         start_item.GetLayoutObject() ? start_item.GetLayoutObject()->RecordReplayId() : 0,
                          start_offset, end_offset);
 
     DCHECK_LT(start_offset, end_offset);
@@ -1189,7 +1189,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("NGInlineNode::ShapeText #1 %d",
-                         start_item.GetLayoutObject()->RecordReplayId());
+                         start_item.GetLayoutObject() ? start_item.GetLayoutObject()->RecordReplayId() : 0);
 
     if (start_item.Type() != NGInlineItem::kText || !start_item.Length()) {
       index++;
@@ -1227,7 +1227,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
       // https://linear.app/replay/issue/RUN-480
       recordreplay::Assert("NGInlineNode::ShapeText #3 %d %d %u %u",
-                           item.GetLayoutObject()->RecordReplayId(),
+                           item.GetLayoutObject() ? item.GetLayoutObject()->RecordReplayId() : 0,
                            item.Type(), item.Length(), item.EndOffset());
 
       if (item.Type() == NGInlineItem::kControl) {
