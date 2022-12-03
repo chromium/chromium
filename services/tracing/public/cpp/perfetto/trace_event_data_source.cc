@@ -330,38 +330,6 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-base::Value TraceEventMetadataSource::GenerateLegacyMetadataDict() {
-  DCHECK(!privacy_filtering_enabled_);
-
-  base::Value merged_metadata(base::Value::Type::DICTIONARY);
-  std::vector<JsonMetadataGeneratorFunction> json_generators;
-  {
-    base::AutoLock lock(lock_);
-    json_generators = json_generator_functions_;
-  }
-  for (auto& generator : json_generators) {
-    absl::optional<base::Value> metadata_dict = generator.Run();
-    if (!metadata_dict) {
-      continue;
-    }
-    merged_metadata.MergeDictionary(&(*metadata_dict));
-  }
-
-  base::trace_event::MetadataFilterPredicate metadata_filter =
-      base::trace_event::TraceLog::GetInstance()->GetMetadataFilterPredicate();
-
-  // This out-of-band generation of the global metadata is only used by the
-  // crash service uploader path, which always requires privacy filtering.
-  CHECK(metadata_filter);
-  for (auto it : merged_metadata.DictItems()) {
-    if (!metadata_filter.Run(it.first)) {
-      it.second = base::Value("__stripped__");
-    }
-  }
-
-  return merged_metadata;
-}
-
 void TraceEventMetadataSource::GenerateMetadata(
     std::unique_ptr<
         std::vector<TraceEventMetadataSource::JsonMetadataGeneratorFunction>>

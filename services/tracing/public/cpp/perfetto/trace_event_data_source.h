@@ -75,11 +75,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
   // Same as above, but for filling in proto format.
   void AddGeneratorFunction(MetadataGeneratorFunction generator);
   void AddGeneratorFunction(PacketGeneratorFunction generator);
-  // For background tracing, the legacy crash uploader needs
-  // metadata fields to be uploaded as POST args in addition to being
-  // embedded in the trace. TODO(oysteine): Remove when only the
-  // UMA uploader path is used.
-  base::Value GenerateLegacyMetadataDict();
 
   // PerfettoTracedProcess::DataSourceBase implementation:
   void StartTracingImpl(
