@@ -10,6 +10,11 @@ import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 import {SwitchAccess} from './switch_access.js';
 import {SAConstants, SwitchAccessMenuAction} from './switch_access_constants.js';
 
+const ActionResponse = SAConstants.ActionResponse;
+const MenuAction = SwitchAccessMenuAction;
+const MenuType = SAConstants.MenuType;
+const Mode = SAConstants.Mode;
+
 /**
  * Class to handle performing actions with Switch Access, including determining
  * which actions are available in the given context.
@@ -24,7 +29,7 @@ export class ActionManager {
      */
     this.actionNode_;
 
-    /** @private {!Array<!SAConstants.MenuType>} */
+    /** @private {!Array<!MenuType>} */
     this.menuStack_ = [];
   }
 
@@ -44,7 +49,7 @@ export class ActionManager {
     ActionManager.instance.menuStack_ = [];
     ActionManager.instance.actionNode_ = null;
     MenuManager.close();
-    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+    if (SwitchAccess.mode === Mode.POINT_SCAN) {
       Navigator.byPoint.start();
     } else {
       Navigator.byPoint.stop();
@@ -78,12 +83,12 @@ export class ActionManager {
     }
 
     ActionManager.instance.menuStack_ = [];
-    ActionManager.instance.menuStack_.push(SAConstants.MenuType.MAIN_MENU);
+    ActionManager.instance.menuStack_.push(MenuType.MAIN_MENU);
     ActionManager.instance.actionNode_ = node;
     ActionManager.instance.openCurrentMenu_();
   }
 
-  /** @param {!SAConstants.MenuType} menu */
+  /** @param {!MenuType} menu */
   static openMenu(menu) {
     ActionManager.instance.menuStack_.push(menu);
     ActionManager.instance.openCurrentMenu_();
@@ -91,29 +96,29 @@ export class ActionManager {
 
   /**
    * Given the action to be performed, appropriately handles performing it.
-   * @param {!SwitchAccessMenuAction} action
+   * @param {!MenuAction} action
    */
   static performAction(action) {
     SwitchAccessMetrics.recordMenuAction(action);
 
     switch (action) {
       // Global actions:
-      case SwitchAccessMenuAction.SETTINGS:
+      case MenuAction.SETTINGS:
         chrome.accessibilityPrivate.openSettingsSubpage(
             'manageAccessibility/switchAccess');
         ActionManager.exitCurrentMenu();
         break;
-      case SwitchAccessMenuAction.POINT_SCAN:
+      case MenuAction.POINT_SCAN:
         ActionManager.exitCurrentMenu();
         Navigator.byPoint.start();
         break;
-      case SwitchAccessMenuAction.ITEM_SCAN:
+      case MenuAction.ITEM_SCAN:
         Navigator.byItem.restart();
         ActionManager.exitAllMenus();
         break;
       // Point scan actions:
-      case SwitchAccessMenuAction.LEFT_CLICK:
-      case SwitchAccessMenuAction.RIGHT_CLICK:
+      case MenuAction.LEFT_CLICK:
+      case MenuAction.RIGHT_CLICK:
         // Exit menu, then click (so the action will hit the desired target,
         // instead of the menu).
         FocusRingManager.clearAll();
@@ -150,46 +155,46 @@ export class ActionManager {
 
   /**
    * Returns all possible actions for the provided menu type
-   * @param {!SAConstants.MenuType} type
-   * @return {!Array<!SwitchAccessMenuAction>}
+   * @param {!MenuType} type
+   * @return {!Array<!MenuAction>}
    * @private
    */
   actionsForType_(type) {
     switch (type) {
-      case SAConstants.MenuType.MAIN_MENU:
+      case MenuType.MAIN_MENU:
         return [
-          SwitchAccessMenuAction.COPY,
-          SwitchAccessMenuAction.CUT,
-          SwitchAccessMenuAction.DECREMENT,
-          SwitchAccessMenuAction.DICTATION,
-          SwitchAccessMenuAction.INCREMENT,
-          SwitchAccessMenuAction.KEYBOARD,
-          SwitchAccessMenuAction.MOVE_CURSOR,
-          SwitchAccessMenuAction.PASTE,
-          SwitchAccessMenuAction.SCROLL_DOWN,
-          SwitchAccessMenuAction.SCROLL_LEFT,
-          SwitchAccessMenuAction.SCROLL_RIGHT,
-          SwitchAccessMenuAction.SCROLL_UP,
-          SwitchAccessMenuAction.SELECT,
-          SwitchAccessMenuAction.START_TEXT_SELECTION,
+          MenuAction.COPY,
+          MenuAction.CUT,
+          MenuAction.DECREMENT,
+          MenuAction.DICTATION,
+          MenuAction.INCREMENT,
+          MenuAction.KEYBOARD,
+          MenuAction.MOVE_CURSOR,
+          MenuAction.PASTE,
+          MenuAction.SCROLL_DOWN,
+          MenuAction.SCROLL_LEFT,
+          MenuAction.SCROLL_RIGHT,
+          MenuAction.SCROLL_UP,
+          MenuAction.SELECT,
+          MenuAction.START_TEXT_SELECTION,
         ];
 
-      case SAConstants.MenuType.TEXT_NAVIGATION:
+      case MenuType.TEXT_NAVIGATION:
         return [
-          SwitchAccessMenuAction.JUMP_TO_BEGINNING_OF_TEXT,
-          SwitchAccessMenuAction.JUMP_TO_END_OF_TEXT,
-          SwitchAccessMenuAction.MOVE_UP_ONE_LINE_OF_TEXT,
-          SwitchAccessMenuAction.MOVE_DOWN_ONE_LINE_OF_TEXT,
-          SwitchAccessMenuAction.MOVE_BACKWARD_ONE_WORD_OF_TEXT,
-          SwitchAccessMenuAction.MOVE_FORWARD_ONE_WORD_OF_TEXT,
-          SwitchAccessMenuAction.MOVE_BACKWARD_ONE_CHAR_OF_TEXT,
-          SwitchAccessMenuAction.MOVE_FORWARD_ONE_CHAR_OF_TEXT,
-          SwitchAccessMenuAction.END_TEXT_SELECTION,
+          MenuAction.JUMP_TO_BEGINNING_OF_TEXT,
+          MenuAction.JUMP_TO_END_OF_TEXT,
+          MenuAction.MOVE_UP_ONE_LINE_OF_TEXT,
+          MenuAction.MOVE_DOWN_ONE_LINE_OF_TEXT,
+          MenuAction.MOVE_BACKWARD_ONE_WORD_OF_TEXT,
+          MenuAction.MOVE_FORWARD_ONE_WORD_OF_TEXT,
+          MenuAction.MOVE_BACKWARD_ONE_CHAR_OF_TEXT,
+          MenuAction.MOVE_FORWARD_ONE_CHAR_OF_TEXT,
+          MenuAction.END_TEXT_SELECTION,
         ];
-      case SAConstants.MenuType.POINT_SCAN_MENU:
+      case MenuType.POINT_SCAN_MENU:
         return [
-          SwitchAccessMenuAction.LEFT_CLICK,
-          SwitchAccessMenuAction.RIGHT_CLICK,
+          MenuAction.LEFT_CLICK,
+          MenuAction.RIGHT_CLICK,
         ];
       default:
         return [];
@@ -197,22 +202,22 @@ export class ActionManager {
   }
 
   /**
-   * @param {!Array<!SwitchAccessMenuAction>} actions
-   * @return {!Array<!SwitchAccessMenuAction>}
+   * @param {!Array<!MenuAction>} actions
+   * @return {!Array<!MenuAction>}
    * @private
    */
   addGlobalActions_(actions) {
-    if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
-      actions.push(SwitchAccessMenuAction.ITEM_SCAN);
+    if (SwitchAccess.mode === Mode.POINT_SCAN) {
+      actions.push(MenuAction.ITEM_SCAN);
     } else {
-      actions.push(SwitchAccessMenuAction.POINT_SCAN);
+      actions.push(MenuAction.POINT_SCAN);
     }
-    actions.push(SwitchAccessMenuAction.SETTINGS);
+    actions.push(MenuAction.SETTINGS);
     return actions;
   }
 
   /**
-   * @return {!SAConstants.MenuType}
+   * @return {!MenuType}
    * @private
    */
   get currentMenuType_() {
@@ -220,12 +225,12 @@ export class ActionManager {
   }
 
   /**
-   * @return {!Array<!SwitchAccessMenuAction>}
+   * @return {!Array<!MenuAction>}
    * @private
    */
   getActionsForCurrentMenuAndNode_() {
-    if (this.currentMenuType_ === SAConstants.MenuType.POINT_SCAN_MENU) {
-      let actions = this.actionsForType_(SAConstants.MenuType.POINT_SCAN_MENU);
+    if (this.currentMenuType_ === MenuType.POINT_SCAN_MENU) {
+      let actions = this.actionsForType_(MenuType.POINT_SCAN_MENU);
       actions = this.addGlobalActions_(actions);
       return actions;
     }
@@ -236,7 +241,7 @@ export class ActionManager {
     let actions = this.actionNode_.actions;
     const possibleActions = this.actionsForType_(this.currentMenuType_);
     actions = actions.filter(a => possibleActions.includes(a));
-    if (this.currentMenuType_ === SAConstants.MenuType.MAIN_MENU) {
+    if (this.currentMenuType_ === MenuType.MAIN_MENU) {
       actions = this.addGlobalActions_(actions);
     }
     return actions;
@@ -247,7 +252,7 @@ export class ActionManager {
    * @private
    */
   getLocationForCurrentMenuAndNode_() {
-    if (this.currentMenuType_ === SAConstants.MenuType.POINT_SCAN_MENU) {
+    if (this.currentMenuType_ === MenuType.POINT_SCAN_MENU) {
       return {
         left: Math.floor(Navigator.byPoint.currentPoint.x),
         top: Math.floor(Navigator.byPoint.currentPoint.y),
@@ -275,7 +280,7 @@ export class ActionManager {
   }
 
   /**
-   * @param {!SwitchAccessMenuAction} action
+   * @param {!MenuAction} action
    * @private
    */
   performActionOnCurrentNode_(action) {
@@ -293,21 +298,21 @@ export class ActionManager {
     const response = this.actionNode_.performAction(action);
 
     switch (response) {
-      case SAConstants.ActionResponse.CLOSE_MENU:
+      case ActionResponse.CLOSE_MENU:
         ActionManager.exitAllMenus();
         return;
-      case SAConstants.ActionResponse.EXIT_SUBMENU:
+      case ActionResponse.EXIT_SUBMENU:
         ActionManager.exitCurrentMenu();
         return;
-      case SAConstants.ActionResponse.REMAIN_OPEN:
+      case ActionResponse.REMAIN_OPEN:
         Navigator.byItem.restoreSuspendedGroup();
         return;
-      case SAConstants.ActionResponse.RELOAD_MENU:
+      case ActionResponse.RELOAD_MENU:
         ActionManager.refreshMenuUnconditionally();
         return;
-      case SAConstants.ActionResponse.OPEN_TEXT_NAVIGATION_MENU:
+      case ActionResponse.OPEN_TEXT_NAVIGATION_MENU:
         if (SwitchAccess.instance.improvedTextInputEnabled()) {
-          this.menuStack_.push(SAConstants.MenuType.TEXT_NAVIGATION);
+          this.menuStack_.push(MenuType.TEXT_NAVIGATION);
         }
         this.openCurrentMenu_();
     }
