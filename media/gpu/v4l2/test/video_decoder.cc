@@ -125,7 +125,7 @@ void VideoDecoder::Initialize() {
   // TODO(stevecho): remove VIDIOC_ENUM_FRAMESIZES ioctl call
   //   after b/193237015 is resolved.
   if (!v4l2_ioctl_->EnumFrameSizes(OUTPUT_queue_->fourcc()))
-    LOG(FATAL) << "EnumFrameSizes for OUTPUT queue failed.";
+    LOG(INFO) << "EnumFrameSizes for OUTPUT queue failed.";
 
   if (!v4l2_ioctl_->SetFmt(OUTPUT_queue_))
     LOG(FATAL) << "SetFmt for OUTPUT queue failed.";
