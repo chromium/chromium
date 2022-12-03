@@ -57,14 +57,24 @@ int GetCurrentTid() {
   return 0;
 }
 
+std::string ImplementationPlatform::GetCustomSavePath(
+    const std::string& parent_folder,
+    const std::string& file_name) {
+  // This should return the <saved_custom_path>/file_name. For now we will
+  // just return an empty string, since chrome doesn't call this yet.
+  // TODO(b/223710122): Eventually chrome should implement this method.
+  NOTIMPLEMENTED();
+  return std::string();
+}
+
 std::string ImplementationPlatform::GetDownloadPath(
-    absl::string_view parent_folder,
-    absl::string_view file_name) {
+    const std::string& parent_folder,
+    const std::string& file_name) {
   // This should return the <download_path>/parent_folder/file_name. For now we
   // will just return an empty string, since chrome doesn't call this yet.
   // TODO(b/223710122): Eventually chrome should implement this method.
   NOTIMPLEMENTED();
-  return std::string("");
+  return std::string();
 }
 
 OSName ImplementationPlatform::GetCurrentOS() {
@@ -134,7 +144,7 @@ std::unique_ptr<InputFile> ImplementationPlatform::CreateInputFile(
 }
 
 std::unique_ptr<InputFile> ImplementationPlatform::CreateInputFile(
-    absl::string_view file_path,
+    const std::string& file_path,
     size_t size) {
   // This constructor is not called by Chrome. Returning nullptr, just in case.
   // TODO(b/223710122): Eventually chrome should implement and use this
@@ -152,7 +162,7 @@ std::unique_ptr<OutputFile> ImplementationPlatform::CreateOutputFile(
 }
 
 std::unique_ptr<OutputFile> ImplementationPlatform::CreateOutputFile(
-    absl::string_view file_path) {
+    const std::string& file_path) {
   // This constructor is not called by Chrome. Returning nullptr, just in case.
   // TODO(b/223710122): Eventually chrome should implement and use this
   // constructor exclusively.
