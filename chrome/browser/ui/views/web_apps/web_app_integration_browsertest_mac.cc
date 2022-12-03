@@ -48,6 +48,23 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   helper_.CheckWindowCreated();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CorruptAppShim) {
+  // Install and close the PWA.
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.CheckWindowCreated();
+  helper_.ClosePwa();
+  // Now mess up the shortcut.
+  helper_.CorruptAppShim(Site::kStandalone);
+  // And verify that launching still (eventually) works.
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckWindowCreated();
+  helper_.ClosePwa();
+  // Also re-launch from platform shortcut, to verify that the shortcut is fully
+  // working.
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

@@ -2032,6 +2032,24 @@ void WebAppIntegrationTestDriver::UninstallFromOs(Site site) {
 #endif
 }
 
+#if BUILDFLAG(IS_MAC)
+void WebAppIntegrationTestDriver::CorruptAppShim(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__))
+    return;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  AppId app_id = GetAppIdBySiteMode(site);
+  std::string app_name = GetSiteConfiguration(site).app_name;
+  base::FilePath app_path = GetShortcutPath(
+      override_registration_->shortcut_override->chrome_apps_folder.GetPath(),
+      app_name, app_id);
+  base::FilePath bin_path = app_path.AppendASCII("Contents")
+                                .AppendASCII("MacOS")
+                                .AppendASCII("app_mode_loader");
+  EXPECT_TRUE(base::DeleteFile(bin_path));
+  AfterStateChangeAction();
+}
+#endif
+
 void WebAppIntegrationTestDriver::CheckAppListEmpty() {
   if (!BeforeStateCheckAction(__FUNCTION__))
     return;

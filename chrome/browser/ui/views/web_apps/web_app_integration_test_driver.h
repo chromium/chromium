@@ -284,6 +284,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void UninstallFromAppSettings(Site site);
   void UninstallPolicyApp(Site site);
   void UninstallFromOs(Site site);
+#if BUILDFLAG(IS_MAC)
+  void CorruptAppShim(Site site);
+#endif
 
   // State Check Actions:
   void CheckAppListEmpty();
