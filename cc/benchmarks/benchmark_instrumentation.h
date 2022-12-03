@@ -25,8 +25,8 @@ constexpr const char* Category() {
 const char kBeginFrameId[] = "begin_frame_id";
 }  // namespace internal
 
-const char kSendBeginFrame[] = "ThreadProxy::ScheduledActionSendBeginMainFrame";
-const char kDoBeginFrame[] = "ThreadProxy::BeginMainFrame";
+const char kSendBeginFrame[] = "ProxyImpl::ScheduledActionSendBeginMainFrame";
+const char kDoBeginFrame[] = "ProxyMain::BeginMainFrame";
 
 class ScopedBeginFrameTask {
  public:
