@@ -1488,6 +1488,10 @@ class CSSMathExpressionNodeParser {
       return CSSMathExpressionNumericLiteral::Create(
           M_PI, CSSPrimitiveValue::UnitType::kNumber);
     }
+    if (token.Id() == CSSValueID::kE) {
+      return CSSMathExpressionNumericLiteral::Create(
+          M_E, CSSPrimitiveValue::UnitType::kNumber);
+    }
     if (!(token.GetType() == kNumberToken ||
           token.GetType() == kPercentageToken ||
           token.GetType() == kDimensionToken))
