@@ -6,6 +6,7 @@
 // See http://code.google.com/p/googletest/issues/detail?id=371
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "base/containers/contains.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "media/base/video_codecs.h"
@@ -14,6 +15,8 @@
 namespace media {
 
 namespace {
+
+#define V4L2_PIX_FMT_INVALID 0
 
 #define TOSTR(enumCase) \
   case enumCase:        \
@@ -57,7 +60,44 @@ class V4L2MinigbmTest
 // said metadata (e.g. width, height, number of planes, pitch) are the
 // same as those we would allocate via minigbm.
 TEST_P(V4L2MinigbmTest, AllocateAndCompareWithMinigbm) {
-  GTEST_SKIP() << "Test not implemented yet";
+  const auto video_codec_profile = std::get<0>(GetParam());
+
+  scoped_refptr<V4L2Device> device = V4L2Device::Create();
+  ASSERT_TRUE(device);
+
+  // Open the device to determine its decode capabilities.
+  const auto fourcc_stateful =
+      V4L2Device::VideoCodecProfileToV4L2PixFmt(video_codec_profile, false);
+  const bool is_stateful =
+      device->Open(V4L2Device::Type::kDecoder, fourcc_stateful);
+
+  // Verifies device capabilities.
+  constexpr auto kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
+  struct v4l2_capability caps;
+  if (device->Ioctl(VIDIOC_QUERYCAP, &caps) ||
+      (caps.capabilities & kCapsRequired) != kCapsRequired) {
+    GTEST_SKIP() << "Device doesn't support expected capabilities";
+  }
+
+  // Tests whether device supports a desired pixel format.
+  constexpr uint32_t desired_v4l2_pixel_formats[] = {V4L2_PIX_FMT_NV12,
+                                                     V4L2_PIX_FMT_NV12M};
+  std::vector<uint32_t> supported_v4l2_pixel_formats =
+      device->EnumerateSupportedPixelformats(
+          V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+  int32_t chosen_v4l2_pixel_format = 0;
+  for (const auto supported_v4l2_pixel_format : supported_v4l2_pixel_formats) {
+    if (base::Contains(desired_v4l2_pixel_formats,
+                       supported_v4l2_pixel_format)) {
+      chosen_v4l2_pixel_format = supported_v4l2_pixel_format;
+      break;
+    }
+  }
+  ASSERT_NE(chosen_v4l2_pixel_format, V4L2_PIX_FMT_INVALID);
+
+  if (is_stateful) {
+    // TODO(bchoobineh): Stateful decoder test function call here.
+  }
 }
 
 constexpr VideoCodecProfile kVideoCodecProfiles[] = {H264PROFILE_BASELINE};
