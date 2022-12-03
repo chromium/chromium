@@ -3,19 +3,12 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE([
-  '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/chromevox_next_e2e_test_base.js',
-]);
+GEN_INCLUDE(['../testing/common_e2e_test_base.js']);
 
 /**
  * Test fixture for recovery strategy tests.
  */
-AccessibilityExtensionRecoveryStrategyTest =
-    class extends ChromeVoxNextE2ETest {
-  constructor() {
-    super();
-  }
-
+AccessibilityExtensionRecoveryStrategyTest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -26,6 +19,7 @@ AccessibilityExtensionRecoveryStrategyTest =
           'TreePathRecoveryStrategy',
         ],
         '/common/cursors/recovery_strategy.js');
+    globalThis.RoleType = chrome.automation.RoleType;
   }
 };
 
