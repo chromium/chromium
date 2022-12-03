@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL ORB should block opaque font/ttf assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL ORB should block opaque text/plain assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL ORB should block opaque application/json assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS ORB shouldn't block opaque image/png
+PASS ORB shouldn't block opaque text/javascript
+Harness: the test ran to completion.
+
