@@ -175,10 +175,8 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
 
   void EnableAndClickOnVirtualKeyboardTrayButton() {
     accessibility_controller()->virtual_keyboard().SetEnabled(true);
-    views::View* button =
-        GetMenuButton(FloatingAccessibilityView::ButtonId::kVirtualKeyboard);
-    ui::GestureEvent event = CreateTapEvent();
-    button->OnGestureEvent(&event);
+    GestureTapOn(
+        GetMenuButton(FloatingAccessibilityView::ButtonId::kVirtualKeyboard));
   }
 
   // Setup one language

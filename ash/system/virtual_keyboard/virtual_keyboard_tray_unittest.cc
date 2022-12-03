@@ -45,14 +45,12 @@ TEST_F(VirtualKeyboardTrayTest, PerformActionTogglesVirtualKeyboard) {
   ASSERT_TRUE(tray->GetVisible());
 
   // First tap should show the virtual keyboard.
-  tray->PerformAction(ui::GestureEvent(
-      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+  GestureTapOn(tray);
   EXPECT_TRUE(tray->is_active());
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   // Second tap should hide the virtual keyboard.
-  tray->PerformAction(ui::GestureEvent(
-      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+  GestureTapOn(tray);
   EXPECT_FALSE(tray->is_active());
   ASSERT_TRUE(keyboard::WaitUntilHidden());
 }

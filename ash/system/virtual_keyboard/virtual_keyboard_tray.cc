@@ -18,6 +18,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -25,24 +26,32 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace ash {
+
+class TrayBubbleView;
 
 VirtualKeyboardTray::VirtualKeyboardTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
-    : TrayBackgroundView(shelf, catalog_name),
-      icon_(new views::ImageView),
-      shelf_(shelf) {
+    : TrayBackgroundView(shelf, catalog_name), shelf_(shelf) {
+  SetPressedCallback(base::BindRepeating(&VirtualKeyboardTray::OnButtonPressed,
+                                         base::Unretained(this)));
+
+  auto icon = std::make_unique<views::ImageView>();
   const ui::ImageModel image = ui::ImageModel::FromVectorIcon(
       kShelfKeyboardNewuiIcon, kColorAshIconColorPrimary);
-  icon_->SetImage(image);
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+  icon->SetImage(image);
+  icon->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
   const int vertical_padding = (kTrayItemSize - image.Size().height()) / 2;
   const int horizontal_padding = (kTrayItemSize - image.Size().width()) / 2;
-  icon_->SetBorder(views::CreateEmptyBorder(
+  icon->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  tray_container()->AddChildView(icon_);
+  icon_ = tray_container()->AddChildView(std::move(icon));
 
   // The Shell may not exist in some unit tests.
   if (Shell::HasInstance()) {
@@ -54,11 +63,39 @@ VirtualKeyboardTray::VirtualKeyboardTray(
 
 VirtualKeyboardTray::~VirtualKeyboardTray() {
   // The Shell may not exist in some unit tests.
-  if (Shell::HasInstance()) {
-    keyboard::KeyboardUIController::Get()->RemoveObserver(this);
-    Shell::Get()->RemoveShellObserver(this);
-    Shell::Get()->accessibility_controller()->RemoveObserver(this);
+  if (!Shell::HasInstance())
+    return;
+
+  keyboard::KeyboardUIController::Get()->RemoveObserver(this);
+  Shell::Get()->RemoveShellObserver(this);
+  Shell::Get()->accessibility_controller()->RemoveObserver(this);
+}
+
+void VirtualKeyboardTray::OnButtonPressed(const ui::Event& event) {
+  UserMetricsRecorder::RecordUserClickOnTray(
+      LoginMetricsRecorder::TrayClickTarget::kVirtualKeyboardTray);
+
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
+
+  // Keyboard may not always be enabled. https://crbug.com/749989
+  if (!keyboard_controller->IsEnabled())
+    return;
+
+  // Normally, active status is set when virtual keyboard is shown/hidden,
+  // however, showing virtual keyboard happens asynchronously and, especially
+  // the first time, takes some time. We need to set active status here to
+  // prevent bad things happening if user clicked the button before keyboard is
+  // shown.
+  if (is_active()) {
+    keyboard_controller->HideKeyboardByUser();
+    SetIsActive(false);
+    return;
   }
+    keyboard_controller->ShowKeyboardInDisplay(
+        display::Screen::GetScreen()->GetDisplayNearestWindow(
+            shelf_->GetWindow()));
+    SetIsActive(true);
+    return;
 }
 
 void VirtualKeyboardTray::Initialize() {
@@ -82,34 +119,6 @@ void VirtualKeyboardTray::HideBubbleWithView(
 
 void VirtualKeyboardTray::ClickedOutsideBubble() {}
 
-bool VirtualKeyboardTray::PerformAction(const ui::Event& event) {
-  UserMetricsRecorder::RecordUserClickOnTray(
-      LoginMetricsRecorder::TrayClickTarget::kVirtualKeyboardTray);
-
-  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
-
-  // Keyboard may not always be enabled. https://crbug.com/749989
-  if (!keyboard_controller->IsEnabled())
-    return true;
-
-  // Normally, active status is set when virtual keyboard is shown/hidden,
-  // however, showing virtual keyboard happens asynchronously and, especially
-  // the first time, takes some time. We need to set active status here to
-  // prevent bad things happening if user clicked the button before keyboard is
-  // shown.
-  if (is_active()) {
-    keyboard_controller->HideKeyboardByUser();
-    SetIsActive(false);
-  } else {
-    keyboard_controller->ShowKeyboardInDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(
-            shelf_->GetWindow()));
-    SetIsActive(true);
-  }
-
-  return true;
-}
-
 void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
   bool new_enabled =
       Shell::Get()->accessibility_controller()->virtual_keyboard().enabled();
@@ -120,8 +129,7 @@ void VirtualKeyboardTray::OnKeyboardVisibilityChanged(const bool is_visible) {
   SetIsActive(is_visible);
 }
 
-const char* VirtualKeyboardTray::GetClassName() const {
-  return "VirtualKeyboardTray";
-}
+BEGIN_METADATA(VirtualKeyboardTray, TrayBackgroundView);
+END_METADATA
 
 }  // namespace ash
