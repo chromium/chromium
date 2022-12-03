@@ -3253,6 +3253,7 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
                   "' specified to an 'appearance' property is not "
                   "standardized. It will be removed in the future."));
         }
+        context.Count(WebFeature::kCSSValueAppearanceNonStandard);
       }
       [[fallthrough]];
       // This function distinguishes 'appearance' and '-webkit-appearance'
