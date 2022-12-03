@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include "base/time/time.h"
 #include "chrome/updater/updater_branding.h"
 
 namespace updater {
@@ -92,7 +93,8 @@ extern const wchar_t kLegacyExeName[];
 // slight delay before creating coclasses reduces (but it does not eliminate)
 // the probability of running into this race condition, until a better
 // solution is found.
-inline constexpr int kCreateUpdaterInstanceDelayMs = 200;
+inline constexpr base::TimeDelta kCreateUpdaterInstanceDelay =
+    base::Milliseconds(200);
 
 }  // namespace updater
 

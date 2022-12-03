@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/platform_thread.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -64,7 +65,7 @@ class ProxyImplBase {
 
   HResultOr<Microsoft::WRL::ComPtr<Interface>> CreateInterface() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ::Sleep(kCreateUpdaterInstanceDelayMs);
+    base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
 
     Microsoft::WRL::ComPtr<IUnknown> server;
     HRESULT hr = ::CoCreateInstance(Derived::GetClassGuid(scope_), nullptr,

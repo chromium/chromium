@@ -98,7 +98,7 @@ HRESULT CreateLocalServer(GUID clsid,
                           Microsoft::WRL::ComPtr<ComInterface>& server) {
   // crbug.com/1259178 - there is known race condition between the COM server
   // shutdown and server start up.
-  ::Sleep(kCreateUpdaterInstanceDelayMs);
+  base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
   return ::CoCreateInstance(clsid, nullptr, CLSCTX_LOCAL_SERVER,
                             IID_PPV_ARGS(&server));
 }
@@ -353,9 +353,9 @@ bool IsUpdaterRunning() {
   return test::IsProcessRunning(GetExecutableRelativePath().value());
 }
 
-void SleepFor(int seconds) {
-  VLOG(2) << "Sleeping " << seconds << " seconds...";
-  base::WaitableEvent().TimedWait(base::Seconds(seconds));
+void SleepFor(const base::TimeDelta& interval) {
+  VLOG(2) << "Sleeping " << interval.InSecondsF() << " seconds...";
+  base::PlatformThread::Sleep(interval);
   VLOG(2) << "Sleep complete.";
 }
 
@@ -703,7 +703,7 @@ void Uninstall(UpdaterScope scope) {
   // Uninstallation involves a race with the uninstall.cmd script and the
   // process exit. Sleep to allow the script to complete its work.
   // TODO(crbug.com/1217765): Figure out a way to replace this.
-  SleepFor(5);
+  SleepFor(base::Seconds(5));
 }
 
 void SetActive(UpdaterScope /*scope*/, const std::string& id) {
