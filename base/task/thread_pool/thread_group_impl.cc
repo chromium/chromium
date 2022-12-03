@@ -196,8 +196,10 @@ class ThreadGroupImpl::ScopedCommandsExecutor
 class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
                                                   public BlockingObserver {
  public:
-  // |outer| owns the worker for which this delegate is constructed.
-  explicit WorkerThreadDelegateImpl(TrackedRef<ThreadGroupImpl> outer);
+  // |outer| owns the worker for which this delegate is constructed. If
+  // |is_excess| is true, this worker will be eligible for reclaim.
+  explicit WorkerThreadDelegateImpl(TrackedRef<ThreadGroupImpl> outer,
+                                    bool is_excess);
   WorkerThreadDelegateImpl(const WorkerThreadDelegateImpl&) = delete;
   WorkerThreadDelegateImpl& operator=(const WorkerThreadDelegateImpl&) = delete;
 
@@ -242,6 +244,9 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
       EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_) {
     return *read_any().current_task_priority;
   }
+
+  // True if this worker is be eligible for reclaim.
+  bool is_excess() const { return is_excess_; }
 
   // Exposed for AnnotateAcquiredLockAlias
   const CheckedLock& lock() const LOCK_RETURNED(outer_->lock_) {
@@ -315,6 +320,8 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
   }
 
   const TrackedRef<ThreadGroupImpl> outer_;
+
+  const bool is_excess_;
 
   // Whether |outer_->max_tasks_|/|outer_->max_best_effort_tasks_| were
   // incremented due to a ScopedBlockingCall on the thread.
@@ -506,8 +513,9 @@ size_t ThreadGroupImpl::NumberOfIdleWorkersForTesting() const {
 }
 
 ThreadGroupImpl::WorkerThreadDelegateImpl::WorkerThreadDelegateImpl(
-    TrackedRef<ThreadGroupImpl> outer)
-    : outer_(std::move(outer)) {
+    TrackedRef<ThreadGroupImpl> outer,
+    bool is_excess)
+    : outer_(std::move(outer)), is_excess_(is_excess) {
   // Bound in OnMainEntry().
   DETACH_FROM_THREAD(worker_thread_checker_);
 }
@@ -654,7 +662,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::DidProcessTask(
 
 TimeDelta ThreadGroupImpl::WorkerThreadDelegateImpl::GetSleepTimeout() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  if (outer_->after_start().no_worker_reclaim)
+  if (!is_excess())
     return TimeDelta::Max();
   // Sleep for an extra 10% to avoid the following pathological case:
   //   0) A task is running on a timer which matches
@@ -690,7 +698,7 @@ TimeDelta ThreadGroupImpl::WorkerThreadDelegateImpl::GetSleepTimeout() {
 bool ThreadGroupImpl::WorkerThreadDelegateImpl::CanCleanupLockRequired(
     const WorkerThread* worker) const {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  if (outer_->after_start().no_worker_reclaim)
+  if (!is_excess())
     return false;
 
   const TimeTicks last_used_time = worker->GetLastUsedTime();
@@ -722,17 +730,6 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnWorkerBecomesIdleLockRequired(
     WorkerThread* worker) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   DCHECK(!outer_->idle_workers_set_.Contains(worker));
-
-  if (outer_->after_start().no_worker_reclaim) {
-    // Under NoWorkerThreadReclaim, immediately cleanup excess workers that were
-    // going to sleep. Only 1 worker is cleaned up at a time, which is enough
-    // because each worker who caused |max_tasks_| to increase will eventually
-    // go through this.
-    if (outer_->workers_.size() > outer_->max_tasks_) {
-      CleanupLockRequired(executor, worker);
-      return;
-    }
-  }
 
   // Add the worker to the idle set.
   outer_->idle_workers_set_.Insert(worker);
@@ -896,30 +893,18 @@ bool ThreadGroupImpl::WorkerThreadDelegateImpl::CanGetWorkLockRequired(
   const bool is_on_idle_workers_set = outer_->IsOnIdleSetLockRequired(worker);
   DCHECK_EQ(is_on_idle_workers_set, outer_->idle_workers_set_.Contains(worker));
 
-  if (outer_->after_start().no_worker_reclaim) {
-    DCHECK(!is_on_idle_workers_set);
-    // Under NoWorkerThreadReclaim, immediately cleanup excess workers. Only 1
-    // worker is cleaned up at a time, which is enough because each worker who
-    // caused |max_tasks_| to increase will eventually go through this.
-    if (outer_->GetNumAwakeWorkersLockRequired() > outer_->max_tasks_) {
+  if (is_on_idle_workers_set) {
+    if (CanCleanupLockRequired(worker))
       CleanupLockRequired(executor, worker);
-      return false;
-    }
-  } else {
-    if (is_on_idle_workers_set) {
-      if (CanCleanupLockRequired(worker))
-        CleanupLockRequired(executor, worker);
-      return false;
-    }
+    return false;
+  }
 
-    // Excess workers should not get work, until they are no longer excess (i.e.
-    // max tasks increases). This ensures that if we have excess workers in the
-    // thread group, they get a chance to no longer be excess before being
-    // cleaned up.
-    if (outer_->GetNumAwakeWorkersLockRequired() > outer_->max_tasks_) {
-      OnWorkerBecomesIdleLockRequired(executor, worker);
-      return false;
-    }
+  // If too many workers are running, this worker should not get work, until
+  // tasks are no longer in excess (i.e. max tasks increases). This ensures that
+  // if this worker is in excess, it gets a chance to being cleaned up.
+  if (outer_->GetNumAwakeWorkersLockRequired() > outer_->max_tasks_) {
+    OnWorkerBecomesIdleLockRequired(executor, worker);
+    return false;
   }
 
   return true;
@@ -993,11 +978,14 @@ ThreadGroupImpl::CreateAndRegisterWorkerLockRequired(
   // WorkerThread needs |lock_| as a predecessor for its thread lock
   // because in WakeUpOneWorker, |lock_| is first acquired and then
   // the thread lock is acquired when WakeUp is called on the worker.
-  scoped_refptr<WorkerThread> worker =
-      MakeRefCounted<WorkerThread>(thread_type_hint_,
-                                   std::make_unique<WorkerThreadDelegateImpl>(
-                                       tracked_ref_factory_.GetTrackedRef()),
-                                   task_tracker_, &lock_);
+  scoped_refptr<WorkerThread> worker = MakeRefCounted<WorkerThread>(
+      thread_type_hint_,
+      std::make_unique<WorkerThreadDelegateImpl>(
+          tracked_ref_factory_.GetTrackedRef(),
+          /* is_excess=*/after_start().no_worker_reclaim
+              ? workers_.size() >= after_start().initial_max_tasks
+              : true),
+      task_tracker_, worker_sequence_num_++, &lock_);
 
   workers_.push_back(worker);
   executor->ScheduleStart(worker);

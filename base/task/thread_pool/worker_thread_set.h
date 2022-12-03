@@ -23,6 +23,10 @@ class WorkerThread;
 // WorkerThreads are not owned by the set. All operations are amortized
 // O(log(n)). This class is NOT thread-safe.
 class BASE_EXPORT WorkerThreadSet {
+  struct Compare {
+    bool operator()(const WorkerThread* a, const WorkerThread* b) const;
+  };
+
  public:
   WorkerThreadSet();
   WorkerThreadSet(const WorkerThreadSet&) = delete;
@@ -56,7 +60,7 @@ class BASE_EXPORT WorkerThreadSet {
   bool IsEmpty() const { return set_.empty(); }
 
  private:
-  std::set<WorkerThread*> set_;
+  std::set<WorkerThread*, Compare> set_;
 };
 
 }  // namespace internal

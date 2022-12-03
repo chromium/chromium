@@ -38,15 +38,15 @@ class ThreadPoolWorkerSetTest : public testing::Test {
   void SetUp() override {
     worker_a_ = MakeRefCounted<WorkerThread>(
         ThreadType::kDefault, std::make_unique<MockWorkerThreadDelegate>(),
-        task_tracker_.GetTrackedRef());
+        task_tracker_.GetTrackedRef(), 0);
     ASSERT_TRUE(worker_a_);
     worker_b_ = MakeRefCounted<WorkerThread>(
         ThreadType::kDefault, std::make_unique<MockWorkerThreadDelegate>(),
-        task_tracker_.GetTrackedRef());
+        task_tracker_.GetTrackedRef(), 1);
     ASSERT_TRUE(worker_b_);
     worker_c_ = MakeRefCounted<WorkerThread>(
         ThreadType::kDefault, std::make_unique<MockWorkerThreadDelegate>(),
-        task_tracker_.GetTrackedRef());
+        task_tracker_.GetTrackedRef(), 2);
     ASSERT_TRUE(worker_c_);
   }
 
@@ -82,7 +82,7 @@ TEST_F(ThreadPoolWorkerSetTest, InsertTake) {
   EXPECT_EQ(3U, set.Size());
 
   WorkerThread* idle_worker = set.Take();
-  EXPECT_TRUE(idle_worker);
+  EXPECT_EQ(idle_worker, worker_a_.get());
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_EQ(2U, set.Size());
 
@@ -127,18 +127,17 @@ TEST_F(ThreadPoolWorkerSetTest, PeekPop) {
   EXPECT_EQ(3U, set.Size());
 
   WorkerThread* idle_worker = set.Take();
-  EXPECT_NE(nullptr, set.Peek());
-  EXPECT_NE(idle_worker, set.Peek());
+  EXPECT_EQ(worker_a_.get(), idle_worker);
+  EXPECT_EQ(worker_b_.get(), set.Peek());
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_EQ(2U, set.Size());
 
-  EXPECT_NE(nullptr, set.Take());
-  EXPECT_NE(nullptr, set.Peek());
-  EXPECT_NE(idle_worker, set.Peek());
+  EXPECT_EQ(worker_b_.get(), set.Take());
+  EXPECT_EQ(worker_c_.get(), set.Peek());
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_EQ(1U, set.Size());
 
-  EXPECT_TRUE(set.Take());
+  EXPECT_EQ(worker_c_.get(), set.Take());
   EXPECT_TRUE(set.IsEmpty());
   EXPECT_EQ(0U, set.Size());
 
@@ -168,9 +167,10 @@ TEST_F(ThreadPoolWorkerSetTest, Contains) {
   EXPECT_TRUE(set.Contains(worker_c_.get()));
 
   WorkerThread* idle_worker = set.Take();
-  EXPECT_EQ(set.Contains(worker_a_.get()), worker_a_.get() != idle_worker);
-  EXPECT_EQ(set.Contains(worker_b_.get()), worker_b_.get() != idle_worker);
-  EXPECT_EQ(set.Contains(worker_c_.get()), worker_c_.get() != idle_worker);
+  EXPECT_EQ(idle_worker, worker_a_.get());
+  EXPECT_FALSE(set.Contains(worker_a_.get()));
+  EXPECT_TRUE(set.Contains(worker_b_.get()));
+  EXPECT_TRUE(set.Contains(worker_c_.get()));
 
   set.Take();
 
@@ -198,17 +198,15 @@ TEST_F(ThreadPoolWorkerSetTest, Remove) {
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_EQ(3U, set.Size());
 
-  WorkerThread* worker_to_remove =
-      set.Peek() != worker_a_.get() ? worker_a_.get() : worker_b_.get();
-  set.Remove(worker_to_remove);
+  set.Remove(worker_b_.get());
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_EQ(2U, set.Size());
 
-  EXPECT_NE(worker_to_remove, set.Take());
+  EXPECT_EQ(worker_a_.get(), set.Take());
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_EQ(1U, set.Size());
 
-  EXPECT_NE(worker_to_remove, set.Take());
+  EXPECT_EQ(worker_c_.get(), set.Take());
   EXPECT_TRUE(set.IsEmpty());
   EXPECT_EQ(0U, set.Size());
 }
@@ -222,17 +220,15 @@ TEST_F(ThreadPoolWorkerSetTest, PushAfterRemove) {
   EXPECT_EQ(1U, set.Size());
 
   // Need to also push worker B for this test as it's illegal to Remove() the
-  // top of the set.
+  // front of the set.
   set.Insert(worker_b_.get());
   EXPECT_EQ(2U, set.Size());
 
-  WorkerThread* worker_to_remove =
-      set.Peek() != worker_a_.get() ? worker_a_.get() : worker_b_.get();
-  set.Remove(worker_to_remove);
+  set.Remove(worker_b_.get());
+  worker_b_->EndUnusedPeriod();
   EXPECT_EQ(1U, set.Size());
-  worker_to_remove->EndUnusedPeriod();
 
-  set.Insert(worker_to_remove);
+  set.Insert(worker_b_.get());
   EXPECT_EQ(2U, set.Size());
 }
 

@@ -105,6 +105,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // before Start() is called. |thread_type_hint| is the preferred thread type;
   // the actual thread type depends on shutdown state and platform
   // capabilities. |task_tracker| is used to handle shutdown behavior of Tasks.
+  // |sequence_num| is an index that helps identifying this WorkerThread.
   // |predecessor_lock| is a lock that is allowed to be held when calling
   // methods on this WorkerThread. |backward_compatibility| indicates
   // whether backward compatibility is enabled. Either JoinForTesting() or
@@ -112,6 +113,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   WorkerThread(ThreadType thread_type_hint,
                std::unique_ptr<Delegate> delegate,
                TrackedRef<TaskTracker> task_tracker,
+               size_t sequence_num,
                const CheckedLock* predecessor_lock = nullptr);
 
   WorkerThread(const WorkerThread&) = delete;
@@ -171,6 +173,8 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   // Returns the last time this WorkerThread was used. Returns a null time if
   // this WorkerThread is currently in-use. Thread-safe.
   TimeTicks GetLastUsedTime() const;
+
+  size_t sequence_num() const { return sequence_num_; }
 
  private:
   friend class RefCountedThreadSafe<WorkerThread>;
@@ -251,6 +255,8 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
   // Set once JoinForTesting() has been called.
   AtomicFlag join_called_for_testing_;
+
+  const size_t sequence_num_;
 
   // Service thread task runner.
   scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;

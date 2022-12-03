@@ -11,6 +11,11 @@
 
 namespace base::internal {
 
+bool WorkerThreadSet::Compare::operator()(const WorkerThread* a,
+                                          const WorkerThread* b) const {
+  return a->sequence_num() < b->sequence_num();
+}
+
 WorkerThreadSet::WorkerThreadSet() = default;
 
 WorkerThreadSet::~WorkerThreadSet() = default;
