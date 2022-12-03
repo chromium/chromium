@@ -80,7 +80,9 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     // states with restore bounds (maximized, minimized, snapped, etc), they
     // will take the current bounds as their restore bounds and have the current
     // bounds determined by the system.
-    if (window_state->HasRestoreBounds()) {
+    // Note that for floated state, the window should be restored to its current
+    // floated bounds since it's not stored in restore bounds.
+    if (window_state->HasRestoreBounds() && !window_state->IsFloated()) {
       window_info->current_bounds = window_state->GetRestoreBoundsInScreen();
     } else {
       window_info->current_bounds =

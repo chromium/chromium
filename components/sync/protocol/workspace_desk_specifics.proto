@@ -218,6 +218,8 @@ message WorkspaceDeskSpecifics {
     // in landscape screen orientation and bottom in portrait screen
     // orientation.
     SECONDARY_SNAPPED = 6;
+    // Floated window state.
+    FLOATED = 7;
   }
 
   // Enumeration for how a window opens.  Maps to base::WindowOpenDisposition.

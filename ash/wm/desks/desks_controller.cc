@@ -1300,13 +1300,16 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
               window_state->OnWMEvent(&event);
             }
             break;
+          case chromeos::WindowStateType::kFloated: {
+            const WMEvent event(WM_EVENT_FLOAT);
+            window_state->OnWMEvent(&event);
+            break;
+          }
           case chromeos::WindowStateType::kInactive:
           case chromeos::WindowStateType::kFullscreen:
           case chromeos::WindowStateType::kPinned:
           case chromeos::WindowStateType::kTrustedPinned:
           case chromeos::WindowStateType::kPip:
-            // TODO(crbug.com/1331825): Float state support for desk template.
-          case chromeos::WindowStateType::kFloated:
             NOTREACHED();
             break;
         }

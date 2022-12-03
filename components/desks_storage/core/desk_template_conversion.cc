@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/restore_data.h"
@@ -134,6 +135,7 @@ constexpr char kWindowStateMaximized[] = "MAXIMIZED";
 constexpr char kWindowStateFullscreen[] = "FULLSCREEN";
 constexpr char kWindowStatePrimarySnapped[] = "PRIMARY_SNAPPED";
 constexpr char kWindowStateSecondarySnapped[] = "SECONDARY_SNAPPED";
+constexpr char kWindowStateFloated[] = "FLOATED";
 constexpr char kZIndex[] = "z_index";
 
 // Valid value sets.
@@ -157,7 +159,7 @@ constexpr auto kValidWindowOpenDispositions =
 constexpr auto kValidWindowStates = base::MakeFixedFlatSet<base::StringPiece>(
     {kWindowStateNormal, kWindowStateMinimized, kWindowStateMaximized,
      kWindowStateFullscreen, kWindowStatePrimarySnapped,
-     kWindowStateSecondarySnapped, kZIndex});
+     kWindowStateSecondarySnapped, kWindowStateFloated, kZIndex});
 constexpr auto kValidTabGroupColors = base::MakeFixedFlatSet<base::StringPiece>(
     {app_restore::kTabGroupColorUnknown, app_restore::kTabGroupColorGrey,
      app_restore::kTabGroupColorBlue, app_restore::kTabGroupColorRed,
@@ -549,6 +551,8 @@ chromeos::WindowStateType ToChromeOsWindowState(
     return chromeos::WindowStateType::kPrimarySnapped;
   else if (window_state == kWindowStateSecondarySnapped)
     return chromeos::WindowStateType::kSecondarySnapped;
+  else if (window_state == kWindowStateFloated)
+    return chromeos::WindowStateType::kFloated;
 
   // We should never reach here unless we have been passed an invalid window
   // state.
@@ -715,6 +719,8 @@ std::string ChromeOsWindowStateToString(
       return kWindowStatePrimarySnapped;
     case chromeos::WindowStateType::kSecondarySnapped:
       return kWindowStateSecondarySnapped;
+    case chromeos::WindowStateType::kFloated:
+      return kWindowStateFloated;
     default:
       // Available states in JSON representation is a subset of all window
       // states enumerated by WindowStateType. Default to normal if not
@@ -1338,6 +1344,8 @@ ui::WindowShowState ToUiWindowState(WindowState state) {
       return ui::WindowShowState::SHOW_STATE_NORMAL;
     case WindowState::WorkspaceDeskSpecifics_WindowState_SECONDARY_SNAPPED:
       return ui::WindowShowState::SHOW_STATE_NORMAL;
+    case WindowState::WorkspaceDeskSpecifics_WindowState_FLOATED:
+      return ui::WindowShowState::SHOW_STATE_NORMAL;
   }
 }
 
@@ -1359,6 +1367,8 @@ chromeos::WindowStateType ToChromeOsWindowState(WindowState state) {
       return chromeos::WindowStateType::kPrimarySnapped;
     case WindowState::WorkspaceDeskSpecifics_WindowState_SECONDARY_SNAPPED:
       return chromeos::WindowStateType::kSecondarySnapped;
+    case WindowState::WorkspaceDeskSpecifics_WindowState_FLOATED:
+      return chromeos::WindowStateType::kFloated;
   }
 }
 
@@ -1371,8 +1381,7 @@ WindowState FromChromeOsWindowState(chromeos::WindowStateType state) {
     case chromeos::WindowStateType::kPinned:
     case chromeos::WindowStateType::kTrustedPinned:
     case chromeos::WindowStateType::kPip:
-    // TODO(crbug.com/1331825): Float state support for desk template.
-    case chromeos::WindowStateType::kFloated:
+      // TODO(crbug.com/1331825): Float state support for desk template.
       return WindowState::WorkspaceDeskSpecifics_WindowState_NORMAL;
     case chromeos::WindowStateType::kMinimized:
       return WindowState::WorkspaceDeskSpecifics_WindowState_MINIMIZED;
@@ -1384,6 +1393,8 @@ WindowState FromChromeOsWindowState(chromeos::WindowStateType state) {
       return WindowState::WorkspaceDeskSpecifics_WindowState_PRIMARY_SNAPPED;
     case chromeos::WindowStateType::kSecondarySnapped:
       return WindowState::WorkspaceDeskSpecifics_WindowState_SECONDARY_SNAPPED;
+    case chromeos::WindowStateType::kFloated:
+      return WindowState::WorkspaceDeskSpecifics_WindowState_FLOATED;
   }
 }
 

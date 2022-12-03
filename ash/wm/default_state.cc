@@ -634,8 +634,6 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
     case WindowStateType::kMinimized:
       break;
     case WindowStateType::kFloated: {
-      // TODO(shidi): This needs to be updated if we decide to have float window
-      // for overview mode.
       // When a floated window is previously minimized, un-minimize will restore
       // the float state with previous floated bounds, without re-calculating
       // preferred bounds.

@@ -24,11 +24,13 @@
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/window_state.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -80,6 +82,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/desk.mojom-shared.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -462,7 +465,8 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
   DesksClientTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kDesksTemplates,
-                              ash::features::kEnableSavedDesks},
+                              ash::features::kEnableSavedDesks,
+                              chromeos::wm::features::kFloatWindow},
         /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
   DesksClientTest(const DesksClientTest&) = delete;
@@ -1055,6 +1059,62 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
   EXPECT_EQ(ash::Shell::GetContainer(browser_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
             browser_window->parent());
+}
+
+// Tests that launching a template that contains a floated browser window works
+// as expected.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithFloatedWindow) {
+  // Test that Singleton was properly initialized.
+  ASSERT_TRUE(DesksClient::Get());
+
+  // Float browser window and move out from default location.
+  const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  ui::test::EventGenerator event_generator(window->GetRootWindow());
+  event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(ash::WindowState::Get(window)->IsFloated());
+  window->SetBounds(browser_bounds);
+  const int32_t browser_window_id =
+      window->GetProperty(app_restore::kWindowIdKey);
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kTemplate);
+
+  // Test the default template's name is the current desk's name.
+  auto* desks_controller = ash::DesksController::Get();
+  EXPECT_EQ(
+      desk_template->template_name(),
+      desks_controller->GetDeskName(desks_controller->GetActiveDeskIndex()));
+
+  const app_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
+  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
+
+  // Find `browser` window's app restore data.
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
+  ASSERT_TRUE(iter != app_id_to_launch_list.end());
+  auto app_restore_data_iter = iter->second.find(browser_window_id);
+  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
+  const auto& data = app_restore_data_iter->second;
+  // Verify floated window bounds is correctly captured.
+  EXPECT_EQ(browser_bounds, data->current_bounds.value());
+  // Verify window float state is correctly captured.
+  EXPECT_EQ(chromeos::WindowStateType::kFloated, data->window_state_type);
+
+  // Launch saved template and test floated window is restored correctly.
+  SetAndLaunchTemplate(std::move(desk_template));
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+
+  // Get the floated window from newly created desk.
+  auto* float_controller = ash::Shell::Get()->float_controller();
+  auto* floated_window = float_controller->FindFloatedWindowOfDesk(
+      desks_controller->active_desk());
+  DCHECK(floated_window);
+  DCHECK(ash::WindowState::Get(floated_window)->IsFloated());
+  // Restored floated window to the saved bounds instead of default bounds.
+  DCHECK_EQ(floated_window->bounds(), browser_bounds);
 }
 
 // Tests that launching a template that contains a browser window with tab

@@ -497,11 +497,15 @@ void Desk::Activate(bool update_window_activation) {
   // the user switched to another desk, so as not to break the user's workflow.
   for (auto* window :
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
-    if (!base::Contains(windows_, window))
+    const auto* window_state = WindowState::Get(window);
+    // Floated window should be activated with the desk window, but it doesn't
+    // belong to `windows_`.
+    if (!base::Contains(windows_, window) && !window_state->IsFloated()) {
       continue;
+    }
 
     // Do not activate minimized windows, otherwise they will unminimize.
-    if (WindowState::Get(window)->IsMinimized())
+    if (window_state->IsMinimized())
       continue;
 
     if (features::IsPerDeskZOrderEnabled() &&

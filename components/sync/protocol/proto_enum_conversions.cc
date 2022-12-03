@@ -787,7 +787,7 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::WorkspaceDeskSpecifics::WindowState window_state) {
   ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, WindowState,
-                     UNKNOWN_WINDOW_STATE, SECONDARY_SNAPPED);
+                     UNKNOWN_WINDOW_STATE, FLOATED);
   switch (window_state) {
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, UNKNOWN_WINDOW_STATE);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NORMAL);
@@ -796,6 +796,7 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, FULLSCREEN);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, PRIMARY_SNAPPED);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SECONDARY_SNAPPED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, FLOATED);
   }
   NOTREACHED();
   return "";

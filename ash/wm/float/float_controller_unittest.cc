@@ -385,11 +385,7 @@ TEST_F(WindowFloatTest, FloatWindowWithDeskRemovalUndo) {
   // shown.
   views::LabelButton* dismiss_button =
       DesksTestApi::GetCloseAllUndoToastDismissButton();
-  const gfx::Point button_center =
-      dismiss_button->GetBoundsInScreen().CenterPoint();
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(button_center);
-  event_generator->ClickLeftButton();
+  AshTestBase::LeftClickOn(dismiss_button);
   // Canceling close-all will bring the floated window back to shown.
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
   // Check if `window` still belongs to `desk_2`.

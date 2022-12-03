@@ -274,10 +274,13 @@ void GetLayersData(aura::Window* window,
     layer_data.should_force_mirror_visible = true;
 
   // Since floated window is not stored in desk container and will be hidden
-  // when the desk is inactive, we need to make sure it's visible in the desk
-  // mini view at anytime, except when it's minimized (which has been handled
-  // above).
-  if (window_state && window_state->IsFloated() && !window->IsVisible())
+  // when the desk is inactive, or when we switch to the template/save desk grid
+  // on overview (via `HideForDesksTemplatesGrid` etc.). We need to make sure
+  // it's visible in the desk mini view at anytime, except when it's minimized
+  // (which has been handled above). Currently we force the floated window to be
+  // visible at all time, since we don't have a use case where we need to hide
+  // floated window for desk preview.
+  if (window_state && window_state->IsFloated())
     layer_data.should_force_mirror_visible = true;
 
   // Visible on all desks windows and floated windows aren't children of

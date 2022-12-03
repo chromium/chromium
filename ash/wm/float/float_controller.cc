@@ -31,6 +31,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_observer.h"
@@ -249,6 +250,13 @@ FloatController::~FloatController() {
 gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
     aura::Window* window) {
   DCHECK(chromeos::wm::CanFloatWindow(window));
+
+  // In the case of window restore, as we re-float previously floated window, we
+  // will use `window->bounds()`to restore floated window's previous
+  // location.
+  if (window->GetProperty(app_restore::kLaunchedFromAppRestoreKey))
+    return window->bounds();
+
   auto* work_area_insets = WorkAreaInsets::ForWindow(window->GetRootWindow());
   const gfx::Rect work_area = work_area_insets->user_work_area_bounds();
 
