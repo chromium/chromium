@@ -535,6 +535,7 @@ void TestFeedNetwork::SendDiscoverApiRequest(
   bool is_feed_query_request =
       request_type == NetworkRequestType::kFeedQuery ||
       request_type == WebFeedListContentsDiscoverApi::kRequestType ||
+      request_type == SingleWebFeedListContentsDiscoverApi::kRequestType ||
       request_type == QueryInteractiveFeedDiscoverApi::kRequestType ||
       request_type == QueryBackgroundFeedDiscoverApi::kRequestType ||
       request_type == QueryNextPageDiscoverApi::kRequestType;
@@ -581,6 +582,11 @@ void TestFeedNetwork::SendDiscoverApiRequest(
       case WebFeedListContentsDiscoverApi::kRequestType: {
         feedwire::Response response;
         InjectApiResponse<WebFeedListContentsDiscoverApi>(response);
+        break;
+      }
+      case SingleWebFeedListContentsDiscoverApi::kRequestType: {
+        feedwire::Response response;
+        InjectApiResponse<SingleWebFeedListContentsDiscoverApi>(response);
         break;
       }
       case QueryInteractiveFeedDiscoverApi::kRequestType: {

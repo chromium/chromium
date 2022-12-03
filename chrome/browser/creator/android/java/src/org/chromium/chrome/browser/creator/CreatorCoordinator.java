@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedAutoplaySettingsDelegate;
 import org.chromium.chrome.browser.feed.FeedContentFirstLoadWatcher;
 import org.chromium.chrome.browser.feed.FeedStream;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
@@ -70,14 +72,16 @@ public class CreatorCoordinator
             mCreatorToolbarModelChangeProcessor;
 
     private final SnackbarManager mSnackbarManager;
-    private BottomSheetController mBottomSheetController;
     private final WindowAndroid mWindowAndroid;
+    private BottomSheetController mBottomSheetController;
     private ScrimCoordinator mScrim;
     private ViewGroup mBottomSheetContainer;
+    private ViewGroup mLayout;
     private Profile mProfile;
     private Stream mStream;
     private String mTitle;
     private String mUrl;
+    private int mHeaderCount;
 
     private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
 
@@ -98,6 +102,7 @@ public class CreatorCoordinator
         contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
                 getContentPreviewsPaddingPx(), CREATOR_PROFILE_ID, mProfileView));
         mContentManager.addContents(0, contentPreviewsList);
+        mHeaderCount = 1;
 
         // Inflate the XML
         mCreatorViewGroup =
@@ -118,10 +123,14 @@ public class CreatorCoordinator
         setUpToolbarListener();
 
         mMediator = new CreatorMediator(mActivity, mCreatorModel);
-
+    }
+    public void initFeedStream(FeedActionDelegate feedActionDelegate) {
         // Create a FeedStream and bind it to the RecyclerView
-        // TODO(crbug.com/1377505): Add CreatorActionDelegate to the FeedStream and enable it.
-        mStream = createCreatorFeedStream();
+        mStream = createCreatorFeedStream(feedActionDelegate);
+
+        mStream.bind(mRecyclerView, mContentManager, /*FeedScrollState*/ null, mSurfaceScope,
+                mHybridListRenderer, new FeedLaunchReliabilityLogger() {},
+                /* HeaderCount */ mHeaderCount, /* shouldScrollToTop */ false);
     }
 
     public ViewGroup getView() {
@@ -130,6 +139,10 @@ public class CreatorCoordinator
 
     public PropertyModel getCreatorModel() {
         return mCreatorModel;
+    }
+
+    public BottomSheetController getBottomSheetController() {
+        return mBottomSheetController;
     }
 
     private RecyclerView setUpView() {
@@ -229,16 +242,15 @@ public class CreatorCoordinator
         });
     }
 
-    FeedStream createCreatorFeedStream() {
-        // TODO(crbug.com/1381667): Replace StreamKind.FOR_YOU with the Creator kind once ready
+    FeedStream createCreatorFeedStream(FeedActionDelegate feedActionDelegate) {
         return new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShownInitially */ false, mWindowAndroid,
-                /* shareSupplier */ null, StreamKind.FOR_YOU,
+                /* shareSupplier */ null, StreamKind.SINGLE_WEB_FEED,
                 /* FeedAutoplaySettingsDelegate */ this,
-                /* actionDelegate */ null,
+                /* actionDelegate */ feedActionDelegate,
                 /* helpAndFeedbackLauncher */ null,
                 /* FeedContentFirstLoadWatcher */ this,
-                /* streamsMediator */ null);
+                /* streamsMediator */ null, mWebFeedId);
     }
 
     /** Launches autoplay settings activity. */

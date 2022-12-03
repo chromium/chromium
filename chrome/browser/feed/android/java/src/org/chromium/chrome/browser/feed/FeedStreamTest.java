@@ -197,7 +197,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null, mFeedContentFirstLoadWatcher, mStreamsMediator);
+                /*helpAndFeedbackLauncher=*/null, mFeedContentFirstLoadWatcher, mStreamsMediator,
+                "".getBytes());
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
@@ -1071,7 +1072,8 @@ public class FeedStreamTest {
                 /* isInterestFeed= */ StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
+                "".getBytes());
         mFeedStream = stream;
         createHeaderContent(1);
         bindToView();
@@ -1092,7 +1094,8 @@ public class FeedStreamTest {
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
+                "".getBytes());
         assertNull(stream.getUnreadContentObserverForTest());
     }
 
@@ -1107,7 +1110,8 @@ public class FeedStreamTest {
                 /* isInterestFeed= */ StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
+                "".getBytes());
         assertNotNull(stream.getUnreadContentObserverForTest());
         FeatureList.setTestFeatures(null);
     }
@@ -1123,7 +1127,8 @@ public class FeedStreamTest {
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
+                "".getBytes());
         assertNotNull(stream.getUnreadContentObserverForTest());
         FeatureList.setTestFeatures(null);
     }
@@ -1139,7 +1144,8 @@ public class FeedStreamTest {
                 StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
+                "".getBytes());
         assertFalse(stream.supportsOptions());
     }
 
@@ -1154,7 +1160,8 @@ public class FeedStreamTest {
                 StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
+                "".getBytes());
         assertFalse(stream.supportsOptions());
     }
 
@@ -1169,7 +1176,8 @@ public class FeedStreamTest {
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
+                "".getBytes());
         assertFalse(stream.supportsOptions());
     }
 
@@ -1184,7 +1192,8 @@ public class FeedStreamTest {
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null);
+                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
+                "".getBytes());
         assertTrue(stream.supportsOptions());
     }
 

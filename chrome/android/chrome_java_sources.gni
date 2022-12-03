@@ -75,6 +75,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkAddEditFolderActivity.java",
   "java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkEditActivity.java",
   "java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkFolderSelectActivity.java",
+  "java/src/org/chromium/chrome/browser/app/creator/CreatorActionDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/app/creator/CreatorActivity.java",
   "java/src/org/chromium/chrome/browser/app/download/DownloadMessageUiDelegate.java",
   "java/src/org/chromium/chrome/browser/app/download/home/DownloadActivity.java",

@@ -13,6 +13,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/proto/v2/web_feed_identifier_token.pb.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/proto/v2/wire/chrome_client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_entry_point_data.pb.h"
@@ -372,6 +373,17 @@ feedwire::Request CreateFeedQueryRefreshRequest(
         ->mutable_web_feed_token()
         ->mutable_web_feed_token()
         ->set_web_feed_token(kChromeFollowToken);
+  } else if (stream_type.IsSingleWebFeed()) {
+    // A special token that requests content for the Single Web Feed.
+    webfeedidentifier::WebFeedIdentifierToken web_feed_id;
+    web_feed_id.mutable_outer_id()->mutable_inner_id()->set_web_feed_name(
+        stream_type.GetWebFeedId().c_str());
+
+    request.mutable_feed_request()
+        ->mutable_feed_query()
+        ->mutable_web_feed_token()
+        ->mutable_web_feed_token()
+        ->set_web_feed_token(web_feed_id.SerializeAsString());
   }
   SetNoticeCardAcknowledged(&request, request_metadata);
   SetInfoCardTrackingStates(&request, request_metadata);

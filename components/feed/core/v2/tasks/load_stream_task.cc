@@ -312,10 +312,16 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
 
   FeedNetwork& network = stream_->GetNetwork();
   const bool force_feed_query = GetFeedConfig().use_feed_query_requests;
-  if (options_.stream_type.IsWebFeed() && !force_feed_query) {
+  if (!force_feed_query && options_.stream_type.IsWebFeed()) {
     // Special case: web feed that is not using Feed Query requests go to
     // WebFeedListContentsDiscoverApi.
     network.SendApiRequest<WebFeedListContentsDiscoverApi>(
+        std::move(request), account_info, std::move(request_metadata),
+        base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
+  } else if (!force_feed_query && options_.stream_type.IsSingleWebFeed()) {
+    // Special case: web feed that is not using Feed Query requests go to
+    // WebFeedListContentsDiscoverApi.
+    network.SendApiRequest<SingleWebFeedListContentsDiscoverApi>(
         std::move(request), account_info, std::move(request_metadata),
         base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
   } else if (options_.stream_type.IsForYou() &&

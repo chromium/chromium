@@ -660,13 +660,17 @@ public class FeedStream implements Stream {
             int streamKind, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate,
             FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             FeedContentFirstLoadWatcher feedContentFirstLoadWatcher,
-            Stream.StreamsMediator streamsMediator) {
+            Stream.StreamsMediator streamsMediator, byte[] webFeedId) {
         mActivity = activity;
         mStreamKind = streamKind;
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
-        mNativeFeedStream = FeedStreamJni.get().init(
-                this, streamKind, mReliabilityLoggingBridge.getNativePtr());
-
+        if (streamKind == StreamKind.SINGLE_WEB_FEED) {
+            mNativeFeedStream = FeedStreamJni.get().initWebFeed(
+                    this, webFeedId, mReliabilityLoggingBridge.getNativePtr());
+        } else {
+            mNativeFeedStream = FeedStreamJni.get().init(
+                    this, streamKind, mReliabilityLoggingBridge.getNativePtr());
+        }
         mBottomSheetController = bottomSheetController;
         mShareHelper = new ShareHelperWrapper(windowAndroid, shareDelegateSupplier);
         mSnackManager = snackbarManager;
