@@ -246697,6 +246697,19 @@
          ],
          {}
         ]
+       ],
+       "range-tick-marks-05.html": [
+        "a65c7b7946d56a20e8085595dd33fac6f2b95122",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-input-element/range-tick-marks-05-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "the-meter-element": {
@@ -259216,16 +259229,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "1b22115f6672a07e905ea64f4a96a2c85d76671d",
-     []
-    ],
-    "mtime.json": [
-     "f555bd57cb0ffbe148b958e366450fb464e3c9e2",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -355584,6 +355587,10 @@
        ],
        "range-tick-marks-04-ref.html": [
         "a6afaff7eefb12eb8b5c401aeb9ca7ebc1501876",
+        []
+       ],
+       "range-tick-marks-05-ref.html": [
+        "f144af388055770402effa0e16b788f8ea430637",
         []
        ],
        "resources": {
@@ -492818,6 +492825,13 @@
           ]
          ]
         }
+       ]
+      ],
+      "script-js-unlabeled-gziped.sub.html": [
+       "fe8544079883e6087a1cbd46152e8bc6d29c57fd",
+       [
+        null,
+        {}
        ]
       ],
       "script-unlabeled.sub.html": [
