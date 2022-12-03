@@ -3686,6 +3686,7 @@
                     },
                     "enable_features": [
                         "BookmarkApproximateNodeMatch",
+                        "BookmarkIndexPaths",
                         "BookmarkLimitNumNodesForBookmarkSearch",
                         "BookmarkTypedUrlsMap",
                         "OmniboxBookmarkPaths",

@@ -118,8 +118,10 @@ void TitledUrlIndex::RemovePath(const TitledUrlNode* node) {
       "Bookmarks.UpdateTitledUrlIndex.RemovePath");
   for (const std::u16string& term :
        ExtractQueryWords(Normalize(node->GetTitledUrlNodeTitle()))) {
-    DCHECK_GT(path_index_[term], 0u);
-    if (!--path_index_[term])
+    // `path_index_.count(term)` should be > 0, since nodes can't be
+    // removed/renamed if they didn't exist to begin with. But some tests don't
+    // fully load bookmarks so it's not `DCHECK`ed.
+    if (path_index_.count(term) && !--path_index_[term])
       path_index_.erase(term);
   }
 }
@@ -461,7 +463,7 @@ TitledUrlIndex::TitledUrlNodes TitledUrlIndex::RetrieveNodesMatchingTerm(
     return {};
 
   if (!query_parser::QueryParser::IsWordLongEnoughForPrefixSearch(
-      term, matching_algorithm)) {
+          term, matching_algorithm)) {
     // Term is too short for prefix match, compare using exact match.
     if (i->first != term)
       return {};  // No title/URL pairs with this term.
