@@ -200,12 +200,12 @@ class TestImporter(object):
 
         return 0
 
-    def update_expectations_for_cl(self):
+    def update_expectations_for_cl(self) -> bool:
         """Performs the expectation-updating part of an auto-import job.
 
         This includes triggering try jobs and waiting; then, if applicable,
-        writing new baselines and TestExpectation lines, committing, and
-        uploading a new patchset.
+        writing new baselines, metadata, and TestExpectation lines, committing,
+        and uploading a new patchset.
 
         This assumes that there is CL associated with the current branch.
 
@@ -230,6 +230,10 @@ class TestImporter(object):
 
         if try_results and self.git_cl.some_failed(try_results):
             self.fetch_new_expectations_and_baselines()
+            # Update metadata after baselines so that `rebaseline-cl` does not
+            # complain about uncommitted files. `update-metadata` has a similar
+            # but more fine-grained check.
+            self._expectations_updater.update_metadata()
             if self.chromium_git.has_working_directory_changes():
                 # Skip slow and timeout tests so that presubmit check passes
                 port = self.host.port_factory.get()
@@ -480,10 +484,13 @@ class TestImporter(object):
 
     def _has_wpt_changes(self):
         changed_files = self.chromium_git.changed_files()
-        rel_dest_path = self.fs.relpath(self.dest_path,
-                                        self.finder.chromium_base())
-        for cf in changed_files:
-            if cf.startswith(rel_dest_path):
+        test_roots = [
+            self.fs.relpath(self.finder.path_from_web_tests(subdir),
+                            self.finder.chromium_base())
+            for subdir in Port.WPT_DIRS
+        ]
+        for changed_file in changed_files:
+            if any(changed_file.startswith(root) for root in test_roots):
                 return True
         return False
 
@@ -567,15 +574,12 @@ class TestImporter(object):
         temp_file.write(description)
         temp_file.close()
 
-        self.git_cl.run([
-            'upload',
-            '--bypass-hooks',
-            '-f',
-            '--message-file',
-            temp_path
-        ])
-
-        self.fs.remove(temp_path)
+        try:
+            self.git_cl.run([
+                'upload', '--bypass-hooks', '-f', '--message-file', temp_path
+            ])
+        finally:
+            self.fs.remove(temp_path)
 
     def get_directory_owners(self):
         """Returns a mapping of email addresses to owners of changed tests."""

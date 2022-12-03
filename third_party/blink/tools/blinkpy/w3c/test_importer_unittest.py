@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import json
 import six
 import unittest
@@ -160,7 +158,14 @@ class TestImporterTest(LoggingTestCase):
             'INFO: For updating WPT metadata:\n',
             'INFO:   cq-wpt-builder-c\n',
             'INFO: All jobs finished.\n',
+            'INFO: Output of update-metadata:\n',
+            'INFO:   update-metadata: MOCK output of child process\n',
+            'INFO: -- end of update-metadata output --\n',
         ])
+        self.assertIn([
+            'python', '/mock-checkout/third_party/blink/tools/blink_tool.py',
+            'update-metadata', '--no-trigger-jobs'
+        ], host.executive.calls)
 
     def test_run_commit_queue_for_cl_pass(self):
         host = self.mock_host()
