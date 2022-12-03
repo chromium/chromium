@@ -5,6 +5,7 @@
 #ifndef SANDBOX_MAC_SEATBELT_EXEC_H_
 #define SANDBOX_MAC_SEATBELT_EXEC_H_
 
+#include <memory>
 #include <string>
 
 #include "sandbox/mac/seatbelt.pb.h"
@@ -110,13 +111,6 @@ class SEATBELT_EXPORT SeatbeltExecServer {
   // succeeds.
   bool ApplySandboxProfile(const mac::SandboxPolicy& sandbox_policy);
 
-  // Set a string parameter in the sandbox profile. This is present in the
-  // server because the process about to initialize a sandbox may need to add
-  // some extra parameters, such as the path to the executable or the current
-  // PID. This must be called before InitializeSandbox().
-  [[nodiscard]] bool SetParameter(const std::string& key,
-                                  const std::string& value);
-
  private:
   // Reads from the |fd_| and stores the data into a string. This does
   // not append a NUL terminator as protobuf does not expect one.
@@ -124,9 +118,6 @@ class SEATBELT_EXPORT SeatbeltExecServer {
 
   // The file descriptor used to communicate with the launcher process.
   int fd_;
-
-  // Extra parameters added by the server process.
-  std::map<std::string, std::string> extra_params_;
 };
 
 }  // namespace sandbox

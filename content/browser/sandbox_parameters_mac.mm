@@ -85,11 +85,18 @@ void AddDarwinDirs(sandbox::SeatbeltExecClient* client) {
 // All of the below functions populate the |client| with the parameters that the
 // sandbox needs to resolve information that cannot be known at build time, such
 // as the user's home directory.
-void SetupCommonSandboxParameters(sandbox::SeatbeltExecClient* client) {
-  const base::CommandLine* command_line =
+void SetupCommonSandboxParameters(
+    sandbox::SeatbeltExecClient* client,
+    const base::CommandLine& target_command_line) {
+  const base::CommandLine* browser_command_line =
       base::CommandLine::ForCurrentProcess();
-  bool enable_logging =
-      command_line->HasSwitch(sandbox::policy::switches::kEnableSandboxLogging);
+  bool enable_logging = browser_command_line->HasSwitch(
+      sandbox::policy::switches::kEnableSandboxLogging);
+
+  CHECK(client->SetParameter(
+      sandbox::policy::kParamExecutablePath,
+      sandbox::policy::GetCanonicalPath(target_command_line.GetProgram())
+          .value()));
 
   CHECK(client->SetBooleanParameter(sandbox::policy::kParamEnableLogging,
                                     enable_logging));
@@ -107,8 +114,10 @@ void SetupCommonSandboxParameters(sandbox::SeatbeltExecClient* client) {
   CHECK(client->SetParameter(sandbox::policy::kParamBrowserPid,
                              std::to_string(getpid())));
 
-  std::string logging_path =
-      GetContentClient()->browser()->GetLoggingFileName(*command_line).value();
+  std::string logging_path = GetContentClient()
+                                 ->browser()
+                                 ->GetLoggingFileName(*browser_command_line)
+                                 .value();
   CHECK(client->SetParameter(sandbox::policy::kParamLogFilePath, logging_path));
 
 #if defined(COMPONENT_BUILD)
@@ -135,8 +144,9 @@ void SetupCommonSandboxParameters(sandbox::SeatbeltExecClient* client) {
                                     false));
 }
 
-void SetupNetworkSandboxParameters(sandbox::SeatbeltExecClient* client) {
-  SetupCommonSandboxParameters(client);
+void SetupNetworkSandboxParameters(sandbox::SeatbeltExecClient* client,
+                                   const base::CommandLine& command_line) {
+  SetupCommonSandboxParameters(client, command_line);
 
   std::vector<base::FilePath> storage_paths =
       GetContentClient()->browser()->GetNetworkContextsParentDirectory();
@@ -164,8 +174,9 @@ void SetupNetworkSandboxParameters(sandbox::SeatbeltExecClient* client) {
 #if BUILDFLAG(ENABLE_PPAPI)
 void SetupPPAPISandboxParameters(
     const std::vector<content::WebPluginInfo>& plugins,
-    sandbox::SeatbeltExecClient* client) {
-  SetupCommonSandboxParameters(client);
+    sandbox::SeatbeltExecClient* client,
+    const base::CommandLine& command_line) {
+  SetupCommonSandboxParameters(client, command_line);
 
   base::FilePath bundle_path =
       sandbox::policy::GetCanonicalPath(base::mac::MainBundlePath());
@@ -189,7 +200,7 @@ void SetupPPAPISandboxParameters(
 
 void SetupGpuSandboxParameters(sandbox::SeatbeltExecClient* client,
                                const base::CommandLine& command_line) {
-  SetupCommonSandboxParameters(client);
+  SetupCommonSandboxParameters(client, command_line);
   AddDarwinDirs(client);
   CHECK(client->SetBooleanParameter(
       sandbox::policy::kParamDisableMetalShaderCache,
@@ -218,18 +229,18 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kUtility:
-      SetupCommonSandboxParameters(client);
+      SetupCommonSandboxParameters(client, command_line);
       break;
     case sandbox::mojom::Sandbox::kGpu: {
       SetupGpuSandboxParameters(client, command_line);
       break;
     }
     case sandbox::mojom::Sandbox::kNetwork:
-      SetupNetworkSandboxParameters(client);
+      SetupNetworkSandboxParameters(client, command_line);
       break;
 #if BUILDFLAG(ENABLE_PPAPI)
     case sandbox::mojom::Sandbox::kPpapi:
-      SetupPPAPISandboxParameters(plugins, client);
+      SetupPPAPISandboxParameters(plugins, client, command_line);
       break;
 #endif
     case sandbox::mojom::Sandbox::kNoSandbox:
@@ -241,7 +252,7 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kScreenAI:
 #endif
     case sandbox::mojom::Sandbox::kSpeechRecognition:
-      SetupCommonSandboxParameters(client);
+      SetupCommonSandboxParameters(client, command_line);
       CHECK(GetContentClient()->browser()->SetupEmbedderSandboxParameters(
           sandbox_type, client));
   }
