@@ -57,13 +57,13 @@ function errorReducer(
       if (success) {
         return null;
       }
-      return state || {message: loadTimeData.getString('setWallpaperError')};
+      return {message: loadTimeData.getString('setWallpaperError')};
     case WallpaperActionName.SET_SELECTED_IMAGE:
       const {image} = action;
       if (image) {
         return state;
       }
-      return state || {message: loadTimeData.getString('loadWallpaperError')};
+      return {message: loadTimeData.getString('loadWallpaperError')};
     // Show network error toast if local images are available but online
     // collections are failed to load. As local images include at least
     // the default image, we only need to check the status of online
@@ -71,8 +71,7 @@ function errorReducer(
     case WallpaperActionName.SET_COLLECTIONS:
       const {collections} = action;
       if (!isNonEmptyArray(collections)) {
-        return state ||
-            {message: loadTimeData.getString('wallpaperNetworkError')};
+        return {message: loadTimeData.getString('wallpaperNetworkError')};
       }
       return state;
     case PersonalizationActionName.SET_ERROR:

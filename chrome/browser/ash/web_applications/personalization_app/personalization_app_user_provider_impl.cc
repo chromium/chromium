@@ -394,5 +394,4 @@ void PersonalizationAppUserProviderImpl::SetUserImageFileSelectorForTesting(
     std::unique_ptr<ash::UserImageFileSelector> file_selector) {
   user_image_file_selector_ = std::move(file_selector);
 }
-
 }  // namespace ash::personalization_app

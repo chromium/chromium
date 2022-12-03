@@ -2263,6 +2263,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_SET_WALLPAPER_ERROR" desc="Label for the error toast notification when setting wallpaper failed">
         Something went wrong. Try choosing a wallpaper again or reopen the app.
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_NETWORK_ERROR" desc="Error message displayed when avatar information cannot be downloaded or set">
+        Please connect to a network and reload the page to view and set avatars.
+      </message>
       <message name="IDS_PERSONALIZATION_APP_DISMISS" desc="Label for the toast notification dismiss action">
         Dismiss
       </message>
