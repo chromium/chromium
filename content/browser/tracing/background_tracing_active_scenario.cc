@@ -99,14 +99,12 @@ class BackgroundTracingActiveScenario::TracingSession {
         perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
     tracing_session_->Setup(perfetto_config);
 
-    auto category_preset = parent_scenario->GetConfig()->category_preset();
-    tracing_session_->SetOnStartCallback([category_preset] {
+    tracing_session_->SetOnStartCallback([] {
       GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(
               &BackgroundTracingManagerImpl::OnStartTracingDone,
-              base::Unretained(&BackgroundTracingManagerImpl::GetInstance()),
-              category_preset));
+              base::Unretained(&BackgroundTracingManagerImpl::GetInstance())));
     });
     tracing_session_->Start();
     // We check IsEnabled() before creating the LegacyTracingSession,

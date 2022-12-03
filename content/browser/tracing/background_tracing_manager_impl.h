@@ -56,8 +56,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
     // Called after tracing is enabled on all processes because the rule was
     // triggered.
-    virtual void OnTracingEnabled(
-        BackgroundTracingConfigImpl::CategoryPreset preset) = 0;
+    virtual void OnTracingEnabled() = 0;
 
     virtual ~EnabledStateObserver() = default;
   };
@@ -146,7 +145,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   bool IsAllowedFinalization(bool is_crash_scenario) const;
 
   // Called by BackgroundTracingActiveScenario
-  void OnStartTracingDone(BackgroundTracingConfigImpl::CategoryPreset preset);
+  void OnStartTracingDone();
 
   // For tests
   CONTENT_EXPORT BackgroundTracingActiveScenario* GetActiveScenarioForTesting();

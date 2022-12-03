@@ -25,8 +25,7 @@ class CONTENT_EXPORT BackgroundReachedCodeTracingObserver
   // BackgroundTracingManagerImpl::EnabledStateObserver implementation.
   void OnScenarioActivated(const BackgroundTracingConfigImpl* config) override;
   void OnScenarioAborted() override;
-  void OnTracingEnabled(
-      BackgroundTracingConfigImpl::CategoryPreset preset) override;
+  void OnTracingEnabled() override;
 
   std::unique_ptr<BackgroundTracingConfigImpl> IncludeReachedCodeConfigIfNeeded(
       std::unique_ptr<BackgroundTracingConfigImpl> config);

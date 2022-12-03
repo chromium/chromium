@@ -64,8 +64,7 @@ void BackgroundReachedCodeTracingObserver::OnScenarioAborted() {
   enabled_in_current_session_ = false;
 }
 
-void BackgroundReachedCodeTracingObserver::OnTracingEnabled(
-    BackgroundTracingConfigImpl::CategoryPreset preset) {}
+void BackgroundReachedCodeTracingObserver::OnTracingEnabled() {}
 
 std::unique_ptr<BackgroundTracingConfigImpl>
 BackgroundReachedCodeTracingObserver::IncludeReachedCodeConfigIfNeeded(

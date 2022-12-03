@@ -80,8 +80,7 @@ void BackgroundStartupTracingObserver::OnScenarioAborted() {
   enabled_in_current_session_ = false;
 }
 
-void BackgroundStartupTracingObserver::OnTracingEnabled(
-    BackgroundTracingConfigImpl::CategoryPreset preset) {}
+void BackgroundStartupTracingObserver::OnTracingEnabled() {}
 
 void BackgroundStartupTracingObserver::SetPreferenceManagerForTesting(
     std::unique_ptr<PreferenceManager> preferences) {

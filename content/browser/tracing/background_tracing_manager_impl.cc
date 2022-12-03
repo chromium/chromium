@@ -421,11 +421,10 @@ void BackgroundTracingManagerImpl::InvalidateTriggerHandlesForTesting() {
   trigger_handles_.clear();
 }
 
-void BackgroundTracingManagerImpl::OnStartTracingDone(
-    BackgroundTracingConfigImpl::CategoryPreset preset) {
+void BackgroundTracingManagerImpl::OnStartTracingDone() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (auto* observer : background_tracing_observers_) {
-    observer->OnTracingEnabled(preset);
+    observer->OnTracingEnabled();
   }
 }
 

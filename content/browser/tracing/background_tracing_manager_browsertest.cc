@@ -230,10 +230,7 @@ class TestBackgroundTracingHelper
     wait_for_scenario_aborted_.Quit();
   }
 
-  void OnTracingEnabled(
-      BackgroundTracingConfigImpl::CategoryPreset preset) override {
-    wait_for_tracing_enabled_.Quit();
-  }
+  void OnTracingEnabled() override { wait_for_tracing_enabled_.Quit(); }
 
   void WaitForScenarioActivated() { wait_for_scenario_activated_.Run(); }
   void WaitForScenarioAborted() { wait_for_scenario_aborted_.Run(); }
