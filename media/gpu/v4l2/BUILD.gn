@@ -196,3 +196,15 @@ executable("v4l2_stateless_decoder") {
     deps += [ "//third_party/libgav1:libgav1_parser" ]
   }
 }
+
+test("v4l2_unittest") {
+  testonly = true
+  sources = [ "v4l2_unittest.cc" ]
+
+  deps = [
+    ":v4l2",
+    "//base/test:test_support",
+    "//media:test_support",
+    "//testing/gtest",
+  ]
+}
