@@ -40,11 +40,32 @@ std::string PaymentAppInstallUtil::InstallPaymentApp(
   CHECK(!service_worker_file_path.empty());
   CHECK_EQ('/', service_worker_file_path.at(0));
 
-  GURL sw_js_url = test_server.GetURL(hostname, service_worker_file_path);
-  GURL sw_scope = sw_js_url.GetWithoutFilename();
+  GURL service_worker_javascript_file_url =
+      test_server.GetURL(hostname, service_worker_file_path);
 
-  std::string method = url::Origin::Create(sw_scope).Serialize();
-  CHECK_NE('/', method.at(method.length() - 1));
+  std::string payment_method_identifier =
+      url::Origin::Create(service_worker_javascript_file_url).Serialize();
+
+  return InstallPaymentAppForPaymentMethodIdentifier(
+             web_contents, service_worker_javascript_file_url,
+             payment_method_identifier, icon_install)
+             ? payment_method_identifier
+             : std::string();
+}
+
+// static
+bool PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+    content::WebContents& web_contents,
+    const GURL& service_worker_javascript_file_url,
+    const std::string& payment_method_identifier,
+    IconInstall icon_install) {
+  CHECK(service_worker_javascript_file_url.is_valid());
+  CHECK(!payment_method_identifier.empty());
+  CHECK_NE('/', payment_method_identifier.at(
+                    payment_method_identifier.length() - 1));
+
+  GURL service_worker_scope =
+      service_worker_javascript_file_url.GetWithoutFilename();
 
   SkBitmap app_icon;
   if (icon_install == IconInstall::kWithIcon) {
@@ -57,12 +78,13 @@ std::string PaymentAppInstallUtil::InstallPaymentApp(
   bool success = false;
   content::PaymentAppProvider::GetOrCreateForWebContents(&web_contents)
       ->InstallPaymentAppForTesting(
-          app_icon, sw_js_url, sw_scope, method,
+          app_icon, service_worker_javascript_file_url, service_worker_scope,
+          payment_method_identifier,
           base::BindOnce(&OnInstallPaymentApp, run_loop.QuitClosure(),
                          &success));
   run_loop.Run();
 
-  return success ? method : std::string();
+  return success;
 }
 
 }  // namespace payments

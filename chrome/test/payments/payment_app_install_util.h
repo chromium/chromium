@@ -36,6 +36,14 @@ class PaymentAppInstallUtil {
       const std::string& service_worker_file_path,
       IconInstall icon_install);
 
+  // Install the payment app specified by `service_worker_javascript_file_url`
+  // with the given `payment_method_idnetifier`. Returns `true` on success.
+  static bool InstallPaymentAppForPaymentMethodIdentifier(
+      content::WebContents& web_contents,
+      const GURL& service_worker_javascript_file_url,
+      const std::string& payment_method_identifier,
+      IconInstall icon_install);
+
   PaymentAppInstallUtil() = delete;
 };
 

@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/test/payments/payment_app_install_util.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
@@ -49,11 +50,15 @@ class AndroidPaymentAppFactoryTest
 // should be ignored.
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                        IgnoreInstalledPlayBillingServiceWorker) {
-  NavigateTo("a.com", "/payment_handler_installer.html");
-  ASSERT_EQ("success",
-            content::EvalJs(GetActiveWebContents(),
-                            "install('alicepay.com/app1/app.js', "
-                            "['https://play.google.com/billing'], false)"));
+  GURL service_worker_javascript_file_url = https_server()->GetURL(
+      "a.com", "/alicepay.com/app1/app.js");
+  ASSERT_TRUE(
+      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *GetActiveWebContents(),
+          service_worker_javascript_file_url,
+          /*payment_method_identifier=*/"https://play.google.com/billing",
+          PaymentAppInstallUtil::IconInstall::kWithIcon));
+
   NavigateTo("b.com", "/can_make_payment_checker.html");
   ASSERT_EQ("false", content::EvalJs(
                          GetActiveWebContents(),
