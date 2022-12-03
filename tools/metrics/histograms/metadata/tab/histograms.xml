@@ -1281,39 +1281,6 @@ chromium-metrics-reviews@google.com.
   <summary>[Android and iOS] The number of tabs open at cold launch.</summary>
 </histogram>
 
-<histogram name="Tabs.DesktopTabOffsetFromLeftOfSwitch" units="units"
-    expires_after="2021-06-30">
-  <owner>connily@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
-  <summary>
-    The tab index from the beginning of the tab strip when switching into a tab.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.DesktopTabOffsetFromRightOfSwitch" units="units"
-    expires_after="2021-06-30">
-  <owner>connily@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
-  <summary>
-    The tab index from the end of the tab strip when switching into a tab.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.DesktopTabOffsetOfSwitch" units="units"
-    expires_after="2021-06-30">
-  <owner>connily@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
-  <summary>
-    The offset between the tab currently selected tab and the newly selected
-    tab.
-
-    If the user switches to a tab to the left of their currently selected tab,
-    we log a positive offset value indicating how many tabs to the left they
-    moved. If the user switches to a tab to the right of their currently
-    selected tab, we log a negative offset value.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.FirstSwitchedToForegroundCreationRank" units="units"
     expires_after="M77">
   <owner>pkotwicz@chromium.org</owner>
