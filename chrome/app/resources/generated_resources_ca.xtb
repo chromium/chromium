@@ -335,7 +335,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1307431692088049276">No m'ho tornis a preguntar</translation>
 <translation id="1307559529304613120">El sistema no ha pogut emmagatzemar un testimoni d'accés a l'API de llarg termini per a aquest dispositiu.</translation>
 <translation id="1309375166585231290">Els teus pares encara no ho han autoritzat</translation>
-<translation id="1312811472299082263">Crea a partir d'un manual d'estratègia d'Ansible o d'un fitxer de còpia de seguretat de Crostini</translation>
+<translation id="1312811472299082263">Crea a partir d'un manual d'Ansible o d'un fitxer de còpia de seguretat de Crostini</translation>
 <translation id="1313405956111467313">Configuració automàtica del servidor intermediari</translation>
 <translation id="131364520783682672">Bloq Maj</translation>
 <translation id="1313660246522271310">Se't tancarà la sessió de tots els llocs web, també de les pestanyes obertes</translation>
@@ -2164,7 +2164,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2942279350258725020">Missatges Android</translation>
 <translation id="2942560570858569904">S'està esperant...</translation>
 <translation id="2942581856830209953">Personalitza aquesta pàgina</translation>
-<translation id="2943268899142471972">Selecciona un manual d'estratègia d'Ansible o un fitxer de còpia de seguretat de Crostini</translation>
+<translation id="2943268899142471972">Selecciona un manual d'Ansible o un fitxer de còpia de seguretat de Crostini</translation>
 <translation id="2944060181911631861">Envia dades d'ús i de diagnòstic. Ajuda a millorar la teva experiència a Android enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google. <ph name="BEGIN_LINK1" />Més informació<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Ves a Fitxers</translation>
 <translation id="2946119680249604491">Afegeix una connexió</translation>
