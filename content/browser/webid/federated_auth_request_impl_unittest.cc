@@ -484,13 +484,14 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     const char* provider_key = ConvertProviderToChar(provider);
     IdpNetworkRequestManager::Endpoints endpoints;
-    endpoints.token = config_.idp_info[provider_key].manifest.token_endpoint;
+    endpoints.token =
+        GURL(config_.idp_info[provider_key].manifest.token_endpoint);
     endpoints.accounts =
-        config_.idp_info[provider_key].manifest.accounts_endpoint;
+        GURL(config_.idp_info[provider_key].manifest.accounts_endpoint);
     endpoints.client_metadata =
-        config_.idp_info[provider_key].manifest.client_metadata_endpoint;
+        GURL(config_.idp_info[provider_key].manifest.client_metadata_endpoint);
     endpoints.metrics =
-        config_.idp_info[provider_key].manifest.metrics_endpoint;
+        GURL(config_.idp_info[provider_key].manifest.metrics_endpoint);
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;

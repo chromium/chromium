@@ -87,10 +87,10 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     ~Endpoints();
     Endpoints(const Endpoints&);
 
-    std::string token;
-    std::string accounts;
-    std::string client_metadata;
-    std::string metrics;
+    GURL token;
+    GURL accounts;
+    GURL client_metadata;
+    GURL metrics;
   };
 
   struct ClientMetadata {

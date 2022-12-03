@@ -14,22 +14,10 @@ namespace {
 // TODO(cbiesinger): Determine what the right number is.
 static constexpr size_t kMaxProvidersInManifestList = 1ul;
 
-GURL ResolveManifestUrl(
-    const FederatedManifestRequester::FetchResult& fetch_result,
-    const std::string& endpoint) {
-  if (endpoint.empty())
-    return GURL();
-  return fetch_result.identity_provider_config_url.Resolve(endpoint);
-}
-
 }  // namespace
 
 using blink::mojom::FederatedAuthRequestResult;
 using TokenStatus = FedCmRequestIdTokenStatus;
-
-FederatedManifestRequester::Endpoints::Endpoints() = default;
-FederatedManifestRequester::Endpoints::Endpoints(const Endpoints&) = default;
-FederatedManifestRequester::Endpoints::~Endpoints() = default;
 
 FederatedManifestRequester::FetchError::FetchError(const FetchError&) = default;
 
@@ -211,14 +199,7 @@ void FederatedManifestRequester::OnManifestFetched(
     }
   }
 
-  fetch_result.endpoints.token =
-      ResolveManifestUrl(fetch_result, endpoints.token);
-  fetch_result.endpoints.accounts =
-      ResolveManifestUrl(fetch_result, endpoints.accounts);
-  fetch_result.endpoints.client_metadata =
-      ResolveManifestUrl(fetch_result, endpoints.client_metadata);
-  fetch_result.endpoints.metrics =
-      ResolveManifestUrl(fetch_result, endpoints.metrics);
+  fetch_result.endpoints = endpoints;
 
   fetch_result.metadata = idp_metadata;
 

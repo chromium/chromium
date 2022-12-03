@@ -333,7 +333,7 @@ FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
 
 FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
     blink::mojom::IdentityProvider provider,
-    FederatedManifestRequester::Endpoints endpoints,
+    IdpNetworkRequestManager::Endpoints endpoints,
     IdentityProviderMetadata metadata,
     bool prefer_auto_signin)
     : provider(std::move(provider)),

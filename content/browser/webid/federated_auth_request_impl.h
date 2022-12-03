@@ -85,14 +85,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   struct IdentityProviderInfo {
     IdentityProviderInfo(blink::mojom::IdentityProvider,
-                         FederatedManifestRequester::Endpoints,
+                         IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata,
                          bool prefer_auto_signin);
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
 
     blink::mojom::IdentityProvider provider;
-    FederatedManifestRequester::Endpoints endpoints;
+    IdpNetworkRequestManager::Endpoints endpoints;
     IdentityProviderMetadata metadata;
     bool prefer_auto_signin{false};
     bool has_failing_idp_signin_status{false};

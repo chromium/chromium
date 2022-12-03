@@ -125,6 +125,12 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
         })");
 }
 
+GURL ResolveManifestUrl(const GURL& config_url, const std::string& endpoint) {
+  if (endpoint.empty())
+    return GURL();
+  return config_url.Resolve(endpoint);
+}
+
 absl::optional<content::IdentityRequestAccount> ParseAccount(
     const base::Value& account,
     const std::string& client_id) {
@@ -371,9 +377,9 @@ void OnManifestParsed(const GURL& provider,
   auto ExtractEndpoint = [&](const char* key) {
     const base::Value* endpoint = response.FindKey(key);
     if (!endpoint || !endpoint->is_string()) {
-      return std::string();
+      return GURL();
     }
-    return endpoint->GetString();
+    return ResolveManifestUrl(provider, endpoint->GetString());
   };
 
   Endpoints endpoints;

@@ -24,19 +24,6 @@ namespace content {
 // Validates returned information and calls callback when done.
 class FederatedManifestRequester {
  public:
-  // Fetched from the IDP FedCM manifest configuration.
-  struct Endpoints {
-    Endpoints();
-    ~Endpoints();
-    Endpoints(const Endpoints&);
-
-    GURL idp;
-    GURL token;
-    GURL accounts;
-    GURL client_metadata;
-    GURL metrics;
-  };
-
   struct FetchError {
     FetchError(const FetchError& info);
     FetchError(blink::mojom::FederatedAuthRequestResult result,
@@ -54,7 +41,7 @@ class FederatedManifestRequester {
     FetchResult(const FetchResult&);
     ~FetchResult();
     GURL identity_provider_config_url;
-    Endpoints endpoints;
+    IdpNetworkRequestManager::Endpoints endpoints;
     absl::optional<IdentityProviderMetadata> metadata;
     absl::optional<FetchError> error;
   };
