@@ -270,6 +270,24 @@ static_library("libaom") {
   public_deps = [ ":libaom_buildflags" ]
 }
 
+static_library("libaomrc") {
+  if (!is_debug && is_win) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  sources = [
+    "//third_party/libaom/source/libaom/av1/ratectrl_rtc.cc",
+    "//third_party/libaom/source/libaom/av1/ratectrl_rtc.h",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":libaom_config" ]
+
+  public_configs = [ ":libaom_external_config" ]
+  public_deps = [ ":libaom" ]
+}
+
 fuzzer_test("libaom_av1_dec_fuzzer") {
   sources = [ "source/libaom/examples/av1_dec_fuzzer.cc" ]
   seed_corpus = "fuzz/av1_dec_fuzzer_corpus"

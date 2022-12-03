@@ -44,6 +44,10 @@
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "vp9_video_rate_control_wrapper.h"
+#if BUILDFLAG(ENABLE_LIBAOM)
+#include "av1_video_rate_control_wrapper.h"
+#include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
+#endif
 
 #define NOTIFY_RETURN_ON_FAILURE(cond, log, ret) \
   do {                                           \
@@ -78,12 +82,18 @@ const size_t kOneMicrosecondInMFSampleTimeUnits = 10;
 const size_t kPrefixNALLocatedBytePos = 3;
 constexpr uint64_t kH264MaxQp = 51;
 constexpr uint64_t kVP9MaxQp = 63;
+constexpr uint64_t kAV1MaxQp = 63;
 
 // Quantizer parameter used in libvpx vp9 rate control, whose range is 0-63.
 // These are based on WebRTC's defaults, cite from
 // third_party/webrtc/media/engine/webrtc_video_engine.h.
 constexpr uint8_t kVP9MinQuantizer = 2;
 constexpr uint8_t kVP9MaxQuantizer = 56;
+// Default value from
+// //third_party/webrtc/modules/video_coding/codecs/av1/libaom_av1_encoder.cc,
+constexpr uint8_t kAV1MinQuantizer = 10;
+// //third_party/webrtc/media/engine/webrtc_video_engine.h.
+constexpr uint8_t kAV1MaxQuantizer = 56;
 
 constexpr const wchar_t* const kMediaFoundationVideoEncoderDLLs[] = {
     L"mf.dll",
@@ -116,12 +126,13 @@ eAVEncH264VProfile GetH264VProfile(VideoCodecProfile profile,
   }
 }
 
-// Convert VP9 qindex (0-255) to the quantizer parameter input in MF
+// Convert AV1/VP9 qindex (0-255) to the quantizer parameter input in MF
 // AVEncVideoEncodeQP. AVEncVideoEncodeQP maps it to libvpx qp tuning parameter
 // and thus the range is 0-63.
-uint8_t Vp9QPtoAVEncQP(uint8_t q_index) {
+uint8_t QindextoAVEncQP(uint8_t q_index) {
   // The following computation is based on the table in
   // //third_party/libvpx/source/libvpx/vp9/encoder/vp9_quantize.c.
+  // //third_party/libaom/source/libaom/av1/encoder/av1_quantize.c
   // {
   //   0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,
   //   52,  56,  60,  64,  68,  72,  76,  80,  84,  88,  92,  96,  100,
@@ -137,13 +148,16 @@ uint8_t Vp9QPtoAVEncQP(uint8_t q_index) {
 }
 
 bool IsValidQp(VideoCodec codec, uint64_t qp) {
-  if (codec == VideoCodec::kH264) {
-    return qp <= kH264MaxQp;
+  switch (codec) {
+    case VideoCodec::kH264:
+      return qp <= kH264MaxQp;
+    case VideoCodec::kVP9:
+      return qp <= kVP9MaxQp;
+    case VideoCodec::kAV1:
+      return qp <= kAV1MaxQp;
+    default:
+      return false;
   }
-  if (codec == VideoCodec::kVP9) {
-    return qp <= kVP9MaxQp;
-  }
-  return false;
 }
 // Only eAVEncVP9VProfile_420_8 is supported on Intel graphics.
 eAVEncVP9VProfile GetVP9VProfile(VideoCodecProfile profile) {
@@ -332,9 +346,20 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
   config.framerate = frame_rate;
   config.ss_number_layers = 1;
   config.ts_number_layers = num_temporal_layers;
-  if (codec == VideoCodec::kVP9) {
-    config.max_quantizer = kVP9MaxQuantizer;
-    config.min_quantizer = kVP9MinQuantizer;
+  switch (codec) {
+    case VideoCodec::kVP9: {
+      config.max_quantizer = kVP9MaxQuantizer;
+      config.min_quantizer = kVP9MinQuantizer;
+      break;
+    }
+    case VideoCodec::kAV1: {
+      config.max_quantizer = kAV1MaxQuantizer;
+      config.min_quantizer = kAV1MinQuantizer;
+      break;
+    }
+    default:
+      NOTREACHED();
+      break;
   }
   int bitrate_sum = 0;
   for (int tid = 0; tid < num_temporal_layers; ++tid) {
@@ -599,12 +624,23 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
       base::FeatureList::IsEnabled(kMediaFoundationUseSoftwareRateCtrl) &&
       !config.HasTemporalLayer();
 
-  if (use_sw_brc && codec_ == VideoCodec::kVP9) {
+  if (use_sw_brc && (codec_ == VideoCodec::kVP9
+#if BUILDFLAG(ENABLE_LIBAOM)
+                     || codec_ == VideoCodec::kAV1
+#endif
+                     )) {
     VideoRateControlWrapper::RateControlConfig rate_config =
         CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
                                    frame_rate_, /*num_temporal_layers=*/1,
                                    codec_);
-    rate_ctrl_ = VP9RateControl::Create(rate_config);
+    if (codec_ == VideoCodec::kVP9) {
+      rate_ctrl_ = VP9RateControl::Create(rate_config);
+    } else if (codec_ == VideoCodec::kAV1) {
+#if BUILDFLAG(ENABLE_LIBAOM)
+      // If libaom is not enabled, |rate_ctrl_| will not be initialized.
+      rate_ctrl_ = AV1RateControl::Create(rate_config);
+#endif
+    }
   }
 
   encoder_thread_task_runner_->PostTask(
@@ -1201,7 +1237,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     int qp = rate_ctrl_->ComputeQP(frame_params);
     VARIANT var;
     var.vt = VT_UI8;
-    var.ulVal = Vp9QPtoAVEncQP(static_cast<uint8_t>(qp));
+    var.ulVal = QindextoAVEncQP(static_cast<uint8_t>(qp));
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set current layer QP", hr);
     hr = input_sample_->SetUINT64(MFSampleExtension_VideoEncodeQP, var.ulVal);
@@ -1607,8 +1643,9 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
         should_notify_encoder_info_change = true;
         encoder_info_.reports_average_qp = false;
       }
-    } else if (codec_ == VideoCodec::kVP9 && !rate_ctrl_) {
-      encoder_info_.reports_average_qp = false;
+    } else if (codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) {
+      if (!rate_ctrl_)
+        encoder_info_.reports_average_qp = false;
     }
   }
   if (!encoder_info_sent_ || should_notify_encoder_info_change) {

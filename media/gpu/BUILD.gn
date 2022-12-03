@@ -255,6 +255,14 @@ component("gpu") {
         "windows/d3d11_h265_accelerator.h",
       ]
     }
+    if (enable_libaom) {
+      sources += [
+        "windows/av1_video_rate_control_wrapper.cc",
+        "windows/av1_video_rate_control_wrapper.h",
+      ]
+      configs += [ "//third_party/libaom:libaom_config" ]
+      deps += [ "//third_party/libaom:libaomrc" ]
+    }
     configs += [
       "//third_party/khronos:khronos_headers",
       "//third_party/libvpx:libvpx_config",
