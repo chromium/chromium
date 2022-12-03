@@ -24,7 +24,7 @@ class BuildResolverTest(LoggingTestCase):
         # A CL should only be required for try builders without explicit build
         # numbers.
         self.git_cl = MockGitCL(self.host, issue_number='None')
-        self.resolver = BuildResolver(self.host.builders, self.git_cl)
+        self.resolver = BuildResolver(self.git_cl)
 
     def test_resolve_last_failing_ci_build(self):
         self.host.web.append_prpc_response({
@@ -34,6 +34,7 @@ class BuildResolverTest(LoggingTestCase):
                         'id': '123',
                         'builder': {
                             'builder': 'Fake Test Linux',
+                            'bucket': 'ci',
                         },
                         'number': 123,
                         'status': 'FAILURE',
@@ -42,10 +43,10 @@ class BuildResolverTest(LoggingTestCase):
             }],
         })
         build_statuses = self.resolver.resolve_builds(
-            [Build('Fake Test Linux')])
+            [Build('Fake Test Linux', bucket='ci')])
         self.assertEqual(
             build_statuses, {
-                Build('Fake Test Linux', 123, '123'):
+                Build('Fake Test Linux', 123, '123', 'ci'):
                 TryJobStatus('COMPLETED', 'FAILURE'),
             })
         (_, body), = self.host.web.requests
@@ -62,7 +63,8 @@ class BuildResolverTest(LoggingTestCase):
                             'status': 'FAILURE',
                         },
                         'fields': ('builds.*.id,builds.*.number,'
-                                   'builds.*.builder.builder,builds.*.status'),
+                                   'builds.*.builder.builder,'
+                                   'builds.*.builder.bucket,builds.*.status'),
                     },
                 }],
             })
@@ -74,6 +76,7 @@ class BuildResolverTest(LoggingTestCase):
                     'id': '123',
                     'builder': {
                         'builder': 'Fake Test Linux',
+                        'bucket': 'ci',
                     },
                     'number': 123,
                     'status': 'FAILURE',
@@ -83,6 +86,7 @@ class BuildResolverTest(LoggingTestCase):
                     'id': '456',
                     'builder': {
                         'builder': 'linux-rel',
+                        'bucket': 'try',
                     },
                     'number': 456,
                     'status': 'SCHEDULED',
@@ -90,12 +94,12 @@ class BuildResolverTest(LoggingTestCase):
             }],
         })
         build_statuses = self.resolver.resolve_builds([
-            Build('Fake Test Linux', 123),
+            Build('Fake Test Linux', 123, bucket='ci'),
             Build('linux-rel', 456),
         ])
         self.assertEqual(
             build_statuses, {
-                Build('Fake Test Linux', 123, '123'):
+                Build('Fake Test Linux', 123, '123', 'ci'):
                 TryJobStatus('COMPLETED', 'FAILURE'),
                 Build('linux-rel', 456, '456'):
                 TryJobStatus('SCHEDULED', None),
@@ -110,8 +114,10 @@ class BuildResolverTest(LoggingTestCase):
                             'bucket': 'ci',
                             'builder': 'Fake Test Linux',
                         },
-                        'buildNumber': 123,
-                        'fields': 'id,number,builder.builder,status',
+                        'buildNumber':
+                        123,
+                        'fields': ('id,number,builder.builder,builder.bucket,'
+                                   'status'),
                     },
                 }, {
                     'getBuild': {
@@ -120,8 +126,10 @@ class BuildResolverTest(LoggingTestCase):
                             'bucket': 'try',
                             'builder': 'linux-rel',
                         },
-                        'buildNumber': 456,
-                        'fields': 'id,number,builder.builder,status',
+                        'buildNumber':
+                        456,
+                        'fields': ('id,number,builder.builder,builder.bucket,'
+                                   'status'),
                     },
                 }],
             })

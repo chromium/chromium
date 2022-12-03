@@ -70,12 +70,14 @@ class UpdateMetadata(Command):
             optparse.make_option(
                 '--build',
                 dest='builds',
-                metavar='<builder>[:<buildnum>],...',
+                metavar='[{ci,try}/]<builder>[:<start>[-<end>]],...',
                 action='callback',
                 callback=_parse_build_specifiers,
                 type='string',
-                help=('Comma-separated list of builds to download results for '
-                      '(e.g., "Linux Tests:100,linux-rel"). '
+                help=('Comma-separated list of builds or build ranges to '
+                      'download results for (e.g., "ci/Linux Tests:100-110"). '
+                      'When provided with only the builder name, use the try '
+                      'build from the latest patchset. '
                       'May specify multiple times.')),
             optparse.make_option(
                 '-b',
@@ -145,7 +147,6 @@ class UpdateMetadata(Command):
     def execute(self, options: optparse.Values, args: List[str],
                 _tool: Host) -> Optional[int]:
         build_resolver = BuildResolver(
-            self._tool.builders,
             self.git_cl,
             can_trigger_jobs=(options.trigger_jobs and not options.dry_run))
         manifests = load_and_update_manifests(self._path_finder)
@@ -619,14 +620,25 @@ def _default_expected_by_type():
 def _parse_build_specifiers(option: optparse.Option, _opt_str: str, value: str,
                             parser: optparse.OptionParser):
     builds = getattr(parser.values, option.dest, None) or []
-    for build_specifier in value.split(','):
-        builder, sep, maybe_num = build_specifier.partition(':')
-        try:
-            build_num = int(maybe_num) if sep else None
-            builds.append(Build(builder, build_num))
-        except ValueError:
-            raise optparse.OptionValueError('invalid build number for %r' %
-                                            builder)
+    specifier_pattern = re.compile(r'(ci/|try/)?([^:]+)(:\d+(-\d+)?)?')
+    for specifier in value.split(','):
+        specifier_match = specifier_pattern.fullmatch(specifier)
+        if not specifier_match:
+            raise optparse.OptionValueError('invalid build specifier %r' %
+                                            specifier)
+        bucket, builder, build_range, maybe_end = specifier_match.groups()
+        if build_range:
+            start = int(build_range[1:].split('-')[0])
+            end = int(maybe_end[1:]) if maybe_end else start
+            build_numbers = range(start, end + 1)
+            if not build_numbers:
+                raise optparse.OptionValueError(
+                    'start build number must precede end for %r' % specifier)
+        else:
+            build_numbers = [None]
+        bucket = bucket[:-1] if bucket else 'try'
+        for build_number in build_numbers:
+            builds.append(Build(builder, build_number, bucket=bucket))
     setattr(parser.values, option.dest, builds)
 
 

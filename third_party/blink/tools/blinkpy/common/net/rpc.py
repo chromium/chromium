@@ -29,7 +29,7 @@
 import functools
 import logging
 import json
-from typing import NamedTuple, Optional
+from typing import Literal, NamedTuple, Optional
 from urllib.parse import urlunsplit
 
 import six
@@ -56,6 +56,7 @@ class Build(NamedTuple):
     builder_name: str
     build_number: Optional[int] = None
     build_id: Optional[str] = None
+    bucket: Literal['ci', 'try'] = 'try'
 
 
 class RPCError(Exception):
@@ -193,15 +194,14 @@ class BuildbucketClient(BaseRPC):
         super().__init__(web, luci_auth, hostname, service)
         self._batch_requests = []
 
-    def _make_get_build_body(self, build=None, bucket='try',
-                             build_fields=None):
+    def _make_get_build_body(self, build=None, build_fields=None):
         request = {}
         if build.build_id:
             request['id'] = str(build.build_id)
         if build.builder_name:
             request['builder'] = {
                 'project': 'chromium',
-                'bucket': bucket,
+                'bucket': build.bucket,
                 'builder': build.builder_name
             }
         if build.build_number:
@@ -219,9 +219,9 @@ class BuildbucketClient(BaseRPC):
                                          for field in build_fields)
         return request
 
-    def get_build(self, build=None, bucket='try', build_fields=None):
-        return self._luci_rpc(
-            'GetBuild', self._make_get_build_body(build, bucket, build_fields))
+    def get_build(self, build=None, build_fields=None):
+        return self._luci_rpc('GetBuild',
+                              self._make_get_build_body(build, build_fields))
 
     def search_builds(self, predicate, build_fields=None, count=0):
         return self._luci_rpc_paginated('SearchBuilds',
@@ -230,9 +230,9 @@ class BuildbucketClient(BaseRPC):
                                         'builds',
                                         count=count)
 
-    def add_get_build_req(self, build=None, bucket='try', build_fields=None):
+    def add_get_build_req(self, build=None, build_fields=None):
         self._batch_requests.append(
-            ('getBuild', self._make_get_build_body(build, bucket,
+            ('getBuild', self._make_get_build_body(build,
                                                    build_fields), None, None))
 
     def add_search_builds_req(self, predicate, build_fields=None, count=1000):

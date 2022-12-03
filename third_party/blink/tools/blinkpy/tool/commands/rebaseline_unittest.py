@@ -1145,11 +1145,11 @@ class TestBaselineSetTest(unittest.TestCase):
         test_baseline_set.add('a/x.html', Build('MOCK Mac10.12'))
         test_baseline_set.add('a/x.html', Build('MOCK Win10'),
                               'blink_web_tests (with patch)')
-        self.assertEqual(str(test_baseline_set), (
-            '<TestBaselineSet with:\n'
-            "  a/x.html: Build(builder_name='MOCK Mac10.12', build_number=None, build_id=None), None, test-mac-mac10.12\n"
-            "  a/x.html: Build(builder_name='MOCK Win10', build_number=None, build_id=None), blink_web_tests (with patch), test-win-win10>"
-        ))
+        self.assertRegex(str(test_baseline_set),
+                         'a/x.html: .*, None, test-mac-mac10.12')
+        self.assertRegex(
+            str(test_baseline_set),
+            'a/x.html: .*, blink_web_tests \(with patch\), test-win-win10')
 
     def test_getters(self):
         test_baseline_set = TestBaselineSet(host=self.host)

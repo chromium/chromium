@@ -7,7 +7,6 @@ from typing import Collection, Dict, Optional, Tuple
 
 from blinkpy.common.net.rpc import Build
 from blinkpy.common.net.git_cl import BuildStatuses, GitCL, TryJobStatus
-from blinkpy.web_tests.builder_list import BuilderList
 
 _log = logging.getLogger(__name__)
 
@@ -34,29 +33,27 @@ class BuildResolver:
     MISSING = TryJobStatus('MISSING', None)
 
     # Build fields required by `_build_statuses_from_responses`.
-    _build_fields = ['id', 'number', 'builder.builder', 'status']
+    _build_fields = [
+        'id', 'number', 'builder.builder', 'builder.bucket', 'status'
+    ]
 
     def __init__(self,
-                 builders: BuilderList,
                  git_cl: GitCL,
                  can_trigger_jobs: bool = False):
-        self._builders = builders
         self._git_cl = git_cl
         self._can_trigger_jobs = can_trigger_jobs
 
-    def _bucket(self, builder: str) -> str:
-        return 'try' if self._builders.is_try_server_builder(builder) else 'ci'
-
-    def _builder_predicate(self, builder: str) -> Dict[str, str]:
+    def _builder_predicate(self, build: Build) -> Dict[str, str]:
         return {
             'project': 'chromium',
-            'bucket': self._bucket(builder),
-            'builder': builder,
+            'bucket': build.bucket,
+            'builder': build.builder_name,
         }
 
     def _build_statuses_from_responses(self, raw_builds) -> BuildStatuses:
         return {
-            Build(build['builder']['builder'], build['number'], build['id']):
+            Build(build['builder']['builder'], build['number'], build['id'],
+                  build['builder']['bucket']):
             TryJobStatus.from_bb_status(build['status'])
             for build in raw_builds
         }
@@ -81,13 +78,12 @@ class BuildResolver:
             if build.build_number:
                 self._git_cl.bb_client.add_get_build_req(
                     build,
-                    bucket=self._bucket(build.builder_name),
                     build_fields=self._build_fields)
-            elif self._builders.is_try_server_builder(build.builder_name):
+            elif build.bucket == 'try':
                 try_builders_to_infer.add(build.builder_name)
             else:
                 predicate = {
-                    'builder': self._builder_predicate(build.builder_name),
+                    'builder': self._builder_predicate(build),
                     'status': 'FAILURE'
                 }
                 self._git_cl.bb_client.add_search_builds_req(
@@ -181,4 +177,4 @@ class BuildResolver:
         for build in sorted(build_statuses, key=self._build_sort_key):
             _log.info(template, build.builder_name,
                       str(build.build_number or '--'), build_statuses[build],
-                      self._bucket(build.builder_name))
+                      build.bucket)

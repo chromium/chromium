@@ -125,7 +125,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         self._builders = options.builders
 
         build_resolver = BuildResolver(
-            self._tool.builders,
             self.git_cl,
             can_trigger_jobs=(options.trigger_jobs and not self._dry_run))
         builds = [Build(builder) for builder in self.selected_try_bots]

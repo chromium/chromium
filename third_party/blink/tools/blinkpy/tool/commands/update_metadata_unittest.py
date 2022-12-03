@@ -926,19 +926,23 @@ class UpdateMetadataArgumentParsingTest(unittest.TestCase):
 
     def test_build_syntax(self):
         options, _args = self.command.parse_args([
-            '--build=Linux Tests:100,linux-rel', '--build=mac-rel:200',
-            '--build=Mac12 Tests'
+            '--build=ci/Linux Tests:100,linux-rel', '--build=mac-rel:200',
+            '--build=ci/Mac12 Tests:300-302'
         ])
         self.assertEqual(options.builds, [
-            Build('Linux Tests', 100),
+            Build('Linux Tests', 100, bucket='ci'),
             Build('linux-rel'),
             Build('mac-rel', 200),
-            Build('Mac12 Tests'),
+            Build('Mac12 Tests', 300, bucket='ci'),
+            Build('Mac12 Tests', 301, bucket='ci'),
+            Build('Mac12 Tests', 302, bucket='ci'),
         ])
-        with self.assert_parse_error('invalid build number'):
+        with self.assert_parse_error('invalid build specifier'):
             self.command.parse_args(['--build=linux-rel:'])
-        with self.assert_parse_error('invalid build number'):
+        with self.assert_parse_error('invalid build specifier'):
             self.command.parse_args(['--build=linux-rel:nan'])
+        with self.assert_parse_error('start build number must precede end'):
+            self.command.parse_args(['--build=Linux Tests:100-10'])
 
     def test_bug_number_patterns(self):
         options, _args = self.command.parse_args(['-b', '123'])
