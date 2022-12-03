@@ -1473,7 +1473,7 @@ BASE_FEATURE(kRetryGetVideoCaptureDeviceInfos,
 // Wayland display server.
 BASE_FEATURE(kWebRtcPipeWireCapturer,
              "WebRTCPipeWireCapturer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 
 enum class VideoCaptureServiceConfiguration {
