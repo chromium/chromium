@@ -26,10 +26,6 @@ enum BindingsPolicy {
   // allowed unless the app has been started up with the --dom-automation
   // switch.)
   BINDINGS_POLICY_DOM_AUTOMATION = 1 << 2,
-  // Bindings that allows the JS content to retrieve a variety of internal
-  // metrics. (By default this isn't allowed unless the app has been started up
-  // with the --enable-stats-collection-bindings switch.)
-  BINDINGS_POLICY_STATS_COLLECTION = 1 << 3,
 };
 
 constexpr int kWebUIBindingsPolicyMask =

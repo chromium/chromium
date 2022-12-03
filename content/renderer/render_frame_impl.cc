@@ -1941,8 +1941,6 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kDomAutomationController))
     enabled_bindings_ |= BINDINGS_POLICY_DOM_AUTOMATION;
-  if (command_line.HasSwitch(switches::kStatsCollectionController))
-    enabled_bindings_ |= BINDINGS_POLICY_STATS_COLLECTION;
   frame_request_blocker_ = blink::WebFrameRequestBlocker::Create();
 
   // Bind this class to mojom::Frame and to the message router for legacy IPC.
@@ -3840,14 +3838,17 @@ void RenderFrameImpl::DidClearWindowObject() {
   if (enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
     WebUIExtension::Install(frame_);
 
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+
   if (enabled_bindings_ & BINDINGS_POLICY_DOM_AUTOMATION)
     DomAutomationController::Install(this, frame_);
 
-  if (enabled_bindings_ & BINDINGS_POLICY_STATS_COLLECTION)
+  // Bindings that allows the JS content to retrieve a variety of internal
+  // metrics. By default this isn't allowed unless the process has been started
+  // with the --enable-stats-collection-bindings switch.
+  if (command_line.HasSwitch(switches::kStatsCollectionController))
     StatsCollectionController::Install(frame_);
-
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
 
   if (command_line.HasSwitch(cc::switches::kEnableGpuBenchmarking))
     GpuBenchmarking::Install(weak_factory_.GetWeakPtr());
