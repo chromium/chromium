@@ -209,8 +209,6 @@ crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCa
 # Timeout on Nexus 5
 
 # WebGL's accelerated canvas capture is failing on ChromeOS
-crbug.com/1353813 [ chromeos ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
-crbug.com/1353813 [ chromeos ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
 # WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
 crbug.com/852089 [ android ] WebGPUTraceTest_* [ Skip ]
