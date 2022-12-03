@@ -196,8 +196,8 @@ TEST_F(LocalBinaryUploadServiceTest, SomeRequestsArePending) {
   EXPECT_EQ(1u, lbus.GetPendingRequestCountForTesting());
 }
 
-// Flaky on mac, http://crbug.com/1365018
-#if BUILDFLAG(IS_MAC)
+// Flaky on mac and linux, http://crbug.com/1365018
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PendingRequestsGetProcessed DISABLED_PendingRequestsGetProcessed
 #else
 #define MAYBE_PendingRequestsGetProcessed PendingRequestsGetProcessed
