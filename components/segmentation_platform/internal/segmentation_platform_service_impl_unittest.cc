@@ -285,6 +285,16 @@ class SegmentationPlatformServiceImplTest
     AssertCachedSegment(kTestSegmentationKey3, false);
   }
 
+  void FailInitializationFlow() {
+    // Let the DB loading fail.
+    EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));
+    segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kError);
+    signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+    segment_storage_config_db_->InitStatusCallback(
+        leveldb_proto::Enums::InitStatus::kOK);
+    segment_storage_config_db_->LoadCallback(true);
+  }
+
   int GetPendingActionsQueueSize() {
     return segmentation_platform_service_impl_->pending_actions_.size();
   }
@@ -328,6 +338,21 @@ TEST_F(SegmentationPlatformServiceImplTest,
   AssertSelectedSegmentOnDemand(
       kTestSegmentationKey4, /*is_ready=*/true,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
+  EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
+}
+
+TEST_F(SegmentationPlatformServiceImplTest,
+       GetSelectedSegmentOnDemandIfDbFailed) {
+  EXPECT_FALSE(segmentation_platform_service_impl_->IsPlatformInitialized());
+  int pending_queue_size = GetPendingActionsQueueSize();
+  // Initialize the platform
+  FailInitializationFlow();
+  // Platform failed to initialize, so the API call to get the selected
+  // segment on demand is executed with a null result.
+  EXPECT_FALSE(segmentation_platform_service_impl_->IsPlatformInitialized());
+  EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
+  AssertSelectedSegmentOnDemand(kTestSegmentationKey4, /*is_ready=*/false,
+                                SegmentId::OPTIMIZATION_TARGET_UNKNOWN);
   EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
 }
 

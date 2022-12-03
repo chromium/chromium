@@ -147,13 +147,20 @@ void SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand(
     const std::string& segmentation_key,
     scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback) {
-  if (!storage_initialized_) {
+  if (!storage_init_status_.has_value()) {
     // If the platform isn't fully initialized, cache the input arguments to run
     // later.
     pending_actions_.push_back(base::BindOnce(
         &SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand,
         weak_ptr_factory_.GetWeakPtr(), segmentation_key,
         std::move(input_context), std::move(callback)));
+    return;
+  }
+
+  if (!storage_init_status_.value()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), SegmentSelectionResult()));
     return;
   }
 
@@ -184,11 +191,11 @@ ServiceProxy* SegmentationPlatformServiceImpl::GetServiceProxy() {
 }
 
 bool SegmentationPlatformServiceImpl::IsPlatformInitialized() {
-  return storage_initialized_;
+  return storage_init_status_.has_value() && storage_init_status_.value();
 }
 
 void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
-  storage_initialized_ = true;
+  storage_init_status_ = success;
   OnServiceStatusChanged();
 
   if (!success) {
@@ -260,7 +267,7 @@ void SegmentationPlatformServiceImpl::OnModelRefreshNeeded() {
 }
 
 void SegmentationPlatformServiceImpl::OnServiceStatusChanged() {
-  proxy_->OnServiceStatusChanged(storage_initialized_,
+  proxy_->OnServiceStatusChanged(storage_init_status_.has_value(),
                                  storage_service_->GetServiceStatus());
 }
 
