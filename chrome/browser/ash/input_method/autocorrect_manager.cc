@@ -569,6 +569,15 @@ void AutocorrectManager::MeasureAndLogAssistiveAutocorrectQualityBreakdown(
 
 void AutocorrectManager::OnActivate(const std::string& engine_id) {
   active_engine_id_ = engine_id;
+
+  PrefService* pref_service = profile_->GetPrefs();
+  auto autocorrect_pref =
+      GetPhysicalKeyboardAutocorrectPref(*pref_service, engine_id);
+  if (base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
+      autocorrect_pref == AutocorrectPreference::kDefault &&
+      IsUsEnglishId(engine_id)) {
+    SetPhysicalKeyboardAutocorrectAsEnabledByDefault(pref_service, engine_id);
+  }
 }
 
 bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {

@@ -6,8 +6,12 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
+#include "base/values.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash::input_method {
 namespace {
@@ -16,6 +20,8 @@ constexpr char kPkAutocorrectLevelPrefName[] =
     "physicalKeyboardAutoCorrectionLevel";
 constexpr char kVkAutocorrectLevelPrefName[] =
     "virtualKeyboardAutoCorrectionLevel";
+constexpr char kPkEnabledByDefaultPrefName[] =
+    "physicalKeyboardAutoCorrectionEnabledByDefault";
 
 AutocorrectPreference GetAutocorrectPrefFor(
     const std::string& autocorrect_pref_path,
@@ -35,13 +41,33 @@ AutocorrectPreference GetAutocorrectPrefFor(
   return AutocorrectPreference::kDisabled;
 }
 
+bool IsPkAutocorrectEnabledByDefault(const PrefService& pref_service,
+                                     const std::string& engine_id) {
+  if (!base::FeatureList::IsEnabled(features::kAutocorrectByDefault))
+    return false;
+
+  const base::Value::Dict& settings =
+      pref_service.GetDict(prefs::kLanguageInputMethodSpecificSettings);
+  const base::Value* enabled_by_default = settings.FindByDottedPath(
+      base::StrCat({engine_id, ".", kPkEnabledByDefaultPrefName}));
+
+  return (enabled_by_default && enabled_by_default->GetIfBool().has_value() &&
+          enabled_by_default->GetIfBool().value());
+}
+
 }  // namespace
 
 AutocorrectPreference GetPhysicalKeyboardAutocorrectPref(
     const PrefService& pref_service,
     const std::string& engine_id) {
-  return GetAutocorrectPrefFor(kPkAutocorrectLevelPrefName, pref_service,
-                               engine_id);
+  auto preference = GetAutocorrectPrefFor(kPkAutocorrectLevelPrefName,
+                                          pref_service, engine_id);
+  if (!base::FeatureList::IsEnabled(features::kAutocorrectByDefault))
+    return preference;
+  return (preference == AutocorrectPreference::kDefault &&
+          IsPkAutocorrectEnabledByDefault(pref_service, engine_id))
+             ? AutocorrectPreference::kEnabledByDefault
+             : preference;
 }
 
 AutocorrectPreference GetVirtualKeyboardAutocorrectPref(
@@ -49,6 +75,20 @@ AutocorrectPreference GetVirtualKeyboardAutocorrectPref(
     const std::string& engine_id) {
   return GetAutocorrectPrefFor(kVkAutocorrectLevelPrefName, pref_service,
                                engine_id);
+}
+
+bool SetPhysicalKeyboardAutocorrectAsEnabledByDefault(
+    PrefService* pref_service,
+    const std::string& engine_id) {
+  if (!base::FeatureList::IsEnabled(features::kAutocorrectByDefault))
+    return false;
+  base::Value* result =
+      ScopedDictPrefUpdate(pref_service,
+                           prefs::kLanguageInputMethodSpecificSettings)
+          ->SetByDottedPath(
+              base::StrCat({engine_id, ".", kPkEnabledByDefaultPrefName}),
+              base::Value(true));
+  return result != nullptr;
 }
 
 }  // namespace ash::input_method

@@ -114,8 +114,10 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
     return true;
   }
 
-  return GetPhysicalKeyboardAutocorrectPref(*(prefs), engine_id) ==
-         AutocorrectPreference::kEnabled;
+  AutocorrectPreference preference =
+      GetPhysicalKeyboardAutocorrectPref(*(prefs), engine_id);
+  return preference == AutocorrectPreference::kEnabled ||
+         preference == AutocorrectPreference::kEnabledByDefault;
 }
 
 bool IsPredictiveWritingEnabled(PrefService* pref_service,

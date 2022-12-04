@@ -22,6 +22,11 @@ AutocorrectPreference GetVirtualKeyboardAutocorrectPref(
     const PrefService& pref_service,
     const std::string& engine_id);
 
+// Marks the current user as having autocorrect preference enabled by default.
+bool SetPhysicalKeyboardAutocorrectAsEnabledByDefault(
+    PrefService* pref_service,
+    const std::string& engine_id);
+
 }  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_AUTOCORRECT_PREFS_H_

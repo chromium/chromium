@@ -16,7 +16,8 @@ enum class AutocorrectPreference {
   kDefault = 0,
   kEnabled = 1,
   kDisabled = 2,
-  kMaxValue = kDisabled,
+  kEnabledByDefault = 3,
+  kMaxValue = kEnabledByDefault,
 };
 
 // Must match with IMEAutocorrectPrefStateTransition in enums.xml

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
@@ -50,6 +52,7 @@ void SetVkAutocorrectLevelTo(Profile& profile,
 class AutocorrectPrefsTest : public ::testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
 };
 
@@ -149,6 +152,31 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<AutocorrectPrefCase> info) {
       return info.param.test_name;
     });
+
+TEST_F(AutocorrectPrefsTest, MarksUsersPrefAsEnabledByDefault) {
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
+
+  SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
+                                                   kUsEnglish);
+
+  EXPECT_EQ(
+      GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()), kUsEnglish),
+      AutocorrectPreference::kEnabledByDefault);
+}
+
+TEST_F(AutocorrectPrefsTest, EnabledByDefaultIsScopedToSingleLanguage) {
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
+
+  SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
+                                                   kBrazilPortugese);
+
+  EXPECT_EQ(
+      GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()), kUsEnglish),
+      AutocorrectPreference::kDefault);
+  EXPECT_EQ(GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()),
+                                               kBrazilPortugese),
+            AutocorrectPreference::kEnabledByDefault);
+}
 
 }  // namespace
 }  // namespace ash::input_method
