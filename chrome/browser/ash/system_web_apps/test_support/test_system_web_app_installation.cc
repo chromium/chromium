@@ -112,8 +112,11 @@ UnittestingSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
 gfx::Size UnittestingSystemAppDelegate::GetMinimumWindowSize() const {
   return minimum_window_size_;
 }
-bool UnittestingSystemAppDelegate::ShouldReuseExistingWindow() const {
-  return single_window_;
+Browser* UnittestingSystemAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
+  return single_window_ ? SystemWebAppDelegate::GetWindowForLaunch(profile, url)
+                        : nullptr;
 }
 bool UnittestingSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return show_new_window_menu_option_;

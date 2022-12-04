@@ -43,8 +43,9 @@ bool CroshSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool CroshSystemAppDelegate::ShouldReuseExistingWindow() const {
-  return false;
+Browser* CroshSystemAppDelegate::GetWindowForLaunch(Profile* profile,
+                                                    const GURL& url) const {
+  return nullptr;
 }
 
 bool CroshSystemAppDelegate::ShouldShowInSearch() const {

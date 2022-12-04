@@ -361,8 +361,9 @@ bool MediaSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return true;
 }
 
-bool MediaSystemAppDelegate::ShouldReuseExistingWindow() const {
-  return !ShouldShowNewWindowMenuOption();
+Browser* MediaSystemAppDelegate::GetWindowForLaunch(Profile* profile,
+                                                    const GURL& url) const {
+  return nullptr;
 }
 
 bool MediaSystemAppDelegate::ShouldHandleFileOpenIntents() const {

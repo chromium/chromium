@@ -92,8 +92,9 @@ bool SampleSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return true;
 }
 
-bool SampleSystemAppDelegate::ShouldReuseExistingWindow() const {
-  return false;
+Browser* SampleSystemAppDelegate::GetWindowForLaunch(Profile* profile,
+                                                     const GURL& url) const {
+  return nullptr;
 }
 
 absl::optional<ash::SystemWebAppBackgroundTaskInfo>

@@ -86,7 +86,3 @@ bool FaceMLSystemAppDelegate::ShouldCaptureNavigations() const {
 bool FaceMLSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return false;
 }
-
-bool FaceMLSystemAppDelegate::ShouldReuseExistingWindow() const {
-  return true;
-}

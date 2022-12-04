@@ -22,7 +22,6 @@ class FaceMLSystemAppDelegate : public ash::SystemWebAppDelegate {
   gfx::Rect GetDefaultBounds(Browser*) const override;
   bool IsAppEnabled() const override;
   bool ShouldCaptureNavigations() const override;
-  bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;
 };
 

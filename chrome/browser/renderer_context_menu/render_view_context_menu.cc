@@ -1640,11 +1640,11 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't show "Open link in new app window", if the link points to the
-  // current app, and the app is single windowed.
+  // current app, and the app would reuse an existing window.
   if (system_app_ &&
       system_app_->GetType() ==
           ash::GetSystemWebAppTypeForAppId(profile, *link_app_id) &&
-      system_app_->ShouldReuseExistingWindow()) {
+      system_app_->GetWindowForLaunch(profile, params_.link_url) != nullptr) {
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -72,8 +72,9 @@ std::unique_ptr<WebAppInstallInfo> TerminalSystemAppDelegate::GetWebAppInfo()
   return CreateWebAppInfoForTerminalSystemWebApp();
 }
 
-bool TerminalSystemAppDelegate::ShouldReuseExistingWindow() const {
-  return false;
+Browser* TerminalSystemAppDelegate::GetWindowForLaunch(Profile* profile,
+                                                       const GURL& url) const {
+  return nullptr;
 }
 
 bool TerminalSystemAppDelegate::ShouldShowNewWindowMenuOption() const {

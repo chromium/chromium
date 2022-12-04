@@ -42,38 +42,6 @@ bool IsFileManagerUrl(const GURL& url) {
           url.scheme() == kChromeUntrustedScheme);
 }
 
-// Show a chrome:// (os://) app for a given URL.
-void ShowOsAppForProfile(Profile* profile,
-                         const GURL& gurl,
-                         ash::SystemWebAppType app_type) {
-  // Use the original (non off-the-record) profile for a Chrome URL unless
-  // this is a guest session.
-  if (!profile->IsGuestSession() && profile->IsOffTheRecord())
-    profile = profile->GetOriginalProfile();
-
-  // If this profile isn't allowed to create browser windows (e.g. the login
-  // screen profile) then bail out.
-  if (Browser::GetCreationStatusForProfile(profile) !=
-      Browser::CreationStatus::kOk) {
-    return;
-  }
-
-  Browser* browser =
-      ash::FindSystemWebAppBrowser(profile, app_type, Browser::TYPE_APP, gurl);
-  if (browser) {
-    // If there is a matching browser we simply activate it and be done!
-    browser->window()->Activate();
-    return;
-  }
-
-  ash::SystemAppLaunchParams params;
-  params.url = gurl;
-  int64_t display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  ash::LaunchSystemWebAppAsync(profile, app_type, params,
-                               std::make_unique<apps::WindowInfo>(display_id));
-}
-
 }  // namespace
 
 namespace crosapi {
@@ -155,8 +123,14 @@ bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
     LOG(ERROR) << "Invalid URL passed to UrlHandlerAsh::OpenUrl:" << url;
     return false;
   }
-  ShowOsAppForProfile(ProfileManager::GetPrimaryUserProfile(), target_url,
-                      app_id);
+
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  ash::SystemAppLaunchParams params;
+  params.url = target_url;
+  int64_t display_id =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+  ash::LaunchSystemWebAppAsync(profile, app_id, params,
+                               std::make_unique<apps::WindowInfo>(display_id));
   return true;
 }
 

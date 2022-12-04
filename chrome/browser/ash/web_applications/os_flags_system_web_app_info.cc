@@ -56,10 +56,6 @@ bool OsFlagsSystemWebAppDelegate::IsAppEnabled() const {
   return true;
 }
 
-bool OsFlagsSystemWebAppDelegate::ShouldReuseExistingWindow() const {
-  return true;
-}
-
 bool OsFlagsSystemWebAppDelegate::ShouldShowInLauncher() const {
   return false;
 }

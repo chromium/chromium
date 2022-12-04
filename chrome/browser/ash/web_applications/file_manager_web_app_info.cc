@@ -166,8 +166,10 @@ bool FileManagerSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
 
-bool FileManagerSystemAppDelegate::ShouldReuseExistingWindow() const {
-  return false;
+Browser* FileManagerSystemAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
+  return nullptr;
 }
 
 bool FileManagerSystemAppDelegate::IsAppEnabled() const {

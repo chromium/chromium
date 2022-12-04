@@ -21,6 +21,14 @@
 
 namespace ash {
 
+Browser* SystemWebAppDelegate::GetWindowForLaunch(Profile* profile,
+                                                  const GURL& url) const {
+  DCHECK(!ShouldShowNewWindowMenuOption())
+      << "App can't show 'new window' menu option and reuse windows at "
+         "the same time.";
+  return FindSystemWebAppBrowser(profile, GetType(), Browser::TYPE_APP);
+}
+
 // TODO(crbug.com/1231886): Reduce code duplication between SWA launch code and
 // web app launch code, so SWAs can easily maintain feature parity with regular
 // web apps (e.g. launch_handler behaviours).
@@ -29,34 +37,21 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     web_app::WebAppProvider* provider,
     const GURL& url,
     const apps::AppLaunchParams& params) const {
-  Browser::Type browser_type =
-      (params.disposition == WindowOpenDisposition::NEW_POPUP)
-          ? Browser::TYPE_APP_POPUP
-          : Browser::TYPE_APP;
-
-  // Always find an existing window, so that we can offset the screen
-  // coordinates from a previously opened one.
-  Browser* browser = FindSystemWebAppBrowser(profile, GetType(), browser_type);
-
   // System Web App windows can't be properly restored without storing the app
   // type. Until that is implemented, skip them for session restore.
   // TODO(crbug.com/1003170): Enable session restore for System Web Apps by
   // passing through the underlying value of params.omit_from_session_restore.
   constexpr bool kOmitFromSessionRestore = true;
 
-  // Always reuse an existing browser for popups, otherwise check app type
-  // whether we should use a single window.
+  // Always reuse an existing browser for popups. Otherwise let the app decide.
   // TODO(crbug.com/1060423): Allow apps to control whether popups are single.
-  const bool reuse_existing_window =
-      browser_type == Browser::TYPE_APP_POPUP || ShouldReuseExistingWindow();
+  Browser* browser =
+      (params.disposition == WindowOpenDisposition::NEW_POPUP)
+          ? FindSystemWebAppBrowser(profile, GetType(), Browser::TYPE_APP_POPUP)
+          : GetWindowForLaunch(profile, url);
 
   bool started_new_navigation = false;
   if (!browser) {
-    browser = web_app::CreateWebApplicationWindow(
-        profile, params.app_id, params.disposition, params.restore_id,
-        kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize());
-    started_new_navigation = true;
-  } else if (!reuse_existing_window) {
     browser = web_app::CreateWebApplicationWindow(
         profile, params.app_id, params.disposition, params.restore_id,
         kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize());

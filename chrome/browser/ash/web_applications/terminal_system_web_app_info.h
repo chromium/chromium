@@ -21,7 +21,7 @@ class TerminalSystemAppDelegate : public ash::SystemWebAppDelegate {
 
   // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
-  bool ShouldReuseExistingWindow() const override;
+  Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldShowInLauncher() const override;
   bool IsAppEnabled() const override;

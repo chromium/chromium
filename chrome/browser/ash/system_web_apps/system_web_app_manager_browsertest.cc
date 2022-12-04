@@ -1800,15 +1800,34 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerContextMenuBrowserTest, WebLink) {
   }
 }
 
-class SystemWebAppAccessibilityTest : public SystemWebAppManagerBrowserTest {
+class SystemWebAppSingleWindowTest : public SystemWebAppManagerBrowserTest {
  public:
-  SystemWebAppAccessibilityTest()
+  SystemWebAppSingleWindowTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
-  ~SystemWebAppAccessibilityTest() override = default;
+  ~SystemWebAppSingleWindowTest() override = default;
+};
 
+IN_PROC_BROWSER_TEST_P(SystemWebAppSingleWindowTest, WindowReuse) {
+  WaitForTestSystemAppInstall();
+
+  content::WebContents* web_contents =
+      LaunchApp(maybe_installation_->GetType());
+
+  // Second launch reuses the window.
+  EXPECT_EQ(web_contents,
+            LaunchAppWithoutWaiting(maybe_installation_->GetType()));
+
+  // Third launch reuses the window despite different URL.
+  apps::AppLaunchParams params =
+      LaunchParamsForApp(maybe_installation_->GetType());
+  params.override_url = GURL("http://example.com/in-scope");
+  EXPECT_EQ(web_contents, LaunchAppWithoutWaiting(std::move(params)));
+}
+
+class SystemWebAppAccessibilityTest : public SystemWebAppSingleWindowTest {
  protected:
   void EnableChromeVox();
   test::SpeechMonitor speech_monitor_;
@@ -1875,8 +1894,7 @@ class SystemWebAppAbortsLaunchTest : public SystemWebAppManagerBrowserTest {
 IN_PROC_BROWSER_TEST_P(SystemWebAppAbortsLaunchTest, LaunchAborted) {
   WaitForTestSystemAppInstall();
 
-  ash::LaunchSystemWebAppAsync(browser()->profile(),
-                               maybe_installation_->GetType());
+  LaunchSystemWebAppAsync(browser()->profile(), maybe_installation_->GetType());
 
   EXPECT_EQ(0U, GetSystemWebAppBrowserCount(maybe_installation_->GetType()));
 }
@@ -2026,10 +2044,16 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerDefaultBoundsTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppSingleWindowTest);
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppAccessibilityTest);
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppAbortsLaunchTest);
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppIconHealthMetricsTest);
 

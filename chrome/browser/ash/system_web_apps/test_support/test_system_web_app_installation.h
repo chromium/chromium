@@ -40,7 +40,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
 
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;
-  bool ShouldReuseExistingWindow() const override;
+  Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
   bool ShouldShowNewWindowMenuOption() const override;
   base::FilePath GetLaunchDirectory(
       const apps::AppLaunchParams& params) const override;

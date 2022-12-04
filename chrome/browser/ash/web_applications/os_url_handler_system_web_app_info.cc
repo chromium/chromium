@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -80,8 +82,11 @@ bool OsUrlHandlerSystemWebAppDelegate::ShouldShowInSearch() const {
   return false;
 }
 
-bool OsUrlHandlerSystemWebAppDelegate::ShouldReuseExistingWindow() const {
-  return false;
+Browser* OsUrlHandlerSystemWebAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
+  return ash::FindSystemWebAppBrowser(profile, GetType(), Browser::TYPE_APP,
+                                      url);
 }
 
 bool OsUrlHandlerSystemWebAppDelegate::ShouldRestoreOverrideUrl() const {

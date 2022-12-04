@@ -22,7 +22,7 @@ class SampleSystemAppDelegate : public ash::SystemWebAppDelegate {
   // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
-  bool ShouldReuseExistingWindow() const override;
+  Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
   bool ShouldShowNewWindowMenuOption() const override;
   absl::optional<ash::SystemWebAppBackgroundTaskInfo> GetTimerInfo()
       const override;

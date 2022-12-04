@@ -31,7 +31,7 @@ class OsUrlHandlerSystemWebAppDelegate : public ash::SystemWebAppDelegate {
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
-  bool ShouldReuseExistingWindow() const override;
+  Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
   bool ShouldRestoreOverrideUrl() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
 
