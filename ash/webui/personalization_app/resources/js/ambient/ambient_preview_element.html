@@ -152,6 +152,10 @@
     grid-area: image;
   }
 
+  #imageContainer[ambient-mode-managed] img.disabled {
+    opacity: var(--cros-disabled-opacity);
+  }
+
   #imageContainer img.disabled {
     /**
      * Use 50% for image instead of default cros-disabled-opacity.
@@ -223,7 +227,7 @@
   </template>
   <template is="dom-if" if="[[!loading_]]">
     <template is="dom-if" if="[[!ambientModeEnabled_]]">
-      <div id="imageContainer" class="preview-image-container" aria-hidden="true">
+      <div id="imageContainer" class="preview-image-container" ambient-mode-managed$="[[isAmbientModeManaged_()]]" aria-hidden="true">
         <div class="preview-image-border"></div>
         <img class="preview-image disabled" src="//personalization/images/slideshow.png">
       </div>
@@ -248,13 +252,24 @@
       <template is="dom-if" if="[[isAmbientSubpageUIChangeEnabled_()]]">
         <div id="messageContainer">
           <ambient-zero-state-svg></ambient-zero-state-svg>
-          <span class="text" id="turnOnDescription">
-            $i18n{ambientModeMainPageZeroStateMessageV2}
-          </span>
-          <cr-button class="primary" on-click="onClickAmbientModeButton_"
-              aria-describedby="turnOnDescription">
-            <div>$i18n{ambientModeTurnOnLabel}</div>
-          </cr-button>
+          <template is="dom-if" if="[[!isAmbientModeManaged_()]]">
+            <span class="text" id="turnOnDescription">
+              $i18n{ambientModeMainPageZeroStateMessageV2}
+            </span>
+            <cr-button class="primary" on-click="onClickAmbientModeButton_"
+                aria-describedby="turnOnDescription">
+              <div>$i18n{ambientModeTurnOnLabel}</div>
+            </cr-button>
+          </template>
+          <template is="dom-if" if="[[isAmbientModeManaged_()]]">
+            <span class="text" id="turnOnDescription">
+              $i18n{ambientModeMainPageEnterpriseUserMessage}
+            </span>
+            <cr-button class="primary">
+              <!-- TODO(b/258838122): on-click behavior -->
+              <div>$i18n{ambientModeLearnMoreLabel}</div>
+            </cr-button>
+          </template>
         </div>
       </template>
     </template>

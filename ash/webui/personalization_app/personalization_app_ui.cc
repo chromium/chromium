@@ -205,8 +205,12 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE},
       {"ambientModeMainPageZeroStateMessageV2",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE_V2},
+      {"ambientModeMainPageEnterpriseUserMessage",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ENTERPRISE_USER_MESSAGE},
       {"ambientModeTurnOnLabel",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL},
+      {"ambientModeLearnMoreLabel",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_LEARN_MORE_LABEL},
       {"ariaLabelChangeScreensaver",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_SCREENSAVER},
       {"ambientModeNetworkError",
@@ -375,6 +379,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isAmbientSubpageUIChangeEnabled",
                      features::IsAmbientSubpageUIChangeEnabled());
+
+  // TODO(b/258838122): update when the screen saver policy code is ready.
+  source->AddBoolean("isAmbientModeManaged", false);
 }
 
 void PersonalizationAppUI::HandleWebUIRequest(

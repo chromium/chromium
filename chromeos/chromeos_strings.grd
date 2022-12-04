@@ -2423,8 +2423,14 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE_V2" desc="Message shown in the Ambient subpage on the main page of personalization hub when ambient mode is disabled.">
         Turn on to select options
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ENTERPRISE_USER_MESSAGE" desc="Message shown in the Ambient subpage on the main page of personalization hub when ambient mode is disabled by enterprise policy.">
+        Not available on your device
+      </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL" desc="Label of button to turn on ambient mode.">
         Turn on
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_LEARN_MORE_LABEL" desc="Label of button to explain how ambient mode is managed by enterprise policy.">
+        Learn more
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_NETWORK_ERROR" desc="Error message displayed when screen saver information cannot be downloaded.">
         Please connect to a network and reload the page to view screen saver.

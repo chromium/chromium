@@ -297,6 +297,10 @@ export class AmbientPreview extends WithPersonalizationStore {
   private isAmbientSubpageUIChangeEnabled_(): boolean {
     return loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled');
   }
+
+  private isAmbientModeManaged_(): boolean {
+    return loadTimeData.getBoolean('isAmbientModeManaged');
+  }
 }
 
 customElements.define(AmbientPreview.is, AmbientPreview);

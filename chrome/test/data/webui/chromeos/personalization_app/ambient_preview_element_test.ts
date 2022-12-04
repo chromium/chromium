@@ -207,4 +207,34 @@ suite('AmbientPreviewTest', function() {
         ambientPreviewElement.i18n('ambientModeMainPageZeroStateMessage'),
         textSpan.innerText.trim());
   });
+
+  test(
+      'displays not available message for enterprise controlled user',
+      async () => {
+        loadTimeData.overrideValues(
+            {['isAmbientSubpageUIChangeEnabled']: true});
+        // Enable `isAmbientModeManaged` to mock an enterprise controlled user.
+        loadTimeData.overrideValues({['isAmbientModeManaged']: true});
+
+        personalizationStore.data.ambient.albums = ambientProvider.albums;
+        personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
+        personalizationStore.data.ambient.ambientModeEnabled = false;
+        personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
+            ambientProvider.googlePhotosAlbumsPreviews;
+        ambientPreviewElement = initElement(AmbientPreview);
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(ambientPreviewElement);
+
+        const messageContainer =
+            ambientPreviewElement.shadowRoot!.getElementById(
+                'messageContainer');
+        assertTrue(!!messageContainer);
+        const textSpan = messageContainer.querySelector<HTMLSpanElement>(
+            '#turnOnDescription');
+        assertTrue(!!textSpan);
+        assertEquals(
+            ambientPreviewElement.i18n(
+                'ambientModeMainPageEnterpriseUserMessage'),
+            textSpan.innerText.trim());
+      });
 });

@@ -31,6 +31,10 @@ export class PersonalizationMain extends WithPersonalizationStore {
         type: Boolean,
         value: true,
       },
+      isAmbientModeManaged_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isAmbientModeManaged'),
+      },
     };
   }
 
