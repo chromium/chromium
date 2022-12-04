@@ -92725,7 +92725,7 @@
       ]
      ],
      "deprecated-sameas-018.html": [
-      "9f9071635eae13593f719a2b69d753a33f027a6f",
+      "11e3e3a1bd62c0c97ab40802e21f1e30c2520ae8",
       [
        null,
        [
@@ -259229,16 +259229,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "462903fe5d0521166271e574b226fb8ec04b516d",
-     []
-    ],
-    "mtime.json": [
-     "078e943c979395993551bab56ed235ed4c30002d",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
