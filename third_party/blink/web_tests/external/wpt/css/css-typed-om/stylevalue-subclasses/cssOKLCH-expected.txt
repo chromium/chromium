@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+FAIL Constructing a CSSOKLCH with percent for the lightness works as intended. CSSOKLCH is not defined
+FAIL CSSOKLCH.l can be updated with a percent. CSSOKLCH is not defined
+FAIL Constructing a CSSOKLCH with number for the lightness works as intended. CSSOKLCH is not defined
+FAIL CSSOKLCH.l can be updated with a number. CSSOKLCH is not defined
+FAIL Constructing a CSSOKLCH with css pixels for lightness throws a SyntaxError. assert_throws_dom: function "() => new CSSOKLCH(lightness, 0, 0)" threw object "ReferenceError: CSSOKLCH is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL Constructing a CSSOKLCH with degrees for lightness throws a SyntaxError. assert_throws_dom: function "() => new CSSOKLCH(lightness, 0, 0)" threw object "ReferenceError: CSSOKLCH is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL CSSOKLCH can be constructed from three numbers and will get an alpha of 100%. CSSOKLCH is not defined
+FAIL CSSOKLCH can be constructed from four numbers. CSSOKLCH is not defined
+FAIL Constructing a CSSOKLCH with CSS.number for l, c, h or alpha throws a SyntaxError assert_throws_dom: function "() => new CSSOKLCH(CSS.number(1), 0, 0, 0)" threw object "ReferenceError: CSSOKLCH is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL Updating a CSSOKLCH with CSS.number for l throws a SyntaxError CSSOKLCH is not defined
+FAIL CSSOKLCH.l can be updated to a number. CSSOKLCH is not defined
+FAIL CSSOKLCH.l can be updated with a CSS percent. CSSOKLCH is not defined
+FAIL Updating a CSSOKLCH with CSS.number for c throws a SyntaxError CSSOKLCH is not defined
+FAIL CSSOKLCH.c can be updated to a number. CSSOKLCH is not defined
+FAIL CSSOKLCH.c can be updated with a CSS percent. CSSOKLCH is not defined
+FAIL Updating a CSSOKLCH with CSS.number for alpha throws a SyntaxError CSSOKLCH is not defined
+FAIL CSSOKLCH.alpha can be updated to a number. CSSOKLCH is not defined
+FAIL CSSOKLCH.alpha can be updated with a CSS percent. CSSOKLCH is not defined
+Harness: the test ran to completion.
+

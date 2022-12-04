@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS Constructing a CSSHWB with degrees for the hue works as intended.
+PASS CSSHWB.h can be updated with a degrees.
+PASS Constructing a CSSHWB with radians for the hue works as intended.
+PASS CSSHWB.h can be updated with a radians.
+PASS Constructing a CSSHWB with gradians for the hue works as intended.
+PASS CSSHWB.h can be updated with a gradians.
+PASS Constructing a CSSHWB with a number for hue throws a TypeError.
+PASS Constructing a CSSHWB with undefined for hue throws a TypeError.
+FAIL Constructing a CSSHWB with css pixels for hue throws a SyntaxError. assert_throws_dom: function "() => new CSSHWB(hue, 0, 0)" threw object "TypeError: Failed to construct 'CSSHWB': Hue must be a CSS angle type." that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+PASS CSSHWB can be constructed from three numbers and will get an alpha of 100%.
+PASS CSSHWB can be constructed from four numbers.
+FAIL Constructing a CSSHWB with CSS.number for s, l or alpha throws a SyntaxError assert_throws_dom: function "() => new CSSHWB(CSS.deg(0), CSS.number(1), 0, 0)" threw object "TypeError: Failed to construct 'CSSHWB': Black, white and alpha must be interpretable as percentages." that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL Updating a CSSHWB with CSS.number for w throws a SyntaxError assert_throws_dom: function "() => result[attr] = CSS.number(1)" threw object "TypeError: Failed to set the 'w' property on 'CSSHWB': White must be interpretable as a percentage." that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+PASS CSSHWB.w can be updated to a number.
+PASS CSSHWB.w can be updated with a CSS percent.
+FAIL Updating a CSSHWB with CSS.number for b throws a SyntaxError assert_throws_dom: function "() => result[attr] = CSS.number(1)" threw object "TypeError: Failed to set the 'b' property on 'CSSHWB': Black must be interpretable as a percentage." that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+PASS CSSHWB.b can be updated to a number.
+PASS CSSHWB.b can be updated with a CSS percent.
+FAIL Updating a CSSHWB with CSS.number for alpha throws a SyntaxError assert_throws_dom: function "() => result[attr] = CSS.number(1)" threw object "TypeError: Failed to set the 'alpha' property on 'CSSHWB': Alpha must be interpretable as a percentage." that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+PASS CSSHWB.alpha can be updated to a number.
+PASS CSSHWB.alpha can be updated with a CSS percent.
+Harness: the test ran to completion.
+
