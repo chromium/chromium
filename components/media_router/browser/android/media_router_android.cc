@@ -16,7 +16,7 @@
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
-#include "components/media_router/browser/route_message_observer.h"
+#include "components/media_router/browser/presentation_connection_message_observer.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/route_request_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -214,13 +214,13 @@ void MediaRouterAndroid::UnregisterMediaRoutesObserver(
   routes_observers_.RemoveObserver(observer);
 }
 
-void MediaRouterAndroid::RegisterRouteMessageObserver(
-    RouteMessageObserver* observer) {
+void MediaRouterAndroid::RegisterPresentationConnectionMessageObserver(
+    PresentationConnectionMessageObserver* observer) {
   NOTREACHED();
 }
 
-void MediaRouterAndroid::UnregisterRouteMessageObserver(
-    RouteMessageObserver* observer) {
+void MediaRouterAndroid::UnregisterPresentationConnectionMessageObserver(
+    PresentationConnectionMessageObserver* observer) {
   NOTREACHED();
 }
 

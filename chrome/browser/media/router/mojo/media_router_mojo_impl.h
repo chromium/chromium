@@ -301,8 +301,10 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   void UnregisterMediaSinksObserver(MediaSinksObserver* observer) override;
   void RegisterMediaRoutesObserver(MediaRoutesObserver* observer) override;
   void UnregisterMediaRoutesObserver(MediaRoutesObserver* observer) override;
-  void RegisterRouteMessageObserver(RouteMessageObserver* observer) override;
-  void UnregisterRouteMessageObserver(RouteMessageObserver* observer) override;
+  void RegisterPresentationConnectionMessageObserver(
+      PresentationConnectionMessageObserver* observer) override;
+  void UnregisterPresentationConnectionMessageObserver(
+      PresentationConnectionMessageObserver* observer) override;
 
   // Notifies |observer| of any existing cached routes, if it is still
   // registered.
@@ -425,9 +427,10 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   // ids..
   MediaRoutesQuery routes_query_;
 
-  using RouteMessageObserverList =
-      base::ObserverList<RouteMessageObserver>::Unchecked;
-  base::flat_map<MediaRoute::Id, std::unique_ptr<RouteMessageObserverList>>
+  using PresentationConnectionMessageObserverList =
+      base::ObserverList<PresentationConnectionMessageObserver>;
+  base::flat_map<MediaRoute::Id,
+                 std::unique_ptr<PresentationConnectionMessageObserverList>>
       message_observers_;
 
   // Receivers for Mojo remotes to |this| held by media route providers.

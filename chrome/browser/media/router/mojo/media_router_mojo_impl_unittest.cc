@@ -28,7 +28,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/media_router/browser/route_message_observer.h"
+#include "components/media_router/browser/presentation_connection_message_observer.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/issue.h"
@@ -682,7 +682,7 @@ TEST_F(MediaRouterMojoImplTest, SendRouteBinaryMessage) {
 namespace {
 
 // Used in the RouteMessages* tests to populate the messages that will be
-// processed and dispatched to RouteMessageObservers.
+// processed and dispatched to PresentationConnectionMessageObservers.
 void PopulateRouteMessages(std::vector<RouteMessagePtr>* batch1,
                            std::vector<RouteMessagePtr>* batch2,
                            std::vector<RouteMessagePtr>* batch3,
@@ -711,12 +711,13 @@ void PopulateRouteMessages(std::vector<RouteMessagePtr>* batch1,
 // messages being received from the router are correct and in-sequence. The
 // checks here correspond to the expected messages in PopulateRouteMessages()
 // above.
-class ExpectedMessagesObserver final : public RouteMessageObserver {
+class ExpectedMessagesObserver final
+    : public PresentationConnectionMessageObserver {
  public:
   ExpectedMessagesObserver(MediaRouter* router,
                            const MediaRoute::Id& route_id,
                            std::vector<RouteMessagePtr> expected_messages)
-      : RouteMessageObserver(router, route_id),
+      : PresentationConnectionMessageObserver(router, route_id),
         expected_messages_(std::move(expected_messages)) {}
 
   ~ExpectedMessagesObserver() override { CheckReceivedMessages(); }

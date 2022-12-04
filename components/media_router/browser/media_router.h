@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/media_router/browser/route_message_observer.h"
+#include "components/media_router/browser/presentation_connection_message_observer.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_sink.h"
@@ -190,11 +190,12 @@ class MediaRouter : public KeyedService {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
+  // TODO(https://crbug.com/1198580): remove message observer classes and API.
   friend class IssuesObserver;
   friend class MediaSinksObserver;
   friend class MediaRoutesObserver;
   friend class PresentationConnectionStateObserver;
-  friend class RouteMessageObserver;
+  friend class PresentationConnectionMessageObserver;
 
   // The following functions are called by friend Observer classes above.
 
@@ -233,12 +234,13 @@ class MediaRouter : public KeyedService {
   // route. Note that MediaRouter does not own |observer|. |observer| should be
   // unregistered before it is destroyed. Registering the same observer more
   // than once will result in undefined behavior.
-  virtual void RegisterRouteMessageObserver(RouteMessageObserver* observer) = 0;
+  virtual void RegisterPresentationConnectionMessageObserver(
+      PresentationConnectionMessageObserver* observer) = 0;
 
   // Unregisters a previously registered RouteMessagesObserver. |observer| will
   // stop receiving further updates.
-  virtual void UnregisterRouteMessageObserver(
-      RouteMessageObserver* observer) = 0;
+  virtual void UnregisterPresentationConnectionMessageObserver(
+      PresentationConnectionMessageObserver* observer) = 0;
 };
 
 }  // namespace media_router

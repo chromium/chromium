@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/media_router/browser/route_message_observer.h"
+#include "components/media_router/browser/presentation_connection_message_observer.h"
 #include "components/media_router/common/media_route.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -42,7 +42,7 @@ class MediaRouter;
 
 class BrowserPresentationConnectionProxy
     : public blink::mojom::PresentationConnection,
-      public RouteMessageObserver {
+      public PresentationConnectionMessageObserver {
  public:
   // |router|: media router instance not owned by this class;
   // |route_id|: underlying media route. |target_connection_remote_| sends
@@ -70,7 +70,7 @@ class BrowserPresentationConnectionProxy
   void DidClose(
       blink::mojom::PresentationConnectionCloseReason reason) override;
 
-  // RouteMessageObserver implementation.
+  // PresentationConnectionMessageObserver implementation.
   void OnMessagesReceived(
       std::vector<mojom::RouteMessagePtr> messages) override;
 

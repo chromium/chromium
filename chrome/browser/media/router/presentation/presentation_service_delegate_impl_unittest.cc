@@ -733,8 +733,8 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
             std::move(result->connection_remote));
       };
 
-  RouteMessageObserver* proxy_message_observer = nullptr;
-  EXPECT_CALL(*router_, RegisterRouteMessageObserver(_))
+  PresentationConnectionMessageObserver* proxy_message_observer = nullptr;
+  EXPECT_CALL(*router_, RegisterPresentationConnectionMessageObserver(_))
       .WillOnce(::testing::SaveArg<0>(&proxy_message_observer));
   // Note: This specifically tests the messaging case where no mojo pipe is
   // returned to PresentationServiceDelegateImpl and it is not a local
@@ -762,7 +762,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
   proxy_message_observer->OnMessagesReceived(std::move(messages));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_CALL(*router_, UnregisterRouteMessageObserver(_));
+  EXPECT_CALL(*router_, UnregisterPresentationConnectionMessageObserver(_));
   EXPECT_CALL(*router_, DetachRoute("route_id")).Times(1);
   delegate_impl_->Reset(main_frame_process_id_, main_frame_routing_id_);
 }

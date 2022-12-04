@@ -35,8 +35,8 @@ source_set("browser") {
     "presentation/start_presentation_context.h",
     "presentation/web_contents_presentation_manager.cc",
     "presentation/web_contents_presentation_manager.h",
-    "route_message_observer.cc",
-    "route_message_observer.h",
+    "presentation_connection_message_observer.cc",
+    "presentation_connection_message_observer.h",
     "route_message_util.cc",
     "route_message_util.h",
   ]

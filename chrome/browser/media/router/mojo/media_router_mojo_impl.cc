@@ -24,7 +24,7 @@
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
-#include "components/media_router/browser/route_message_observer.h"
+#include "components/media_router/browser/presentation_connection_message_observer.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -601,14 +601,15 @@ void MediaRouterMojoImpl::UnregisterMediaRoutesObserver(
   routes_query_.RemoveObserver(observer);
 }
 
-void MediaRouterMojoImpl::RegisterRouteMessageObserver(
-    RouteMessageObserver* observer) {
+void MediaRouterMojoImpl::RegisterPresentationConnectionMessageObserver(
+    PresentationConnectionMessageObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(observer);
   const MediaRoute::Id& route_id = observer->route_id();
   auto& observer_list = message_observers_[route_id];
   if (!observer_list) {
-    observer_list = std::make_unique<RouteMessageObserverList>();
+    observer_list =
+        std::make_unique<PresentationConnectionMessageObserverList>();
   } else {
     DCHECK(!observer_list->HasObserver(observer));
   }
@@ -625,8 +626,8 @@ void MediaRouterMojoImpl::RegisterRouteMessageObserver(
   }
 }
 
-void MediaRouterMojoImpl::UnregisterRouteMessageObserver(
-    RouteMessageObserver* observer) {
+void MediaRouterMojoImpl::UnregisterPresentationConnectionMessageObserver(
+    PresentationConnectionMessageObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(observer);
 

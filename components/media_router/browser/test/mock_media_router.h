@@ -131,10 +131,10 @@ class MockMediaRouter : public MediaRouterBase {
                void(MediaRoutesObserver* observer));
   MOCK_METHOD1(UnregisterMediaRoutesObserver,
                void(MediaRoutesObserver* observer));
-  MOCK_METHOD1(RegisterRouteMessageObserver,
-               void(RouteMessageObserver* observer));
-  MOCK_METHOD1(UnregisterRouteMessageObserver,
-               void(RouteMessageObserver* observer));
+  MOCK_METHOD1(RegisterPresentationConnectionMessageObserver,
+               void(PresentationConnectionMessageObserver* observer));
+  MOCK_METHOD1(UnregisterPresentationConnectionMessageObserver,
+               void(PresentationConnectionMessageObserver* observer));
   MOCK_METHOD0(GetMediaSinkServiceStatus, std::string());
 
  private:
