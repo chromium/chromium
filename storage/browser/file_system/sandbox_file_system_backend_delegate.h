@@ -133,8 +133,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
       bool create);
 
   // FileSystemBackend helpers.
-  void OpenFileSystem(const blink::StorageKey& storage_key,
-                      const absl::optional<BucketLocator>& bucket_locator,
+  void OpenFileSystem(const BucketLocator& bucket_locator,
                       FileSystemType type,
                       OpenFileSystemMode mode,
                       ResolveURLCallback callback,

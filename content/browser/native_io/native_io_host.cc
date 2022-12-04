@@ -374,8 +374,9 @@ void NativeIOHost::DeleteFile(const std::string& name,
     return;
   }
 
-  manager_->quota_manager_proxy()->NotifyStorageAccessed(
-      storage_key(), blink::mojom::StorageType::kTemporary, base::Time::Now());
+  manager_->quota_manager_proxy()->NotifyBucketAccessed(
+      storage::BucketLocator::ForDefaultBucket(storage_key()),
+      base::Time::Now());
 
   // The deletion task runs on the file_task_runner and is skipped on shutdown,
   // as is ok for storage key data deletion.
@@ -399,8 +400,9 @@ void NativeIOHost::GetAllFileNames(GetAllFileNamesCallback callback) {
     return;
   }
 
-  manager_->quota_manager_proxy()->NotifyStorageAccessed(
-      storage_key(), blink::mojom::StorageType::kTemporary, base::Time::Now());
+  manager_->quota_manager_proxy()->NotifyBucketAccessed(
+      storage::BucketLocator::ForDefaultBucket(storage_key()),
+      base::Time::Now());
 
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoGetAllFileNames, root_path_),
@@ -557,11 +559,12 @@ void NativeIOHost::DidOpenFile(
   }
 
   // DoOpenFile may create a file if none exists, which justifies
-  // NotifyStorageModified.
-  manager_->quota_manager_proxy()->NotifyStorageModified(
-      storage::QuotaClientType::kNativeIO, storage_key(),
-      blink::mojom::StorageType::kTemporary, 0, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+  // NotifyBucketModified.
+  manager_->quota_manager_proxy()->NotifyBucketModified(
+      storage::QuotaClientType::kNativeIO,
+      storage::BucketLocator::ForDefaultBucket(storage_key()), 0,
+      base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
+      base::DoNothing());
 
   open_file_hosts_.insert({
     name, std::make_unique<NativeIOFileHost>(this, name,
@@ -587,10 +590,11 @@ void NativeIOHost::DidDeleteFile(
 
   io_pending_files_.erase(name);
 
-  manager_->quota_manager_proxy()->NotifyStorageModified(
-      storage::QuotaClientType::kNativeIO, storage_key(),
-      blink::mojom::StorageType::kTemporary, 0, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+  manager_->quota_manager_proxy()->NotifyBucketModified(
+      storage::QuotaClientType::kNativeIO,
+      storage::BucketLocator::ForDefaultBucket(storage_key()), 0,
+      base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
+      base::DoNothing());
 
   std::move(callback).Run(std::move(delete_result.first), delete_result.second);
   return;
@@ -609,10 +613,11 @@ void NativeIOHost::DidRenameFile(const std::string& old_name,
   io_pending_files_.erase(old_name);
   io_pending_files_.erase(new_name);
 
-  manager_->quota_manager_proxy()->NotifyStorageModified(
-      storage::QuotaClientType::kNativeIO, storage_key(),
-      blink::mojom::StorageType::kTemporary, 0, base::Time::Now(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+  manager_->quota_manager_proxy()->NotifyBucketModified(
+      storage::QuotaClientType::kNativeIO,
+      storage::BucketLocator::ForDefaultBucket(storage_key()), 0,
+      base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
+      base::DoNothing());
 
   std::move(callback).Run(std::move(rename_error));
   return;

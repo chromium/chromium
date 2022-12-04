@@ -115,7 +115,7 @@ void MediaLicenseStorageHost::DidOpenFile(const std::string& file_name,
   // We don't actually touch the database here, but notify the quota system
   // anyways since conceptually we're creating an empty file.
   manager_->quota_manager_proxy()->NotifyBucketModified(
-      storage::QuotaClientType::kMediaLicense, bucket_locator_.id, /*delta=*/0,
+      storage::QuotaClientType::kMediaLicense, bucket_locator_, /*delta=*/0,
       /*modification_time=*/base::Time::Now(),
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(std::move(callback), Status::kSuccess,
@@ -128,7 +128,7 @@ void MediaLicenseStorageHost::ReadFile(const media::CdmType& cdm_type,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   manager_->quota_manager_proxy()->NotifyBucketAccessed(
-      bucket_locator_.id,
+      bucket_locator_,
       /*access_time=*/base::Time::Now());
 
   db_.AsyncCall(&MediaLicenseDatabase::ReadFile)
@@ -161,7 +161,7 @@ void MediaLicenseStorageHost::DidWriteFile(WriteFileCallback callback,
   // Pass `delta`=0 since media license data does not count against quota.
   // TODO(crbug.com/1305441): Consider counting this data against quota.
   manager_->quota_manager_proxy()->NotifyBucketModified(
-      storage::QuotaClientType::kMediaLicense, bucket_locator_.id, /*delta=*/0,
+      storage::QuotaClientType::kMediaLicense, bucket_locator_, /*delta=*/0,
       /*modification_time=*/base::Time::Now(),
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(std::move(callback), success));

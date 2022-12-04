@@ -67,7 +67,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       override;
 
   // We don't mock them.
-  void SetUsageCacheEnabled(storage::QuotaClientType client_id,
+  void SetUsageCacheEnabled(QuotaClientType client_id,
                             const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
                             bool enabled) override {}
@@ -78,45 +78,23 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       UsageAndQuotaCallback callback) override;
 
   void GetUsageAndQuota(
-      const storage::BucketLocator& bucket_locator,
+      const BucketLocator& bucket_locator,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 
   // Updates the internal access count which can be accessed via
-  // notify_storage_accessed_count(). Also, records the `storage_key` and `type`
-  // in `last_notified_storage_key_` and `last_notified_type_`.
-  void NotifyStorageAccessed(const blink::StorageKey& storage_key,
-                             blink::mojom::StorageType type,
-                             base::Time access_time) override;
-
-  // Updates the internal access count which can be accessed via
   // `notify_bucket_accessed_count()`. Also, records the `bucket_id` in
   // `last_notified_bucket_id_`.
-  void NotifyBucketAccessed(storage::BucketId bucket_id,
+  void NotifyBucketAccessed(const BucketLocator& bucket,
                             base::Time access_time) override;
-
-  // Records the `storage_key`, `type` and `delta` as
-  // last_notified_storage_key_, last_notified_type_ and last_notified_delta_
-  // respectively. If non-null MockQuotaManager is given to the constructor this
-  // also updates the manager's internal usage information.
-  // TODO(https://crbug.com/1202167): Remove when all usages have updated to use
-  // NotifyBucketModified.
-  void NotifyStorageModified(
-      storage::QuotaClientType client_id,
-      const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
-      int64_t delta,
-      base::Time modification_time,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      base::OnceClosure callback) override;
 
   // Records the `bucket_id` and `delta` as `last_notified_bucket_id_` and
   // `last_notified_bucket_delta_` respectively. If a non-null
   // `MockQuotaManager` is given to the constructor, this also updates the
   // manager's internal usage information.
   void NotifyBucketModified(
-      storage::QuotaClientType client_id,
-      storage::BucketId bucket_id,
+      QuotaClientType client_id,
+      const BucketLocator& bucket,
       int64_t delta,
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -129,25 +107,16 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;
 
-  int notify_storage_accessed_count() const { return storage_accessed_count_; }
-  // TODO(https://crbug.com/1202167): Remove when all usages have updated to use
-  // notify_bucket_modified_count.
-  int notify_storage_modified_count() const { return storage_modified_count_; }
   blink::StorageKey last_notified_storage_key() const {
     return last_notified_storage_key_;
   }
   blink::mojom::StorageType last_notified_type() const {
     return last_notified_type_;
   }
-  int64_t last_notified_delta() const { return last_notified_delta_; }
 
   int notify_bucket_accessed_count() const { return bucket_accessed_count_; }
   int notify_bucket_modified_count() const { return bucket_modified_count_; }
-  storage::BucketId last_notified_bucket_id() const {
-    return last_notified_bucket_id_;
-  }
-  // TODO(https://crbug.com/1202167): Rename this to `last_notified_delta()`
-  // once we get rid of the `StorageKey`-based methods.
+  BucketId last_notified_bucket_id() const { return last_notified_bucket_id_; }
   int64_t last_notified_bucket_delta() const {
     return last_notified_bucket_delta_;
   }
@@ -158,16 +127,13 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
  private:
   const raw_ptr<MockQuotaManager> mock_quota_manager_;
 
-  int storage_accessed_count_ = 0;
-  int storage_modified_count_ = 0;
   blink::StorageKey last_notified_storage_key_;
   blink::mojom::StorageType last_notified_type_ =
       blink::mojom::StorageType::kUnknown;
-  int64_t last_notified_delta_ = 0;
 
   int bucket_accessed_count_ = 0;
   int bucket_modified_count_ = 0;
-  storage::BucketId last_notified_bucket_id_ = BucketId::FromUnsafeValue(0);
+  BucketId last_notified_bucket_id_ = BucketId::FromUnsafeValue(-1);
   int64_t last_notified_bucket_delta_ = 0;
 };
 

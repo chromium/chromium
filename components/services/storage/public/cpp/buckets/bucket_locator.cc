@@ -32,6 +32,13 @@ BucketLocator::BucketLocator(BucketLocator&&) noexcept = default;
 BucketLocator& BucketLocator::operator=(const BucketLocator&) = default;
 BucketLocator& BucketLocator::operator=(BucketLocator&&) noexcept = default;
 
+bool BucketLocator::IsEquivalentTo(const BucketLocator& other) const {
+  return *this == other ||
+         (this->is_default &&
+          (std::tie(storage_key, type, is_default) ==
+           std::tie(other.storage_key, other.type, other.is_default)));
+}
+
 bool operator==(const BucketLocator& lhs, const BucketLocator& rhs) {
   return std::tie(lhs.id, lhs.storage_key, lhs.type, lhs.is_default) ==
          std::tie(rhs.id, rhs.storage_key, rhs.type, rhs.is_default);
@@ -44,6 +51,19 @@ bool operator!=(const BucketLocator& lhs, const BucketLocator& rhs) {
 bool operator<(const BucketLocator& lhs, const BucketLocator& rhs) {
   return std::tie(lhs.id, lhs.storage_key, lhs.type, lhs.is_default) <
          std::tie(rhs.id, rhs.storage_key, rhs.type, rhs.is_default);
+}
+
+bool CompareBucketLocators::operator()(const BucketLocator& a,
+                                       const BucketLocator& b) const {
+  // In this custom comparator, we make default buckets match regardless
+  // of ID as the ID can be blank for a default bucket.
+  if (a.IsEquivalentTo(b))
+    return false;
+
+  // The normal operator< doesn't work here because it doesn't maintain a
+  // strict weak ordering.
+  return std::tie(a.storage_key, a.type, a.is_default, a.id) <
+         std::tie(b.storage_key, b.type, b.is_default, b.id);
 }
 
 }  // namespace storage

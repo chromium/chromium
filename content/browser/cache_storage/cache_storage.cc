@@ -671,7 +671,7 @@ void CacheStorage::OpenCache(const std::string& cache_name,
   if (!initialized_)
     LazyInit();
 
-  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_.id,
+  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_,
                                              base::Time::Now());
 
   // TODO: Hold a handle to this CacheStorage instance while executing
@@ -696,7 +696,7 @@ void CacheStorage::HasCache(const std::string& cache_name,
   if (!initialized_)
     LazyInit();
 
-  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_.id,
+  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_,
                                              base::Time::Now());
 
   auto id = scheduler_->CreateId();
@@ -717,7 +717,7 @@ void CacheStorage::DoomCache(const std::string& cache_name,
   if (!initialized_)
     LazyInit();
 
-  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_.id,
+  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_,
                                              base::Time::Now());
 
   auto id = scheduler_->CreateId();
@@ -737,7 +737,7 @@ void CacheStorage::EnumerateCaches(int64_t trace_id,
   if (!initialized_)
     LazyInit();
 
-  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_.id,
+  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_,
                                              base::Time::Now());
 
   auto id = scheduler_->CreateId();
@@ -761,7 +761,7 @@ void CacheStorage::MatchCache(const std::string& cache_name,
   if (!initialized_)
     LazyInit();
 
-  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_.id,
+  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_,
                                              base::Time::Now());
 
   auto id = scheduler_->CreateId();
@@ -785,7 +785,7 @@ void CacheStorage::MatchAllCaches(
   if (!initialized_)
     LazyInit();
 
-  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_.id,
+  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_,
                                              base::Time::Now());
 
   auto id = scheduler_->CreateId();
@@ -809,7 +809,7 @@ void CacheStorage::WriteToCache(const std::string& cache_name,
   if (!initialized_)
     LazyInit();
 
-  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_.id,
+  quota_manager_proxy_->NotifyBucketAccessed(bucket_locator_,
                                              base::Time::Now());
 
   // Note, this is a shared operation since it only reads CacheStorage data.
@@ -1191,8 +1191,8 @@ void CacheStorage::DeleteCacheFinalize(CacheStorageCache* doomed_cache) {
 void CacheStorage::DeleteCacheDidGetSize(CacheStorageCache* doomed_cache,
                                          int64_t cache_size) {
   quota_manager_proxy_->NotifyBucketModified(
-      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_),
-      bucket_locator_.id, -cache_size, base::Time::Now(),
+      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), bucket_locator_,
+      -cache_size, base::Time::Now(),
       base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
 
   cache_loader_->CleanUpDeletedCache(doomed_cache);

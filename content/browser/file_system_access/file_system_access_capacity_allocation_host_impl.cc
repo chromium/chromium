@@ -114,7 +114,7 @@ void FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota(
   }
   granted_capacity_ += capacity_delta;
   quota_manager_proxy()->NotifyBucketModified(
-      storage::QuotaClientType::kFileSystem, url_.bucket()->id, capacity_delta,
+      storage::QuotaClientType::kFileSystem, *url_.bucket(), capacity_delta,
       base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
       base::DoNothing());
   std::move(callback).Run(capacity_delta);

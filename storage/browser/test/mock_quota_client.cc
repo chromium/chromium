@@ -44,36 +44,14 @@ void MockQuotaClient::AddBucketsData(
   bucket_data_.insert(mock_data.begin(), mock_data.end());
 }
 
-void MockQuotaClient::ModifyStorageKeyAndNotify(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType storage_type,
-    int64_t delta) {
-  auto it = base::ranges::find_if(
-      bucket_data_,
-      [storage_key, storage_type](std::pair<BucketLocator, int64_t> entry) {
-        return entry.first.is_default &&
-               entry.first.storage_key == storage_key &&
-               entry.first.type == storage_type;
-      });
-  DCHECK(it != bucket_data_.end());
-  it->second += delta;
-  DCHECK_GE(it->second, 0);
-
-  // TODO(tzik): Check quota to prevent usage exceed
-  quota_manager_proxy_->NotifyStorageModified(
-      client_type_, storage_key, storage_type, delta, IncrementMockTime(),
-      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
-}
-
-void MockQuotaClient::ModifyBucketAndNotify(BucketId bucket_id, int64_t delta) {
-  auto it = base::ranges::find(
-      bucket_data_, bucket_id,
-      [](std::pair<BucketLocator, int64_t> entry) { return entry.first.id; });
+void MockQuotaClient::ModifyBucketAndNotify(const BucketLocator& bucket,
+                                            int64_t delta) {
+  auto it = bucket_data_.find(bucket);
   DCHECK(it != bucket_data_.end());
   it->second += delta;
   DCHECK_GE(it->second, 0);
   quota_manager_proxy_->NotifyBucketModified(
-      client_type_, bucket_id, delta, IncrementMockTime(),
+      client_type_, bucket, delta, IncrementMockTime(),
       base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
 }
 
@@ -154,10 +132,9 @@ void MockQuotaClient::RunDeleteBucketData(const BucketLocator& bucket,
   }
 
   int64_t delta = it->second;
-  quota_manager_proxy_->NotifyStorageModified(
-      client_type_, blink::StorageKey(bucket.storage_key), bucket.type, -delta,
-      base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-      base::DoNothing());
+  quota_manager_proxy_->NotifyBucketModified(
+      client_type_, bucket, -delta, base::Time::Now(),
+      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   bucket_data_.erase(it);
   std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
 }

@@ -25,6 +25,7 @@
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/common/file_system/file_system_util.h"
 
 using content::BrowserThread;
@@ -89,7 +90,7 @@ void SyncFileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
 
   if (skip_initialize_syncfs_service_for_testing_) {
     GetDelegate()->OpenFileSystem(
-        url.storage_key(), url.bucket(), url.type(), mode, std::move(callback),
+        url.GetBucket(), url.type(), mode, std::move(callback),
         GetSyncableFileSystemRootURI(url.origin().GetURL()));
     return;
   }

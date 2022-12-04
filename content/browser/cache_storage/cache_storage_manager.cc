@@ -1004,7 +1004,7 @@ void CacheStorageManager::DeleteBucketDidClose(
   cache_storage.reset();
 
   quota_manager_proxy_->NotifyBucketModified(
-      CacheStorageQuotaClient::GetClientTypeFromOwner(owner), bucket_locator.id,
+      CacheStorageQuotaClient::GetClientTypeFromOwner(owner), bucket_locator,
       -bucket_size, base::Time::Now(),
       base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
 

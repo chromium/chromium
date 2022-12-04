@@ -922,7 +922,7 @@ void IndexedDBContextImpl::FactoryOpened(
 void IndexedDBContextImpl::ConnectionOpened(
     const storage::BucketLocator& bucket_locator) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  quota_manager_proxy()->NotifyBucketAccessed(bucket_locator.id,
+  quota_manager_proxy()->NotifyBucketAccessed(bucket_locator,
                                               base::Time::Now());
   if (bucket_set_.insert(bucket_locator).second) {
     // A newly created db, notify the quota system.
@@ -935,7 +935,7 @@ void IndexedDBContextImpl::ConnectionOpened(
 void IndexedDBContextImpl::ConnectionClosed(
     const storage::BucketLocator& bucket_locator) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  quota_manager_proxy()->NotifyBucketAccessed(bucket_locator.id,
+  quota_manager_proxy()->NotifyBucketAccessed(bucket_locator,
                                               base::Time::Now());
   if (indexeddb_factory_.get() &&
       indexeddb_factory_->GetConnectionCount(bucket_locator.id) == 0)
@@ -1090,9 +1090,9 @@ void IndexedDBContextImpl::QueryDiskAndUpdateQuotaUsage(
   if (difference) {
     bucket_size_map_[bucket_locator] = current_disk_usage;
     quota_manager_proxy()->NotifyBucketModified(
-        storage::QuotaClientType::kIndexedDatabase, bucket_locator.id,
-        difference, base::Time::Now(),
-        base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
+        storage::QuotaClientType::kIndexedDatabase, bucket_locator, difference,
+        base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
+        base::DoNothing());
     NotifyIndexedDBListChanged(bucket_locator);
   }
 }

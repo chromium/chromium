@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -167,6 +168,15 @@ std::string FileSystemURL::DebugString() const {
   }
   ss << " }";
   return ss.str();
+}
+
+BucketLocator FileSystemURL::GetBucket() const {
+  if (bucket())
+    return *bucket_;
+
+  auto bucket = storage::BucketLocator::ForDefaultBucket(storage_key());
+  bucket.type = storage::FileSystemTypeToQuotaStorageType(type());
+  return bucket;
 }
 
 bool FileSystemURL::IsParent(const FileSystemURL& child) const {

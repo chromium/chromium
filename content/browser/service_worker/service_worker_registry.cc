@@ -815,10 +815,11 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
     // Only notify access for already stored registrations.
     if (status == blink::ServiceWorkerStatusCode::kOk &&
         (*registration)->IsStored()) {
+      // Can be nullptr in tests.
       if (quota_manager_proxy_) {
-        // Can be nullptr in tests.
-        quota_manager_proxy_->NotifyStorageAccessed(
-            (*registration)->key(), blink::mojom::StorageType::kTemporary,
+        // TODO(crbug.com/1293510): pass correct bucket.
+        quota_manager_proxy_->NotifyBucketAccessed(
+            storage::BucketLocator::ForDefaultBucket((*registration)->key()),
             base::Time::Now());
       }
     }
@@ -1024,8 +1025,8 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
 
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
-      quota_manager_proxy_->NotifyStorageAccessed(
-          registration->key(), blink::mojom::StorageType::kTemporary,
+      quota_manager_proxy_->NotifyBucketAccessed(
+          storage::BucketLocator::ForDefaultBucket(registration->key()),
           base::Time::Now());
     }
   }
@@ -1063,8 +1064,8 @@ void ServiceWorkerRegistry::DidFindRegistrationForScope(
 
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
-      quota_manager_proxy_->NotifyStorageAccessed(
-          registration->key(), blink::mojom::StorageType::kTemporary,
+      quota_manager_proxy_->NotifyBucketAccessed(
+          storage::BucketLocator::ForDefaultBucket(registration->key()),
           base::Time::Now());
     }
   }
@@ -1108,8 +1109,8 @@ void ServiceWorkerRegistry::DidFindRegistrationForId(
                                 std::move(result->version_reference));
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
-      quota_manager_proxy_->NotifyStorageAccessed(
-          registration->key(), blink::mojom::StorageType::kTemporary,
+      quota_manager_proxy_->NotifyBucketAccessed(
+          storage::BucketLocator::ForDefaultBucket(registration->key()),
           base::Time::Now());
     }
   }
@@ -1283,9 +1284,9 @@ void ServiceWorkerRegistry::DidStoreRegistration(
 
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
-    quota_manager_proxy_->NotifyStorageModified(
-        storage::QuotaClientType::kServiceWorker, key,
-        blink::mojom::StorageType::kTemporary,
+    quota_manager_proxy_->NotifyBucketModified(
+        storage::QuotaClientType::kServiceWorker,
+        storage::BucketLocator::ForDefaultBucket(key),
         stored_resources_total_size_bytes - deleted_resources_size,
         base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
         base::DoNothing());
@@ -1325,9 +1326,9 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
 
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
-    quota_manager_proxy_->NotifyStorageModified(
-        storage::QuotaClientType::kServiceWorker, key,
-        blink::mojom::StorageType::kTemporary, -deleted_resources_size,
+    quota_manager_proxy_->NotifyBucketModified(
+        storage::QuotaClientType::kServiceWorker,
+        storage::BucketLocator::ForDefaultBucket(key), -deleted_resources_size,
         base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
         base::DoNothing());
   }

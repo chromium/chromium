@@ -78,6 +78,7 @@ void UsageTracker::GetBucketUsageWithBreakdown(
     const BucketLocator& bucket,
     UsageWithBreakdownCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(bucket.id);
   std::vector<UsageWithBreakdownCallback>& bucket_callbacks =
       bucket_usage_callbacks_[bucket];
   bucket_callbacks.emplace_back(std::move(callback));

@@ -112,23 +112,15 @@ class SandboxObfuscatedStorageKeyEnumerator
 
 base::File::Error OpenSandboxFileSystemOnFileTaskRunner(
     ObfuscatedFileUtil* file_util,
-    const GURL& origin_url,
-    const absl::optional<BucketLocator>& bucket_locator,
+    const BucketLocator& bucket_locator,
     FileSystemType type,
     OpenFileSystemMode mode) {
   const bool create = (mode == OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT);
   base::File::Error error;
-  if (bucket_locator.has_value()) {
-    base::FileErrorOr<base::FilePath> path =
-        file_util->GetDirectoryForBucketAndType(bucket_locator.value(), type,
-                                                create);
-    error = path.has_value() ? base::File::FILE_OK : path.error();
-  } else {
-    base::FileErrorOr<base::FilePath> path =
-        file_util->GetDirectoryForStorageKeyAndType(
-            blink::StorageKey(url::Origin::Create(origin_url)), type, create);
-    error = path.has_value() ? base::File::FILE_OK : path.error();
-  }
+  base::FileErrorOr<base::FilePath> path =
+      file_util->GetDirectoryForBucketAndType(bucket_locator, type, create);
+  error = path.has_value() ? base::File::FILE_OK : path.error();
+
   if (error != base::File::FILE_OK) {
     UMA_HISTOGRAM_ENUMERATION(kOpenFileSystemLabel, kCreateDirectoryError,
                               kFileSystemErrorMax);
@@ -256,40 +248,34 @@ SandboxFileSystemBackendDelegate::GetBaseDirectoryForBucketAndType(
 }
 
 void SandboxFileSystemBackendDelegate::OpenFileSystem(
-    const blink::StorageKey& storage_key,
-    const absl::optional<BucketLocator>& bucket_locator,
+    const BucketLocator& bucket_locator,
     FileSystemType type,
     OpenFileSystemMode mode,
     ResolveURLCallback callback,
     const GURL& root_url) {
-  if (!IsAllowedScheme(storage_key.origin().GetURL())) {
+  if (!IsAllowedScheme(bucket_locator.storage_key.origin().GetURL())) {
     std::move(callback).Run(GURL(), std::string(),
                             base::File::FILE_ERROR_SECURITY);
     return;
   }
 
-  std::string name = GetFileSystemName(storage_key.origin().GetURL(), type);
+  std::string name =
+      GetFileSystemName(bucket_locator.storage_key.origin().GetURL(), type);
 
   // |quota_manager_proxy_| may be null in unit tests.
   base::OnceClosure quota_callback;
-  if (quota_manager_proxy_.get()) {
+  if (quota_manager_proxy_) {
     quota_callback =
-        (bucket_locator.has_value())
-            ? base::BindOnce(&QuotaManagerProxy::NotifyBucketAccessed,
-                             quota_manager_proxy_, bucket_locator->id,
-                             base::Time::Now())
-            : base::BindOnce(&QuotaManagerProxy::NotifyStorageAccessed,
-                             quota_manager_proxy_, storage_key,
-                             FileSystemTypeToQuotaStorageType(type),
-                             base::Time::Now());
-  } else
+        base::BindOnce(&QuotaManagerProxy::NotifyBucketAccessed,
+                       quota_manager_proxy_, bucket_locator, base::Time::Now());
+  } else {
     quota_callback = base::DoNothing();
+  }
 
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&OpenSandboxFileSystemOnFileTaskRunner,
-                     obfuscated_file_util(), storage_key.origin().GetURL(),
-                     bucket_locator, type, mode),
+                     obfuscated_file_util(), bucket_locator, type, mode),
       base::BindOnce(&DidOpenFileSystem, weak_factory_.GetWeakPtr(),
                      std::move(quota_callback),
                      base::BindOnce(std::move(callback), root_url, name)));
@@ -369,10 +355,12 @@ SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
   usage_cache()->CloseCacheFiles();
   bool result = obfuscated_file_util()->DeleteDirectoryForStorageKeyAndType(
       storage_key, type);
+  auto bucket = BucketLocator::ForDefaultBucket(storage_key);
+  bucket.type = FileSystemTypeToQuotaStorageType(type);
+
   if (result && proxy && usage) {
-    proxy->NotifyStorageModified(
-        QuotaClientType::kFileSystem, storage_key,
-        FileSystemTypeToQuotaStorageType(type), -usage, base::Time::Now(),
+    proxy->NotifyBucketModified(
+        QuotaClientType::kFileSystem, bucket, -usage, base::Time::Now(),
         base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   }
 
@@ -395,10 +383,9 @@ SandboxFileSystemBackendDelegate::DeleteBucketDataOnFileTaskRunner(
   bool result = obfuscated_file_util()->DeleteDirectoryForBucketAndType(
       bucket_locator, type);
   if (result && proxy && usage) {
-    proxy->NotifyBucketModified(QuotaClientType::kFileSystem, bucket_locator.id,
-                                -usage, base::Time::Now(),
-                                base::SequencedTaskRunner::GetCurrentDefault(),
-                                base::DoNothing());
+    proxy->NotifyBucketModified(
+        QuotaClientType::kFileSystem, bucket_locator, -usage, base::Time::Now(),
+        base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   }
 
   if (result)

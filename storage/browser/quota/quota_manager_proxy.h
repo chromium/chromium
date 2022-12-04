@@ -180,30 +180,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
-  virtual void NotifyStorageAccessed(const blink::StorageKey& storage_key,
-                                     blink::mojom::StorageType type,
-                                     base::Time access_time);
-
   // Notifies the quota manager that a bucket has been accessed to maintain LRU
   // ordering.
-  virtual void NotifyBucketAccessed(BucketId bucket_id, base::Time access_time);
-
-  // Notify the quota manager that storage has been modified for the given
-  // client.  A `callback` may be optionally provided to be invoked on the
-  // given task runner when the quota system's state in memory has been
-  // updated.  If a `callback` is provided then `callback_task_runner` must
-  // also be provided.  If the quota manager runs on `callback_task_runner`,
-  // then the `callback` may be invoked synchronously.
-  // TODO(https://crbug.com/1202167): Remove when all usages have updated to use
-  // `NotifyBucketModified()`.
-  virtual void NotifyStorageModified(
-      QuotaClientType client_id,
-      const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
-      int64_t delta,
-      base::Time modification_time,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      base::OnceClosure callback);
+  virtual void NotifyBucketAccessed(const BucketLocator& bucket,
+                                    base::Time access_time);
 
   // Notifies the quota manager that a bucket has been modified for the given
   // client.  A `callback` may be optionally provided to be invoked on the
@@ -213,7 +193,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // then the `callback` may be invoked synchronously.
   virtual void NotifyBucketModified(
       QuotaClientType client_id,
-      BucketId bucket_id,
+      const BucketLocator& bucket,
       int64_t delta,
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,

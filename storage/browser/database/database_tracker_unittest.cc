@@ -113,25 +113,23 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
     registered_client_.Bind(std::move(client));
   }
 
-  void NotifyStorageAccessed(const blink::StorageKey& storage_key,
-                             blink::mojom::StorageType type,
-                             base::Time access_time) override {
-    EXPECT_EQ(blink::mojom::StorageType::kTemporary, type);
-    accesses_[storage_key] += 1;
+  void NotifyBucketAccessed(const BucketLocator& bucket,
+                            base::Time access_time) override {
+    EXPECT_EQ(blink::mojom::StorageType::kTemporary, bucket.type);
+    accesses_[bucket.storage_key] += 1;
   }
 
-  void NotifyStorageModified(
+  void NotifyBucketModified(
       QuotaClientType client_id,
-      const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
+      const BucketLocator& bucket,
       int64_t delta,
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback) override {
     EXPECT_EQ(QuotaClientType::kDatabase, client_id);
-    EXPECT_EQ(blink::mojom::StorageType::kTemporary, type);
-    modifications_[storage_key].first += 1;
-    modifications_[storage_key].second += delta;
+    EXPECT_EQ(blink::mojom::StorageType::kTemporary, bucket.type);
+    modifications_[bucket.storage_key].first += 1;
+    modifications_[bucket.storage_key].second += delta;
     if (callback)
       callback_task_runner->PostTask(FROM_HERE, std::move(callback));
   }

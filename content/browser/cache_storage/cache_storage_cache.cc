@@ -2224,8 +2224,8 @@ void CacheStorageCache::UpdateCacheSizeGotSize(
   last_reported_size_ = PaddedCacheSize();
 
   quota_manager_proxy_->NotifyBucketModified(
-      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_),
-      bucket_locator_.id, size_delta, base::Time::Now(), scheduler_task_runner_,
+      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), bucket_locator_,
+      size_delta, base::Time::Now(), scheduler_task_runner_,
       base::BindOnce(&CacheStorageCache::UpdateCacheSizeNotifiedStorageModified,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

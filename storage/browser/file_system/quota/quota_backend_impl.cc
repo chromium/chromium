@@ -144,11 +144,11 @@ void QuotaBackendImpl::ReserveQuotaInternal(const QuotaReservationInfo& info) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!info.origin.opaque());
   DCHECK(quota_manager_proxy_.get());
-  quota_manager_proxy_->NotifyStorageModified(
-      QuotaClientType::kFileSystem, blink::StorageKey(info.origin),
-      FileSystemTypeToQuotaStorageType(info.type), info.delta,
-      base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
-      base::DoNothing());
+  auto bucket = BucketLocator::ForDefaultBucket(blink::StorageKey(info.origin));
+  bucket.type = FileSystemTypeToQuotaStorageType(info.type);
+  quota_manager_proxy_->NotifyBucketModified(
+      QuotaClientType::kFileSystem, bucket, info.delta, base::Time::Now(),
+      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
 }
 
 base::FileErrorOr<base::FilePath> QuotaBackendImpl::GetUsageCachePath(

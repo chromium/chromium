@@ -44,9 +44,8 @@ void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
   DCHECK(update_notify_runner_->RunsTasksInCurrentSequence());
 
   if (quota_manager_proxy_.get()) {
-    quota_manager_proxy_->NotifyStorageModified(
-        QuotaClientType::kFileSystem, url.storage_key(),
-        FileSystemTypeToQuotaStorageType(url.type()), delta, base::Time::Now(),
+    quota_manager_proxy_->NotifyBucketModified(
+        QuotaClientType::kFileSystem, url.GetBucket(), delta, base::Time::Now(),
         base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   }
 
@@ -82,9 +81,8 @@ void SandboxQuotaObserver::OnEndUpdate(const FileSystemURL& url) {
 
 void SandboxQuotaObserver::OnAccess(const FileSystemURL& url) {
   if (quota_manager_proxy_.get()) {
-    quota_manager_proxy_->NotifyStorageAccessed(
-        url.storage_key(), FileSystemTypeToQuotaStorageType(url.type()),
-        base::Time::Now());
+    quota_manager_proxy_->NotifyBucketAccessed(url.GetBucket(),
+                                               base::Time::Now());
   }
 }
 

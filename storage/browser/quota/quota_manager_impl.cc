@@ -1861,88 +1861,38 @@ UsageTracker* QuotaManagerImpl::GetUsageTracker(StorageType type) const {
   return nullptr;
 }
 
-void QuotaManagerImpl::NotifyStorageAccessed(const StorageKey& storage_key,
-                                             StorageType type,
-                                             base::Time access_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnsureDatabaseOpened();
-  if (type == StorageType::kTemporary && is_getting_eviction_bucket_) {
-    // Record the accessed storage keys while GetLruEvictableBucket task is
-    // running to filter out them from eviction.
-    access_notified_storage_keys_.insert(storage_key);
-  }
-
-  if (db_disabled_)
-    return;
-  PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(
-          [](const StorageKey& storage_key, StorageType type,
-             base::Time accessed_time, QuotaDatabase* database) {
-            DCHECK(database);
-            return database->SetStorageKeyLastAccessTime(storage_key, type,
-                                                         accessed_time);
-          },
-          storage_key, type, access_time),
-      base::BindOnce(&QuotaManagerImpl::OnComplete,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void QuotaManagerImpl::NotifyBucketAccessed(BucketId bucket_id,
+void QuotaManagerImpl::NotifyBucketAccessed(const BucketLocator& bucket,
                                             base::Time access_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
   if (is_getting_eviction_bucket_) {
     // Record the accessed buckets while GetLRUStorageKey task is running
     // to filter out them from eviction.
-    access_notified_buckets_.insert(bucket_id);
+    access_notified_buckets_.insert(bucket);
   }
 
   if (db_disabled_)
     return;
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(
-          [](BucketId bucket_id, base::Time accessed_time,
+          [](BucketLocator bucket, base::Time accessed_time,
              QuotaDatabase* database) {
             DCHECK(database);
-            return database->SetBucketLastAccessTime(bucket_id, accessed_time);
+            if (bucket.is_default) {
+              return database->SetStorageKeyLastAccessTime(
+                  bucket.storage_key, bucket.type, accessed_time);
+            } else {
+              return database->SetBucketLastAccessTime(bucket.id,
+                                                       accessed_time);
+            }
           },
-          bucket_id, access_time),
+          bucket, access_time),
       base::BindOnce(&QuotaManagerImpl::OnComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
-void QuotaManagerImpl::NotifyStorageModified(QuotaClientType client_id,
-                                             const StorageKey& storage_key,
-                                             StorageType type,
-                                             int64_t delta,
-                                             base::Time modification_time,
-                                             base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback);
-  EnsureDatabaseOpened();
-  DCHECK(GetUsageTracker(type));
-
-  if (db_disabled_) {
-    if (callback)
-      std::move(callback).Run();
-    return;
-  }
-
-  PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(
-          [](const StorageKey& storage_key, const std::string& bucket_name,
-             blink::mojom::StorageType type, QuotaDatabase* database) {
-            DCHECK(database);
-            return database->GetBucket(storage_key, bucket_name, type);
-          },
-          storage_key, kDefaultBucketName, type),
-      base::BindOnce(&QuotaManagerImpl::DidGetBucketForUsage,
-                     weak_factory_.GetWeakPtr(), client_id, delta,
-                     modification_time, std::move(callback)));
-}
-
 void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
-                                            BucketId bucket_id,
+                                            const BucketLocator& bucket,
                                             int64_t delta,
                                             base::Time modification_time,
                                             base::OnceClosure callback) {
@@ -1952,11 +1902,15 @@ void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
 
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(
-          [](BucketId bucket_id, QuotaDatabase* database) {
+          [](BucketLocator bucket, QuotaDatabase* database) {
             DCHECK(database);
-            return database->GetBucketById(bucket_id);
+            if (bucket.is_default) {
+              return database->GetBucket(bucket.storage_key, kDefaultBucketName,
+                                         bucket.type);
+            }
+            return database->GetBucketById(bucket.id);
           },
-          bucket_id),
+          bucket),
       base::BindOnce(&QuotaManagerImpl::DidGetBucketForUsage,
                      weak_factory_.GetWeakPtr(), client_id, delta,
                      modification_time, std::move(callback)));
@@ -2393,19 +2347,16 @@ void QuotaManagerImpl::DidGetEvictionBucket(
   // eviction task.
   DCHECK(!bucket.has_value() ||
          !bucket->storage_key.origin().GetURL().is_empty());
-  // TODO(crbug.com/1208141): Remove this evaluation for storage key once
-  // QuotaClient is migrated to operate on buckets and NotifyStorageAccessed
-  // no longer used.
-  if (bucket.has_value() && bucket->is_default &&
-      base::Contains(access_notified_storage_keys_, bucket->storage_key)) {
-    std::move(callback).Run(absl::nullopt);
-  } else if (bucket.has_value() &&
-             base::Contains(access_notified_buckets_, bucket->id)) {
+  if (bucket.has_value() &&
+      std::count_if(access_notified_buckets_.begin(),
+                    access_notified_buckets_.end(),
+                    [&bucket](const BucketLocator& locator) {
+                      return bucket->IsEquivalentTo(locator);
+                    })) {
     std::move(callback).Run(absl::nullopt);
   } else {
     std::move(callback).Run(bucket);
   }
-  access_notified_storage_keys_.clear();
   access_notified_buckets_.clear();
 
   is_getting_eviction_bucket_ = false;

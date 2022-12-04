@@ -292,39 +292,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Called by storage backends via proxy.
   //
-  // Quota-managed storage backends should call this method when storage is
-  // accessed. Used to maintain LRU ordering.
-  // TODO(crbug.com/1199417): Remove when all usages have updated to use
-  // NotifyBucketAccessed.
-  void NotifyStorageAccessed(const blink::StorageKey& storage_key,
-                             blink::mojom::StorageType type,
-                             base::Time access_time);
-
-  // Called by storage backends via proxy.
-  //
   // Quota-managed storage backends should call this method when a bucket is
   // accessed. Used to maintain LRU ordering.
-  void NotifyBucketAccessed(BucketId bucket_id, base::Time access_time);
-
-  // Called by storage backends via proxy.
-  //
-  // Quota-managed storage backends must call this method when they have made
-  // any modifications that change the amount of data stored in their storage.
-  // TODO(crbug.com/1199417): Remove when all usages have updated to use
-  // NotifyBucketModified.
-  void NotifyStorageModified(QuotaClientType client_id,
-                             const blink::StorageKey& storage_key,
-                             blink::mojom::StorageType type,
-                             int64_t delta,
-                             base::Time modification_time,
-                             base::OnceClosure callback);
+  void NotifyBucketAccessed(const BucketLocator& bucket,
+                            base::Time access_time);
 
   // Called by storage backends via proxy.
   //
   // Quota-managed storage backends must call this method when they have made
   // any modifications that change the amount of data stored in a bucket.
   void NotifyBucketModified(QuotaClientType client_id,
-                            BucketId bucket_id,
+                            const BucketLocator& bucket,
                             int64_t delta,
                             base::Time modification_time,
                             base::OnceClosure callback);
@@ -774,12 +752,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   GetBucketCallback lru_bucket_callback_;
 
-  // Keeps track of storage keys that have been accessed during an eviction task
-  // so they can be filtered out from eviction.
-  std::set<blink::StorageKey> access_notified_storage_keys_;
   // Buckets that have been notified of access during LRU task to exclude from
   // eviction.
-  std::set<BucketId> access_notified_buckets_;
+  std::set<BucketLocator> access_notified_buckets_;
 
   std::map<blink::StorageKey, QuotaOverride> devtools_overrides_;
   int next_override_handle_id_ = 0;

@@ -1649,7 +1649,7 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
       << "Capacity allocation is only relevant for sandboxed file systems, "
          "which should have an associated bucket.";
   context_->quota_manager_proxy()->NotifyBucketModified(
-      storage::QuotaClientType::kFileSystem, url.bucket()->id, -overallocation,
+      storage::QuotaClientType::kFileSystem, *url.bucket(), -overallocation,
       base::Time::Now(),
       /*callback_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
       std::move(callback));
