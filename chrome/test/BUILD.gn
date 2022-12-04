@@ -6624,6 +6624,7 @@ test("unit_tests") {
       "../browser/apps/app_service/app_icon/app_icon_factory_unittest.cc",
       "../browser/apps/app_service/app_icon/app_icon_test_util.cc",
       "../browser/apps/app_service/app_icon/app_icon_test_util.h",
+      "../browser/apps/app_service/app_icon/chrome_apps_icon_unittest.cc",
       "../browser/apps/app_service/app_icon/web_app_icon_unittest.cc",
       "../browser/apps/app_service/app_service_proxy_unittest.cc",
       "../browser/apps/app_service/intent_util_unittest.cc",
