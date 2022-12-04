@@ -4859,5 +4859,42 @@ class AssertNoJsInIosTest(unittest.TestCase):
         self.assertEqual('warning', results[0].type)
         self.assertEqual(1, len(results[0].items))
 
+class CheckNoAbbreviationInPngFileNameTest(unittest.TestCase):
+  def testHasAbbreviation(self):
+    """test png file names with abbreviation that fails the check"""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('image_a.png', [], action='A'),
+      MockFile('image_a_.png', [], action='A'),
+      MockFile('image_a_name.png', [], action='A'),
+      MockFile('chrome/ui/feature_name/resources/image_a.png', [], action='A'),
+      MockFile('chrome/ui/feature_name/resources/image_a_.png', [], action='A'),
+      MockFile('chrome/ui/feature_name/resources/image_a_name.png', [], action='A'),
+    ]
+    results = PRESUBMIT.CheckNoAbbreviationInPngFileName(input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual('error', results[0].type)
+    self.assertEqual(len(input_api.files), len(results[0].items))
+
+  def testNoAbbreviation(self):
+    """test png file names without abbreviation that passes the check"""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('a.png', [], action='A'),
+      MockFile('_a.png', [], action='A'),
+      MockFile('image.png', [], action='A'),
+      MockFile('image_ab_.png', [], action='A'),
+      MockFile('image_ab_name.png', [], action='A'),
+      # These paths used to fail because `feature_a_name` matched the regex by mistake.
+      # They should pass now because the path components ahead of the file name are ignored in the check.
+      MockFile('chrome/ui/feature_a_name/resources/a.png', [], action='A'),
+      MockFile('chrome/ui/feature_a_name/resources/_a.png', [], action='A'),
+      MockFile('chrome/ui/feature_a_name/resources/image.png', [], action='A'),
+      MockFile('chrome/ui/feature_a_name/resources/image_ab_.png', [], action='A'),
+      MockFile('chrome/ui/feature_a_name/resources/image_ab_name.png', [], action='A'),
+    ]
+    results = PRESUBMIT.CheckNoAbbreviationInPngFileName(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
 if __name__ == '__main__':
   unittest.main()

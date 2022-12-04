@@ -2586,23 +2586,25 @@ def CheckChromeOsSyncedPrefRegistration(input_api, output_api):
     return results
 
 
-# TODO: add unit tests.
 def CheckNoAbbreviationInPngFileName(input_api, output_api):
     """Makes sure there are no abbreviations in the name of PNG files.
     The native_client_sdk directory is excluded because it has auto-generated PNG
     files for documentation.
     """
     errors = []
-    files_to_check = [r'.*_[a-z]_.*\.png$|.*_[a-z]\.png$']
+    files_to_check = [r'.*\.png$']
     files_to_skip = [r'^native_client_sdk/',
                      r'^services/test/',
                      r'^third_party/blink/web_tests/',
                     ]
     file_filter = lambda f: input_api.FilterSourceFile(
         f, files_to_check=files_to_check, files_to_skip=files_to_skip)
+    abbreviation = input_api.re.compile('.+_[a-z]\.png|.+_[a-z]_.*\.png')
     for f in input_api.AffectedFiles(include_deletes=False,
                                      file_filter=file_filter):
-        errors.append('    %s' % f.LocalPath())
+        file_name = input_api.os_path.split(f.LocalPath())[1]
+        if abbreviation.search(file_name):
+            errors.append('    %s' % f.LocalPath())
 
     results = []
     if errors:
