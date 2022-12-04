@@ -10,12 +10,15 @@ option java_outer_classname = "OutputConfigProto";
 package segmentation_platform.proto;
 
 // Defines what type of model is supplied. Results are based on which
-// classifier the model is in.
-message Classifier {
+// classifier/regressor the model is in.
+message Predictor {
   // A classifier to interpret model results as a boolean.
-  message BooleanClassifier {
+  message BinaryClassifier {
     // Limit to classify result as false/true.
     optional float threshold = 1;
+    // Labels for positive and negative outputs.
+    optional string positive_label = 2;
+    optional string negative_label = 3;
   }
 
   // A classifier to interpret model results as one of multiple classes. Each
@@ -24,23 +27,49 @@ message Classifier {
     // Number of top results the client is interested in. Must be less than
     // or equal to the number of labels specified.
     optional int64 top_k_outputs = 1;
+
+    // Class labels associated with the outputs.
+    repeated string class_labels = 2;
   }
 
-  oneof ClassifierType {
-    // Model result is classified as boolean.
-    BooleanClassifier boolean_classifier = 2;
+  // A post-processor that converts a continuous model score into discrete
+  // ranges.
+  message BinnedClassifier {
+    // A bin represents a bucket containing entries between the current bin min
+    // range to the next bin min range.
+    message Bin {
+      // Minimum range for this bin.
+      optional float min_range = 1;
+      // Signify what the bin corresponds to.
+      optional string label = 2;
+    }
+    // BinnedClassifier contains multiple bins.
+    // The result is one of the selected bins.
+    repeated Bin bins = 1;
+  }
+
+  // Describes a regression model.
+  message Regressor {}
+
+  // Specifies how to post process the raw model results based on model type,
+  // e.g. classification or regression.
+  oneof PredictorType {
+    // Model result is classified as boolean/binary.
+    BinaryClassifier binary_classifier = 1;
 
     // Model result is of multi-class type.
-    MultiClassClassifier multi_class_classifier = 3;
+    MultiClassClassifier multi_class_classifier = 2;
+
+    // Model result is binned into one of the types.
+    BinnedClassifier binned_classifier = 3;
+
+    // Model output is of regression type.
+    Regressor regressor = 4;
   }
 }
 
 // Specified by client in the metadata on how to interpret the model results.
 message OutputConfig {
-  // Each `output_label` corresponds to one output. It signifies how to
-  // interpret the output.
-  repeated string output_labels = 1;
-
-  // Tells the return type of the result for model evaluation.
-  optional Classifier classifier = 2;
+  // A post-processor associated with the model.
+  optional Predictor predictor = 1;
 }
