@@ -226,11 +226,8 @@ export class EmojiGroupComponent extends PolymerElement {
    * Returns HTML class attribute of an emoji button.
    */
   private getEmojiButtonClassName(emoji: EmojiVariants): string {
-    if (emoji.alternates && emoji.alternates.length > 0) {
-      return 'emoji-button has-variants';
-    } else {
-      return 'emoji-button';
-    }
+    return emoji.alternates && emoji.alternates.length > 0 ? 'has-variants' :
+                                                             '';
   }
 
   /**
@@ -273,7 +270,7 @@ export class EmojiGroupComponent extends PolymerElement {
   }
 
   /**
-   * Return weather variants of an emoji is visible or not.
+   * Return whether variants of an emoji is visible or not.
    */
   private isEmojiVariantVisible(
       emojiIndex: number, shownEmojiVariantIndex: number): boolean {

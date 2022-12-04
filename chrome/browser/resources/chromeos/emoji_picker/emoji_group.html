@@ -233,7 +233,7 @@
   <template is="dom-repeat" items="[[data]]">
     <div class="emoji-button-container">
       <button id="[[getEmojiButtonId(index)]]" data-index$="[[index]]"
-        class$="[[getEmojiButtonClassName(item)]]"
+        class$="emoji-button [[getEmojiButtonClassName(item)]]"
         on-mouseenter="showTooltip" on-focus="showTooltip"
         aria-label="[[getEmojiAriaLabel(item)]]">
         [[getDisplayEmojiForEmoji(item.base.string)]]
