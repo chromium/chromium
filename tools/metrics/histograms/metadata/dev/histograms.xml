@@ -68,16 +68,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="DevTools.ConsoleShowsCorsErrors"
-    enum="DevToolsConsoleShowsCorsErrors" expires_after="2022-12-01">
-  <owner>dsv@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <owner>yangguo@chromium.org</owner>
-  <summary>
-    Records if showing CORS erros in DevTools Console is enabled.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.CSSHintShown" enum="DevToolsCSSHintShown"
     expires_after="2023-08-12">
   <owner>changhaohan@chromium.org</owner>

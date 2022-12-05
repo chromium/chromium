@@ -26177,11 +26177,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="1" label="Grouping disabled"/>
 </enum>
 
-<enum name="DevToolsConsoleShowsCorsErrors">
-  <int value="0" label="CORS errors disabled"/>
-  <int value="1" label="CORS errors enabled"/>
-</enum>
-
 <enum name="DevToolsCssEditorOpened">
   <obsolete>
     Removed in M95. See crbug.com/1235544.
