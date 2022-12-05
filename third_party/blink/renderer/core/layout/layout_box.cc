@@ -3482,6 +3482,16 @@ void LayoutBox::RebuildFragmentTreeSpine() {
       result = NGLayoutResult::CloneWithPostLayoutFragments(*result);
     container = container->ContainingNGBox();
   }
+
+  if (container && container->NeedsLayout()) {
+    // We stopped walking upwards because this container needs layout. This
+    // typically means that updating the associated layout results is waste of
+    // time, since we're probably going to lay it out anyway. However, in some
+    // cases the container is going to hit the cache and therefore not perform
+    // actual layout. If this happens, we need to update the layout results at
+    // that point.
+    container->SetHasBrokenSpine();
+  }
 }
 
 void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {

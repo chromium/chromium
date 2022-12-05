@@ -440,16 +440,12 @@ const NGLayoutResult* NGBlockNode::Layout(
   if ((cache_status == NGLayoutCacheStatus::kHit ||
        cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout) &&
       needed_layout && constraint_space.CacheSlot() == NGCacheSlot::kLayout &&
-      !ChildLayoutBlockedByDisplayLock()) {
+      box_->HasBrokenSpine() && !ChildLayoutBlockedByDisplayLock()) {
     // If we're not guaranteed to discard the old fragment (which we're only
     // guaranteed to do if we have decided to perform full layout), we need to
     // clone the result to pick the most recent fragments from the LayoutBox
-    // children, because there may be relayout boundary children which just got
-    // laid out by the subtree layout machinery, but didn't rebuild the fragment
-    // tree spine, because its containing block (this node) was already marked
-    // for layout, and thus assuming that the containing block would eventually
-    // update its children (and the remaining part of the ancestry) anyway. So,
-    // here we are, fulfilling our part of the deal.
+    // children, because we stopped rebuilding the fragment spine right here
+    // after performing subtree layout.
     layout_result =
         NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
     const auto& new_fragment =
@@ -461,6 +457,7 @@ const NGLayoutResult* NGBlockNode::Layout(
     bool clear_trailing_results =
         new_fragment.BreakToken() && new_fragment.HasItems();
     StoreResultInLayoutBox(layout_result, break_token, clear_trailing_results);
+    box_->ClearHasBrokenSpine();
   }
 
   if (cache_status == NGLayoutCacheStatus::kHit) {

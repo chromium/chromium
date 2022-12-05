@@ -1210,6 +1210,19 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   void MarkMayHaveAnchorQuery();
 
+  void SetHasBrokenSpine() {
+    NOT_DESTROYED();
+    bitfields_.SetHasBrokenSpine(true);
+  }
+  void ClearHasBrokenSpine() {
+    NOT_DESTROYED();
+    bitfields_.SetHasBrokenSpine(false);
+  }
+  bool HasBrokenSpine() const {
+    NOT_DESTROYED();
+    return bitfields_.HasBrokenSpine();
+  }
+
   bool IsTruncated() const {
     NOT_DESTROYED();
     return bitfields_.IsTruncated();
@@ -4161,7 +4174,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           might_traverse_physical_fragments_(false),
           whitespace_children_may_change_(false),
           needs_devtools_info_(false),
-          may_have_anchor_query_(false) {}
+          may_have_anchor_query_(false),
+          has_broken_spine_(false) {}
 
     // Self needs layout for style means that this layout object is marked for a
     // full layout. This is the default layout but it is expensive as it
@@ -4516,6 +4530,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     // See comments for |MayHaveAnchorQuery()|.
     ADD_BOOLEAN_BITFIELD(may_have_anchor_query_, MayHaveAnchorQuery);
+
+    // Set if we stopped rebuilding the spine because this object was marked for
+    // layout. We don't need to do anything if we actually end up re-laying out
+    // the object, but if it turns out that we hit the cache, we need to update
+    // the vertebra for this object at that point - i.e. update the associated
+    // layout results, by reading out the post-layout results from the children.
+    ADD_BOOLEAN_BITFIELD(has_broken_spine_, HasBrokenSpine);
   };
 
 #undef ADD_BOOLEAN_BITFIELD
