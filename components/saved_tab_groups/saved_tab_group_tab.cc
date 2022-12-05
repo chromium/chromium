@@ -13,11 +13,13 @@ SavedTabGroupTab::SavedTabGroupTab(
     const base::GUID& group_guid,
     SavedTabGroup* group,
     absl::optional<base::GUID> guid,
+    absl::optional<base::Token> local_tab_id,
     absl::optional<base::Time> creation_time_windows_epoch_micros,
     absl::optional<base::Time> update_time_windows_epoch_micros,
     absl::optional<gfx::Image> favicon)
     : guid_(guid.has_value() ? guid.value() : base::GUID::GenerateRandomV4()),
       group_guid_(group_guid),
+      local_tab_id_(local_tab_id),
       saved_tab_group_(group),
       url_(url),
       title_(title),
@@ -69,8 +71,8 @@ SavedTabGroupTab SavedTabGroupTab::FromSpecifics(
   base::Time update_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(specific.update_time_windows_epoch_micros()));
 
-  return SavedTabGroupTab(url, title, group_guid, nullptr, guid, creation_time,
-                          update_time);
+  return SavedTabGroupTab(url, title, group_guid, nullptr, guid, absl::nullopt,
+                          creation_time, update_time);
 }
 
 std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::ToSpecifics()

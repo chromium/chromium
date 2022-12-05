@@ -28,6 +28,7 @@ class SavedTabGroupTab {
                    const base::GUID& group_guid,
                    SavedTabGroup* group = nullptr,
                    absl::optional<base::GUID> guid = absl::nullopt,
+                   absl::optional<base::Token> local_tab_id = absl::nullopt,
                    absl::optional<base::Time>
                        creation_time_windows_epoch_micros = absl::nullopt,
                    absl::optional<base::Time> update_time_windows_epoch_micros =
@@ -39,6 +40,9 @@ class SavedTabGroupTab {
   // Accessors.
   const base::GUID& guid() const { return guid_; }
   const base::GUID& group_guid() const { return group_guid_; }
+  const absl::optional<base::Token> local_tab_id() const {
+    return local_tab_id_;
+  }
   SavedTabGroup* saved_tab_group() const { return saved_tab_group_; }
   const GURL& url() const { return url_; }
   const std::u16string& title() const { return title_; }
@@ -71,6 +75,11 @@ class SavedTabGroupTab {
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
+  SavedTabGroupTab& SetLocalTabID(absl::optional<base::Token> local_tab_id) {
+    local_tab_id_ = local_tab_id;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+    return *this;
+  }
   SavedTabGroupTab& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros) {
     update_time_windows_epoch_micros_ = update_time_windows_epoch_micros;
@@ -99,8 +108,11 @@ class SavedTabGroupTab {
   // The ID used to represent the tab in sync.
   base::GUID guid_;
 
-  // The ID used to represent the tab in sync. This must not be null. It
+  // The ID used to represent the tab's group in sync. This must not be null.
   base::GUID group_guid_;
+
+  // The ID used to represent the tab in reference to the web_contents locally.
+  absl::optional<base::Token> local_tab_id_;
 
   // The Group which owns this tab, this can be null if sync hasn't sent the
   // group over yet.

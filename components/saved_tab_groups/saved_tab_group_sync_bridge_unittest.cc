@@ -210,7 +210,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncDataWithExistingData) {
                               {}, group_guid, absl::nullopt,
                               group_creation_time);
   SavedTabGroupTab updated_tab_1(GURL("https://support.google.com"), u"Support",
-                                 group_guid, nullptr, tab_1_guid,
+                                 group_guid, nullptr, tab_1_guid, absl::nullopt,
                                  tab_1_creation_time);
   updated_group.AddTab(0, updated_tab_1);
 
@@ -233,7 +233,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncDataWithExistingData) {
 
   // Ensure tab_2 was left untouched.
   SavedTabGroupTab tab_2_replica(GURL("https://google.com"), u"Google",
-                                 group_guid, nullptr, tab_2_guid,
+                                 group_guid, nullptr, tab_2_guid, absl::nullopt,
                                  tab_2_creation_time);
   EXPECT_TRUE(AreTabSpecificsEqual(
       *tab_2_replica.ToSpecifics(),
