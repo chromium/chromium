@@ -55,7 +55,7 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;
   void OnReadAnythingThemeChanged(
-      std::string& font_name,
+      const std::string& font_name,
       double font_scale,
       ui::ColorId foreground_color_id,
       ui::ColorId background_color_id,

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_TOOLBAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_TOOLBAR_VIEW_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_button_view.h"
@@ -49,7 +53,7 @@ class ReadAnythingToolbarView : public views::View,
 
   // ReadAnythingModel::Observer:
   void OnReadAnythingThemeChanged(
-      std::string& font_name,
+      const std::string& font_name,
       double font_scale,
       ui::ColorId foreground_color_id,
       ui::ColorId background_color_id,

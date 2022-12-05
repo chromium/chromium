@@ -34,7 +34,7 @@ ReadAnythingModel::ReadAnythingModel()
 
 ReadAnythingModel::~ReadAnythingModel() = default;
 
-void ReadAnythingModel::Init(std::string& font_name,
+void ReadAnythingModel::Init(const std::string& font_name,
                              double font_scale,
                              read_anything::mojom::Colors colors,
                              Spacing line_spacing,
