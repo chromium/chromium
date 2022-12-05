@@ -52,6 +52,12 @@ class AutofillProfileTableViewControllerTest
         initWithBrowserState:chrome_browser_state_.get()];
   }
 
+  void TearDown() override {
+    [base::mac::ObjCCastStrict<AutofillProfileTableViewController>(controller())
+        settingsWillBeDismissed];
+    ChromeTableViewControllerTest::TearDown();
+  }
+
   void AddProfile(const std::string& origin,
                   const std::string& name,
                   const std::string& address) {

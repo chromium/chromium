@@ -77,6 +77,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // such as inserting or removing items/sections. This boolean is used to
   // stop the observer callback from acting on user-initiated changes.
   BOOL _deletionInProgress;
+
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 @property(nonatomic, getter=isAutofillProfileEnabled)
@@ -103,7 +106,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)dealloc {
-  _personalDataManager->RemoveObserver(_observer.get());
+  if (!_settingsAreDismissed)
+    _personalDataManager->RemoveObserver(_observer.get());
 }
 
 - (void)viewDidLoad {
@@ -118,6 +122,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)loadModel {
   [super loadModel];
+  if (_settingsAreDismissed)
+    return;
+
   TableViewModel* model = self.tableViewModel;
 
   [model addSectionWithIdentifier:SectionIdentifierSwitches];
@@ -146,6 +153,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Populates profile section using personalDataManager.
 - (void)populateProfileSection {
+  if (_settingsAreDismissed)
+    return;
+
   TableViewModel* model = self.tableViewModel;
   const std::vector<autofill::AutofillProfile*> autofillProfiles =
       _personalDataManager->GetProfiles();
@@ -222,7 +232,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (BOOL)localProfilesExist {
-  return !_personalDataManager->GetProfiles().empty();
+  return !_settingsAreDismissed && !_personalDataManager->GetProfiles().empty();
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -233,6 +243,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)reportBackUserAction {
   base::RecordAction(base::UserMetricsAction("MobileAddressesSettingsBack"));
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  _personalDataManager->RemoveObserver(_observer.get());
+
+  // Remove observer bridges.
+  _observer.reset();
+
+  // Clear C++ ivars.
+  _personalDataManager = nullptr;
+  _browserState = nullptr;
+
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -276,6 +301,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
   [super setEditing:editing animated:animated];
+  if (_settingsAreDismissed)
+    return;
 
   [self updateUIForEditState];
 }
@@ -283,6 +310,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+  if (_settingsAreDismissed)
+    return;
 
   // Edit mode is the state where the user can select and delete entries. In
   // edit mode, selection is handled by the superclass. When not in edit mode
@@ -310,7 +339,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didDeselectRowAtIndexPath:indexPath];
-  if (!self.tableView.editing)
+  if (_settingsAreDismissed || !self.tableView.editing)
     return;
 
   if (self.tableView.indexPathsForSelectedRows.count == 0)
@@ -322,6 +351,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Called when the user clicks on the information button of the managed
 // setting's UI. Shows a textual bubble with the information of the enterprise.
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
+  if (_settingsAreDismissed)
+    return;
+
   EnterpriseInfoPopoverViewController* bubbleViewController =
       [[EnterpriseInfoPopoverViewController alloc] initWithEnterpriseName:nil];
   bubbleViewController.delegate = self;
@@ -342,6 +374,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (_settingsAreDismissed)
+    return NO;
+
   // Only profile data cells are editable.
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   return [item isKindOfClass:[AutofillProfileItem class]];
@@ -350,7 +385,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
      forRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (editingStyle != UITableViewCellEditingStyleDelete)
+  if (editingStyle != UITableViewCellEditingStyleDelete ||
+      _settingsAreDismissed)
     return;
   [self deleteItems:@[ indexPath ]];
 }
@@ -359,6 +395,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  if (_settingsAreDismissed)
+    return cell;
 
   switch (static_cast<ItemType>(
       [self.tableViewModel itemTypeForIndexPath:indexPath])) {
@@ -460,6 +498,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Removes the item from the personal data manager model.
 - (void)willDeleteItemsAtIndexPaths:(NSArray*)indexPaths {
+  if (_settingsAreDismissed)
+    return;
+
   for (NSIndexPath* indexPath in indexPaths) {
     AutofillProfileItem* item = base::mac::ObjCCastStrict<AutofillProfileItem>(
         [self.tableViewModel itemAtIndexPath:indexPath]);
@@ -471,7 +512,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // items in the section.
 - (void)removeSectionIfEmptyForSectionWithIdentifier:
     (SectionIdentifier)sectionIdentifier {
-  if (![self.tableViewModel hasSectionForSectionIdentifier:sectionIdentifier]) {
+  if (_settingsAreDismissed ||
+      ![self.tableViewModel hasSectionForSectionIdentifier:sectionIdentifier]) {
     _deletionInProgress = NO;
     return;
   }
