@@ -243,6 +243,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.FeatureUsage" enum="CustomTabsFeatureUsed"
+    expires_after="2023-06-30">
+  <owner>donnd@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records each feature of a Chrome Custom Tab when that feature is used. A
+    single key feature - &quot;Sessions&quot; - is logged once per CCT Session,
+    and no other feature enum may be logged more frequently. This provides a
+    single large list of features and their percentage usage (one or more times
+    per session) right in the UMA timeline. Recorded during a CCT Session.
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.HadInteractionOnClose" enum="Boolean"
     expires_after="2023-04-16">
   <owner>wenyufu@chromium.org</owner>

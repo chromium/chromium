@@ -191,6 +191,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTBackgroundTab,
     &kCCTBrandTransparency,
     &kCCTClientDataHeader,
+    &kCCTFeatureUsage,
     &kCCTIncognito,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTNewDownloadTab,
@@ -564,6 +565,10 @@ BASE_FEATURE(kCCTClientDataHeader,
 BASE_FEATURE(kCCTNewDownloadTab,
              "CCTNewDownloadTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTFeatureUsage,
+             "CCTFeatureUsage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTIncognito, "CCTIncognito", base::FEATURE_ENABLED_BY_DEFAULT);
 

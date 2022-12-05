@@ -24272,6 +24272,51 @@ metrics consent we also won't be able to send UMA metrics. -->
       label="Not loaded because the module dex could not be copied to storage"/>
 </enum>
 
+<enum name="CustomTabsFeatureUsed">
+  <int value="0" label="Sessions - counter for all sessions"/>
+  <int value="1" label="Action button EXTRA_ACTION_BUTTON_BUNDLE"/>
+  <int value="2" label="Action button tint EXTRA_TINT_ACTION_BUTTON"/>
+  <int value="3" label="Background color EXTRA_INITIAL_BACKGROUND_COLOR"/>
+  <int value="4" label="Background EXTRA_ENABLE_BACKGROUND_INTERACTION"/>
+  <int value="5" label="Close button EXTRA_CLOSE_BUTTON_ICON"/>
+  <int value="6" label="Close position EXTRA_CLOSE_BUTTON_POSITION"/>
+  <int value="7" label="Color dark CTF_DARK"/>
+  <int value="8" label="Color light CTF_LIGHT"/>
+  <int value="9" label="Color scheme EXTRA_COLOR_SCHEME"/>
+  <int value="10" label="Color system CTF_SYSTEM"/>
+  <int value="11" label="Disable download EXTRA_DISABLE_DOWNLOAD_BUTTON"/>
+  <int value="12" label="Disable star EXTRA_DISABLE_STAR_BUTTON"/>
+  <int value="13" label="Exit animation EXTRA_EXIT_ANIMATION_BUNDLE"/>
+  <int value="14" label="GSA experiment ids EXPERIMENT_IDS"/>
+  <int value="15" label="Incognito EXTRA_OPEN_NEW_INCOGNITO_TAB"/>
+  <int value="16" label="Initial height EXTRA_INITIAL_ACTIVITY_HEIGHT_PX"/>
+  <int value="17" label="Media EXTRA_ENABLE_EMBEDDED_MEDIA_EXPERIENCE"/>
+  <int value="18" label="Media launcher EXTRA_BROWSER_LAUNCH_SOURCE"/>
+  <int value="19" label="Media url EXTRA_MEDIA_VIEWER_URL"/>
+  <int value="20" label="Menu items EXTRA_MENU_ITEMS"/>
+  <int value="21" label="Package extra EXTRA_CALLING_ACTIVITY_PACKAGE"/>
+  <int value="22" label="Package from Sessions or Extra CTF_PACKAGE_NAME"/>
+  <int value="23" label="Partial corners EXTRA_TOOLBAR_CORNER_RADIUS_DP"/>
+  <int value="24" label="Partial height layout CTF_PARTIAL"/>
+  <int value="25" label="Pending intent EXTRA_REMOTEVIEWS_PENDINGINTENT"/>
+  <int value="26" label="Reader Mode usage READER_MODE"/>
+  <int value="27" label="Remote view IDs EXTRA_REMOTEVIEWS_VIEW_IDS"/>
+  <int value="28" label="Remote views EXTRA_REMOTEVIEWS"/>
+  <int value="29" label="Resizable EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR"/>
+  <int value="30" label="Screen orientation EXTRA_SCREEN_ORIENTATION"/>
+  <int value="31" label="Sent by Chrome CTF_SENT_BY_CHROME"/>
+  <int value="32" label="Service keep alive EXTRA_KEEP_ALIVE"/>
+  <int value="33" label="Share menu EXTRA_DEFAULT_SHARE_MENU_ITEM"/>
+  <int value="34" label="Share state EXTRA_SHARE_STATE"/>
+  <int value="35" label="Title visibility EXTRA_TITLE_VISIBILITY_STATE"/>
+  <int value="36" label="Toolbar items EXTRA_TOOLBAR_ITEMS"/>
+  <int value="37" label="Translate specified EXTRA_TRANSLATE_LANGUAGE"/>
+  <int value="38" label="TWA display mode EXTRA_DISPLAY_MODE"/>
+  <int value="39" label="TWA EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY"/>
+  <int value="40" label="TWA origins EXTRA_ADDITIONAL_TRUSTED_ORIGINS"/>
+  <int value="41" label="Url bar hiding EXTRA_ENABLE_URLBAR_HIDING"/>
+</enum>
+
 <enum name="CustomTabsParallelRequestStatusOnStart">
   <int value="0" label="No Parallel Request was requested"/>
   <int value="1" label="Parallel request successfully started"/>

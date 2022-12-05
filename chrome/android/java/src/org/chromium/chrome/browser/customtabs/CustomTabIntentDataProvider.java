@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
@@ -366,7 +367,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     /**
      * Constructs a {@link CustomTabIntentDataProvider}.
      *
-     * The colorScheme parameter specifies which color scheme the Custom Tab should use.
+     * @param intent The intent to launch the CCT.
+     * @param colorScheme The colorScheme parameter specifies which color scheme the Custom Tab
+     * should use.
      * It can currently be either {@link CustomTabsIntent#COLOR_SCHEME_LIGHT} or
      * {@link CustomTabsIntent#COLOR_SCHEME_DARK}.
      * If Custom Tab was launched with {@link CustomTabsIntent#COLOR_SCHEME_SYSTEM}, colorScheme
@@ -468,6 +471,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int backgroundInteractBehavior = IntentUtils.safeGetIntExtra(
                 intent, EXTRA_ENABLE_BACKGROUND_INTERACTION, BACKGROUND_INTERACT_DEFAULT);
         mInteractWithBackground = backgroundInteractBehavior != BACKGROUND_INTERACT_OFF;
+
+        logCustomTabFeatures(intent, colorScheme);
     }
 
     /** Returns the toolbar corner radius in px. */
@@ -686,6 +691,115 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         orientation);
                 return ScreenOrientationLockType.DEFAULT;
         }
+    }
+
+    /**
+     * Logs the usage of intents of all CCT features to a large enum histogram in order to track
+     * usage by apps.
+     * @param intent The intent used to launch the CCT.
+     * @param colorScheme The requested color scheme to use with the CCT.
+     */
+    private void logCustomTabFeatures(Intent intent, int colorScheme) {
+        if (!CustomTabsFeatureUsage.isEnabled()) return;
+        CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
+
+        // Ordering: Log all the features ordered by CustomTabsFeature enum, when they apply.
+        if (mAnimationBundle != null) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ACTION_BUTTON_BUNDLE);
+        }
+        if (IntentUtils.safeHasExtra(intent, CustomTabsIntent.EXTRA_TINT_ACTION_BUTTON)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_TINT_ACTION_BUTTON);
+        }
+        if (IntentUtils.safeHasExtra(intent, EXTRA_INITIAL_BACKGROUND_COLOR)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_INITIAL_BACKGROUND_COLOR);
+        }
+        if (mInteractWithBackground) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_BACKGROUND_INTERACTION);
+        }
+        if (mCloseButtonIcon != null) featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_ICON);
+        if (getCloseButtonPosition() != CLOSE_BUTTON_POSITION_DEFAULT) {
+            featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_POSITION);
+        }
+        if (colorScheme == CustomTabsIntent.COLOR_SCHEME_DARK) {
+            featureUsage.log(CustomTabsFeature.CTF_DARK);
+        }
+        if (colorScheme == CustomTabsIntent.COLOR_SCHEME_LIGHT) {
+            featureUsage.log(CustomTabsFeature.CTF_LIGHT);
+        }
+        if (IntentUtils.safeHasExtra(intent, CustomTabsIntent.EXTRA_COLOR_SCHEME)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_COLOR_SCHEME);
+        }
+        if (colorScheme == CustomTabsIntent.COLOR_SCHEME_SYSTEM) {
+            featureUsage.log(CustomTabsFeature.CTF_SYSTEM);
+        }
+        if (mDisableDownload) featureUsage.log(CustomTabsFeature.EXTRA_DISABLE_DOWNLOAD_BUTTON);
+        if (mDisableStar) featureUsage.log(CustomTabsFeature.EXTRA_DISABLE_STAR_BUTTON);
+        if (mGsaExperimentIds != null) featureUsage.log(CustomTabsFeature.EXPERIMENT_IDS);
+        if (IntentUtils.safeHasExtra(intent,
+                    CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL_LEGACY)
+                || IntentUtils.safeHasExtra(
+                        intent, CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX);
+        }
+        if (mEnableEmbeddedMediaExperience) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_EMBEDDED_MEDIA_EXPERIENCE);
+        }
+        if (mIsFromMediaLauncherActivity) {
+            featureUsage.log(CustomTabsFeature.EXTRA_BROWSER_LAUNCH_SOURCE);
+        }
+        if (mMediaViewerUrl != null) featureUsage.log(CustomTabsFeature.EXTRA_MEDIA_VIEWER_URL);
+        if (mMenuEntries != null) featureUsage.log(CustomTabsFeature.EXTRA_MENU_ITEMS);
+        if (IntentUtils.safeHasExtra(intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_CALLING_ACTIVITY_PACKAGE);
+        }
+        if (getClientPackageName() != null) featureUsage.log(CustomTabsFeature.CTF_PACKAGE_NAME);
+        if (IntentUtils.safeHasExtra(
+                    intent, CustomTabIntentDataProvider.EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY)
+                || IntentUtils.safeHasExtra(
+                        intent, CustomTabIntentDataProvider.EXTRA_TOOLBAR_CORNER_RADIUS_DP)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_TOOLBAR_CORNER_RADIUS_DP);
+        }
+        if (isPartialHeightCustomTab()) {
+            featureUsage.log(CustomTabsFeature.CTF_PARTIAL);
+        }
+        if (mRemoteViewsPendingIntent != null) {
+            featureUsage.log(CustomTabsFeature.EXTRA_REMOTEVIEWS_PENDINGINTENT);
+        }
+        if (mClickableViewIds != null) {
+            featureUsage.log(CustomTabsFeature.EXTRA_REMOTEVIEWS_VIEW_IDS);
+        }
+        if (mRemoteViews != null) featureUsage.log(CustomTabsFeature.EXTRA_REMOTEVIEWS);
+        if (!mIsPartialCustomTabFixedHeight) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR);
+        }
+        if (mDefaultOrientation != ScreenOrientation.DEFAULT) {
+            featureUsage.log(CustomTabsFeature.EXTRA_SCREEN_ORIENTATION);
+        }
+        if (mIsOpenedByChrome) featureUsage.log(CustomTabsFeature.CTF_SENT_BY_CHROME);
+        if (mKeepAliveServiceIntent != null) featureUsage.log(CustomTabsFeature.EXTRA_KEEP_ALIVE);
+        if (mShowShareItemInMenu) featureUsage.log(CustomTabsFeature.EXTRA_DEFAULT_SHARE_MENU_ITEM);
+        if (IntentUtils.safeHasExtra(intent, CustomTabsIntent.EXTRA_SHARE_STATE)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_SHARE_STATE);
+        }
+        if (mTitleVisibilityState != CustomTabsIntent.NO_TITLE) {
+            featureUsage.log(CustomTabsFeature.EXTRA_TITLE_VISIBILITY_STATE);
+        }
+        if (IntentUtils.safeHasExtra(intent, CustomTabsIntent.EXTRA_TOOLBAR_ITEMS)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_TOOLBAR_ITEMS);
+        }
+        if (mTranslateLanguage != null) {
+            featureUsage.log(CustomTabsFeature.EXTRA_TRANSLATE_LANGUAGE);
+        }
+        if (IntentUtils.safeHasExtra(intent, TrustedWebActivityIntentBuilder.EXTRA_DISPLAY_MODE)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_DISPLAY_MODE);
+        }
+        if (mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY) {
+            featureUsage.log(CustomTabsFeature.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY);
+        }
+        if (mTrustedWebActivityAdditionalOrigins != null) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);
+        }
+        if (mEnableUrlBarHiding) featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_URLBAR_HIDING);
     }
 
     @Override

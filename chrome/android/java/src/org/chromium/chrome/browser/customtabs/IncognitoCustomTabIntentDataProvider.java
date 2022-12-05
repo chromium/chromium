@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -88,6 +89,8 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
         mUiType = getUiType(intent);
         updateExtraMenuItemsIfNecessary(intent);
+
+        logFeatureUsage(intent);
     }
 
     private static @CustomTabsUiType int getUiType(Intent intent) {
@@ -153,6 +156,38 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         CustomTabsSessionToken sessionToken =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         return CustomTabsConnection.getInstance().getClientPackageNameForSession(sessionToken);
+    }
+
+    /**
+     * Logs the usage of intents of all CCT features to a large enum histogram in order to track
+     * usage by apps.
+     * @param intent The intent used to launch the CCT.
+     */
+    private void logFeatureUsage(Intent intent) {
+        if (!CustomTabsFeatureUsage.isEnabled()) return;
+        CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
+
+        // Ordering: Log all the features ordered by enum, when they apply.
+        if (mCloseButtonIcon != null) featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_ICON);
+        if (getCloseButtonPosition() != CLOSE_BUTTON_POSITION_DEFAULT) {
+            featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_POSITION);
+        }
+        if (mAnimationBundle != null) {
+            featureUsage.log(CustomTabsFeature.EXTRA_EXIT_ANIMATION_BUNDLE);
+        }
+        featureUsage.log(CustomTabsFeature.EXTRA_OPEN_NEW_INCOGNITO_TAB);
+        if (mMenuEntries != null) featureUsage.log(CustomTabsFeature.EXTRA_MENU_ITEMS);
+        if (getClientPackageName() != null) featureUsage.log(CustomTabsFeature.CTF_PACKAGE_NAME);
+        if (IntentUtils.safeHasExtra(intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_CALLING_ACTIVITY_PACKAGE);
+        }
+        if (isPartialHeightCustomTab()) featureUsage.log(CustomTabsFeature.CTF_PARTIAL);
+        if (isForReaderMode(intent)) featureUsage.log(CustomTabsFeature.CTF_READER_MODE);
+        if (mIsOpenedByChrome) featureUsage.log(CustomTabsFeature.CTF_SENT_BY_CHROME);
+        if (mShowShareItem) featureUsage.log(CustomTabsFeature.EXTRA_DEFAULT_SHARE_MENU_ITEM);
+        if (mTitleVisibilityState != CustomTabsIntent.NO_TITLE) {
+            featureUsage.log(CustomTabsFeature.EXTRA_TITLE_VISIBILITY_STATE);
+        }
     }
 
     public static void addIncognitoExtrasForChromeFeatures(
