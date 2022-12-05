@@ -200,14 +200,14 @@ void SVGSMILElement::Condition::ConnectEventBase(
   DCHECK_EQ(type_, kEventBase);
   DCHECK(!base_element_);
   DCHECK(!event_listener_);
-  SVGElement* target;
+  Element* target;
   if (base_id_.empty()) {
     target = timed_element.targetElement();
   } else {
-    target = DynamicTo<SVGElement>(SVGURIReference::ObserveTarget(
+    target = SVGURIReference::ObserveTarget(
         base_id_observer_, timed_element.GetTreeScope(), base_id_,
         WTF::BindRepeating(&SVGSMILElement::BuildPendingResource,
-                           WrapWeakPersistent(&timed_element))));
+                           WrapWeakPersistent(&timed_element)));
   }
   if (!target)
     return;
@@ -215,7 +215,6 @@ void SVGSMILElement::Condition::ConnectEventBase(
       MakeGarbageCollected<ConditionEventListener>(&timed_element, this);
   base_element_ = target;
   base_element_->addEventListener(name_, event_listener_, false);
-  timed_element.AddReferenceTo(base_element_);
 }
 
 void SVGSMILElement::Condition::DisconnectEventBase(

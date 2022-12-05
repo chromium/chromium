@@ -243,7 +243,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
     AtomicString name_;
     SMILTime offset_;
     unsigned repeat_;
-    Member<SVGElement> base_element_;
+    Member<Element> base_element_;
     Member<IdTargetObserver> base_id_observer_;
     Member<ConditionEventListener> event_listener_;
   };
