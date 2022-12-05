@@ -128,9 +128,40 @@ constexpr net::NetworkTrafficAnnotationTag
       }
       policy {
         cookies_allowed: NO
-        setting: "N/A"
-        policy_exception_justification:
-          "Not implemented, considered not necessary."
+        setting: "The policy if set, controls the wallpaper image and disables "
+        "this feature for user."
+        chrome_policy {
+          WallpaperImage {
+            WallpaperImage: "{}"
+          }
+        }
+      })");
+
+constexpr net::NetworkTrafficAnnotationTag
+    kDownloadOnlineWallpaperTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("wallpaper_online_downloader",
+                                            R"(
+      semantics {
+        sender: "ChromeOS Online Wallpaper Downloader"
+        description:
+          "When the user selects a photo from their desktop wallpaper "
+          "collection, the image must be downloaded at a high enough "
+          "resolution to display as a wallpaper. This request fetches "
+          "that image."
+        trigger: "When the user clicks on the wallpaper thumbnail in "
+        "the wallpaper collection"
+        data: "None. These URLs are publicly accessible."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+     policy {
+        cookies_allowed: NO
+        setting: "The policy if set, controls the wallpaper image and disables "
+        "this feature for user."
+        chrome_policy {
+          WallpaperImage {
+            WallpaperImage: "{}"
+          }
+        }
       })");
 
 // The paths of wallpaper directories.
@@ -2907,7 +2938,7 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     // wallpaper picker to the new one.
     std::string url = params.url.spec() + GetBackdropWallpaperSuffix();
     ImageDownloader::Get()->Download(
-        GURL(url), MISSING_TRAFFIC_ANNOTATION,
+        GURL(url), kDownloadOnlineWallpaperTrafficAnnotation,
         base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                        set_wallpaper_weak_factory_.GetWeakPtr(), params,
                        /*save_file=*/true, std::move(callback)));
@@ -2923,7 +2954,7 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     for (size_t i = 0; i < variants.size(); i++) {
       ImageDownloader::Get()->Download(
           GURL(variants.at(i).raw_url.spec() + GetBackdropWallpaperSuffix()),
-          MISSING_TRAFFIC_ANNOTATION,
+          kDownloadOnlineWallpaperTrafficAnnotation,
           base::BindOnce(
               &WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded,
               set_wallpaper_weak_factory_.GetWeakPtr(), params, on_done,

@@ -1,7 +1,6 @@
 # Chrome OS safelist for network annotator.
 # Please do not add any new safelist.
 #
-missing,ash/wallpaper/wallpaper_controller_impl.cc
 all,chromeos/printing/printer_config_cache.cc
 all,ash/webui/projector_app/projector_xhr_sender.cc
 all,chromeos/ash/components/geolocation/simple_geolocation_request.cc

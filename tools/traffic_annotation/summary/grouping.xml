@@ -96,6 +96,7 @@ after discussions on the right group.
       <annotation id="wallpaper_google_photos_enabled"/>
       <annotation id="wallpaper_google_photos_photos"/>
       <annotation id="search_and_assistant_enabled_checker"/>
+      <annotation id="wallpaper_online_downloader"/>
     </sender>
     <sender name="ChromeOS Recovery">
       <annotation id="cros_recovery_image_download"/>
