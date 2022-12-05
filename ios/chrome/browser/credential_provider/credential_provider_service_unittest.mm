@@ -54,7 +54,11 @@ using password_manager::LoginDatabase;
 class CredentialProviderServiceTest : public PlatformTest {
  public:
   CredentialProviderServiceTest()
-      : chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {
+    NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
+    [user_defaults removeObjectForKey:
+                       kUserDefaultsCredentialProviderFirstTimeSyncCompleted];
+  }
 
   CredentialProviderServiceTest(const CredentialProviderServiceTest&) = delete;
   CredentialProviderServiceTest& operator=(
@@ -66,10 +70,6 @@ class CredentialProviderServiceTest : public PlatformTest {
     password_store_ = CreatePasswordStore();
     password_store_->Init(/*prefs=*/nullptr,
                           /*affiliated_match_helper=*/nullptr);
-
-    NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
-    EXPECT_FALSE([user_defaults
-        boolForKey:kUserDefaultsCredentialProviderFirstTimeSyncCompleted]);
 
     credential_store_ = [[MemoryCredentialStore alloc] init];
 
