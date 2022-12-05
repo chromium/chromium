@@ -286,14 +286,6 @@ void AppServiceProxyLacros::StopApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
-void AppServiceProxyLacros::GetMenuModel(
-    const std::string& app_id,
-    apps::mojom::MenuType menu_type,
-    int64_t display_id,
-    apps::mojom::Publisher::GetMenuModelCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void AppServiceProxyLacros::ExecuteContextMenuCommand(
     const std::string& app_id,
     int command_id,

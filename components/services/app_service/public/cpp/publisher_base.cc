@@ -114,20 +114,6 @@ void PublisherBase::StopApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
-void PublisherBase::GetMenuModel(const std::string& app_id,
-                                 apps::mojom::MenuType menu_type,
-                                 int64_t display_id,
-                                 GetMenuModelCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void PublisherBase::ExecuteContextMenuCommand(const std::string& app_id,
-                                              int command_id,
-                                              const std::string& shortcut_id,
-                                              int64_t display_id) {
-  NOTIMPLEMENTED();
-}
-
 void PublisherBase::OpenNativeSettings(const std::string& app_id) {
   NOTIMPLEMENTED();
 }

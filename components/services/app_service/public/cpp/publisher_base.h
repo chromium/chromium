@@ -61,14 +61,6 @@ class PublisherBase : public apps::mojom::Publisher {
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;
-  void GetMenuModel(const std::string& app_id,
-                    apps::mojom::MenuType menu_type,
-                    int64_t display_id,
-                    GetMenuModelCallback callback) override;
-  void ExecuteContextMenuCommand(const std::string& app_id,
-                                 int command_id,
-                                 const std::string& shortcut_id,
-                                 int64_t display_id) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void SetResizeLocked(const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;

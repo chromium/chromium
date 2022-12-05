@@ -67,10 +67,6 @@ class BuiltInChromeOsApps : public apps::PublisherBase, public AppPublisher {
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
-  void GetMenuModel(const std::string& app_id,
-                    apps::mojom::MenuType menu_type,
-                    int64_t display_id,
-                    GetMenuModelCallback callback) override;
 
   const raw_ptr<Profile> profile_;
 };

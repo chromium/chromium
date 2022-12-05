@@ -168,12 +168,4 @@ void RemoteApps::Connect(
   subscribers_.Add(std::move(subscriber));
 }
 
-void RemoteApps::GetMenuModel(const std::string& app_id,
-                              mojom::MenuType menu_type,
-                              int64_t display_id,
-                              GetMenuModelCallback callback) {
-  std::move(callback).Run(
-      ConvertMenuItemsToMojomMenuItems(delegate_->GetMenuModel(app_id)));
-}
-
 }  // namespace apps

@@ -207,12 +207,4 @@ void BuiltInChromeOsApps::Connect(
   // lifetime of the Chrome OS session. There won't be any further updates.
 }
 
-void BuiltInChromeOsApps::GetMenuModel(const std::string& app_id,
-                                       apps::mojom::MenuType menu_type,
-                                       int64_t display_id,
-                                       GetMenuModelCallback callback) {
-  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
-               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
-}
-
 }  // namespace apps

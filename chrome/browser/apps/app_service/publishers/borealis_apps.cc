@@ -456,14 +456,6 @@ void BorealisApps::Connect(
                                          weak_factory_.GetWeakPtr()));
 }
 
-void BorealisApps::GetMenuModel(const std::string& app_id,
-                                apps::mojom::MenuType menu_type,
-                                int64_t display_id,
-                                GetMenuModelCallback callback) {
-  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
-               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
-}
-
 void BorealisApps::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
     guest_os::VmType vm_type,

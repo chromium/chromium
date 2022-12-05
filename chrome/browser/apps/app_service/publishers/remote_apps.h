@@ -104,10 +104,6 @@ class RemoteApps : public apps::PublisherBase, public AppPublisher {
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
-  void GetMenuModel(const std::string& app_id,
-                    apps::mojom::MenuType menu_type,
-                    int64_t display_id,
-                    GetMenuModelCallback callback) override;
 
   Profile* const profile_;
   Delegate* const delegate_;

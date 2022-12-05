@@ -55,16 +55,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
                   const std::string& app_id) override;
   void StopApp(apps::mojom::AppType app_type,
                const std::string& app_id) override;
-  void GetMenuModel(apps::mojom::AppType app_type,
-                    const std::string& app_id,
-                    apps::mojom::MenuType menu_type,
-                    int64_t display_id,
-                    GetMenuModelCallback callback) override;
-  void ExecuteContextMenuCommand(apps::mojom::AppType app_type,
-                                 const std::string& app_id,
-                                 int command_id,
-                                 const std::string& shortcut_id,
-                                 int64_t display_id) override;
   void OpenNativeSettings(apps::mojom::AppType app_type,
                           const std::string& app_id) override;
   void SetResizeLocked(apps::mojom::AppType app_type,

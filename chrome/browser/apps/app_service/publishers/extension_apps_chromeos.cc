@@ -376,14 +376,6 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
   app_time->ResumeWebActivity(app_id);
 }
 
-void ExtensionAppsChromeOs::GetMenuModel(const std::string& app_id,
-                                         apps::mojom::MenuType menu_type,
-                                         int64_t display_id,
-                                         GetMenuModelCallback callback) {
-  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
-               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
-}
-
 void ExtensionAppsChromeOs::OnAppWindowAdded(
     extensions::AppWindow* app_window) {
   if (!ShouldRecordAppWindowActivity(app_window)) {

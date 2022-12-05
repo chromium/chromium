@@ -195,14 +195,6 @@ void StandaloneBrowserApps::Connect(
   subscribers_.Add(std::move(subscriber));
 }
 
-void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
-                                         apps::mojom::MenuType menu_type,
-                                         int64_t display_id,
-                                         GetMenuModelCallback callback) {
-  std::move(callback).Run(
-      ConvertMenuItemsToMojomMenuItems(CreateBrowserMenuItems(profile_)));
-}
-
 void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
   auto* browser_manager = crosapi::BrowserManager::Get();
   // `browser_manager` may be null in tests.

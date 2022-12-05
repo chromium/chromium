@@ -411,15 +411,6 @@ void WebApps::StopApp(const std::string& app_id) {
   publisher_helper().StopApp(app_id);
 }
 
-void WebApps::GetMenuModel(const std::string& app_id,
-                           apps::mojom::MenuType menu_type,
-                           int64_t display_id,
-                           GetMenuModelCallback callback) {
-  GetMenuModel(app_id, apps::ConvertMojomMenuTypeToMenuType(menu_type),
-               display_id,
-               apps::MenuItemsToMojomMenuItemsCallback(std::move(callback)));
-}
-
 void WebApps::GetAppShortcutMenuModel(
     const std::string& app_id,
     apps::MenuItems menu_items,

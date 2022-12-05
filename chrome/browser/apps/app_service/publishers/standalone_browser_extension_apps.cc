@@ -329,15 +329,6 @@ void StandaloneBrowserExtensionApps::Connect(
                                true /* should_notify_initialized */);
 }
 
-void StandaloneBrowserExtensionApps::GetMenuModel(
-    const std::string& app_id,
-    apps::mojom::MenuType menu_type,
-    int64_t display_id,
-    GetMenuModelCallback callback) {
-  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
-               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
-}
-
 void StandaloneBrowserExtensionApps::StopApp(const std::string& app_id) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.

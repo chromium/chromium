@@ -177,13 +177,6 @@ class AppServiceProxyLacros : public KeyedService,
   // Stops the current running app for the given |app_id|.
   void StopApp(const std::string& app_id);
 
-  // Returns the menu items for the given |app_id|. |display_id| is the id of
-  // the display from which the app is launched.
-  void GetMenuModel(const std::string& app_id,
-                    apps::mojom::MenuType menu_type,
-                    int64_t display_id,
-                    apps::mojom::Publisher::GetMenuModelCallback callback);
-
   // Executes a shortcut menu |command_id| and |shortcut_id| for a menu item
   // previously built with GetMenuModel(). |app_id| is the menu app.
   // |display_id| is the id of the display from which the app is launched.

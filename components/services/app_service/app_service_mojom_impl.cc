@@ -106,36 +106,6 @@ void AppServiceMojomImpl::StopApp(apps::mojom::AppType app_type,
   iter->second->StopApp(app_id);
 }
 
-void AppServiceMojomImpl::GetMenuModel(apps::mojom::AppType app_type,
-                                       const std::string& app_id,
-                                       apps::mojom::MenuType menu_type,
-                                       int64_t display_id,
-                                       GetMenuModelCallback callback) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    std::move(callback).Run(apps::mojom::MenuItems::New());
-    return;
-  }
-
-  iter->second->GetMenuModel(app_id, menu_type, display_id,
-                             std::move(callback));
-}
-
-void AppServiceMojomImpl::ExecuteContextMenuCommand(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    int command_id,
-    const std::string& shortcut_id,
-    int64_t display_id) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-
-  iter->second->ExecuteContextMenuCommand(app_id, command_id, shortcut_id,
-                                          display_id);
-}
-
 void AppServiceMojomImpl::OpenNativeSettings(apps::mojom::AppType app_type,
                                              const std::string& app_id) {
   auto iter = publishers_.find(app_type);
