@@ -3652,6 +3652,18 @@
         },
         'os_type': 'win',
       },
+      'win11-wpt-content-shell-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'x86-64',
+          'win11',
+          'isolate_profile_data',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+        'os_type': 'win',
+      },
     },
   },
   {

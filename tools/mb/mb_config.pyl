@@ -459,6 +459,7 @@
       'win10-code-coverage': 'clang_code_coverage_reclient',
       'win10-rel-no-external-ip': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'win10-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
+      'win11-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'win32-archive-rel-goma-rbe-canary': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-rel-goma-rbe-latest': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-arm64-rel': 'win32_arm64_release_bot_reclient',
