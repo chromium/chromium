@@ -134,6 +134,8 @@ class CORE_EXPORT SVGImage final : public Image {
 
   String FilenameExtension() const override;
 
+  const AtomicString& MimeType() const override;
+
   SizeAvailability DataChanged(bool all_data_received) override;
 
   // FIXME: SVGImages are underreporting decoded sizes and will be unable

@@ -49,6 +49,7 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   String FilenameExtension() const override { return "jxl"; }
+  const AtomicString& MimeType() const override;
   bool ImageIsHighBitDepth() override { return is_hdr_; }
 
   // Returns true if the data in fast_reader begins with

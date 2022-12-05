@@ -46,6 +46,7 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   String FilenameExtension() const override { return "jpg"; }
+  const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader* data) override;
   gfx::Size DecodedSize() const override { return decoded_size_; }
   bool SetSize(unsigned width, unsigned height) override;

@@ -52,6 +52,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   String FilenameExtension() const override { return "ico"; }
+  const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader*) override;
   gfx::Size Size() const override;
   gfx::Size FrameSizeAtIndex(wtf_size_t) const override;

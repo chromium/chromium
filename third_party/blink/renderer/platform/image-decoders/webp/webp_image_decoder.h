@@ -50,6 +50,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   String FilenameExtension() const override { return "webp"; }
+  const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader* data) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;
   int RepetitionCount() const override;

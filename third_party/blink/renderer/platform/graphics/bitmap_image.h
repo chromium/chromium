@@ -68,6 +68,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   gfx::Size SizeWithConfig(SizeConfig) const override;
   bool GetHotSpot(gfx::Point&) const override;
   String FilenameExtension() const override;
+  const AtomicString& MimeType() const override;
 
   SizeAvailability SetData(scoped_refptr<SharedBuffer> data,
                            bool all_data_received) override;

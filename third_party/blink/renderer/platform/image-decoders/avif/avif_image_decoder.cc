@@ -273,6 +273,11 @@ AVIFImageDecoder::AVIFImageDecoder(AlphaOption alpha_option,
 
 AVIFImageDecoder::~AVIFImageDecoder() = default;
 
+const AtomicString& AVIFImageDecoder::MimeType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, avif_mime_type, ("image/avif"));
+  return avif_mime_type;
+}
+
 bool AVIFImageDecoder::ImageIsHighBitDepth() {
   return bit_depth_ > 8;
 }

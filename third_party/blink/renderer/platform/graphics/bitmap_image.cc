@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -245,6 +246,10 @@ bool BitmapImage::HasColorProfile() const {
 
 String BitmapImage::FilenameExtension() const {
   return decoder_ ? decoder_->FilenameExtension() : String();
+}
+
+const AtomicString& BitmapImage::MimeType() const {
+  return decoder_ ? decoder_->MimeType() : g_null_atom;
 }
 
 void BitmapImage::Draw(cc::PaintCanvas* canvas,

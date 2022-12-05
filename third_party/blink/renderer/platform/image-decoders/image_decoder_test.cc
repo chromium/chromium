@@ -35,6 +35,7 @@
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -52,6 +53,7 @@ class TestImageDecoder : public ImageDecoder {
   TestImageDecoder() : TestImageDecoder(ImageDecoder::kDefaultBitDepth) {}
 
   String FilenameExtension() const override { return ""; }
+  const AtomicString& MimeType() const override { return g_empty_atom; }
 
   Vector<ImageFrame, 1>& FrameBufferCache() { return frame_buffer_cache_; }
 

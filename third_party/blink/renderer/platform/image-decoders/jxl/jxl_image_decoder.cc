@@ -68,6 +68,13 @@ JXLImageDecoder::JXLImageDecoder(
   info_.have_animation = false;
 }
 
+// Use the provisional Mime type "image/jxl" for JPEG XL images. See
+// https://www.iana.org/assignments/provisional-standard-media-types/provisional-standard-media-types.xhtml.
+const AtomicString& JXLImageDecoder::MimeType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, jxl_mime_type, ("image/jxl"));
+  return jxl_mime_type;
+}
+
 bool JXLImageDecoder::ReadBytes(size_t remaining,
                                 wtf_size_t* offset,
                                 WTF::Vector<uint8_t>* segment,

@@ -834,6 +834,11 @@ JPEGImageDecoder::JPEGImageDecoder(AlphaOption alpha_option,
 
 JPEGImageDecoder::~JPEGImageDecoder() = default;
 
+const AtomicString& JPEGImageDecoder::MimeType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, jpeg_mime_type, ("image/jpeg"));
+  return jpeg_mime_type;
+}
+
 bool JPEGImageDecoder::SetSize(unsigned width, unsigned height) {
   if (!ImageDecoder::SetSize(width, height))
     return false;

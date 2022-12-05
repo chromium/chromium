@@ -201,8 +201,11 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
     return kSizeUnavailable;
   }
 
-  // null string if unknown
+  // Returns null string if unknown.
   virtual String FilenameExtension() const;
+
+  // Returns WTF::g_null_atom if unknown.
+  virtual const AtomicString& MimeType() const;
 
   virtual void DestroyDecodedData() = 0;
 

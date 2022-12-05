@@ -50,6 +50,7 @@ class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   String FilenameExtension() const override { return "bmp"; }
+  const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader*) override;
   // CAUTION: SetFailed() deletes |reader_|.  Be careful to avoid
   // accessing deleted memory, especially when calling this from inside

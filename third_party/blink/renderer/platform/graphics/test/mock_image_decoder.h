@@ -32,6 +32,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace blink {
@@ -83,6 +84,11 @@ class MockImageDecoder : public ImageDecoder {
   }
 
   String FilenameExtension() const override { return "mock"; }
+
+  const AtomicString& MimeType() const override {
+    DEFINE_STATIC_LOCAL(const AtomicString, mock_mime_type, ("image/x-mock"));
+    return mock_mime_type;
+  }
 
   int RepetitionCount() const override { return client_->RepetitionCount(); }
 

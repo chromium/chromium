@@ -63,6 +63,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   ~DeferredImageDecoder();
 
   String FilenameExtension() const;
+  const AtomicString& MimeType() const;
 
   sk_sp<PaintImageGenerator> CreateGenerator();
 
@@ -112,6 +113,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   std::unique_ptr<ImageDecoder> metadata_decoder_;
 
   String filename_extension_;
+  AtomicString mime_type_;
   gfx::Size size_;
   int repetition_count_;
   bool has_embedded_color_profile_ = false;

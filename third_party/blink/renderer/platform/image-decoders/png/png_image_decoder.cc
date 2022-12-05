@@ -75,6 +75,11 @@ PNGImageDecoder::PNGImageDecoder(
 
 PNGImageDecoder::~PNGImageDecoder() = default;
 
+const AtomicString& PNGImageDecoder::MimeType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, png_mime_type, ("image/png"));
+  return png_mime_type;
+}
+
 bool PNGImageDecoder::SetFailed() {
   reader_.reset();
   return ImageDecoder::SetFailed();

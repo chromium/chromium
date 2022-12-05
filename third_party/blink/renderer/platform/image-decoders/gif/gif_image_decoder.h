@@ -48,6 +48,7 @@ class PLATFORM_EXPORT GIFImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   String FilenameExtension() const override { return "gif"; }
+  const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader* data) override;
   int RepetitionCount() const override;
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;

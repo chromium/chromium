@@ -51,6 +51,11 @@ BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
 
 BMPImageDecoder::~BMPImageDecoder() = default;
 
+const AtomicString& BMPImageDecoder::MimeType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, bmp_mime_type, ("image/bmp"));
+  return bmp_mime_type;
+}
+
 void BMPImageDecoder::OnSetData(SegmentReader* data) {
   if (reader_)
     reader_->SetData(data);

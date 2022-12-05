@@ -46,6 +46,7 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   String FilenameExtension() const override { return "png"; }
+  const AtomicString& MimeType() const override;
   bool SetSize(unsigned, unsigned) override;
   int RepetitionCount() const override;
   bool ImageIsHighBitDepth() override;

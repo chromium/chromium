@@ -931,4 +931,9 @@ String SVGImage::FilenameExtension() const {
   return "svg";
 }
 
+const AtomicString& SVGImage::MimeType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, svg_mime_type, ("image/svg+xml"));
+  return svg_mime_type;
+}
+
 }  // namespace blink

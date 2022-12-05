@@ -64,6 +64,11 @@ GIFImageDecoder::GIFImageDecoder(AlphaOption alpha_option,
 
 GIFImageDecoder::~GIFImageDecoder() = default;
 
+const AtomicString& GIFImageDecoder::MimeType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, gif_mime_type, ("image/gif"));
+  return gif_mime_type;
+}
+
 void GIFImageDecoder::OnSetData(SegmentReader* data) {
   if (!data) {
     if (segment_stream_)

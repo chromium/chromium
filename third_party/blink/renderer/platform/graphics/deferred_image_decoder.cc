@@ -140,6 +140,10 @@ String DeferredImageDecoder::FilenameExtension() const {
                            : filename_extension_;
 }
 
+const AtomicString& DeferredImageDecoder::MimeType() const {
+  return metadata_decoder_ ? metadata_decoder_->MimeType() : mime_type_;
+}
+
 sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
   if (frame_generator_ && frame_generator_->DecodeFailed())
     return nullptr;
@@ -343,6 +347,7 @@ void DeferredImageDecoder::ActivateLazyDecoding() {
   image_is_high_bit_depth_ = metadata_decoder_->ImageIsHighBitDepth();
   has_hot_spot_ = metadata_decoder_->HotSpot(hot_spot_);
   filename_extension_ = metadata_decoder_->FilenameExtension();
+  mime_type_ = metadata_decoder_->MimeType();
   has_embedded_color_profile_ = metadata_decoder_->HasEmbeddedColorProfile();
   color_space_for_sk_images_ = metadata_decoder_->ColorSpaceForSkImages();
 

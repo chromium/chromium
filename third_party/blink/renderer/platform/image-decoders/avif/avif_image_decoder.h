@@ -30,6 +30,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
   // ImageDecoder:
   String FilenameExtension() const override { return "avif"; }
+  const AtomicString& MimeType() const override;
   bool ImageIsHighBitDepth() override;
   void OnSetData(SegmentReader* data) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;

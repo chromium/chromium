@@ -51,6 +51,12 @@ ICOImageDecoder::ICOImageDecoder(AlphaOption alpha_option,
 
 ICOImageDecoder::~ICOImageDecoder() = default;
 
+const AtomicString& ICOImageDecoder::MimeType() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, ico_mime_type,
+                      ("image/vnd.microsoft.icon"));
+  return ico_mime_type;
+}
+
 void ICOImageDecoder::OnSetData(SegmentReader* data) {
   fast_reader_.SetData(data);
 
