@@ -227,7 +227,7 @@ void OmniboxAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
         url_service_->RegisterOmniboxKeyword(
             extension->id(), extension->short_name(), keyword,
             GetTemplateURLStringForExtension(extension->id()),
-            ExtensionPrefs::Get(profile_)->GetInstallTime(extension->id()));
+            ExtensionPrefs::Get(profile_)->GetLastUpdateTime(extension->id()));
       } else {
         pending_extensions_.insert(extension);
       }
@@ -259,7 +259,7 @@ void OmniboxAPI::OnTemplateURLsLoaded() {
     url_service_->RegisterOmniboxKeyword(
         i->id(), i->short_name(), OmniboxInfo::GetKeyword(i),
         GetTemplateURLStringForExtension(i->id()),
-        ExtensionPrefs::Get(profile_)->GetInstallTime(i->id()));
+        ExtensionPrefs::Get(profile_)->GetLastUpdateTime(i->id()));
   }
   pending_extensions_.clear();
 }

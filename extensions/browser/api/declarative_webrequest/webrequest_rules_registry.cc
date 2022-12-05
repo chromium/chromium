@@ -287,7 +287,7 @@ WebRequestRulesRegistry::~WebRequestRulesRegistry() {}
 
 base::Time WebRequestRulesRegistry::GetExtensionInstallationTime(
     const std::string& extension_id) const {
-  return ExtensionPrefs::Get(browser_context_)->GetInstallTime(extension_id);
+  return ExtensionPrefs::Get(browser_context_)->GetLastUpdateTime(extension_id);
 }
 
 void WebRequestRulesRegistry::ClearCacheOnNavigation() {

@@ -677,7 +677,7 @@ class ExtensionPrefsPopulatesInstallTimePrefs : public ExtensionPrefsTest {
     extension_ = prefs_.AddExtension("test1");
     // Cache the first install time.
     first_install_time_ = prefs()->GetFirstInstallTime(extension_->id());
-    auto last_update_time = prefs()->GetInstallTime(extension_->id());
+    auto last_update_time = prefs()->GetLastUpdateTime(extension_->id());
     // First time install will result in same value for both first_install_time
     // and last_update_time prefs.
     EXPECT_NE(base::Time(), first_install_time_);
@@ -690,7 +690,7 @@ class ExtensionPrefsPopulatesInstallTimePrefs : public ExtensionPrefsTest {
 
   void Verify() override {
     auto first_install_time = prefs()->GetFirstInstallTime(extension_->id());
-    auto last_update_time = prefs()->GetInstallTime(extension_->id());
+    auto last_update_time = prefs()->GetLastUpdateTime(extension_->id());
     EXPECT_NE(base::Time(), first_install_time);
     EXPECT_NE(base::Time(), last_update_time);
     // Verify that the first_install_time remains unchanged after the extension

@@ -483,8 +483,8 @@ void ExtensionSystemImpl::RegisterExtensionWithRequestContexts(
     base::OnceClosure callback) {
   base::Time install_time;
   if (extension->location() != mojom::ManifestLocation::kComponent) {
-    install_time = ExtensionPrefs::Get(profile_)->
-        GetInstallTime(extension->id());
+    install_time =
+        ExtensionPrefs::Get(profile_)->GetLastUpdateTime(extension->id());
   }
   bool incognito_enabled = util::IsIncognitoEnabled(extension->id(), profile_);
 

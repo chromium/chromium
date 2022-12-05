@@ -334,7 +334,7 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   }
   install.set_blacklist_state(GetBlacklistState(extension.id(), prefs));
   install.set_installed_in_this_sample_period(
-      prefs->GetInstallTime(extension.id()) >= last_sample_time);
+      prefs->GetLastUpdateTime(extension.id()) >= last_sample_time);
 
   return install;
 }

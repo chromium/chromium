@@ -1795,7 +1795,7 @@ base::Time ExtensionPrefs::GetFirstInstallTime(
   return GetTimePrefHelper(extension_id, kPrefFirstInstallTime);
 }
 
-base::Time ExtensionPrefs::GetInstallTime(
+base::Time ExtensionPrefs::GetLastUpdateTime(
     const std::string& extension_id) const {
   return GetTimePrefHelper(extension_id, kPrefLastUpdateTime);
 }
@@ -2443,7 +2443,7 @@ void ExtensionPrefs::InitExtensionControlledPrefs(
   for (const auto& info : extensions_info) {
     const ExtensionId& extension_id = info->extension_id;
 
-    base::Time install_time = GetInstallTime(extension_id);
+    base::Time install_time = GetLastUpdateTime(extension_id);
     bool is_enabled = !IsExtensionDisabled(extension_id);
     bool is_incognito_enabled = IsIncognitoEnabled(extension_id);
     extension_pref_value_map_->RegisterExtension(

@@ -199,7 +199,7 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignal) {
   EXPECT_EQ(info->name(), kExtensionName[0]);
   EXPECT_EQ(info->version(), kExtensionVersion);
   EXPECT_EQ(info->install_timestamp_msec(),
-            extension_prefs_->GetInstallTime(kExtensionId[0]).ToJavaTime());
+            extension_prefs_->GetLastUpdateTime(kExtensionId[0]).ToJavaTime());
 }
 
 TEST_F(ExtensionTelemetryServiceTest, DiscardsInvalidSignal) {
@@ -277,7 +277,7 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithNoSignals) {
               kExtensionVersion);
     EXPECT_EQ(
         telemetry_report_pb->reports(i).extension().install_timestamp_msec(),
-        extension_prefs_->GetInstallTime(kExtensionId[i]).ToJavaTime());
+        extension_prefs_->GetLastUpdateTime(kExtensionId[i]).ToJavaTime());
     // Verify that there is no signal data associated with the extension.
     EXPECT_EQ(telemetry_report_pb->reports(i).signals().size(), 0);
   }
@@ -303,7 +303,7 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithSignal) {
               kExtensionVersion);
     EXPECT_EQ(
         telemetry_report_pb->reports(i).extension().install_timestamp_msec(),
-        extension_prefs_->GetInstallTime(kExtensionId[i]).ToJavaTime());
+        extension_prefs_->GetLastUpdateTime(kExtensionId[i]).ToJavaTime());
   }
 
   // Verify that first extension's report has signal data.

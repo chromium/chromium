@@ -642,8 +642,7 @@ class ExtensionPrefs : public KeyedService {
   // Helper method to acquire the installation/last update time of an extension.
   // Returns base::Time() if the installation time could not be parsed or
   // found.
-  // TODO(anunoy): Rename to GetLastUpdatedTime.
-  base::Time GetInstallTime(const std::string& extension_id) const;
+  base::Time GetLastUpdateTime(const std::string& extension_id) const;
 
   // Returns true if the extension should not be synced.
   bool DoNotSync(const std::string& extension_id) const;

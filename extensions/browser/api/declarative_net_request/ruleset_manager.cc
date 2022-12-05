@@ -84,7 +84,7 @@ void RulesetManager::AddRuleset(const ExtensionId& extension_id,
 
   bool inserted =
       rulesets_
-          .emplace(extension_id, prefs_->GetInstallTime(extension_id),
+          .emplace(extension_id, prefs_->GetLastUpdateTime(extension_id),
                    std::move(matcher))
           .second;
   DCHECK(inserted) << "AddRuleset called twice in succession for "

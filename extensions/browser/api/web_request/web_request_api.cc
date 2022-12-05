@@ -2931,7 +2931,7 @@ WebRequestInternalEventHandledFunction::Run() {
 
     if (!dict_value.empty()) {
       base::Time install_time = ExtensionPrefs::Get(browser_context())
-                                    ->GetInstallTime(extension_id_safe());
+                                    ->GetLastUpdateTime(extension_id_safe());
       response =
           std::make_unique<ExtensionWebRequestEventRouter::EventResponse>(
               extension_id_safe(), install_time);

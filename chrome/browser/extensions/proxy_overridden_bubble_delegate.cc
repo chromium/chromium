@@ -52,7 +52,7 @@ bool ProxyOverriddenBubbleDelegate::ShouldIncludeExtension(
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   base::TimeDelta since_install =
-      base::Time::Now() - prefs->GetInstallTime(extension->id());
+      base::Time::Now() - prefs->GetLastUpdateTime(extension->id());
   if (since_install.InDays() < kDaysSinceInstallMin)
     return false;
 

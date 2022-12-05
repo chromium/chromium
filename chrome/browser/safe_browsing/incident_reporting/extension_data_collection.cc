@@ -67,7 +67,7 @@ void PopulateExtensionInfo(
       extension.converted_from_user_script());
   extension_info->set_may_be_untrusted(extension.may_be_untrusted());
   extension_info->set_install_time_msec(
-      extension_prefs.GetInstallTime(extension.id()).ToJavaTime());
+      extension_prefs.GetLastUpdateTime(extension.id()).ToJavaTime());
 
   std::unique_ptr<extensions::InstallSignature> signature_from_prefs =
       extensions::InstallSignature::FromDict(
@@ -115,7 +115,7 @@ void CollectExtensionData(ClientIncidentReport_ExtensionData* data) {
         extensions::ExtensionPrefsFactory::GetForBrowserContext(profile);
     for (const auto& extension : *extensions) {
       base::Time install_time =
-          extension_prefs->GetInstallTime(extension->id());
+          extension_prefs->GetLastUpdateTime(extension->id());
       if (install_time > last_install_time) {
         last_install_time = install_time;
         last_installed_extension = extension;

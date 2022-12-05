@@ -300,7 +300,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);
     if (prefs) {
       app->last_launch_time = prefs->GetLastLaunchTime(extension->id());
-      app->install_time = prefs->GetInstallTime(extension->id());
+      app->install_time = prefs->GetLastUpdateTime(extension->id());
     } else {
       app->last_launch_time = base::Time();
       app->install_time = base::Time();

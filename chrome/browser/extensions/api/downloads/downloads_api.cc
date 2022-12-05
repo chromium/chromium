@@ -1008,7 +1008,7 @@ bool OnDeterminingFilenameWillDispatchCallback(
     mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   *any_determiners = true;
   base::Time installed =
-      ExtensionPrefs::Get(browser_context)->GetInstallTime(extension->id());
+      ExtensionPrefs::Get(browser_context)->GetLastUpdateTime(extension->id());
   data->AddPendingDeterminer(extension->id(), installed);
   return true;
 }

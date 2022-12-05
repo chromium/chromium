@@ -237,7 +237,9 @@ AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);
     if (prefs && prefs->GetInstalledExtensionInfo(extension->id())) {
       app->last_launch_time = prefs->GetLastLaunchTime(extension->id());
-      app->install_time = prefs->GetInstallTime(extension->id());
+      // TODO(anunoy): Determine if this value should be set to the extension's
+      // first install time vs last update time.
+      app->install_time = prefs->GetLastUpdateTime(extension->id());
     }
   }
 
@@ -272,7 +274,9 @@ apps::mojom::AppPtr ExtensionAppsBase::ConvertImpl(
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);
     if (prefs) {
       app->last_launch_time = prefs->GetLastLaunchTime(extension->id());
-      app->install_time = prefs->GetInstallTime(extension->id());
+      // TODO(anunoy): Determine if this value should be set to the extension's
+      // first install time vs last update time.
+      app->install_time = prefs->GetLastUpdateTime(extension->id());
     }
   }
   app->install_source = install_reason == apps::mojom::InstallReason::kSystem
