@@ -341,7 +341,6 @@ source_set("unit_tests") {
     "icon_coalescer_unittest.cc",
     "intent_filter_util_unittest.cc",
     "intent_util_unittest.cc",
-    "menu_unittest.cc",
     "preferred_apps_converter_unittest.cc",
     "preferred_apps_list_unittest.cc",
   ]

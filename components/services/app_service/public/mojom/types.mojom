@@ -250,21 +250,6 @@ union PermissionValue {
   TriState tristate_value;
 };
 
-// MenuItems are used to populate context menus, e.g. in the app list or shelf.
-// Note: Some menu item types only support a subset of these item features.
-// Please update comments below (MenuItemType -> [fields expected for usage])
-// when anything changed to MenuItemType or MenuItem.
-//
-// kCommand    -> [command_id, string_id].
-// kRadio      -> [command_id, string_id, radio_group_id].
-// kSeparator  -> [command_id].
-// kSubmenu    -> [command_id, string_id, submenu].
-// kPublisherCommand -> [command_id, shortcut_id, label, image].
-//
-struct MenuItems {
-  array<MenuItem> items;
-};
-
 struct MenuItem {
   // The type of the menu item.
   MenuItemType type;

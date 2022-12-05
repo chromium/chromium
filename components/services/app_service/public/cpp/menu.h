@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
@@ -90,39 +89,6 @@ struct COMPONENT_EXPORT(APP_TYPES) MenuItems {
 
   std::vector<MenuItemPtr> items;
 };
-
-// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
-// AppService.
-COMPONENT_EXPORT(APP_TYPES)
-MenuType ConvertMojomMenuTypeToMenuType(apps::mojom::MenuType mojom_menu_type);
-
-COMPONENT_EXPORT(APP_TYPES)
-MenuItemType ConvertMojomMenuItemTypeToMenuItemType(
-    apps::mojom::MenuItemType mojom_menu_item_type);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::MenuItemType ConvertMenuItemTypeToMojomMenuItemType(
-    MenuItemType menu_item_type);
-
-COMPONENT_EXPORT(APP_TYPES)
-MenuItemPtr ConvertMojomMenuItemToMenuItem(
-    const apps::mojom::MenuItemPtr& mojom_menu_item);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::MenuItemPtr ConvertMenuItemToMojomMenuItem(
-    const MenuItemPtr& menu_item);
-
-COMPONENT_EXPORT(APP_TYPES)
-MenuItems ConvertMojomMenuItemsToMenuItems(
-    const apps::mojom::MenuItemsPtr& mojom_menu_items);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::MenuItemsPtr ConvertMenuItemsToMojomMenuItems(
-    const MenuItems& menu_item);
-
-COMPONENT_EXPORT(APP_TYPES)
-base::OnceCallback<void(MenuItems)> MenuItemsToMojomMenuItemsCallback(
-    base::OnceCallback<void(apps::mojom::MenuItemsPtr)> callback);
 
 }  // namespace apps
 
