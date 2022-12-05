@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.os.Build;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +36,7 @@ public class ToolbarActionModeCallback implements ActionMode.Callback {
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        ensureValidToolbarVisibility(mode.getType() != ActionMode.TYPE_FLOATING);
+        ensureValidToolbarVisibility(!isFloatingActionMode(mode));
         return true;
     }
 
@@ -53,5 +54,11 @@ public class ToolbarActionModeCallback implements ActionMode.Callback {
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         return false;
+    }
+
+    private static boolean isFloatingActionMode(ActionMode mode) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
+
+        return mode.getType() == ActionMode.TYPE_FLOATING;
     }
 }

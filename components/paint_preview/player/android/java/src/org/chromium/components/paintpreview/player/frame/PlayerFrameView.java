@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Size;
 import android.view.MotionEvent;
@@ -50,7 +51,11 @@ public class PlayerFrameView extends FrameLayout {
             PlayerFrameViewDelegate playerFrameViewDelegate,
             PlayerFrameGestureDetectorDelegate gestureDetectorDelegate,
             @Nullable Runnable firstPaintListener) {
-        return new PlayerFrameViewApi23(context, canDetectZoom, playerFrameViewDelegate,
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return new PlayerFrameViewApi23(context, canDetectZoom, playerFrameViewDelegate,
+                    gestureDetectorDelegate, firstPaintListener);
+        }
+        return new PlayerFrameView(context, canDetectZoom, playerFrameViewDelegate,
                 gestureDetectorDelegate, firstPaintListener);
     }
 

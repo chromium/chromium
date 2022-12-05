@@ -355,7 +355,12 @@ public class EventForwarder {
     }
 
     public static int getMouseEventActionButton(MotionEvent event) {
-        return ApiHelperForM.getActionButton(event);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ApiHelperForM.getActionButton(event);
+        }
+
+        // On <M, the only mice events sent are hover events, which cannot have a button.
+        return 0;
     }
 
     /**

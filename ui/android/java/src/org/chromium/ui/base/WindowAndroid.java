@@ -240,7 +240,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         mAllowChangeRefreshRate = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isTv(context);
 
         // Multiple refresh rate support is only available on M+.
-        recomputeSupportedRefreshRates();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) recomputeSupportedRefreshRates();
 
         // Temporary solution for flaky tests, see https://crbug.com/767624 for context
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

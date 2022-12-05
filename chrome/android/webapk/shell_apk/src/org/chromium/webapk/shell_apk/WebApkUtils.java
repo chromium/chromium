@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -176,8 +177,13 @@ public class WebApkUtils {
     /**
      * @see android.content.res.Resources#getColor(int id).
      */
+    @SuppressWarnings("deprecation")
     public static int getColor(Resources res, int id) throws Resources.NotFoundException {
-        return res.getColor(id, null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return res.getColor(id, null);
+        } else {
+            return res.getColor(id);
+        }
     }
 
     /**
@@ -222,12 +228,15 @@ public class WebApkUtils {
     }
 
     /**
-     * Sets the status bar icons to dark or light.
+     * Sets the status bar icons to dark or light. Note that this is only valid for
+     * Android M+.
      *
      * @param rootView The root view used to request updates to the system UI theming.
      * @param useDarkIcons Whether the status bar icons should be dark.
      */
     public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+
         int systemUiVisibility = rootView.getSystemUiVisibility();
         if (useDarkIcons) {
             systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
@@ -310,6 +319,10 @@ public class WebApkUtils {
     /** Returns the ComponentName for the top activity in {@link taskId}'s task stack. */
     @SuppressLint("NewApi") // See crbug.com/1081331 for context.
     public static ComponentName fetchTopActivityComponent(Context context, int taskId) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return null;
+        }
+
         ActivityManager manager =
                 (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.AppTask task : manager.getAppTasks()) {

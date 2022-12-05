@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
 import android.os.Build;
@@ -19,12 +20,20 @@ import android.os.Bundle;
 public class NotificationTestUtil {
     @SuppressWarnings("deprecation") // for Notification.icon
     public static Bitmap getSmallIconFromNotification(Context context, Notification notification) {
-        return getBitmapFromIcon(context, notification.getSmallIcon());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return getBitmapFromIcon(context, notification.getSmallIcon());
+        } else {
+            return BitmapFactory.decodeResource(context.getResources(), notification.icon);
+        }
     }
 
     @SuppressWarnings("deprecation") // for Notification.largeIcon
     public static Bitmap getLargeIconFromNotification(Context context, Notification notification) {
-        return getBitmapFromIcon(context, notification.getLargeIcon());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return getBitmapFromIcon(context, notification.getLargeIcon());
+        } else {
+            return notification.largeIcon;
+        }
     }
 
     public static Bitmap getBitmapFromIcon(Context context, Icon icon) {

@@ -100,7 +100,7 @@ public final class KnownViolations {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             exemptions.ignoreExternalMethod(DETECT_DISK_WRITE,
                     "com.android.server.clipboard.HostClipboardMonitor#setHostClipboard");
-        } else {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             exemptions.ignoreExternalMethod(
                     DETECT_DISK_WRITE, "android.content.ClipboardManager#setPrimaryClip");
         }

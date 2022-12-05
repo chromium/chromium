@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,8 +84,11 @@ public class WebappSplashScreenTest {
     public void testThemeColorWhenNotSpecified() {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
 
-        // Status bar color should be white to match CCTs and WebAPK shell.
+        // Status bar color should be white on M+ to match CCTs and WebAPK shell.
         int expectedColor = Color.WHITE;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            expectedColor = Color.BLACK;
+        }
         Assert.assertEquals(
                 expectedColor, mActivityTestRule.getActivity().getWindow().getStatusBarColor());
     }

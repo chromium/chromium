@@ -14,6 +14,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
@@ -85,7 +86,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         FeatureList.setTestCanUseDefaultsForTesting();
         setReengagementNotificationEnabled(true);
         TrackerFactory.setTrackerForTests(mTracker);
-        closeReengagementNotifications();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) closeReengagementNotifications();
     }
 
     @After
@@ -94,7 +95,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         DefaultBrowserInfo2.clearDefaultInfoForTests();
         FeatureList.resetTestCanUseDefaultsForTesting();
         FeatureList.setTestFeatures(null);
-        closeReengagementNotifications();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) closeReengagementNotifications();
     }
 
     @Test
@@ -302,10 +303,14 @@ public class ReengagementNotificationControllerIntegrationTest {
     }
 
     private void verifyNotification(@StringRes int title, @StringRes int description) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+
         CriteriaHelper.pollUiThread(() -> { return findNotification(title, description); });
     }
 
     private void verifyHasNoNotifications() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+
         Assert.assertFalse(hasNotifications());
     }
 

@@ -95,6 +95,8 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
     @SuppressLint("NewApi")
     @Override
     public boolean finishAndRemoveTaskSdk23() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
+
         ActivityManager manager =
                 (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
         String webApkPackageName = mContext.getPackageName();

@@ -345,6 +345,8 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param task The AppTask to get the name of.
      */
     public static String getActivityNameFromTask(AppTask task) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return "";
+
         ActivityManager.RecentTaskInfo taskInfo = AndroidTaskUtils.getTaskInfoFromTask(task);
         if (taskInfo == null || taskInfo.baseActivity == null) return "";
 
@@ -386,6 +388,9 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return True if multiple instances of Chrome are running.
      */
     public boolean areMultipleChromeInstancesRunning(Context context) {
+        // Exit early if multi-window isn't supported.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) return false;
+
         // Check if both tasks are running.
         boolean tabbedTaskRunning = false;
         boolean tabbed2TaskRunning = false;

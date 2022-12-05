@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.PowerManager;
 
 import androidx.annotation.NonNull;
@@ -122,9 +123,17 @@ public class DeviceConditions {
     }
 
     /**
-     * @return Whether the device is in idle / doze mode.
+     * @return Whether the device is in idle / doze mode. This feature is only available in M and
+     * later versions of Android devices so it will return false for earlier versions.
      */
     public static boolean isCurrentlyInIdleMode(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return false;
+        }
+        return isCurrentlyInIdleModeM(context);
+    }
+
+    private static boolean isCurrentlyInIdleModeM(Context context) {
         return ApiHelperForM.isDeviceIdleMode(
                 (PowerManager) context.getSystemService(Context.POWER_SERVICE));
     }
