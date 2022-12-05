@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,17 +23,28 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter {
     private int mSelectedItem = RecyclerView.NO_POSITION;
     private LayoutManager mLayoutManager;
+    private int mNumSessionViewsCreated;
+    private int mNumSessionViewsBound;
 
     OmniboxSuggestionsDropdownAdapter(ModelList data) {
         super(data);
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView view) {
+    public void onAttachedToRecyclerView(@NonNull RecyclerView view) {
         super.onAttachedToRecyclerView(view);
-
         mLayoutManager = view.getLayoutManager();
         mSelectedItem = RecyclerView.NO_POSITION;
+    }
+
+    /* package */ void recordSessionMetrics() {
+        if (mNumSessionViewsBound > 0) {
+            SuggestionsMetrics.recordSuggestionViewReuseStats(mNumSessionViewsCreated,
+                    100 * (mNumSessionViewsBound - mNumSessionViewsCreated)
+                            / mNumSessionViewsBound);
+        }
+        mNumSessionViewsCreated = 0;
+        mNumSessionViewsBound = 0;
     }
 
     @Override
@@ -106,5 +118,17 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
                 TimingMetric metric = SuggestionsMetrics.recordSuggestionViewCreateTime()) {
             return super.createView(parent, viewType);
         }
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        mNumSessionViewsCreated++;
+        return super.onCreateViewHolder(parent, viewType);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        mNumSessionViewsBound++;
+        super.onBindViewHolder(holder, position);
     }
 }

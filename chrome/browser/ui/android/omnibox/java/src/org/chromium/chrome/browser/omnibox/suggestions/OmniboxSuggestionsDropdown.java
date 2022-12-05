@@ -232,7 +232,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         @Override
         public ViewHolder getRecycledView(int viewType) {
             ViewHolder result = super.getRecycledView(viewType);
-            SuggestionsMetrics.recordSuggestionViewReused(result != null);
             if (result == null) {
                 SuggestionsMetrics.recordSuggestionsViewCreatedType(viewType);
             } else {
@@ -418,6 +417,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         getRecycledViewPool().clear();
+        mAdapter.recordSessionMetrics();
         mAnchorView.getViewTreeObserver().removeOnGlobalLayoutListener(mAnchorViewLayoutListener);
         if (mAlignmentView != null) {
             mAlignmentView.removeOnLayoutChangeListener(mAlignmentViewLayoutListener);

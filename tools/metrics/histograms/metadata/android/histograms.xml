@@ -2856,7 +2856,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.Reused" enum="BooleanReused"
-    expires_after="2023-04-02">
+    expires_after="M110">
+  <obsolete>
+    Replaced with Android.Omnibox.SessionViewsCreated and
+    Android.Omnibox.SessionViewsReused since M110
+  </obsolete>
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -2879,6 +2883,9 @@ chromium-metrics-reviews@google.com.
 
     * If this metric decreased, while the Total Count increased, then the change
     has a negative effect (fewer reuses, more time spent creating views)
+
+    Obsolete: Please use Android.Omnibox.SessionViewsCreated and
+    Android.Omnibox.SessionViewsReused.
 
     This histogram is related to Android.Omnibox.SuggestionList.LayoutTime2,
     Android.Omnibox.SuggestionList.MeasureTime2,
@@ -2906,6 +2913,59 @@ chromium-metrics-reviews@google.com.
     of memory consumption.
 
     This histogram is related to Android.Omnibox.SuggestionView.CreatedType.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionView.SessionViewsCreated"
+    units="views created" expires_after="2023-07-01">
+  <owner>ender@google.com</owner>
+  <owner>rongtan@google.com</owner>
+  <summary>
+    Records number of views created from the moment the Omnibox was focused,
+    until the interaction was completed, whether the user navigated somewhere or
+    canceled the interaction.
+
+    Values recorded here tell how efficiently the view creation and re-use
+    works, highlighting possible issues related to unusually frequent view
+    creation; the number of views created should be low and not exceed the sum
+    of all the views recycled by HistogramRecordingRecycledViewPool component.
+    Any deviation from this are a signal that the RecycledViewPool limits are
+    not optimal.
+
+    When observing a higher than expected number of created views, consult the
+    Android.Omnibox.SuggestionView.CreatedType to identify view type that is not
+    correctly captured and update the limits of the
+    HistogramRecordingRecycledViewPool.
+
+    This histogram is related to Android.Omnibox.SuggestionView.CreatedType,
+    Android.Omnibox.SuggestionView.SessionViewsReused.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionView.SessionViewsReused" units="%"
+    expires_after="2023-07-01">
+  <owner>ender@google.com</owner>
+  <owner>rongtan@google.com</owner>
+  <summary>
+    Captures the efficiency of the view re-use from the moment the Omnibox was
+    focused, until the interaction was completed, whether the user navigated
+    somewhere or canceled the interaction.
+
+    Values captured here directly reflect the efficiency of recycled view pool
+    tuning, with the following caveats:
+
+    * short sessions (omnibox focused and defocused, with no inputs) will report
+    efficiency of 0% (because all the views had to be created and no views were
+    available for re-use).
+
+    * this metric will never truly capture 100% effectiveness, because during
+    every input session some views will have to be created.
+
+    The captured value should be at or above 90% re-use. Lower re-use rates may
+    be an indication of a possible issue.
+
+    This histogram is related to
+    Android.Omnibox.SuggestionView.SessionViewsCreated.
   </summary>
 </histogram>
 

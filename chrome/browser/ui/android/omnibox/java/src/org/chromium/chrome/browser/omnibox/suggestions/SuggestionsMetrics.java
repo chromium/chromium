@@ -64,10 +64,16 @@ public class SuggestionsMetrics {
     /**
      * Record whether suggestion view was successfully reused.
      *
-     * @param reused Whether suggestion view was reused.
+     * @param viewsCreated Number of views created during the input session. This should not be
+     *         higher than the sum of all limits in HistogramRecordingRecycledViewPool.
+     * @param viewsReused Ratio of views re-used to total views bound. Effectively captures the
+     *         efficiency of view recycling.
      */
-    static final void recordSuggestionViewReused(boolean reused) {
-        RecordHistogram.recordBooleanHistogram("Android.Omnibox.SuggestionView.Reused", reused);
+    static final void recordSuggestionViewReuseStats(int viewsCreated, int viewsReused) {
+        RecordHistogram.recordCount100Histogram(
+                "Android.Omnibox.SuggestionView.SessionViewsCreated", viewsCreated);
+        RecordHistogram.recordCount100Histogram(
+                "Android.Omnibox.SuggestionView.SessionViewsReused", viewsReused);
     }
 
     /**
