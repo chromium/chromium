@@ -10,10 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/strings/string_piece_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace gfx {
-class ImageSkia;
-}
+#include "ui/base/models/image_model.h"
 
 namespace ui {
 class ClipboardData;
@@ -167,7 +164,7 @@ ASH_EXPORT bool IsSupported(const ui::ClipboardData& data);
 ASH_EXPORT bool IsEnabledInCurrentMode();
 
 // Returns an image icon for the file clipboard item.
-ASH_EXPORT gfx::ImageSkia GetIconForFileClipboardItem(
+ASH_EXPORT ui::ImageModel GetIconForFileClipboardItem(
     const ClipboardHistoryItem& item,
     const std::string& file_name);
 

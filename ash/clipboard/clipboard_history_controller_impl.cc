@@ -19,9 +19,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/shell.h"
+#include "ash/style/color_util.h"
 #include "ash/wm/window_util.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -543,11 +543,17 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
         std::string file_name =
             base::UTF16ToUTF8(resource_manager_->GetLabel(item));
         item_value.SetKey(kTextDataKey, base::Value(file_name));
-        ScopedLightModeAsDefault scoped_light_mode_as_default;
+        ui::ImageModel image_model =
+            clipboard_history_util::GetIconForFileClipboardItem(item,
+                                                                file_name);
+        // TODO(b/252366283): Refactor so we don't use the RootWindow from
+        // Shell.
+        const ui::ColorProvider* color_provider =
+            ColorUtil::GetColorProviderSourceForWindow(
+                Shell::Get()->GetPrimaryRootWindow())
+                ->GetColorProvider();
         std::string data_url = webui::GetBitmapDataUrl(
-            *clipboard_history_util::GetIconForFileClipboardItem(item,
-                                                                 file_name)
-                 .bitmap());
+            *image_model.Rasterize(color_provider).bitmap());
         item_value.SetKey(kImageDataKey, base::Value(data_url));
         item_value.SetKey(kFormatDataKey, base::Value(kFileFormat));
         break;

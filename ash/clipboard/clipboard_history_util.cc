@@ -11,7 +11,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
@@ -19,7 +18,8 @@
 #include "chromeos/ui/base/file_icon_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash::clipboard_history_util {
 
@@ -187,26 +187,26 @@ bool IsEnabledInCurrentMode() {
   }
 }
 
-gfx::ImageSkia GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
+ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
                                            const std::string& file_name) {
   DCHECK_EQ(DisplayFormat::kFile, CalculateDisplayFormat(item.data()));
   const int copied_files_count = GetCountOfCopiedFiles(item.data());
 
   if (copied_files_count == 0)
-    return gfx::ImageSkia();
+    return ui::ImageModel();
+
   if (copied_files_count == 1) {
-    return chromeos::GetIconForPath(
+    return ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(
         base::FilePath(file_name),
-        ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
+        ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
   }
   constexpr std::array<const gfx::VectorIcon*, 9> icons = {
       &kTwoFilesIcon,   &kThreeFilesIcon, &kFourFilesIcon,
       &kFiveFilesIcon,  &kSixFilesIcon,   &kSevenFilesIcon,
       &kEightFilesIcon, &kNineFilesIcon,  &kMoreThanNineFilesIcon};
   int icon_index = std::min(copied_files_count - 2, (int)icons.size() - 1);
-  const SkColor icon_color = ash::AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  return CreateVectorIcon(*icons[icon_index], icon_color);
+  return ui::ImageModel::FromVectorIcon(*icons[icon_index],
+                                        cros_tokens::kColorPrimary);
 }
 
 }  // namespace ash::clipboard_history_util

@@ -8,7 +8,6 @@
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 
 namespace views {
-class ImageView;
 class MenuItemView;
 }
 
@@ -30,9 +29,6 @@ class ClipboardHistoryFileItemView : public ClipboardHistoryTextItemView {
   // ClipboardHistoryTextItemView:
   std::unique_ptr<ContentsView> CreateContentsView() override;
   const char* GetClassName() const override;
-  void OnThemeChanged() override;
-
-  views::ImageView* file_icon_ = nullptr;
 };
 
 }  // namespace ash
