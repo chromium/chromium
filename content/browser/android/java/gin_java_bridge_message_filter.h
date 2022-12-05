@@ -67,12 +67,17 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
   //  2. As RenderFrames pass away earlier than JavaScript wrappers,
   //     messages from the latter can arrive after the RenderFrame has been
   //     removed from the WebContents' routing table.
-  typedef std::map<int32_t, scoped_refptr<GinJavaBridgeDispatcherHost>> HostMap;
+  //
+  // A secondary map (guarded by the same lock) exists to track whether a given
+  // routing ID is a main frame, which is used exclusively for metrics.
+  using HostMap = std::map<int32_t, scoped_refptr<GinJavaBridgeDispatcherHost>>;
+  using HostPrimaryMainFrameMap = std::map<int32_t, bool>;
 
   ~GinJavaBridgeMessageFilter() override;
 
   // Called on the background thread.
-  scoped_refptr<GinJavaBridgeDispatcherHost> FindHost();
+  scoped_refptr<GinJavaBridgeDispatcherHost> FindHost(
+      bool* is_in_primary_main_frame = nullptr);
   void OnGetMethods(GinJavaBoundObject::ObjectID object_id,
                     std::set<std::string>* returned_method_names);
   void OnHasMethod(GinJavaBoundObject::ObjectID object_id,
@@ -87,6 +92,8 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
 
   // Accessed both from UI and background threads.
   HostMap hosts_ GUARDED_BY(hosts_lock_);
+  HostPrimaryMainFrameMap hosts_is_in_primary_main_frame_
+      GUARDED_BY(hosts_lock_);
   base::Lock hosts_lock_;
 
   // The `AgentSchedulingGroupHost` that this object is associated with. This

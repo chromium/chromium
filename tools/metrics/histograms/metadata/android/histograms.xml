@@ -4298,6 +4298,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.JavaBridge.InvocationIsInPrimaryMainFrame"
+    enum="BooleanMainFrame" expires_after="2023-04-19">
+  <owner>peter@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether an invocation of a JavaScript method exposed through
+    WebView's Java Bridge happened on a page's main frame or one of its sub
+    frames. Recorded for each invocation of such methods.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.LoadUrl.UrlScheme" enum="WebViewUrlScheme"
     expires_after="2023-04-19">
   <owner>ntfschr@chromium.org</owner>
