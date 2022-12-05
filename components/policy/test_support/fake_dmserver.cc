@@ -48,18 +48,34 @@ constexpr char kPolicyUserKey[] = "policy_user";
 
 constexpr char kDefaultPolicyBlobFilename[] = "policy.json";
 constexpr char kDefaultClientStateFilename[] = "state.json";
+constexpr int kDefaultMinLogLevel = logging::LOGGING_INFO;
+constexpr bool kDefaultLogToConsole = false;
 
 constexpr char kPolicyBlobPathSwitch[] = "policy-blob-path";
 constexpr char kClientStatePathSwitch[] = "client-state-path";
 constexpr char kLogPathSwitch[] = "log-path";
 constexpr char kStartupPipeSwitch[] = "startup-pipe";
+constexpr char kMinLogLevelSwitch[] = "min-log-level";
+constexpr char kLogToConsoleSwitch[] = "log-to-console";
 
 }  // namespace
 
-void InitLogging(const std::string& log_path) {
+void InitLogging(const absl::optional<std::string>& log_path,
+                 bool log_to_console,
+                 int min_log_level) {
   logging::LoggingSettings settings;
-  settings.log_file_path = log_path.c_str();
-  settings.logging_dest = logging::LOG_TO_ALL;
+  if (log_path.has_value()) {
+    settings.log_file_path = log_path.value().c_str();
+    settings.logging_dest = logging::LOG_TO_FILE;
+  } else {
+    settings.logging_dest = logging::LOG_TO_STDERR;
+  }
+  // If log_to_console exists then log to everything.
+  if (log_to_console) {
+    settings.logging_dest |=
+        logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
+  }
+  logging::SetMinLogLevel(min_log_level);
   logging::InitLogging(settings);
 }
 
@@ -67,9 +83,13 @@ void ParseFlags(const base::CommandLine& command_line,
                 std::string& policy_blob_path,
                 std::string& client_state_path,
                 absl::optional<std::string>& log_path,
-                base::ScopedFD& startup_pipe) {
+                base::ScopedFD& startup_pipe,
+                bool& log_to_console,
+                int& min_log_level) {
   policy_blob_path = kDefaultPolicyBlobFilename;
   client_state_path = kDefaultClientStateFilename;
+  log_to_console = kDefaultLogToConsole;
+  min_log_level = kDefaultMinLogLevel;
 
   if (command_line.HasSwitch(kPolicyBlobPathSwitch)) {
     policy_blob_path = command_line.GetSwitchValueASCII(kPolicyBlobPathSwitch);
@@ -91,6 +111,17 @@ void ParseFlags(const base::CommandLine& command_line,
         << "Expected an int value for --startup-pipe switch, but got: "
         << pipe_str;
     startup_pipe = base::ScopedFD(pipe_val);
+  }
+
+  if (command_line.HasSwitch(kMinLogLevelSwitch)) {
+    std::string log_str = command_line.GetSwitchValueASCII(kMinLogLevelSwitch);
+    CHECK(base::StringToInt(log_str, &min_log_level))
+        << "Expected an int value for --min-log-level switch, but got: "
+        << log_str;
+  }
+
+  if (command_line.HasSwitch(kLogToConsoleSwitch)) {
+    log_to_console = true;
   }
 }
 

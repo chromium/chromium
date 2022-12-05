@@ -83,15 +83,20 @@ Example:
 #include "base/values.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace fakedms {
 
-void InitLogging(const std::string& log_path);
+void InitLogging(const absl::optional<std::string>& log_path,
+                 bool log_to_console,
+                 int min_log_level);
 void ParseFlags(const base::CommandLine& command_line,
                 std::string& policy_blob_path,
                 std::string& client_state_path,
                 absl::optional<std::string>& log_path,
-                base::ScopedFD& startup_pipe);
+                base::ScopedFD& startup_pipe,
+                bool& log_to_console,
+                int& min_log_level);
 
 class FakeDMServer : public policy::EmbeddedPolicyTestServer {
  public:

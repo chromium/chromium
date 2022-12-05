@@ -86,6 +86,7 @@ if (is_chromeos) {
       "//base",
       "//google_apis:google_apis",
       "//net",
+      "//third_party/abseil-cpp:absl",
       "//third_party/private_membership:private_membership_proto",
       "//third_party/re2:re2",
     ]

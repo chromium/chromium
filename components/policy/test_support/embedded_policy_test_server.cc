@@ -61,9 +61,9 @@ std::unique_ptr<HttpResponse> LogStatusAndReturn(
   CustomHttpResponse* basic_response =
       static_cast<CustomHttpResponse*>(response.get());
   if (basic_response->code() == net::HTTP_OK) {
-    DLOG(INFO) << "Request succeeded: " << url;
+    LOG(INFO) << "Request succeeded: " << url;
   } else {
-    DLOG(INFO) << "Request failed with error code " << basic_response->code()
+    LOG(ERROR) << "Request failed with error code " << basic_response->code()
                << " (" << basic_response->content() << "): " << url;
   }
   return response;
@@ -176,7 +176,7 @@ void EmbeddedPolicyTestServer::UpdateExternalPolicy(
 std::unique_ptr<HttpResponse> EmbeddedPolicyTestServer::HandleRequest(
     const HttpRequest& request) {
   GURL url = request.GetURL();
-  DLOG(INFO) << "Request URL: " << url;
+  LOG(INFO) << "Request URL: " << url;
 
   if (url.path() == kExternalPolicyDataPath)
     return HandleExternalPolicyDataRequest(url);

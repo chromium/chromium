@@ -14,12 +14,13 @@ int main(int argc, char** argv) {
   std::string policy_blob_path, client_state_path;
   absl::optional<std::string> log_path;
   base::ScopedFD startup_pipe;
+  int min_log_level;
+  bool log_to_console;
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   fakedms::ParseFlags(*command_line, policy_blob_path, client_state_path,
-                      log_path, startup_pipe);
-  if (log_path.has_value())
-    fakedms::InitLogging(log_path.value());
+                      log_path, startup_pipe, log_to_console, min_log_level);
+  fakedms::InitLogging(log_path, log_to_console, min_log_level);
 
   base::RunLoop run_loop;
   fakedms::FakeDMServer policy_test_server(policy_blob_path, client_state_path,
