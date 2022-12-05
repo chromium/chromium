@@ -65,10 +65,6 @@ class TouchToFillCreditCardMediator {
         mDelegate.scanCreditCard();
     }
 
-    public void showCreditCardSettings() {
-        mDelegate.showCreditCardSettings();
-    }
-
     private void onSelectedCreditCard(String uniqueId) {
         mDelegate.suggestionSelected(uniqueId);
     }

@@ -55,7 +55,6 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   bool ShouldShowScanCreditCard() override;
   void ScanCreditCard() override;
   void OnCreditCardScanned(const CreditCard& card) override;
-  void ShowCreditCardSettings() override;
   void SuggestionSelected(std::string unique_id) override;
 
  private:

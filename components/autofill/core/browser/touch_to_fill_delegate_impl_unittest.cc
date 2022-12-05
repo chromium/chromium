@@ -49,10 +49,6 @@ class MockAutofillClient : public TestAutofillClient {
               (CreditCardScanCallback callback),
               (override));
   MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
-  MOCK_METHOD(void,
-              ShowAutofillSettings,
-              (bool show_credit_card_settings),
-              (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               (base::WeakPtr<autofill::TouchToFillDelegate> delegate,
@@ -385,16 +381,6 @@ TEST_F(TouchToFillDelegateImplUnitTest, ScanCreditCardIsCalled) {
   CreditCard credit_card = autofill::test::GetCreditCard();
   EXPECT_CALL(*browser_autofill_manager_, FillCreditCardFormImpl);
   touch_to_fill_delegate_->OnCreditCardScanned(credit_card);
-  EXPECT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);
-}
-
-TEST_F(TouchToFillDelegateImplUnitTest, ShowCreditCardSettingsIsCalled) {
-  TryToShowTouchToFill(/*expected_success=*/true);
-
-  EXPECT_CALL(autofill_client_, ShowAutofillSettings(testing::Eq(true)));
-  touch_to_fill_delegate_->ShowCreditCardSettings();
-
-  ASSERT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionClosesTheSheet) {
