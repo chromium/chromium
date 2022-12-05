@@ -898,7 +898,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
 
   // Update scale and verify that devicePixelRatio is updated accordingly.
   const float kZoomInScale = 1.5;
-  frame->SetPageScale(kZoomInScale);
+  fuchsia::web::ContentAreaSettings settings;
+  settings.set_page_scale(kZoomInScale);
+  frame->SetContentAreaSettings(std::move(settings));
 
   absl::optional<base::Value> scaled_dpr =
       ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
@@ -924,16 +926,22 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
 
   // Reset the scale to 1.0 (default) and verify that reported DPR is updated
   // to 1.0.
-  frame->SetPageScale(1.0);
+  const float kDefaultScale = 1.0;
+  fuchsia::web::ContentAreaSettings settings2;
+  settings2.set_page_scale(kDefaultScale);
+  frame->SetContentAreaSettings(std::move(settings2));
+
   absl::optional<base::Value> dpr_after_reset =
       ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(dpr_after_reset);
 
-  EXPECT_EQ(dpr_after_reset->GetDouble(), 1.0);
+  EXPECT_EQ(dpr_after_reset->GetDouble(), kDefaultScale);
 
   // Zoom out by setting scale to 0.5.
   const float kZoomOutScale = 0.5;
-  frame->SetPageScale(kZoomOutScale);
+  fuchsia::web::ContentAreaSettings settings3;
+  settings3.set_page_scale(kZoomOutScale);
+  frame->SetContentAreaSettings(std::move(settings3));
 
   absl::optional<base::Value> zoomed_out_dpr =
       ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
