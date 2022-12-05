@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/input_method/pref_change_recorder.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
+#include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -18,6 +21,8 @@ namespace {
 
 constexpr char kUsEnglish[] = "xkb:us::eng";
 constexpr char kBrazilPortugese[] = "xkb:br::por";
+constexpr char kSpainSpanish[] = "xkb:es::spa";
+constexpr char kFranceFrench[] = "xkb:fr::fra";
 
 class FakeInputMethodOptions {
  public:
@@ -48,6 +53,7 @@ class PrefChangeRecorderTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 struct AutocorrectPrefChangeCase {
@@ -238,6 +244,97 @@ INSTANTIATE_TEST_SUITE_P(
     }),
     [](const testing::TestParamInfo<AutocorrectPrefChangeCase>& info) {
       return info.param.test_name;
+    });
+
+struct EnabledByDefaultMetricCase {
+  std::string test_variant;
+  std::string engine_id;
+  std::string metric_name;
+};
+
+class RecordsEnabledByDefaultTransitions
+    : public PrefChangeRecorderTest,
+      public testing::WithParamInterface<EnabledByDefaultMetricCase> {};
+
+TEST_P(RecordsEnabledByDefaultTransitions, RecordsNothingIfTheFlagIsDisabled) {
+  const EnabledByDefaultMetricCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  feature_list_.InitWithFeatures({}, {features::kAutocorrectByDefault});
+
+  // Start observing changes ...
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  // Simulate the user being marked as active in the enabled by default group.
+  SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
+                                                   test_case.engine_id);
+
+  histograms_.ExpectTotalCount(test_case.metric_name, 0);
+}
+
+TEST_P(RecordsEnabledByDefaultTransitions, RecordsDefaultToEnabledByDefault) {
+  const EnabledByDefaultMetricCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
+
+  // Start observing changes ...
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  // Simulate the user being marked as active in the enabled by default group.
+  SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
+                                                   test_case.engine_id);
+
+  histograms_.ExpectTotalCount(test_case.metric_name, 1);
+  histograms_.ExpectUniqueSample(
+      test_case.metric_name,
+      /*sample=*/AutocorrectPrefStateTransition::kDefaultToForceEnabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(RecordsEnabledByDefaultTransitions, RecordsEnabledByDefaultToDisabled) {
+  const EnabledByDefaultMetricCase& test_case = GetParam();
+  base::HistogramTester histograms_;
+  FakeInputMethodOptions options(profile_.GetPrefs(), test_case.engine_id);
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
+
+  // User was previously marked as active in the enabled by default group.
+  SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
+                                                   test_case.engine_id);
+  // Start observing changes ...
+  PrefChangeRecorder recorder(profile_.GetPrefs());
+  options.SetPkAutocorrectLevel(0);  // set as disabled
+
+  histograms_.ExpectTotalCount(test_case.metric_name, 1);
+  histograms_.ExpectUniqueSample(
+      test_case.metric_name,
+      /*sample=*/AutocorrectPrefStateTransition::kForceEnabledToDisabled,
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrefChangeRecorderTest,
+    RecordsEnabledByDefaultTransitions,
+    testing::ValuesIn<EnabledByDefaultMetricCase>({
+        EnabledByDefaultMetricCase{
+            "UsEnglish",
+            /*engine_id=*/kUsEnglish,
+            /*metric_name=*/
+            "InputMethod.Assistive.AutocorrectV2.UserPrefChange.English.PK"},
+        EnabledByDefaultMetricCase{
+            "BrazilianPortugese",
+            /*engine_id=*/kBrazilPortugese,
+            /*metric_name=*/
+            "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.PK"},
+        EnabledByDefaultMetricCase{
+            "SpainSpanish",
+            /*engine_id=*/kSpainSpanish,
+            /*metric_name=*/
+            "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.PK"},
+        EnabledByDefaultMetricCase{
+            "FranceFrench",
+            /*engine_id=*/kFranceFrench,
+            /*metric_name=*/
+            "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.PK"},
+    }),
+    [](const testing::TestParamInfo<EnabledByDefaultMetricCase>& info) {
+      return info.param.test_variant;
     });
 
 }  // namespace
