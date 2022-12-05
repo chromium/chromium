@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
@@ -143,6 +144,11 @@ class VIEWS_EXPORT TooltipController
   // to hide it until the cursor moves to another window.
   bool ShouldHideBecauseMouseWasOncePressed();
 
+  aura::Window* tooltip_window_at_mouse_press() {
+    auto& windows = tooltip_window_at_mouse_press_tracker_.windows();
+    return windows.empty() ? nullptr : windows[0];
+  }
+
   // The window on which we are currently listening for events. When there's a
   // keyboard-triggered visible tooltip, its value is set to the tooltip parent
   // window. Otherwise, it's following the cursor.
@@ -159,8 +165,8 @@ class VIEWS_EXPORT TooltipController
   // The tooltip should stay hidden after a mouse press event on the view until
   // the cursor moves to another view.
   std::u16string tooltip_text_at_mouse_press_;
-  raw_ptr<aura::Window, DanglingUntriaged> tooltip_window_at_mouse_press_ =
-      nullptr;
+  // NOTE: this either has zero or one window.
+  aura::WindowTracker tooltip_window_at_mouse_press_tracker_;
 
   // Location of the last events in |tooltip_window_|'s coordinates.
   gfx::Point last_mouse_loc_;
