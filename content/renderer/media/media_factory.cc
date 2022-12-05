@@ -275,23 +275,6 @@ enum class MediaPlayerType {
   kMediaStream,  // MediaStream backed.
 };
 
-// Helper function getting or creating the compositor task runner to use.
-scoped_refptr<base::SingleThreadTaskRunner>
-GetOrCreateVideoFrameCompositorTaskRunner(content::RenderFrame* render_frame) {
-  content::RenderThreadImpl* render_thread =
-      content::RenderThreadImpl::current();
-  if (::features::UseSurfaceLayerForVideo()) {
-    // All of Chromium's GPU code must know which thread it's running on, and
-    // be the same thread on which the rendering context was initialized. This
-    // is why this must be a SingleThreadTaskRunner instead of a
-    // SequencedTaskRunner.
-    return render_thread->CreateVideoFrameCompositorTaskRunner();
-  }
-  if (auto task_runner = render_thread->compositor_task_runner())
-    return task_runner;
-  return render_frame->GetTaskRunner(blink::TaskType::kInternalMediaRealTime);
-}
-
 std::unique_ptr<blink::WebVideoFrameSubmitter> CreateSubmitter(
     scoped_refptr<base::SingleThreadTaskRunner>
         main_thread_compositor_task_runner,
@@ -490,7 +473,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   }
 
   auto video_frame_compositor_task_runner =
-      GetOrCreateVideoFrameCompositorTaskRunner(render_frame_);
+      blink::Platform::Current()->VideoFrameCompositorTaskRunner();
   auto vfc = std::make_unique<blink::VideoFrameCompositor>(
       video_frame_compositor_task_runner, std::move(submitter));
 
@@ -804,7 +787,7 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
       frame, client, GetWebMediaPlayerDelegate(), std::move(media_log),
       render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia),
       blink::Platform::Current()->GetMediaStreamVideoSourceVideoTaskRunner(),
-      GetOrCreateVideoFrameCompositorTaskRunner(render_frame_),
+      blink::Platform::Current()->VideoFrameCompositorTaskRunner(),
       render_thread->GetMediaSequencedTaskRunner(),
       std::move(compositor_worker_task_runner),
       render_thread->GetGpuFactories(), sink_id,

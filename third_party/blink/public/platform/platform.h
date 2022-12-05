@@ -344,6 +344,13 @@ class BLINK_PLATFORM_EXPORT Platform {
   // once CreateAndSetCompositorThread() is called.
   scoped_refptr<base::SingleThreadTaskRunner> CompositorThreadTaskRunner();
 
+  // Returns the video frame compositor thread task runner. This may
+  // conditionally be the same as the compositor thread task runner.
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  VideoFrameCompositorTaskRunner() {
+    return CompositorThreadTaskRunner();
+  }
+
   // Returns the task runner of the media thread.
   // This method should only be called on the main thread, or it crashes.
   virtual scoped_refptr<base::SequencedTaskRunner> MediaThreadTaskRunner() {

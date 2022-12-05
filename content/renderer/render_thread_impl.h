@@ -378,9 +378,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
   gfx::ColorSpace GetRenderingColorSpace();
 
-  scoped_refptr<base::SingleThreadTaskRunner>
-  CreateVideoFrameCompositorTaskRunner();
-
   // The time the run loop started for this thread.
   base::TimeTicks run_loop_start_time() const { return run_loop_start_time_; }
 
