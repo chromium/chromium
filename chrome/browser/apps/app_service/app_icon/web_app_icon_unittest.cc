@@ -422,7 +422,9 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableNonEffectCompressedIcon) {
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
   std::vector<uint8_t> src_data;
-  src_data = GenerateWebAppNonEffectCompressedIcon(app_id, kSizeInDip);
+  GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      {{1.0, kIconSize1}, {2.0, kIconSize2}}, /*scale=*/1.0, src_data);
 
   auto icon =
       LoadCompressedIconBlockingFromWebApp(app_id, apps::IconEffects::kNone);
@@ -447,7 +449,9 @@ TEST_F(WebAppIconFactoryTest,
   ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
 
   std::vector<uint8_t> src_data;
-  src_data = GenerateWebAppNonEffectCompressedIcon(app_id, kSizeInDip);
+  GenerateWebAppCompressedIcon(
+      app_id, IconPurpose::ANY, apps::IconEffects::kNone, sizes_px,
+      {{1.0, kIconSize1}, {2.0, kIconSize2}}, /*scale=*/1.0, src_data);
 
   auto icon =
       LoadCompressedIconBlockingFromWebApp(app_id, apps::IconEffects::kNone);
