@@ -16,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 # The full list can be obtained at
 # https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/v1/test_result.proto;drc=ca12b9f52b27f064b0fa47c39baa3b011ffa5790;l=151-174
 VALID_STATUSES = {"PASS", "FAIL", "CRASH", "ABORT", "SKIP"}
+CRASH_MESSAGE = 'App crashed and disconnected.'
 
 
 def _compose_test_result(test_id,
@@ -86,6 +87,8 @@ def _compose_test_result(test_id,
       # serializable in order for the eventual json.dumps to succeed
       message = base64.b64encode(test_log.encode('utf-8')).decode('utf-8')
     test_result['summaryHtml'] = '<text-artifact artifact-id="Test Log" />'
+    if CRASH_MESSAGE in test_log:
+      test_result['failureReason'] = {'primaryErrorMessage': CRASH_MESSAGE}
     test_result['artifacts'].update({
         'Test Log': {
             'contents': message

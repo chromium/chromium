@@ -28,6 +28,12 @@ HEADERS = {
     'Accept': 'application/json',
     'Authorization': 'ResultSink %s' % AUTH_TOKEN
 }
+CRASH_TEST_LOG = """
+Exception Reason:
+App crashed and disconnected.
+
+Recovery Suggestion:
+"""
 
 
 class UnitTest(unittest.TestCase):
@@ -73,6 +79,34 @@ class UnitTest(unittest.TestCase):
         },
         'duration': '1.233000000s',
         'tags': [],
+        'testMetadata': {
+            'name': 'TestCase/testSomething',
+            'location': None,
+        },
+    }
+    self.assertEqual(test_result, expected)
+
+  def test_parsing_crash_message(self):
+    """Tests parsing crash message from test log and setting it as the
+    failure reason"""
+    test_result = result_sink_util._compose_test_result(
+        'TestCase/testSomething', 'FAIL', False, test_log=CRASH_TEST_LOG)
+    expected = {
+        'testId': 'TestCase/testSomething',
+        'status': 'FAIL',
+        'expected': False,
+        'summaryHtml': '<text-artifact artifact-id="Test Log" />',
+        'tags': [],
+        'failureReason': {
+            'primaryErrorMessage': 'App crashed and disconnected.'
+        },
+        'artifacts': {
+            'Test Log': {
+                'contents':
+                    base64.b64encode(CRASH_TEST_LOG.encode('utf-8')
+                                    ).decode('utf-8')
+            },
+        },
         'testMetadata': {
             'name': 'TestCase/testSomething',
             'location': None,
