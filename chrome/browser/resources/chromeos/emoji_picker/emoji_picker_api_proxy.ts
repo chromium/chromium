@@ -13,7 +13,7 @@ export interface EmojiPickerApiProxy {
 
   isIncognitoTextField(): Promise<{incognito: boolean}>;
 
-  getFeatureList(): Promise<{featureList: boolean[]}>;
+  getFeatureList(): Promise<{featureList: number[]}>;
 }
 
 /** @implements {EmojiPickerApiProxy} */

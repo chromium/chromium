@@ -10,7 +10,7 @@
  */
 
 
-import {SubcategoryData} from './types.js';
+import {CategoryEnum, SubcategoryData} from './types.js';
 
 const RECENTLY_USED_NAME = 'Recently used';
 
@@ -20,11 +20,12 @@ const RECENTLY_USED_NAME = 'Recently used';
  * used" group as the first tab of each category.
  */
 function makeGroupTabs(
-    categories: string[], categoryBaseEmojis: Record<string, Array<{
-                                                       name: string,
-                                                       pagination?: number,
-                                                       icon?: string,
-                                                     }>>) {
+    categories: CategoryEnum[],
+    categoryBaseEmojis: Record<string, Array<{
+                                 name: string,
+                                 pagination?: number,
+                                 icon?: string,
+                               }>>) {
   const groupTabs: SubcategoryData[] = [];
   let groupId = 0;
 
@@ -162,11 +163,9 @@ export const V2_SUBCATEGORY_TABS = makeGroupTabs(
 );
 
 // A mapping from each category to the index of their first tab.
-export const V2_TABS_CATEGORY_START_INDEX = Object.fromEntries(
-    new Map(V2_SUBCATEGORY_TABS
-                .map((item, index) => [item.category, index] as const)
-                .reverse())
-        .entries(),
-);
+export const V2_TABS_CATEGORY_START_INDEX: Map<CategoryEnum, number> = new Map(
+    V2_SUBCATEGORY_TABS.map((item, index) => [item.category, index] as const)
+        .reverse());
 
-export const EMOJI_GROUP_TABS = makeGroupTabs(['emoji'], CATEGORY_TABS);
+export const EMOJI_GROUP_TABS =
+    makeGroupTabs([CategoryEnum.EMOJI], CATEGORY_TABS);

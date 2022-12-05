@@ -327,11 +327,11 @@ export class EmojiPicker extends PolymerElement {
 
     // Create recently used emoji group for the category as its first
     // group element.
-    if (V2_TABS_CATEGORY_START_INDEX[category] ===
+    if (V2_TABS_CATEGORY_START_INDEX.get(category) ===
         this.categoriesGroupElements.length) {
       const historyGroupElement = this.createEmojiGroupElement(
-        this.getHistoryEmojis(category), {}, true,
-        V2_TABS_CATEGORY_START_INDEX[category]);
+          this.getHistoryEmojis(category), {}, true,
+          V2_TABS_CATEGORY_START_INDEX.get(category));
       this.push('categoriesGroupElements', historyGroupElement);
     }
 
@@ -782,7 +782,7 @@ export class EmojiPicker extends PolymerElement {
       historyUpdated = true, preferenceUpdated = true) {
 
     // History item is assumed to be the first item of each category.
-    const historyIndex = V2_TABS_CATEGORY_START_INDEX[category];
+    const historyIndex = V2_TABS_CATEGORY_START_INDEX.get(category);
 
     // If history group is already added, then update it.
     if (historyUpdated &&
