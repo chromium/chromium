@@ -146,9 +146,6 @@ public class TestInputMethodManagerWrapper implements InputMethodManagerWrapper 
     public void updateExtractedText(
             View view, int token, android.view.inputmethod.ExtractedText text) {}
 
-    @Override
-    public void notifyUserAction() {}
-
     public final List<Pair<Range, Range>> getUpdateSelectionList() {
         return mUpdateSelectionList;
     }

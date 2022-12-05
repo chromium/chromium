@@ -71,13 +71,6 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
         }
     };
 
-    private final Runnable mNotifyUserActionRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mImeAdapter.notifyUserAction();
-        }
-    };
-
     private final Runnable mFinishComposingTextRunnable = new Runnable() {
         @Override
         public void run() {
@@ -288,10 +281,6 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
         }
     }
 
-    private void notifyUserAction() {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, mNotifyUserActionRunnable);
-    }
-
     /**
      * @see InputConnection#setComposingText(java.lang.CharSequence, int)
      */
@@ -314,7 +303,6 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                 updateComposingTextOnUiThread(text, newCursorPosition, isPendingAccent);
             }
         });
-        notifyUserAction();
         return true;
     }
 
@@ -356,7 +344,6 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                 commitTextOnUiThread(text, newCursorPosition);
             }
         });
-        notifyUserAction();
         return true;
     }
 
@@ -503,7 +490,6 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                 mImeAdapter.sendKeyEvent(event);
             }
         });
-        notifyUserAction();
         return true;
     }
 

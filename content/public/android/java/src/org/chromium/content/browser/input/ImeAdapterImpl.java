@@ -841,10 +841,6 @@ public class ImeAdapterImpl
                 mNativeImeAdapterAndroid, ImeAdapterImpl.this, focusType);
     }
 
-    void notifyUserAction() {
-        mInputMethodManagerWrapper.notifyUserAction();
-    }
-
     public void sendSyntheticKeyPress(int keyCode, int flags) {
         long eventTime = SystemClock.uptimeMillis();
         sendKeyEvent(new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0, 0,

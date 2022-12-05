@@ -69,11 +69,6 @@ public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWra
     }
 
     @Override
-    public void notifyUserAction() {
-        mWrapper.notifyUserAction();
-    }
-
-    @Override
     public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
         mWrapper.onWindowAndroidChanged(newWindowAndroid);
     }

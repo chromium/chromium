@@ -115,9 +115,6 @@ public class VrInputMethodManagerWrapper implements InputMethodManagerWrapper {
     }
 
     @Override
-    public void notifyUserAction() {}
-
-    @Override
     public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {}
 
     @Override
