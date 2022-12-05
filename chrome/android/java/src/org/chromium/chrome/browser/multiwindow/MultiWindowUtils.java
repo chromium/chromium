@@ -344,7 +344,6 @@ public class MultiWindowUtils implements ActivityStateListener {
      * Determines the name of an activity from its {@link AppTask}.
      * @param task The AppTask to get the name of.
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     public static String getActivityNameFromTask(AppTask task) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return "";
 
@@ -511,7 +510,6 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return True if the Activity still has a task in Android recents, regardless of whether
      *         the Activity has been destroyed.
      */
-    @RequiresApi(Build.VERSION_CODES.M)
     private boolean isActivityTaskInRecents(String className, Context context) {
         ActivityManager activityManager = (ActivityManager)
                 context.getSystemService(Context.ACTIVITY_SERVICE);

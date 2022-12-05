@@ -18,7 +18,6 @@ import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.drawable.IconCompat;
@@ -508,7 +507,6 @@ public abstract class NotificationBuilderBase {
      * provided and the API level is high enough, otherwise the resource id is used.
      * @param iconBitmap should be used only on devices that support bitmap icons.
      */
-    @RequiresApi(Build.VERSION_CODES.M) // For the Icon class.
     protected static void setStatusBarIcon(
             NotificationWrapperBuilder builder, int iconId, @Nullable Bitmap iconBitmap) {
         if (iconBitmap != null) {

@@ -12,7 +12,6 @@ import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.uiautomator.UiDevice;
@@ -551,12 +550,10 @@ public class PortalsTest {
     private NotificationPredicate mMediaPlaybackNotificationPred =
             notification -> notification.getId() == R.id.media_playback_notification;
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private void waitForNotification(NotificationPredicate pred) {
         waitForNotification(pred, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private void waitForNotification(NotificationPredicate pred, long maxTimeoutMs) {
         CriteriaHelper.pollInstrumentationThread(() -> {
             StatusBarNotification notifications[] =
@@ -572,7 +569,6 @@ public class PortalsTest {
         }, maxTimeoutMs, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private void waitForNoNotifications(NotificationPredicate pred) {
         CriteriaHelper.pollInstrumentationThread(() -> {
             StatusBarNotification notifications[] =

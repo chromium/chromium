@@ -16,7 +16,6 @@ import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -212,7 +211,6 @@ public class IncognitoNotificationServiceTest {
     @Test
     @MediumTest
     @Feature("Incognito")
-    @RequiresApi(Build.VERSION_CODES.M)
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testCloseAllIncognitoNotificationIsDisplayed() {
         launchIncognitoTabAndEnsureNotificationDisplayed();
@@ -221,7 +219,6 @@ public class IncognitoNotificationServiceTest {
     @Test
     @MediumTest
     @Feature("Incognito")
-    @RequiresApi(Build.VERSION_CODES.M)
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     @Features.EnableFeatures(ChromeFeatureList.CCT_INCOGNITO)
     public void testCloseAllIncognitoNotificationForIncognitoCCT_DoesNotCloseCCT()

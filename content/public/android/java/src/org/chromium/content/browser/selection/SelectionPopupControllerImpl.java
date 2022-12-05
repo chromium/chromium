@@ -887,12 +887,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private static Intent createProcessTextIntent() {
         return new Intent().setAction(Intent.ACTION_PROCESS_TEXT).setType("text/plain");
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private Intent createProcessTextIntentForResolveInfo(ResolveInfo info) {
         boolean isReadOnly = !isFocusedNodeEditable();
         return createProcessTextIntent()

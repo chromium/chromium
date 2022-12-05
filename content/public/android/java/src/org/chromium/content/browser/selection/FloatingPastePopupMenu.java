@@ -12,15 +12,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.content.R;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Paste popup implementation based on floating ActionModes.
  */
-@RequiresApi(Build.VERSION_CODES.M)
 public class FloatingPastePopupMenu implements PastePopupMenu {
     private final View mParent;
     private final PastePopupMenuDelegate mDelegate;

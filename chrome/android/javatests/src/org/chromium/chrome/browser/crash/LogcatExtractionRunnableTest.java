@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -62,7 +61,6 @@ public class LogcatExtractionRunnableTest {
         }
     };
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private static class TestJobScheduler extends JobScheduler {
         TestJobScheduler() {}
 

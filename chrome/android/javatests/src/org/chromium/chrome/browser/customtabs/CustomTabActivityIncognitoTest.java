@@ -36,7 +36,6 @@ import android.widget.ImageButton;
 import android.widget.RemoteViews;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -291,7 +290,6 @@ public class CustomTabActivityIncognitoTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
-    @RequiresApi(Build.VERSION_CODES.M)
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void closeAllIncognitoNotificationIsNotDisplayed() throws Exception {
         // It may happen that some previous incognito notification from tabbed activity may be

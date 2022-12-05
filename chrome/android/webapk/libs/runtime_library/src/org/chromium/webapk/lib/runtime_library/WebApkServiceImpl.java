@@ -19,7 +19,6 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
 /**
@@ -125,7 +124,6 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
     }
 
     /** Returns the package name of the task's base activity. */
-    @RequiresApi(Build.VERSION_CODES.M)
     private static String getTaskBaseActivityPackageName(ActivityManager.AppTask task) {
         try {
             ActivityManager.RecentTaskInfo info = task.getTaskInfo();

@@ -12,7 +12,6 @@ import android.os.Build;
 import android.webkit.WebViewFactory;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -67,7 +66,6 @@ public final class WebLayerNotificationWrapperBuilder extends NotificationWrappe
         return this;
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private Icon createIcon(int resId) {
         return Icon.createWithResource(WebViewFactory.getLoadedPackageInfo().packageName,
                 WebLayerImpl.getResourceIdForSystemUi(resId));

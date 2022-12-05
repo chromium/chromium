@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.PowerManager;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -134,7 +133,6 @@ public class DeviceConditions {
         return isCurrentlyInIdleModeM(context);
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private static boolean isCurrentlyInIdleModeM(Context context) {
         return ApiHelperForM.isDeviceIdleMode(
                 (PowerManager) context.getSystemService(Context.POWER_SERVICE));

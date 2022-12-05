@@ -1459,7 +1459,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.M)
     public void onProvideAssistContent(AssistContent outContent) {
         Tab tab = getActivityTab();
         boolean inOverviewMode = isInOverviewMode();

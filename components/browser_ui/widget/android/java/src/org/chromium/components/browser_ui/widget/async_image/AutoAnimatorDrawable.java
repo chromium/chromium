@@ -16,7 +16,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.graphics.drawable.DrawableWrapperCompat;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
@@ -80,7 +79,6 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
         return found.get();
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private static void attachRestartListeners(@Nullable Drawable drawable) {
         AutoAnimatorDrawable.animatedDrawableHelper(drawable, animatable -> {
             if (animatable instanceof Animatable2Compat) {
@@ -162,7 +160,6 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private static final class AutoRestarter extends Animatable2.AnimationCallback {
         // Animatable2.AnimationCallback implementation.
         @Override
