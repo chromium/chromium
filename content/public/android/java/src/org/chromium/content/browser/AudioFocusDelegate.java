@@ -5,7 +5,11 @@
 package org.chromium.content.browser;
 
 import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
+import android.os.Build;
+import android.os.Handler;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -31,13 +35,18 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
 
     private int mFocusType;
     private boolean mIsDucking;
+    private AudioFocusRequest mFocusRequest;
 
     // Native pointer to C++ content::AudioFocusDelegateAndroid.
     // It will be set to 0 when the native AudioFocusDelegateAndroid object is destroyed.
     private long mNativeAudioFocusDelegateAndroid;
 
+    // Handle to the UI thread to ensure callbacks are on the correct thread.
+    private final Handler mHandler;
+
     private AudioFocusDelegate(long nativeAudioFocusDelegateAndroid) {
         mNativeAudioFocusDelegateAndroid = nativeAudioFocusDelegateAndroid;
+        mHandler = new Handler(ThreadUtils.getUiThreadLooper());
     }
 
     @CalledByNative
@@ -65,7 +74,14 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
         assert ThreadUtils.runningOnUiThread();
         AudioManager am = (AudioManager) ContextUtils.getApplicationContext().getSystemService(
                 Context.AUDIO_SERVICE);
-        am.abandonAudioFocus(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (mFocusRequest != null) {
+                am.abandonAudioFocusRequest(mFocusRequest);
+                mFocusRequest = null;
+            }
+        } else {
+            am.abandonAudioFocus(this);
+        }
     }
 
     @CalledByNative
@@ -77,7 +93,24 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
         AudioManager am = (AudioManager) ContextUtils.getApplicationContext().getSystemService(
                 Context.AUDIO_SERVICE);
 
-        int result = am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, mFocusType);
+        int result;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AudioAttributes playbackAttributes =
+                    new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                            .build();
+            mFocusRequest = new AudioFocusRequest.Builder(mFocusType)
+                                    .setAudioAttributes(playbackAttributes)
+                                    .setAcceptsDelayedFocusGain(false)
+                                    .setWillPauseWhenDucked(false)
+                                    .setOnAudioFocusChangeListener(this, mHandler)
+                                    .build();
+            result = am.requestAudioFocus(mFocusRequest);
+        } else {
+            result = am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, mFocusType);
+        }
+
         return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
 
