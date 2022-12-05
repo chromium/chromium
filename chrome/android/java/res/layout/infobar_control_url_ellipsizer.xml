@@ -20,7 +20,7 @@ found in the LICENSE file.
         android:clickable="false"
         tools:text="https://" />
 
-    <org.chromium.chrome.browser.infobar.TextViewEllipsizerSafe
+    <TextView
         android:id="@+id/url_minus_scheme"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
