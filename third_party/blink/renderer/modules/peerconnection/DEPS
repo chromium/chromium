@@ -9,8 +9,6 @@ include_rules = [
     "+third_party/blink/renderer/modules/p2p",
     "+third_party/blink/renderer/modules/webrtc",
 
-    # TODO(crbug.com/1266408): Temporarily added to enable splitting UMA stats based on tier.
-    "+base/cpu.h",
     "+base/hash/md5.h",
     "+base/lazy_instance.h",
     "+base/power_monitor/power_observer.h",
@@ -18,8 +16,6 @@ include_rules = [
     "+base/sequence_checker.h",
     # TODO(crbug.com/787254): Replace StringPrintf uses here.
     "+base/strings/stringprintf.h",
-    # TODO(crbug.com/1266408): Temporarily added to enable splitting UMA stats based on tier.
-    "+base/system/sys_info.h",
     # TODO(crbug.com/787254): Remove the use of base::CurrentThread.
     "+base/task/current_thread.h",
     "+base/threading/thread.h",

@@ -200,8 +200,6 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   WebrtcVideoPerfReporter webrtc_video_perf_reporter_;
 
-  bool encode_decode_capabilities_reported_ = false;
-
   THREAD_CHECKER(thread_checker_);
 };
 
