@@ -147,6 +147,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorActionProperties.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorActionProvider.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorActionViewLayout.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorBookmarkAction.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorCloseAction.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorCoordinator.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorGroupAction.java",

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -64,6 +65,8 @@ class TabSelectionEditorMediator
     private PropertyListModel<PropertyModel, PropertyKey> mActionListModel;
     private ListModelChangeProcessor mActionChangeProcessor;
     private TabSelectionEditorMenu mTabSelectionEditorMenu;
+    private SnackbarManager mSnackbarManager;
+    private TabSelectionEditorLayout mTabSelectionEditorLayout;
 
     /**
      * The last time the Tab Selection Editor was shown across all instances, null if never shown
@@ -97,7 +100,8 @@ class TabSelectionEditorMediator
             TabListCoordinator tabListCoordinator,
             TabSelectionEditorCoordinator.ResetHandler resetHandler, PropertyModel model,
             SelectionDelegate<Integer> selectionDelegate,
-            TabSelectionEditorToolbar tabSelectionEditorToolbar, boolean actionOnRelatedTabs) {
+            TabSelectionEditorToolbar tabSelectionEditorToolbar, boolean actionOnRelatedTabs,
+            SnackbarManager snackbarManager, TabSelectionEditorLayout tabSelectionEditorLayout) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mTabListCoordinator = tabListCoordinator;
@@ -106,6 +110,8 @@ class TabSelectionEditorMediator
         mSelectionDelegate = selectionDelegate;
         mTabSelectionEditorToolbar = tabSelectionEditorToolbar;
         mActionOnRelatedTabs = actionOnRelatedTabs;
+        mSnackbarManager = snackbarManager;
+        mTabSelectionEditorLayout = tabSelectionEditorLayout;
 
         mModel.set(
                 TabSelectionEditorProperties.TOOLBAR_NAVIGATION_LISTENER, mNavigationClickListener);
@@ -194,6 +200,8 @@ class TabSelectionEditorMediator
     @Override
     public void show(List<Tab> tabs, int preSelectedTabCount,
             @Nullable RecyclerViewPosition recyclerViewPosition) {
+        // Reparent the snackbarManager to use the selection editor layout to avoid layering issues.
+        mSnackbarManager.setParentView(mTabSelectionEditorLayout);
         recordTimeSinceLastShown();
         // We don't call TabListCoordinator#prepareTabSwitcherView, since not all the logic (e.g.
         // requiring one tab to be selected) is applicable here.
@@ -313,6 +321,7 @@ class TabSelectionEditorMediator
 
     private void hideInternal(boolean hiddenByAction) {
         if (!isEditorVisible()) return;
+        mSnackbarManager.setParentView(null);
 
         if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
             RecordUserAction.record("TabMultiSelectV2.Closed");
@@ -363,6 +372,11 @@ class TabSelectionEditorMediator
     public boolean areAllTabsSelected() {
         Set<Integer> selectedTabIds = mSelectionDelegate.getSelectedItems();
         return selectedTabIds.size() == mVisibleTabs.size();
+    }
+
+    @Override
+    public SnackbarManager getSnackbarManager() {
+        return mSnackbarManager;
     }
 
     /**

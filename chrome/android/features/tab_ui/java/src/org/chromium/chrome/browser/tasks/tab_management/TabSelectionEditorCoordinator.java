@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorProperties.IS_VISIBLE;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -155,7 +157,7 @@ class TabSelectionEditorCoordinator {
         }
     }
 
-    private final Context mContext;
+    private final Activity mActivity;
     private final ViewGroup mParentView;
     private final TabModelSelector mTabModelSelector;
     private final TabSelectionEditorLayout mTabSelectionEditorLayout;
@@ -167,12 +169,13 @@ class TabSelectionEditorCoordinator {
     private final Callback<RecyclerViewPosition> mClientTabListRecyclerViewPositionSetter;
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
 
-    public TabSelectionEditorCoordinator(Context context, ViewGroup parentView,
+    public TabSelectionEditorCoordinator(Activity activity, ViewGroup parentView,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
             Callback<RecyclerViewPosition> clientTabListRecyclerViewPositionSetter,
-            @TabListMode int mode, ViewGroup rootView, boolean displayGroups) {
+            @TabListMode int mode, ViewGroup rootView, boolean displayGroups,
+            SnackbarManager snackbarManager) {
         try (TraceEvent e = TraceEvent.scoped("TabSelectionEditorCoordinator.constructor")) {
-            mContext = context;
+            mActivity = activity;
             mParentView = parentView;
             mTabModelSelector = tabModelSelector;
             mClientTabListRecyclerViewPositionSetter = clientTabListRecyclerViewPositionSetter;
@@ -184,7 +187,7 @@ class TabSelectionEditorCoordinator {
                                     ChromeFeatureList.TAB_SELECTION_EDITOR_V2));
 
             mTabSelectionEditorLayout =
-                    LayoutInflater.from(context)
+                    LayoutInflater.from(activity)
                             .inflate(R.layout.tab_selection_editor_layout, parentView, false)
                             .findViewById(R.id.selectable_list);
 
@@ -195,7 +198,7 @@ class TabSelectionEditorCoordinator {
             // TODO(ckitagawa): Lazily instantiate the TabSelectionEditorCoordinator. When doing so,
             // the Coordinator hosting the TabSelectionEditorCoordinator could share and reconfigure
             // its TabListCoordinator to work with the editor as an optimization.
-            mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
+            mTabListCoordinator = new TabListCoordinator(mode, activity, mTabModelSelector,
                     thumbnailProvider, titleProvider, displayGroups, null, null,
                     TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
                     mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView, null);
@@ -273,9 +276,12 @@ class TabSelectionEditorCoordinator {
                     mTabListCoordinator.softCleanup();
                 }
             };
-            mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext,
+            // TODO(crbug.com/1393679): Refactor SnackbarManager to support multiple overridden
+            // parentViews in a stack to avoid contention and using new snackbar managers.
+            mTabSelectionEditorMediator = new TabSelectionEditorMediator(mActivity,
                     mTabModelSelector, mTabListCoordinator, resetHandler, mModel,
-                    mSelectionDelegate, mTabSelectionEditorLayout.getToolbar(), displayGroups);
+                    mSelectionDelegate, mTabSelectionEditorLayout.getToolbar(), displayGroups,
+                    snackbarManager, mTabSelectionEditorLayout);
         }
     }
 
@@ -315,7 +321,7 @@ class TabSelectionEditorCoordinator {
             boolean displayGroups, TabContentManager tabContentManager) {
         if (displayGroups) {
             mMultiThumbnailCardProvider =
-                    new MultiThumbnailCardProvider(mContext, tabContentManager, mTabModelSelector);
+                    new MultiThumbnailCardProvider(mActivity, tabContentManager, mTabModelSelector);
             return mMultiThumbnailCardProvider;
         }
         return (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {

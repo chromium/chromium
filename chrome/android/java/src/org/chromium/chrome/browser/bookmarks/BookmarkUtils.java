@@ -10,7 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
+import android.os.LocaleList;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -43,6 +46,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -71,8 +75,11 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /** A class holding static util functions for bookmark. */
 public class BookmarkUtils {
@@ -169,7 +176,8 @@ public class BookmarkUtils {
         if (bookmarkId != null && bookmarkId.getType() == BookmarkType.NORMAL) {
             @BrowserProfileType
             int type = Profile.getBrowserProfileTypeFromProfile(
-                    Profile.fromWebContents(tab.getWebContents()));
+                    IncognitoUtils.getProfileFromWindowAndroid(
+                            tab.getWindowAndroid(), tab.isIncognito()));
             RecordHistogram.recordEnumeratedHistogram(
                     "Bookmarks.AddedPerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
         }
@@ -243,6 +251,59 @@ public class BookmarkUtils {
     }
 
     /**
+     * Add all selected tabs from TabSelectionEditorV2 as bookmarks. This logic depends on the
+     * snackbar workflow above. Currently there is no support for adding the selected tabs or newly
+     * created folder directly to the reading list.
+     * @param activity The current activity.
+     * @param bookmarkModel The bookmark model.
+     * @param tabList The list of all currently selected tabs from the TabSelectionEditor menu.
+     * @param snackbarManager The SnackbarManager used to show the snackbar.
+     */
+    public static void addBookmarksOnMultiSelect(Activity activity,
+            @NonNull BookmarkModel bookmarkModel, @NonNull List<Tab> tabList,
+            @NonNull SnackbarManager snackbarManager) {
+        // TODO(crbug.com/1385914): Refactor the bookmark folder select activity to allow for the
+        // view to display in a dialog implementation approach.
+        assert bookmarkModel != null;
+
+        // For a single selected bookmark, default to the single tab-to-bookmark approach.
+        if (tabList.size() == 1) {
+            addBookmarkAndShowSnackbar(bookmarkModel, tabList.get(0), snackbarManager, activity,
+                    false, BookmarkType.NORMAL);
+            return;
+        }
+
+        // Current date time format with an example would be: Nov 17, 2022 4:34:20 PM PST
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(
+                DateFormat.MEDIUM, DateFormat.LONG, getLocale(activity));
+        String fileName =
+                activity.getString(R.string.tab_selection_editor_add_bookmarks_folder_name,
+                        dateFormat.format(new Date(System.currentTimeMillis())));
+        BookmarkId newFolder =
+                bookmarkModel.addFolder(bookmarkModel.getDefaultFolder(), 0, fileName);
+        int tabsBookmarkedCount = 0;
+
+        for (Tab tab : tabList) {
+            BookmarkId tabToBookmark = addBookmarkInternal(activity, bookmarkModel, tab.getTitle(),
+                    tab.getOriginalUrl(), newFolder, BookmarkType.NORMAL);
+
+            if (bookmarkModel.doesBookmarkExist(tabToBookmark)) {
+                tabsBookmarkedCount++;
+            }
+        }
+        RecordHistogram.recordCount100Histogram(
+                "Android.TabMultiSelectV2.BookmarkTabsCount", tabsBookmarkedCount);
+
+        SnackbarController snackbarController =
+                createSnackbarControllerForBookmarkFolderEditButton(activity, newFolder);
+        Snackbar snackbar = Snackbar.make(activity.getString(R.string.bookmark_page_saved_default),
+                snackbarController, Snackbar.TYPE_ACTION, Snackbar.UMA_BOOKMARK_ADDED);
+        snackbar.setSingleLine(false).setAction(
+                activity.getString(R.string.bookmark_item_edit), null);
+        snackbarManager.showSnackbar(snackbar);
+    }
+
+    /**
      * Adds a bookmark with the given {@link Tab}. This will reset last used parent if it fails to
      * add a bookmark.
      *
@@ -308,6 +369,26 @@ public class BookmarkUtils {
             public void onAction(Object actionData) {
                 RecordUserAction.record("EnhancedBookmarks.EditAfterCreateButtonClicked");
                 startEditActivity(activity, bookmarkId);
+            }
+        };
+    }
+
+    /**
+     * Creates a snackbar controller for a case where "Edit" button is shown to edit a newly
+     * created bookmarks folder with bulk added bookmarks
+     */
+    private static SnackbarController createSnackbarControllerForBookmarkFolderEditButton(
+            Context context, BookmarkId folder) {
+        return new SnackbarController() {
+            @Override
+            public void onDismissNoAction(Object actionData) {
+                RecordUserAction.record("TabMultiSelectV2.BookmarkTabsSnackbarEditNotClicked");
+            }
+
+            @Override
+            public void onAction(Object actionData) {
+                RecordUserAction.record("TabMultiSelectV2.BookmarkTabsSnackbarEditClicked");
+                BookmarkAddEditFolderActivity.startEditFolderActivity(context, folder);
             }
         };
     }
@@ -734,5 +815,17 @@ public class BookmarkUtils {
         id = R.string.iph_price_tracking_menu_item_accessibility;
         id = R.string.iph_shopping_list_save_flow;
         id = R.string.iph_shopping_list_save_flow_accessibility;
+    }
+
+    private static Locale getLocale(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            LocaleList locales = activity.getResources().getConfiguration().getLocales();
+            if (locales.size() > 0) {
+                return locales.get(0);
+            }
+        }
+        @SuppressWarnings("deprecation")
+        Locale locale = activity.getResources().getConfiguration().locale;
+        return locale;
     }
 }

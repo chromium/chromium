@@ -153,6 +153,7 @@ public class TabSwitcherCoordinator
     private TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
     private Supplier<ShareDelegate> mShareDelegateSupplier;
+    private SnackbarManager mTabSelectionEditorSnackbarManager;
 
     /** {@see TabManagementDelegate#createCarouselTabSwitcher} */
     public TabSwitcherCoordinator(@NonNull Activity activity,
@@ -185,6 +186,11 @@ public class TabSwitcherCoordinator
             mSnackbarManager = snackbarManager;
             mModalDialogManager = modalDialogManager;
             mShareDelegateSupplier = shareDelegateSupplier;
+
+            // The snackbarManager for the TabSelectionEditor from the tab switcher side, with the
+            // rootView as the default parentView. The parentView will be re-parented on show,
+            // inside the selection editor mediator using its layout.
+            mTabSelectionEditorSnackbarManager = new SnackbarManager(activity, mRootView, null);
 
             PropertyModel containerViewModel =
                     new PropertyModel(TabListContainerProperties.ALL_KEYS);
@@ -475,13 +481,13 @@ public class TabSwitcherCoordinator
     }
 
     private void setUpTabSelectionEditorCoordinator(
-            Context context, TabContentManager tabContentManager) {
+            Activity activity, TabContentManager tabContentManager) {
         // For tab switcher in carousel mode, the selection editor should still follow grid
         // style.
         int selectionEditorMode = mMode == TabListMode.CAROUSEL ? TabListMode.GRID : mMode;
-        mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(context,
+        mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(activity,
                 mCoordinatorView, mTabModelSelector, tabContentManager, null, selectionEditorMode,
-                mRootView, /*displayGroups=*/false);
+                mRootView, /*displayGroups=*/false, mTabSelectionEditorSnackbarManager);
     }
 
     private void showTabSelectionEditorV2() {
@@ -492,7 +498,7 @@ public class TabSwitcherCoordinator
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(mActivity,
                     mCoordinatorView, mTabModelSelector, mTabContentManager,
                     mTabListCoordinator::setRecyclerViewPosition, selectionEditorMode, mRootView,
-                    /*displayGroups=*/true);
+                    /*displayGroups=*/true, mTabSelectionEditorSnackbarManager);
             mMediator.setTabSelectionEditorController(
                     mTabSelectionEditorCoordinator.getController());
         }
@@ -505,6 +511,11 @@ public class TabSwitcherCoordinator
                     mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             mTabSelectionEditorActions.add(TabSelectionEditorGroupAction.createAction(
                     mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+            if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_BOOKMARKS.getValue()) {
+                mTabSelectionEditorActions.add(
+                        TabSelectionEditorBookmarkAction.createAction(mActivity, ShowMode.MENU_ONLY,
+                                ButtonType.ICON_AND_TEXT, IconPosition.START));
+            }
             if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE.getValue()) {
                 mTabSelectionEditorActions.add(TabSelectionEditorShareAction.createAction(mActivity,
                         ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));

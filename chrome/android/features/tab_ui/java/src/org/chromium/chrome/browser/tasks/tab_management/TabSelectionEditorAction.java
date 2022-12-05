@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -121,6 +122,11 @@ public abstract class TabSelectionEditorAction {
          * Sync position of the client {@link TabListCoordinator}'s RecyclerView with the editor's.
          */
         void syncRecyclerViewPosition();
+
+        /**
+         * Retrieves the SnackbarManager for the selection editor.
+         */
+        SnackbarManager getSnackbarManager();
     }
 
     private ObserverList<ActionObserver> mObsevers = new ObserverList<>();

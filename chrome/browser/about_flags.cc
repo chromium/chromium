@@ -3282,9 +3282,21 @@ const FeatureEntry::FeatureVariation
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kTabSelectionEditorV2_share_enabled[] = {
     {"enable_share", "true"}};
+const FeatureEntry::FeatureParam kTabSelectionEditorV2_bookmarks_enabled[] = {
+    {"enable_bookmarks", "true"}};
+const FeatureEntry::FeatureParam
+    kTabSelectionEditorV2_share_and_bookmarks_enabled[] = {
+        {"enable_share", "true"},
+        {"enable_bookmarks", "true"},
+};
 const FeatureEntry::FeatureVariation kTabSelectionEditorV2Variations[] = {
     {"- with share", kTabSelectionEditorV2_share_enabled,
      std::size(kTabSelectionEditorV2_share_enabled), nullptr},
+    {"- with bookmarks", kTabSelectionEditorV2_bookmarks_enabled,
+     std::size(kTabSelectionEditorV2_bookmarks_enabled), nullptr},
+    {"- with share and bookmarks",
+     kTabSelectionEditorV2_share_and_bookmarks_enabled,
+     std::size(kTabSelectionEditorV2_share_and_bookmarks_enabled), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 

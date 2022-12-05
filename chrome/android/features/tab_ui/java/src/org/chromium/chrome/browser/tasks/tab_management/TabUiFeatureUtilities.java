@@ -127,6 +127,12 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
                     TAB_SELECTION_EDITOR_V2_SHARE_PARAM, false);
 
+    // Field trial parameter for controlling bookmark tabs in TabSelectionEditorV2.
+    private static final String TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM = "enable_bookmarks";
+    public static final BooleanCachedFieldTrialParameter ENABLE_TAB_SELECTION_EDITOR_V2_BOOKMARKS =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
+                    TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM, false);
+
     private static Boolean sTabManagementModuleSupportedForTesting;
     private static Boolean sGridTabSwitcherPolishEnabledForTesting;
     private static Boolean sGridTabSwitcherDelayCreationEnabledForTesting;

@@ -103,9 +103,10 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
@@ -117,6 +118,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -568,7 +570,85 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2 + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_bookmarks/true"})
+    public void
+    testDialogSelectionEditorV2_BookmarkSingleTabView() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open the selection editor.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        openSelectionEditorV2AndVerify(cta, 2);
+
+        // Bookmark one tab and verify edit snackbar.
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Bookmark tab");
+
+        onViewWaiting(allOf(withId(R.id.snackbar_button),
+                isDescendantOfA(withId(R.id.selectable_list)), isDisplayed()));
+        onView(allOf(withId(R.id.snackbar), isDescendantOfA(withId(R.id.bottom_container))))
+                .check(doesNotExist());
+        onView(allOf(withId(R.id.snackbar_button), isDescendantOfA(withId(R.id.selectable_list)),
+                       isDisplayed()))
+                .perform(click());
+
+        BookmarkEditActivity activity = BookmarkTestUtil.waitForEditActivity();
+        activity.finish();
+
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2 + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_bookmarks/true"})
+    public void
+    testDialogSelectionEditorV2_BookmarkTabsView() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open the selection editor.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        openSelectionEditorV2AndVerify(cta, 2);
+
+        // Bookmark two tabs and verify edit snackbar.
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Bookmark tabs");
+
+        onViewWaiting(allOf(withId(R.id.snackbar_button),
+                isDescendantOfA(withId(R.id.selectable_list)), isDisplayed()));
+        onView(allOf(withId(R.id.snackbar), isDescendantOfA(withId(R.id.bottom_container))))
+                .check(doesNotExist());
+        onView(allOf(withId(R.id.snackbar_button), isDescendantOfA(withId(R.id.selectable_list)),
+                       isDisplayed()))
+                .perform(click());
+
+        BookmarkAddEditFolderActivity activity = BookmarkTestUtil.waitForAddEditFolderActivity();
+        activity.finish();
+
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+    }
+
+    @Test
+    @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2 + "<Study"})
     @CommandLineFlags.
     Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:enable_share/true"})
@@ -610,7 +690,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
     @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2 + "<Study"})
     @CommandLineFlags.
     Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:enable_share/true"})

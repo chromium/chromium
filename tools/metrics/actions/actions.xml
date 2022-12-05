@@ -36103,6 +36103,15 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
+  <suffix name="BookmarkTabs"
+      label="Users tapped on the bookmark tabs button in
+             TabSelectionEditorV2."/>
+  <suffix name="BookmarkTabsSnackbarEditClicked"
+      label="Users tapped on the edit button on the bookmarks snackbar in
+             TabSelectionEditorV2."/>
+  <suffix name="BookmarkTabsSnackbarEditNotClicked"
+      label="Users did not tap on the edit button on the bookmarks snackbar
+             in TabSelectionEditorV2."/>
   <suffix name="Closed"
       label="Catch all for closures of the TabSelectionEditorV2."/>
   <suffix name="ClosedAutomatically"

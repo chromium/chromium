@@ -3604,6 +3604,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabMultiSelectV2.BookmarkTabsCount" units="count"
+    expires_after="2023-11-23">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Reports the number of tabs that are bookmarked using the TabSelectionEditor
+    bookmark action. Recorded once per user attempt to bookmark tabs in the Tab
+    Selection Editor.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabMultiSelectV2.SharingState"
     enum="TabSelectionEditorShareActionState" expires_after="2023-10-14">
   <owner>ckitagawa@chromium.org</owner>

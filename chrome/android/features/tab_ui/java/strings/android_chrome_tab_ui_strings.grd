@@ -275,6 +275,18 @@
       <message name="IDS_TAB_SELECTION_EDITOR_SHARE_SHEET_PREVIEW_THUMBNAIL" desc="When users click the menu item 'Share tab(s)' in the Tab SelectionEditor Toolbar, a share sheet will pop up and this text is the name for the thumbnail of the share sheet preview. [CHAR_LIMIT=27]">
         Thumbnail for share sheet preview.
       </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_BOOKMARK_TABS_ACTION_BUTTON" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome bookmarks all currently selected tabs shown in the editor. [CHAR_LIMIT=27]">
+        {TABS_COUNT, plural,
+          =1 {Bookmark tab}
+          other {Bookmark tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_BOOKMARK_TABS_ACTION_BUTTON" desc="The accessibility string for the share button in the Tab Selection Editor Toolbar. Tap this button to bookmark all selected tabs.">
+        {TABS_COUNT, plural,
+          =1 {Bookmark <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Bookmark <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
       <message name="IDS_TAB_SELECTION_EDITOR_TABS_COUNT" desc="The text for the selection counter shown in the Tab Selection Editor Toolbar. This shows the number of selected tabs including those within selected groups.">
         {TABS_COUNT, plural,
           =1 {<ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab}
@@ -316,6 +328,9 @@
           =1 {Close <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
           other {Close <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
         }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_ADD_BOOKMARKS_FOLDER_NAME" desc="File name for a new folder containing all selected bookmarks to add from the Tab Selection Editor menu, followed by a timestamp">
+        New Folder - <ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
       </message>
 
       <!-- Tab Grid Dialog strings -->

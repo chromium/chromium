@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.INITIAL_SCROLL_INDEX_OFFSET_GTS;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -140,15 +141,16 @@ public class TabGridDialogMediator
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
     private Callback<Integer> mToolbarMenuCallback;
+    private Activity mActivity;
 
-    TabGridDialogMediator(Context context, DialogController dialogController, PropertyModel model,
+    TabGridDialogMediator(Activity activity, DialogController dialogController, PropertyModel model,
             TabModelSelector tabModelSelector, TabCreatorManager tabCreatorManager,
             TabSwitcherMediator.ResetHandler tabSwitcherResetHandler,
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
             AnimationSourceViewProvider animationSourceViewProvider,
             Supplier<ShareDelegate> shareDelegateSupplier, SnackbarManager snackbarManager,
             String componentName) {
-        mContext = context;
+        mContext = activity;
         mModel = model;
         mTabModelSelector = tabModelSelector;
         mTabCreatorManager = tabCreatorManager;
@@ -159,6 +161,7 @@ public class TabGridDialogMediator
         mTabGridDialogHandler = new DialogHandler();
         mShareDelegateSupplier = shareDelegateSupplier;
         mComponentName = componentName;
+        mActivity = activity;
 
         // Register for tab model.
         mTabModelObserver = new TabModelObserver() {
@@ -265,11 +268,11 @@ public class TabGridDialogMediator
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                updateColorProperties(context, newModel.isIncognito());
+                updateColorProperties(mContext, newModel.isIncognito());
             }
         };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
-        updateColorProperties(context, mTabModelSelector.isIncognitoSelected());
+        updateColorProperties(mContext, mTabModelSelector.isIncognitoSelected());
 
         // Setup ScrimView click Runnable.
         mScrimClickRunnable = () -> {
@@ -562,6 +565,10 @@ public class TabGridDialogMediator
                     mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             actions.add(TabSelectionEditorUngroupAction.createAction(
                     mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+            if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_BOOKMARKS.getValue()) {
+                actions.add(TabSelectionEditorBookmarkAction.createAction(mActivity,
+                        ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+            }
             if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE.getValue()) {
                 actions.add(TabSelectionEditorShareAction.createAction(mContext, ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT, IconPosition.START));
