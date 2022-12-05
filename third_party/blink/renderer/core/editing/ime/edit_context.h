@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_input_panel_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -37,7 +38,8 @@ class V8EditContextInputMode;
 class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
                                       public ActiveScriptWrappable<EditContext>,
                                       public ExecutionContextClient,
-                                      public WebInputMethodController {
+                                      public WebInputMethodController,
+                                      public ElementRareDataField {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

@@ -81,6 +81,7 @@ bool CheckTokensSyntax(const Vector<String>& tokens,
 void DOMTokenList::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   ScriptWrappable::Trace(visitor);
+  ElementRareDataField::Trace(visitor);
 }
 
 // https://dom.spec.whatwg.org/#concept-domtokenlist-validation

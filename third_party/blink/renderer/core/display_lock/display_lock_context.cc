@@ -1315,6 +1315,7 @@ void DisplayLockContext::NotifyRenderAffectingStateChanged() {
 void DisplayLockContext::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(document_);
+  ElementRareDataField::Trace(visitor);
 }
 
 void DisplayLockContext::SetShouldUnlockAutoForPrint(bool flag) {

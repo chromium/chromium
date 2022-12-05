@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_SCROLL_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_SCROLL_DATA_H_
 
+#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -22,7 +23,8 @@ class PaintLayer;
 // The snapshot is updated once per frame update on top of animation frame to
 // avoid layout cycling.
 class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
-                         public ScrollSnapshotClient {
+                         public ScrollSnapshotClient,
+                         public ElementRareDataField {
  public:
   explicit AnchorScrollData(Element*);
 

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -27,7 +28,8 @@ using CSSToggleMapMaplike =
     Maplike<AtomicString, IDLString, Member<CSSToggle>, CSSToggle>;
 
 class CORE_EXPORT CSSToggleMap : public ScriptWrappable,
-                                 public CSSToggleMapMaplike {
+                                 public CSSToggleMapMaplike,
+                                 public ElementRareDataField {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

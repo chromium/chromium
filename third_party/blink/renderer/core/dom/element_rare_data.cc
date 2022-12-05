@@ -45,23 +45,15 @@
 namespace blink {
 
 struct SameSizeAsElementRareData : NodeRareData, ElementRareDataBase {
-  gfx::Vector2dF scroll_offset;
   void* pointers_or_strings[4];
   Member<void*> members[22];
-  FocusgroupFlags focusgroup_flags;
-  HasInvalidationFlags has_invalidation_flags;
+  gfx::Vector2dF scroll_offset;
   wtf_size_t anchored_popover_count;
-  unsigned flags[1];
 };
 
 ElementRareData::ElementRareData(NodeRenderingData* node_layout_data)
     : NodeRareData(ClassType::kElementRareData, node_layout_data),
-      class_list_(nullptr),
-      did_attach_internals_(false),
-      should_force_legacy_layout_for_child_(false),
-      style_should_force_legacy_layout_(false),
-      has_undo_stack_(false),
-      scrollbar_pseudo_element_styles_depend_on_font_metrics_(false) {}
+      class_list_(nullptr) {}
 
 ElementRareData::~ElementRareData() {
   DCHECK(!pseudo_element_data_);

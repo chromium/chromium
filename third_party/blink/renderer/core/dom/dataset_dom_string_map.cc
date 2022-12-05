@@ -202,6 +202,7 @@ bool DatasetDOMStringMap::DeleteItem(const String& name) {
 
 void DatasetDOMStringMap::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
+  ElementRareDataField::Trace(visitor);
   DOMStringMap::Trace(visitor);
 }
 

@@ -88,6 +88,7 @@ void ElementIntersectionObserverData::InvalidateCachedRects() {
 void ElementIntersectionObserverData::Trace(Visitor* visitor) const {
   visitor->Trace(observations_);
   visitor->Trace(observers_);
+  ElementRareDataField::Trace(visitor);
 }
 
 }  // namespace blink

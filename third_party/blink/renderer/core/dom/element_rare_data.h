@@ -114,30 +114,6 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
   bool HasPseudoElements() const override;
   void ClearPseudoElements() override;
 
-  void SetDidAttachInternals() override { did_attach_internals_ = true; }
-  bool DidAttachInternals() const override { return did_attach_internals_; }
-
-  void SetStyleShouldForceLegacyLayout(bool force) override {
-    style_should_force_legacy_layout_ = force;
-  }
-  bool StyleShouldForceLegacyLayout() const override {
-    return style_should_force_legacy_layout_;
-  }
-  void SetShouldForceLegacyLayoutForChild(bool force) override {
-    should_force_legacy_layout_for_child_ = force;
-  }
-  bool ShouldForceLegacyLayoutForChild() const override {
-    return should_force_legacy_layout_for_child_;
-  }
-  bool HasUndoStack() const override { return has_undo_stack_; }
-  void SetHasUndoStack(bool value) override { has_undo_stack_ = value; }
-  bool ScrollbarPseudoElementStylesDependOnFontMetrics() const override {
-    return scrollbar_pseudo_element_styles_depend_on_font_metrics_;
-  }
-  void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) override {
-    scrollbar_pseudo_element_styles_depend_on_font_metrics_ = value;
-  }
-
   AttrNodeList& EnsureAttrNodeList() override;
   AttrNodeList* GetAttrNodeList() override { return attr_node_list_.Get(); }
   void RemoveAttrNodeList() override { attr_node_list_.Clear(); }
@@ -287,96 +263,6 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
   void RemoveAnchorScrollData() override { anchor_scroll_data_ = nullptr; }
   AnchorScrollData& EnsureAnchorScrollData(Element*) override;
 
-  FocusgroupFlags GetFocusgroupFlags() const override {
-    return focusgroup_flags_;
-  }
-  void SetFocusgroupFlags(FocusgroupFlags flags) override {
-    focusgroup_flags_ = flags;
-  }
-  void ClearFocusgroupFlags() override {
-    focusgroup_flags_ = FocusgroupFlags::kNone;
-  }
-
-  bool AffectedBySubjectHas() const override {
-    return has_invalidation_flags_.affected_by_subject_has;
-  }
-  void SetAffectedBySubjectHas() override {
-    has_invalidation_flags_.affected_by_subject_has = true;
-  }
-  bool AffectedByNonSubjectHas() const override {
-    return has_invalidation_flags_.affected_by_non_subject_has;
-  }
-  void SetAffectedByNonSubjectHas() override {
-    has_invalidation_flags_.affected_by_non_subject_has = true;
-  }
-  bool AncestorsOrAncestorSiblingsAffectedByHas() const override {
-    return has_invalidation_flags_
-        .ancestors_or_ancestor_siblings_affected_by_has;
-  }
-  void SetAncestorsOrAncestorSiblingsAffectedByHas() override {
-    has_invalidation_flags_.ancestors_or_ancestor_siblings_affected_by_has =
-        true;
-  }
-  unsigned GetSiblingsAffectedByHasFlags() const override {
-    return has_invalidation_flags_.siblings_affected_by_has;
-  }
-  bool HasSiblingsAffectedByHasFlags(unsigned flags) const override {
-    return has_invalidation_flags_.siblings_affected_by_has & flags;
-  }
-  void SetSiblingsAffectedByHasFlags(unsigned flags) override {
-    has_invalidation_flags_.siblings_affected_by_has |= flags;
-  }
-  bool AffectedByPseudoInHas() const override {
-    return has_invalidation_flags_.affected_by_pseudos_in_has;
-  }
-  void SetAffectedByPseudoInHas() override {
-    has_invalidation_flags_.affected_by_pseudos_in_has = true;
-  }
-  bool AncestorsOrSiblingsAffectedByHoverInHas() const override {
-    return has_invalidation_flags_
-        .ancestors_or_siblings_affected_by_hover_in_has;
-  }
-  void SetAncestorsOrSiblingsAffectedByHoverInHas() override {
-    has_invalidation_flags_.ancestors_or_siblings_affected_by_hover_in_has =
-        true;
-  }
-  bool AncestorsOrSiblingsAffectedByActiveInHas() const override {
-    return has_invalidation_flags_
-        .ancestors_or_siblings_affected_by_active_in_has;
-  }
-  void SetAncestorsOrSiblingsAffectedByActiveInHas() override {
-    has_invalidation_flags_.ancestors_or_siblings_affected_by_active_in_has =
-        true;
-  }
-  bool AncestorsOrSiblingsAffectedByFocusInHas() const override {
-    return has_invalidation_flags_
-        .ancestors_or_siblings_affected_by_focus_in_has;
-  }
-  void SetAncestorsOrSiblingsAffectedByFocusInHas() override {
-    has_invalidation_flags_.ancestors_or_siblings_affected_by_focus_in_has =
-        true;
-  }
-  bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const override {
-    return has_invalidation_flags_
-        .ancestors_or_siblings_affected_by_focus_visible_in_has;
-  }
-  void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() override {
-    has_invalidation_flags_
-        .ancestors_or_siblings_affected_by_focus_visible_in_has = true;
-  }
-  bool AffectedByLogicalCombinationsInHas() const override {
-    return has_invalidation_flags_.affected_by_logical_combinations_in_has;
-  }
-  void SetAffectedByLogicalCombinationsInHas() override {
-    has_invalidation_flags_.affected_by_logical_combinations_in_has = true;
-  }
-  bool AffectedByMultipleHas() const override {
-    return has_invalidation_flags_.affected_by_multiple_has;
-  }
-  void SetAffectedByMultipleHas() override {
-    has_invalidation_flags_.affected_by_multiple_has = true;
-  }
-
   bool HasElementFlag(ElementFlags mask) const override {
     return element_flags_ & static_cast<uint16_t>(mask);
   }
@@ -388,6 +274,7 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
   void ClearElementFlag(ElementFlags mask) override {
     element_flags_ &= ~static_cast<uint16_t>(mask);
   }
+
   bool HasRestyleFlags() const override {
     return bit_field_.get<RestyleFlags>();
   }
@@ -396,7 +283,6 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
   void SetTabIndexExplicitly() override {
     SetElementFlag(ElementFlags::kTabIndexWasSetExplicitly, true);
   }
-
   void ClearTabIndexExplicitly() override {
     ClearElementFlag(ElementFlags::kTabIndexWasSetExplicitly);
   }
@@ -411,8 +297,6 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
   void Trace(blink::Visitor*) const override;
 
  private:
-  ScrollOffset saved_layer_scroll_offset_;
-
   AtomicString nonce_;
   AtomicString is_value_;
 
@@ -442,16 +326,8 @@ class ElementRareData final : public NodeRareData, public ElementRareDataBase {
   Member<CSSToggleMap> toggle_map_;
   Member<AnchorScrollData> anchor_scroll_data_;
 
-  FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
-  HasInvalidationFlags has_invalidation_flags_;
-
+  ScrollOffset saved_layer_scroll_offset_;
   wtf_size_t anchored_popover_count_ = 0;
-
-  unsigned did_attach_internals_ : 1;
-  unsigned should_force_legacy_layout_for_child_ : 1;
-  unsigned style_should_force_legacy_layout_ : 1;
-  unsigned has_undo_stack_ : 1;
-  unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {
