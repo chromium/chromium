@@ -58,7 +58,7 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
 
  private:
   // Records PSM execution result, and stops the protocol.
-  void StoreErrorAndStop(RlweResult psm_result);
+  void RecordErrorAndStop(RlweResult psm_result);
 
   // Constructs and sends the PSM RLWE OPRF request.
   void SendRlweOprfRequest();
@@ -106,9 +106,6 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
 
   // The time when the PSM request started.
   base::TimeTicks time_start_;
-
-  // Represents the last PSM protocol execution result.
-  absl::optional<ResultHolder> last_psm_execution_result_;
 
   // The UMA histogram suffix. It's set only to ".InitialEnrollment" for an
   // |AutoEnrollmentClient| until PSM will support FRE.
