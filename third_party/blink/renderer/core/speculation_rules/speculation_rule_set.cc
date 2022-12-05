@@ -212,15 +212,17 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     if (!referrer_policy_value->AsString(&referrer_policy_str))
       return nullptr;
 
-    network::mojom::ReferrerPolicy referrer_policy_out =
-        network::mojom::ReferrerPolicy::kDefault;
-    if (!SecurityPolicy::ReferrerPolicyFromString(
-            referrer_policy_str, kDoNotSupportReferrerPolicyLegacyKeywords,
-            &referrer_policy_out)) {
-      return nullptr;
+    if (!referrer_policy_str.empty()) {
+      network::mojom::ReferrerPolicy referrer_policy_out =
+          network::mojom::ReferrerPolicy::kDefault;
+      if (!SecurityPolicy::ReferrerPolicyFromString(
+              referrer_policy_str, kDoNotSupportReferrerPolicyLegacyKeywords,
+              &referrer_policy_out)) {
+        return nullptr;
+      }
+      DCHECK_NE(referrer_policy_out, network::mojom::ReferrerPolicy::kDefault);
+      referrer_policy = referrer_policy_out;
     }
-    DCHECK_NE(referrer_policy_out, network::mojom::ReferrerPolicy::kDefault);
-    referrer_policy = referrer_policy_out;
   }
 
   return MakeGarbageCollected<SpeculationRule>(

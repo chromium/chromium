@@ -499,6 +499,28 @@ TEST_F(SpeculationRuleSetTest, ReferrerPolicy) {
                         Not(SetsReferrerPolicy()))));
 }
 
+TEST_F(SpeculationRuleSetTest, EmptyReferrerPolicy) {
+  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
+      true};
+
+  // If an empty string is used for referrer_policy, treat this as if the key
+  // were omitted.
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/index2.html"],
+          "referrer_policy": ""
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(AllOf(MatchesListOfURLs("https://example.com/index2.html"),
+                        Not(SetsReferrerPolicy()))));
+}
+
 TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {
   // A <script> with a case-insensitive type match should be propagated to the
   // document.
