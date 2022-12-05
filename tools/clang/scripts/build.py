@@ -519,6 +519,7 @@ def main():
   parser.add_argument('--thinlto',
                       action='store_true',
                       help='build with ThinLTO')
+  parser.add_argument('--bolt', action='store_true', help='build with BOLT')
   parser.add_argument('--llvm-force-head-revision', action='store_true',
                       help='build the latest revision')
   parser.add_argument('--run-tests', action='store_true',
@@ -647,12 +648,15 @@ def main():
   ldflags = []
 
   targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'
+  projects = 'clang;lld;clang-tools-extra'
+  if args.bolt:
+    projects += ';bolt'
 
   base_cmake_args = [
       '-GNinja',
       '-DCMAKE_BUILD_TYPE=Release',
       '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
-      '-DLLVM_ENABLE_PROJECTS=clang;lld;clang-tools-extra',
+      '-DLLVM_ENABLE_PROJECTS=' + projects,
       '-DLLVM_ENABLE_RUNTIMES=compiler-rt',
       '-DLLVM_TARGETS_TO_BUILD=' + targets,
       # PIC needed for Rust build (links LLVM into shared object)
@@ -953,6 +957,11 @@ def main():
 
   print('Building final compiler.')
 
+  # Keep static relocations in the executable for BOLT to analyze. Resolve all
+  # symbols on program start to allow BOLT's PLT optimization.
+  if args.bolt:
+    ldflags += ['-Wl,--emit-relocs', '-Wl,-znow']
+
   default_tools = ['plugins', 'blink_gc_plugin', 'translation_unit']
   chrome_tools = list(set(default_tools + args.extra_tools))
   if cc is not None:  base_cmake_args.append('-DCMAKE_C_COMPILER=' + cc)
@@ -1078,7 +1087,7 @@ def main():
       if target_arch == 'aarch64' or target_arch == 'x86_64':
         api_level = '21'
       target_triple += '-linux-android' + api_level
-      cflags = [
+      android_cflags = [
           '--sysroot=%s/sysroot' % toolchain_dir,
 
           # We don't have an unwinder ready, and don't need it either.
@@ -1087,16 +1096,16 @@ def main():
 
       if target_arch == 'aarch64':
         # Use PAC/BTI instructions for AArch64
-        cflags += [ '-mbranch-protection=standard' ]
+        android_cflags += ['-mbranch-protection=standard']
 
       android_args = compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
           'LLVM_ENABLE_RUNTIMES=compiler-rt',
           # On Android, we want DWARF info for the builtins for unwinding. See
           # crbug.com/1311807.
           'CMAKE_BUILD_TYPE=RelWithDebInfo',
-          'CMAKE_C_FLAGS=' + ' '.join(cflags),
-          'CMAKE_CXX_FLAGS=' + ' '.join(cflags),
-          'CMAKE_ASM_FLAGS=' + ' '.join(cflags),
+          'CMAKE_C_FLAGS=' + ' '.join(android_cflags),
+          'CMAKE_CXX_FLAGS=' + ' '.join(android_cflags),
+          'CMAKE_ASM_FLAGS=' + ' '.join(android_cflags),
           'COMPILER_RT_USE_BUILTINS_LIBRARY=ON',
           'SANITIZER_CXX_ABI=libcxxabi',
           'CMAKE_SHARED_LINKER_FLAGS=-Wl,-u__cxa_demangle',
@@ -1199,6 +1208,68 @@ def main():
   if chrome_tools:
     # If any Chromium tools were built, install those now.
     RunCommand(['ninja', 'cr-install'], msvc_arch='x64')
+
+  if args.bolt:
+    print('Performing BOLT post-link optimizations.')
+    bolt_profiles_dir = os.path.join(LLVM_BUILD_DIR, 'bolt-profiles')
+    os.mkdir(bolt_profiles_dir)
+
+    # Instrument.
+    RunCommand([
+        'bin/llvm-bolt', 'bin/clang', '-o', 'bin/clang-bolt.inst',
+        '-instrument', '--instrumentation-file-append-pid',
+        '--instrumentation-file=' +
+        os.path.join(bolt_profiles_dir, 'prof.fdata')
+    ])
+    RunCommand([
+        'ln', '-s',
+        os.path.join(LLVM_BUILD_DIR, 'bin', 'clang-bolt.inst'),
+        os.path.join(LLVM_BUILD_DIR, 'bin', 'clang++-bolt.inst')
+    ])
+
+    # Train by building a part of Clang.
+    os.mkdir('bolt-training')
+    os.chdir('bolt-training')
+    bolt_train_cmake_args = base_cmake_args + [
+        '-DLLVM_TARGETS_TO_BUILD=X86',
+        '-DLLVM_ENABLE_PROJECTS=clang',
+        '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
+        '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
+        '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
+        '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
+        '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
+        '-DCMAKE_C_COMPILER=' +
+        os.path.join(LLVM_BUILD_DIR, 'bin/clang-bolt.inst'),
+        '-DCMAKE_CXX_COMPILER=' +
+        os.path.join(LLVM_BUILD_DIR, 'bin/clang++-bolt.inst'),
+        '-DCMAKE_ASM_COMPILER=' +
+        os.path.join(LLVM_BUILD_DIR, 'bin/clang-bolt.inst'),
+        '-DCMAKE_ASM_COMPILER_ID=Clang',
+    ]
+    RunCommand(['cmake'] + bolt_train_cmake_args +
+               [os.path.join(LLVM_DIR, 'llvm')])
+    RunCommand([
+        'ninja', 'tools/clang/lib/Sema/CMakeFiles/obj.clangSema.dir/Sema.cpp.o'
+    ])
+    os.chdir(LLVM_BUILD_DIR)
+
+    # Optimize.
+    RunCommand([
+        sys.executable,
+        os.path.join(LLVM_DIR, 'clang', 'utils', 'perf-training',
+                     'perf-helper.py'), 'merge-fdata', 'bin/merge-fdata',
+        'merged.fdata', bolt_profiles_dir
+    ])
+    RunCommand([
+        'bin/llvm-bolt', 'bin/clang', '-o', 'bin/clang-bolt.opt', '-data',
+        'merged.fdata', '-reorder-blocks=ext-tsp', '-reorder-functions=hfsort+',
+        '-split-functions', '-split-all-cold', '-split-eh', '-dyno-stats',
+        '-icf=1', '-use-gnu-stack', '-use-old-text'
+    ])
+
+    # Overwrite clang, preserving its timestamp so ninja doesn't rebuild it.
+    RunCommand(['touch', '-r', 'bin/clang', 'bin/clang-bolt.opt'])
+    RunCommand(['mv', 'bin/clang-bolt.opt', 'bin/clang'])
 
   if not args.build_mac_arm:
     VerifyVersionOfBuiltClangMatchesVERSION()

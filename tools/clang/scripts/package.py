@@ -226,6 +226,8 @@ def main():
       build_cmd.append('--build-mac-arm')
     if sys.platform != 'darwin':
       build_cmd.append('--thinlto')
+    if sys.platform.startswith('linux'):
+      build_cmd.append('--bolt')
 
     TeeCmd(build_cmd, log)
 
