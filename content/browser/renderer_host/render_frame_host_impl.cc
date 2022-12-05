@@ -7655,6 +7655,13 @@ void RenderFrameHostImpl::CreateFencedFrame(
     }
   }
 
+  // Inactive pages cannot create fenced frames. If the page is in the BFCache,
+  // it will be evicted.
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kCreateFencedFrame)) {
+    return;
+  }
+
   fenced_frames_.push_back(
       std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
   FencedFrame* fenced_frame = fenced_frames_.back().get();

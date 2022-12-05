@@ -1198,6 +1198,53 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
   EXPECT_TRUE(ff_rfh->IsSandboxed(blink::kFencedFrameForcedSandboxFlags));
 }
 
+IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
+                       CreateFencedFrameWhileInBackForwardCache) {
+  if (!BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    LOG(ERROR) << "BackForwardCache must be enabled for this test.";
+    return;
+  }
+
+  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("a.test", "/title1.html")));
+  RenderFrameHostWrapper primary_rfh(primary_main_frame_host());
+  ASSERT_TRUE(
+      ExecJs(primary_rfh.get(),
+             JsReplace(kAddIframeScript,
+                       https_server()->GetURL("c.test", "/title1.html"))));
+  RenderFrameHostWrapper iframe(
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(primary_rfh.get(), 0)));
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
+  ASSERT_EQ(primary_rfh->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kInBackForwardCache);
+  ASSERT_EQ(iframe->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  mojo::PendingAssociatedRemote<blink::mojom::FencedFrameOwnerHost> remote;
+  mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost> receiver;
+  receiver = remote.InitWithNewEndpointAndPassReceiver();
+
+  auto remote_frame_interfaces =
+      blink::mojom::RemoteFrameInterfacesFromRenderer::New();
+  remote_frame_interfaces->frame_host_receiver =
+      mojo::AssociatedRemote<blink::mojom::RemoteFrameHost>()
+          .BindNewEndpointAndPassDedicatedReceiver();
+  mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
+  std::ignore = frame.BindNewEndpointAndPassDedicatedReceiver();
+  remote_frame_interfaces->frame = frame.Unbind();
+
+  static_cast<RenderFrameHostImpl*>(iframe.get())
+      ->CreateFencedFrame(
+          std::move(receiver), blink::mojom::FencedFrameMode::kDefault,
+          std::move(remote_frame_interfaces), blink::RemoteFrameToken(),
+          base::UnguessableToken::Create());
+  EXPECT_TRUE(primary_rfh.WaitUntilRenderFrameDeleted());
+  EXPECT_TRUE(iframe.IsRenderFrameDeleted());
+}
+
 class FencedFrameWithSiteIsolationDisabledBrowserTest
     : public FencedFrameMPArchBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
