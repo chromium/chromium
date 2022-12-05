@@ -50,6 +50,24 @@ class RenderFrameHostOwner {
   RenderFrameHostOwner() = default;
   virtual ~RenderFrameHostOwner() = default;
 
+  // A RenderFrameHost started loading:
+  //
+  // - `should_show_loading_ui` indicates whether the loading indicator UI
+  //   should be shown or not. It must be true for:
+  //   * cross-document navigations
+  //   * navigations intercepted by the navigation API's intercept().
+  //
+  // - `was_previously_loading` is false if the FrameTree was not loading
+  //   before. The caller is required to provide this boolean as the delegate
+  //   should only be notified if the FrameTree went from non-loading to loading
+  //   state. However, when it is called, the FrameTree should be in a loading
+  //   state.
+  virtual void DidStartLoading(bool should_show_loading_ui,
+                               bool was_previously_loading) = 0;
+
+  // A RenderFrameHost in this owner stopped loading.
+  virtual void DidStopLoading() = 0;
+
   virtual void RestartNavigationAsCrossDocument(
       std::unique_ptr<NavigationRequest> navigation_request) = 0;
 

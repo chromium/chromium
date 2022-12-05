@@ -7207,8 +7207,12 @@ void RenderFrameHostImpl::DidStopLoading() {
 
   // Only inform the FrameTreeNode of a change in load state if the load state
   // of this RenderFrameHost is being tracked.
-  if (!IsPendingDeletion())
-    frame_tree_node_->DidStopLoading();
+  // This async Mojo method can be called from the renderer before entering
+  // BFCache but the message can arrive here after it.
+  if (!IsPendingDeletion() && !IsInBackForwardCache()) {
+    DCHECK(owner_);
+    owner_->DidStopLoading();
+  }
 }
 
 void RenderFrameHostImpl::GetSavableResourceLinksCallback(
@@ -11530,7 +11534,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     bool was_loading =
         frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
     is_loading_ = true;
-    frame_tree_node()->DidStartLoading(should_show_loading_ui, was_loading);
+    DCHECK(owner_);
+    owner_->DidStartLoading(should_show_loading_ui, was_loading);
   }
 
   if (navigation_request)

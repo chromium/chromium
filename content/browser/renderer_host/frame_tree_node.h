@@ -331,20 +331,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // NavigationRequest (e.g. speculative RenderFrameHost, loading state).
   void ResetNavigationRequestButKeepState();
 
-  // A RenderFrameHost in this node started loading.
-  // |should_show_loading_ui| indicates whether this navigation should be
-  // visible in the UI. True for cross-document navigations and navigations
-  // intercepted by the navigation API's intercept().
-  // |was_previously_loading| is false if the FrameTree was not loading before.
-  // The caller is required to provide this boolean as the delegate should only
-  // be notified if the FrameTree went from non-loading to loading state.
-  // However, when it is called, the FrameTree should be in a loading state.
-  void DidStartLoading(bool should_show_loading_ui,
-                       bool was_previously_loading);
-
-  // A RenderFrameHost in this node stopped loading.
-  void DidStopLoading();
-
   // The load progress for a RenderFrameHost in this node was updated to
   // |load_progress|. This will notify the FrameTree which will in turn notify
   // the WebContents.
@@ -591,6 +577,9 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   bool AncestorOrSelfHasCSPEE() const;
 
   // RenderFrameHostOwner implementation:
+  void DidStartLoading(bool should_show_loading_ui,
+                       bool was_previously_loading) override;
+  void DidStopLoading() override;
   void RestartNavigationAsCrossDocument(
       std::unique_ptr<NavigationRequest> navigation_request) override;
   Navigator& GetCurrentNavigator() override;
