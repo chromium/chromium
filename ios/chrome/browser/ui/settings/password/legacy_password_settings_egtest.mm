@@ -409,6 +409,7 @@ id<GREYMatcher> EditDoneButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.relaunch_policy = NoForceRelaunchAndResetState;
 
   config.features_disabled.push_back(
       password_manager::features::kIOSPasswordUISplit);
@@ -1811,8 +1812,7 @@ id<GREYMatcher> EditDoneButton() {
 }
 
 // Tests the add password flow.
-// TODO(crbug.com/1377079): Flaky, please re-enable once fixed.
-- (void)DISABLED_testAddNewPasswordCredential {
+- (void)testAddNewPasswordCredential {
   OpenPasswordSettings();
 
   // Press "Add".
@@ -1904,8 +1904,7 @@ id<GREYMatcher> EditDoneButton() {
 // Tests that adding new password credential where the username and website
 // matches with an existing credential results in showing a section alert for
 // the existing credential.
-// TODO(crbug.com/1377079): Resolve flaky failures and reenable the test.
-- (void)DISABLED_testAddNewDuplicatedPasswordCredential {
+- (void)testAddNewDuplicatedPasswordCredential {
   SaveExamplePasswordForm();
 
   OpenPasswordSettings();
@@ -1930,7 +1929,7 @@ id<GREYMatcher> EditDoneButton() {
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface setUpMockReauthenticationModuleForAddPassword];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -1964,8 +1963,7 @@ id<GREYMatcher> EditDoneButton() {
 // Tests that the duplicate credential section alert is shown when the user adds
 // a credential that has the same website as that of an existing credential
 // (does not contain username).
-// TODO(crbug.com/1377079): Flaky, please re-enable once fixed.
-- (void)DISABLED_testDuplicatedCredentialWithNoUsername {
+- (void)testDuplicatedCredentialWithNoUsername {
   OpenPasswordSettings();
 
   [[EarlGrey selectElementWithMatcher:AddPasswordButton()]

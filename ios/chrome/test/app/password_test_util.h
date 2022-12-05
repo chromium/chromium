@@ -30,7 +30,11 @@ namespace chrome_test_util {
 // Replace the reauthentication module in
 // PasswordDetailsTableViewController with a fake one to avoid being
 // blocked with a reauth prompt, and return the fake reauthentication module.
-MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule();
+// `is_add_new_password` is true if we are adding a new password (using the
+// AddPasswordViewController). This used to determine the class to cast
+// properly.
+MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule(
+    bool is_add_new_password = false);
 
 // Replace the reauthentication module in Password Manager's
 // PasswordExporter with a fake one to avoid being

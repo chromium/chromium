@@ -435,6 +435,7 @@ id<GREYMatcher> EditDoneButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.relaunch_policy = NoForceRelaunchAndResetState;
 
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordUISplit);
@@ -1953,51 +1954,6 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
 }
 
-// Tests the add password flow.
-// TODO(crbug.com/1377079): Flaky, please re-enable once fixed.
-- (void)DISABLED_testAddNewPasswordCredential {
-  OpenPasswordManager();
-
-  // Press "Add".
-  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
-      performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
-
-  // Fill form.
-  [[EarlGrey selectElementWithMatcher:PasswordDetailWebsite()]
-      performAction:grey_replaceText(@"https://www.example.com")];
-
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
-      performAction:grey_replaceText(@"new username")];
-
-  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
-      performAction:grey_replaceText(@"new password")];
-
-  // The "Add" button is enabled after site and password have been entered.
-  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
-      assertWithMatcher:grey_enabled()];
-
-  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
-      performAction:grey_tap()];
-
-  [GetInteractionForPasswordEntry(@"example.com, new username")
-      performAction:grey_tap()];
-
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
-
-  TapEdit();
-
-  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
-      assertWithMatcher:grey_textFieldValue(@"new password")];
-}
-
 // Tests the add password flow from the toolbar button.
 - (void)testAddNewPasswordCredential {
   OpenPasswordManager();
@@ -2091,8 +2047,7 @@ id<GREYMatcher> EditDoneButton() {
 // Tests that adding new password credential where the username and website
 // matches with an existing credential results in showing a section alert for
 // the existing credential.
-// TODO(crbug.com/1377079): Resolve flaky failures and reenable the test.
-- (void)DISABLED_testAddNewDuplicatedPasswordCredential {
+- (void)testAddNewDuplicatedPasswordCredential {
   SaveExamplePasswordForm();
 
   OpenPasswordManager();
@@ -2117,7 +2072,7 @@ id<GREYMatcher> EditDoneButton() {
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface setUpMockReauthenticationModuleForAddPassword];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -2151,11 +2106,10 @@ id<GREYMatcher> EditDoneButton() {
 // Tests that the duplicate credential section alert is shown when the user adds
 // a credential that has the same website as that of an existing credential
 // (does not contain username).
-// TODO(crbug.com/1377079): Flaky, please re-enable once fixed.
-- (void)DISABLED_testDuplicatedCredentialWithNoUsername {
+- (void)testDuplicatedCredentialWithNoUsername {
   OpenPasswordManager();
 
-  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+  [[EarlGrey selectElementWithMatcher:AddPasswordToolbarButton()]
       performAction:grey_tap()];
 
   // Fill form.

@@ -161,6 +161,10 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   _mockReauthenticationModule = SetUpAndReturnMockReauthenticationModule();
 }
 
++ (void)setUpMockReauthenticationModuleForAddPassword {
+  _mockReauthenticationModule = SetUpAndReturnMockReauthenticationModule(true);
+}
+
 + (void)setUpMockReauthenticationModuleForExport {
   _mockReauthenticationModule =
       SetUpAndReturnMockReauthenticationModuleForExport();

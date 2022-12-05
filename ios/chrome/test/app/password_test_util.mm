@@ -5,6 +5,7 @@
 #import "ios/chrome/test/app/password_test_util.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -46,18 +47,26 @@ namespace chrome_test_util {
 // Replace the reauthentication module in
 // PasswordDetailsCollectionViewController with a fake one to avoid being
 // blocked with a reauth prompt, and return the fake reauthentication module.
-MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule() {
+MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule(
+    bool is_add_new_password) {
   MockReauthenticationModule* mock_reauthentication_module =
       [[MockReauthenticationModule alloc] init];
   // TODO(crbug.com/754642): Stop using TopPresentedViewController();
   UINavigationController* ui_navigation_controller =
       base::mac::ObjCCastStrict<UINavigationController>(
           top_view_controller::TopPresentedViewController());
-  PasswordDetailsTableViewController* password_details_table_view_controller =
-      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
-          ui_navigation_controller.topViewController);
-  password_details_table_view_controller.reauthModule =
-      mock_reauthentication_module;
+  if (is_add_new_password) {
+    AddPasswordViewController* add_password_view_controller =
+        base::mac::ObjCCastStrict<AddPasswordViewController>(
+            ui_navigation_controller.topViewController);
+    add_password_view_controller.reauthModule = mock_reauthentication_module;
+  } else {
+    PasswordDetailsTableViewController* password_details_table_view_controller =
+        base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+            ui_navigation_controller.topViewController);
+    password_details_table_view_controller.reauthModule =
+        mock_reauthentication_module;
+  }
   return mock_reauthentication_module;
 }
 

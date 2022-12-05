@@ -17,6 +17,7 @@
 // Sets a re-authentication mock (i.e. what asks user for fingerprint to
 // view password) and its options for next test.
 + (void)setUpMockReauthenticationModule;
++ (void)setUpMockReauthenticationModuleForAddPassword;
 + (void)setUpMockReauthenticationModuleForExport;
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult;
