@@ -99,6 +99,10 @@ void CascadeMap::Add(const CSSPropertyName& name, CascadePriority priority) {
   if (name.IsCustomProperty()) {
     auto result = custom_properties_.insert(name, CascadePriorityList());
     list = &result.stored_value->value;
+    if (list->IsEmpty()) {
+      list->Push(backing_vector_, priority);
+      return;
+    }
   } else {
     DCHECK(!CSSProperty::Get(name.Id()).IsSurrogate());
 
@@ -116,14 +120,11 @@ void CascadeMap::Add(const CSSPropertyName& name, CascadePriority priority) {
     list = &native_properties_.Buffer()[index];
     if (!native_properties_.Bits().Has(id)) {
       native_properties_.Bits().Set(id);
-      new (list) CascadeMap::CascadePriorityList();
+      new (list) CascadeMap::CascadePriorityList(backing_vector_, priority);
+      return;
     }
   }
 
-  if (list->IsEmpty()) {
-    list->Push(backing_vector_, priority);
-    return;
-  }
   CascadePriority& top = list->Top(backing_vector_);
   DCHECK(priority.ForLayerComparison() >= top.ForLayerComparison());
   if (top >= priority) {
