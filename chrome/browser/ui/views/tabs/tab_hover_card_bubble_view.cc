@@ -739,6 +739,9 @@ class TabHoverCardBubbleView::ThumbnailView
 // static
 constexpr base::TimeDelta TabHoverCardBubbleView::kHoverCardSlideDuration;
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabHoverCardBubbleView,
+                                      kHoverCardBubbleElementId);
+
 TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     : BubbleDialogDelegateView(tab,
                                views::BubbleBorder::TOP_LEFT,
@@ -856,6 +859,8 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // Start in the fully "faded-in" position so that whatever text we initially
   // display is visible.
   SetTextFade(1.0);
+
+  SetProperty(views::kElementIdentifierKey, kHoverCardBubbleElementId);
 }
 
 TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;

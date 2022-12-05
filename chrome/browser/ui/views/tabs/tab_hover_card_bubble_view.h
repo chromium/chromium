@@ -110,6 +110,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   };
 
   METADATA_HEADER(TabHoverCardBubbleView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardBubbleElementId);
   explicit TabHoverCardBubbleView(Tab* tab);
   TabHoverCardBubbleView(const TabHoverCardBubbleView&) = delete;
   TabHoverCardBubbleView& operator=(const TabHoverCardBubbleView&) = delete;

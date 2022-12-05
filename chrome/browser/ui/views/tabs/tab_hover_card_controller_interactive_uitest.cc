@@ -13,6 +13,7 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/reputation/core/safety_tip_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -50,14 +52,22 @@ TabRendererData MakeTabRendererData() {
 }
 }  // namespace
 
-class TabHoverCardInteractiveUiTest : public InProcessBrowserTest,
+class TabHoverCardInteractiveUiTest : public InteractiveBrowserTest,
                                       public test::TabHoverCardTestUtil {
  public:
   ~TabHoverCardInteractiveUiTest() override = default;
 
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InteractiveBrowserTest::SetUp();
+  }
+
   // Start the test by moving the mouse to a location where it will not be
   // hovering the tabstrip. All subsequent interactions will be simulated.
   void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    Tab::SetShowHoverCardOnMouseHoverForTesting(true);
+    embedded_test_server()->StartAcceptingConnections();
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
     gfx::Point upper_left;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -69,6 +79,49 @@ class TabHoverCardInteractiveUiTest : public InProcessBrowserTest,
                                              run_loop.QuitClosure());
     run_loop.Run();
   }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+  MultiStep HoverTabAt(int index) {
+#if BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/1396074): Fix for mac
+    return Steps(Do(base::BindLambdaForTesting(
+        [=]() { SimulateHoverTab(browser(), index); })));
+#else
+    const char kTabToHover[] = "Tab to hover";
+    return Steps(NameDescendantViewByType<Tab>(kBrowserViewElementId,
+                                               kTabToHover, index),
+                 MoveMouseTo(kTabToHover));
+#endif
+  }
+
+  MultiStep UnhoverTab() {
+#if BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/1396074): Fix for mac
+    return Steps(Do(base::BindLambdaForTesting([=]() {
+      TabStrip* const tab_strip = GetTabStrip(browser());
+      HoverCardDestroyedWaiter waiter(tab_strip);
+      ui::MouseEvent stop_hover_event(ui::ET_MOUSE_EXITED, gfx::Point(),
+                                      gfx::Point(), base::TimeTicks(),
+                                      ui::EF_NONE, 0);
+      static_cast<views::View*>(tab_strip)->OnMouseExited(stop_hover_event);
+      waiter.Wait();
+    })));
+#else
+    return Steps(MoveMouseTo(kNewTabButtonElementId));
+#endif
+  }
+
+  StepBuilder CheckHovercardIsOpen() {
+    return WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId);
+  }
+
+  StepBuilder CheckHovercardIsClosed() {
+    return WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId);
+  }
 };
 
 #if defined(USE_AURA)
@@ -77,37 +130,20 @@ class TabHoverCardInteractiveUiTest : public InProcessBrowserTest,
 // Because this test depends on Aura event handling, it is not performed on Mac.
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        HoverCardHidesOnAnyKeyPressInSameWindow) {
-  SimulateHoverTab(browser(), 0);
-
-  // Verify that the hover card widget is destroyed sometime between now and
-  // when we check afterwards. Depending on platform, the destruction could be
-  // synchronous or asynchronous.
-  TabStrip* const tab_strip = GetTabStrip(browser());
-  HoverCardDestroyedWaiter waiter(tab_strip);
-
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
-
-  // Note, fade in/out animations are disabled for testing so this should be
-  // relatively quick.
-  waiter.Wait();
-  EXPECT_FALSE(IsHoverCardVisible(tab_strip));
+  RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(),
+                  Check(base::BindLambdaForTesting([=]() {
+                    return ui_test_utils::SendKeyPressSync(
+                        browser(), ui::VKEY_DOWN, false, false, false, false);
+                  })),
+                  CheckHovercardIsClosed());
 }
 
 #endif
 
-// TODO(crbug.com/1050765): test may be flaky on Windows.
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        HoverCardHidesOnMouseExit) {
-  SimulateHoverTab(browser(), 0);
-
-  TabStrip* const tab_strip = GetTabStrip(browser());
-  HoverCardDestroyedWaiter waiter(tab_strip);
-  ui::MouseEvent stop_hover_event(ui::ET_MOUSE_EXITED, gfx::Point(),
-                                  gfx::Point(), base::TimeTicks(), ui::EF_NONE,
-                                  0);
-  static_cast<views::View*>(tab_strip)->OnMouseExited(stop_hover_event);
-  waiter.Wait();
+  RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(), UnhoverTab(),
+                  CheckHovercardIsClosed());
 }
 
 // TODO(crbug.com/1050765): test may be flaky on Linux and/or ChromeOS.
@@ -158,16 +194,10 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   EXPECT_FALSE(IsHoverCardVisible(tab_strip));
 }
 
-// TODO(crbug.com/1050765): test may be flaky on Windows.
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        WidgetNotVisibleOnMousePressAfterHover) {
-  SimulateHoverTab(browser(), 0);
-
-  ui::MouseEvent click_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             base::TimeTicks(), ui::EF_NONE, 0);
-  TabStrip* const tab_strip = GetTabStrip(browser());
-  tab_strip->tab_at(0)->OnMousePressed(click_event);
-  EXPECT_FALSE(IsHoverCardVisible(tab_strip));
+  RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(),
+                  SelectTab(kTabStripElementId, 0), CheckHovercardIsClosed());
 }
 
 // TODO(crbug.com/1050765): test may be flaky on Linux and/or ChromeOS.
@@ -280,7 +310,7 @@ class TabHoverCardBubbleViewInterstitialBrowserTest
         net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
     https_server_mismatched_->AddDefaultHandlers(GetChromeTestDataDir());
 
-    InProcessBrowserTest::SetUpOnMainThread();
+    TabHoverCardInteractiveUiTest::SetUpOnMainThread();
     reputation::InitializeSafetyTipConfig();
   }
 
@@ -296,9 +326,8 @@ class TabHoverCardBubbleViewInterstitialBrowserTest
 // showing a lookalike interstitial is ("Did you mean google.com?").
 IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
                        LookalikeInterstitial_ShouldHideHoverCardUrl) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  // Navigate the tab to a lookalike URL and check the hover card. The domain
-  // field must be empty.
+  //  Navigate the tab to a lookalike URL and check the hover card. The domain
+  //  field must be empty.
   static constexpr char kLookalikeDomain[] = "googlé.com";
   static constexpr char kUrlPath[] = "/empty.html";
   const GURL url = embedded_test_server()->GetURL(kLookalikeDomain, kUrlPath);
