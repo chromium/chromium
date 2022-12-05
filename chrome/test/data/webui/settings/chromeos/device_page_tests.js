@@ -540,6 +540,19 @@ suite('SettingsDevicePage', function() {
           isVisible(audioPage.shadowRoot.querySelector('#audioOutputTitle')));
       assertTrue(isVisible(
           audioPage.shadowRoot.querySelector('#audioOutputSubsection')));
+      assertTrue(
+          isVisible(audioPage.shadowRoot.querySelector('#audioInputSection')));
+      const sectionHeader =
+          audioPage.shadowRoot.querySelector('#audioInputTitle');
+      assertTrue(isVisible(sectionHeader));
+      assertEquals('Input', sectionHeader.textContent);
+      const deviceSubsectionHeader =
+          audioPage.shadowRoot.querySelector('#audioInputDeviceLabel');
+      assertTrue(isVisible(deviceSubsectionHeader));
+      assertEquals('Device', deviceSubsectionHeader.textContent);
+      const deviceSubsectionDropdown =
+          audioPage.shadowRoot.querySelector('#audioInputDeviceDropdown');
+      assertTrue(isVisible(deviceSubsectionDropdown));
     });
   });
 
