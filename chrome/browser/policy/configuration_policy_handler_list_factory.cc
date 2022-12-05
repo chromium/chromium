@@ -276,6 +276,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kThrottleNonVisibleCrossOriginIframesAllowed,
     prefs::kThrottleNonVisibleCrossOriginIframesAllowed,
     base::Value::Type::BOOLEAN },
+  { key::kNewBaseUrlInheritanceBehaviorAllowed,
+    prefs::kNewBaseUrlInheritanceBehaviorAllowed,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

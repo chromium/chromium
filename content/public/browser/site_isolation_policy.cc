@@ -26,6 +26,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "url/origin.h"
 
 namespace content {
@@ -141,9 +142,17 @@ bool SiteIsolationPolicy::UseDedicatedProcessesForAllSites() {
 
 // static
 bool SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() {
-  return !IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation) &&
-         base::FeatureList::IsEnabled(
-             blink::features::kIsolateSandboxedIframes);
+  // This feature is controlled by kIsolateSandboxedIframes, and depends on
+  // partial Site Isolation being enabled. It also requires new base URL
+  // behavior, so it implicitly causes
+  // blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() to return true,
+  // and can't be enabled if the new base URL behavior has been disabled by
+  // enterprise policy.
+  return base::FeatureList::IsEnabled(
+             blink::features::kIsolateSandboxedIframes) &&
+         !IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation) &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             blink::switches::kDisableNewBaseUrlInheritanceBehavior);
 }
 
 // static

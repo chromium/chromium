@@ -3683,4 +3683,9 @@ const char kPrintingOAuth2AuthorizationServers[] =
 const char kThrottleNonVisibleCrossOriginIframesAllowed[] =
     "throttle_non_visible_cross_origin_iframes_allowed";
 
+// If true, the feature NewBaseUrlInheritanceBehavior will be allowed, otherwise
+// attempts to enable the feature will be disallowed.
+const char kNewBaseUrlInheritanceBehaviorAllowed[] =
+    "new_base_url_inheritance_behavior_allowed";
+
 }  // namespace prefs

@@ -8358,6 +8358,50 @@
       }
     ]
   },
+  "NewBaseUrlInheritanceBehaviorAllowed": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NewBaseUrlInheritanceBehaviorAllowed": true
+        },
+        "prefs": {
+          "new_base_url_inheritance_behavior_allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "NewBaseUrlInheritanceBehaviorAllowed": false
+        },
+        "prefs": {
+          "new_base_url_inheritance_behavior_allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "new_base_url_inheritance_behavior_allowed": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      }
+    ]
+  },
   "ScrollToTextFragmentEnabled": {
     "os": [
       "win",

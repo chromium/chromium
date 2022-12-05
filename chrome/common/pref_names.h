@@ -1301,6 +1301,7 @@ extern const char kAccessControlAllowMethodsInCORSPreflightSpecConformant[];
 extern const char kDIPSTimerLastUpdate[];
 
 extern const char kThrottleNonVisibleCrossOriginIframesAllowed[];
+extern const char kNewBaseUrlInheritanceBehaviorAllowed[];
 
 }  // namespace prefs
 

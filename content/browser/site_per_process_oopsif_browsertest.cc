@@ -4,6 +4,7 @@
 
 #include "content/browser/site_per_process_browsertest.h"
 
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -13,6 +14,7 @@
 #include "content/test/render_document_feature.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace content {
 
@@ -41,6 +43,22 @@ class SrcdocIsolatedSandboxedIframeTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };  // class SrcdocIsolatedSandboxedIframeTest
+
+// Test class to verify that the enterprise policy
+// NewBaseUrlInheritanceBehaviorAllowed can be used to control whether the
+// NewBaseUrlInheritanceBehavior and IsolateSandboxedIframes features can be
+// used.
+class BaseUrlInheritanceBehaviorEnterprisePolicyTest
+    : public SrcdocIsolatedSandboxedIframeTest {
+ public:
+  BaseUrlInheritanceBehaviorEnterprisePolicyTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SrcdocIsolatedSandboxedIframeTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        blink::switches::kDisableNewBaseUrlInheritanceBehavior);
+  }
+};  // class BaseUrlInheritanceBehaviorEnterprisePolicyTest
 
 // Out-of-process-sandboxed-iframe (OOPSIF) tests.
 //
@@ -2101,6 +2119,34 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   EXPECT_EQ(main_url2, root_ftn->current_frame_host()->GetBaseUrl());
 }
 
+// This test verifies that using enterprise policy to disable
+// NewBaseUrlInheritanceBehavior effectively disables both
+// the new base url inheritance behavior, and isolation of sandboxed iframes by
+// forcing both AreIsolatedSandboxedIframesEnabled() and
+// IsNewBaseUrlInheritanceBehaviorEnabled() to return false.
+IN_PROC_BROWSER_TEST_P(BaseUrlInheritanceBehaviorEnterprisePolicyTest,
+                       VerifyEnterprisePolicyDisables) {
+  EXPECT_FALSE(SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled());
+  EXPECT_FALSE(blink::features::IsNewBaseUrlInheritanceBehaviorEnabled());
+
+  // Verify that the about:blank window does not get the base url of its
+  // initiator, which is the expected behavior when the
+  // IsolateSandboxedIframes or NewBaseUrlInheritanceBehavior features are
+  // overridden by the enterprise policy.
+  StartEmbeddedServer();
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_NE("about:blank", EvalJs(shell(), "document.baseURI").ExtractString());
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(root, "popup = window.open('about:blank');"));
+  Shell* popup = new_shell_observer.GetShell();
+  EXPECT_EQ("about:blank", EvalJs(popup, "document.baseURI").ExtractString());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessIsolatedSandboxedIframeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
@@ -2119,6 +2165,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SrcdocIsolatedSandboxedIframeTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "isolated" : "non_isolated";
+                         });
+INSTANTIATE_TEST_SUITE_P(All,
+                         BaseUrlInheritanceBehaviorEnterprisePolicyTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "isolated" : "non_isolated";

@@ -1533,6 +1533,8 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
   registry->RegisterIntegerPref(prefs::kSCTAuditingHashdanceReportCount, 0);
   registry->RegisterBooleanPref(
       prefs::kThrottleNonVisibleCrossOriginIframesAllowed, true);
+  registry->RegisterBooleanPref(prefs::kNewBaseUrlInheritanceBehaviorAllowed,
+                                true);
 }
 
 // static

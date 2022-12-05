@@ -1552,8 +1552,10 @@ bool IsNewBaseUrlInheritanceBehaviorEnabled() {
   // The kIsolateSandboxedIframes feature depends on the new base URL behavior,
   // so it enables the new behavior even if kNewBaseUrlInheritanceBehavior
   // isn't enabled.
-  return base::FeatureList::IsEnabled(kNewBaseUrlInheritanceBehavior) ||
-         base::FeatureList::IsEnabled(kIsolateSandboxedIframes);
+  return (base::FeatureList::IsEnabled(kNewBaseUrlInheritanceBehavior) ||
+          base::FeatureList::IsEnabled(kIsolateSandboxedIframes)) &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableNewBaseUrlInheritanceBehavior);
 }
 
 const base::FeatureParam<int> kDocumentMaxEventNodePathCachedEntries{
