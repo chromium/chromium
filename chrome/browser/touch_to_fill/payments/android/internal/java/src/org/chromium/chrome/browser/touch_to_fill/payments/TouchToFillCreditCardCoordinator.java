@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
 import android.content.Context;
@@ -73,6 +74,7 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
                 .with(SHEET_ITEMS, new ModelList())
                 .with(DISMISS_HANDLER, mediator::onDismissed)
                 .with(SCAN_CREDIT_CARD_CALLBACK, mMediator::scanCreditCard)
+                .with(SHOW_CREDIT_CARD_SETTINGS_CALLBACK, mMediator::showCreditCardSettings)
                 .build();
     }
 }

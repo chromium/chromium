@@ -62,6 +62,10 @@ void TouchToFillCreditCardController::ScanCreditCard(JNIEnv* env) {
   delegate_->ScanCreditCard();
 }
 
+void TouchToFillCreditCardController::ShowCreditCardSettings(JNIEnv* env) {
+  delegate_->ShowCreditCardSettings();
+}
+
 void TouchToFillCreditCardController::SuggestionSelected(
     JNIEnv* env,
     base::android::JavaParamRef<jstring> unique_id) {

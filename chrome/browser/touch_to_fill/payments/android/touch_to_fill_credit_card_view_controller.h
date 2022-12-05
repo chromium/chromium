@@ -14,8 +14,12 @@ class TouchToFillCreditCardViewController {
  public:
   virtual ~TouchToFillCreditCardViewController() = default;
 
+  // Called whenever the surface gets hidden (regardless of the cause).
   virtual void OnDismissed(JNIEnv* env) = 0;
+  // Calls credit card scanner
   virtual void ScanCreditCard(JNIEnv* env) = 0;
+  // Causes the credit cards settings page to be shown
+  virtual void ShowCreditCardSettings(JNIEnv* env) = 0;
   virtual void SuggestionSelected(
       JNIEnv* env,
       base::android::JavaParamRef<jstring> unique_id) = 0;

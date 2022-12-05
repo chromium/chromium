@@ -100,6 +100,11 @@ class TouchToFillCreditCardView implements BottomSheetContent {
         mScanCreditCardHandler = callback;
     }
 
+    void setShowCreditCardSettingsCallback(Runnable callback) {
+        View managePaymentMethodsButton = mContentView.findViewById(R.id.manage_payment_methods);
+        managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
+    }
+
     /**
      * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
      *

@@ -13,5 +13,5 @@ found in the LICENSE file.
     <dimen name="ttf_for_payments_buttons_vertical_margin">18dp</dimen>
     <dimen name="touch_to_fill_payments_favicon_width">40dp</dimen>
     <dimen name="touch_to_fill_payments_favicon_height">24dp</dimen>
-    <dimen name="touch_to_fill_payments_sheet_margin">24dp</dimen>
+    <dimen name="ttf_for_payments_menu_item_icon_padding">12dp</dimen>
 </resources>
