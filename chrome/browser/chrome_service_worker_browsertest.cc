@@ -317,7 +317,13 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCount) {
+// TODO(crbug.com/1395715): The test is flaky. Re-enable it.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_SubresourceCount DISABLED_SubresourceCount
+#else
+#define MAYBE_SubresourceCount SubresourceCount
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCount) {
   base::RunLoop ukm_loop;
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_recorder;
