@@ -89,12 +89,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const url = chrome.readAnything.getUrl(nodeId);
     if (url && element.nodeName === 'A') {
       element.setAttribute('href', url);
-      element.onclick = function(e) {
-        if (e.target !== e.currentTarget) {
-          throw new Error(
-              'Target ' + e.target + ' does not match current target ' +
-              e.currentTarget);
-        }
+      element.onclick = function() {
         chrome.readAnything.onLinkClicked(nodeId);
       };
     }
