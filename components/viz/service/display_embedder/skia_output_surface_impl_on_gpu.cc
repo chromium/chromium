@@ -1575,8 +1575,8 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
     // Texture parameters can be modified by concurrent reads so reset them
     // before compositing from the texture. See https://crbug.com/1092080.
     if (is_gl && context->maybe_concurrent_reads()) {
-      auto* promise_texture = context->promise_image_texture();
-      if (promise_texture) {
+      for (SkPromiseImageTexture* promise_texture :
+           context->promise_image_textures()) {
         GrBackendTexture backend_texture = promise_texture->backendTexture();
         backend_texture.glTextureParametersModified();
       }
@@ -1586,10 +1586,12 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
 
 void SkiaOutputSurfaceImplOnGpu::ResetStateOfImages() {
   for (auto& context : image_contexts_with_end_access_state_) {
-    if (!gr_context()->setBackendTextureState(
-            context.first->promise_image_texture()->backendTexture(),
-            *context.second)) {
-      DLOG(ERROR) << "setBackendTextureState() failed.";
+    for (SkPromiseImageTexture* promise_texture :
+         context.first->promise_image_textures()) {
+      if (!gr_context()->setBackendTextureState(
+              promise_texture->backendTexture(), *context.second)) {
+        DLOG(ERROR) << "setBackendTextureState() failed.";
+      }
     }
   }
   image_contexts_with_end_access_state_.clear();

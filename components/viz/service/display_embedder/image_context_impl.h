@@ -65,13 +65,10 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // Returns true if there might be concurrent reads to the backing texture.
   bool maybe_concurrent_reads() const { return maybe_concurrent_reads_; }
 
-  void set_promise_image_texture(
-      sk_sp<SkPromiseImageTexture> promise_image_texture) {
-    owned_promise_image_texture_ = std::move(promise_image_texture);
-    promise_image_texture_ = owned_promise_image_texture_.get();
-  }
-  SkPromiseImageTexture* promise_image_texture() const {
-    return promise_image_texture_;
+  // Return the vector of promise image textures.
+  const std::vector<raw_ptr<SkPromiseImageTexture>>& promise_image_textures()
+      const {
+    return promise_image_textures_;
   }
   std::unique_ptr<GrBackendSurfaceMutableState> TakeAccessEndState() const {
     return representation_scoped_read_access_
@@ -79,6 +76,8 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
                : nullptr;
   }
 
+  void SetPromiseImageTextures(
+      std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures);
   void BeginAccessIfNecessary(
       gpu::SharedContextState* context_state,
       gpu::SharedImageRepresentationFactory* representation_factory,
@@ -90,6 +89,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   void EndAccessIfNecessary();
 
  private:
+  void DeleteFallbackGrBackendTextures();
   void CreateFallbackImage(gpu::SharedContextState* context_state);
   bool BeginAccessIfNecessaryForSharedImage(
       gpu::SharedContextState* context_state,
@@ -109,7 +109,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
   // Fallback in case we cannot produce a |representation_|.
   raw_ptr<gpu::SharedContextState> fallback_context_state_ = nullptr;
-  GrBackendTexture fallback_texture_;
+  std::vector<GrBackendTexture> fallback_textures_;
 
   // Only one of the follow should be non-null at the same time.
   scoped_refptr<gpu::gles2::TexturePassthrough> texture_passthrough_;
@@ -124,13 +124,12 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
       representation_raster_scoped_access_;
 
   // For holding SkPromiseImageTexture create from |fallback_texture| or legacy
-  // mailbox.
-  sk_sp<SkPromiseImageTexture> owned_promise_image_texture_;
+  // mailboxes.
+  std::vector<sk_sp<SkPromiseImageTexture>> owned_promise_image_textures_;
 
-  // The |promise_image_texture| is used for fulfilling the promise image. It is
-  // used on GPU thread.
-  raw_ptr<SkPromiseImageTexture, DanglingUntriaged> promise_image_texture_ =
-      nullptr;
+  // The |promise_image_textures| are used for fulfilling the promise images.
+  // They are used on GPU thread.
+  std::vector<raw_ptr<SkPromiseImageTexture>> promise_image_textures_;
 };
 
 }  // namespace viz

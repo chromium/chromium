@@ -65,10 +65,31 @@ namespace viz {
 
 namespace {
 
-sk_sp<SkPromiseImageTexture> Fulfill(void* texture_context) {
-  DCHECK(texture_context);
-  auto* image_context = static_cast<ImageContextImpl*>(texture_context);
-  return sk_ref_sp(image_context->promise_image_texture());
+// FulfillForPlane is a struct that contains the ImageContext `context` used for
+// fulfilling an SkPromiseImageTexture identified by `plane_index`. The
+// plane_index is 0 for single planar formats and can be between [0, 3] for
+// multiplanar formats.
+struct FulfillForPlane {
+  explicit FulfillForPlane(ImageContextImpl* context, int plane_index = 0)
+      : context_(context), plane_index_(plane_index) {}
+
+  const raw_ptr<ImageContextImpl> context_ = nullptr;
+  const int plane_index_ = 0;
+};
+
+sk_sp<SkPromiseImageTexture> Fulfill(void* fulfill) {
+  DCHECK(fulfill);
+  auto* fulfill_for_plane = static_cast<FulfillForPlane*>(fulfill);
+  const auto& promise_textures =
+      fulfill_for_plane->context_->promise_image_textures();
+  int plane_index = fulfill_for_plane->plane_index_;
+  return promise_textures.empty()
+             ? nullptr
+             : sk_ref_sp(promise_textures[plane_index].get());
+}
+
+void CleanUp(void* fulfill) {
+  delete static_cast<FulfillForPlane*>(fulfill);
 }
 
 gpu::ContextUrl& GetActiveUrl() {
@@ -391,6 +412,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
       static_cast<ImageContextImpl*>(image_context));
 
   const auto& mailbox_holder = image_context->mailbox_holder();
+  auto* impl = static_cast<ImageContextImpl*>(image_context);
 
   if (representation_factory_) {
     auto* sync_point_manager = dependency_->GetSyncPointManager();
@@ -402,7 +424,6 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
       image_context->mutable_mailbox_holder()->sync_token.Clear();
     }
 
-    auto* impl = static_cast<ImageContextImpl*>(image_context);
     if (impl->BeginRasterAccess(representation_factory_.get()))
       return;
   }
@@ -416,12 +437,13 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
       image_context->format().resource_format(),
       image_context->mailbox_holder().texture_target,
       image_context->ycbcr_info());
+  FulfillForPlane* fulfill = new FulfillForPlane(impl);
   auto image = SkImage::MakePromiseTexture(
       gr_context_thread_safe_, backend_format,
       {image_context->size().width(), image_context->size().height()},
       GrMipMapped::kNo, image_context->origin(), color_type,
       image_context->alpha_type(), image_context->color_space(), Fulfill,
-      /*textureReleaseProc=*/nullptr, image_context);
+      CleanUp, fulfill);
   image_context->SetImage(std::move(image), backend_format);
 
   if (mailbox_holder.sync_token.HasData()) {
@@ -448,6 +470,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
   GrBackendFormat formats[4] = {};
   SkDeferredDisplayListRecorder::PromiseImageTextureContext
       texture_contexts[4] = {};
+  void* fulfills[4] = {};
   for (size_t i = 0; i < contexts.size(); ++i) {
     auto* context = static_cast<ImageContextImpl*>(contexts[i]);
     DCHECK(context->origin() == kTopLeft_GrSurfaceOrigin);
@@ -466,14 +489,14 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     }
     images_in_current_paint_.push_back(context);
     texture_contexts[i] = context;
+    fulfills[i] = new FulfillForPlane(context);
   }
 
   GrYUVABackendTextureInfo yuva_backend_info(
       yuva_info, formats, GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
   auto image = SkImage::MakePromiseYUVATexture(
       gr_context_thread_safe_, yuva_backend_info, std::move(image_color_space),
-      Fulfill,
-      /*textureReleaseProc=*/nullptr, texture_contexts);
+      Fulfill, CleanUp, fulfills);
   DCHECK(image);
   return image;
 }
@@ -713,13 +736,13 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
         ResourceFormatToClosestSkColorType(true /* gpu_compositing */, format);
     GrBackendFormat backend_format = GetGrBackendFormatForTexture(
         format, GL_TEXTURE_2D, /*ycbcr_info=*/absl::nullopt);
+    FulfillForPlane* fulfill = new FulfillForPlane(image_context.get());
     auto image = SkImage::MakePromiseTexture(
         gr_context_thread_safe_, backend_format,
         {image_context->size().width(), image_context->size().height()},
         mipmap ? GrMipMapped::kYes : GrMipMapped::kNo, image_context->origin(),
         color_type, image_context->alpha_type(), image_context->color_space(),
-        Fulfill,
-        /*textureReleaseProc=*/nullptr, image_context.get());
+        Fulfill, CleanUp, fulfill);
     image_context->SetImage(std::move(image), backend_format);
     if (!image_context->has_image()) {
       return nullptr;
