@@ -128,10 +128,12 @@ class PolicyDetails:
                                        policy.get('supported_on', [])):
       split_result = version_range.split('-')
       if len(split_result) != 2:
-        raise RuntimeError('supported_on must have exactly one dash: "%s"' % p)
+        raise RuntimeError('supported_on must have exactly one dash: "%s"' %
+                           self.name)
       (version_min, version_max) = split_result
       if version_min == '':
-        raise RuntimeError('supported_on must define a start version: "%s"' % p)
+        raise RuntimeError('supported_on must define a start version: "%s"' %
+                           self.name)
 
       # Skip if filtering by Chromium version and the current Chromium version
       # does not support the policy.
