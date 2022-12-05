@@ -52,7 +52,7 @@
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-arm-generic-rel": {

@@ -81,6 +81,7 @@ try_.builder(
     mirrors = [
         "ci/chromeos-arm-generic-dbg",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
