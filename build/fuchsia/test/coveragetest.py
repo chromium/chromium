@@ -12,8 +12,8 @@ import unittest
 import coverage  # pylint: disable=import-error
 
 COVERED_FILES = [
-    'flash_device.py', 'log_manager.py', 'publish_package.py', 'serve_repo.py',
-    'test_server.py', 'compatible_utils.py'
+    'compatible_utils.py', 'deploy_to_fuchsia.py', 'flash_device.py',
+    'log_manager.py', 'publish_package.py', 'serve_repo.py', 'test_server.py'
 ]
 
 

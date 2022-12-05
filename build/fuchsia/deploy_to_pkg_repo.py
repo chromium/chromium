@@ -27,12 +27,11 @@ def main():
   assert args.package
 
   fuchsia_out_dir = os.path.expanduser(args.fuchsia_out_dir)
-  fuchsia_amber_files_dir = os.path.join(fuchsia_out_dir, 'amber-files')
-  assert os.path.exists(fuchsia_amber_files_dir), \
+  assert os.path.exists(fuchsia_out_dir), \
      '{} not found, check that --fuchsia-out-dir points to a valid out dir.' \
-     ' eg. /path/to/fuchsia/out/default'.format(fuchsia_amber_files_dir)
+     ' eg. /path/to/fuchsia/out/default'.format(fuchsia_out_dir)
 
-  repo = pkg_repo.ExternalPkgRepo(fuchsia_amber_files_dir,
+  repo = pkg_repo.ExternalPkgRepo(fuchsia_out_dir,
                                   os.path.join(fuchsia_out_dir, '.build-id'))
   print('Installing packages and symbols in package repo %s...' %
         repo.GetPath())

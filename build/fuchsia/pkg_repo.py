@@ -8,8 +8,13 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+from compatible_utils import install_symbols
 
 # Maximum amount of time to block while waiting for "pm serve" to come up.
 _PM_SERVE_LISTEN_TIMEOUT_SECS = 10
@@ -206,13 +211,13 @@ class ExternalPkgRepo(PkgRepo):
   """Publishes packages to a package repository located and served externally
   (ie. located under a Fuchsia build directory and served by "fx serve"."""
 
-  def __init__(self, pkg_root, symbol_root):
+  def __init__(self, fuchsia_out_dir):
     super(PkgRepo, self).__init__()
 
-    self._pkg_root = pkg_root
-    self._symbol_root = symbol_root
+    self._fuchsia_out_dir = fuchsia_out_dir
+    self._pkg_root = os.path.join(fuchsia_out_dir, 'amber-files')
 
-    logging.info('Using existing package root: {}'.format(pkg_root))
+    logging.info('Using existing package root: {}'.format(self._pkg_root))
     logging.info('ATTENTION: This will not start a package server. ' +
                  'Please run "fx serve" manually.')
 
@@ -222,32 +227,10 @@ class ExternalPkgRepo(PkgRepo):
   def PublishPackage(self, package_path):
     super(ExternalPkgRepo, self).PublishPackage(package_path)
 
-    self._InstallSymbols(os.path.join(os.path.dirname(package_path), 'ids.txt'))
+    install_symbols((package_path), self._fuchsia_out_dir)
 
   def __enter__(self):
     return self
 
   def __exit__(self, type, value, tb):
     pass
-
-  def _InstallSymbols(self, package_path):
-    """Installs debug symbols for a packageinto the GDB-standard symbol
-    directory located at |self.symbol_root|."""
-
-    ids_txt_path = os.path.join(os.path.dirname(package_path), 'ids.txt')
-    for entry in open(ids_txt_path, 'r'):
-      build_id, binary_relpath = entry.strip().split(' ')
-      binary_abspath = os.path.abspath(
-          os.path.join(os.path.dirname(ids_txt_path), binary_relpath))
-      symbol_dir = os.path.join(self._symbol_root, build_id[:2])
-      symbol_file = os.path.join(symbol_dir, build_id[2:] + '.debug')
-
-      if not os.path.exists(symbol_dir):
-        os.makedirs(symbol_dir)
-
-      if os.path.islink(symbol_file) or os.path.exists(symbol_file):
-        # Clobber the existing entry to ensure that the symlink's target is
-        # up to date.
-        os.unlink(symbol_file)
-
-      os.symlink(os.path.relpath(binary_abspath, symbol_dir), symbol_file)

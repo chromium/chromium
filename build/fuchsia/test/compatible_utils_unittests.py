@@ -263,6 +263,34 @@ universe_package_labels += []
                 os.path.join(tmp_dir, 'images-internal', 'chromebook-x64',
                              'workstation_eng'))
 
+    def test_install_symbols(self):
+        """Test |install_symbols|."""
+
+        with tempfile.TemporaryDirectory() as fuchsia_out_dir:
+            build_id = 'test_build_id'
+            symbol_file = os.path.join(fuchsia_out_dir, '.build-id',
+                                       build_id[:2], build_id[2:] + '.debug')
+            id_path = os.path.join(fuchsia_out_dir, 'ids.txt')
+            try:
+                binary_relpath = 'path/to/binary'
+                with open(id_path, 'w') as f:
+                    f.write(f'{build_id} {binary_relpath}')
+                compatible_utils.install_symbols([id_path], fuchsia_out_dir)
+                self.assertTrue(os.path.islink(symbol_file))
+                self.assertEqual(os.path.realpath(symbol_file),
+                                 os.path.join(fuchsia_out_dir, binary_relpath))
+
+                new_binary_relpath = 'path/to/new/binary'
+                with open(id_path, 'w') as f:
+                    f.write(f'{build_id} {new_binary_relpath}')
+                compatible_utils.install_symbols([id_path], fuchsia_out_dir)
+                self.assertTrue(os.path.islink(symbol_file))
+                self.assertEqual(
+                    os.path.realpath(symbol_file),
+                    os.path.join(fuchsia_out_dir, new_binary_relpath))
+            finally:
+                os.remove(id_path)
+
 
 if __name__ == '__main__':
     unittest.main()

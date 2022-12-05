@@ -78,11 +78,6 @@ template("fuchsia_run_script_with_packages") {
   } else {
     _pkg_shortname = get_label_info(invoker.package, "name")
   }
-  if (!defined(invoker.use_v2_script)) {
-    use_v2_script = use_v2_script_default
-  } else {
-    use_v2_script = invoker.use_v2_script
-  }
 
   _generated_script_path =
       "$root_build_dir/bin/" +
@@ -126,7 +121,7 @@ template("fuchsia_run_script_with_packages") {
     }
 
     # Compute the list of full paths to package files, including dependencies.
-    if (!use_v2_script) {
+    if (!invoker.use_v2_script) {
       _pkg_dir = "$root_out_dir/gen/" + get_label_info(invoker.package, "dir") +
                  "/" + _pkg_shortname
       package_paths =
@@ -137,7 +132,7 @@ template("fuchsia_run_script_with_packages") {
         package_dep_target = package_dep[0]
         deps += [ package_dep_target ]
         data_deps += [ package_dep_target ]
-        if (!use_v2_script) {
+        if (!invoker.use_v2_script) {
           package_dep_name = package_dep[1]
           package_dep_path = rebase_path(
                   get_label_info(package_dep_target, "target_gen_dir") + "/" +
@@ -153,7 +148,7 @@ template("fuchsia_run_script_with_packages") {
       executable_args = []
     }
 
-    if (!use_v2_script) {
+    if (!invoker.use_v2_script) {
       foreach(package_path, package_paths) {
         executable_args += [
           "--package",
@@ -193,6 +188,11 @@ template("fuchsia_package_installer") {
   } else {
     pkg_shortname = get_label_info(invoker.package, "name")
   }
+  if (!defined(invoker.use_v2_script)) {
+    use_v2_script = use_v2_script_default
+  } else {
+    use_v2_script = invoker.use_v2_script
+  }
   fuchsia_package_metadata(pkg_shortname) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
@@ -205,7 +205,16 @@ template("fuchsia_package_installer") {
                            "*",
                            TESTONLY_AND_VISIBILITY + [ "executable_args" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    executable = rebase_path("//build/fuchsia/deploy_to_pkg_repo.py")
+    if (use_v2_script) {
+      executable = rebase_path("//build/fuchsia/test/deploy_to_fuchsia.py")
+      executable_args = [
+        "--out-dir",
+        "@WrappedPath(.)",
+        pkg_shortname,
+      ]
+    } else {
+      executable = rebase_path("//build/fuchsia/deploy_to_pkg_repo.py")
+    }
     output_name_format = "deploy_%package%"
     include_fuchsia_build_dir = true
   }
