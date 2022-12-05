@@ -2,7 +2,7 @@
   "name": "dependency-analysis",
   "version": "1.0.0",
   "scripts": {
-    "serve": "webpack-dev-server --mode development",
+    "serve": "webpack-dev-server --compress --mode development",
     "serve-dist": "http-server ./dist --port 8888",
     "build": "webpack",
     "lint": "eslint src/*.js src/vue_components/*.vue; exit 0",

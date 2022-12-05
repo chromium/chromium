@@ -9,8 +9,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
-  // Defines two entry point chunks, one for each page.
+  // Defines multiple entry point chunks, one for each page.
   entry: {
+    targetView: './src/target_view.js',
     packageView: './src/package_view.js',
     classView: './src/class_view.js',
   },
@@ -72,7 +73,13 @@ module.exports = {
     ],
   },
   plugins: [
-    // Defines two HTML outputs, one for each page.
+    // Defines multiple HTML outputs, one for each page.
+    new HtmlWebpackPlugin({
+      filename: 'target_view.html',
+      template: './src/target_view.html',
+      favicon: './src/assets/package_graph_icon.png',
+      chunks: ['targetView'],
+    }),
     new HtmlWebpackPlugin({
       filename: 'package_view.html',
       template: './src/package_view.html',

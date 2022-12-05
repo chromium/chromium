@@ -7,6 +7,7 @@
  * @readonly @enum {string}
  */
 const PagePathName = {
+  TARGET: '/target_view.html',
   PACKAGE: '/package_view.html',
   CLASS: '/class_view.html',
 };

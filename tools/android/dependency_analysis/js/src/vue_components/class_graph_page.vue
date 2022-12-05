@@ -4,14 +4,14 @@
 
 <template>
   <div id="page-container">
-    <v-dialog />
+    <v-dialog/>
     <div id="title-and-graph-container">
       <div
           id="title-and-metadata">
         <div
             id="title"
             class="md-headline">
-          Clank Dependency Viewer - Class Graph
+          <a href="/">Clank Dependency Viewer</a>  - Class Graph
         </div>
         <div
             id="graph-metadata-info">

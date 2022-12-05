@@ -250,9 +250,13 @@ class ClassDisplaySettingsData extends DisplaySettingsData {
 /** Data store containing package graph display-related settings. */
 class PackageDisplaySettingsData extends DisplaySettingsData {}
 
+/** Data store containing target graph display-related settings. */
+class TargetDisplaySettingsData extends DisplaySettingsData {}
+
 export {
   ClassDisplaySettingsData,
   DisplaySettingsPreset,
   GraphEdgeColor,
   PackageDisplaySettingsData,
+  TargetDisplaySettingsData,
 };

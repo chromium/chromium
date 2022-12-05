@@ -1,4 +1,4 @@
-<!-- Copyright 2020 The Chromium Authors
+<!-- Copyright 2022 The Chromium Authors
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
@@ -11,7 +11,7 @@
         <div
             id="title"
             class="md-headline">
-          <a href="/">Clank Dependency Viewer</a> - Package Graph
+          <a href="/">Clank Dependency Viewer</a>  - Target Graph
         </div>
         <div
             id="graph-metadata-info">
@@ -78,8 +78,8 @@
           :selected-node-details-data="pageModel.selectedNodeDetailsData"
           @[CUSTOM_EVENTS.DETAILS_CHECK_NODE]="filterAddOrCheckNode"
           @[CUSTOM_EVENTS.DETAILS_UNCHECK_NODE]="filterUncheckNode">
-        <PackageDetailsPanel
-            :selected-package="pageModel.selectedNodeDetailsData.selectedNode"/>
+        <TargetDetailsPanel
+            :selected-target="pageModel.selectedNodeDetailsData.selectedNode"/>
       </GraphSelectedNodeDetails>
     </div>
   </div>
@@ -92,11 +92,11 @@ import {PagePathName, UrlProcessor} from '../url_processor.js';
 import {GraphNode} from '../graph_model.js';
 import {PageModel} from '../page_model.js';
 import {
-  PackageDisplaySettingsData,
+  TargetDisplaySettingsData,
   DisplaySettingsPreset,
 } from '../display_settings_data.js';
-import {parsePackageGraphModelFromJson} from '../process_graph_json.js';
-import {shortenPackageName} from '../chrome_hooks.js';
+import {parseTargetGraphModelFromJson} from '../process_graph_json.js';
+import {shortenTargetName} from '../chrome_hooks.js';
 
 import GraphDisplayPanel from './graph_display_panel.vue';
 import GraphDisplaySettings from './graph_display_settings.vue';
@@ -106,10 +106,10 @@ import GraphMetadataInfo from './graph_metadata_info.vue';
 import GraphSelectedNodeDetails from './graph_selected_node_details.vue';
 import GraphVisualization from './graph_visualization.vue';
 import NumericInput from './numeric_input.vue';
-import PackageDetailsPanel from './package_details_panel.vue';
+import TargetDetailsPanel from './target_details_panel.vue';
 
 // @vue/component
-const PackageGraphPage = {
+const TargetGraphPage = {
   components: {
     GraphDisplayPanel,
     GraphDisplaySettings,
@@ -119,7 +119,7 @@ const PackageGraphPage = {
     GraphSelectedNodeDetails,
     GraphVisualization,
     NumericInput,
-    PackageDetailsPanel,
+    TargetDetailsPanel,
   },
   props: {
     graphJson: Object,
@@ -127,26 +127,26 @@ const PackageGraphPage = {
   },
 
   /**
-   * Various references to objects used across the entire package page.
-   * @typedef {Object} PackagePageData
+   * Various references to objects used across the entire target page.
+   * @typedef {Object} TargetPageData
    * @property {!PageModel} pageModel The data store for the page.
-   * @property {!PackageDisplaySettingsData} displaySettingsData Additional data
+   * @property {!TargetDisplaySettingsData} displaySettingsData Additional data
    *   store for the graph's display settings.
    * @property {PagePathName} pagePathName The pathname for the page.
    */
 
   /**
-   * @return {PackagePageData} The objects used throughout the page.
+   * @return {TargetPageData} The objects used throughout the page.
   */
   data: function() {
-    const graphModel = parsePackageGraphModelFromJson(this.graphJson);
+    const graphModel = parseTargetGraphModelFromJson(this.graphJson);
     const pageModel = new PageModel(graphModel);
-    const displaySettingsData = new PackageDisplaySettingsData();
+    const displaySettingsData = new TargetDisplaySettingsData();
 
     return {
       pageModel,
       displaySettingsData,
-      pagePathName: PagePathName.PACKAGE,
+      pagePathName: PagePathName.TARGET,
     };
   },
   computed: {
@@ -169,9 +169,9 @@ const PackageGraphPage = {
     this.displaySettingsData.readUrlProcessor(pageUrlProcessor);
 
     if (this.displaySettingsData.nodeFilterData.filterList.length === 0) {
-      // Default package to be displayed when the page is first loaded.
+      // Default target to be displayed when the page is first loaded.
       [
-        'org.chromium.chrome.browser.tab',
+        '//chrome/android:chrome_java',
       ].forEach(nodeName => this.filterAddOrCheckNode(nodeName));
     }
   },
@@ -184,13 +184,13 @@ const PackageGraphPage = {
       const urlProcessor = UrlProcessor.createForOutput();
       this.displaySettingsData.updateUrlProcessor(urlProcessor);
 
-      const pageUrl = urlProcessor.getUrl(document.URL, PagePathName.PACKAGE);
+      const pageUrl = urlProcessor.getUrl(document.URL, PagePathName.TARGET);
       history.replaceState(null, '', pageUrl);
     },
-    filterGetShortName: shortenPackageName,
-    filterGetDisplayData: function(fullPackageName) {
+    filterGetShortName: shortenTargetName,
+    filterGetDisplayData: function(fullTargetName) {
       return {
-        firstLine: shortenPackageName(fullPackageName),
+        firstLine: shortenTargetName(fullTargetName),
         secondLine: '',
       };
     },
@@ -246,7 +246,7 @@ const PackageGraphPage = {
   },
 };
 
-export default PackageGraphPage;
+export default TargetGraphPage;
 </script>
 
 <style lang="scss">

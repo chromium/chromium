@@ -68,6 +68,16 @@ class GraphNode {
   }
 }
 
+/** A node representing a Java build target. */
+class TargetNode extends GraphNode {
+  constructor(id, displayName, classNames) {
+    super(id, displayName);
+
+    /** @public {!Array<string>} */
+    this.classNames = classNames;
+  }
+}
+
 /** A node representing a Java package. */
 class PackageNode extends GraphNode {
   constructor(id, displayName, classNames) {
@@ -302,6 +312,7 @@ class GraphModel {
 
 export {
   GraphNode,
+  TargetNode,
   PackageNode,
   ClassNode,
   GraphEdge,

@@ -60,7 +60,7 @@ npm install
 npm run serve
 ```
 
-You may need this if you are on node version 17+:
+You may need this in your `~/.bashrc` if you are on node version 17+:
 
 ```
 export NODE_OPTIONS=--openssl-legacy-provider
