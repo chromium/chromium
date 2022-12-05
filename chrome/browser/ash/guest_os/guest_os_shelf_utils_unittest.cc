@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 
 #include <iterator>
 #include <memory>
@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace crostini {
+namespace guest_os {
 
 namespace {
 
@@ -36,19 +36,18 @@ struct WindowIds {
 };
 
 std::string GenAppId(const App& app) {
-  return CrostiniTestHelper::GenerateAppId(app.desktop_file_id, app.vm_name,
-                                           app.container_name);
+  return crostini::CrostiniTestHelper::GenerateAppId(
+      app.desktop_file_id, app.vm_name, app.container_name);
 }
 
 }  // namespace
 
-class CrostiniShelfUtilsTest : public testing::Test {
+class GuestOsShelfUtilsTest : public testing::Test {
  public:
   std::string GetShelfAppIdUsingProfile(const Profile* profile,
                                         WindowIds window_ids) const {
-    return GetCrostiniShelfAppId(profile,
-                                 base::OptionalToPtr(window_ids.app_id),
-                                 base::OptionalToPtr(window_ids.startup_id));
+    return GetGuestShelfAppId(profile, base::OptionalToPtr(window_ids.app_id),
+                              base::OptionalToPtr(window_ids.startup_id));
   }
 
   std::string GetShelfAppId(WindowIds window_ids) const {
@@ -97,21 +96,21 @@ class CrostiniShelfUtilsTest : public testing::Test {
   TestingProfile testing_profile_;
 };
 
-TEST_F(CrostiniShelfUtilsTest,
-       GetCrostiniShelfAppIdReturnsEmptyIdWhenCalledWithoutAnyParametersSet) {
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestShelfAppIdReturnsEmptyIdWhenCalledWithoutAnyParametersSet) {
   SetGuestOsRegistry({});
 
   EXPECT_EQ(GetShelfAppId(WindowIds()), "");
 }
 
-TEST_F(CrostiniShelfUtilsTest,
-       GetCrostiniShelfAppIdReturnsEmptyIdForIneligibleProfile) {
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestShelfAppIdReturnsEmptyIdForIneligibleProfile) {
   EXPECT_EQ(GetShelfAppIdUsingProfile(GetOffTheRecordProfile(), WindowIds()),
             "");
 }
 
-TEST_F(CrostiniShelfUtilsTest,
-       GetCrostiniShelfAppIdFindsAppWithEitherWindowIdOrAppId) {
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestShelfAppIdFindsAppWithEitherWindowIdOrAppId) {
   SetGuestOsRegistry({
       {.desktop_file_id = "cool.app"},
   });
@@ -125,7 +124,7 @@ TEST_F(CrostiniShelfUtilsTest,
             GenAppId({.desktop_file_id = "cool.app"}));
 }
 
-TEST_F(CrostiniShelfUtilsTest, GetCrostiniShelfAppIdIgnoresWindowAppIdsCase) {
+TEST_F(GuestOsShelfUtilsTest, GetGuestShelfAppIdIgnoresWindowAppIdsCase) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app"},
   });
@@ -136,8 +135,8 @@ TEST_F(CrostiniShelfUtilsTest, GetCrostiniShelfAppIdIgnoresWindowAppIdsCase) {
 }
 
 TEST_F(
-    CrostiniShelfUtilsTest,
-    GetCrostiniShelfAppIdCantFindAppWhenMultipleAppsInDifferentVmsShareDesktopFileIds) {
+    GuestOsShelfUtilsTest,
+    GetGuestShelfAppIdCantFindAppWhenMultipleAppsInDifferentVmsShareDesktopFileIds) {
   SetGuestOsRegistry({
       {.desktop_file_id = "super"},
       {.desktop_file_id = "super", .vm_name = "vm 2"},
@@ -148,8 +147,8 @@ TEST_F(
             "crostini:org.chromium.termina.wmclass.super");
 }
 
-TEST_F(CrostiniShelfUtilsTest,
-       GetCrostiniShelfAppIdDoesntFindAppWhenGivenUnregisteredAppIds) {
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestShelfAppIdDoesntFindAppWhenGivenUnregisteredAppIds) {
   SetGuestOsRegistry({});
 
   EXPECT_EQ(
@@ -162,8 +161,8 @@ TEST_F(CrostiniShelfUtilsTest,
   EXPECT_EQ(GetShelfAppId({.app_id = "fancy.app"}), "crostini:fancy.app");
 }
 
-TEST_F(CrostiniShelfUtilsTest,
-       GetCrostiniShelfAppIdCanFindAppUsingItsStartupWmClass) {
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestShelfAppIdCanFindAppUsingItsStartupWmClass) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app", .startup_wm_class = "app_start"},
   });
@@ -173,9 +172,8 @@ TEST_F(CrostiniShelfUtilsTest,
             GenAppId({.desktop_file_id = "app"}));
 }
 
-TEST_F(
-    CrostiniShelfUtilsTest,
-    GetCrostiniShelfAppIdCantFindAppIfMultipleAppsStartupWmClassesAreTheSame) {
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestShelfAppIdCantFindAppIfMultipleAppsStartupWmClassesAreTheSame) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app2", .startup_wm_class = "app2"},
       {.desktop_file_id = "app3", .startup_wm_class = "app2"},
@@ -186,8 +184,8 @@ TEST_F(
             "crostini:org.chromium.termina.wmclass.app2");
 }
 
-TEST_F(CrostiniShelfUtilsTest,
-       GetCrostiniShelfAppIdCanFindAppUsingStartupIdIfStartupNotifyIsTrue) {
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestShelfAppIdCanFindAppUsingStartupIdIfStartupNotifyIsTrue) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app", .startup_notify = true},
       {.desktop_file_id = "app2", .startup_notify = false},
@@ -208,7 +206,7 @@ TEST_F(CrostiniShelfUtilsTest,
             "crostini:unknown_app_id");
 }
 
-TEST_F(CrostiniShelfUtilsTest, GetCrostiniShelfAppIdCanFindAppsByName) {
+TEST_F(GuestOsShelfUtilsTest, GetGuestShelfAppIdCanFindAppsByName) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app", .app_name = "name"},
   });
@@ -218,8 +216,8 @@ TEST_F(CrostiniShelfUtilsTest, GetCrostiniShelfAppIdCanFindAppsByName) {
             GenAppId({.desktop_file_id = "app"}));
 }
 
-TEST_F(CrostiniShelfUtilsTest,
-       GetCrostiniShelfAppIdDoesntFindAppsByNameIfTheyHaveNoDisplaySet) {
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestShelfAppIdDoesntFindAppsByNameIfTheyHaveNoDisplaySet) {
   // One no_display app.
   SetGuestOsRegistry({
       {.desktop_file_id = "another_app",
@@ -244,4 +242,4 @@ TEST_F(CrostiniShelfUtilsTest,
             GenAppId({.desktop_file_id = "app"}));
 }
 
-}  // namespace crostini
+}  // namespace guest_os

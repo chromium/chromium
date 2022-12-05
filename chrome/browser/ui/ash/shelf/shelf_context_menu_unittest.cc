@@ -24,11 +24,11 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -672,7 +672,7 @@ TEST_F(ShelfContextMenuTest, CrostiniNormalApp) {
 TEST_F(ShelfContextMenuTest, CrostiniUnregisteredApps) {
   const std::string fake_window_app_id = "foo";
   const std::string fake_window_startup_id = "bar";
-  const std::string app_id = crostini::GetCrostiniShelfAppId(
+  const std::string app_id = guest_os::GetGuestShelfAppId(
       profile(), &fake_window_app_id, &fake_window_startup_id);
   PinAppWithIDToShelf(app_id);
   const ash::ShelfItem* item = controller()->GetItem(ash::ShelfID(app_id));

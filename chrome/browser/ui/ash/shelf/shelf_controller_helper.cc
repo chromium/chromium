@@ -16,8 +16,8 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -253,7 +253,7 @@ bool ShelfControllerHelper::IsValidIDForArcApp(
 
 bool ShelfControllerHelper::IsValidIDFromAppService(
     const std::string& app_id) const {
-  if (crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
+  if (guest_os::IsUnregisteredCrostiniShelfAppId(app_id)) {
     return true;
   }
 

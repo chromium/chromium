@@ -16,8 +16,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
@@ -74,7 +74,7 @@ std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
   // AppService, Arc shortcuts and Crostini apps with the prefix "crostini:".
   if ((app_type != apps::AppType::kUnknown &&
        app_type != apps::AppType::kExtension) ||
-      crostini::IsUnmatchedCrostiniShelfAppId(item->id.app_id) ||
+      guest_os::IsUnregisteredCrostiniShelfAppId(item->id.app_id) ||
       arc::IsArcItem(controller->profile(), item->id.app_id)) {
     return std::make_unique<AppServiceShelfContextMenu>(controller, item,
                                                         display_id);

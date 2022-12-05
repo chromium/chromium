@@ -17,10 +17,10 @@
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
@@ -98,7 +98,7 @@ AppServiceShelfContextMenu::AppServiceShelfContextMenu(
     const ash::ShelfItem* item,
     int64_t display_id)
     : ShelfContextMenu(controller, item, display_id) {
-  if (crostini::IsUnmatchedCrostiniShelfAppId(item->id.app_id) ||
+  if (guest_os::IsUnregisteredCrostiniShelfAppId(item->id.app_id) ||
       borealis::BorealisWindowManager::IsAnonymousAppId(item->id.app_id)) {
     // Sometimes GuestOS runs applications that are not registered with the apps
     // service. These "anonymous" apps should not be pinnable, so we set type
@@ -392,7 +392,7 @@ void AppServiceShelfContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
   // When Crostini generates shelf id with the prefix "crostini:", AppService
   // can't generate the menu items, because the app_id doesn't match, so add the
   // menu items at UI side, based on the app running status.
-  if (crostini::IsUnmatchedCrostiniShelfAppId(item().id.app_id)) {
+  if (guest_os::IsUnregisteredCrostiniShelfAppId(item().id.app_id)) {
     BuildCrostiniAppMenu(menu_model.get());
   }
 

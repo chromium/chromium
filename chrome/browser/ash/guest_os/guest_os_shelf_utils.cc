@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
-namespace crostini {
+namespace guest_os {
 
 namespace {
 
@@ -113,20 +113,20 @@ FindAppIdResult FindAppId(const base::Value::Dict& prefs,
 }  // namespace
 
 // The code follows these steps to identify apps and returns the first match:
-// 1) If the Startup Id is set, look for a matching desktop file id.
-// 2) Ignore windows if the App Id is not set.
-// 3) If the App Id is not prefixed by org.chromium.termina., it's an app with
-// native Wayland support. Look for a matching desktop file id.
-// 4) If the App Id is prefixed by org.chromium.termina.wmclass.:
+// 1) If the |window_startup_id| is set, look for a matching desktop file id.
+// 2) Ignore windows if the |window_app_id| is not set.
+// 3) If the |window_app_id| is not prefixed by org.chromium.termina., it's an
+//    app with native Wayland support. Look for a matching desktop file id.
+// 4) If the |window_app_id| is prefixed by org.chromium.termina.wmclass.:
 // 4.1) Look for an app where StartupWMClass is matches the suffix.
 // 4.2) Look for an app where the desktop file id matches the suffix.
 // 4.3) Look for an app where the unlocalized name matches the suffix. This
 //      handles the xterm & uxterm examples.
-// 5) If we couldn't find a match, prefix the app id with 'crostini:' so we can
-// easily identify shelf entries as Crostini apps.
-std::string GetCrostiniShelfAppId(const Profile* profile,
-                                  const std::string* window_app_id,
-                                  const std::string* window_startup_id) {
+// 5) If we couldn't find a match, prefix the |window_app_id| with 'crostini:'
+//    so we can easily identify shelf entries as Crostini apps.
+std::string GetGuestShelfAppId(const Profile* profile,
+                               const std::string* window_app_id,
+                               const std::string* window_startup_id) {
   if (!profile || !profile->GetPrefs())
     return std::string();
 
@@ -202,14 +202,14 @@ std::string GetCrostiniShelfAppId(const Profile* profile,
   return kCrostiniShelfIdPrefix + *window_app_id;
 }
 
-bool IsUnmatchedCrostiniShelfAppId(base::StringPiece shelf_app_id) {
+bool IsUnregisteredCrostiniShelfAppId(base::StringPiece shelf_app_id) {
   return base::StartsWith(shelf_app_id, kCrostiniShelfIdPrefix,
                           base::CompareCase::SENSITIVE);
 }
 
 bool IsCrostiniShelfAppId(const Profile* profile,
                           base::StringPiece shelf_app_id) {
-  if (IsUnmatchedCrostiniShelfAppId(shelf_app_id)) {
+  if (IsUnregisteredCrostiniShelfAppId(shelf_app_id)) {
     return true;
   }
 
@@ -224,4 +224,4 @@ bool IsCrostiniShelfAppId(const Profile* profile,
   return apps.contains(shelf_app_id);
 }
 
-}  // namespace crostini
+}  // namespace guest_os

@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -411,7 +411,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
   if (update.IsCreation()) {
     const std::string& app_id = update.AppId();
     if (GetAppType(app_id) == apps::AppType::kCrostini ||
-        crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
+        guest_os::IsUnregisteredCrostiniShelfAppId(app_id)) {
       window->SetProperty(aura::client::kAppType,
                           static_cast<int>(ash::AppType::CROSTINI_APP));
     }

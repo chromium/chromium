@@ -7,7 +7,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
@@ -53,7 +53,7 @@ bool AppServiceAppIconLoader::CanLoadImage(Profile* profile,
   if (apps::AppServiceProxyFactory::GetForProfile(profile)
               ->AppRegistryCache()
               .GetAppType(app_id) != apps::AppType::kUnknown ||
-      crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
+      guest_os::IsUnregisteredCrostiniShelfAppId(app_id)) {
     return true;
   }
 
@@ -140,7 +140,7 @@ void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
 
   // When Crostini generates shelf id as the app_id, which couldn't match to an
   // app, the default penguin icon should be loaded.
-  if (crostini::IsUnmatchedCrostiniShelfAppId(app_id)) {
+  if (guest_os::IsUnregisteredCrostiniShelfAppId(app_id)) {
     proxy->LoadIconFromIconKey(
         apps::AppType::kCrostini, app_id, apps::IconKey(), icon_type,
         icon_size_in_dip(), allow_placeholder_icon,

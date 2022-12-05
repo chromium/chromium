@@ -10,7 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -469,7 +469,7 @@ AppType GetAppType(Profile* profile, const std::string& app_id) {
   if (type != AppType::kUnknown) {
     return type;
   }
-  if (crostini::IsCrostiniShelfAppId(profile, app_id)) {
+  if (guest_os::IsCrostiniShelfAppId(profile, app_id)) {
     return AppType::kCrostini;
   }
   return AppType::kUnknown;
