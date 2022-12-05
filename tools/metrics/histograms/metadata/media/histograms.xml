@@ -6187,23 +6187,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaRouter.Sink.SelectedType.CastAndDialPresent.{Ui}"
-    enum="MediaSinkType" expires_after="2023-01-03">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    The type of the Media Sink that media is being cast to, when both Cast and
-    DIAL sinks are available for casting. Recorded each time the user selects a
-    Media Sink to start casting from {Ui}.
-  </summary>
-  <token key="Ui">
-    <variant name="CastHarmony"/>
-    <variant name="GlobalMediaControls"/>
-  </token>
-</histogram>
-
 <histogram name="MediaRouter.Sink.SelectedType.{Ui}" enum="MediaSinkType"
-    expires_after="2023-01-03">
+    expires_after="2023-05-03">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6227,7 +6212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Action.CloseLatency" units="ms"
-    expires_after="2023-01-03">
+    expires_after="2023-05-03">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6238,7 +6223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Action.StartLocal.Latency" units="ms"
-    expires_after="2023-01-03">
+    expires_after="2023-05-03">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6249,19 +6234,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Action.StartLocalPosition"
-    enum="MediaRouterSinkPositionLabel" expires_after="2023-01-03">
+    enum="MediaRouterSinkPositionLabel" expires_after="2023-05-03">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>The index of the sink that was selected in the sink list.</summary>
-</histogram>
-
-<histogram name="MediaRouter.Ui.Action.StartLocalSessionSuccessful"
-    enum="BooleanSuccess" expires_after="2023-01-03">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    The number of times a session was successfully started versus failed.
-  </summary>
 </histogram>
 
 <histogram name="MediaRouter.Ui.Action.StopRoute" enum="MediaRouteType"
@@ -6307,7 +6283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Device.Count.{Ui}.{Trigger}.{Mrp}.{State}"
-    units="units" expires_after="2023-01-03">
+    units="units" expires_after="2023-05-03">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6346,7 +6322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Dialog.IconStateAtOpen"
-    enum="MediaRouterIconState" expires_after="2023-01-03">
+    enum="MediaRouterIconState" expires_after="2023-05-03">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6356,7 +6332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Dialog.LoadedWithData" units="ms"
-    expires_after="2023-01-03">
+    expires_after="2023-05-03">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6366,7 +6342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Dialog.Paint" units="ms"
-    expires_after="2023-01-03">
+    expires_after="2023-05-03">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6393,15 +6369,6 @@ chromium-metrics-reviews@google.com.
     feature is active), or is pinned to the toolbar by user pref / admin policy.
     Recorded whenever the browser is initialized for a regular (not incognito or
     guest) profile.
-  </summary>
-</histogram>
-
-<histogram name="MediaRouter.Ui.Navigate.SourceSelection"
-    enum="MediaRouterSourceTypes" expires_after="2023-01-03">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    The number of times the user selects a specific cast source type.
   </summary>
 </histogram>
 

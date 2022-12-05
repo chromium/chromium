@@ -151,9 +151,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Records the number of sinks shown with the metrics recorder.
   void RecordSinkCount();
 
-  // Returns true if there are active Cast and DIAL sinks.
-  bool HasCastAndDialSinks() const;
-
   // Returns true iff feature is turned on and the access code casting policy
   // has been enabled for this user.
   bool IsAccessCodeCastingEnabled() const;

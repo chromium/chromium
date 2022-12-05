@@ -328,7 +328,7 @@ void CastDialogView::SinkPressed(size_t index) {
     if (cast_mode) {
       controller_->StartCasting(sink.id, cast_mode.value());
       metrics_.OnStartCasting(base::Time::Now(), index, cast_mode.value(),
-                              sink.icon_type, HasCastAndDialSinks());
+                              sink.icon_type);
     }
   }
 }
@@ -381,29 +381,6 @@ void CastDialogView::RecordSinkCountWithDelay() {
 
 void CastDialogView::RecordSinkCount() {
   metrics_.OnRecordSinkCount(sink_buttons_);
-}
-
-bool CastDialogView::HasCastAndDialSinks() const {
-  bool has_cast = false;
-  bool has_dial = false;
-  for (const auto* sink_button : sink_buttons_) {
-    // A sink gets disabled while we're trying to connect to it, but we consider
-    // those sinks available.
-    if (!sink_button->GetEnabled() &&
-        sink_button->sink().state != UIMediaSinkState::CONNECTING) {
-      continue;
-    }
-    if (sink_button->sink().provider == mojom::MediaRouteProviderId::CAST) {
-      has_cast = true;
-    } else if (sink_button->sink().provider ==
-               mojom::MediaRouteProviderId::DIAL) {
-      has_dial = true;
-    }
-    if (has_cast && has_dial) {
-      return true;
-    }
-  }
-  return false;
 }
 
 bool CastDialogView::IsAccessCodeCastingEnabled() const {

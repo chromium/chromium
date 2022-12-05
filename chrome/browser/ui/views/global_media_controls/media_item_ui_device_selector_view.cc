@@ -613,7 +613,6 @@ void MediaItemUIDeviceSelectorView::DoStartCastSession(
 void MediaItemUIDeviceSelectorView::RecordStartCastingMetrics(
     media_router::SinkIconType sink_icon_type) {
   MediaRouterMetrics::RecordMediaSinkTypeForGlobalMediaControls(sink_icon_type);
-  RecordStartCastingWithCastAndDialPresent(sink_icon_type);
 
   global_media_controls::GlobalMediaControlsCastActionAndEntryPoint action;
   switch (entry_point_) {
@@ -633,36 +632,6 @@ void MediaItemUIDeviceSelectorView::RecordStartCastingMetrics(
   base::UmaHistogramEnumeration(
       media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
       action);
-}
-
-void MediaItemUIDeviceSelectorView::RecordStartCastingWithCastAndDialPresent(
-    media_router::SinkIconType type) {
-  bool has_cast = false;
-  bool has_dial = false;
-  for (views::View* view : device_entry_views_container_->children()) {
-    DeviceEntryUI* entry = GetDeviceEntryUI(view);
-    if (entry->GetType() != DeviceEntryUIType::kCast) {
-      continue;
-    }
-    const auto* cast_entry = static_cast<CastDeviceEntryView*>(entry);
-    // A sink gets disabled while we're trying to connect to it, but we consider
-    // those sinks available.
-    if (!cast_entry->GetEnabled() &&
-        cast_entry->sink().state !=
-            media_router::UIMediaSinkState::CONNECTING) {
-      continue;
-    }
-    if (cast_entry->sink().provider == MediaRouteProviderId::CAST) {
-      has_cast = true;
-    } else if (cast_entry->sink().provider == MediaRouteProviderId::DIAL) {
-      has_dial = true;
-    }
-    if (has_cast && has_dial) {
-      MediaRouterMetrics::RecordMediaSinkTypeWhenCastAndDialPresent(
-          type, media_router::UiType::kGlobalMediaControls);
-      return;
-    }
-  }
 }
 
 void MediaItemUIDeviceSelectorView::RecordStopCastingMetrics() {

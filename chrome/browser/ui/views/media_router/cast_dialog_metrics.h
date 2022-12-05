@@ -44,13 +44,11 @@ class CastDialogMetrics {
 
   // Records the index of the selected sink in the sink list. Also records how
   // long it took to start casting if no other action (aside from selecting a
-  // sink) was taken prior to that. |has_cast_and_dial| is whether or not both
-  // DIAL and Cast active sinks were available when casting started.
+  // sink) was taken prior to that.
   void OnStartCasting(const base::Time& start_time,
                       int selected_sink_index,
                       MediaCastMode cast_mode,
-                      SinkIconType icon_type,
-                      bool has_cast_and_dial);
+                      SinkIconType icon_type);
 
   void OnStopCasting(bool is_local_route);
 

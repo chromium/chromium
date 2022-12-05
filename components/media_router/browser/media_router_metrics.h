@@ -228,9 +228,6 @@ class MediaRouterMetrics {
   static void RecordMediaSinkTypeForGlobalMediaControls(
       SinkIconType sink_icon_type);
   static void RecordMediaSinkTypeForCastDialog(SinkIconType sink_icon_type);
-  static void RecordMediaSinkTypeWhenCastAndDialPresent(
-      SinkIconType sink_icon_type,
-      UiType ui);
 
   // Records the number of devices shown in the Cast dialog. The device count
   // may be 0.
