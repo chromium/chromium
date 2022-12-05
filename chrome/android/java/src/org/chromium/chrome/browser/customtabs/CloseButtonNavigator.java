@@ -111,6 +111,11 @@ public class CloseButtonNavigator {
                 return;
             }
         }
+
+        if (numTabsClosed > 0) {
+            RecordHistogram.recordCount100Histogram(
+                    "CustomTabs.TabCounts.OnClosingAllTabs", numTabsClosed);
+        }
     }
 
     /**
