@@ -207,8 +207,8 @@ TEST_F(OsIntegrationManagerTest, UpdateProtocolHandlers) {
 #if !BUILDFLAG(IS_WIN)
   EXPECT_CALL(manager, UpdateShortcuts(app_id, base::StringPiece(), testing::_))
       .WillOnce([](const AppId& app_id, base::StringPiece old_name,
-                   base::OnceClosure update_finished_callback) {
-        std::move(update_finished_callback).Run();
+                   ResultCallback update_finished_callback) {
+        std::move(update_finished_callback).Run(Result::kOk);
       });
 #endif
 

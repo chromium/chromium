@@ -103,6 +103,8 @@ void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback) {
   if (!registry)
     return;
 
+  // Note: This can be replaced with a `BarrierCallback`, and the callback is
+  // now guaranteed to be called on the calling thread.
   scoped_refptr<Latch> latch = new Latch(std::move(callback));
 
   // Update all apps.

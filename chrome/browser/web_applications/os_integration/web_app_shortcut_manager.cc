@@ -13,6 +13,9 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
@@ -23,6 +26,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -129,10 +133,8 @@ void WebAppShortcutManager::Start() {
 void WebAppShortcutManager::UpdateShortcuts(
     const AppId& app_id,
     base::StringPiece old_name,
-    base::OnceClosure update_finished_callback) {
-  if (!CanCreateShortcuts())
-    return;
-
+    ResultCallback update_finished_callback) {
+  DCHECK(CanCreateShortcuts());
   GetShortcutInfoForApp(
       app_id,
       base::BindOnce(
@@ -329,17 +331,19 @@ void WebAppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu(
 
 void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
     std::u16string old_name,
-    base::OnceClosure update_finished_callback,
+    ResultCallback update_finished_callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   if (GetShortcutUpdateCallbackForTesting())
     std::move(GetShortcutUpdateCallbackForTesting()).Run(shortcut_info.get());
 
-  if (suppress_shortcuts_for_testing_ || !shortcut_info)
+  if (suppress_shortcuts_for_testing_ || !shortcut_info) {
+    std::move(update_finished_callback).Run(Result::kOk);
     return;
+  }
 
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
-  internals::PostShortcutIOTaskAndReply(
+  internals::PostShortcutIOTaskAndReplyWithResult(
       base::BindOnce(&internals::UpdatePlatformShortcuts,
                      std::move(shortcut_data_dir), std::move(old_name)),
       std::move(shortcut_info), std::move(update_finished_callback));
@@ -518,7 +522,8 @@ void WebAppShortcutManager::UpdateShortcutsForAllAppsNow() {
                      weak_ptr_factory_.GetWeakPtr()));
 
   for (const auto& app_id : app_ids) {
-    UpdateShortcuts(app_id, /*old_name=*/{}, done_callback);
+    UpdateShortcuts(app_id, /*old_name=*/{},
+                    base::IgnoreArgs<Result>(done_callback));
   }
 
   UpdateShortcutsForAllAppsCallback update_callback =

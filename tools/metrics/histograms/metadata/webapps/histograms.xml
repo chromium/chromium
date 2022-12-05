@@ -1078,6 +1078,21 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of shortcut creation for PWA.</summary>
 </histogram>
 
+<histogram name="WebApp.Shortcuts.Update.Result" enum="BooleanSuccess"
+    expires_after="2023-12-16">
+  <owner>camdenking@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    The result of updating shortcuts for an installed PWA. Shortcuts are usually
+    the icon in the operating system signifying the app or extension as an OS
+    entity (e.g. on Mac, it's the .app file). Updating shortcuts occurs when an
+    app is updated through the manifest update mechanism, when the Mac
+    architecture changes, the shortcut version number has been updated, and when
+    the user denies use of protocol handlers or file handlers, which occurs on
+    launch of those respective features.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.ShortcutsMenuRegistration.Result" enum="BooleanSuccess"
     expires_after="2023-09-10">
   <owner>dibyapal@chromium.org</owner>
