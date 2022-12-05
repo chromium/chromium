@@ -66,20 +66,20 @@ void DragDropClientMac::StartDragAndDrop(
   DCHECK(!NSEqualSizes([image size], NSZeroSize));
   NSDraggingItem* drag_item = provider_mac.GetDraggingItem();
 
-  // Subtract the image's height from the y location so that the mouse will be
-  // at the upper left corner of the image.
+  // Create the frame to cause the mouse to be centered over the image, with the
+  // image slightly above the mouse pointer for visibility.
   NSRect dragging_frame =
-      NSMakeRect([event locationInWindow].x,
-                 [event locationInWindow].y - [image size].height,
-                 [image size].width, [image size].height);
+      NSMakeRect(event.locationInWindow.x - image.size.width / 2,
+                 event.locationInWindow.y - image.size.height / 4,
+                 image.size.width, image.size.height);
   [drag_item setDraggingFrame:dragging_frame contents:image];
 
   [bridge_->ns_view() beginDraggingSessionWithItems:@[ drag_item ]
                                               event:event
                                              source:bridge_->ns_view()];
 
-  // Since Drag and drop is asynchronous on Mac, we need to spin a nested run
-  // loop for consistency with other platforms.
+  // Since Drag and drop is asynchronous on the Mac, spin a nested run loop for
+  // consistency with other platforms.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
