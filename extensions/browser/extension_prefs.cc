@@ -1137,7 +1137,7 @@ bool ReadInt64(const base::DictionaryValue* dictionary,
 void SaveTime(prefs::DictionaryValueUpdate* dictionary,
               const char* key,
               const base::Time& time) {
-  SaveInt64(dictionary, key, time.ToInternalValue());
+  SaveInt64(dictionary, key, time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 // The opposite of SaveTime. If |key| is not found, this returns an empty Time
@@ -1145,7 +1145,7 @@ void SaveTime(prefs::DictionaryValueUpdate* dictionary,
 base::Time ReadTime(const base::DictionaryValue* dictionary, const char* key) {
   int64_t value;
   if (ReadInt64(dictionary, key, &value))
-    return base::Time::FromInternalValue(value);
+    return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(value));
 
   return base::Time();
 }
@@ -1655,8 +1655,8 @@ bool ExtensionPrefs::FinishDelayedInstallInfo(const std::string& extension_id) {
   pending_install_dict->Remove(kDelayedInstallReason);
 
   const base::Time install_time = clock_->Now();
-  std::string install_time_str =
-      base::NumberToString(install_time.ToInternalValue());
+  std::string install_time_str = base::NumberToString(
+      install_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   pending_install_dict->SetString(kPrefLastUpdateTime, install_time_str);
 
   // Update first install time only if it does not already exist in committed
@@ -1787,7 +1787,7 @@ base::Time ExtensionPrefs::GetTimePrefHelper(const std::string& extension_id,
   int64_t time_i64 = 0;
   if (!base::StringToInt64(time_str, &time_i64))
     return base::Time();
-  return base::Time::FromInternalValue(time_i64);
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time_i64));
 }
 
 base::Time ExtensionPrefs::GetFirstInstallTime(
@@ -2358,8 +2358,8 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
   extension_dict->SetBoolean(kPrefWasInstalledByOem,
                              extension->was_installed_by_oem());
 
-  std::string install_time_str =
-      base::NumberToString(install_time.ToInternalValue());
+  std::string install_time_str = base::NumberToString(
+      install_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   // Don't overwrite any existing first_install_time pref value so that we
   // preserve the original install time.
   if (!extension_dict->HasKey(kPrefFirstInstallTime))

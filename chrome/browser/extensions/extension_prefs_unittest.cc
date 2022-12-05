@@ -718,7 +718,8 @@ class ExtensionPrefsMigratesToLastUpdateTime : public ExtensionPrefsTest {
                                  nullptr);
     prefs()->UpdateExtensionPref(extension_->id(), kFirstInstallTimePrefKey,
                                  nullptr);
-    time_str_ = base::NumberToString(base::Time::Now().ToInternalValue());
+    time_str_ = base::NumberToString(
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
     prefs()->SetStringPref(extension_->id(), kOldInstallTimePrefMap, time_str_);
 
     // Run the migration routine.
