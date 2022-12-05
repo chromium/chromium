@@ -2228,8 +2228,6 @@ source_set("ash") {
     "policy/enrollment/enrollment_requisition_manager.h",
     "policy/enrollment/enrollment_status.cc",
     "policy/enrollment/enrollment_status.h",
-    "policy/enrollment/fake_auto_enrollment_client.cc",
-    "policy/enrollment/fake_auto_enrollment_client.h",
     "policy/enrollment/psm/construct_rlwe_id.cc",
     "policy/enrollment/psm/construct_rlwe_id.h",
     "policy/enrollment/psm/fake_rlwe_dmserver_client.cc",
