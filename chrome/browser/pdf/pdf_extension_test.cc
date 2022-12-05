@@ -87,6 +87,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -1544,19 +1545,23 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, LinkPermissions) {
 
 // This test ensures that titles are set properly for PDFs without /Title.
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithNoTitle) {
-  WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_contents);
-  EXPECT_EQ(u"test.pdf", guest_contents->GetTitle());
+  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest_view);
+  EXPECT_EQ(u"test.pdf", guest_view->GetController()
+                             .GetLastCommittedEntry()
+                             ->GetTitleForDisplay());
   EXPECT_EQ(u"test.pdf", GetActiveWebContents()->GetTitle());
 }
 
 // This test ensures that titles are set properly for PDFs with /Title.
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithTitle) {
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-title.pdf"));
-  ASSERT_TRUE(guest_contents);
-  EXPECT_EQ(u"PDF title test", guest_contents->GetTitle());
+  ASSERT_TRUE(guest_view);
+  EXPECT_EQ(u"PDF title test", guest_view->GetController()
+                                   .GetLastCommittedEntry()
+                                   ->GetTitleForDisplay());
   EXPECT_EQ(u"PDF title test", GetActiveWebContents()->GetTitle());
 }
 
