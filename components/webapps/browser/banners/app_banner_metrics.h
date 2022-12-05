@@ -85,7 +85,6 @@ enum BeforeInstallEvent {
 extern const char kDismissEventHistogram[];
 extern const char kDisplayEventHistogram[];
 extern const char kInstallEventHistogram[];
-extern const char kMinutesHistogram[];
 extern const char kUserResponseHistogram[];
 extern const char kBeforeInstallEventHistogram[];
 extern const char kInstallableStatusCodeHistogram[];
@@ -94,7 +93,6 @@ extern const char kInstallDisplayModeHistogram[];
 void TrackDismissEvent(int event);
 void TrackDisplayEvent(int event);
 void TrackInstallEvent(int event);
-void TrackMinutesFromFirstVisitToBannerShown(int minutes);
 void TrackUserResponse(int event);
 void TrackBeforeInstallEvent(int event);
 void TrackInstallableStatusCode(InstallableStatusCode code);

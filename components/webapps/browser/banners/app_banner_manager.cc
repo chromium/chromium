@@ -1027,17 +1027,6 @@ void AppBannerManager::ShowBanner() {
   install_source =
       status_reporter_->GetInstallSource(contents, InstallTrigger::API);
 
-  // If this is the first time that we are showing the banner for this site,
-  // record how long it's been since the first visit.
-  absl::optional<base::Time> did_show_time =
-      AppBannerSettingsHelper::GetSingleBannerEvent(
-          web_contents(), validated_url_, GetAppIdentifier(),
-          AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW);
-  if (did_show_time && did_show_time->is_null()) {
-    AppBannerSettingsHelper::RecordMinutesFromFirstVisitToShow(
-        web_contents(), validated_url_, GetAppIdentifier(), GetCurrentTime());
-  }
-
   DCHECK(!manifest_url_.is_empty());
   DCHECK(!blink::IsEmptyManifest(manifest()));
   DCHECK(!primary_icon_url_.is_empty());

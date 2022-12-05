@@ -272,7 +272,6 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
                 manager->state() == State::INACTIVE);
 
     // If in incognito, ensure that nothing is recorded.
-    histograms.ExpectTotalCount(kMinutesHistogram, 0);
     if (browser->profile()->IsOffTheRecord() || !expected_code_for_histogram) {
       histograms.ExpectTotalCount(kInstallableStatusCodeHistogram, 0);
     } else {
@@ -491,7 +490,6 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                                   false /* expected_will_show */,
                                   State::INACTIVE);
 
-  histograms.ExpectTotalCount(kMinutesHistogram, 0);
   histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
                                 INSUFFICIENT_ENGAGEMENT, 1);
 }
@@ -516,7 +514,6 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerNotCreated) {
                                   false /* expected_will_show */,
                                   State::INACTIVE);
 
-  histograms.ExpectTotalCount(kMinutesHistogram, 0);
   histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
                                 RENDERER_CANCELLED, 1);
 }
@@ -544,7 +541,6 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerCancelled) {
                                   false /* expected_will_show */,
                                   State::INACTIVE);
 
-  histograms.ExpectTotalCount(kMinutesHistogram, 0);
   histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
                                 RENDERER_CANCELLED, 1);
 }
@@ -572,7 +568,6 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                      "callStashedPrompt();", true /* with_gesture */),
       true /* expected_will_show */, State::COMPLETE);
 
-  histograms.ExpectTotalCount(kMinutesHistogram, 1);
   histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
                                 SHOWING_WEB_APP_BANNER, 1);
 }
@@ -612,7 +607,6 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                      "callStashedPrompt();", true /* with_gesture */),
       true /* expected_will_show */, State::COMPLETE);
 
-  histograms.ExpectTotalCount(kMinutesHistogram, 1);
   histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
                                 SHOWING_WEB_APP_BANNER, 1);
 }
@@ -654,7 +648,6 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerReprompt) {
                      "callStashedPrompt();", true /* with_gesture */),
       true /* expected_will_show */, State::COMPLETE);
 
-  histograms.ExpectTotalCount(kMinutesHistogram, 1);
   histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
                                 SHOWING_WEB_APP_BANNER, 1);
 }
@@ -941,7 +934,6 @@ IN_PROC_BROWSER_TEST_F(
                        "callStashedPrompt();", true /* with_gesture */),
         true /* expected_will_show */, State::COMPLETE);
 
-    histograms.ExpectTotalCount(kMinutesHistogram, 1);
     histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
                                   SHOWING_WEB_APP_BANNER, 1);
   }

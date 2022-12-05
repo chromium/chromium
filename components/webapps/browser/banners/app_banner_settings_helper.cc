@@ -380,22 +380,6 @@ bool AppBannerSettingsHelper::HasSufficientEngagement(double total_engagement) {
          (total_engagement >= gTotalEngagementToTrigger);
 }
 
-void AppBannerSettingsHelper::RecordMinutesFromFirstVisitToShow(
-    content::WebContents* web_contents,
-    const GURL& origin_url,
-    const std::string& package_name_or_start_url,
-    base::Time time) {
-  absl::optional<base::Time> could_show_time =
-      GetSingleBannerEvent(web_contents, origin_url, package_name_or_start_url,
-                           APP_BANNER_EVENT_COULD_SHOW);
-
-  int minutes = 0;
-  if (could_show_time && !could_show_time->is_null())
-    minutes = (time - *could_show_time).InMinutes();
-
-  TrackMinutesFromFirstVisitToBannerShown(minutes);
-}
-
 bool AppBannerSettingsHelper::WasLaunchedRecently(
     content::BrowserContext* browser_context,
     const GURL& origin_url,
