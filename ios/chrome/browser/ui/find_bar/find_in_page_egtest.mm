@@ -173,7 +173,8 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
                                    grey_accessibilityID(kToolsMenuFindInPageId),
                                    grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 250)
-      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      onElementWithMatcher:grey_accessibilityID(
+                               kPopupMenuToolsMenuActionListId)]
       performAction:grey_tap()];
 }
 
