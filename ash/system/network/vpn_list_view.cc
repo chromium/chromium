@@ -23,6 +23,7 @@
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/network/vpn_list.h"
+#include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -42,8 +43,10 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -71,6 +74,7 @@ namespace {
 // Layout constants for QsRevamp.
 constexpr auto kQsContainerShortMargin = gfx::Insets::TLBR(0, 0, 2, 0);
 constexpr auto kQsContainerTallMargin = gfx::Insets::TLBR(0, 0, 8, 0);
+constexpr auto kQsProviderTriViewInsets = gfx::Insets::TLBR(8, 8, 8, 0);
 
 struct CompareArcVpnProviderByLastLaunchTime {
   bool operator()(const VpnProviderPtr& provider1,
@@ -120,6 +124,37 @@ bool IsVpnConfigAllowed() {
   return prefs->GetBoolean(prefs::kVpnConfigAllowed);
 }
 
+views::ImageView* GetPolicyIndicatorIcon() {
+  views::ImageView* policy_indicator_icon =
+      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
+  policy_indicator_icon->SetImage(gfx::CreateVectorIcon(
+      kSystemMenuBusinessIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  policy_indicator_icon->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED,
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_BUILT_IN_PROVIDER)));
+  return policy_indicator_icon;
+}
+
+// Shows the "add network" dialog for a VPN provider.
+void ShowAddVpnDialog(VpnType vpn_provider_type,
+                      const std::string& vpn_provider_app_id) {
+  if (vpn_provider_type == VpnType::kExtension) {
+    base::RecordAction(base::UserMetricsAction("StatusArea_VPN_AddThirdParty"));
+    Shell::Get()->system_tray_model()->client()->ShowThirdPartyVpnCreate(
+        vpn_provider_app_id);
+  } else if (vpn_provider_type == VpnType::kArc) {
+    // TODO(lgcheng@) Add UMA status if needed.
+    Shell::Get()->system_tray_model()->client()->ShowArcVpnCreate(
+        vpn_provider_app_id);
+  } else {
+    base::RecordAction(base::UserMetricsAction("StatusArea_VPN_AddBuiltIn"));
+    Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
+        ::onc::network_type::kVPN);
+  }
+}
+
 // A list entry that represents a VPN provider.
 class VPNListProviderEntry : public views::View {
  public:
@@ -128,11 +163,9 @@ class VPNListProviderEntry : public views::View {
   // Currently the |enabled| flag will be always true for VPN providers other
   // than the built-in VPNs.
   VPNListProviderEntry(const VpnProviderPtr& vpn_provider,
-                       bool top_item,
                        const std::string& name,
-                       bool enabled,
-                       int button_accessible_name_id)
-      : vpn_provider_(vpn_provider->Clone()) {
+                       bool enabled) {
+    DCHECK(!features::IsQsRevampEnabled());
     TrayPopupUtils::ConfigureAsStickyHeader(this);
     SetLayoutManager(std::make_unique<views::FillLayout>());
     TriView* tri_view = TrayPopupUtils::CreateSubHeaderRowView(true);
@@ -167,9 +200,9 @@ class VPNListProviderEntry : public views::View {
         kSystemMenuAddConnectionIcon, ColorUtil::GetDisabledColor(image_color));
 
     SystemMenuButton* add_vpn_button = new SystemMenuButton(
-        base::BindRepeating(&VPNListProviderEntry::AddVpnButtonPressed,
-                            base::Unretained(this)),
-        enabled_icon, disabled_icon, button_accessible_name_id);
+        base::BindRepeating(&ShowAddVpnDialog, vpn_provider->type,
+                            vpn_provider->app_id),
+        enabled_icon, disabled_icon, IDS_ASH_STATUS_TRAY_ADD_CONNECTION);
 
     LoginStatus login_status =
         Shell::Get()->session_controller()->login_status();
@@ -180,44 +213,77 @@ class VPNListProviderEntry : public views::View {
 
   VPNListProviderEntry(const VPNListProviderEntry&) = delete;
   VPNListProviderEntry& operator=(const VPNListProviderEntry&) = delete;
-
- private:
-  views::ImageView* GetPolicyIndicatorIcon() {
-    views::ImageView* policy_indicator_icon =
-        TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
-    policy_indicator_icon->SetImage(gfx::CreateVectorIcon(
-        kSystemMenuBusinessIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
-    policy_indicator_icon->SetAccessibleName(l10n_util::GetStringFUTF16(
-        IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED,
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_BUILT_IN_PROVIDER)));
-    return policy_indicator_icon;
-  }
-
-  void AddVpnButtonPressed() {
-    // If the user clicks on a provider entry, request that the "add network"
-    // dialog for this provider be shown.
-    if (vpn_provider_->type == VpnType::kExtension) {
-      base::RecordAction(
-          base::UserMetricsAction("StatusArea_VPN_AddThirdParty"));
-      Shell::Get()->system_tray_model()->client()->ShowThirdPartyVpnCreate(
-          vpn_provider_->app_id);
-    } else if (vpn_provider_->type == VpnType::kArc) {
-      // TODO(lgcheng@) Add UMA status if needed.
-      Shell::Get()->system_tray_model()->client()->ShowArcVpnCreate(
-          vpn_provider_->app_id);
-    } else {
-      base::RecordAction(base::UserMetricsAction("StatusArea_VPN_AddBuiltIn"));
-      Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
-          ::onc::network_type::kVPN);
-    }
-  }
-
-  VpnProviderPtr vpn_provider_;
 };
 
 BEGIN_METADATA(VPNListProviderEntry, views::View)
+END_METADATA
+
+// A view for a VPN provider with QsRevamp. Derives from ActionableView so the
+// entire row is clickable.
+class VPNListProviderEntryRevamp : public ActionableView {
+ public:
+  METADATA_HEADER(VPNListProviderEntryRevamp);
+
+  VPNListProviderEntryRevamp(const VpnProviderPtr& vpn_provider,
+                             const std::string& name,
+                             bool enabled)
+      : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
+        vpn_provider_type_(vpn_provider->type),
+        vpn_provider_app_id_(vpn_provider->app_id) {
+    DCHECK(features::IsQsRevampEnabled());
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    // Disable focus on the row because we want the keyboard focus ring to
+    // appear on the add network button.
+    SetFocusBehavior(FocusBehavior::NEVER);
+
+    // Create a TriView to hold the children.
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    TriView* tri_view =
+        TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/true);
+    tri_view->SetInsets(kQsProviderTriViewInsets);
+    tri_view->SetContainerVisible(TriView::Container::START, false);
+    AddChildView(tri_view);
+
+    // Add the VPN label with the provider name.
+    views::Label* label = TrayPopupUtils::CreateDefaultLabel();
+    label->SetText(base::UTF8ToUTF16(name));
+    // TODO(b/252873172): Set correct font for label.
+    TrayPopupUtils::SetLabelFontList(
+        label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+    tri_view->AddView(TriView::Container::CENTER, label);
+
+    // Add the VPN policy indicator if this provider is disabled.
+    if (!enabled)
+      tri_view->AddView(TriView::Container::END, GetPolicyIndicatorIcon());
+
+    // Add the VPN add button.
+    auto add_vpn_button = std::make_unique<SystemMenuButton>(
+        base::BindRepeating(&ShowAddVpnDialog, vpn_provider_type_,
+                            vpn_provider_app_id_),
+        kSystemMenuPlusIcon, IDS_ASH_STATUS_TRAY_ADD_CONNECTION);
+
+    // Update enabled state for the whole row and the button.
+    bool add_vpn_enabled =
+        enabled && CanAddVpnButtonBeEnabled(
+                       Shell::Get()->session_controller()->login_status());
+    SetEnabled(add_vpn_enabled);
+    add_vpn_button->SetEnabled(add_vpn_enabled);
+
+    tri_view->AddView(TriView::Container::END, add_vpn_button.release());
+  }
+
+  // ActionableView:
+  bool PerformAction(const ui::Event& event) override {
+    ShowAddVpnDialog(vpn_provider_type_, vpn_provider_app_id_);
+    return true;
+  }
+
+ private:
+  VpnType vpn_provider_type_;
+  std::string vpn_provider_app_id_;
+};
+
+BEGIN_METADATA(VPNListProviderEntryRevamp, ActionableView)
 END_METADATA
 
 // A list entry that represents a network. If the network is currently
@@ -466,9 +532,6 @@ void VPNListView::AddProviderAndNetworks(VpnProviderPtr vpn_provider,
           ? l10n_util::GetStringUTF8(IDS_ASH_STATUS_TRAY_VPN_BUILT_IN_PROVIDER)
           : vpn_provider->provider_name;
 
-  // Add a list entry for the VPN provider.
-  views::View* provider_view = nullptr;
-
   // Note: Currently only built-in VPNs can be disabled by policy.
   bool vpn_enabled = vpn_provider->type != VpnType::kOpenVPN ||
                      !model()->IsBuiltinVpnProhibited();
@@ -488,23 +551,32 @@ void VPNListView::AddProviderAndNetworks(VpnProviderPtr vpn_provider,
   views::View* provider_container;
   if (features::IsQsRevampEnabled()) {
     // Use square corners on the bottom if the provider has networks.
-    provider_container =
+    RoundedContainer* rounded_container =
         scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
             has_networks ? RoundedContainer::Behavior::kTopRounded
                          : RoundedContainer::Behavior::kAllRounded));
-    provider_container->SetProperty(
+    // Ensure the provider view ink drop fills the whole container.
+    rounded_container->SetBorderInsets(gfx::Insets());
+    rounded_container->SetProperty(
         views::kMarginsKey,
         has_networks ? kQsContainerShortMargin : kQsContainerTallMargin);
+    provider_container = rounded_container;
   } else {
     provider_container = scroll_content();
   }
 
-  provider_view =
-      new VPNListProviderEntry(vpn_provider, list_empty_, vpn_name, vpn_enabled,
-                               IDS_ASH_STATUS_TRAY_ADD_CONNECTION);
-  provider_container->AddChildView(provider_view);
+  // Add a list entry for the VPN provider.
+  std::unique_ptr<views::View> provider_view;
+  if (features::IsQsRevampEnabled()) {
+    provider_view = std::make_unique<VPNListProviderEntryRevamp>(
+        vpn_provider, vpn_name, vpn_enabled);
+  } else {
+    provider_view = std::make_unique<VPNListProviderEntry>(
+        vpn_provider, vpn_name, vpn_enabled);
+  }
   const VpnProvider* vpn_providerp = vpn_provider.get();
-  provider_view_map_[provider_view] = std::move(vpn_provider);
+  provider_view_map_[provider_view.get()] = std::move(vpn_provider);
+  provider_container->AddChildView(std::move(provider_view));
   list_empty_ = false;
 
   if (vpn_enabled && has_networks) {

@@ -111,6 +111,20 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_sim_unlock_settings_count_;
   }
 
+  int show_third_party_vpn_create_count() const {
+    return show_third_party_vpn_create_count_;
+  }
+
+  const std::string& last_third_party_vpn_extension_id() const {
+    return last_third_party_vpn_extension_id_;
+  }
+
+  int show_arc_vpn_create_count() const { return show_arc_vpn_create_count_; }
+
+  const std::string& last_arc_vpn_app_id() const {
+    return last_arc_vpn_app_id_;
+  }
+
   int show_network_create_count() const { return show_network_create_count_; }
 
   int show_calendar_event_count() const { return show_calendar_event_count_; }
@@ -150,6 +164,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_os_smart_privacy_settings_count_ = 0;
   int show_wifi_sync_settings_count_ = 0;
   int show_sim_unlock_settings_count_ = 0;
+  int show_third_party_vpn_create_count_ = 0;
+  std::string last_third_party_vpn_extension_id_;
+  int show_arc_vpn_create_count_ = 0;
+  std::string last_arc_vpn_app_id_;
   int show_firmware_update_count_ = 0;
   int show_network_create_count_ = 0;
   int show_calendar_event_count_ = 0;

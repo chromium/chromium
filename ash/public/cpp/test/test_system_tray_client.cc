@@ -95,9 +95,15 @@ void TestSystemTrayClient::ShowSettingsSimUnlock() {
 }
 
 void TestSystemTrayClient::ShowThirdPartyVpnCreate(
-    const std::string& extension_id) {}
+    const std::string& extension_id) {
+  ++show_third_party_vpn_create_count_;
+  last_third_party_vpn_extension_id_ = extension_id;
+}
 
-void TestSystemTrayClient::ShowArcVpnCreate(const std::string& app_id) {}
+void TestSystemTrayClient::ShowArcVpnCreate(const std::string& app_id) {
+  ++show_arc_vpn_create_count_;
+  last_arc_vpn_app_id_ = app_id;
+}
 
 void TestSystemTrayClient::ShowNetworkSettings(const std::string& network_id) {
   show_network_settings_count_++;
