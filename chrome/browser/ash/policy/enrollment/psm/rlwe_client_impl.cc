@@ -63,11 +63,7 @@ RlweClientImpl::CreateQueryRequest(
     return responses.status();
   }
 
-  if (responses->membership_responses_size() != 1 ||
-      responses->membership_responses(0).plaintext_id().sensitive_id() !=
-          plaintext_id_.sensitive_id()) {
-    return absl::InvalidArgumentError("id mismatch");
-  }
+  DCHECK_EQ(responses->membership_responses_size(), 1);
 
   return responses->membership_responses(0).membership_response().is_member();
 }
