@@ -1,6 +1,6 @@
 # This workflow will run headful and headless e2e tests.
 
-name: e2e tests
+name: E2E tests
 
 on:
   pull_request:
