@@ -1630,8 +1630,10 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
                           : SkColors::kBlack;
     viz::SolidColorDrawQuad* solid_quad =
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    // TODO(crbug.com/1339335): Support AA quads coming from exo.
+    constexpr bool kForceAntiAliasingOff = true;
     solid_quad->SetNew(quad_state, quad_rect, quad_rect, color,
-                       false /* force_anti_aliasing_off */);
+                       kForceAntiAliasingOff);
   }
 
   render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect));
