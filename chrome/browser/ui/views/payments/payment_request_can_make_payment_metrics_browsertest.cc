@@ -105,7 +105,6 @@ class PaymentRequestCanMakePaymentMetricsTest
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
                        Called_True_NotShown) {
-  NavigateTo("a.com", "/payment_handler_installer.html");
   base::HistogramTester histogram_tester;
 
   std::string a_method_name;
