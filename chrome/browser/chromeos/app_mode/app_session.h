@@ -37,13 +37,16 @@ class KioskSessionPluginHandlerDelegate;
 // AppSession maintains a kiosk session and handles its lifetime.
 class AppSession {
  public:
-  AppSession();
-  AppSession(base::OnceClosure attempt_user_exit, PrefService* local_state);
+  explicit AppSession(Profile* profile);
+  AppSession(Profile* profile,
+             base::OnceClosure attempt_user_exit,
+             PrefService* local_state);
   AppSession(const AppSession&) = delete;
   AppSession& operator=(const AppSession&) = delete;
   virtual ~AppSession();
 
   static std::unique_ptr<AppSession> CreateForTesting(
+      Profile* profile,
       base::OnceClosure attempt_user_exit,
       PrefService* local_state,
       const std::vector<std::string>& crash_dirs);
@@ -53,10 +56,11 @@ class AppSession {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Initializes an app session for Chrome App Kiosk.
-  virtual void Init(Profile* profile, const std::string& app_id);
+  virtual void Init(const std::string& app_id);
 
   // Initializes an app session for Web kiosk.
-  virtual void InitForWebKiosk(Browser* browser);
+  // |web_app_name| is absl::nullopt for ash-side of the web kiosk with Lacros.
+  virtual void InitForWebKiosk(const absl::optional<std::string>& web_app_name);
 
   // Invoked when GuestViewManager adds a guest web contents.
   void OnGuestAdded(content::WebContents* guest_web_contents);
@@ -73,15 +77,15 @@ class AppSession {
   bool is_shutting_down() const { return is_shutting_down_; }
 
  protected:
-  AppSession(base::OnceClosure attempt_user_exit,
-             PrefService* local_state,
+  AppSession(Profile* profile,
+             base::OnceClosure attempt_user_exit,
              std::unique_ptr<AppSessionMetricsService> metrics_service);
 
-  // Set the |profile_| object.
-  void SetProfile(Profile* profile);
-
   // Create a |browser_window_handler_| object.
-  void CreateBrowserWindowHandler(absl::optional<std::string> web_app_name);
+  void CreateBrowserWindowHandler(
+      const absl::optional<std::string>& web_app_name);
+
+  Profile* profile() const { return profile_; }
 
  private:
   // AppWindowHandler watches for app window and exits the session when the

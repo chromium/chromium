@@ -217,17 +217,17 @@ class AppSessionTest
         profile(), /*is_main_browser=*/true);
 
     app_session_ = AppSession::CreateForTesting(
-        base::DoNothing(), local_state(), {crash_path().value()});
-    app_session_->InitForWebKiosk(web_kiosk_main_browser_.get());
+        profile(), base::DoNothing(), local_state(), {crash_path().value()});
+    app_session_->InitForWebKiosk(web_app_name);
 
     task_environment_.RunUntilIdle();
   }
 
   // Simulate starting a chrome app kiosk session.
   void StartChromeAppKioskSession() {
-    app_session_ =
-        std::make_unique<AppSession>(base::DoNothing(), local_state());
-    app_session_->Init(profile(), kTestAppId);
+    app_session_ = std::make_unique<AppSession>(profile(), base::DoNothing(),
+                                                local_state());
+    app_session_->Init(kTestAppId);
   }
 
   // Waits until |app_session_| handles creation of |new_browser_window| and
@@ -773,7 +773,7 @@ TEST_F(AppSessionTest, ShouldHandlePlugin) {
       run_loop.QuitClosure()));
   run_loop.Run();
 
-  AppSession app_session;
+  AppSession app_session(profile());
   KioskSessionPluginHandlerDelegate* delegate =
       app_session.GetPluginHandlerDelegateForTesting();
 

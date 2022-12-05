@@ -29,27 +29,23 @@ void StartFloatingAccessibilityMenu() {
 
 }  // namespace
 
-AppSessionAsh::AppSessionAsh() {
-  network_metrics_service_ = std::make_unique<NetworkConnectivityMetricsService>();
+AppSessionAsh::AppSessionAsh(Profile* profile) : AppSession(profile) {
+  network_metrics_service_ =
+      std::make_unique<NetworkConnectivityMetricsService>();
 }
 
 AppSessionAsh::~AppSessionAsh() = default;
 
-void AppSessionAsh::Init(Profile* profile, const std::string& app_id) {
-  chromeos::AppSession::Init(profile, app_id);
+void AppSessionAsh::Init(const std::string& app_id) {
+  chromeos::AppSession::Init(app_id);
   StartFloatingAccessibilityMenu();
-  InitKioskAppUpdateService(profile, app_id);
+  InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
 }
 
-void AppSessionAsh::InitForWebKiosk(Browser* browser) {
-  chromeos::AppSession::InitForWebKiosk(browser);
-  StartFloatingAccessibilityMenu();
-}
-
-void AppSessionAsh::InitForWebKioskWithLacros(Profile* profile) {
-  SetProfile(profile);
-  CreateBrowserWindowHandler(absl::nullopt);
+void AppSessionAsh::InitForWebKiosk(
+    const absl::optional<std::string>& web_app_name) {
+  chromeos::AppSession::InitForWebKiosk(web_app_name);
   StartFloatingAccessibilityMenu();
 }
 
@@ -57,10 +53,9 @@ void AppSessionAsh::ShuttingDown() {
   network_metrics_service_.reset();
 }
 
-void AppSessionAsh::InitKioskAppUpdateService(Profile* profile,
-                                              const std::string& app_id) {
+void AppSessionAsh::InitKioskAppUpdateService(const std::string& app_id) {
   // Set the app_id for the current instance of KioskAppUpdateService.
-  auto* update_service = KioskAppUpdateServiceFactory::GetForProfile(profile);
+  auto* update_service = KioskAppUpdateServiceFactory::GetForProfile(profile());
   DCHECK(update_service);
   if (update_service)
     update_service->Init(app_id);

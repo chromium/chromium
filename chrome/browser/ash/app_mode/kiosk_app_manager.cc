@@ -124,10 +124,10 @@ std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
   return cache;
 }
 
-std::unique_ptr<AppSessionAsh> CreateAppSession() {
+std::unique_ptr<AppSessionAsh> CreateAppSession(Profile* profile) {
   if (g_test_overrides)
     return g_test_overrides->CreateAppSession();
-  return std::make_unique<AppSessionAsh>();
+  return std::make_unique<AppSessionAsh>(profile);
 }
 
 base::Version GetPlatformVersion() {
@@ -292,9 +292,9 @@ void KioskAppManager::InitSession(Profile* profile, const std::string& app_id) {
         flags);
   }
 
-  app_session_ = CreateAppSession();
+  app_session_ = CreateAppSession(profile);
   if (app_session_)
-    app_session_->Init(profile, app_id);
+    app_session_->Init(app_id);
   NotifySessionInitialized();
 }
 

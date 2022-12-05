@@ -50,20 +50,22 @@ void KioskSessionServiceLacros::InitChromeKioskSession(
     const std::string& app_id) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
   app_session_ = std::make_unique<chromeos::AppSession>(
+      profile,
       base::BindOnce(&KioskSessionServiceLacros::AttemptUserExit,
                      weak_factory_.GetWeakPtr()),
       g_browser_process->local_state());
-  app_session_->Init(profile, app_id);
+  app_session_->Init(app_id);
 }
 
 void KioskSessionServiceLacros::InitWebKioskSession(Browser* browser,
                                                     const GURL& install_url) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
   app_session_ = std::make_unique<chromeos::AppSession>(
+      browser->profile(),
       base::BindOnce(&KioskSessionServiceLacros::AttemptUserExit,
                      weak_factory_.GetWeakPtr()),
       g_browser_process->local_state());
-  app_session_->InitForWebKiosk(browser);
+  app_session_->InitForWebKiosk(browser->app_name());
   install_url_ = install_url;
 }
 

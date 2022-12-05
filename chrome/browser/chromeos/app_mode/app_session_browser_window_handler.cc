@@ -20,7 +20,7 @@ const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
 
 AppSessionBrowserWindowHandler::AppSessionBrowserWindowHandler(
     Profile* profile,
-    absl::optional<std::string> web_app_name,
+    const absl::optional<std::string>& web_app_name,
     base::RepeatingCallback<void(bool is_closing)>
         on_browser_window_added_callback,
     base::RepeatingClosure on_last_browser_window_closed_callback)

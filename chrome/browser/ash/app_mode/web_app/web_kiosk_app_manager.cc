@@ -129,11 +129,14 @@ void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
 void WebKioskAppManager::InitSession(Browser* browser, Profile* profile) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
 
-  app_session_ = std::make_unique<AppSessionAsh>();
-  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession())
-    app_session_->InitForWebKioskWithLacros(profile);
-  else
-    app_session_->InitForWebKiosk(browser);
+  app_session_ = std::make_unique<AppSessionAsh>(profile);
+  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
+    // When Lacros is enabled, ash-side does not have a browser and should not
+    // pass any browser-related arguments.
+    app_session_->InitForWebKiosk(absl::nullopt);
+  } else {
+    app_session_->InitForWebKiosk(browser->app_name());
+  }
 
   NotifySessionInitialized();
 }
