@@ -93,7 +93,7 @@ try_.orchestrator_builder(
     name = "android-arm64-rel",
     mirrors = [
         "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
-        #"ci/android-pie-arm64-rel",  # Pixel 2 on Pie
+        "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
     ],
     description_html = "This builder may trigger tests on multiple Android versions.",
     try_settings = builder_config.try_settings(
@@ -103,12 +103,9 @@ try_.orchestrator_builder(
     ),
     compilator = "android-arm64-rel-compilator",
     check_for_flakiness = True,
-    # TODO(crbug.com/1367393): Enable on branch once not experimental.
-    # branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
@@ -119,8 +116,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "android-arm64-rel-compilator",
-    # TODO(crbug.com/1367393): Enable on branch once not experimental.
-    # branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.STANDARD_MILESTONE,
     check_for_flakiness = True,
     main_list_view = "try",
     # TODO (gatong): Remove once we've migrated to n2s
@@ -432,7 +428,7 @@ try_.orchestrator_builder(
     check_for_flakiness = True,
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    tryjob = try_.job(),
+    #tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
