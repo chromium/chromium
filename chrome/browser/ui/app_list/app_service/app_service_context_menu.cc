@@ -182,18 +182,10 @@ void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(apps::kAppServiceGetMenuWithoutMojom)) {
-    proxy_->GetMenuModel(
-        app_id(), apps::MenuType::kAppList, controller()->GetAppListDisplayId(),
-        base::BindOnce(&AppServiceContextMenu::OnGetMenuModel,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  } else {
-    proxy_->GetMenuModel(
-        app_id(), apps::mojom::MenuType::kAppList,
-        controller()->GetAppListDisplayId(),
-        base::BindOnce(&AppServiceContextMenu::OnGetMojomMenuModel,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
+  proxy_->GetMenuModel(
+      app_id(), apps::MenuType::kAppList, controller()->GetAppListDisplayId(),
+      base::BindOnce(&AppServiceContextMenu::OnGetMenuModel,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
@@ -468,13 +460,6 @@ void AppServiceContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
   }
 
   std::move(callback).Run(std::move(menu_model));
-}
-
-void AppServiceContextMenu::OnGetMojomMenuModel(
-    GetMenuModelCallback callback,
-    apps::mojom::MenuItemsPtr menu_items) {
-  OnGetMenuModel(std::move(callback),
-                 apps::ConvertMojomMenuItemsToMenuItems(menu_items));
 }
 
 void AppServiceContextMenu::BuildExtensionAppShortcutsMenu(

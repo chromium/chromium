@@ -479,42 +479,17 @@ void AppServiceProxyBase::GetMenuModel(
   }
 }
 
-void AppServiceProxyBase::GetMenuModel(
-    const std::string& app_id,
-    apps::mojom::MenuType menu_type,
-    int64_t display_id,
-    apps::mojom::Publisher::GetMenuModelCallback callback) {
-  if (!app_service_.is_connected()) {
-    return;
-  }
-
-  auto app_type = app_registry_cache_.GetAppType(app_id);
-  app_service_->GetMenuModel(ConvertAppTypeToMojomAppType(app_type), app_id,
-                             menu_type, display_id, std::move(callback));
-}
-
 void AppServiceProxyBase::ExecuteContextMenuCommand(
     const std::string& app_id,
     int command_id,
     const std::string& shortcut_id,
     int64_t display_id) {
-  if (base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
-    auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
-    if (publisher) {
-      publisher->ExecuteContextMenuCommand(app_id, command_id, shortcut_id,
-                                           display_id);
-    }
-    return;
+  auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+  if (publisher) {
+    publisher->ExecuteContextMenuCommand(app_id, command_id, shortcut_id,
+                                         display_id);
   }
-
-  if (!app_service_.is_connected()) {
-    return;
-  }
-
-  auto app_type = app_registry_cache_.GetAppType(app_id);
-  app_service_->ExecuteContextMenuCommand(
-      ConvertAppTypeToMojomAppType(app_type), app_id, command_id, shortcut_id,
-      display_id);
+  return;
 }
 
 void AppServiceProxyBase::OpenNativeSettings(const std::string& app_id) {

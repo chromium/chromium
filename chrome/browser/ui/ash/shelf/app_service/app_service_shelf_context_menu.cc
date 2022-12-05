@@ -134,21 +134,11 @@ std::u16string AppServiceShelfContextMenu::GetLabelForCommandId(
 }
 
 void AppServiceShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
-  if (base::FeatureList::IsEnabled(apps::kAppServiceGetMenuWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
-        ->GetMenuModel(
-            item().id.app_id, apps::MenuType::kShelf, display_id(),
-            base::BindOnce(&AppServiceShelfContextMenu::OnGetMenuModel,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(callback)));
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
-        ->GetMenuModel(
-            item().id.app_id, apps::mojom::MenuType::kShelf, display_id(),
-            base::BindOnce(&AppServiceShelfContextMenu::OnGetMojomMenuModel,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(callback)));
-  }
+  apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
+      ->GetMenuModel(
+          item().id.app_id, apps::MenuType::kShelf, display_id(),
+          base::BindOnce(&AppServiceShelfContextMenu::OnGetMenuModel,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
@@ -407,13 +397,6 @@ void AppServiceShelfContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
   }
 
   std::move(callback).Run(std::move(menu_model));
-}
-
-void AppServiceShelfContextMenu::OnGetMojomMenuModel(
-    GetMenuModelCallback callback,
-    apps::mojom::MenuItemsPtr menu_items) {
-  OnGetMenuModel(std::move(callback),
-                 apps::ConvertMojomMenuItemsToMenuItems(menu_items));
 }
 
 void AppServiceShelfContextMenu::BuildExtensionAppShortcutsMenu(

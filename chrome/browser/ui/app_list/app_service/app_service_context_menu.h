@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/app_list/app_context_menu.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 class AppContextMenuDelegate;
 class AppListControllerDelegate;
@@ -55,8 +54,6 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
  private:
   void OnGetMenuModel(GetMenuModelCallback callback,
                       apps::MenuItems menu_items);
-  void OnGetMojomMenuModel(GetMenuModelCallback callback,
-                           apps::mojom::MenuItemsPtr menu_items);
 
   // Build additional extension app menu items.
   void BuildExtensionAppShortcutsMenu(ui::SimpleMenuModel* menu_model);

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
 class ChromeShelfController;
@@ -45,8 +44,6 @@ class AppServiceShelfContextMenu : public ShelfContextMenu {
  private:
   void OnGetMenuModel(GetMenuModelCallback callback,
                       apps::MenuItems menu_items);
-  void OnGetMojomMenuModel(GetMenuModelCallback callback,
-                           apps::mojom::MenuItemsPtr menu_items);
 
   // Build additional extension app menu items.
   void BuildExtensionAppShortcutsMenu(ui::SimpleMenuModel* menu_model);

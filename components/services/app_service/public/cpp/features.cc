@@ -10,10 +10,6 @@ BASE_FEATURE(kAppServiceWithoutMojom,
              "AppServiceWithoutMojom",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAppServiceGetMenuWithoutMojom,
-             "AppServiceGetMenuWithoutMojom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAppServiceCapabilityAccessWithoutMojom,
              "AppServiceCapabilityAccessWithoutMojom",
              base::FEATURE_ENABLED_BY_DEFAULT);

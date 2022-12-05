@@ -208,12 +208,6 @@ class AppServiceProxyBase : public KeyedService,
                     MenuType menu_type,
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback);
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  void GetMenuModel(const std::string& app_id,
-                    apps::mojom::MenuType menu_type,
-                    int64_t display_id,
-                    apps::mojom::Publisher::GetMenuModelCallback callback);
 
   // Executes a shortcut menu |command_id| and |shortcut_id| for a menu item
   // previously built with GetMenuModel(). |app_id| is the menu app.
