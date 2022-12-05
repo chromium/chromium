@@ -155,8 +155,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 }
 
 // Tests that the "Manage Passwords..." action works.
-// TODO(crbug.com/1350308): Test is flaky.
-- (void)DISABLED_testManagePasswordsActionOpensPasswordSettings {
+- (void)testManagePasswordsActionOpensPasswordSettings {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];

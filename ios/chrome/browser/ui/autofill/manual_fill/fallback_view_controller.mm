@@ -29,12 +29,13 @@ namespace {
 // This is the width used for `self.preferredContentSize`.
 constexpr CGFloat PopoverPreferredWidth = 320;
 
-// This is the maximum height used for `self.preferredContentSize`.
-constexpr CGFloat PopoverMaxHeight = 360;
-
 // This is the height used for `self.preferredContentSize` when showing the
 // loading indicator on iPad.
 constexpr CGFloat PopoverLoadingHeight = 185.5;
+
+// Minimum and maximum heights permitted for `self.preferredContentSize`.
+constexpr CGFloat PopoverMinHeight = 160;
+constexpr CGFloat PopoverMaxHeight = 360;
 
 // If the loading indicator was shown, it will be on screen for at least this
 // amount of seconds.
@@ -268,6 +269,7 @@ constexpr CGFloat kSectionFooterHeight = 8;
     [self.tableView layoutIfNeeded];
     CGSize systemLayoutSize = self.tableView.contentSize;
     CGFloat preferredHeight = MIN(systemLayoutSize.height, PopoverMaxHeight);
+    preferredHeight = MAX(preferredHeight, PopoverMinHeight);
     self.preferredContentSize =
         CGSizeMake(PopoverPreferredWidth, preferredHeight);
   }
