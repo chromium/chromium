@@ -16,7 +16,6 @@ import {metrics} from '../../common/js/metrics.js';
 import {RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {xfm} from '../../common/js/xfm.js';
 import {NudgeType} from '../../containers/nudge_container.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -2995,10 +2994,8 @@ CommandHandler.COMMANDS_['browser-back'] = new (class extends FilesCommand {
     // TODO(fukino): It should be better to minimize Files app only when there
     // is no back stack, and otherwise use BrowserBack for history navigation.
     // https://crbug.com/624100.
-    const currentWindow = xfm.getCurrentWindow();
-    if (currentWindow) {
-      currentWindow.minimize();
-    }
+    // TODO(https://crbug.com/1097066): Implement minimize for files SWA, then
+    // call its minimize() function here.
   }
 })();
 

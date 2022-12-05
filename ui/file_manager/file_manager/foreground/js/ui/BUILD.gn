@@ -348,7 +348,6 @@ js_library("file_manager_dialog_base") {
   deps = [
     ":dialogs",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:xfm",
   ]
 }
 

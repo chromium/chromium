@@ -9,17 +9,4 @@ import {storage} from './storage_adapter.js';
 export const xfm = {
   notifications,
   storage,
-  /**
-   * @return {!chrome.app.window.AppWindow}
-   */
-  getCurrentWindow: () => {
-    return /** @type {!chrome.app.window.AppWindow} */ ({
-      minimize: () => {
-        // TODO(1097066): Implement.
-      },
-      focus: () => {
-        window.focus();
-      },
-    });
-  },
 };

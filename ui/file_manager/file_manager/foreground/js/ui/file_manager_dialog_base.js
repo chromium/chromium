@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {util} from '../../../common/js/util.js';
-import {xfm} from '../../../common/js/xfm.js';
 
 import {BaseDialog} from './dialogs.js';
 
@@ -58,10 +57,7 @@ export class FileManagerDialogBase extends BaseDialog {
     FileManagerDialogBase.shown = true;
 
     // If a dialog is shown, activate the window.
-    const appWindow = xfm.getCurrentWindow();
-    if (appWindow) {
-      appWindow.focus();
-    }
+    window.focus();
 
     super.showWithTitle(title, message, onOk, onCancel, null);
 
