@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -201,6 +202,11 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
 
     suggestion->set_has_tab_match(i->has_tab_match.value_or(false));
     suggestion->set_is_keyword_suggestion(i->from_keyword);
+
+    if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+        !AutocompleteMatch::IsSearchType(i->type)) {
+      suggestion->mutable_scoring_signals()->CopyFrom(i->scoring_signals);
+    }
   }
   for (auto i(log.providers_info.begin()); i != log.providers_info.end(); ++i) {
     OmniboxEventProto::ProviderInfo* provider_info =
