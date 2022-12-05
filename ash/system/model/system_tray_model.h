@@ -49,8 +49,7 @@ class SystemTrayModel : public SystemTray {
                      const std::string& current_locale_iso_code) override;
   void ShowUpdateIcon(UpdateSeverity severity,
                       bool factory_reset_required,
-                      bool rollback,
-                      UpdateType update_type) override;
+                      bool rollback) override;
   void SetRelaunchNotificationState(
       const RelaunchNotificationState& relaunch_notification_state) override;
   void ResetUpdateState() override;

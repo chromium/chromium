@@ -15,7 +15,6 @@ class SystemTrayClient;
 enum class DeferredUpdateState;
 enum class NotificationStyle;
 enum class UpdateSeverity;
-enum class UpdateType;
 struct DeviceEnterpriseInfo;
 struct LocaleInfo;
 struct RelaunchNotificationState;
@@ -79,8 +78,7 @@ class ASH_PUBLIC_EXPORT SystemTray {
   // tooltip or the notification.
   virtual void ShowUpdateIcon(UpdateSeverity severity,
                               bool factory_reset_required,
-                              bool rollback,
-                              UpdateType update_type) = 0;
+                              bool rollback) = 0;
 
   // Changes the update notification in the unified system menu,
   // according to different policies, when there is an update available

@@ -94,12 +94,7 @@ void ShowSettingsSubPageForActiveUser(const std::string& sub_page) {
 }
 
 // Returns the severity of a pending update.
-ash::UpdateSeverity GetUpdateSeverity(ash::UpdateType update_type,
-                                      UpgradeDetector* detector) {
-  // Lacros is always "low", which is the same severity OS updates start with.
-  if (update_type == ash::UpdateType::kLacros)
-    return ash::UpdateSeverity::kLow;
-
+ash::UpdateSeverity GetUpdateSeverity(UpgradeDetector* detector) {
   // OS updates use UpgradeDetector's severity mapping.
   switch (detector->upgrade_notification_stage()) {
     case UpgradeDetector::UPGRADE_ANNOYANCE_NONE:
@@ -295,7 +290,7 @@ SystemTrayClientImpl::SystemTrayClientImpl()
 
   // If an upgrade is available at startup then tell ash about it.
   if (UpgradeDetector::GetInstance()->notify_upgrade())
-    HandleUpdateAvailable(ash::UpdateType::kSystem);
+    HandleUpdateAvailable();
 
   // If the device is enterprise managed then send ash the enterprise domain.
   policy::BrowserPolicyConnectorAsh* policy_connector =
@@ -342,16 +337,12 @@ SystemTrayClientImpl* SystemTrayClientImpl::Get() {
 void SystemTrayClientImpl::SetRelaunchNotificationState(
     const ash::RelaunchNotificationState& relaunch_notification_state) {
   relaunch_notification_state_ = relaunch_notification_state;
-  HandleUpdateAvailable(ash::UpdateType::kSystem);
+  HandleUpdateAvailable();
 }
 
 void SystemTrayClientImpl::ResetUpdateState() {
   relaunch_notification_state_ = {};
   system_tray_->ResetUpdateState();
-}
-
-void SystemTrayClientImpl::SetLacrosUpdateAvailable() {
-  HandleUpdateAvailable(ash::UpdateType::kLacros);
 }
 
 void SystemTrayClientImpl::SetPrimaryTrayEnabled(bool enabled) {
@@ -790,7 +781,7 @@ SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)
   g_system_tray_client_instance = mock_instance;
 }
 
-void SystemTrayClientImpl::HandleUpdateAvailable(ash::UpdateType update_type) {
+void SystemTrayClientImpl::HandleUpdateAvailable() {
   UpgradeDetector* detector = UpgradeDetector::GetInstance();
   if (detector->upgrade_notification_stage() ==
       UpgradeDetector::UPGRADE_ANNOYANCE_NONE) {
@@ -799,19 +790,18 @@ void SystemTrayClientImpl::HandleUpdateAvailable(ash::UpdateType update_type) {
     return;
   }
 
-  if (update_type == ash::UpdateType::kSystem && !detector->notify_upgrade()) {
+  if (!detector->notify_upgrade()) {
     LOG(ERROR) << "Tried to show update notification when no update available";
     return;
   }
 
   // Show the system tray icon.
-  ash::UpdateSeverity severity = GetUpdateSeverity(update_type, detector);
+  ash::UpdateSeverity severity = GetUpdateSeverity(detector);
   system_tray_->ShowUpdateIcon(severity, detector->is_factory_reset_required(),
-                               detector->is_rollback(), update_type);
+                               detector->is_rollback());
 
-  // Only overwrite title and body for system updates.
-  if (update_type == ash::UpdateType::kSystem)
-    system_tray_->SetRelaunchNotificationState(relaunch_notification_state_);
+  // Overwrite title and body.
+  system_tray_->SetRelaunchNotificationState(relaunch_notification_state_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -841,7 +831,7 @@ void SystemTrayClientImpl::OnUpdateOverCellularOneTimePermissionGranted() {
 }
 
 void SystemTrayClientImpl::OnUpgradeRecommended() {
-  HandleUpdateAvailable(ash::UpdateType::kSystem);
+  HandleUpdateAvailable();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

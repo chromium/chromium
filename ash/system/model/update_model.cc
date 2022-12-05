@@ -19,20 +19,17 @@ void UpdateModel::RemoveObserver(UpdateObserver* observer) {
 
 void UpdateModel::SetUpdateAvailable(UpdateSeverity severity,
                                      bool factory_reset_required,
-                                     bool rollback,
-                                     UpdateType update_type) {
+                                     bool rollback) {
   update_required_ = true;
   update_deferred_ = DeferredUpdateState::kNone;
   severity_ = severity;
   factory_reset_required_ = factory_reset_required;
   rollback_ = rollback;
-  update_type_ = update_type;
   NotifyUpdateAvailable();
 }
 
 void UpdateModel::SetRelaunchNotificationState(
     const RelaunchNotificationState& relaunch_notification_state) {
-  DCHECK_EQ(update_type_, UpdateType::kSystem);
   relaunch_notification_state_ = relaunch_notification_state;
   NotifyUpdateAvailable();
 }

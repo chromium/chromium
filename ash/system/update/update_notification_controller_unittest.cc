@@ -64,7 +64,7 @@ class AddNotificationWaiter : public message_center::MessageCenterObserver {
 void ShowDefaultUpdateNotification() {
   Shell::Get()->system_tray_model()->ShowUpdateIcon(
       UpdateSeverity::kLow, /*factory_reset_required=*/false,
-      /*rollback=*/false, UpdateType::kSystem);
+      /*rollback=*/false);
 }
 
 }  // namespace
@@ -268,7 +268,7 @@ TEST_F(UpdateNotificationControllerTest,
        VisibilityAfterUpdateRequiringFactoryReset) {
   // Simulate an update that requires factory reset.
   Shell::Get()->system_tray_model()->ShowUpdateIcon(UpdateSeverity::kLow, true,
-                                                    false, UpdateType::kSystem);
+                                                    false);
 
   // Showing Update Notification posts a task to check for slow boot request
   // and use the result of that check to generate appropriate notification. Wait
@@ -300,7 +300,7 @@ TEST_F(UpdateNotificationControllerTest, NoUpdateNotification) {
 TEST_F(UpdateNotificationControllerTest, RollbackNotification) {
   Shell::Get()->system_tray_model()->ShowUpdateIcon(
       UpdateSeverity::kLow, /*factory_reset_required=*/true,
-      /*rollback=*/true, UpdateType::kSystem);
+      /*rollback=*/true);
 
   // Showing Update Notification posts a task to check for slow boot request
   // and use the result of that check to generate appropriate notification. Wait
@@ -327,7 +327,7 @@ TEST_F(UpdateNotificationControllerTest, RollbackNotification) {
 TEST_F(UpdateNotificationControllerTest, RollbackRecommendedNotification) {
   Shell::Get()->system_tray_model()->ShowUpdateIcon(
       UpdateSeverity::kLow, /*factory_reset_required=*/true,
-      /*rollback=*/true, UpdateType::kSystem);
+      /*rollback=*/true);
 
   Shell::Get()->system_tray_model()->SetRelaunchNotificationState(
       {.requirement_type = RelaunchNotificationState::kRecommendedNotOverdue});
@@ -358,7 +358,7 @@ TEST_F(UpdateNotificationControllerTest,
        RollbackRecommendedOverdueNotification) {
   Shell::Get()->system_tray_model()->ShowUpdateIcon(
       UpdateSeverity::kLow, /*factory_reset_required=*/true,
-      /*rollback=*/true, UpdateType::kSystem);
+      /*rollback=*/true);
 
   Shell::Get()->system_tray_model()->SetRelaunchNotificationState(
       {.requirement_type = RelaunchNotificationState::kRecommendedAndOverdue});
@@ -387,7 +387,7 @@ TEST_F(UpdateNotificationControllerTest,
 TEST_F(UpdateNotificationControllerTest, RollbackRequiredNotification) {
   Shell::Get()->system_tray_model()->ShowUpdateIcon(
       UpdateSeverity::kLow, /*factory_reset_required=*/true,
-      /*rollback=*/true, UpdateType::kSystem);
+      /*rollback=*/true);
 
   constexpr base::TimeDelta remaining_time = base::Seconds(3);
 
@@ -664,33 +664,6 @@ TEST_F(UpdateNotificationControllerTest, SetBackToDefault) {
             GetNotificationButton(0));
   EXPECT_NE(message_center::NotificationPriority::SYSTEM_PRIORITY,
             GetNotificationPriority());
-}
-
-TEST_F(UpdateNotificationControllerTest, VisibilityAfterLacrosUpdate) {
-  // Simulate an update.
-  AddNotificationWaiter waiter;
-  Shell::Get()->system_tray_model()->ShowUpdateIcon(UpdateSeverity::kLow, false,
-                                                    false, UpdateType::kLacros);
-  waiter.Wait();
-
-  // The notification is now visible.
-  ASSERT_TRUE(HasNotification());
-  EXPECT_EQ(kSystemNotificationColorNormal, *GetNotificationColor());
-  EXPECT_TRUE(strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) ==
-              0);
-  EXPECT_EQ("Lacros update available", GetNotificationTitle());
-  EXPECT_EQ("Device restart is required to apply the update.",
-            GetNotificationMessage());
-  EXPECT_EQ("Restart to update", GetNotificationButton(0));
-
-  // Click the "Restart to update" button.
-  message_center::MessageCenter::Get()
-      ->FindVisibleNotificationById(kNotificationId)
-      ->delegate()
-      ->Click(/*button_index=*/0, /*reply=*/absl::nullopt);
-
-  // Controller tried to restart chrome.
-  EXPECT_EQ(1, GetSessionControllerClient()->attempt_restart_chrome_count());
 }
 
 TEST_F(UpdateNotificationControllerTest,

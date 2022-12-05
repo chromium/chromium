@@ -36,8 +36,7 @@ class UpdateModel {
   // changing the icon, color, and tooltip.
   void SetUpdateAvailable(UpdateSeverity severity,
                           bool factory_reset_required,
-                          bool rollback,
-                          UpdateType update_type);
+                          bool rollback);
 
   // Stores the state of the notification according to the RelaunchNotification
   // policy. State persists until reboot or another call to this function.
@@ -61,7 +60,6 @@ class UpdateModel {
   bool update_required() const { return update_required_; }
   bool factory_reset_required() const { return factory_reset_required_; }
   bool rollback() const { return rollback_; }
-  UpdateType update_type() const { return update_type_; }
   const RelaunchNotificationState& relaunch_notification_state() const {
     return relaunch_notification_state_;
   }
@@ -77,7 +75,6 @@ class UpdateModel {
   UpdateSeverity severity_ = UpdateSeverity::kNone;
   bool factory_reset_required_ = false;
   bool rollback_ = false;
-  UpdateType update_type_ = UpdateType::kSystem;
   RelaunchNotificationState relaunch_notification_state_;
   bool update_over_cellular_available_ = false;
   DeferredUpdateState update_deferred_ = DeferredUpdateState::kNone;

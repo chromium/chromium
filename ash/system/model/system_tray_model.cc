@@ -91,10 +91,9 @@ void SystemTrayModel::SetLocaleList(
 
 void SystemTrayModel::ShowUpdateIcon(UpdateSeverity severity,
                                      bool factory_reset_required,
-                                     bool rollback,
-                                     UpdateType update_type) {
-  update_model()->SetUpdateAvailable(severity, factory_reset_required, rollback,
-                                     update_type);
+                                     bool rollback) {
+  update_model()->SetUpdateAvailable(severity, factory_reset_required,
+                                     rollback);
 }
 
 void SystemTrayModel::SetRelaunchNotificationState(

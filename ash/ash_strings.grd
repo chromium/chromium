@@ -825,12 +825,6 @@ Style notes:
       <message name="IDS_DIALOG_MESSAGE_SLOW_BOOT" desc="The body of the Slow Boot Shutdown Confirmation Dialog.">
         Your screen will go blank for longer than usual (up to a minute) during this update. Please don't press the power button while the update is in progress.
       </message>
-      <message name="IDS_UPDATE_NOTIFICATION_TITLE_LACROS" desc="The title of the notification to notify that the user should restart to get an update for the experimental 'Lacros' browser.">
-        Lacros update available
-      </message>
-      <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_LACROS" desc="The body of the notification to notify that the user should restart to get an update for the experimental 'Lacros' browser.">
-        Device restart is required to apply the update.
-      </message>
       <message name="IDS_LACROS_CANNOT_LAUNCH_MULTI_SIGNIN_MESSAGE" desc="The body of the notification informing the user that the experimental 'Lacros' browser cannot launch.">
         Lacros is not supported while multiple users are signed in.
       </message>

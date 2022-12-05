@@ -26,12 +26,6 @@ enum class UpdateSeverity {
   kCritical,
 };
 
-// The type of update being applied. Sets the string in the system tray.
-enum class UpdateType {
-  kLacros,  // Lacros browser, see //docs/lacros.md
-  kSystem,
-};
-
 // State for deferred system updates.
 enum class DeferredUpdateState {
   // No deferred update available.
