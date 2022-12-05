@@ -2443,9 +2443,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityTextRunCrash) {
 // Test that even if a different tab is selected when a navigation occurs,
 // the correct tab still gets navigated (see crbug.com/672563).
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, NavigationOnCorrectTab) {
-  WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
   WebContents* web_contents = GetActiveWebContents();
 
   ui_test_utils::NavigateToURLWithDisposition(
@@ -2459,7 +2459,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, NavigationOnCorrectTab) {
       active_web_contents);
   content::TestNavigationObserver navigation_observer(web_contents);
   ASSERT_TRUE(
-      content::ExecuteScript(guest_contents,
+      content::ExecuteScript(guest->GetGuestMainFrame(),
                              "viewer.navigator_.navigate("
                              "    'www.example.com',"
                              "    WindowOpenDisposition.CURRENT_TAB);"));
