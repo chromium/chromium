@@ -11,7 +11,7 @@
 // this. This file defines replacements for these containers that have the
 // same interface but always iterate their contents in insertion order.
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -24,7 +24,7 @@ class deterministic_unordered_map {
   // are empty. If the map has many erasures over time then this vector will
   // grow without bound. It would be nice to occasionally clean out these old
   // entries.
-  typedef std::vector<base::Optional<std::pair<Key, T>>> InnerVector;
+  typedef std::vector<absl::optional<std::pair<Key, T>>> InnerVector;
   InnerVector vector_;
 
   // Map all keys in the map to indexes in vector_.
@@ -32,11 +32,7 @@ class deterministic_unordered_map {
   InnerMap map_;
 
  public:
-  struct iterator : std::iterator<std::forward_iterator_tag,
-                                  std::pair<Key, T>,
-                                  long,
-                                  std::pair<Key, T>*,
-                                  std::pair<Key, T>&> {
+  struct iterator {
     size_t index_;
     InnerVector& vector_;
     iterator(size_t index, InnerVector& vector)
@@ -75,11 +71,7 @@ class deterministic_unordered_map {
     }
   };
 
-  struct const_iterator : std::iterator<std::forward_iterator_tag,
-                                        std::pair<Key, T>,
-                                        long,
-                                        const std::pair<Key, T>*,
-                                        const std::pair<Key, T>&> {
+  struct const_iterator {
     size_t index_;
     const InnerVector& vector_;
     const_iterator(size_t index, const InnerVector& vector)

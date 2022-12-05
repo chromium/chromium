@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
@@ -211,7 +210,7 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
 
 #ifdef OS_LINUX
 
-  base::Optional<std::string> apiKey;
+  absl::optional<std::string> apiKey;
   const char* val = getenv("RECORD_REPLAY_API_KEY");
   if (val) {
     apiKey.emplace(val);

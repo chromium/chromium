@@ -29,6 +29,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_priority.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 class ImageResourceContent;

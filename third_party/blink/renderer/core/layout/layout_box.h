@@ -2122,7 +2122,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // (which is responsible for painting the tickmarks).
   void InvalidatePaintForTickmarks();
 
-  int RecordReplayId() const { return record_replay_id_; }
+  int RecordReplayId() const {
+    NOT_DESTROYED();
+    return record_replay_id_;
+  }
 
   // Returns which of the border box space and contents space (maybe both)
   // the backgrounds should be painted into, if the LayoutBox is composited.

@@ -87,10 +87,10 @@ PowerModeArbiter* PowerModeArbiter::GetInstance() {
 
 PowerModeArbiter::PowerModeArbiter()
     : trace_observer_(std::make_unique<TraceObserver>()),
+      lock_("PowerModeArbiter.lock_"),
       active_mode_("PowerModeArbiter", this),
       observers_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()),
-      lock_("PowerModeArbiter.lock_"),
       charging_voter_(std::make_unique<ChargingPowerModeVoter>(this)) {
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
   base::trace_event::TraceLog::GetInstance()->AddIncrementalStateObserver(this);

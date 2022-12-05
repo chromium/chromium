@@ -334,7 +334,7 @@ class BASE_EXPORT TaskQueueImpl {
     ~GuardedTaskPoster();
 
     base::internal::OperationsController operations_controller_;
-    base::Optional<base::internal::OperationsController> record_replay_unordered_operations_controller_;
+    absl::optional<base::internal::OperationsController> record_replay_unordered_operations_controller_;
 
     // Pointer might be stale, access guarded by |operations_controller_|
     raw_ptr<TaskQueueImpl> outer_;

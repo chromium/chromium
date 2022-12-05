@@ -324,18 +324,6 @@ void PageTimingMetricsSender::SendNow() {
     }
   }
 
-  // The number of CSS properties which we send can vary between recording
-  // and replaying due to the use of weak pointers when noting CSS properties
-  // which need to be sent. Force these to match.
-  new_features_->css_properties.resize(
-    recordreplay::RecordReplayValue("PageTimingMetricsSender::SendNow NumCSSProperties",
-                                    new_features_->css_properties.size())
-  );
-  new_features_->animated_css_properties.resize(
-    recordreplay::RecordReplayValue("PageTimingMetricsSender::SendNow NumAnimatedCSSProperties",
-                                    new_features_->animated_css_properties.size())
-  );
-
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
                       std::move(input_timing_delta_), mobile_friendliness_,

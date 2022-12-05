@@ -66,7 +66,8 @@ namespace {
 void NotifyFinishObservers(
     HeapHashSet<WeakMember<ResourceFinishObserver>>* observers) {
   HeapVector<Member<ResourceFinishObserver>> observers_vector;
-  CopyToVector(*observers, observers_vector);
+  for (const auto& observer : *observers)
+    observers_vector.push_back(observer);
   std::sort(observers_vector.begin(), observers_vector.end(),
             recordreplay::CompareMemberByPointerId<Member<ResourceFinishObserver>>());
   for (const auto& observer : observers_vector)

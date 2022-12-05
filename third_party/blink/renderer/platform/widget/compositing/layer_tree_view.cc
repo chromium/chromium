@@ -189,7 +189,7 @@ void LayerTreeView::DidUpdateLayers() {
 }
 
 void LayerTreeView::BeginMainFrame(const viz::BeginFrameArgs& args) {
-  if (!delegate_) {
+  if (!delegate_)
     return;
   widget_scheduler_->WillBeginFrame(args);
   delegate_->BeginMainFrame(args.frame_time);

@@ -26,7 +26,7 @@ ParentExecutionContextTaskRunners* ParentExecutionContextTaskRunners::Create() {
 ParentExecutionContextTaskRunners::ParentExecutionContextTaskRunners(
     ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
-      mutex_("ParentExecutionContextTaskRunners.mutex_") {
+      lock_("ParentExecutionContextTaskRunners.lock_") {
   // For now we only support very limited task types. Sort in the TaskType enum
   // value order.
   for (auto type : {TaskType::kNetworking, TaskType::kPostedMessage,

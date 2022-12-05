@@ -732,21 +732,13 @@ void FieldTrialList::CreateTrialsFromCommandLine(const CommandLine& cmd_line,
                                                  uint32_t fd_key) {
   global_->create_trials_from_command_line_called_ = true;
 
-<<<<<<< HEAD
   // Field trials are disabled when recording/replaying.
   if (recordreplay::IsRecordingOrReplaying("no-field-trials")) {
     return;
   }
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
-  if (cmd_line.HasSwitch(field_trial_handle_switch)) {
-||||||| 80c960997e61f
-#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
-  if (cmd_line.HasSwitch(field_trial_handle_switch)) {
-=======
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
   if (cmd_line.HasSwitch(switches::kFieldTrialHandle)) {
->>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     std::string switch_value =
         cmd_line.GetSwitchValueASCII(switches::kFieldTrialHandle);
     bool result = CreateTrialsFromSwitchValue(switch_value, fd_key);

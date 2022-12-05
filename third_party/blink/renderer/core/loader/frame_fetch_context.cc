@@ -117,6 +117,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+
 namespace blink {
 
 namespace {

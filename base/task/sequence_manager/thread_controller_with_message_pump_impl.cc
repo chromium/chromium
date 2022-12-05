@@ -473,7 +473,6 @@ WorkDetails ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // caller expects per-task granularity.
     if (main_thread_only().quit_pending)
       break;
-    }
   }
 
   if (main_thread_only().quit_pending)

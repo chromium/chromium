@@ -1203,7 +1203,7 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Value> arg = v8::String::NewFromTwoByte(isolate, message.characters16(),
                                                         v8::NewStringType::kNormal,
-                                                        message.length()).ToLocalChecked();
+                                                        (int)message.length()).ToLocalChecked();
   v8::Local<v8::Function> callback = gCDPMessageCallback->Get(isolate);
   v8::MaybeLocal<v8::Value> rv = callback->Call(context, v8::Undefined(isolate), 1, &arg);
   CHECK(!rv.IsEmpty());
@@ -1232,7 +1232,8 @@ void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector) {
 
     gInspectorSession = gInspector->connect(ContextGroupId,
                                             new InspectorChannel(),
-                                            v8_inspector::StringView()).release();
+                                            v8_inspector::StringView(),
+                                            v8_inspector::V8Inspector::kFullyTrusted).release();
   }
 }
 
@@ -1447,9 +1448,9 @@ static void HandleNetworkPrepareRequestEvent(const base::DictionaryValue& info) 
 
   base::DictionaryValue event;
   event.SetString("kind", "request");
-  event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->DeepCopy()));
-  event.Set("requestMethod", std::unique_ptr<base::Value>(info.FindPath("requestMethod")->DeepCopy()));
-  event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->DeepCopy()));
+  event.Set("requestUrl", std::unique_ptr<base::Value>(info.FindPath("requestUrl")->CreateDeepCopy()));
+  event.Set("requestMethod", std::unique_ptr<base::Value>(info.FindPath("requestMethod")->CreateDeepCopy()));
+  event.Set("requestHeaders", std::unique_ptr<base::Value>(info.FindPath("requestHeaders")->CreateDeepCopy()));
 
   gCurrentNetworkRequestEvent = &event;
   recordreplay::OnNetworkRequestEvent(request_id.c_str());
@@ -1478,19 +1479,19 @@ static void HandleNetworkDidReceiveResponseEvent(const base::DictionaryValue& in
   base::DictionaryValue event;
   event.SetString("kind", "response");
   event.Set("responseHeaders", std::unique_ptr<base::Value>(
-    info.FindPath("responseHeaders")->DeepCopy()
+    info.FindPath("responseHeaders")->CreateDeepCopy()
   ));
   event.Set("responseProtocolVersion", std::unique_ptr<base::Value>(
-    info.FindPath("responseProtocolVersion")->DeepCopy()
+    info.FindPath("responseProtocolVersion")->CreateDeepCopy()
   ));
   event.Set("responseStatus", std::unique_ptr<base::Value>(
-    info.FindPath("responseStatus")->DeepCopy()
+    info.FindPath("responseStatus")->CreateDeepCopy()
   ));
   event.Set("responseStatusText", std::unique_ptr<base::Value>(
-    info.FindPath("responseStatusText")->DeepCopy()
+    info.FindPath("responseStatusText")->CreateDeepCopy()
   ));
   event.Set("responseFromCache", std::unique_ptr<base::Value>(
-    info.FindPath("responseFromCache")->DeepCopy()
+    info.FindPath("responseFromCache")->CreateDeepCopy()
   ));
 
   gCurrentNetworkRequestEvent = &event;
@@ -1513,10 +1514,10 @@ static void HandleNetworkDidFinishLoadingEvent(const base::DictionaryValue& info
   base::DictionaryValue event;
   event.SetString("kind", "request-done");
   event.Set("encodedBodySize", std::unique_ptr<base::Value>(
-    info.FindPath("encodedBodySize")->DeepCopy()
+    info.FindPath("encodedBodySize")->CreateDeepCopy()
   ));
   event.Set("decodedBodySize", std::unique_ptr<base::Value>(
-    info.FindPath("decodedBodySize")->DeepCopy()
+    info.FindPath("decodedBodySize")->CreateDeepCopy()
   ));
 
   gCurrentNetworkRequestEvent = &event;
@@ -1539,7 +1540,7 @@ static void HandleNetworkDidFailLoadingEvent(const base::DictionaryValue& info) 
   base::DictionaryValue event;
   event.SetString("kind", "request-failed");
   event.Set("requestFailedReason", std::unique_ptr<base::Value>(
-    info.FindPath("requestFailedReason")->DeepCopy()
+    info.FindPath("requestFailedReason")->CreateDeepCopy()
   ));
 
   gCurrentNetworkRequestEvent = &event;
@@ -1659,7 +1660,7 @@ extern "C" void V8RecordReplayRegisterBrowserEventCallback(
 
 static void RunScript(v8::Isolate* isolate, v8::Local<v8::Context> context, const char* script, const char* filename) {
   v8::Local<v8::String> filename_string = ToV8String(isolate, filename);
-  v8::ScriptOrigin origin(filename_string);
+  v8::ScriptOrigin origin(isolate, filename_string);
 
   v8::Local<v8::String> source = ToV8String(isolate, script);
   v8::Local<v8::Script> compiled = v8::Script::Compile(context, source, &origin).ToLocalChecked();

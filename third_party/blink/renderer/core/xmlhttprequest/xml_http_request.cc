@@ -1784,7 +1784,6 @@ void XMLHttpRequest::EndLoading() {
     LocalFrame* frame = window->GetFrame();
     if (frame && network::IsSuccessfulStatus(status()))
       frame->GetPage()->GetChromeClient().AjaxSucceeded(frame);
-    }
   }
 }
 

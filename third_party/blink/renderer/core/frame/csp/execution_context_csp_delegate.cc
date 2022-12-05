@@ -288,11 +288,11 @@ void ExecutionContextCSPDelegate::DispatchViolationEventInternal(
 
   if (auto* document = GetDocument()) {
     if (element && element->isConnected() && element->GetDocument() == document)
-      element->DispatchEvent(event);
+      element->DispatchEvent(event, "ExecutionContextCSPDelegate::DispatchViolationEventInternal");
     else
-      document->DispatchEvent(event);
+      document->DispatchEvent(event, "ExecutionContextCSPDelegate::DispatchViolationEventInternal");
   } else if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_)) {
-    scope->DispatchEvent(event);
+    scope->DispatchEvent(event, "ExecutionContextCSPDelegate::DispatchViolationEventInternal");
   }
 }
 

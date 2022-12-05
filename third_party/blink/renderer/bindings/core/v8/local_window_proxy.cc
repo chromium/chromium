@@ -223,7 +223,7 @@ void LocalWindowProxy::Initialize() {
   // checkpoint at which execution can pause.
   if (recordreplay::IsRecordingOrReplaying("checkpoints") &&
       origin &&
-      !origin->Host().IsEmpty() &&
+      !origin->Host().empty() &&
       !gRecordReplayStateInitialized) {
     gRecordReplayStateInitialized = true;
     SetupRecordReplayCommands(GetIsolate());

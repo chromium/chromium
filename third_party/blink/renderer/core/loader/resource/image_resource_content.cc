@@ -261,7 +261,7 @@ void ImageResourceContent::NotifyObservers(
           this);
       CopyToVector(finished_observers_, finished_observers_as_vector);
       std::sort(finished_observers_as_vector.begin(), finished_observers_as_vector.end(),
-                recordreplay::CompareByPointerId());
+                recordreplay::CompareMemberByPointerId<Member<ImageResourceObserver>>());
     }
 
     for (ImageResourceObserver* observer : finished_observers_as_vector) {
@@ -276,7 +276,7 @@ void ImageResourceContent::NotifyObservers(
           this);
       CopyToVector(observers_, observers_as_vector);
       std::sort(observers_as_vector.begin(), observers_as_vector.end(),
-                recordreplay::CompareByPointerId());
+                recordreplay::CompareMemberByPointerId<Member<ImageResourceObserver>>());
     }
 
     for (ImageResourceObserver* observer : observers_as_vector) {

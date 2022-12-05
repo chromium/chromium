@@ -565,7 +565,7 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
                      ? Thread::Current()->Scheduler()
                      : nullptr) {
   if (recordreplay::IsRecordingOrReplaying("notify-html-parse")) {
-    CHECK(sync_policy != kAllowAsynchronousParsing);
+    CHECK(sync_policy != kAllowDeferredParsing);
     V8RecordReplayHTMLParseStart(this, document.Url().GetString().Utf8().c_str());
   }
 

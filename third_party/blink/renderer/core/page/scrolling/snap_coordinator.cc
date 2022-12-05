@@ -217,7 +217,7 @@ void SnapCoordinator::ResnapAllContainersIfNeeded() {
   std::sort(container_vector.begin(), container_vector.end(),
             recordreplay::CompareByRecordReplayId());
 
-  for (const auto& container : container_vector) {
+  for (const auto* container : container_vector) {
     if (!container->GetScrollableArea()->NeedsResnap())
       continue;
 
@@ -249,7 +249,7 @@ void SnapCoordinator::UpdateAllSnapContainerDataIfNeeded() {
   std::sort(container_vector.begin(), container_vector.end(),
             recordreplay::CompareByRecordReplayId());
 
-  for (const auto& container : container_vector) {
+  for (auto* container : container_vector) {
     if (container->GetScrollableArea()->SnapContainerDataNeedsUpdate())
       UpdateSnapContainerData(*container);
   }

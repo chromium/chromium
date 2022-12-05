@@ -1394,7 +1394,7 @@ void LocalFrameMojoHandler::OnPortalActivated(
   ThreadDebugger* debugger = MainThreadDebugger::Instance();
   if (debugger)
     debugger->ExternalAsyncTaskStarted(data.sender_stack_trace_id);
-  dom_window->DispatchEvent(*event);
+  dom_window->DispatchEvent(*event, "LocalFrameMojoHandler::OnPortalActivated");
   if (debugger)
     debugger->ExternalAsyncTaskFinished(data.sender_stack_trace_id);
   event->ExpireAdoptionLifetime();

@@ -178,7 +178,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
                          recordreplay::PointerId(this), wait_delta.ToInternalValue());
   }
 
-  Optional<recordreplay::AutoDisallowEvents> disallow;
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (kernel_->record_replay_unordered_)
     disallow.emplace();
 
@@ -281,7 +281,7 @@ cmp_fst_addr(const std::pair<WaitableEvent*, unsigned> &a,
 // NO_THREAD_SAFETY_ANALYSIS: Complex control flow.
 size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
                                size_t count) NO_THREAD_SAFETY_ANALYSIS {
-  Optional<recordreplay::AutoDisallowEvents> disallow;
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (count && raw_waitables[0]->kernel_->record_replay_unordered_)
     disallow.emplace();
 

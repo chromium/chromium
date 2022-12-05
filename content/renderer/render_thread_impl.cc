@@ -1392,11 +1392,7 @@ extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload
 
 void RenderThreadImpl::RecordReplayBrowserEvent(
     const std::string& name,
-    base::Value value) {
-  if (!value.GetAsDictionary(nullptr)) {
-    fprintf(stderr, "RecordReplayBrowserEvent not a dictionary\n");
-    return;
-  }
+    base::Value::Dict value) {
   std::string json;
   base::JSONWriter::Write(value, &json);
   V8RecordReplayBrowserEvent(name.c_str(), json.c_str());

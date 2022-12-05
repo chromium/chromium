@@ -286,7 +286,7 @@ void WorkerThread::UpdateThreadType(ThreadType desired_thread_type) {
 }
 
 void WorkerThread::ThreadMain() {
-  Optional<recordreplay::AutoDisallowEvents> disallow;
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (record_replay_unordered_)
     disallow.emplace();
 

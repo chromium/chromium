@@ -256,7 +256,7 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
         for (WatchSet::const_iterator search_iter = ready_watches_.begin();
              search_iter != ready_watches_.end();
              ++search_iter) {
-          if (*search_iter == last_watch_to_block_arming_) {
+          if (*search_iter == reinterpret_cast<const Watch*>(last_watch_to_block_arming_)) {
             next_ready_iter = search_iter;
             break;
           }

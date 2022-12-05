@@ -763,7 +763,6 @@ int Node::OnPortAccepted(const PortRef& port_ref,
                          std::unique_ptr<PortAcceptedEvent> event) {
   if (!port_ref.is_valid())
     return ERROR_PORT_UNKNOWN;
-  }
 
 #if DCHECK_IS_ON()
   {
@@ -941,7 +940,7 @@ int Node::OnObserveClosure(const PortRef& port_ref,
                        event->port_name().v1, event->port_name().v2);
 
   // OK if the port doesn't exist, as it may have been closed already.
-  if (!port_ref.is_valid())
+  if (!port_ref.is_valid()) {
     // https://linear.app/replay/issue/RUN-549
     recordreplay::Assert("Node::OnObserveClosure #1");
     return OK;

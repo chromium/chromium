@@ -452,10 +452,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // the dynamic scope of the call that initited the network request).  This
   // variable is set from `InspectorNetworkAgent`, and also accessed from
   // other event-handler methods within it.
-  const base::Optional<uint64_t>& GetRecordReplayBookmark() const {
+  const absl::optional<uint64_t>& GetRecordReplayBookmark() const {
     return record_replay_bookmark_;
   }
-  void SetRecordReplayBookmark(const base::Optional<uint64_t> &record_replay_bookmark) {
+  void SetRecordReplayBookmark(const absl::optional<uint64_t> &record_replay_bookmark) {
     record_replay_bookmark_ = record_replay_bookmark;
   }
 
@@ -617,7 +617,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   absl::optional<String> devtools_stack_id_;
 
-  base::Optional<uint64_t> record_replay_bookmark_;
+  absl::optional<uint64_t> record_replay_bookmark_;
 
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 

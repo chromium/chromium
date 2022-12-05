@@ -74,7 +74,7 @@ bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
             recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
 
   for (auto& observation : observations_to_process) {
-    entry.value->ComputeIntersection(flags, monotonic_time);
+    observation->ComputeIntersection(flags, monotonic_time);
   }
   return needs_occlusion_tracking;
 }

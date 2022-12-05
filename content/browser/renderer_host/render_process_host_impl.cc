@@ -2253,7 +2253,9 @@ void RenderProcessHostImpl::WriteIntoTrace(
 void RenderProcessHostImpl::SendRecordReplayBrowserEvent(
     const std::string& name,
     base::Value&& value) {
-  GetRendererInterface()->RecordReplayBrowserEvent(name, std::move(value));
+  fprintf(stderr, "SendRecordReplayBrowserEvent CRASH\n");
+  CHECK(0);
+  //GetRendererInterface()->RecordReplayBrowserEvent(name, std::move(value));
 }
 
 void RenderProcessHostImpl::RegisterMojoInterfaces() {

@@ -10,12 +10,12 @@ namespace blink {
 
 void DisplayItemRasterInvalidator::Generate() {
   struct OldAndNewDisplayItems {
-    const DisplayItemClient* client;
     // Union of visual rects of all old display items of the client.
     gfx::Rect old_visual_rect;
     // Union of visual rects of all new display items of the client.
     gfx::Rect new_visual_rect;
     PaintInvalidationReason reason = PaintInvalidationReason::kNone;
+
     DISALLOW_NEW();
   };
   HashMap<DisplayItemClientId, OldAndNewDisplayItems> clients_to_invalidate;
@@ -139,7 +139,7 @@ void DisplayItemRasterInvalidator::AddRasterInvalidation(
 
   // https://linear.app/replay/issue/RUN-657
   recordreplay::Assert("DisplayItemRasterInvalidator::AddRasterInvalidation %s %d %d %d %d %d",
-                       why, r.X(), r.Y(), r.Width(), r.Height(), r.IsEmpty());
+                       why, r.x(), r.y(), r.width(), r.height(), r.IsEmpty());
 
   if (r.IsEmpty())
     return;

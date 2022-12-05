@@ -1163,8 +1163,8 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
-    dict.SetDouble("identifier",
-                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
     const char* http_version = HttpVersionToString(response.HttpVersion());
     base::ListValue headers;
     for (auto header : response.HttpHeaderFields()) {
@@ -1175,7 +1175,7 @@ void ResourceLoader::DidReceiveResponseInternal(
     }
     dict.SetKey("responseHeaders", std::move(headers));
     dict.SetString("responseProtocolVersion", http_version);
-    dict.SetDouble("responseStatus", response.HttpStatusCode());
+    dict.SetDoubleKey("responseStatus", response.HttpStatusCode());
     dict.SetString("responseStatusText", response.HttpStatusText().Utf8());
     dict.SetBoolean("responseFromCache", response.WasCached());
     recordreplay::BrowserEvent("Network.DidReceiveResponse", dict);
@@ -1252,9 +1252,9 @@ void ResourceLoader::DidReceiveData(const char* data, int length) {
 
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
-    dict.SetDouble("identifier",
-                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
-    dict.SetDouble("dataLength", (double) length);
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetDoubleKey("dataLength", (double) length);
     if (data) {
       std::string data_base64 = base::Base64Encode(
         base::span<const uint8_t>(
@@ -1307,10 +1307,10 @@ void ResourceLoader::DidFinishLoading(
 
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
-    dict.SetDouble("identifier",
-                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
-    dict.SetDouble("encodedBodySize", (double) encoded_body_length);
-    dict.SetDouble("decodedBodySize", (double) decoded_body_length);
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetDoubleKey("encodedBodySize", (double) encoded_body_length);
+    dict.SetDoubleKey("decodedBodySize", (double) decoded_body_length);
     recordreplay::BrowserEvent("Network.DidFinishLoading", dict);
   }
 
@@ -1370,8 +1370,8 @@ void ResourceLoader::DidFail(const WebURLError& error,
   if (PermitRecordReplayBrowserEvents()) {
     std::string reason = net::ErrorToShortString(error.reason());
     base::DictionaryValue dict;
-    dict.SetDouble("identifier",
-                   (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
+    dict.SetDoubleKey("identifier",
+                      (double) RecordReplayNetworkRequestId(resource_->InspectorId()));
     dict.SetString("requestFailedReason", std::move(reason));
     recordreplay::BrowserEvent("Network.DidFailLoading", dict);
   }

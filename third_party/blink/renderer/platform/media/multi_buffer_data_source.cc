@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/platform/media/multi_buffer_reader.h"
 #include "url/gurl.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 namespace {
 

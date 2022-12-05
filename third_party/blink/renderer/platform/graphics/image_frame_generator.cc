@@ -86,7 +86,7 @@ ImageFrameGenerator::ImageFrameGenerator(const SkISize& full_size,
       decoder_color_behavior_(color_behavior),
       is_multi_frame_(is_multi_frame),
       supported_sizes_(std::move(supported_sizes)),
-      generator_mutex_("ImageFrameGenerator.generator_mutex_") {
+      generator_lock_("ImageFrameGenerator.generator_lock_") {
 #if DCHECK_IS_ON()
   // Verify that sizes are in an increasing order, since
   // GetSupportedDecodeSize() depends on it.

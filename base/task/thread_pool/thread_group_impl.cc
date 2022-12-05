@@ -1007,7 +1007,7 @@ ThreadGroupImpl::CreateAndRegisterWorkerLockRequired(
   DCHECK_LT(workers_.size(), kMaxNumberOfWorkers);
   DCHECK(idle_workers_stack_.IsEmpty());
 
-  Optional<recordreplay::AutoDisallowEvents> disallow;
+  absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (record_replay_unordered_)
     disallow.emplace();
 

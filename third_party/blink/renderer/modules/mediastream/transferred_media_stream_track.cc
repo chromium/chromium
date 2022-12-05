@@ -394,7 +394,7 @@ TransferredMediaStreamTrack::EventPropagator::EventPropagator(
 
 void TransferredMediaStreamTrack::EventPropagator::Invoke(ExecutionContext*,
                                                           Event* event) {
-  transferred_track_->DispatchEvent(*event);
+  transferred_track_->DispatchEvent(*event, "TransferredMediaStreamTrack::EventPropagator::Invoke");
 }
 
 void TransferredMediaStreamTrack::EventPropagator::Trace(

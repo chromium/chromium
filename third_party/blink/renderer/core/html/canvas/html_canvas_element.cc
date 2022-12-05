@@ -361,9 +361,9 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   // WebGL contexts are not currently supported when recording/replaying.
   if (recordreplay::IsRecordingOrReplaying("no-webgl")) {
     switch (rendering_api) {
-      case CanvasRenderingAPI::kWebgl:
-      case CanvasRenderingAPI::kWebgl2:
-      case CanvasRenderingAPI::kWebgpu:
+      case CanvasRenderingContext::CanvasRenderingAPI::kWebgl:
+      case CanvasRenderingContext::CanvasRenderingAPI::kWebgl2:
+      case CanvasRenderingContext::CanvasRenderingAPI::kWebgpu:
         return nullptr;
       default:
         break;

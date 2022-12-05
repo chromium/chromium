@@ -135,7 +135,7 @@ void FrameOrWorkerScheduler::NotifyLifecycleObservers() {
   std::sort(observers.begin(), observers.end(),
             recordreplay::CompareByPointerId());
 
-  for (const auto& observer : observers) {
+  for (auto* observer : observers) {
     observer->GetCallback().Run(
         CalculateLifecycleState(observer->GetObserverType()));
   }

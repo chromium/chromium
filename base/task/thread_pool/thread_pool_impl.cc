@@ -116,7 +116,7 @@ ThreadPoolImpl::ThreadPoolImpl(StringPiece histogram_label,
     record_replay_unordered_thread_group_ = std::make_unique<ThreadGroupImpl>(
         std::string(),
         kBackgroundPoolEnvironmentParams.name_suffix,
-        kBackgroundPoolEnvironmentParams.priority_hint,
+        kBackgroundPoolEnvironmentParams.thread_type_hint,
         task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
   }
 }
@@ -245,10 +245,9 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   if (record_replay_unordered_thread_group_) {
     static_cast<ThreadGroupImpl*>(record_replay_unordered_thread_group_.get())
         ->Start(max_best_effort_tasks, max_best_effort_tasks,
-                suggested_reclaim_time, service_thread_task_runner,
-                worker_thread_observer,
-                worker_environment,
-                g_synchronous_thread_start_for_testing);
+                init_params.suggested_reclaim_time,
+                service_thread_task_runner, worker_thread_observer,
+                worker_environment, g_synchronous_thread_start_for_testing);
   }
 
   started_ = true;
