@@ -5,5 +5,5 @@
     <include name="IDR_VERSION_UI_MOBILE_CSS" file="../version_ui/resources/about_version_mobile.css" type="BINDATA" />
   </if>
   <include name="IDR_VERSION_UI_HTML" file="../version_ui/resources/about_version.html" preprocess="true" type="BINDATA" />
-  <include name="IDR_VERSION_UI_JS" file="../version_ui/resources/about_version.js" preprocess="true" type="BINDATA" />
+  <include name="IDR_VERSION_UI_JS" file="${root_gen_dir}/components/version_ui/resources/tsc/about_version.js" use_base_dir="false" type="BINDATA" />
 </grit-part>

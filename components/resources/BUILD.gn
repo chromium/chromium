@@ -50,6 +50,7 @@ grit("components_resources") {
     ":about_credits",
     "//components/flags_ui/resources:build_ts",
     "//components/security_interstitials/content/resources:build_ts",
+    "//components/version_ui/resources:build_ts",
   ]
 
   if (!is_ios) {

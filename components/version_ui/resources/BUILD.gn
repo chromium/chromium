@@ -1,0 +1,25 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = target_gen_dir
+  in_files = [ "about_version.ts" ]
+}
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [ "about_version.ts" ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  if (is_chromeos_ash) {
+    definitions +=
+        [ "//tools/typescript/definitions/chromeos_info_private.d.ts" ]
+  }
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [ ":preprocess" ]
+}
