@@ -888,6 +888,38 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SmartDeletePhraseNoChange) {
   ASSERT_EQ("Hello world", GetEditableValue());
 }
 
+// Is a DictationTest for the same reason as the above test.
+IN_PROC_BROWSER_TEST_P(DictationTest, Help) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWait("help");
+
+  // Wait for the help URL to load.
+  SuccessWaiter(
+      base::BindLambdaForTesting([&]() {
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        return web_contents->GetVisibleURL() ==
+               "https://support.google.com/chromebook?p=text_dictation_m100";
+      }),
+      "Still waiting for help URL to load")
+      .Wait();
+
+  WaitForRecognitionStopped();
+}
+
+// Confirms that punctuation can be sent and entered into the editable. We
+// unfortuantely can't test that "period" -> "." or "exclamation point" -> "!"
+// since that computation happens in the speech recognition engine.
+IN_PROC_BROWSER_TEST_P(DictationTest, Punctuation) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  std::string text = "Testing Dictation. It's a great feature!";
+  SendFinalResultAndWaitForEditableValue(text, text);
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
 class DictationWithAutoclickTest : public DictationTestBase {
  public:
   DictationWithAutoclickTest() = default;
@@ -1211,30 +1243,6 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MacroSucceededMetric) {
   histogram_tester_.ExpectUniqueSample(/*name=*/kMacroRecognizedMetric,
                                        /*sample=*/kInputTextViewMetricValue,
                                        /*expected_bucket_count=*/1);
-}
-
-// Flaky on Linux (crbug.com/1348608).
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Help DISABLED_Help
-#else
-#define MAYBE_Help Help
-#endif
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MAYBE_Help) {
-  SendFinalResultAndWait("help");
-
-  // Wait for the help URL to load.
-  SuccessWaiter(
-      base::BindLambdaForTesting([&]() {
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetActiveWebContents();
-        return web_contents->GetVisibleURL() ==
-               "https://support.google.com/chromebook?p=text_dictation_m100";
-      }),
-      "Still waiting for help URL to load")
-      .Wait();
-
-  // Opening a new tab with the help center article toggles Dictation off.
-  WaitForRecognitionStopped();
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordSimple) {
