@@ -1519,17 +1519,16 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
 }
 
 // Tests basic behavior of the tutorial when signed in.
-// TODO(akihiroota): fix flakiness: http://crbug.com/1172390
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_Tutorial) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, Tutorial) {
   EnableChromeVox();
   sm_.Call([this]() {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL("data:text/html,<button autofocus>Testing</button>")));
   });
+  sm_.ExpectSpeech("Testing");
   sm_.Call([this]() {
     SendKeyPressWithSearch(ui::VKEY_O);
-    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-        nullptr, ui::VKEY_T, false, false, false, false));
+    SendKeyPress(ui::VKEY_T);
   });
   sm_.ExpectSpeech("ChromeVox tutorial");
   sm_.ExpectSpeech(
