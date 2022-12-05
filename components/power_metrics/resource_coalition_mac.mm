@@ -123,8 +123,13 @@ coalition_resource_usage GetCoalitionResourceUsageDifference(
 
   ret.cpu_time_eqos_len = left.cpu_time_eqos_len;
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    DCHECK_GE(left.cpu_time_eqos[i], right.cpu_time_eqos[i]);
-    ret.cpu_time_eqos[i] = left.cpu_time_eqos[i] - right.cpu_time_eqos[i];
+    if (right.cpu_time_eqos[i] > left.cpu_time_eqos[i]) {
+      // TODO(fdoray): Investigate why this happens. In the meantime, pretend
+      // that there was no CPU time at this QoS.
+      ret.cpu_time_eqos[i] = 0;
+    } else {
+      ret.cpu_time_eqos[i] = left.cpu_time_eqos[i] - right.cpu_time_eqos[i];
+    }
   }
 
   ret.cpu_instructions = left.cpu_instructions - right.cpu_instructions;
