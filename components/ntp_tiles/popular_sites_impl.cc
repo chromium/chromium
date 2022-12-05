@@ -284,25 +284,29 @@ base::Value DefaultPopularSites() {
     site.GetDict().Set("baked_in", true);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  auto popular_sites_icons = {
+  static constexpr int default_popular_sites_icons[] = {
       IDR_DEFAULT_POPULAR_SITES_ICON0, IDR_DEFAULT_POPULAR_SITES_ICON1,
       IDR_DEFAULT_POPULAR_SITES_ICON2, IDR_DEFAULT_POPULAR_SITES_ICON3,
       IDR_DEFAULT_POPULAR_SITES_ICON4, IDR_DEFAULT_POPULAR_SITES_ICON5,
       IDR_DEFAULT_POPULAR_SITES_ICON6, IDR_DEFAULT_POPULAR_SITES_ICON7};
+  base::span<const int> icon_list = default_popular_sites_icons;
 
   // If the experiment is enabled, and the popular sites suggestions should
   // include sites with native iOS apps,
   // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
   if (experiment_type ==
       IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
-    popular_sites_icons = {IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON0,
-                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON1,
-                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON2,
-                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON3,
-                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON4,
-                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON5,
-                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON6,
-                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON7};
+    static constexpr int popular_sites_icons_with_popular_ios_apps[] = {
+        IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON0,
+        IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON1,
+        IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON2,
+        IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON3,
+        IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON4,
+        IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON5,
+        IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON6,
+        IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON7};
+
+    icon_list = popular_sites_icons_with_popular_ios_apps;
   }
 
   // If the experiment is enabled, and the popular sites suggestions should
@@ -310,7 +314,7 @@ base::Value DefaultPopularSites() {
   // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
   if (experiment_type ==
       IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
-    popular_sites_icons = {
+    static constexpr int popular_sites_icons_without_popular_ios_apps[] = {
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON0,
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON1,
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON2,
@@ -319,10 +323,12 @@ base::Value DefaultPopularSites() {
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON5,
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON6,
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON7};
+
+    icon_list = popular_sites_icons_without_popular_ios_apps;
   }
 
   size_t index = 0;
-  for (int icon_resource : popular_sites_icons) {
+  for (int icon_resource : icon_list) {
     SetDefaultResourceForSite(index++, icon_resource, sites->GetList());
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
