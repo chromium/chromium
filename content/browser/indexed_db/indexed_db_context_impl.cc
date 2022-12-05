@@ -63,7 +63,6 @@
 #include "third_party/zlib/google/zip.h"
 #include "url/origin.h"
 
-using base::DictionaryValue;
 using storage::DatabaseUtil;
 
 namespace content {
