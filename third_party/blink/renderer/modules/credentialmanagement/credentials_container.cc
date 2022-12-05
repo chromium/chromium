@@ -1099,8 +1099,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
   // ships. Before then, it is useful for RPs to pass both identity and
   // federated while transitioning from the older to the new API.
   if (options->hasFederated() && !options->hasIdentity()) {
-    UseCounter::Count(context,
-                      WebFeature::kCredentialManagerGetFederatedCredential);
+    UseCounter::Count(
+        context, WebFeature::kCredentialManagerGetLegacyFederatedCredential);
   }
   if (!options->hasFederated() && options->hasPassword()) {
     UseCounter::Count(context,
@@ -1294,10 +1294,10 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     }
 
     // Log the UseCounter only when the WebID flag is enabled.
-    UseCounter::Count(context, WebFeature::kFederatedCredentialManagement);
+    UseCounter::Count(context, WebFeature::kFedCm);
     if (!resolver->DomWindow()->GetFrame()->IsMainFrame()) {
       UseCounter::Count(resolver->GetExecutionContext(),
-                        WebFeature::kFederatedCredentialManagementIframe);
+                        WebFeature::kFedCmIframe);
     }
 
     int provider_index = 0;

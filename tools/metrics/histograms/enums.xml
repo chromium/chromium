@@ -41322,7 +41322,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3989" label="FontBuilderCSSFontFamilyWebKitPrefixBody"/>
   <int value="3990" label="CapabilityDelegationOfPaymentRequest"/>
   <int value="3991" label="ConditionalFocus"/>
-  <int value="3992" label="CredentialManagerGetFederatedCredential"/>
+  <int value="3992" label="CredentialManagerGetLegacyFederatedCredential"/>
   <int value="3993" label="CredentialManagerGetPasswordCredential"/>
   <int value="3994" label="CredentialManagerStoreFederatedCredential"/>
   <int value="3995" label="CredentialManagerStorePasswordCredential"/>
@@ -41504,7 +41504,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4163" label="V8Document_Onprerenderingchange_AttributeSetter"/>
   <int value="4164" label="CSSAtRuleFontPaletteValues"/>
   <int value="4165" label="CSSAtRuleContainer"/>
-  <int value="4166" label="FederatedCredentialManagement"/>
+  <int value="4166" label="FedCm"/>
   <int value="4167" label="FetchEventSourceLastEventIdCorsUnSafe"/>
   <int value="4168" label="WrongBaselineOfMultiLineButtonWithNonSpace"/>
   <int value="4169" label="BlobStoreAccessAcrossTopLevelSite"/>
@@ -41745,7 +41745,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4393" label="DocumentLoaderDeliveryTypeNavigationalPrefetch"/>
   <int value="4394" label="SpeculationRulesHeader"/>
   <int value="4395" label="SpeculationRulesDocumentRules"/>
-  <int value="4396" label="FederatedCredentialManagementIframe"/>
+  <int value="4396" label="FedCmIframe"/>
   <int value="4397" label="V8DocumentPictureInPicture_RequestWindow_Method"/>
   <int value="4398" label="V8DocumentPictureInPicture_Window_AttributeGetter"/>
   <int value="4399"
