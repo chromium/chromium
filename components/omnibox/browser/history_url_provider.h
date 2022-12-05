@@ -227,6 +227,8 @@ class HistoryURLProvider : public HistoryProvider {
   FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest,
                            DontTrimHttpsSchemeIfInputMatchesInScheme);
   FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest, DoTrimHttpsScheme);
+  FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest,
+                           HistoryMatchToACMatchWithScoringSignals);
 
   enum MatchType {
     NORMAL,
@@ -335,11 +337,13 @@ class HistoryURLProvider : public HistoryProvider {
   // Converts a specified `match_number` from params.matches into an
   // autocomplete match for display.  If experimental scoring is enabled, the
   // final relevance score might be different from the given `relevance`.
+  // Populates scoring signals in ACMatch if enabled.
   // NOTE: This function should only be called on the UI thread.
   AutocompleteMatch HistoryMatchToACMatch(
       const HistoryURLProviderParams& params,
       size_t match_number,
-      int relevance);
+      int relevance,
+      bool populate_scoring_signals = false);
 
   // Params for the current query.  The provider should not free this directly;
   // instead, it is passed as a parameter through the history backend, and the

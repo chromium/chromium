@@ -748,11 +748,14 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
 
 void HistoryURLProvider::PromoteMatchesIfNecessary(
     const HistoryURLProviderParams& params) {
+  bool populate_scoring_signals =
+      OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled();
   if (params.promote_type == HistoryURLProviderParams::NEITHER)
     return;
   if (params.promote_type == HistoryURLProviderParams::FRONT_HISTORY_MATCH) {
     matches_.push_back(HistoryMatchToACMatch(
-        params, 0, CalculateRelevance(INLINE_AUTOCOMPLETE, 0)));
+        params, 0, CalculateRelevance(INLINE_AUTOCOMPLETE, 0),
+        populate_scoring_signals));
   }
   // There are two cases where we need to add the what-you-typed-match:
   //   * If params.promote_type is WHAT_YOU_TYPED_MATCH, we're being explicitly
@@ -809,6 +812,8 @@ void HistoryURLProvider::QueryComplete(
                                  HistoryURLProviderParams::FRONT_HISTORY_MATCH))
                                    ? 1
                                    : 0;
+    bool populate_scoring_signals =
+        OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled();
     for (size_t i = first_match; i < params->matches.size(); ++i) {
       // All matches score one less than the previous match.
       --relevance;
@@ -817,7 +822,8 @@ void HistoryURLProvider::QueryComplete(
         relevance = CalculateRelevanceScoreUsingScoringParams(
             params->matches[i], relevance, scoring_params_);
       }
-      matches_.push_back(HistoryMatchToACMatch(*params, i, relevance));
+      matches_.push_back(HistoryMatchToACMatch(*params, i, relevance,
+                                               populate_scoring_signals));
     }
   }
 
@@ -1098,7 +1104,8 @@ size_t HistoryURLProvider::RemoveSubsequentMatchesOf(
 AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
     const HistoryURLProviderParams& params,
     size_t match_number,
-    int relevance) {
+    int relevance,
+    bool populate_scoring_signals) {
   // The FormattedStringWithEquivalentMeaning() call below requires callers to
   // be on the main thread.
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -1171,5 +1178,20 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
   }
 
   RecordAdditionalInfoFromUrlRow(info, &match);
+
+  // Populate scoring signals for machine learning model training and scoring.
+  if (populate_scoring_signals) {
+    match.scoring_signals.set_typed_count(info.typed_count());
+    match.scoring_signals.set_visit_count(info.visit_count());
+    match.scoring_signals.set_elapsed_time_last_visit_secs(
+        (base::Time::Now() - info.last_visit()).InSeconds());
+    match.scoring_signals.set_allowed_to_be_default_match(
+        match.allowed_to_be_default_match);
+    match.scoring_signals.set_length_of_url(info.url().spec().length());
+    match.scoring_signals.set_is_host_only(history_match.IsHostOnly());
+    match.scoring_signals.set_has_non_scheme_www_match(
+        history_match.innermost_match);
+  }
+
   return match;
 }
