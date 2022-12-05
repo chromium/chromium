@@ -3,15 +3,15 @@
 This directory contains the script interface and implementation of the View
 Transition, and View Transition APIs.
 
-Document Transition is a type of an animated transition that allows content to
+A View Transition is a type of an animated transition that allows content to
 animate to a new DOM state easily. For instance, modifying the DOM to change the
-background color is a change that can easily be done without document
+background color is a change that can easily be done without view
 transitions. However, view transition also allows the new background state
 to, for example, slide in from the left instead of simply atomically appearing
 on top of the content.
 
 For a detailed explanation, please see the
-[explainer](https://github.com/vmpstr/view-transitions/blob/main/README.md)
+[explainer](https://github.com/WICG/view-transitions/blob/main/README.md)
 
 ## Code Structure
 
@@ -123,6 +123,7 @@ is invariant with respect to whether viewport widgets are shown or not, neither
 its position nor its size change. When all widgets are hidden, it is equal to
 the fixed viewport.
 
+``` text
 ┌──────────────────────┐                              ┌────────────────────┐
 │┼────────────────────┼│                              │                    │
 ││    URL BAR         ││                              │                    │
@@ -139,8 +140,9 @@ the fixed viewport.
 ││                    ││                              │                    │
 │┼────────────────────┼│                              │                    │
 └──────────────────────┘                              └────────────────────┘
-     _The snapshot and fixed viewports when the mobile URL bar and virtual
-                          keyboard are shown._
+```
+_The snapshot and fixed viewports when the mobile URL bar and virtual keyboard
+are shown._
 
 The root ::view-transition pseudo is shifted up and left so that its origin is
 at the snapshot viewport origin. This is a no-op if no viewport widgets are
@@ -160,6 +162,6 @@ the background color in the region overlaid by the URL bar).
 
 Note that this project is in early stages of design and implementation. To
 follow the design evolution, please see [our github
-repo](https://github.com/vmpstr/view-transitions/). Furthermore, this
+repo](https://github.com/WICG/view-transitions/). Furthermore, this
 README's Code Structure section will be updated as we make progress with our
 implementation.
