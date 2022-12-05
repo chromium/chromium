@@ -750,7 +750,7 @@ std::string RenderFrameDevToolsAgentHost::GetTitle() {
     if (!frame_host_->GetPage().IsPrimary()) {
       NavigationEntryImpl* entry = frame_host_->frame_tree_node()
                                        ->frame_tree()
-                                       ->controller()
+                                       .controller()
                                        .GetLastCommittedEntry();
       return entry ? base::UTF16ToUTF8(entry->GetTitleForDisplay())
                    : std::string();

@@ -316,7 +316,7 @@ bool DestroyRenderWidgetHost(int32_t process_id,
   if (rfh->IsOutermostMainFrame()) {
     WebContents::FromRenderFrameHost(rfh)->Close();
   } else {
-    ftn->frame_tree()->RemoveFrame(ftn);
+    ftn->frame_tree().RemoveFrame(ftn);
   }
   return true;
 }

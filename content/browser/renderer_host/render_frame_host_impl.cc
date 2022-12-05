@@ -3456,7 +3456,7 @@ RenderFrameProxyHost* RenderFrameHostImpl::GetProxyToOuterDelegate() {
   DCHECK(is_main_frame());
   int outer_contents_frame_tree_node_id =
       frame_tree_node_->frame_tree()
-          ->delegate()
+          .delegate()
           ->GetOuterDelegateFrameTreeNodeId();
   FrameTreeNode* outer_contents_frame_tree_node =
       FrameTreeNode::GloballyFindByID(outer_contents_frame_tree_node_id);
@@ -5870,7 +5870,7 @@ FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChildInternal(
   if (!child_frame_or_proxy)
     return nullptr;
 
-  if (child_frame_or_proxy.GetFrameTreeNode()->frame_tree() != frame_tree()) {
+  if (&child_frame_or_proxy.GetFrameTreeNode()->frame_tree() != frame_tree()) {
     // Ignore the cases when the child lives in a different frame tree.
     // This is possible when we create a proxy for inner WebContents (e.g.
     // for portals) so the |child_frame_or_proxy| points to the root frame
@@ -8590,7 +8590,7 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
                 : LifecycleStateImpl::kReadyToBeDeleted);
       }
 
-      node->frame_tree()->FrameUnloading(node);
+      node->frame_tree().FrameUnloading(node);
     }
   }
 }
@@ -9152,7 +9152,7 @@ void RenderFrameHostImpl::CommitNavigation(
               NavigationEntryImpl::FromNavigationEntry(
                   navigation_request->frame_tree_node()
                       ->frame_tree()
-                      ->controller()
+                      .controller()
                       .GetLastCommittedEntry())) {
         if (last_committed_entry->back_forward_cache_metrics()) {
           last_committed_entry->back_forward_cache_metrics()
@@ -9765,7 +9765,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() {
 
 const RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() const {
   // Iteration over the GetParent() chain is used below, because returning
-  // |frame_tree()->root()->current_frame_host()| might
+  // |frame_tree().root()->current_frame_host()| might
   // give an incorrect result after |this| has been detached from the frame
   // tree.
   const RenderFrameHostImpl* main_frame = this;
@@ -12130,7 +12130,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       const std::string& namespace_id =
           navigation_request->frame_tree_node()
               ->frame_tree()
-              ->controller()
+              .controller()
               .GetSessionStorageNamespace(
                   GetSiteInstance()->GetStoragePartitionConfig())
               ->id();
@@ -13198,11 +13198,11 @@ void RenderFrameHostImpl::
                           request->GetNavigationEntryOffset());
   SCOPED_CRASH_KEY_NUMBER(
       "VerifyDidCommit", "entry_count",
-      request->frame_tree_node()->frame_tree()->controller().GetEntryCount());
+      request->frame_tree_node()->frame_tree().controller().GetEntryCount());
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "last_committed_index",
                           request->frame_tree_node()
                               ->frame_tree()
-                              ->controller()
+                              .controller()
                               .GetLastCommittedEntryIndex());
 
   SCOPED_CRASH_KEY_BOOL(
@@ -13991,7 +13991,7 @@ void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {
   devtools_instrumentation::WillSwapFrameTreeNode(*frame_tree_node_,
                                                   frame_tree_node);
   frame_tree_node_ = &frame_tree_node;
-  SetFrameTree(*frame_tree_node_->frame_tree());
+  SetFrameTree(frame_tree_node_->frame_tree());
   // Setting the FrameTreeNode is only done for FrameTree/FrameTreeNode swaps
   // in MPArch (specifically prerender activation). This is to ensure that
   // fields such as proxies and ReplicationState are copied over correctly. In
@@ -14015,7 +14015,7 @@ void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {
 }
 
 void RenderFrameHostImpl::SetFrameTree(FrameTree& frame_tree) {
-  DCHECK_EQ(frame_tree_node_->frame_tree(), &frame_tree);
+  DCHECK_EQ(&frame_tree_node_->frame_tree(), &frame_tree);
   frame_tree_ = &frame_tree;
   render_view_host()->SetFrameTree(frame_tree);
   if (GetRenderWidgetHost()) {

@@ -304,8 +304,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, FrameIteration) {
   // WebContentsImpl::ForEachFrameTree should include fenced frames.
   bool visited_fenced_frame_frame_tree = false;
   web_contents()->ForEachFrameTree(
-      base::BindLambdaForTesting([&](FrameTree* frame_tree) {
-        if (frame_tree == fenced_frame_rfh->frame_tree()) {
+      base::BindLambdaForTesting([&](FrameTree& frame_tree) {
+        if (&frame_tree == fenced_frame_rfh->frame_tree()) {
           visited_fenced_frame_frame_tree = true;
         }
       }));
@@ -797,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, IsLoading) {
       fenced_frame->GetInnerRoot());
   FrameTreeNode* fenced_frame_root_node =
       inner_fenced_frame_rfh->frame_tree_node();
-  FrameTree* fenced_frame_tree = fenced_frame_root_node->frame_tree();
+  FrameTree& fenced_frame_tree = fenced_frame_root_node->frame_tree();
 
   // All WebContents::IsLoading, FrameTree::IsLoadingIncludingInnerFrameTrees,
   // and FrameTreeNode::IsLoading should return true when the fenced frame is
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, IsLoading) {
                   ->frame_tree()
                   ->IsLoadingIncludingInnerFrameTrees());
   EXPECT_TRUE(fenced_frame_root_node->IsLoading());
-  EXPECT_TRUE(fenced_frame_tree->IsLoadingIncludingInnerFrameTrees());
+  EXPECT_TRUE(fenced_frame_tree.IsLoadingIncludingInnerFrameTrees());
 
   // Complete the fenced frame response and finish fenced frame navigation.
   fenced_frame_response.WaitForRequest();
@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, IsLoading) {
                    ->frame_tree()
                    ->IsLoadingIncludingInnerFrameTrees());
   EXPECT_FALSE(fenced_frame_root_node->IsLoading());
-  EXPECT_FALSE(fenced_frame_tree->IsLoadingIncludingInnerFrameTrees());
+  EXPECT_FALSE(fenced_frame_tree.IsLoadingIncludingInnerFrameTrees());
 }
 
 // Test that when the documents inside the fenced frame tree are loading,

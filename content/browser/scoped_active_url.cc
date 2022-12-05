@@ -35,7 +35,7 @@ ScopedActiveURL::ScopedActiveURL(RenderViewHost* view)
 
 ScopedActiveURL::ScopedActiveURL(FrameTreeNode* node)
     : ScopedActiveURL(node->current_url(),
-                      node->frame_tree()->root()->current_origin()) {}
+                      node->frame_tree().root()->current_origin()) {}
 
 ScopedActiveURL::~ScopedActiveURL() {
   GetContentClient()->SetActiveURL(GURL(), "");

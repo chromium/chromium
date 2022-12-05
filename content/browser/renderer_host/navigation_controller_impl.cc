@@ -680,7 +680,7 @@ void NavigationControllerImpl::RemovedEntriesTracker::PopulateKeySet(
       // discarded API keys.
       if (frame_entry->document_sequence_number() !=
           frame_tree_node_id_to_doc_seq_nos_[node->frame_tree_node_id()]) {
-        for (auto* descendant : node->frame_tree()->SubtreeNodes(node))
+        for (auto* descendant : node->frame_tree().SubtreeNodes(node))
           nodes_to_process.erase(descendant);
       }
     });
@@ -1364,7 +1364,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // NavigationEntry, by either creating a new object or reusing the previous
   // entry's one.
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics;
-  if (navigation_request->frame_tree_node()->frame_tree()->type() ==
+  if (navigation_request->frame_tree_node()->frame_tree().type() ==
       FrameTree::Type::kPrimary) {
     back_forward_cache_metrics = BackForwardCacheMetrics::
         CreateOrReuseBackForwardCacheMetricsForNavigation(
@@ -3398,7 +3398,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     node = params.frame_tree_node_id != RenderFrameHost::kNoFrameTreeNodeId
                ? frame_tree_->FindByID(params.frame_tree_node_id)
                : frame_tree_->FindByName(params.frame_name);
-    DCHECK(!node || node->frame_tree() == &*frame_tree_);
+    DCHECK(!node || &node->frame_tree() == &frame_tree());
   }
 
   // If no FrameTreeNode was specified, navigate the main frame.
@@ -3574,7 +3574,7 @@ void NavigationControllerImpl::HandleRendererDebugURL(
   // TODO(crbug.com/1254130): Remove the test dependency on this behavior.
   if (!url.SchemeIs(url::kJavaScriptScheme)) {
     bool was_loading = frame_tree_node->frame_tree()
-                           ->LoadingTree()
+                           .LoadingTree()
                            ->IsLoadingIncludingInnerFrameTrees();
     frame_tree_node->current_frame_host()->SetIsLoadingForRendererDebugURL();
     frame_tree_node->DidStartLoading(true /* should_show_loading_ui */,

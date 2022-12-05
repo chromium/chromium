@@ -94,7 +94,7 @@ NavigationThrottle::ThrottleCheckResult AncestorThrottle::ProcessResponseImpl(
     bool is_response_check) {
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
 
-  bool is_portal = request->frame_tree_node()->frame_tree()->IsPortal();
+  bool is_portal = request->frame_tree_node()->frame_tree().IsPortal();
   if (request->IsInMainFrame() && !is_portal) {
     // Allow main frame navigations.
     return NavigationThrottle::PROCEED;

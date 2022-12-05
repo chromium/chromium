@@ -1346,7 +1346,7 @@ bool WebContentsImpl::IsPrerenderedFrame(int frame_tree_node_id) {
                ->lifecycle_state() ==
            RenderFrameHostImpl::LifecycleStateImpl::kPrerendering;
   }
-  return frame_tree_node->frame_tree()->type() == FrameTree::Type::kPrerender;
+  return frame_tree_node->frame_tree().type() == FrameTree::Type::kPrerender;
 }
 
 RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(
@@ -1516,8 +1516,8 @@ void WebContentsImpl::ExecutePageBroadcastMethodForAllPages(
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::ExecutePageBroadcastMethodForAllPages");
   ForEachFrameTree(base::BindRepeating(
-      [](PageBroadcastMethodCallback* callback, FrameTree* frame_tree) {
-        frame_tree->root()->render_manager()->ExecutePageBroadcastMethod(
+      [](PageBroadcastMethodCallback* callback, FrameTree& frame_tree) {
+        frame_tree.root()->render_manager()->ExecutePageBroadcastMethod(
             *callback);
       },
       &callback));
@@ -1805,32 +1805,29 @@ void WebContentsImpl::SetUserAgentOverride(
   // No need to reload if the current entry matches that of the
   // NavigationRequest supplied to DidStartNavigation() as NavigationRequest
   // handles it.
-  ForEachFrameTree(base::BindRepeating([](FrameTree* frame_tree) {
+  ForEachFrameTree(base::BindRepeating([](FrameTree& frame_tree) {
     // For prerendering, we don't want to activate a prerendered page loaded
     // with a stale UA and will handle it even if it finishes loading.
-    if (!frame_tree->IsLoadingIncludingInnerFrameTrees() &&
-        !frame_tree->is_prerendering()) {
+    if (!frame_tree.IsLoadingIncludingInnerFrameTrees() &&
+        !frame_tree.is_prerendering()) {
       return;
     }
 
-    NavigationEntry* entry = frame_tree->controller().GetVisibleEntry();
+    NavigationEntry* entry = frame_tree.controller().GetVisibleEntry();
     if (!entry || !entry->GetIsOverridingUserAgent())
       return;
-    if (frame_tree->root()->navigation_request() &&
-        !frame_tree->root()
-             ->navigation_request()
-             ->ua_change_requires_reload()) {
+    if (frame_tree.root()->navigation_request() &&
+        !frame_tree.root()->navigation_request()->ua_change_requires_reload()) {
       return;
     }
-    if (frame_tree->is_prerendering()) {
+    if (frame_tree.is_prerendering()) {
       // Just cancel if the FrameTree is for prerendering, as prerendered
       // page may not allow another navigation including a reload, depending
       // on conditions.
-      frame_tree->GetMainFrame()->CancelPrerendering(
-          PrerenderCancellationReason(
-              PrerenderFinalStatus::kUaChangeRequiresReload));
+      frame_tree.GetMainFrame()->CancelPrerendering(PrerenderCancellationReason(
+          PrerenderFinalStatus::kUaChangeRequiresReload));
     } else {
-      frame_tree->controller().Reload(ReloadType::BYPASSING_CACHE, true);
+      frame_tree.controller().Reload(ReloadType::BYPASSING_CACHE, true);
     }
   }));
 
@@ -3000,7 +2997,7 @@ void WebContentsImpl::OnCookiesAccessed(RenderFrameHostImpl* rfh,
 void WebContentsImpl::Stop() {
   TRACE_EVENT0("content", "WebContentsImpl::Stop");
   ForEachFrameTree(base::BindRepeating(
-      [](FrameTree* frame_tree) { frame_tree->StopLoading(); }));
+      [](FrameTree& frame_tree) { frame_tree.StopLoading(); }));
   GetPrerenderHostRegistry()->CancelAllHosts(PrerenderFinalStatus::kStop);
   observers_.NotifyObservers(&WebContentsObserver::NavigationStopped);
 }
@@ -4762,8 +4759,8 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
       // against this->primary_frame_tree_. Check against page_delegate(), which
       // is always a WebContentsImpl, while delegate() may be implemented by
       // something else such as for prerendered frame trees.
-      FrameTree* frame_tree = frame_tree_node->frame_tree();
-      CHECK_EQ(frame_tree->page_delegate(), this);
+      FrameTree& frame_tree = frame_tree_node->frame_tree();
+      CHECK_EQ(frame_tree.page_delegate(), this);
 
       // Prerendering and fenced frame navigations are hidden from embedders.
       // If the navigation is targeting a frame in a prerendering or fenced
@@ -4773,10 +4770,10 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
       // frame tree Navigation controller should be used for navigating.
       // Instead, we just navigate directly on the relevant frame
       // tree.
-      if (frame_tree->type() == FrameTree::Type::kPrerender ||
-          frame_tree->type() == FrameTree::Type::kFencedFrame) {
+      if (frame_tree.type() == FrameTree::Type::kPrerender ||
+          frame_tree.type() == FrameTree::Type::kFencedFrame) {
         DCHECK_EQ(params.disposition, WindowOpenDisposition::CURRENT_TAB);
-        frame_tree->controller().LoadURLWithParams(
+        frame_tree.controller().LoadURLWithParams(
             NavigationController::LoadURLParams(params));
         return this;
       }
@@ -5719,7 +5716,7 @@ void WebContentsImpl::ReadyToCommitNavigation(
     static_cast<NavigationRequest*>(navigation_handle)
         ->frame_tree_node()
         ->frame_tree()
-        ->controller()
+        .controller()
         .ssl_manager()
         ->DidStartResourceResponse(
             url::SchemeHostPort(navigation_handle->GetURL()),
@@ -5895,7 +5892,7 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
                "WebContentsImpl::DidNavigateMainFramePreCommit",
                "navigation_is_within_page", navigation_is_within_page);
   const bool is_primary =
-      frame_tree_node->frame_tree()->type() == FrameTree::Type::kPrimary;
+      frame_tree_node->frame_tree().type() == FrameTree::Type::kPrimary;
   // If running for a non-primary main frame, early out.
   if (!is_primary)
     return;
@@ -7232,7 +7229,7 @@ RenderFrameHostImpl* WebContentsImpl::GetOuterWebContentsFrame() {
   FrameTreeNode* outer_node =
       FrameTreeNode::GloballyFindByID(GetOuterDelegateFrameTreeNodeId());
   // The outer node should be in the outer WebContents.
-  DCHECK_EQ(outer_node->frame_tree(),
+  DCHECK_EQ(&outer_node->frame_tree(),
             &GetOuterWebContents()->GetPrimaryFrameTree());
   return outer_node->parent();
 }
@@ -7653,8 +7650,8 @@ void WebContentsImpl::RegisterExistingOriginAsHavingDefaultIsolation(
     web_contents->ForEachFrameTree(base::BindRepeating(
         [](const url::Origin& origin,
            NavigationRequest* navigation_request_to_exclude,
-           FrameTree* frame_tree) {
-          frame_tree->RegisterExistingOriginAsHavingDefaultIsolation(
+           FrameTree& frame_tree) {
+          frame_tree.RegisterExistingOriginAsHavingDefaultIsolation(
               origin, navigation_request_to_exclude);
         },
         origin, navigation_request_to_exclude));
@@ -7868,7 +7865,7 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   RenderFrameHostImpl::UpdateAXFocusDeferScope focus_defer_scope(
       *node->current_frame_host()->GetOutermostMainFrameOrEmbedder());
 
-  node->frame_tree()->SetFocusedFrame(node, source);
+  node->frame_tree().SetFocusedFrame(node, source);
 
   auto* inner_contents = node_.GetInnerWebContentsInFrame(node);
 
@@ -7885,7 +7882,7 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   if (inner_contents) {
     // An inner WebContents is not created from Fenced Frames so we
     // shouldn't end up in this branch.
-    DCHECK_NE(FrameTree::Type::kFencedFrame, node->frame_tree()->type());
+    DCHECK_NE(FrameTree::Type::kFencedFrame, node->frame_tree().type());
 
     // |this| is an outer WebContents and |node| represents an inner
     // WebContents. Transfer the focus to the inner contents if |this| is
@@ -7901,7 +7898,7 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
     // A GuestView embedding a fenced frame will have an
     // OuterContentsFrameTreeNode. However, it will not have the same site
     // instance because a FencedFrame creates a new BrowsingInstance.
-    DCHECK_NE(FrameTree::Type::kFencedFrame, node->frame_tree()->type());
+    DCHECK_NE(FrameTree::Type::kFencedFrame, node->frame_tree().type());
 
     // |this| is an inner WebContents, |node| is its main FrameTreeNode and
     // the outer WebContents FrameTreeNode is at |source|'s SiteInstance.
@@ -7910,14 +7907,14 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
     // its RenderFrameProxyHost (via FrameFocused mojo call, used to
     // implement the window.focus() API).
     if (GetFocusedWebContents() == GetOuterWebContents())
-      SetFocusedFrameTree(node->frame_tree());
+      SetFocusedFrameTree(&node->frame_tree());
   } else if (!GetOuterWebContents() || GetFocusedWebContents() == this) {
     // This is an outermost WebContents or we are currently focused so allow
     // the requested node's frame tree to be focused. The
     // (GetFocusedWebContents() == this) is needed when there are multiple
     // frame trees within an inner WebContents (ie. a GuestView with fenced
     // frames).
-    SetFocusedFrameTree(node->frame_tree());
+    SetFocusedFrameTree(&node->frame_tree());
   }
 }
 
@@ -8499,11 +8496,11 @@ void WebContentsImpl::OnFrameTreeNodeDestroyed(FrameTreeNode* node) {
                         "node", node);
   // If we are the focused frame tree and are destroying the root node
   // reassign the focused frame tree node.
-  if (!node->parent() && GetFocusedFrameTree() == node->frame_tree() &&
-      node->frame_tree() != &primary_frame_tree_) {
+  if (!node->parent() && GetFocusedFrameTree() == &node->frame_tree() &&
+      &node->frame_tree() != &primary_frame_tree_) {
     FrameTreeNode* frame_in_embedder =
         node->render_manager()->GetOuterDelegateNode();
-    SetFocusedFrameTree(frame_in_embedder ? frame_in_embedder->frame_tree()
+    SetFocusedFrameTree(frame_in_embedder ? &frame_in_embedder->frame_tree()
                                           : &primary_frame_tree_);
   }
 
@@ -9235,7 +9232,7 @@ void WebContentsImpl::SetOpenerForNewContents(FrameTreeNode* opener,
     // if the opener is a subframe, the opener tracking could be easily bypassed
     // by spawning from a subframe and deleting the subframe.
     // https://crbug.com/705316
-    new_root->SetOriginalOpener(opener->frame_tree()->root());
+    new_root->SetOriginalOpener(opener->frame_tree().root());
     new_root->SetOpenerDevtoolsFrameToken(
         opener->current_frame_host()->devtools_frame_token());
     opened_by_another_window_ = true;
@@ -9341,9 +9338,9 @@ void WebContentsImpl::ForEachRenderViewHost(
     ForEachFrameTree(base::BindRepeating(
         [](ForEachRenderViewHostTypes view_mask,
            std::set<RenderViewHostImpl*>& render_view_hosts,
-           FrameTree* frame_tree) {
+           FrameTree& frame_tree) {
           // Check the view masks.
-          if (frame_tree->is_prerendering()) {
+          if (frame_tree.is_prerendering()) {
             // We are in a prerendering page.
             if ((view_mask & ForEachRenderViewHostTypes::kPrerenderViews) == 0)
               return;
@@ -9352,7 +9349,7 @@ void WebContentsImpl::ForEachRenderViewHost(
             if ((view_mask & ForEachRenderViewHostTypes::kActiveViews) == 0)
               return;
           }
-          for (auto& render_view_host : frame_tree->render_view_hosts()) {
+          for (auto& render_view_host : frame_tree.render_view_hosts()) {
             render_view_hosts.insert(render_view_host.second);
           }
         },

@@ -3878,7 +3878,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   crash_observer.Wait();
 
   // Verify that the RVH and RFH for A were cleaned up.
-  EXPECT_FALSE(root->frame_tree()->GetRenderViewHost(site_instance->group()));
+  EXPECT_FALSE(root->frame_tree().GetRenderViewHost(site_instance->group()));
   EXPECT_TRUE(deleted_observer.deleted());
 
   // Start a navigation back to A, being careful to stay in the same
@@ -3959,7 +3959,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                                   EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // The main frame should be focused.
-  EXPECT_EQ(root, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(root, root->frame_tree().GetFocusedFrame());
 
   DOMMessageQueue msg_queue(web_contents());
 
@@ -3976,7 +3976,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
 
   // The subframe should now be focused.
-  EXPECT_EQ(root->child_at(0), root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(root->child_at(0), root->frame_tree().GetFocusedFrame());
 
   // Click on the root frame.
   SimulateMouseClick(shell()
@@ -3994,7 +3994,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
 
   // The root frame should be focused again.
-  EXPECT_EQ(root, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(root, root->frame_tree().GetFocusedFrame());
 }
 
 // Check that when a cross-process subframe is focused, its parent's
@@ -4021,11 +4021,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DocumentActiveElement) {
   FrameTreeNode* grandchild = root->child_at(0)->child_at(0);
 
   // The main frame should be focused to start with.
-  EXPECT_EQ(root, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(root, root->frame_tree().GetFocusedFrame());
 
   // Focus the b.com frame.
   FocusFrame(child);
-  EXPECT_EQ(child, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(child, root->frame_tree().GetFocusedFrame());
 
   // Helper function to check a property of document.activeElement in the
   // specified frame.
@@ -4045,7 +4045,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DocumentActiveElement) {
 
   // Focus the a.com main frame again.
   FocusFrame(root);
-  EXPECT_EQ(root, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(root, root->frame_tree().GetFocusedFrame());
 
   // Main frame document's <body> should now be the active element.
   verify_active_element_property(root_rfh, "tagName", "body");
@@ -4090,7 +4090,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SubframeWindowFocus) {
   FrameTreeNode* child2 = root->child_at(1);
 
   // The main frame should be focused to start with.
-  EXPECT_EQ(root, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(root, root->frame_tree().GetFocusedFrame());
 
   // Register focus and blur events that will send messages when each frame's
   // window gets or loses focus, and configure some utility functions useful for
@@ -4142,7 +4142,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SubframeWindowFocus) {
       return allMessages.length == 2 || allMessages;
   })())"));
 
-  EXPECT_EQ(child1, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(child1, root->frame_tree().GetFocusedFrame());
 
   // Now, execute window.focus on the C subframe from A main frame.  This
   // checks that we can shift focus from one remote frame to another.
@@ -4156,7 +4156,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SubframeWindowFocus) {
   })())"));
 
   // The C subframe should now be focused.
-  EXPECT_EQ(child2, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(child2, root->frame_tree().GetFocusedFrame());
 
   // Install event listeners in the A main frame, expecting the main frame to
   // obtain focus.
@@ -4175,7 +4175,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SubframeWindowFocus) {
   })())"));
 
   // The main frame should now be focused.
-  EXPECT_EQ(root, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(root, root->frame_tree().GetFocusedFrame());
 }
 
 // Check that when a subframe has focus, and another subframe navigates
@@ -4192,7 +4192,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* child2 = root->child_at(1);
 
   // The main frame should be focused to start with.
-  EXPECT_EQ(root, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(root, root->frame_tree().GetFocusedFrame());
 
   // Add an <input> element to the first subframe.
   ExecuteScriptAsync(
@@ -4202,7 +4202,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameFocusedObserver focus_observer(child1->current_frame_host());
   ExecuteScriptAsync(root, "frames[0].focus()");
   focus_observer.Wait();
-  EXPECT_EQ(child1, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(child1, root->frame_tree().GetFocusedFrame());
 
   // Give focus to the <input> element in the first subframe.
   ExecuteScriptAsync(child1, "document.querySelector('input').focus()");
@@ -4214,7 +4214,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // This is needed because the incorrect focused frame change as in
   // https://crbug.com/802156 requires an additional post-commit IPC roundtrip.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(child1, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(child1, root->frame_tree().GetFocusedFrame());
 
   // The <input> in first subframe should still be the activeElement.
   EXPECT_EQ(
@@ -10697,7 +10697,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  EXPECT_EQ(root, root->frame_tree()->GetFocusedFrame());
+  EXPECT_EQ(root, root->frame_tree().GetFocusedFrame());
 
   // Add an onmessage handler to the subframe to send back a bool of whether
   // the subframe has focus.

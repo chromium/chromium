@@ -484,7 +484,7 @@ RenderWidgetHostViewBase* RenderFrameHostManager::GetRenderWidgetHostView()
 bool RenderFrameHostManager::IsMainFrameForInnerDelegate() {
   return frame_tree_node_->IsMainFrame() &&
          frame_tree_node_->frame_tree()
-                 ->delegate()
+                 .delegate()
                  ->GetOuterDelegateFrameTreeNodeId() !=
              FrameTreeNode::kFrameTreeNodeInvalidId;
 }
@@ -492,7 +492,7 @@ bool RenderFrameHostManager::IsMainFrameForInnerDelegate() {
 FrameTreeNode* RenderFrameHostManager::GetOuterDelegateNode() {
   int outer_contents_frame_tree_node_id =
       frame_tree_node_->frame_tree()
-          ->delegate()
+          .delegate()
           ->GetOuterDelegateFrameTreeNodeId();
   return FrameTreeNode::GloballyFindByID(outer_contents_frame_tree_node_id);
 }
@@ -534,7 +534,7 @@ void RenderFrameHostManager::RemoveOuterDelegateFrame() {
   DCHECK(frame_tree_node_->IsMainFrame());
   FrameTreeNode* outer_delegate_frame_tree_node = GetOuterDelegateNode();
   DCHECK(outer_delegate_frame_tree_node->parent());
-  outer_delegate_frame_tree_node->frame_tree()->RemoveFrame(
+  outer_delegate_frame_tree_node->frame_tree().RemoveFrame(
       outer_delegate_frame_tree_node);
 }
 
@@ -666,7 +666,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     // navigation finishes, we show it if the delegate is shown. CommitPending()
     // takes care of this in the cross-process case, as well as other cases
     // where a RenderFrameHost is swapped in.
-    if (!frame_tree_node_->frame_tree()->IsHidden())
+    if (!frame_tree_node_->frame_tree().IsHidden())
       render_frame_host_->GetView()->Show();
   }
 }
@@ -1306,7 +1306,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
     // Check that this is for a prerendered FrameTree or not. Note that we
     // cannot check the RFH's LifecycleState here instead, because it will be
     // kSpeculative even for prerendering RFHs at this point.
-    bool is_prerendering = frame_tree_node_->frame_tree()->is_prerendering();
+    bool is_prerendering = frame_tree_node_->frame_tree().is_prerendering();
 
     if (!render_frame_host_->IsRenderFrameLive() &&
         !recovering_without_early_commit && !is_prerendering) {
@@ -1573,7 +1573,7 @@ void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
   // to collapse the frame. Note `IsFencedFrameRoot` returns true for
   // ShadowDOM as well so we need to check the `FrameTree::Type` as well.
   if (frame_tree_node_->IsFencedFrameRoot() &&
-      frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame) {
+      frame_tree_node_->frame_tree().type() == FrameTree::Type::kFencedFrame) {
     if (GetProxyToOuterDelegate()->is_render_frame_proxy_live()) {
       GetProxyToOuterDelegate()->GetAssociatedRemoteFrame()->Collapse(
           collapsed);
@@ -1652,7 +1652,7 @@ void RenderFrameHostManager::UpdateUserActivationState(
     blink::mojom::UserActivationUpdateType update_type,
     blink::mojom::UserActivationNotificationType notification_type) {
   // Don't propagate user activations out of fenced frame trees.
-  FrameTreeNode* root = frame_tree_node_->frame_tree()->root();
+  FrameTreeNode* root = frame_tree_node_->frame_tree().root();
   if (root->IsFencedFrameRoot()) {
     return;
   }
@@ -2491,7 +2491,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // https://crbug.com/787576).
   if (!frame_tree_node_->IsMainFrame()) {
     RenderFrameHostImpl* main_frame =
-        frame_tree_node_->frame_tree()->root()->current_frame_host();
+        frame_tree_node_->frame_tree().root()->current_frame_host();
     if (IsCandidateSameSite(main_frame, dest_url_info)) {
       AppendReason(reason,
                    "DetermineSiteInstanceForURL / subframe-reuse => "
@@ -2807,7 +2807,7 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     // will be done as part of CreateOpenerProxies above; otherwise, we do this
     // here.  We will still check whether two frames are in the same
     // BrowsingInstance before we allow them to interact (e.g., postMessage).
-    frame_tree_node_->frame_tree()->CreateProxiesForSiteInstance(
+    frame_tree_node_->frame_tree().CreateProxiesForSiteInstance(
         frame_tree_node_, new_instance, browsing_context_state);
   }
 
@@ -2819,7 +2819,7 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
       render_frame_host_->GetSiteInstance() == new_instance) {
     if (frame_tree_node_->IsMainFrame()) {
       frame_tree_node_->frame_tree()
-          ->GetRenderViewHost(
+          .GetRenderViewHost(
               static_cast<SiteInstanceImpl*>(new_instance)->group())
           ->SetMainFrameRoutingId(MSG_ROUTING_NONE);
     }
@@ -2870,7 +2870,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
     base::UnguessableToken devtools_frame_token,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> browsing_context_state) {
-  FrameTree* frame_tree = frame_tree_node_->frame_tree();
+  FrameTree& frame_tree = frame_tree_node_->frame_tree();
 
   // Only the kInitChild case passes in a frame routing id.
   DCHECK_EQ(create_frame_case != CreateFrameCase::kInitChild,
@@ -2880,7 +2880,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
   }
 
   scoped_refptr<RenderViewHostImpl> render_view_host =
-      frame_tree->GetRenderViewHost(
+      frame_tree.GetRenderViewHost(
           static_cast<SiteInstanceImpl*>(site_instance)->group());
 
   switch (create_frame_case) {
@@ -2915,7 +2915,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
       break;
   }
   if (!render_view_host) {
-    render_view_host = frame_tree->CreateRenderViewHost(
+    render_view_host = frame_tree.CreateRenderViewHost(
         site_instance, frame_routing_id, renderer_initiated_creation,
         features::GetBrowsingContextMode() ==
                 features::BrowsingContextStateImplementationType::
@@ -2935,14 +2935,14 @@ RenderFrameHostManager::CreateRenderFrameHost(
     // - We create RenderFrameHost in kPrerendering state in case of
     // prerendering frame tree.
     // - We create RenderFrameHost in kActive state in all other cases.
-    lifecycle_state = frame_tree->is_prerendering()
+    lifecycle_state = frame_tree.is_prerendering()
                           ? LifecycleStateImpl::kPrerendering
                           : LifecycleStateImpl::kActive;
   }
 
   return RenderFrameHostFactory::Create(
       site_instance, std::move(render_view_host),
-      frame_tree->render_frame_delegate(), frame_tree, frame_tree_node_,
+      frame_tree.render_frame_delegate(), &frame_tree, frame_tree_node_,
       frame_routing_id, std::move(frame_remote), frame_token, document_token,
       devtools_frame_token, renderer_initiated_creation, lifecycle_state,
       std::move(browsing_context_state));
@@ -3001,7 +3001,7 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
       browsing_context_state = render_frame_host_->browsing_context_state();
     } else {
       scoped_refptr<RenderViewHostImpl> render_view_host =
-          frame_tree_node_->frame_tree()->GetRenderViewHost(
+          frame_tree_node_->frame_tree().GetRenderViewHost(
               static_cast<SiteInstanceImpl*>(new_instance)->group());
       if (render_view_host) {
         // If we reuse a RenderViewHost for a main-frame cross-BrowsingInstance
@@ -3181,12 +3181,12 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
     // The RenderViewHost creates the page level structure in Blink. The first
     // object to depend on it is necessarily a main frame one.
     scoped_refptr<RenderViewHostImpl> render_view_host =
-        frame_tree_node_->frame_tree()->GetRenderViewHost(group);
+        frame_tree_node_->frame_tree().GetRenderViewHost(group);
     CHECK(render_view_host || frame_tree_node_->IsMainFrame());
     if (!render_view_host) {
       // Before creating a new RenderFrameProxyHost, ensure a RenderViewHost
       // exists for |instance|, as it creates the page level structure in Blink.
-      render_view_host = frame_tree_node_->frame_tree()->CreateRenderViewHost(
+      render_view_host = frame_tree_node_->frame_tree().CreateRenderViewHost(
           instance, /*main_frame_routing_id=*/MSG_ROUTING_NONE,
           /*renderer_initiated_creation=*/false,
           features::GetBrowsingContextMode() ==
@@ -3646,7 +3646,7 @@ void RenderFrameHostManager::CommitPending(
   // This needs to be done before updating the frame tree structure, else it
   // will have trouble removing the descendants.
   frame_tree_node_->frame_tree()
-      ->render_frame_delegate()
+      .render_frame_delegate()
       ->FullscreenStateChanged(current_frame_host(), false,
                                blink::mojom::FullscreenOptionsPtr());
 
@@ -3797,7 +3797,7 @@ void RenderFrameHostManager::CommitPending(
       // in its process, so that Blink's page-level focus logic won't try to
       // reset frame focus to the main frame.  See https://crbug.com/802156.
       FrameTreeNode* focused_frame =
-          frame_tree_node_->frame_tree()->GetFocusedFrame();
+          frame_tree_node_->frame_tree().GetFocusedFrame();
       SiteInstanceGroup* site_instance_group =
           render_frame_host_->GetSiteInstance()->group();
       if (focused_frame && !focused_frame->IsMainFrame() &&
@@ -3807,7 +3807,7 @@ void RenderFrameHostManager::CommitPending(
             ->GetRenderFrameProxyHost(site_instance_group)
             ->SetFocusedFrame();
       }
-      frame_tree_node_->frame_tree()->SetPageFocus(site_instance_group, true);
+      frame_tree_node_->frame_tree().SetPageFocus(site_instance_group, true);
     }
   }
 
@@ -3955,7 +3955,7 @@ void RenderFrameHostManager::CommitPending(
   if (render_frame_host_->is_local_root()) {
     // RenderFrames are created with a hidden RenderWidgetHost. When navigation
     // finishes, we show it if the delegate is shown.
-    if (!frame_tree_node_->frame_tree()->IsHidden())
+    if (!frame_tree_node_->frame_tree().IsHidden())
       new_view->Show();
   }
 
@@ -3975,7 +3975,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
       std::move(render_frame_host_);
   render_frame_host_ = std::move(render_frame_host);
 
-  FrameTree* frame_tree = frame_tree_node_->frame_tree();
+  FrameTree& frame_tree = frame_tree_node_->frame_tree();
 
   // Swapping the current RenderFrameHost in a FrameTreeNode comes along with an
   // update to its LifecycleStateImpl.
@@ -4002,7 +4002,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   // are considered current in the prerendered frame tree and invisible to the
   // user, unlike kActive state.
   if (render_frame_host_) {
-    if (frame_tree->is_prerendering()) {
+    if (frame_tree.is_prerendering()) {
       // Prerendering pages do not currently support early commit, so
       // speculative RFHs for prerendering pages will always go through
       // kPendingCommit first.
@@ -4063,7 +4063,7 @@ void RenderFrameHostManager::CollectOpenerFrameTrees(
     std::vector<FrameTree*>* opener_frame_trees,
     std::unordered_set<FrameTreeNode*>* nodes_with_back_links) {
   CHECK(opener_frame_trees);
-  opener_frame_trees->push_back(frame_tree_node_->frame_tree());
+  opener_frame_trees->push_back(&frame_tree_node_->frame_tree());
 
   // Add the FrameTree of the given node's opener to the list of
   // |opener_frame_trees| if it doesn't exist there already. |visited_index|
@@ -4079,13 +4079,13 @@ void RenderFrameHostManager::CollectOpenerFrameTrees(
       if (!node->opener())
         continue;
 
-      FrameTree* opener_tree = node->opener()->frame_tree();
+      FrameTree& opener_tree = node->opener()->frame_tree();
       const auto& existing_tree_it =
-          base::ranges::find(*opener_frame_trees, opener_tree);
+          base::ranges::find(*opener_frame_trees, &opener_tree);
 
       if (existing_tree_it == opener_frame_trees->end()) {
         // This is a new opener tree that we will need to process.
-        opener_frame_trees->push_back(opener_tree);
+        opener_frame_trees->push_back(&opener_tree);
       } else {
         // If this tree is already on our processing list *and* we have visited
         // it,
@@ -4158,15 +4158,15 @@ void RenderFrameHostManager::CreateOpenerProxiesForFrameTree(
   // arises, it should be sufficient to remove this DCHECK.
   DCHECK(frame_tree_node_->IsMainFrame());
 
-  FrameTree* frame_tree = frame_tree_node_->frame_tree();
+  FrameTree& frame_tree = frame_tree_node_->frame_tree();
 
   // Ensure that all the nodes in the opener's FrameTree have
   // RenderFrameProxyHosts for the new SiteInstance.  Only pass the node to
   // be skipped if it's in the same FrameTree.
-  if (skip_this_node && skip_this_node->frame_tree() != frame_tree)
+  if (skip_this_node && &skip_this_node->frame_tree() != &frame_tree)
     skip_this_node = nullptr;
-  frame_tree->CreateProxiesForSiteInstance(skip_this_node, instance,
-                                           browsing_context_state);
+  frame_tree.CreateProxiesForSiteInstance(skip_this_node, instance,
+                                          browsing_context_state);
 }
 
 absl::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
@@ -4226,8 +4226,8 @@ void RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent() {
   RenderWidgetHostView* view = GetRenderWidgetHostView();
   if (view &&
       static_cast<RenderWidgetHostImpl*>(view->GetRenderWidgetHost())
-              ->is_hidden() != frame_tree_node_->frame_tree()->IsHidden()) {
-    if (frame_tree_node_->frame_tree()->IsHidden()) {
+              ->is_hidden() != frame_tree_node_->frame_tree().IsHidden()) {
+    if (frame_tree_node_->frame_tree().IsHidden()) {
       view->Hide();
     } else {
       view->Show();
@@ -4236,10 +4236,10 @@ void RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent() {
 }
 
 void RenderFrameHostManager::EnsureRenderFrameHostPageFocusConsistent() {
-  frame_tree_node_->frame_tree()->SetPageFocus(
+  frame_tree_node_->frame_tree().SetPageFocus(
       render_frame_host_->GetSiteInstance()->group(),
       frame_tree_node_->frame_tree()
-          ->root()
+          .root()
           ->current_frame_host()
           ->GetRenderWidgetHost()
           ->is_focused());
@@ -4322,7 +4322,7 @@ void RenderFrameHostManager::NotifyPrepareForInnerDelegateAttachComplete(
 }
 
 NavigationControllerImpl& RenderFrameHostManager::GetNavigationController() {
-  return frame_tree_node_->frame_tree()->controller();
+  return frame_tree_node_->frame_tree().controller();
 }
 
 }  // namespace content

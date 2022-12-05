@@ -199,10 +199,7 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
       allowed = !strict_mode;
       if (allowed) {
         frame_host_delegate->PassiveInsecureContentFound(request->GetURL());
-        node->frame_tree()
-            ->controller()
-            .ssl_manager()
-            ->DidDisplayMixedContent();
+        node->frame_tree().controller().ssl_manager()->DidDisplayMixedContent();
       }
       break;
 
@@ -234,10 +231,7 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
     case blink::mojom::MixedContentContextType::kShouldBeBlockable:
       allowed = !strict_mode;
       if (allowed)
-        node->frame_tree()
-            ->controller()
-            .ssl_manager()
-            ->DidDisplayMixedContent();
+        node->frame_tree().controller().ssl_manager()->DidDisplayMixedContent();
       break;
 
     case blink::mojom::MixedContentContextType::kNotMixedContent:

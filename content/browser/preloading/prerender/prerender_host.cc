@@ -117,7 +117,7 @@ PrerenderHost* PrerenderHost::GetPrerenderHostFromFrameTreeNode(
   PrerenderHostRegistry* prerender_registry =
       web_contents->GetPrerenderHostRegistry();
   int prerender_host_id =
-      frame_tree_node.frame_tree()->root()->frame_tree_node_id();
+      frame_tree_node.frame_tree().root()->frame_tree_node_id();
 
   if (PrerenderHost* host =
           prerender_registry->FindNonReservedHostById(prerender_host_id)) {
@@ -352,7 +352,7 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
 
   // Observe navigation only in the prerendering frame tree.
-  DCHECK_EQ(navigation_request->frame_tree_node()->frame_tree(),
+  DCHECK_EQ(&(navigation_request->frame_tree_node()->frame_tree()),
             frame_tree_.get());
 
   const bool is_prerender_main_frame =
@@ -450,7 +450,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
       std::move(nav_entry), prior_replication_state);
 
   DCHECK_EQ(&target_frame_tree,
-            navigation_request.frame_tree_node()->frame_tree());
+            &navigation_request.frame_tree_node()->frame_tree());
 
   // We support activating the prerendered page only to the topmost
   // RenderFrameHost.

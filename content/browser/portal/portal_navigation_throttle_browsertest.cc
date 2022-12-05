@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleFencedFrameBrowserTest,
   // A fenced frame's FrameTree embedded inside a portal is not considered to be
   // portal frame tree.
   FrameTreeNode* fenced_frame_root_node = fenced_frame_host->frame_tree_node();
-  EXPECT_FALSE(fenced_frame_root_node->frame_tree()->IsPortal());
+  EXPECT_FALSE(fenced_frame_root_node->frame_tree().IsPortal());
 }
 
 }  // namespace

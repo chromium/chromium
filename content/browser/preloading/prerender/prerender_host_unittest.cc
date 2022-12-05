@@ -246,7 +246,7 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
       FrameTreeNode::GloballyFindByID(prerender_frame_tree_node_id);
   RenderFrameHostImpl* prerender_rfh = prerender_root_ftn->current_frame_host();
   NavigationEntryImpl* prerender_nav_entry =
-      prerender_root_ftn->frame_tree()->controller().GetLastCommittedEntry();
+      prerender_root_ftn->frame_tree().controller().GetLastCommittedEntry();
   FrameNavigationEntry* prerender_root_fne =
       prerender_nav_entry->GetFrameEntry(prerender_root_ftn);
 

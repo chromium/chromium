@@ -440,7 +440,7 @@ void RenderFrameProxyHost::DidFocusFrame() {
   // If a fenced frame has requested focus something wrong has gone on. We do
   // not support programmatic focus between the embedder and embeddee because
   // that could be a side channel.
-  if (frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame &&
+  if (frame_tree_node_->frame_tree().type() == FrameTree::Type::kFencedFrame &&
       frame_tree_node_->render_manager()->GetProxyToOuterDelegate() == this) {
     bad_message::ReceivedBadMessage(GetProcess(),
                                     bad_message::RFPH_FOCUSED_FENCED_FRAME);
@@ -727,7 +727,7 @@ void RenderFrameProxyHost::AdvanceFocus(
     const blink::LocalFrameToken& source_frame_token) {
   // TODO(crbug.com/1292671): Correctly attribute to a fenced frame embedded
   // inside a portal to avoid focusing.
-  if (frame_tree_node_->frame_tree()->IsPortal()) {
+  if (frame_tree_node_->frame_tree().IsPortal()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFPH_ADVANCE_FOCUS_INTO_PORTAL);
     return;
@@ -830,7 +830,7 @@ void RenderFrameProxyHost::WriteIntoTrace(
   if (site_instance) {
     proto->set_rvh_map_id(
         frame_tree_node_->frame_tree()
-            ->GetRenderViewHostMapId(
+            .GetRenderViewHostMapId(
                 static_cast<SiteInstanceImpl*>(site_instance)->group())
             .value());
     proto->set_site_instance_id(site_instance->GetId().value());

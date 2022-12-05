@@ -705,7 +705,7 @@ void PrerenderHostRegistry::DidFinishNavigation(
 
   int main_frame_host_id = navigation_request->frame_tree_node()
                                ->frame_tree()
-                               ->root()
+                               .root()
                                ->frame_tree_node_id();
   PrerenderHost* prerender_host = FindNonReservedHostById(main_frame_host_id);
   if (!prerender_host)

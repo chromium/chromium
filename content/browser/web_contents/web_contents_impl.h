@@ -1346,7 +1346,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() const;
 
  private:
-  using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree*)>;
+  using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
   using RenderViewHostIterationCallback =
       base::RepeatingCallback<void(RenderViewHostImpl*)>;
 

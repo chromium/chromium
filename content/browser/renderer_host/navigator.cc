@@ -216,7 +216,7 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
   // Check if the navigation resulted in having same-origin documents in pages
   // with different COOP status inside the browsing context group.
   RenderFrameHostImpl* top_level_document =
-      rfh->frame_tree_node()->frame_tree()->GetMainFrame();
+      rfh->frame_tree_node()->frame_tree().GetMainFrame();
   network::mojom::CrossOriginOpenerPolicyValue page_coop =
       top_level_document->cross_origin_opener_policy().value;
   for (RenderFrameHostImpl* other_tld :
@@ -232,7 +232,7 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
            (page_coop == CoopValue::kUnsafeNone &&
             other_page_coop == CoopValue::kSameOriginAllowPopups));
     for (FrameTreeNode* frame_tree_node :
-         other_tld->frame_tree_node()->frame_tree()->Nodes()) {
+         other_tld->frame_tree_node()->frame_tree().Nodes()) {
       RenderFrameHostImpl* other_rfh = frame_tree_node->current_frame_host();
       if (other_rfh->lifecycle_state() ==
               RenderFrameHostImpl::LifecycleStateImpl::kActive &&
@@ -478,15 +478,15 @@ void Navigator::DidNavigate(
     bool was_within_same_document) {
   DCHECK(navigation_request);
   FrameTreeNode* frame_tree_node = render_frame_host->frame_tree_node();
-  FrameTree* frame_tree = frame_tree_node->frame_tree();
-  DCHECK_EQ(frame_tree, &controller_.frame_tree());
+  FrameTree& frame_tree = frame_tree_node->frame_tree();
+  DCHECK_EQ(&frame_tree, &controller_.frame_tree());
   base::WeakPtr<RenderFrameHostImpl> old_frame_host =
       frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
   // Save the activation status of the previous page here before it gets reset
   // in FrameTreeNode::ResetForNavigation.
   bool previous_document_was_activated =
-      frame_tree->root()->HasStickyUserActivation();
+      frame_tree.root()->HasStickyUserActivation();
 
   if (auto& old_page_info = navigation_request->commit_params().old_page_info) {
     // This is a same-site main-frame navigation where we did a proactive
@@ -617,7 +617,7 @@ void Navigator::DidNavigate(
   if (old_entry_count != controller_.GetEntryCount() ||
       details.previous_entry_index !=
           controller_.GetLastCommittedEntryIndex()) {
-    frame_tree->root()->render_manager()->ExecutePageBroadcastMethod(
+    frame_tree.root()->render_manager()->ExecutePageBroadcastMethod(
         base::BindRepeating(
             [](int history_offset, int history_count, RenderViewHostImpl* rvh) {
               if (auto& broadcast = rvh->GetAssociatedPageBroadcast())
@@ -695,7 +695,7 @@ void Navigator::DidNavigate(
 
   // Now that something has committed, we don't need to track whether the
   // initial page has been accessed.
-  frame_tree->ResetHasAccessedInitialMainDocument();
+  frame_tree.ResetHasAccessedInitialMainDocument();
 
   // Run post-commit tasks.
   if (details.is_main_frame)
@@ -712,7 +712,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
       TRACE_EVENT_SCOPE_GLOBAL, request->common_params().navigation_start);
 
   FrameTreeNode* frame_tree_node = request->frame_tree_node();
-  DCHECK_EQ(frame_tree_node->frame_tree(), &controller_.frame_tree());
+  DCHECK_EQ(&(frame_tree_node->frame_tree()), &controller_.frame_tree());
 
   navigation_data_ = std::make_unique<NavigationMetricsData>(
       request->common_params().navigation_start, request->common_params().url,

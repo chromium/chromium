@@ -558,7 +558,7 @@ void RemoveAllClientHintsExceptOriginTrialHints(
     url::Origin* outermost_main_frame_origin,
     absl::optional<url::Origin>* third_party_origin) {
   RenderFrameHostImpl* outermost_main_frame =
-      frame_tree_node->frame_tree()->GetMainFrame()->GetOutermostMainFrame();
+      frame_tree_node->frame_tree().GetMainFrame()->GetOutermostMainFrame();
 
   for (auto it = accept_ch->begin(); it != accept_ch->end();) {
     if (*it == WebClientHintsType::kUAReduced ||
@@ -608,9 +608,8 @@ struct ClientHintsExtendedData {
       permissions_policy = blink::PermissionsPolicy::CreateForFencedFrame(
           resource_origin, frame_tree_node->GetFencedFrameMode().value());
     } else {
-      RenderFrameHostImpl* outermost_main_frame = frame_tree_node->frame_tree()
-                                                      ->GetMainFrame()
-                                                      ->GetOutermostMainFrame();
+      RenderFrameHostImpl* outermost_main_frame =
+          frame_tree_node->frame_tree().GetMainFrame()->GetOutermostMainFrame();
       outermost_main_frame_origin =
           outermost_main_frame->GetLastCommittedOrigin();
       permissions_policy = blink::PermissionsPolicy::CopyStateFrom(
@@ -626,7 +625,7 @@ struct ClientHintsExtendedData {
     // If this is a prerender tree, also capture prerender local setting. The
     // setting was given by navigation requests on the prerendering page, and
     // has not been used as a global setting.
-    if (frame_tree_node && frame_tree_node->frame_tree()->is_prerendering()) {
+    if (frame_tree_node && frame_tree_node->frame_tree().is_prerendering()) {
       // If prerender host is nullptr, it means prerender has been canceled and
       // the host will be discarded soon, so we do not need to continue.
       if (auto* host = PrerenderHost::GetPrerenderHostFromFrameTreeNode(
@@ -1159,7 +1158,7 @@ void PersistAcceptCH(const url::Origin& origin,
   // implementation returns a nullptr in two cases: not prerendered or
   // prerender is canceled, and the callers cannot distinguish between the two
   // reasons and have to have another if condition.
-  if (frame_tree_node.frame_tree()->is_prerendering()) {
+  if (frame_tree_node.frame_tree().is_prerendering()) {
     // For prerendering headers, it should not persist the client header until
     // activation, considering user has not visited the page and allowed it to
     // change content setting yet. The client hints should apply to navigations

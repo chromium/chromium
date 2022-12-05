@@ -1033,7 +1033,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsFencedFrameBrowserTest,
       web_contents()->GetPrimaryMainFrame(), fenced_frame_url1);
   NavigationEntryImpl* fenced_frame_entry = FrameTreeNode::From(fenced_frame)
                                                 ->frame_tree()
-                                                ->controller()
+                                                .controller()
                                                 .GetLastCommittedEntry();
   EXPECT_EQ(fenced_frame_entry->back_forward_cache_metrics(), nullptr);
 

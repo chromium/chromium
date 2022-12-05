@@ -3420,9 +3420,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // This should delete the RVH as well. Check this by verifying that there's
   // only one RVH in the frame tree, and it's for the current SiteInstanceGroup,
   // not |site_instance_group_a|.
-  EXPECT_TRUE(root->frame_tree()->GetRenderViewHost(
+  EXPECT_TRUE(root->frame_tree().GetRenderViewHost(
       root->current_frame_host()->GetSiteInstance()->group()));
-  EXPECT_EQ(1u, root->frame_tree()->render_view_host_map_.size());
+  EXPECT_EQ(1u, root->frame_tree().render_view_host_map_.size());
 
   // Go back in the main frame from b.com to a.com. In https://crbug.com/581912,
   // the browser process would crash here because there was no main frame

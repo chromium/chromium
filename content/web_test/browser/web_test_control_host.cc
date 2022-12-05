@@ -1162,7 +1162,7 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
     return;
 
   const bool main_window =
-      FrameTreeNode::From(frame)->frame_tree()->type() ==
+      FrameTreeNode::From(frame)->frame_tree().type() ==
           FrameTree::Type::kPrimary &&
       WebContents::FromRenderFrameHost(frame) == main_window_->web_contents();
 

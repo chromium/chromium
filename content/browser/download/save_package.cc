@@ -1084,7 +1084,7 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
         url_to_local_path[save_item->url()] = local_path;
       } else {
         FrameTreeNode* save_item_frame_tree_node =
-            target_tree_node->frame_tree()->FindByID(
+            target_tree_node->frame_tree().FindByID(
                 save_item->frame_tree_node_id());
         if (!save_item_frame_tree_node) {
           // crbug.com/541354: Raciness when saving a dynamically changing page.

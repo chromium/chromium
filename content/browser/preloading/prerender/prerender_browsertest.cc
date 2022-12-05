@@ -453,7 +453,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
                                     RenderFrameHost* prerender_frame_host) {
     EXPECT_EQ(1, FrameTreeNode::GloballyFindByID(host_id)
                      ->frame_tree()
-                     ->controller()
+                     .controller()
                      .GetEntryCount());
     ASSERT_EQ(1, EvalJs(prerender_frame_host, "history.length"));
   }
@@ -1866,7 +1866,7 @@ IN_PROC_BROWSER_TEST_F(
     // Make sure that loading is not happening.
     EXPECT_FALSE(FrameTreeNode::GloballyFindByID(host_id)
                      ->frame_tree()
-                     ->IsLoadingIncludingInnerFrameTrees());
+                     .IsLoadingIncludingInnerFrameTrees());
 
     TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
                           /*expected_history_length=*/2);
@@ -1882,7 +1882,7 @@ IN_PROC_BROWSER_TEST_F(
     // Make sure that loading is not happening.
     EXPECT_FALSE(FrameTreeNode::GloballyFindByID(host_id)
                      ->frame_tree()
-                     ->IsLoadingIncludingInnerFrameTrees());
+                     .IsLoadingIncludingInnerFrameTrees());
 
     TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
                           /*expected_history_length=*/2);
@@ -2484,8 +2484,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
   // WebContentsImpl::ForEachFrameTree should include prerenders.
   bool visited_prerender_frame_tree = false;
   web_contents_impl()->ForEachFrameTree(
-      base::BindLambdaForTesting([&](FrameTree* frame_tree) {
-        if (frame_tree == prerendered_render_frame_host->frame_tree()) {
+      base::BindLambdaForTesting([&](FrameTree& frame_tree) {
+        if (&frame_tree == prerendered_render_frame_host->frame_tree()) {
           visited_prerender_frame_tree = true;
         }
       }));
@@ -2588,14 +2588,14 @@ class TestPrerenderCancellerSubframeNavigationThrottle
     // Cancel prerendering if this navigation is for subframes in prerendered
     // pages.
     FrameTreeNode* frame_tree_node = navigation_request_->frame_tree_node();
-    if (frame_tree_node->frame_tree()->is_prerendering() &&
+    if (frame_tree_node->frame_tree().is_prerendering() &&
         !frame_tree_node->IsMainFrame()) {
       PrerenderHostRegistry* prerender_host_registry =
           frame_tree_node->current_frame_host()
               ->delegate()
               ->GetPrerenderHostRegistry();
       prerender_host_registry->CancelHost(
-          frame_tree_node->frame_tree()->root()->frame_tree_node_id(),
+          frame_tree_node->frame_tree().root()->frame_tree_node_id(),
           PrerenderFinalStatus::kMaxValue);
     }
     return PROCEED;

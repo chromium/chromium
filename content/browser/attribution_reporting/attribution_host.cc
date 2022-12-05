@@ -138,7 +138,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   absl::optional<SuitableOrigin> initiator_root_frame_origin =
       SuitableOrigin::Create(initiator_frame_host->frame_tree_node()
                                  ->frame_tree()
-                                 ->root()
+                                 .root()
                                  ->current_origin());
 
   if (!initiator_root_frame_origin)

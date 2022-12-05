@@ -256,7 +256,7 @@ ReduceAcceptLanguageUtils::GetOriginForLanguageLookup(
     return request_origin;
   } else if (!frame_tree_node->IsInFencedFrameTree()) {
     RenderFrameHostImpl* outermost_main_rfh =
-        frame_tree_node->frame_tree()->GetMainFrame()->GetOutermostMainFrame();
+        frame_tree_node->frame_tree().GetMainFrame()->GetOutermostMainFrame();
     return outermost_main_rfh->GetLastCommittedOrigin();
   }
   return absl::nullopt;

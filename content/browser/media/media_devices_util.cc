@@ -159,7 +159,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
     site_for_cookies = frame_host->ComputeSiteForCookies();
     top_level_origin = frame_host->frame_tree_node()
                            ->frame_tree()
-                           ->GetMainFrame()
+                           .GetMainFrame()
                            ->GetLastCommittedOrigin();
     frame_salt = frame_host->GetMediaDeviceIDSaltBase();
     has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();

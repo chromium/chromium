@@ -155,7 +155,7 @@ void CrossProcessFrameConnector::RenderProcessGone() {
             features::kReloadHiddenTabsWithCrashedSubframes)) {
       frame_proxy_in_parent_renderer_->frame_tree_node()
           ->frame_tree()
-          ->controller()
+          .controller()
           .SetNeedsReload(
               NavigationControllerImpl::NeedsReloadType::kCrashedSubframe);
       did_mark_for_reload = true;
@@ -553,7 +553,7 @@ void CrossProcessFrameConnector::SetRectInParentView(
     if (old_rect.x() != rect_in_parent_view_in_dip_.x() ||
         old_rect.y() != rect_in_parent_view_in_dip_.y()) {
       for (FrameTreeNode* node :
-           proxy_node->frame_tree()->SubtreeNodes(proxy_node)) {
+           proxy_node->frame_tree().SubtreeNodes(proxy_node)) {
         if (node != proxy_node && node->current_frame_host()->is_local_root())
           node->current_frame_host()->GetRenderWidgetHost()->SendScreenRects();
       }

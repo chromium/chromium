@@ -465,7 +465,7 @@ void AddAdditionalRequestHeaders(
   // including subframe navigations. Add "Purpose: prefetch" as well for
   // compatibility concerns (See
   // https://github.com/WICG/nav-speculation/issues/133).
-  if (frame_tree_node->frame_tree()->is_prerendering()) {
+  if (frame_tree_node->frame_tree().is_prerendering()) {
     headers->SetHeader("Sec-Purpose", "prefetch;prerender");
     headers->SetHeader("Purpose", "prefetch");
   }
@@ -791,7 +791,7 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
     return network::mojom::RequestDestination::kFencedframe;
 
   if (frame_tree_node->IsMainFrame()) {
-    if (frame_tree_node->frame_tree()->IsPortal()) {
+    if (frame_tree_node->frame_tree().IsPortal()) {
       return network::mojom::RequestDestination::kIframe;
     }
     return network::mojom::RequestDestination::kDocument;
@@ -2157,7 +2157,7 @@ FencedFrameURLMapping& NavigationRequest::GetFencedFrameURLMap() {
   // nested fenced frame's `FrameTree`, and false otherwise. This is only the
   // case for the MPArch implementation of fenced frames.
   bool is_inner_frame_tree =
-      frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame;
+      frame_tree_node_->frame_tree().type() == FrameTree::Type::kFencedFrame;
   FrameTreeNode* node_to_use =
       is_inner_frame_tree
           ? frame_tree_node_->render_manager()->GetOuterDelegateNode()
@@ -4464,7 +4464,7 @@ void NavigationRequest::OnStartChecksComplete(
       SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "is_ftn_nav_req",
                             (frame_tree_node_->navigation_request() == this));
       BackForwardCacheImpl& back_forward_cache =
-          frame_tree_node_->frame_tree()->controller().GetBackForwardCache();
+          frame_tree_node_->frame_tree().controller().GetBackForwardCache();
       SCOPED_CRASH_KEY_NUMBER("NoRestoredRFH", "bfcache_entries_size",
                               back_forward_cache.GetEntries().size());
       CaptureTraceForNavigationDebugScenario(
@@ -4966,7 +4966,7 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
   // point.
   bool can_store_old_page_in_bfcache =
       frame_tree_node_->frame_tree()
-          ->controller()
+          .controller()
           .GetBackForwardCache()
           .GetFutureBackForwardCacheEligibilityPotential(old_frame_host)
           .CanStore();
@@ -5558,7 +5558,7 @@ net::Error NavigationRequest::CheckCSPDirectives(
       }
 
       // [prefetch-src]
-      if (frame_tree_node_->frame_tree()->is_prerendering()) {
+      if (frame_tree_node_->frame_tree().is_prerendering()) {
         if (!IsAllowedByCSPDirective(
                 initiator_policies->content_security_policies,
                 &initiator_context,
@@ -5612,7 +5612,7 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   DCHECK(!parent == !parent_policies);
   bool set_parent_for_nested_frame_tree =
       !parent &&
-      (frame_tree_node()->frame_tree()->IsPortal() ||
+      (frame_tree_node()->frame_tree().IsPortal() ||
        frame_tree_node()->IsFencedFrameRoot()) &&
       frame_tree_node()->render_manager()->GetOuterDelegateNode();
   if (set_parent_for_nested_frame_tree) {
@@ -6136,7 +6136,7 @@ bool NavigationRequest::IsMhtmlOrSubframe() {
 
 bool NavigationRequest::IsForMhtmlSubframe() const {
   return frame_tree_node_->parent() && frame_tree_node_->frame_tree()
-                                           ->root()
+                                           .root()
                                            ->current_frame_host()
                                            ->is_mhtml_document();
 }
@@ -6323,7 +6323,7 @@ void NavigationRequest::DidCommitNavigation(
   if ((should_update_history_ && IsSameDocument() && !HasUserGesture() &&
        params.url == previous_main_frame_url) ||
       !render_frame_host_->GetPage().IsPrimary() ||
-      frame_tree_node()->frame_tree()->IsPortal()) {
+      frame_tree_node()->frame_tree().IsPortal()) {
     should_update_history_ = false;
   }
   previous_main_frame_url_ = previous_main_frame_url;

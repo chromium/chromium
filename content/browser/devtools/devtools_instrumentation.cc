@@ -728,7 +728,7 @@ void ApplyNetworkRequestOverrides(
   // Prerendered pages will only have have DevTools attached if the client opted
   // into supporting the tab target. For legacy clients, we will apply relevant
   // network override from the associated main frame target.
-  if (frame_tree_node->frame_tree()->is_prerendering()) {
+  if (frame_tree_node->frame_tree().is_prerendering()) {
     if (!agent_host) {
       agent_host = RenderFrameDevToolsAgentHost::GetFor(
           WebContentsImpl::FromFrameTreeNode(frame_tree_node)
@@ -778,7 +778,7 @@ bool ApplyUserAgentMetadataOverrides(
   // the primary main frame of the WebContents.
   // TODO(https://crbug.com/1221419): The real fix may be to make a separate
   // target for the prerendered page.
-  if (frame_tree_node->frame_tree()->is_prerendering() && !agent_host) {
+  if (frame_tree_node->frame_tree().is_prerendering() && !agent_host) {
     agent_host = RenderFrameDevToolsAgentHost::GetFor(
         WebContentsImpl::FromFrameTreeNode(frame_tree_node)
             ->GetPrimaryMainFrame()
@@ -1166,7 +1166,7 @@ void WillStartDragging(FrameTreeNode* main_frame_tree_node,
                        const blink::mojom::DragDataPtr drag_data,
                        blink::DragOperationsMask drag_operations_mask,
                        bool* intercepted) {
-  DCHECK(main_frame_tree_node->frame_tree()->root() == main_frame_tree_node);
+  DCHECK(main_frame_tree_node->frame_tree().root() == main_frame_tree_node);
   DispatchToAgents(main_frame_tree_node, &protocol::InputHandler::StartDragging,
                    *drag_data, drag_operations_mask, intercepted);
 }

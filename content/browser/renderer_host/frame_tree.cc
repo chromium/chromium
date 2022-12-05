@@ -63,7 +63,7 @@ FrameTreeNode* GetInnerTreeMainFrameNode(FrameTreeNode* node) {
       node->current_frame_host()->inner_tree_main_frame_tree_node_id());
 
   if (inner_main_frame_tree_node) {
-    DCHECK_NE(node->frame_tree(), inner_main_frame_tree_node->frame_tree());
+    DCHECK_NE(&node->frame_tree(), &inner_main_frame_tree_node->frame_tree());
   }
 
   return inner_main_frame_tree_node;
@@ -204,7 +204,7 @@ FrameTree::FrameTree(
       type_(type),
       focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       load_progress_(0.0),
-      root_(this,
+      root_(*this,
             nullptr,
             // The top-level frame must always be in a
             // document scope.
@@ -234,7 +234,7 @@ FrameTreeNode* FrameTree::FindByRoutingID(int process_id, int routing_id) {
       RenderFrameHostImpl::FromID(process_id, routing_id);
   if (render_frame_host) {
     FrameTreeNode* result = render_frame_host->frame_tree_node();
-    if (this == result->frame_tree())
+    if (this == &result->frame_tree())
       return result;
   }
 
@@ -242,7 +242,7 @@ FrameTreeNode* FrameTree::FindByRoutingID(int process_id, int routing_id) {
       RenderFrameProxyHost::FromID(process_id, routing_id);
   if (render_frame_proxy_host) {
     FrameTreeNode* result = render_frame_proxy_host->frame_tree_node();
-    if (this == result->frame_tree())
+    if (this == &result->frame_tree())
       return result;
   }
 
@@ -283,11 +283,11 @@ std::vector<FrameTreeNode*> FrameTree::CollectNodesForIsLoading() {
   std::vector<FrameTreeNode*> nodes;
 
   DCHECK(node_iter != node_range.end());
-  FrameTree* root_loading_tree = root_.frame_tree()->LoadingTree();
+  FrameTree* root_loading_tree = root_.frame_tree().LoadingTree();
   while (node_iter != node_range.end()) {
     // Skip over frame trees and children which belong to inner web contents
     // i.e., when nodes doesn't point to the same loading frame tree.
-    if ((*node_iter)->frame_tree()->LoadingTree() != root_loading_tree) {
+    if ((*node_iter)->frame_tree().LoadingTree() != root_loading_tree) {
       node_iter.AdvanceSkippingChildren();
     } else {
       nodes.push_back(*node_iter);
@@ -375,7 +375,7 @@ FrameTreeNode* FrameTree::AddFrame(
   CHECK_EQ(parent->GetProcess()->GetID(), process_id);
 
   std::unique_ptr<FrameTreeNode> new_node = base::WrapUnique(
-      new FrameTreeNode(this, parent, scope, is_created_by_script,
+      new FrameTreeNode(*this, parent, scope, is_created_by_script,
                         frame_owner_properties, owner_type, frame_policy));
 
   // Set sandbox flags and container policy and make them effective immediately,
@@ -923,7 +923,7 @@ void FrameTree::FocusOuterFrameTrees() {
       // Don't set focus on an inactive FrameTreeNode.
       return;
     }
-    outer_node->frame_tree()->SetFocusedFrame(outer_node, nullptr);
+    outer_node->frame_tree().SetFocusedFrame(outer_node, nullptr);
 
     // For a browser initiated focus change, let embedding renderer know of the
     // change. Otherwise, if the currently focused element is just across a
@@ -935,7 +935,7 @@ void FrameTree::FocusOuterFrameTrees() {
                                             ->GetProxyToOuterDelegate()) {
       proxy_to_outer_delegate->SetFocusedFrame();
     }
-    frame_tree_to_focus = outer_node->frame_tree();
+    frame_tree_to_focus = &outer_node->frame_tree();
   }
 }
 

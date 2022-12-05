@@ -17,7 +17,7 @@ FrameTreeNode* FrameTreeNodeFromDevToolsFrameToken(
       devtools_frame_token) {
     return root;
   } else {
-    for (FrameTreeNode* node : root->frame_tree()->SubtreeNodes(root)) {
+    for (FrameTreeNode* node : root->frame_tree().SubtreeNodes(root)) {
       if (node->current_frame_host()->devtools_frame_token().ToString() ==
           devtools_frame_token) {
         return node;

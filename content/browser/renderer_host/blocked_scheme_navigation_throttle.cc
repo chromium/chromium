@@ -40,7 +40,7 @@ BlockedSchemeNavigationThrottle::WillStartRequest() {
     return PROCEED;
 
   RenderFrameHost* top_frame =
-      request->frame_tree_node()->frame_tree()->root()->current_frame_host();
+      request->frame_tree_node()->frame_tree().root()->current_frame_host();
   BrowserContext* browser_context = top_frame->GetBrowserContext();
 
   if (base::FeatureList::IsEnabled(
@@ -68,7 +68,7 @@ BlockedSchemeNavigationThrottle::WillProcessResponse() {
     return PROCEED;
 
   RenderFrameHost* top_frame =
-      request->frame_tree_node()->frame_tree()->root()->current_frame_host();
+      request->frame_tree_node()->frame_tree().root()->current_frame_host();
   top_frame->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(kConsoleError, request->GetURL().scheme().c_str(),

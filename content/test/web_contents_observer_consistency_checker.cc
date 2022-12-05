@@ -190,7 +190,7 @@ void WebContentsObserverConsistencyChecker::FrameDeleted(
   if (!render_frame_host) {
     DCHECK_NE(FrameTreeNode::GloballyFindByID(frame_tree_node_id)
                   ->frame_tree()
-                  ->type(),
+                  .type(),
               FrameTree::Type::kPrimary);
     return;
   }

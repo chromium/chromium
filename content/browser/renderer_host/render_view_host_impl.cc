@@ -431,7 +431,7 @@ bool RenderViewHostImpl::CreateRenderView(
       frame_tree_node->current_replication_state().Clone();
   params->devtools_main_frame_token =
       frame_tree_node->current_frame_host()->devtools_frame_token();
-  DCHECK_EQ(frame_tree_node->frame_tree(), frame_tree_);
+  DCHECK_EQ(&frame_tree_node->frame_tree(), frame_tree_);
   params->is_prerendering = frame_tree_->is_prerendering();
 
   if (main_rfh) {
@@ -936,7 +936,7 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
     return {};
 
   FrameTreeNode* root = rfh->frame_tree_node();
-  FrameTree* tree = root->frame_tree();
+  FrameTree& tree = root->frame_tree();
 
   // Inner tree nodes are used for several purposes, e.g. fenced frames,
   // <webview>, portals and PDF. These may have a compositor surface as well, in
@@ -945,8 +945,8 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
   FrameTree::NodeRange node_range =
       base::FeatureList::IsEnabled(
           features::kInnerFrameCompositorSurfaceEviction)
-          ? tree->NodesIncludingInnerTreeNodes()
-          : tree->SubtreeNodes(root);
+          ? tree.NodesIncludingInnerTreeNodes()
+          : tree.SubtreeNodes(root);
 
   std::vector<viz::SurfaceId> ids;
   for (FrameTreeNode* node : node_range) {

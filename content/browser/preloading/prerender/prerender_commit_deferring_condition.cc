@@ -24,7 +24,7 @@ FrameTreeNode* GetRootPrerenderFrameTreeNode(int prerender_frame_tree_node_id) {
   FrameTreeNode* prerender_frame_tree_node =
       FrameTreeNode::GloballyFindByID(prerender_frame_tree_node_id);
   return prerender_frame_tree_node
-             ? prerender_frame_tree_node->frame_tree()->root()
+             ? prerender_frame_tree_node->frame_tree().root()
              : nullptr;
 }
 

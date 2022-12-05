@@ -85,7 +85,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // Callers are are expected to initialize sandbox flags separately after
   // calling the constructor.
   FrameTreeNode(
-      FrameTree* frame_tree,
+      FrameTree& frame_tree,
       RenderFrameHostImpl* parent,
       blink::mojom::TreeScopeType tree_scope_type,
       bool is_created_by_script,
@@ -118,7 +118,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // left temporarily with lax state.
   void ResetForNavigation();
 
-  FrameTree* frame_tree() const { return frame_tree_; }
+  FrameTree& frame_tree() const { return frame_tree_.get(); }
   Navigator& navigator();
 
   RenderFrameHostManager* render_manager() { return &render_manager_; }
@@ -661,8 +661,9 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // The next available browser-global FrameTreeNode ID.
   static int next_frame_tree_node_id_;
 
-  // The FrameTree that owns us.
-  raw_ptr<FrameTree> frame_tree_;  // not owned.
+  // The FrameTree owning |this|. It can change with Prerender2 during
+  // activation.
+  raw_ref<FrameTree> frame_tree_;
 
   // A browser-global identifier for the frame in the page, which stays stable
   // even if the frame does a cross-process navigation.
