@@ -559,6 +559,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "FirstRun"})
+    @DisabledTest(message = "https://crbug.com/1370946")
     public void testRenderWithUmaDialog() throws Exception {
         FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
                 FREMobileIdentityConsistencyFieldTrial.OLD_FRE_WITH_UMA_DIALOG_GROUP);
