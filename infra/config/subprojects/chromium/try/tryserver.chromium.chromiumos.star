@@ -227,6 +227,7 @@ try_.builder(
 try_.builder(
     name = "linux-chromeos-inverse-fieldtrials-fyi-rel",
     mirrors = builder_config.copy_from("try/linux-chromeos-rel"),
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -260,6 +261,7 @@ try_.builder(
     mirrors = [
         "ci/linux-lacros-dbg",
     ],
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -294,6 +296,7 @@ try_.builder(
     # The CI builder that this mirrors is enabled on branches, so this will
     # allow testing changes that would break it before submitting
     branch_selector = branches.STANDARD_MILESTONE,
+    goma_backend = None,
 )
 
 try_.builder(
@@ -301,6 +304,7 @@ try_.builder(
     mirrors = [
         "ci/linux-chromeos-annotator-rel",
     ],
+    goma_backend = None,
 )
 
 try_.builder(
@@ -342,4 +346,5 @@ try_.builder(
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
+    goma_backend = None,
 )

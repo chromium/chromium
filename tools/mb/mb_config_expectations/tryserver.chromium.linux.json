@@ -319,7 +319,7 @@
       "is_lsan": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-lacros-fyi-rel": {
@@ -331,7 +331,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-lacros-version-skew-fyi": {
@@ -341,7 +341,7 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-layout-tests-edit-ng": {
@@ -625,7 +625,7 @@
       "is_lsan": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_chromium_chromeos_msan_focal": {
@@ -637,7 +637,7 @@
       "is_msan": true,
       "msan_track_origins": 2,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_chromium_chromeos_msan_rel_ng": {
@@ -649,7 +649,7 @@
       "is_msan": true,
       "msan_track_origins": 2,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_chromium_clobber_deterministic": {
