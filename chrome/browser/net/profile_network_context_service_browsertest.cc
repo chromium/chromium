@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
   (async () => {
     try {
       await fetch("/issue", {trustToken: {type: 'token-request'}});
-      return await document.hasTrustToken($1);
+      return await document.hasPrivateStateToken($1);
     } catch {
       return false;
     }
