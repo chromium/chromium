@@ -269,8 +269,16 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
 }
 
+// TODO(crbug.com/1395713): The test is flaky. Re-enable it.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_InspectSplitModeServiceWorkerBackgrounds \
+  DISABLED_InspectSplitModeServiceWorkerBackgrounds
+#else
+#define MAYBE_InspectSplitModeServiceWorkerBackgrounds \
+  InspectSplitModeServiceWorkerBackgrounds
+#endif
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
-                       InspectSplitModeServiceWorkerBackgrounds) {
+                       MAYBE_InspectSplitModeServiceWorkerBackgrounds) {
   ResultCatcher result_catcher;
   // Load an extension that is service worker based, split mode and enabled in
   // incognito.
