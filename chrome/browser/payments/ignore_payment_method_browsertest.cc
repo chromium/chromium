@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "chrome/test/payments/payment_app_install_util.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
 #include "content/public/test/browser_test.h"
@@ -23,11 +24,10 @@ class IgnorePaymentMethodTest : public PaymentRequestPlatformBrowserTestBase {
   }
 
   void InstallTestPaymentHandler(const std::string& file_name) {
-    NavigateTo("a.com", "/payment_handler_installer.html");
-    ASSERT_EQ("success",
-              content::EvalJs(GetActiveWebContents(),
-                              content::JsReplace("install($1, [$2], false)",
-                                                 file_name, method_name_)));
+    ASSERT_TRUE(
+        PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+            *GetActiveWebContents(), https_server()->GetURL("a.com", file_name),
+            method_name_, PaymentAppInstallUtil::IconInstall::kWithIcon));
   }
 
   void VerifyFunctionOutput(const std::string& expected_return_value,
@@ -46,7 +46,7 @@ class IgnorePaymentMethodTest : public PaymentRequestPlatformBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest, InstalledPHCannotMakePayments) {
-  InstallTestPaymentHandler("can_make_payment_true_responder.js");
+  InstallTestPaymentHandler("/can_make_payment_true_responder.js");
   NavigateTo("b.com", "/can_make_payment_checker.html");
   VerifyFunctionOutput("true", "canMakePayment($1)");
 
@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest, InstalledPHCannotMakePayments) {
 
 IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest,
                        InstalledPHHasNoEnrolledInstruments) {
-  InstallTestPaymentHandler("can_make_payment_true_responder.js");
+  InstallTestPaymentHandler("/can_make_payment_true_responder.js");
   NavigateTo("b.com", "/has_enrolled_instrument_checker.html");
   VerifyFunctionOutput("true", "hasEnrolledInstrument($1)");
 
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest,
 }
 
 IN_PROC_BROWSER_TEST_F(IgnorePaymentMethodTest, InstalledPHCannotBeLaunched) {
-  InstallTestPaymentHandler("payment_request_success_responder.js");
+  InstallTestPaymentHandler("/payment_request_success_responder.js");
   NavigateTo("b.com", "/payment_handler_status.html");
   VerifyFunctionOutput("success", "getStatus($1)");
 
