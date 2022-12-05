@@ -151,13 +151,8 @@ public class StandardNotificationBuilderTest {
         Assert.assertNotNull(notification.publicVersion);
         Assert.assertEquals(context.getString(R.string.notification_hidden_text),
                 NotificationTestUtil.getExtraText(notification.publicVersion));
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            Assert.assertEquals(
-                    "origin", NotificationTestUtil.getExtraSubText(notification.publicVersion));
-        } else {
-            Assert.assertEquals(
-                    "origin", NotificationTestUtil.getExtraTitle(notification.publicVersion));
-        }
+        Assert.assertEquals(
+                "origin", NotificationTestUtil.getExtraSubText(notification.publicVersion));
     }
 
     @Test

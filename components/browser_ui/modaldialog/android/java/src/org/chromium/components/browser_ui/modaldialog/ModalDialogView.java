@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.modaldialog;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
@@ -226,10 +225,6 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         Button positiveButton = getButton(ModalDialogProperties.ButtonType.POSITIVE);
         Button negativeButton = getButton(ModalDialogProperties.ButtonType.NEGATIVE);
         View.OnTouchListener onTouchListener = (View v, MotionEvent ev) -> {
-            // Filter touch events based MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED which is
-            // introduced on M+.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
-
             boolean shouldBlockTouchEvent = false;
 
             try {

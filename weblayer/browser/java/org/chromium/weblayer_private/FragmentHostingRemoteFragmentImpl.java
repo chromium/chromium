@@ -6,7 +6,6 @@ package org.chromium.weblayer_private;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -49,12 +48,6 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
 
         public RemoteFragmentContext(Context webLayerContext) {
             super(webLayerContext);
-
-            // Register ourselves as a the LayoutInflater factory so we can handle loading Views.
-            // See onCreateView for information about why this is needed.
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                getLayoutInflater().setFactory2(this);
-            }
         }
 
         // This method is needed to work around a LayoutInflater bug in Android <N.  Before

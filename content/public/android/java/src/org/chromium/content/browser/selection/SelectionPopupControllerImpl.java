@@ -705,9 +705,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      */
     private void hideActionModeTemporarily(long duration) {
         assert isFloatingActionMode();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (isActionModeValid()) ApiHelperForM.hideActionMode(mActionMode, duration);
-        }
+        if (isActionModeValid()) ApiHelperForM.hideActionMode(mActionMode, duration);
     }
 
     private boolean isFloatingActionMode() {

@@ -21,7 +21,6 @@ import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.PowerManager;
 
 import org.junit.Before;
@@ -262,31 +261,11 @@ public class DeviceConditionsTest {
 
     @Test
     public void testIsInIdleMode() {
-        try (BuildVersionHelper sdkHelper = new BuildVersionHelper()) {
-            // We expect LOLLIPOP to never indicate being in idle mode.
-            sdkHelper.setSdkVersion(VERSION_CODES.LOLLIPOP);
-            setDeviceInIdleMode(false);
-            assertFalse(DeviceConditions.isCurrentlyInIdleMode(mContext));
+        setDeviceInIdleMode(false);
+        assertFalse(DeviceConditions.isCurrentlyInIdleMode(mContext));
 
-            setDeviceInIdleMode(true);
-            assertFalse(DeviceConditions.isCurrentlyInIdleMode(mContext));
-
-            // We expect LOLLIPOP to never indicate being in idle mode.
-            sdkHelper.setSdkVersion(VERSION_CODES.LOLLIPOP_MR1);
-            setDeviceInIdleMode(false);
-            assertFalse(DeviceConditions.isCurrentlyInIdleMode(mContext));
-
-            setDeviceInIdleMode(true);
-            assertFalse(DeviceConditions.isCurrentlyInIdleMode(mContext));
-
-            // But it should be on MARSHMALLOW+.
-            sdkHelper.setSdkVersion(VERSION_CODES.M);
-            setDeviceInIdleMode(false);
-            assertFalse(DeviceConditions.isCurrentlyInIdleMode(mContext));
-
-            setDeviceInIdleMode(true);
-            assertTrue(DeviceConditions.isCurrentlyInIdleMode(mContext));
-        }
+        setDeviceInIdleMode(true);
+        assertTrue(DeviceConditions.isCurrentlyInIdleMode(mContext));
     }
 
     @Test

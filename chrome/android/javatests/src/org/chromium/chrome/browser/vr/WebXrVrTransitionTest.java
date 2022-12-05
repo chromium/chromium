@@ -17,7 +17,6 @@ import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_V
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -104,30 +103,28 @@ public class WebXrVrTransitionTest {
         // overhead to just directly check a pixel.
         // TODO(https://crbug.com/947252): Run this part unconditionally once the cause of the
         // flakiness on older devices is fixed.
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            CriteriaHelper.pollInstrumentationThread(
-                    ()
-                            -> {
-                        // Creating temporary directories doesn't seem to work, so use a fixed
-                        // location that we know we can write to.
-                        File dumpDirectory = new File(UrlUtils.getIsolatedTestFilePath(
-                                "chrome/test/data/vr/framebuffer_dumps"));
-                        if (!dumpDirectory.exists() && !dumpDirectory.isDirectory()) {
-                            Assert.assertTrue("Failed to make framebuffer dump directory",
-                                    dumpDirectory.mkdirs());
-                        }
-                        File baseImagePath = new File(dumpDirectory, "dump");
-                        NativeUiUtils.dumpNextFramesFrameBuffers(baseImagePath.getPath());
-                        String filepath = baseImagePath.getPath()
-                                + NativeUiUtils.FRAME_BUFFER_SUFFIX_WEB_XR_CONTENT + ".png";
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(filepath, options);
-                        return bitmap != null && Color.BLUE == bitmap.getPixel(0, 0);
-                    },
-                    "Immersive session started, but browser not visibly in VR",
-                    POLL_TIMEOUT_LONG_MS, POLL_CHECK_INTERVAL_LONG_MS);
-        }
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> {
+                    // Creating temporary directories doesn't seem to work, so use a fixed
+                    // location that we know we can write to.
+                    File dumpDirectory = new File(UrlUtils.getIsolatedTestFilePath(
+                            "chrome/test/data/vr/framebuffer_dumps"));
+                    if (!dumpDirectory.exists() && !dumpDirectory.isDirectory()) {
+                        Assert.assertTrue("Failed to make framebuffer dump directory",
+                                dumpDirectory.mkdirs());
+                    }
+                    File baseImagePath = new File(dumpDirectory, "dump");
+                    NativeUiUtils.dumpNextFramesFrameBuffers(baseImagePath.getPath());
+                    String filepath = baseImagePath.getPath()
+                            + NativeUiUtils.FRAME_BUFFER_SUFFIX_WEB_XR_CONTENT + ".png";
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(filepath, options);
+                    return bitmap != null && Color.BLUE == bitmap.getPixel(0, 0);
+                },
+                "Immersive session started, but browser not visibly in VR", POLL_TIMEOUT_LONG_MS,
+                POLL_CHECK_INTERVAL_LONG_MS);
 
         framework.assertNoJavaScriptErrors();
     }
