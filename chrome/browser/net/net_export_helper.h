@@ -5,15 +5,9 @@
 #ifndef CHROME_BROWSER_NET_NET_EXPORT_HELPER_H_
 #define CHROME_BROWSER_NET_NET_EXPORT_HELPER_H_
 
-#include <memory>
-
+#include "base/values.h"
 #include "build/build_config.h"
 
-namespace base {
-class Value;
-class DictionaryValue;
-class ListValue;
-}
 class Profile;
 
 namespace chrome_browser_net {
@@ -23,10 +17,10 @@ namespace chrome_browser_net {
 // thread. GetSessionNetworkStats() may return null if the info does not exist;
 // others will always return a Value (possibly empty).
 
-std::unique_ptr<base::DictionaryValue> GetPrerenderInfo(Profile* profile);
-std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile);
+base::Value::Dict GetPrerenderInfo(Profile* profile);
+base::Value::List GetExtensionInfo(Profile* profile);
 #if BUILDFLAG(IS_WIN)
-std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders();
+base::Value::Dict GetWindowsServiceProviders();
 #endif
 
 }  // namespace chrome_browser_net

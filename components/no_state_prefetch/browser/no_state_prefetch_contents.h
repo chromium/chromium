@@ -182,7 +182,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // NoStatePrefetchManager's pending deletes list.
   void Destroy(FinalStatus reason);
 
-  std::unique_ptr<base::DictionaryValue> GetAsValue() const;
+  absl::optional<base::Value::Dict> GetAsDict() const;
 
   // This function is not currently called in production since prerendered
   // contents are never used (only prefetch is supported), but it may be used in

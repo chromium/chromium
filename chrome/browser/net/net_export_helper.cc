@@ -30,22 +30,21 @@
 
 namespace chrome_browser_net {
 
-std::unique_ptr<base::DictionaryValue> GetPrerenderInfo(Profile* profile) {
-  std::unique_ptr<base::DictionaryValue> value;
+base::Value::Dict GetPrerenderInfo(Profile* profile) {
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile);
   if (no_state_prefetch_manager) {
-    value = no_state_prefetch_manager->CopyAsValue();
+    return no_state_prefetch_manager->CopyAsDict();
   } else {
-    value = std::make_unique<base::DictionaryValue>();
-    value->SetBoolean("enabled", false);
-    value->SetBoolean("omnibox_enabled", false);
+    base::Value::Dict dict;
+    dict.Set("enabled", false);
+    dict.Set("omnibox_enabled", false);
+    return dict;
   }
-  return value;
 }
 
-std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile) {
-  auto extension_list = std::make_unique<base::ListValue>();
+base::Value::List GetExtensionInfo(Profile* profile) {
+  base::Value::List extension_list;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ExtensionSystem* extension_system =
       extensions::ExtensionSystem::Get(profile);
@@ -61,7 +60,7 @@ std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile) {
         bool enabled = extension_service->IsExtensionEnabled(extension->id());
         extensions::GetExtensionBasicInfo(extension.get(), enabled,
                                           &extension_info);
-        extension_list->Append(base::Value(std::move(extension_info)));
+        extension_list.Append(std::move(extension_info));
       }
     }
   }
@@ -70,40 +69,38 @@ std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile) {
 }
 
 #if BUILDFLAG(IS_WIN)
-std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders() {
-  auto service_providers = std::make_unique<base::DictionaryValue>();
+base::Value::Dict GetWindowsServiceProviders() {
+  base::Value::Dict service_providers;
 
   WinsockLayeredServiceProviderList layered_providers;
   GetWinsockLayeredServiceProviders(&layered_providers);
   base::Value::List layered_provider_list;
-  for (size_t i = 0; i < layered_providers.size(); ++i) {
+  for (const auto& provider : layered_providers) {
     base::Value::Dict service_dict;
-    service_dict.Set("name", base::AsString16(layered_providers[i].name));
-    service_dict.Set("version", layered_providers[i].version);
-    service_dict.Set("chain_length", layered_providers[i].chain_length);
-    service_dict.Set("socket_type", layered_providers[i].socket_type);
-    service_dict.Set("socket_protocol", layered_providers[i].socket_protocol);
-    service_dict.Set("path", base::WideToUTF8(layered_providers[i].path));
+    service_dict.Set("name", base::AsString16(provider.name));
+    service_dict.Set("version", provider.version);
+    service_dict.Set("chain_length", provider.chain_length);
+    service_dict.Set("socket_type", provider.socket_type);
+    service_dict.Set("socket_protocol", provider.socket_protocol);
+    service_dict.Set("path", base::WideToUTF8(provider.path));
 
     layered_provider_list.Append(std::move(service_dict));
   }
-  service_providers->GetDict().Set("service_providers",
-                                   std::move(layered_provider_list));
+  service_providers.Set("service_providers", std::move(layered_provider_list));
 
   WinsockNamespaceProviderList namespace_providers;
   GetWinsockNamespaceProviders(&namespace_providers);
   base::Value::List namespace_list;
-  for (size_t i = 0; i < namespace_providers.size(); ++i) {
+  for (const auto& provider : namespace_providers) {
     base::Value::Dict namespace_dict;
-    namespace_dict.Set("name", base::AsString16(namespace_providers[i].name));
-    namespace_dict.Set("active", namespace_providers[i].active);
-    namespace_dict.Set("version", namespace_providers[i].version);
-    namespace_dict.Set("type", namespace_providers[i].type);
+    namespace_dict.Set("name", base::AsString16(provider.name));
+    namespace_dict.Set("active", provider.active);
+    namespace_dict.Set("version", provider.version);
+    namespace_dict.Set("type", provider.type);
 
     namespace_list.Append(std::move(namespace_dict));
   }
-  service_providers->GetDict().Set("namespace_providers",
-                                   std::move(namespace_list));
+  service_providers.Set("namespace_providers", std::move(namespace_list));
 
   return service_providers;
 }

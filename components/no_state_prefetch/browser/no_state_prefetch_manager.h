@@ -16,6 +16,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
@@ -31,8 +32,6 @@
 #include "url/origin.h"
 
 namespace base {
-class DictionaryValue;
-class ListValue;
 class TickClock;
 }  // namespace base
 
@@ -195,9 +194,9 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Checks whether |url| has been recently navigated to.
   bool HasRecentlyBeenNavigatedTo(Origin origin, const GURL& url);
 
-  // Returns a Value object containing the active pages being prerendered, and
-  // a history of pages which were prerendered.
-  std::unique_ptr<base::DictionaryValue> CopyAsValue() const;
+  // Returns a `base::Value::Dict` object containing the active pages being
+  // prerendered, and a history of pages which were prerendered.
+  base::Value::Dict CopyAsDict() const;
 
   // Clears the data indicated by which bits of clear_flags are set.
   //
@@ -457,8 +456,9 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Adds to the history list.
   void AddToHistory(NoStatePrefetchContents* contents);
 
-  // Returns a new Value representing the pages currently being prerendered.
-  std::unique_ptr<base::ListValue> GetActivePrerendersAsValue() const;
+  // Returns a new `base::Value::List` representing the pages currently being
+  // prerendered.
+  base::Value::List GetActivePrerenders() const;
 
   // Records the final status a prerender in the case that a
   // NoStatePrefetchContents was never created, adds a PrerenderHistory entry,

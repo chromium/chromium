@@ -390,14 +390,13 @@ class NoStatePrefetchBrowserTest
   // Returns length of |no_state_prefetch_manager_|'s history, or SIZE_MAX on
   // failure.
   size_t GetHistoryLength() const {
-    std::unique_ptr<base::DictionaryValue> prerender_dict =
-        GetNoStatePrefetchManager()->CopyAsValue();
-    if (!prerender_dict)
-      return std::numeric_limits<size_t>::max();
-    base::ListValue* history_list;
-    if (!prerender_dict->GetList("history", &history_list))
-      return std::numeric_limits<size_t>::max();
-    return history_list->GetList().size();
+    base::Value::Dict prerender_dict =
+        GetNoStatePrefetchManager()->CopyAsDict();
+    if (const base::Value::List* history_list =
+            prerender_dict.FindList("history")) {
+      return history_list->size();
+    }
+    return std::numeric_limits<size_t>::max();
   }
 
   // Clears the specified data using BrowsingDataRemover.

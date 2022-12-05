@@ -70,14 +70,6 @@ content::WebUIDataSource* CreateNetExportHTMLSource() {
   return source;
 }
 
-void SetIfNotNull(base::Value::Dict& dict,
-                  const base::StringPiece& path,
-                  std::unique_ptr<base::Value> in_value) {
-  if (in_value) {
-    dict.Set(path, base::Value::FromUniquePtrValue(std::move(in_value)));
-  }
-}
-
 // This class receives javascript messages from the renderer.
 // Note that the WebUI infrastructure runs on the UI thread, therefore all of
 // this class's public methods are expected to run on the UI thread.
@@ -249,13 +241,13 @@ void NetExportMessageHandler::OnStopNetLog(const base::Value::List& list) {
   base::Value::Dict ui_thread_polled_data;
 
   Profile* profile = Profile::FromWebUI(web_ui());
-  SetIfNotNull(ui_thread_polled_data, "prerenderInfo",
-               chrome_browser_net::GetPrerenderInfo(profile));
-  SetIfNotNull(ui_thread_polled_data, "extensionInfo",
-               chrome_browser_net::GetExtensionInfo(profile));
+  ui_thread_polled_data.Set("prerenderInfo",
+                            chrome_browser_net::GetPrerenderInfo(profile));
+  ui_thread_polled_data.Set("extensionInfo",
+                            chrome_browser_net::GetExtensionInfo(profile));
 #if BUILDFLAG(IS_WIN)
-  SetIfNotNull(ui_thread_polled_data, "serviceProviders",
-               chrome_browser_net::GetWindowsServiceProviders());
+  ui_thread_polled_data.Set("serviceProviders",
+                            chrome_browser_net::GetWindowsServiceProviders());
 #endif
 
   file_writer_->StopNetLog(std::move(ui_thread_polled_data));

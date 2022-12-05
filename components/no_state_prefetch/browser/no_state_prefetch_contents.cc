@@ -37,6 +37,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -572,19 +573,17 @@ RenderFrameHost* NoStatePrefetchContents::GetPrimaryMainFrame() {
              : nullptr;
 }
 
-std::unique_ptr<base::DictionaryValue> NoStatePrefetchContents::GetAsValue()
-    const {
+absl::optional<base::Value::Dict> NoStatePrefetchContents::GetAsDict() const {
   if (!no_state_prefetch_contents_)
-    return nullptr;
-  auto dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->SetStringKey("url", prerender_url_.spec());
+    return absl::nullopt;
+  base::Value::Dict dict;
+  dict.Set("url", prerender_url_.spec());
   base::TimeTicks current_time = base::TimeTicks::Now();
   base::TimeDelta duration = current_time - load_start_time_;
-  dict_value->SetIntKey("duration", duration.InSeconds());
-  dict_value->SetBoolKey(
-      "is_loaded",
-      no_state_prefetch_contents_ && !no_state_prefetch_contents_->IsLoading());
-  return dict_value;
+  dict.Set("duration", static_cast<int>(duration.InSeconds()));
+  dict.Set("is_loaded", no_state_prefetch_contents_ &&
+                            !no_state_prefetch_contents_->IsLoading());
+  return dict;
 }
 
 void NoStatePrefetchContents::MarkAsUsedForTesting() {
