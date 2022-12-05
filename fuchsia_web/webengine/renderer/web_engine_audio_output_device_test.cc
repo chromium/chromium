@@ -208,7 +208,7 @@ TEST_F(WebEngineAudioOutputDeviceTest, Underflow) {
   task_environment_.AdvanceClock(kPeriod * 10);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(renderer_.frames_rendered(), kFramesPerPeriod * 3);
-  EXPECT_EQ(renderer_.frames_skipped(), kFramesPerPeriod * 7);
+  EXPECT_EQ(renderer_.frames_skipped(), 0);
   renderer_.reset_frames_rendered();
 
   ValidatePresentationTime();

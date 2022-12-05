@@ -398,17 +398,14 @@ void WebEngineAudioOutputDevice::PumpSamples(base::TimeTicks playback_time) {
 
   auto now = base::TimeTicks::Now();
 
-  int skipped_frames = 0;
-
   // Check if it's too late to send the next packet. If it is, then advance
   // current stream position.
   auto lead_time = playback_time - now;
   if (lead_time < min_lead_time_) {
     auto new_playback_time = now + min_lead_time_;
     auto skipped_time = new_playback_time - playback_time;
-    skipped_frames = media::AudioTimestampHelper::TimeToFrames(
+    media_pos_frames_ += media::AudioTimestampHelper::TimeToFrames(
         skipped_time, params_.sample_rate());
-    media_pos_frames_ += skipped_frames;
     playback_time += skipped_time;
   }
 
@@ -421,8 +418,8 @@ void WebEngineAudioOutputDevice::PumpSamples(base::TimeTicks playback_time) {
     if (!callback_)
       return;
 
-    frames_filled = callback_->Render(playback_time - now, now, skipped_frames,
-                                      audio_bus_.get());
+    frames_filled =
+        callback_->Render(playback_time - now, now, 0, audio_bus_.get());
   }
 
   if (frames_filled) {
