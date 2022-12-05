@@ -4,9 +4,6 @@
       <message name="IDS_BLOCK_INTERSTITIAL_TITLE" desc="A title for the supervised-user block interstitial page.">
         Site blocked
       </message>
-      <message name="IDS_BLOCK_INTERSTITIAL_HEADER" desc="A heading for the supervised user when they attempt to visit a site that is not permitted by the manager.">
-        You need permission from <ph name="NAME">$1<ex>John Doe</ex></ph> to visit this site
-      </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_HEADER" desc="A heading for the message to the child user when they attempt to visit a site that is not permitted by their parent.">
         Ask your parent
       </message>
