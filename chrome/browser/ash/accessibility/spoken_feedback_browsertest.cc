@@ -1304,6 +1304,42 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowFormControlsList) {
+  EnableChromeVox();
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+            <button autofocus>Start here</button>
+            <input type="text" id="text"></input>
+            <label for="text">Name</label>
+            <p>Other text</p>
+            <button>Make it shiny</button>
+            <input type="checkbox" id="checkbox"></input>
+            <label for="checkbox">Express delivery</label>
+            <input type="range" id="slider"></input>
+            <label for="slider">Percent cotton</label>)")));
+  });
+  sm_.ExpectSpeech("Start here");
+  sm_.Call([this]() { SendKeyPressWithSearchAndControl(ui::VKEY_F); });
+  sm_.ExpectSpeech("Form Controls Menu");
+  sm_.ExpectSpeech("Start here Button");
+  sm_.ExpectSpeech("Menu item 1 of ");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Name Edit text");
+  sm_.ExpectSpeech("Menu item 2 of ");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Make it shiny Button");
+  sm_.ExpectSpeech("Menu item 3 of ");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Express delivery Check box");
+  sm_.ExpectSpeech("Menu item 4 of ");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Percent cotton Slider");
+  sm_.ExpectSpeech("Menu item 5 of ");
+
+  sm_.Replay();
+}
+
 // TODO(crbug.com/1310316): Test is flaky.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_SmartStickyMode) {
   EnableChromeVox();
