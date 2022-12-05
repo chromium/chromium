@@ -85,42 +85,73 @@ TEST(CreateUrlCollectionFromGURLTest, UrlsFromGURL) {
   EXPECT_EQ(urls.link, "https://example.com/login");
 }
 
-TEST(IdGeneratorTest, GenerateIds) {
-  using ::testing::Pointee;
-  using ::testing::Eq;
+using ::testing::Eq;
+using ::testing::Pointee;
 
-  IdGenerator<std::string> id_generator;
-  int foo_id = id_generator.GenerateId("foo");
+class IdGeneratorTest : public ::testing::Test {
+ public:
+  IdGeneratorTest() = default;
+
+  IdGenerator& id_generator() { return id_generator_; }
+
+ private:
+  IdGenerator id_generator_;
+};
+
+TEST_F(IdGeneratorTest, GenerateIds) {
+  password_manager::PasswordForm form;
+  form.url = GURL("http://foo.com/LoginAuth");
+  form.signon_realm = "http://foo.com/";
+
+  CredentialUIEntry credential(form);
+
+  int foo_id = id_generator().GenerateId(credential);
 
   // Check idempotence.
-  EXPECT_EQ(foo_id, id_generator.GenerateId("foo"));
+  EXPECT_EQ(foo_id, id_generator().GenerateId(credential));
 
   // Check TryGetKey(id) == s iff id == GenerateId(*s).
-  EXPECT_THAT(id_generator.TryGetKey(foo_id), Pointee(Eq("foo")));
-  EXPECT_EQ(nullptr, id_generator.TryGetKey(foo_id + 1));
+  EXPECT_THAT(id_generator().TryGetKey(foo_id), Pointee(Eq(credential)));
+  EXPECT_EQ(nullptr, id_generator().TryGetKey(foo_id + 1));
+}
 
-  // Check that different sort keys result in different ids.
-  int bar_id = id_generator.GenerateId("bar");
-  int baz_id = id_generator.GenerateId("baz");
-  EXPECT_NE(foo_id, bar_id);
+TEST_F(IdGeneratorTest, DifferentIdsForDifferentKeys) {
+  password_manager::PasswordForm form1;
+  form1.url = GURL("http://bar.com/LoginAuth");
+  form1.signon_realm = "http://bar.com/";
+  password_manager::PasswordForm form2;
+  form2.url = GURL("http://baz_id.com/LoginAuth");
+  form2.signon_realm = "http://baz_id.com/";
+
+  CredentialUIEntry credential1(form1);
+  CredentialUIEntry credential2(form2);
+
+  int bar_id = id_generator().GenerateId(credential1);
+  int baz_id = id_generator().GenerateId(credential2);
   EXPECT_NE(bar_id, baz_id);
 
-  EXPECT_THAT(id_generator.TryGetKey(bar_id), Pointee(Eq("bar")));
-  EXPECT_THAT(id_generator.TryGetKey(baz_id), Pointee(Eq("baz")));
+  EXPECT_THAT(id_generator().TryGetKey(bar_id), Pointee(Eq(credential1)));
+  EXPECT_THAT(id_generator().TryGetKey(baz_id), Pointee(Eq(credential2)));
+}
 
-  // Check that due to clashing |KeyCompare|, new |key|s invalidate existing
-  // |key|.
-  IdGenerator<std::string, int32_t, StringFirstLetterCmp>
-      clashing_id_generator_;
-  int crab_id = clashing_id_generator_.GenerateId("crab");
+TEST_F(IdGeneratorTest, UpdatedCacheWithNewGenerateId) {
+  password_manager::PasswordForm form;
+  form.url = GURL("http://foo.com/LoginAuth");
+  form.signon_realm = "http://foo.com/";
 
-  EXPECT_THAT(clashing_id_generator_.TryGetKey(crab_id), Pointee(Eq("crab")));
+  CredentialUIEntry credential(form);
 
-  int chromium_id = clashing_id_generator_.GenerateId("chromium");
+  int id = id_generator().GenerateId(credential);
+  EXPECT_THAT(id_generator().TryGetKey(id), Pointee(Eq(credential)));
 
-  EXPECT_EQ(crab_id, chromium_id);
-  EXPECT_THAT(clashing_id_generator_.TryGetKey(chromium_id),
-              Pointee(Eq("chromium")));
+  CredentialUIEntry updated_credential(credential);
+  updated_credential.note =
+      password_manager::PasswordNote(u"new note", base::Time::Now());
+
+  int same_id = id_generator().GenerateId(updated_credential);
+
+  EXPECT_EQ(id, same_id);
+  EXPECT_THAT(id_generator().TryGetKey(id), Pointee(Eq(updated_credential)));
 }
 
 }  // namespace extensions

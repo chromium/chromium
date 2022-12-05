@@ -151,7 +151,7 @@ class PasswordsPrivateDelegateImpl
   void ExecuteFunction(base::OnceClosure callback);
 
   void SetCredentials(
-      const std::vector<password_manager::CredentialUIEntry>& credentials);
+      std::vector<password_manager::CredentialUIEntry> credentials);
 
   void RemoveEntryInternal(
       int id,
@@ -207,6 +207,10 @@ class PasswordsPrivateDelegateImpl
       password_manager::PasswordAccessAuthenticator::AuthResultCallback
           callback);
 
+  extensions::api::passwords_private::PasswordUiEntry
+  CreatePasswordUiEntryFromCredentialUiEntry(
+      password_manager::CredentialUIEntry credential);
+
   // Not owned by this class.
   raw_ptr<Profile> profile_;
 
@@ -230,10 +234,7 @@ class PasswordsPrivateDelegateImpl
   ExceptionEntries current_exceptions_;
 
   // An id generator for saved passwords and blocked websites.
-  IdGenerator<password_manager::CredentialUIEntry,
-              int,
-              password_manager::CredentialUIEntry::Less>
-      credential_id_generator_;
+  IdGenerator credential_id_generator_;
 
   // Whether SetCredentials has been called, and whether this class has been
   // initialized.

@@ -326,10 +326,7 @@ class PasswordCheckDelegateTest : public ::testing::Test {
       CreateAndUsePasswordChangeSuccessTracker(&profile_);
   raw_ptr<syncer::TestSyncService> sync_service_ =
       CreateAndUseSyncService(&profile_);
-  IdGenerator<password_manager::CredentialUIEntry,
-              int,
-              password_manager::CredentialUIEntry::Less>
-      credential_id_generator_;
+  IdGenerator credential_id_generator_;
   password_manager::MockAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      account_store_};

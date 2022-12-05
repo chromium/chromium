@@ -163,29 +163,6 @@ ConvertToPasswordFormStores(
   return {};
 }
 
-extensions::api::passwords_private::PasswordUiEntry
-CreatePasswordUiEntryFromCredentialUiEntry(
-    int id,
-    const CredentialUIEntry& credential) {
-  extensions::api::passwords_private::PasswordUiEntry entry;
-  entry.urls = extensions::CreateUrlCollectionFromCredential(credential);
-  entry.username = base::UTF16ToUTF8(credential.username);
-  entry.id = id;
-  entry.stored_in = extensions::StoreSetFromCredential(credential);
-  entry.is_android_credential = password_manager::IsValidAndroidFacetURI(
-      credential.GetFirstSignonRealm());
-  if (!credential.federation_origin.opaque()) {
-    std::u16string formatted_origin =
-        url_formatter::FormatOriginForSecurityDisplay(
-            credential.federation_origin,
-            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-
-    entry.federation_text = l10n_util::GetStringFUTF8(
-        IDS_PASSWORDS_VIA_FEDERATION, formatted_origin);
-  }
-  return entry;
-}
-
 extensions::api::passwords_private::ImportEntry ConvertImportEntry(
     const password_manager::ImportEntry& entry) {
   extensions::api::passwords_private::ImportEntry result;
@@ -316,9 +293,8 @@ PasswordsPrivateDelegateImpl::GetCredentialGroups() {
 
     DCHECK(!group.GetCredentials().empty());
     for (const CredentialUIEntry& credential : group.GetCredentials()) {
-      int id = credential_id_generator_.GenerateId(credential);
       group_api.entries.push_back(
-          CreatePasswordUiEntryFromCredentialUiEntry(id, credential));
+          CreatePasswordUiEntryFromCredentialUiEntry(credential));
     }
 
     groups.push_back(std::move(group_api));
@@ -414,7 +390,7 @@ absl::optional<int> PasswordsPrivateDelegateImpl::ChangeSavedPassword(
       return absl::nullopt;
   }
 
-  return credential_id_generator_.GenerateId(updated_credential);
+  return credential_id_generator_.GenerateId(std::move(updated_credential));
 }
 
 void PasswordsPrivateDelegateImpl::RemoveSavedPassword(
@@ -553,23 +529,23 @@ void PasswordsPrivateDelegateImpl::OsReauthTimeoutCall() {
 }
 
 void PasswordsPrivateDelegateImpl::SetCredentials(
-    const std::vector<CredentialUIEntry>& credentials) {
+    std::vector<CredentialUIEntry> credentials) {
   // Create lists of PasswordUiEntry and ExceptionEntry objects to send to
   // observers.
   current_entries_.clear();
   current_exceptions_.clear();
 
-  for (const CredentialUIEntry& credential : credentials) {
-    int id = credential_id_generator_.GenerateId(credential);
+  for (CredentialUIEntry& credential : credentials) {
     if (credential.blocked_by_user) {
       api::passwords_private::ExceptionEntry current_exception_entry;
       current_exception_entry.urls =
           CreateUrlCollectionFromCredential(credential);
-      current_exception_entry.id = id;
+      current_exception_entry.id =
+          credential_id_generator_.GenerateId(std::move(credential));
       current_exceptions_.push_back(std::move(current_exception_entry));
     } else {
       current_entries_.push_back(
-          CreatePasswordUiEntryFromCredentialUiEntry(id, credential));
+          CreatePasswordUiEntryFromCredentialUiEntry(std::move(credential)));
     }
   }
 
@@ -829,7 +805,7 @@ void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
     }
 
     api::passwords_private::PasswordUiEntry password_ui_entry =
-        CreatePasswordUiEntryFromCredentialUiEntry(id, *credential);
+        CreatePasswordUiEntryFromCredentialUiEntry(*credential);
     password_ui_entry.password = base::UTF16ToUTF8(credential->password);
     password_ui_entry.note = base::UTF16ToUTF8(credential->note.value);
     // password_manager::MovePasswordsToAccountStore() takes care of moving the
@@ -946,6 +922,28 @@ void PasswordsPrivateDelegateImpl::AuthenticateWithBiometrics(
       device_reauth::BiometricAuthRequester::kPasswordsInSettings, message,
       std::move(callback).Then(std::move(on_reauth_completed)));
 #endif
+}
+
+extensions::api::passwords_private::PasswordUiEntry
+PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
+    CredentialUIEntry credential) {
+  extensions::api::passwords_private::PasswordUiEntry entry;
+  entry.urls = extensions::CreateUrlCollectionFromCredential(credential);
+  entry.username = base::UTF16ToUTF8(credential.username);
+  entry.stored_in = extensions::StoreSetFromCredential(credential);
+  entry.is_android_credential = password_manager::IsValidAndroidFacetURI(
+      credential.GetFirstSignonRealm());
+  if (!credential.federation_origin.opaque()) {
+    std::u16string formatted_origin =
+        url_formatter::FormatOriginForSecurityDisplay(
+            credential.federation_origin,
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+
+    entry.federation_text = l10n_util::GetStringFUTF8(
+        IDS_PASSWORDS_VIA_FEDERATION, formatted_origin);
+  }
+  entry.id = credential_id_generator_.GenerateId(std::move(credential));
+  return entry;
 }
 
 }  // namespace extensions

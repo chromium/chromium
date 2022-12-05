@@ -48,12 +48,9 @@ class PasswordCheckDelegate
   using StartPasswordCheckCallback =
       PasswordsPrivateDelegate::StartPasswordCheckCallback;
 
-  PasswordCheckDelegate(
-      Profile* profile,
-      password_manager::SavedPasswordsPresenter* presenter,
-      IdGenerator<password_manager::CredentialUIEntry,
-                  int,
-                  password_manager::CredentialUIEntry::Less>* id_generator);
+  PasswordCheckDelegate(Profile* profile,
+                        password_manager::SavedPasswordsPresenter* presenter,
+                        IdGenerator* id_generator);
   PasswordCheckDelegate(const PasswordCheckDelegate&) = delete;
   PasswordCheckDelegate& operator=(const PasswordCheckDelegate&) = delete;
   ~PasswordCheckDelegate() override;
@@ -137,7 +134,7 @@ class PasswordCheckDelegate
 
   // Constructs `PasswordUiEntry` from `CredentialUIEntry`.
   api::passwords_private::PasswordUiEntry ConstructInsecureCredentialUiEntry(
-      const password_manager::CredentialUIEntry& entry);
+      password_manager::CredentialUIEntry entry);
 
   // Returns a raw pointer to the `PasswordChangeSuccessTracker` associated
   // with `profile_`.
@@ -198,10 +195,7 @@ class PasswordCheckDelegate
   // An id generator for insecure credentials. Required to match
   // `api::passwords_private::PasswordUiEntry` instances passed to the UI
   // with the underlying `CredentialUIEntry` they are based on.
-  raw_ptr<IdGenerator<password_manager::CredentialUIEntry,
-                      int,
-                      password_manager::CredentialUIEntry::Less>>
-      id_generator_;
+  raw_ptr<IdGenerator> id_generator_;
 
   base::WeakPtrFactory<PasswordCheckDelegate> weak_ptr_factory_{this};
 };
