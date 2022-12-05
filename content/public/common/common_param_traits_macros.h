@@ -56,18 +56,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::Referrer)
   IPC_STRUCT_TRAITS_MEMBER(policy)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(blink::mojom::WindowFeatures)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-  IPC_STRUCT_TRAITS_MEMBER(has_x)
-  IPC_STRUCT_TRAITS_MEMBER(has_y)
-  IPC_STRUCT_TRAITS_MEMBER(has_width)
-  IPC_STRUCT_TRAITS_MEMBER(has_height)
-  IPC_STRUCT_TRAITS_MEMBER(menu_bar_visible)
-  IPC_STRUCT_TRAITS_MEMBER(status_bar_visible)
-  IPC_STRUCT_TRAITS_MEMBER(tool_bar_visible)
-  IPC_STRUCT_TRAITS_MEMBER(scrollbars_visible)
-IPC_STRUCT_TRAITS_END()
-
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::FontRenderParams::Hinting,
                           gfx::FontRenderParams::HINTING_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::FontRenderParams::SubpixelRendering,

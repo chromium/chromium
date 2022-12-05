@@ -82,6 +82,10 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     return window_features;
 
   bool ui_features_were_disabled = false;
+  bool menu_bar = true;
+  bool status_bar = true;
+  bool tool_bar = true;
+  bool scrollbars = true;
   enum class PopupState { kUnknown, kPopup, kWindow };
   PopupState popup_state = PopupState::kUnknown;
   unsigned key_begin, key_end;
@@ -164,10 +168,10 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
         key_string != "noreferrer" &&
         (!attribution_reporting_enabled || key_string != "attributionsrc")) {
       ui_features_were_disabled = true;
-      window_features.menu_bar_visible = false;
-      window_features.status_bar_visible = false;
-      window_features.tool_bar_visible = false;
-      window_features.scrollbars_visible = false;
+      menu_bar = false;
+      status_bar = false;
+      tool_bar = false;
+      scrollbars = false;
     }
 
     if (key_string == "left" || key_string == "screenx") {
@@ -186,13 +190,13 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.height_set = true;
       window_features.height = value;
     } else if (key_string == "menubar") {
-      window_features.menu_bar_visible = value;
+      menu_bar = value;
     } else if (key_string == "toolbar" || key_string == "location") {
-      window_features.tool_bar_visible |= static_cast<bool>(value);
+      tool_bar |= static_cast<bool>(value);
     } else if (key_string == "status") {
-      window_features.status_bar_visible = value;
+      status_bar = value;
     } else if (key_string == "scrollbars") {
-      window_features.scrollbars_visible = value;
+      scrollbars = value;
     } else if (key_string == "resizable") {
       window_features.resizable = value;
     } else if (key_string == "noopener") {
@@ -241,20 +245,10 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     }
   }
 
-  if (RuntimeEnabledFeatures::WindowOpenNewPopupBehaviorEnabled()) {
-    bool is_popup = popup_state == PopupState::kPopup;
-    if (popup_state == PopupState::kUnknown) {
-      is_popup = !window_features.tool_bar_visible ||
-                 !window_features.menu_bar_visible ||
-                 !window_features.resizable ||
-                 !window_features.scrollbars_visible ||
-                 !window_features.status_bar_visible;
-    }
-    // If this is a popup, set all BarProps to false, and vice versa.
-    window_features.tool_bar_visible = !is_popup;
-    window_features.menu_bar_visible = !is_popup;
-    window_features.scrollbars_visible = !is_popup;
-    window_features.status_bar_visible = !is_popup;
+  window_features.is_popup = popup_state == PopupState::kPopup;
+  if (popup_state == PopupState::kUnknown) {
+    window_features.is_popup = !tool_bar || !menu_bar || !scrollbars ||
+                               !status_bar || !window_features.resizable;
   }
 
   if (window_features.noreferrer)
@@ -377,7 +371,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
 
   page->SetWindowFeatures(features);
 
-  frame.View()->SetCanHaveScrollbars(features.scrollbars_visible);
+  frame.View()->SetCanHaveScrollbars(!features.is_popup);
 
   mojom::blink::WindowFeaturesPtr window_features =
       mojom::blink::WindowFeatures::New();

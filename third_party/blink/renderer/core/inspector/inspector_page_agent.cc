@@ -195,14 +195,12 @@ std::unique_ptr<protocol::Array<String>> GetEnabledWindowFeatures(
     feature_strings->emplace_back(
         String::Format("height=%d", static_cast<int>(window_features.height)));
   }
-  if (window_features.menu_bar_visible)
+  if (!window_features.is_popup) {
     feature_strings->emplace_back("menubar");
-  if (window_features.tool_bar_visible)
     feature_strings->emplace_back("toolbar");
-  if (window_features.status_bar_visible)
     feature_strings->emplace_back("status");
-  if (window_features.scrollbars_visible)
     feature_strings->emplace_back("scrollbars");
+  }
   if (window_features.resizable)
     feature_strings->emplace_back("resizable");
   if (window_features.noopener)

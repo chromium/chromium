@@ -3310,12 +3310,6 @@
       name: "WindowDefaultStatus",
       base_feature: "WindowDefaultStatus",
     },
-    // New behavior for window.open's interpretation of the windowFeatures parameter.
-    {
-      name: "WindowOpenNewPopupBehavior",
-      status: "stable",
-      base_feature: "WindowOpenNewPopupBehavior",
-    },
     // Allows sites to request fullscreen when the set of screens change.
     {
       name: "WindowPlacementFullscreenOnScreensChange",

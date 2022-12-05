@@ -23,10 +23,7 @@ blink::mojom::WindowFeaturesPtr ConvertWebWindowFeaturesToMojoWindowFeatures(
   result->has_width = web_window_features.width_set;
   result->bounds.set_height(web_window_features.height);
   result->has_height = web_window_features.height_set;
-  result->menu_bar_visible = web_window_features.menu_bar_visible;
-  result->status_bar_visible = web_window_features.status_bar_visible;
-  result->tool_bar_visible = web_window_features.tool_bar_visible;
-  result->scrollbars_visible = web_window_features.scrollbars_visible;
+  result->is_popup = web_window_features.is_popup;
   return result;
 }
 
@@ -41,10 +38,7 @@ blink::WebWindowFeatures ConvertMojoWindowFeaturesToWebWindowFeatures(
   result.width_set = window_features.has_width;
   result.height = window_features.bounds.height();
   result.height_set = window_features.has_height;
-  result.menu_bar_visible = window_features.menu_bar_visible;
-  result.status_bar_visible = window_features.status_bar_visible;
-  result.tool_bar_visible = window_features.tool_bar_visible;
-  result.scrollbars_visible = window_features.scrollbars_visible;
+  result.is_popup = window_features.is_popup;
   return result;
 }
 

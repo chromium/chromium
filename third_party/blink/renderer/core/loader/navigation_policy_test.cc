@@ -53,7 +53,7 @@ class NavigationPolicyTest : public testing::Test {
                         WebInputEvent::GetStaticTimeStampForTests());
     event.button = button;
     if (as_popup)
-      features.tool_bar_visible = false;
+      features.is_popup = true;
     base::AutoReset<const WebInputEvent*> current_event_change(
         &CurrentInputEvent::current_input_event_, &event);
     return NavigationPolicyForCreateWindow(features);
@@ -192,31 +192,41 @@ TEST_F(NavigationPolicyTest, MiddleClickPopup) {
             GetPolicyForCreateWindow(modifiers, button, as_popup));
 }
 
-TEST_F(NavigationPolicyTest, NoToolbarsForcesPopup) {
-  features.tool_bar_visible = false;
+TEST_F(NavigationPolicyTest, ForcePopup) {
+  features.is_popup = true;
   EXPECT_EQ(kNavigationPolicyNewPopup,
             NavigationPolicyForCreateWindow(features));
-  features.tool_bar_visible = true;
+  features.is_popup = false;
   EXPECT_EQ(kNavigationPolicyNewForegroundTab,
             NavigationPolicyForCreateWindow(features));
-}
 
-TEST_F(NavigationPolicyTest, NoStatusBarForcesPopup) {
-  features.status_bar_visible = false;
-  EXPECT_EQ(kNavigationPolicyNewPopup,
-            NavigationPolicyForCreateWindow(features));
-  features.status_bar_visible = true;
-  EXPECT_EQ(kNavigationPolicyNewForegroundTab,
-            NavigationPolicyForCreateWindow(features));
-}
+  static const struct {
+    const char* feature_string;
+    NavigationPolicy policy;
+  } kCases[] = {
+      {"", kNavigationPolicyNewForegroundTab},
+      {"popup", kNavigationPolicyNewPopup},
+      {"location,menubar,resizable,scrollbars,status",
+       kNavigationPolicyNewForegroundTab},
+      {"toolbar,menubar,resizable,scrollbars,status",
+       kNavigationPolicyNewForegroundTab},
+      {"popup,location,menubar,resizable,scrollbars,status",
+       kNavigationPolicyNewPopup},
+      {"menubar,resizable,scrollbars,status", kNavigationPolicyNewPopup},
+      {"location,menubar,resizable,scrollbars", kNavigationPolicyNewPopup},
+      {"location,resizable,scrollbars,status", kNavigationPolicyNewPopup},
+      {"location,menubar,resizable,status", kNavigationPolicyNewPopup},
+      {"location,menubar,scrollbars,status", kNavigationPolicyNewForegroundTab},
+      {"popup=0,menubar,resizable,scrollbars,status",
+       kNavigationPolicyNewForegroundTab},
+  };
 
-TEST_F(NavigationPolicyTest, NoMenuBarForcesPopup) {
-  features.menu_bar_visible = false;
-  EXPECT_EQ(kNavigationPolicyNewPopup,
-            NavigationPolicyForCreateWindow(features));
-  features.menu_bar_visible = true;
-  EXPECT_EQ(kNavigationPolicyNewForegroundTab,
-            NavigationPolicyForCreateWindow(features));
+  for (const auto& test : kCases) {
+    EXPECT_EQ(test.policy,
+              NavigationPolicyForCreateWindow(GetWindowFeaturesFromString(
+                  test.feature_string, /*dom_window=*/nullptr, KURL())))
+        << "Testing '" << test.feature_string << "'";
+  }
 }
 
 TEST_F(NavigationPolicyTest, NoOpener) {

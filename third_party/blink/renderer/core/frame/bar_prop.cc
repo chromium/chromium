@@ -35,8 +35,7 @@
 
 namespace blink {
 
-BarProp::BarProp(ExecutionContext* context, Type type)
-    : ExecutionContextClient(context), type_(type) {}
+BarProp::BarProp(ExecutionContext* context) : ExecutionContextClient(context) {}
 
 void BarProp::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
@@ -49,21 +48,7 @@ bool BarProp::visible() const {
 
   const WebWindowFeatures& features =
       DomWindow()->GetFrame()->GetPage()->GetWindowFeatures();
-  switch (type_) {
-    case kLocationbar:
-    case kPersonalbar:
-    case kToolbar:
-      return features.tool_bar_visible;
-    case kMenubar:
-      return features.menu_bar_visible;
-    case kScrollbars:
-      return features.scrollbars_visible;
-    case kStatusbar:
-      return features.status_bar_visible;
-  }
-
-  NOTREACHED();
-  return false;
+  return !features.is_popup;
 }
 
 }  // namespace blink

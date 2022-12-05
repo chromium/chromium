@@ -39,23 +39,11 @@ class BarProp final : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum Type {
-    kLocationbar,
-    kMenubar,
-    kPersonalbar,
-    kScrollbars,
-    kStatusbar,
-    kToolbar
-  };
-
-  BarProp(ExecutionContext*, Type);
+  explicit BarProp(ExecutionContext*);
 
   bool visible() const;
 
   void Trace(Visitor*) const override;
-
- private:
-  Type type_;
 };
 
 }  // namespace blink

@@ -156,9 +156,7 @@ NavigationPolicy NavigationPolicyForCreateWindow(
   // If our default configuration was modified by a script or wasn't
   // created by a user gesture, then show as a popup. Else, let this
   // new window be opened as a toplevel window.
-  bool as_popup = !features.tool_bar_visible || !features.status_bar_visible ||
-                  !features.scrollbars_visible || !features.menu_bar_visible ||
-                  !features.resizable;
+  bool as_popup = features.is_popup || !features.resizable;
   NavigationPolicy app_policy =
       as_popup ? kNavigationPolicyNewPopup : kNavigationPolicyNewForegroundTab;
   NavigationPolicy user_policy = NavigationPolicyFromCurrentEvent();
