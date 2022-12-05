@@ -41,21 +41,24 @@ class DeleteProfileHelper {
   // deleting the last profile, a new one will be created in its place, and in
   // that case the callback will be called when profile creation is complete.
   // Silently exits if profile is either scheduling or marked for deletion.
+  // If the profile is not loaded, this may trigger a reload of the profile so
+  // that user data is cleaned up.
   void MaybeScheduleProfileForDeletion(
       const base::FilePath& profile_dir,
       ProfileLoadedCallback callback,
       ProfileMetrics::ProfileDelete deletion_source);
 
-  // Schedules the ephemeral profile at the given path to be deleted on
-  // shutdown. New profiles will not be created.
+  // Schedules the ephemeral profile at the given path to be deleted. New
+  // profiles will not be created. If the profile is not loaded, this may
+  // trigger a reload of the profile so that user data is cleaned up.
   void ScheduleEphemeralProfileForDeletion(const base::FilePath& profile_dir);
 
-  // Checks if any ephemeral profiles are left behind (e.g. because of a browser
-  // crash) and schedule them for deletion.
+  // Checks if any profiles are left behind (e.g. because of a browser
+  // crash) and schedule them for deletion. Unlike the "Schedule" methods above,
+  // these functions only remove the data from disk and do not perform any steps
+  // that require the profile to be loaded. They assume that the deleted
+  // profiles are not loaded in memory.
   void CleanUpEphemeralProfiles();
-
-  // Checks if files of deleted profiles are left behind (e.g. because of a
-  // browser crash) and delete them in case they still exist.
   void CleanUpDeletedProfiles();
 
  private:

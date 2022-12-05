@@ -180,6 +180,7 @@ void DeleteProfileHelper::CleanUpEphemeralProfiles() {
   }
 
   for (const base::FilePath& profile_path : profiles_to_delete) {
+    DCHECK(!profile_manager_->GetProfileByPath(profile_path));
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -205,6 +206,7 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
       if (base::PathExists(*profile_path)) {
         LOG(WARNING) << "Files of a deleted profile still exist after restart. "
                         "Cleaning up now.";
+        DCHECK(!profile_manager_->GetProfileByPath(*profile_path));
         base::ThreadPool::PostTask(
             FROM_HERE,
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
