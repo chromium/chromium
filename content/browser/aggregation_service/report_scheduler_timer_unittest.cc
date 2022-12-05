@@ -48,20 +48,15 @@ class MockReportSchedulerTimerDelegate : public ReportSchedulerTimer::Delegate {
 
 class ReportSchedulerTimerTest : public testing::Test {
  public:
-  ReportSchedulerTimerTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  void SetUp() override {
     auto timer_delegate = std::make_unique<MockReportSchedulerTimerDelegate>();
     timer_delegate_ = timer_delegate.get();
     timer_ = std::make_unique<ReportSchedulerTimer>(std::move(timer_delegate));
   }
 
-  void SetUp() override {
-    SetNetworkConnectionTrackerForTesting(
-        network::TestNetworkConnectionTracker::GetInstance());
-  }
-
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<MockReportSchedulerTimerDelegate> timer_delegate_;
   std::unique_ptr<ReportSchedulerTimer> timer_;
 };
