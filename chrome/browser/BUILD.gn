@@ -2484,8 +2484,6 @@ static_library("browser") {
       "accessibility/ax_screen_ai_annotator.h",
       "accessibility/ax_screen_ai_annotator_factory.cc",
       "accessibility/ax_screen_ai_annotator_factory.h",
-      "component_updater/screen_ai_component_installer.cc",
-      "component_updater/screen_ai_component_installer.h",
     ]
     deps += [
       "//components/services/screen_ai",
@@ -2494,6 +2492,13 @@ static_library("browser") {
       "//components/services/screen_ai/public/cpp:utilities",
       "//components/services/screen_ai/public/mojom",
     ]
+
+    if (!is_chromeos_ash) {
+      sources += [
+        "component_updater/screen_ai_component_installer.cc",
+        "component_updater/screen_ai_component_installer.h",
+      ]
+    }
   }
 
   if (is_linux || is_chromeos) {

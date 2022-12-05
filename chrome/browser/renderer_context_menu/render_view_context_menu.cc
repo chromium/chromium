@@ -1072,7 +1072,7 @@ void RenderViewContextMenu::InitMenu() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsPdfOcrEnabled() &&
       accessibility_state_utils::IsScreenReaderEnabled() &&
-      screen_ai::ScreenAIInstallState::GetInstance()->is_component_ready() &&
+      screen_ai::ScreenAIInstallState::GetInstance()->IsComponentReady() &&
       IsFrameInPdfViewer(GetRenderFrameHost())) {
     AppendPdfOcrItem();
   }

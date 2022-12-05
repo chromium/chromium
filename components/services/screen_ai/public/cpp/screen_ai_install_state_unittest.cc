@@ -13,6 +13,10 @@ namespace screen_ai {
 class ScreenAIInstallStateTest : public testing::Test,
                                  ScreenAIInstallState::Observer {
  public:
+  ScreenAIInstallStateTest() {
+    ScreenAIInstallState::GetInstance()->ResetForTesting();
+  }
+
   void StartObservation() {
     component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
   }
@@ -20,11 +24,14 @@ class ScreenAIInstallStateTest : public testing::Test,
   void MakeComponentReady() {
     // The passed file path is not used and just indicates that the component
     // exists.
-    ScreenAIInstallState::GetInstance()->SetComponentReady(
+    ScreenAIInstallState::GetInstance()->SetComponentFolder(
         base::FilePath(FILE_PATH_LITERAL("tmp")));
   }
 
-  void ComponentReady() override { component_ready_received_ = true; }
+  void StateChanged(ScreenAIInstallState::State state) override {
+    if (state == ScreenAIInstallState::State::kReady)
+      component_ready_received_ = true;
+  }
 
   bool ComponentReadyReceived() { return component_ready_received_; }
 

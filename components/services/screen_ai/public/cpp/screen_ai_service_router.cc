@@ -84,7 +84,7 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
   if (screen_ai_service_.is_bound())
     return;
 
-  if (!ScreenAIInstallState::GetInstance()->is_component_ready()) {
+  if (!ScreenAIInstallState::GetInstance()->IsComponentReady()) {
     VLOG(0)
         << "ScreenAI service launch triggered before the component is ready.";
     return;

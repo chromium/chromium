@@ -2287,7 +2287,7 @@ class PdfOcrContextMenuBrowserTest : public PdfPluginContextMenuBrowserTest,
         IsScreenReaderEnabled());
     if (IsComponentReady()) {
       screen_ai::ScreenAIInstallState::GetInstance()
-          ->set_component_ready_for_testing();
+          ->SetComponentReadyForTesting();
     }
   }
 

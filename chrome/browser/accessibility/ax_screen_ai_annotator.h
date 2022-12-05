@@ -50,7 +50,7 @@ class AXScreenAIAnnotator : public KeyedService,
   void AnnotateScreenshot(Browser* browser);
 
   // ScreenAIInstallState::Observer:
-  void ComponentReady() override;
+  void StateChanged(ScreenAIInstallState::State state) override;
 
  private:
   // Binds `screen_ai_annotator_` to the Screen AI service.

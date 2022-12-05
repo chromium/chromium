@@ -8,7 +8,6 @@
 #include <string>
 
 #include "components/component_updater/component_installer.h"
-#include "components/prefs/pref_service.h"
 #include "components/update_client/update_client.h"
 
 namespace component_updater {
@@ -22,8 +21,7 @@ class ScreenAIComponentInstallerPolicy : public ComponentInstallerPolicy {
       const ScreenAIComponentInstallerPolicy&) = delete;
   ~ScreenAIComponentInstallerPolicy() override;
 
-  static void DeleteComponentOrScheduleDeletionIfNeeded(
-      PrefService* global_prefs);
+  static void DeleteComponent();
 
  private:
   // ComponentInstallerPolicy::
@@ -47,7 +45,7 @@ class ScreenAIComponentInstallerPolicy : public ComponentInstallerPolicy {
 // Call once during startup to make the component update service aware of
 // the ScreenAI component.
 void RegisterScreenAIComponent(ComponentUpdateService* cus,
-                               PrefService* global_prefs);
+                               PrefService* local_state);
 
 }  // namespace component_updater
 

@@ -57,7 +57,10 @@ AXScreenAIAnnotator::AXScreenAIAnnotator(
 
 AXScreenAIAnnotator::~AXScreenAIAnnotator() = default;
 
-void AXScreenAIAnnotator::ComponentReady() {
+void AXScreenAIAnnotator::StateChanged(ScreenAIInstallState::State state) {
+  if (state != ScreenAIInstallState::State::kReady)
+    return;
+
   DCHECK(!screen_ai_service_client_.is_bound());
   BindToScreenAIService(browser_context_);
 }

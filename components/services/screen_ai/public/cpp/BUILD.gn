@@ -2,6 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
+if (is_chromeos_ash) {
+  source_set("screen_ai_chromeos_installer") {
+    sources = [
+      "screen_ai_chromeos_installer.cc",
+      "screen_ai_chromeos_installer.h",
+    ]
+
+    deps = [
+      ":screen_ai_install_state",
+      ":utilities",
+      "//chromeos/ash/components/dbus/dlcservice",
+      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    ]
+  }
+}
+
 source_set("screen_ai_install_state") {
   sources = [
     "screen_ai_install_state.cc",
@@ -11,6 +29,8 @@ source_set("screen_ai_install_state") {
   deps = [
     ":utilities",
     "//base/",
+    "//components/prefs",
+    "//ui/accessibility:ax_base",
   ]
 }
 
