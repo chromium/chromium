@@ -124,6 +124,10 @@ export function initialize(): void {
         ErrorType.UNCAUGHT_PROMISE, ErrorLevel.ERROR,
         assertInstanceof(e.reason, Error));
   });
+  window.onerror = (_event, _source, _lineno, _colno, error) => {
+    reportError(ErrorType.UNCAUGHT_ERROR, ErrorLevel.ERROR, error);
+    return true;
+  };
 }
 
 /**
