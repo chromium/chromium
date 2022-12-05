@@ -8,11 +8,8 @@
 #include <map>
 #include <string>
 
+#include "base/values.h"
 #include "ui/base/accelerators/accelerator.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace extensions {
 
@@ -49,7 +46,7 @@ class Command {
   static bool IsActionRelatedCommand(const std::string& command_name);
 
   // Parse the command.
-  bool Parse(const base::DictionaryValue* command,
+  bool Parse(const base::Value::Dict& command,
              const std::string& command_name,
              int index,
              std::u16string* error);

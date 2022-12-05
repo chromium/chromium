@@ -83,8 +83,8 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
   for (const auto item : dict->GetDict()) {
     ++command_index;
 
-    const base::DictionaryValue* command = nullptr;
-    if (!item.second.GetAsDictionary(&command)) {
+    const base::Value::Dict* command = item.second.GetIfDict();
+    if (!command) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           manifest_errors::kInvalidKeyBindingDictionary,
           base::NumberToString(command_index));
@@ -92,7 +92,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
     }
 
     std::unique_ptr<extensions::Command> binding(new Command());
-    if (!binding->Parse(command, item.first, command_index, error))
+    if (!binding->Parse(*command, item.first, command_index, error))
       return false;  // |error| already set.
 
     if (binding->accelerator().key_code() != ui::VKEY_UNKNOWN) {

@@ -412,7 +412,7 @@ bool Command::IsActionRelatedCommand(const std::string& command_name) {
          command_name == values::kPageActionCommandEvent;
 }
 
-bool Command::Parse(const base::DictionaryValue* command,
+bool Command::Parse(const base::Value::Dict& command,
                     const std::string& command_name,
                     int index,
                     std::u16string* error) {
@@ -420,8 +420,7 @@ bool Command::Parse(const base::DictionaryValue* command,
 
   std::u16string description;
   if (!IsActionRelatedCommand(command_name)) {
-    const std::string* description_ptr =
-        command->FindStringKey(keys::kDescription);
+    const std::string* description_ptr = command.FindString(keys::kDescription);
     if (!description_ptr || description_ptr->empty()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidKeyBindingDescription, base::NumberToString(index));
@@ -435,9 +434,10 @@ bool Command::Parse(const base::DictionaryValue* command,
   SuggestionMap suggestions;
 
   // First try to parse the |suggested_key| as a dictionary.
-  const base::DictionaryValue* suggested_key_dict;
-  if (command->GetDictionary(keys::kSuggestedKey, &suggested_key_dict)) {
-    for (const auto item : suggested_key_dict->GetDict()) {
+
+  if (const base::Value::Dict* suggested_key_dict =
+          command.FindDict(keys::kSuggestedKey)) {
+    for (const auto item : *suggested_key_dict) {
       // For each item in the dictionary, extract the platforms specified.
       const std::string* suggested_key_string = item.second.GetIfString();
       if (suggested_key_string && !suggested_key_string->empty()) {
@@ -455,7 +455,7 @@ bool Command::Parse(const base::DictionaryValue* command,
     // don't have to specify a dictionary if they just want to use one default
     // for all platforms.
     const std::string* suggested_key_string =
-        command->FindStringKey(keys::kSuggestedKey);
+        command.FindString(keys::kSuggestedKey);
     if (suggested_key_string && !suggested_key_string->empty()) {
       // If only a single string is provided, it must be default for all.
       suggestions[values::kKeybindingPlatformDefault] = *suggested_key_string;
@@ -465,7 +465,7 @@ bool Command::Parse(const base::DictionaryValue* command,
   }
 
   // Check if this is a global or a regular shortcut.
-  bool global = command->FindBoolPath(keys::kGlobal).value_or(false);
+  bool global = command.FindBoolByDottedPath(keys::kGlobal).value_or(false);
 
   // Normalize the suggestions.
   for (auto iter = suggestions.begin(); iter != suggestions.end(); ++iter) {
