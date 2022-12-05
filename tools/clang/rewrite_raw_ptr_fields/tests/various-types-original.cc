@@ -107,13 +107,18 @@ struct MyStruct {
   using SomeClassPtrAlias = SomeClass*;
 
   // Char pointer fields should be rewritten, unless they are on the
-  // --field-filter-file blocklist.  See also gen-char-test.cc for tests
-  // covering generating the blocklist.
+  // --field-filter-file blocklist.
   //
   // Expected rewrite: raw_ptr<char>, etc.
   char* char_ptr;
-  const char* const_char_ptr;
+  char16_t* char16_ptr;
   wchar_t* wide_char_ptr;
+
+  // TODO(crbug.com/1381955) |const char| pointer fields are not supported yet.
+  //
+  // No rewrite expected (for now).
+  const char* const_char_ptr;
+  const char16_t* const_char16_ptr;
   const wchar_t* const_wide_char_ptr;
 
   // |array_of_ptrs| is an array 123 of pointer to SomeClass.
@@ -196,8 +201,7 @@ struct MyStruct2 {
   using SomeClassRefAlias = SomeClass&;
 
   // Char pointer fields should be rewritten, unless they are on the
-  // --field-filter-file blocklist.  See also gen-char-test.cc for tests
-  // covering generating the blocklist.
+  // --field-filter-file blocklist.
   //
   // Expected rewrite: raw_ref<char>, etc.
   char& char_ref;

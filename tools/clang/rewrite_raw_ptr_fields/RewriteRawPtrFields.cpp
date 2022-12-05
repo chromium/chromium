@@ -776,7 +776,6 @@ class RawPtrRewriter {
         constexpr_var_initializer_writer(output_helper,
                                          "constexpr-var-initializer"),
         macro_field_decl_writer(output_helper, "macro"),
-        char_ptr_field_decl_writer(output_helper, "const-char"),
         global_scope_rewriter(output_helper, "global-scope"),
         union_field_decl_writer(output_helper, "union"),
         reinterpret_cast_struct_writer(output_helper,
@@ -997,17 +996,6 @@ class RawPtrRewriter {
 
     match_finder.addMatcher(macro_field_decl_matcher, &macro_field_decl_writer);
 
-    // See the doc comment for the anyCharType matcher
-    // and the testcases in tests/gen-char-test.cc.
-    auto char_ptr_field_decl_matcher =
-        fieldDecl(allOf(field_decl_matcher,
-                        hasType(pointerType(pointee(qualType(allOf(
-                            isConstQualified(),
-                            hasUnqualifiedDesugaredType(anyCharType()))))))));
-
-    match_finder.addMatcher(char_ptr_field_decl_matcher,
-                            &char_ptr_field_decl_writer);
-
     // See the testcases in tests/gen-global-scope-test.cc.
     auto global_scope_matcher =
         varDecl(allOf(hasGlobalStorage(),
@@ -1080,7 +1068,6 @@ class RawPtrRewriter {
   FilteredExprWriter constexpr_ctor_field_initializer_writer;
   FilteredExprWriter constexpr_var_initializer_writer;
   FilteredExprWriter macro_field_decl_writer;
-  FilteredExprWriter char_ptr_field_decl_writer;
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter union_field_decl_writer;
   FilteredExprWriter reinterpret_cast_struct_writer;

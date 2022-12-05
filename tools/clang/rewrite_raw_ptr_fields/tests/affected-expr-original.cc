@@ -270,12 +270,8 @@ void foo(int x) {
   MyStruct my_struct(s, s, s);
   std::string other_str = "other";
 
-  // To avoid the following error type:
-  //   error: invalid operands to binary expression ... basic_string ... and ...
-  //   raw_ptr ...
-  // we need to append |.get()| to |my_struct.const_char_ptr| below.
-  //
-  // Expected rewrite: ... my_struct.const_char_ptr.get() ...
+  // No rewrite expected. (for now)
+  // TODO(crbug.com/1381955) |const char| pointer fields are not supported yet.
   bool v1 = my_struct.const_char_ptr == other_str;
   bool v2 = other_str == my_struct.const_char_ptr;
   bool v3 = my_struct.const_char_ptr > other_str;
@@ -470,11 +466,8 @@ void foo() {
   SomeClass s;
   MyStruct my_struct(s, s, s);
 
-  // Expected rewrite - appending: .get().  This avoids the following error:
-  // error: no matching function for call to 'FunctionTakingBasicStringPiece'
-  // note: candidate function not viable: no known conversion from
-  // 'base::raw_ptr<const char>' to 'templated_functions::StringPiece' (aka
-  // 'BasicStringPiece<char>') for 1st argument
+  // No rewrite expected. (for now)
+  // TODO(crbug.com/1381955) |const char| pointer fields are not supported yet.
   FunctionTakingBasicStringPiece(my_struct.const_char_ptr);
   FunctionTakingBasicStringPieceRef(my_struct.const_char_ptr);
 
