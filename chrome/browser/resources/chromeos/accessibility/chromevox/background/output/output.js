@@ -672,24 +672,6 @@ export class Output {
   }
 
   /** @override */
-  formatInputType_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    if (!node.inputType) {
-      return;
-    }
-    options.annotation.push(token);
-    let msgId =
-        outputTypes.INPUT_TYPE_MESSAGE_IDS[node.inputType] || 'input_type_text';
-    if (this.formatOptions_.braille) {
-      msgId = msgId + '_brl';
-    }
-    this.append_(buff, Msgs.getMsg(msgId), options);
-    formatLog.writeTokenWithValue(token, Msgs.getMsg(msgId));
-  }
-
   /** @override */
   formatTableCellIndex_(data, token, options) {
     const buff = data.outputBuffer;

@@ -79,13 +79,6 @@ export class OutputInterface {
 
   /**
    * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatInputType_(data, token, options) {}
-
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
    */
   formatListNestedLevel_(data) {}
 
