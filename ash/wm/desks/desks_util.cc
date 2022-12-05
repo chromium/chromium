@@ -113,9 +113,15 @@ aura::Window* GetActiveDeskContainerForRoot(aura::Window* root) {
 ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window) {
   DCHECK(window);
 
+  // This function may be called early on during window construction. If there
+  // is no parent, then it's not part of any desk yet. See b/260851890 for more
+  // details.
+  if (!window->parent())
+    return false;
+
+  auto* window_state = WindowState::Get(window);
   // A floated window may be associated with a desk, but they would be parented
   // to the float container.
-  auto* window_state = WindowState::Get(window);
   if (window_state && window_state->IsFloated()) {
     auto* desk =
         Shell::Get()->float_controller()->FindDeskOfFloatedWindow(window);
