@@ -161,8 +161,7 @@ def _generate_cq_builders_md(ctx):
             quoted_name = "\"\"{name}\"\"".format(name = name)
             lines.append((
                 "* [{name}]({try_builder_view}/{name}) " +
-                "([definition]({definition_query}+{quoted_name})) " +
-                "([matching builders]({trybot_query}+{quoted_name}))"
+                "([definition]({definition_query}+{quoted_name}))"
             ).format(
                 name = name,
                 quoted_name = quoted_name,
@@ -170,7 +169,6 @@ def _generate_cq_builders_md(ctx):
                 definition_query = _codesearch_query(
                     "file:/try/.*\\.star$",
                 ),
-                trybot_query = _codesearch_query("file:trybots.py"),
             ))
 
             if b.experiment_percentage:
