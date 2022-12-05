@@ -9,6 +9,7 @@
 
 #include "components/js_injection/common/interfaces.mojom-shared.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
@@ -21,11 +22,14 @@ struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
     return absl::get<std::u16string>(payload);
   }
 
-  static std::unique_ptr<blink::WebMessageArrayBufferPayload>
-  array_buffer_value(blink::WebMessagePayload& payload) {
-    return std::move(
+  static mojo_base::BigBuffer array_buffer_value(
+      const blink::WebMessagePayload& payload) {
+    auto& array_buffer =
         absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
-            payload));
+            payload);
+    auto big_buffer = mojo_base::BigBuffer(array_buffer->GetLength());
+    array_buffer->CopyInto(big_buffer);
+    return big_buffer;
   }
 
   static js_injection::mojom::JsWebMessageDataView::Tag GetTag(

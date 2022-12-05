@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/functional/overloaded.h"
-#include "components/js_injection/common/interfaces.mojom-shared.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
