@@ -42,5 +42,6 @@ ts_library("build_ts") {
   extra_deps = [
     ":copy_files",
     ":preprocess",
+    "//ash/webui/common/resources:copy_checked_in_dts_files",
   ]
 }
