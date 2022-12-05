@@ -5,19 +5,30 @@
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 
 #include "base/base64.h"
-#include "base/record_replay.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/record_replay.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_document.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/inspector/inspected_frames.h"
+#include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
+#include "third_party/blink/renderer/core/inspector/resolve_node.h"
+// #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
+// #include "third_party/blink/renderer/core/inspector/inspector_dom_snapshot_agent.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "v8/include/v8-inspector.h"
 
+#include <array>
+#include <fstream>
+#include <string>
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
-#include <fstream>
 
 #ifndef OS_WIN
 static const char DirectorySeparator = '/';
@@ -47,11 +58,21 @@ extern void RecordReplayConfirmObjectHasId(v8::Isolate* isolate, v8::Local<v8::C
 
 namespace blink {
 
+// using RemoteObjectIdTypeRaw = v8_inspector::String16;
+
+// The actual type for RemoteObjectId
+using RemoteObjectIdTypeRaw = std::u16string;
+
+// The more convenient type that we use
+using RemoteObjectIdType = WTF::String;
+
 // Script which defines handlers for recorder commands, and is only loaded while
 // replaying.
 const char* gReplayScript = R""""(
-
 (() => {
+
+const Verbose = 1;
+const VerboseCommands = Verbose;
 
 const {
   log,
@@ -61,8 +82,14 @@ const {
   setClearPauseDataCallback,
   addNewScriptHandler,
   getCurrentError,
+
+  // network
   getCurrentNetworkRequestEvent,
   getCurrentNetworkStreamData,
+
+  // Blink, DOM and more
+  jsGetObjectIdForAnyObject,
+  jsPreviewBlinkObjectForObjectId
 } = __RECORD_REPLAY_ARGUMENTS__;
 
 const gSourceMapData = new Map();
@@ -80,10 +107,10 @@ const JSON_parse = JSON.parse;
 // Some of these are duplicated in gSourceMapScript, so watch out when making
 // modifications to update both versions...
 
-function assert(v) {
+function assert(v, msg = "") {
   if (!v) {
-    log(`Assertion failed ${Error().stack}`);
-    throw new Error("Assertion failed");
+    log(`Error: Assertion failed ${msg} ${Error().stack}`);
+    throw new Error("Assertion failed!");
   }
 }
 
@@ -140,7 +167,13 @@ function sendMessage(method, params) {
   gCurrentMessageId = id;
   sendCDPMessage(JSON_stringify({ method, params, id }));
   gCurrentMessageId = undefined;
-  return gCurrentMessageResult;
+  if (gCurrentMessageResult?.result) {
+    return gCurrentMessageResult.result;
+  }
+  if (gCurrentMessageResult?.error) {
+    throw new Error(`${gCurrentMessageResult.error.message} (${gCurrentMessageResult.error.code})`);
+  }
+  return undefined;
 }
 
 const gEventListeners = new Map();
@@ -155,7 +188,7 @@ function messageCallback(message) {
 
     if (message.id) {
       assert(message.id == gCurrentMessageId);
-      gCurrentMessageResult = message.result;
+      gCurrentMessageResult = message;
     } else {
       const listener = gEventListeners.get(message.method);
       if (listener) {
@@ -192,18 +225,29 @@ const CommandCallbacks = {
   "Pause.getObjectPreview": Pause_getObjectPreview,
   "Pause.getObjectProperty": Pause_getObjectProperty,
   "Pause.getScope": Pause_getScope,
+  // bring back after id look up has been fixed
+  // "DOM.getDocument": DOM_getDocument,
+  "DOM.getAllBoundingClientRects": DOM_getAllBoundingClientRects,
+  "DOM.getBoxModel": DOM_getBoxModel
 };
+
+let gLastCommandErrors = [];
 
 function commandCallback(method, params) {
   if (!CommandCallbacks[method]) {
-    log(`Missing command callback: ${method}`);
+    log(`[Command ${method}] Missing command callback: ${method}`);
     return {};
   }
 
   try {
-    return CommandCallbacks[method](params);
+    VerboseCommands && log(`[Command ${method}] Handling command...`);
+    const result = CommandCallbacks[method](params);
+    VerboseCommands && log(`[Command ${method}] Handled command: result=${JSON.stringify(result)}`);
+    return result;
   } catch (e) {
-    log(`Error: Command exception ${method} ${e}`);
+    const msg = `[Command ${method}] Error: ${e?.stack || e}`;
+    gLastCommandErrors.push(msg);
+    log(msg);
     return {};
   }
 }
@@ -331,6 +375,51 @@ function getStackFrames() {
   return callFrames;
 }
 
+
+window.DevOnly = {
+  // NOTE: commented out until we have a safe/reliably way of dealing with it
+  // tryEvalDev(expression, frameId = 0) {
+  //   // log(`[CHROMDEBUG] eval - expression: "${expression}"`);
+
+  //   // NOTE: expression sometimes gets wrapped in parentheses, and its value must be a string
+  //   const prefixes = ['("dev:', '"dev:'];
+  //   const prefix = prefixes.find(p => expression.startsWith(p));
+  //   if (prefix) {
+  //     // hackfix: evaluate straight-up in our dev context
+  //     // TODO: unsafe. Must be behind DEV-ONLY flag.
+
+  //     let cmd = expression;
+  //     if (cmd.startsWith('(')) {
+  //       // strip '()'
+  //       cmd = cmd.substring(1, expression.length - 1);
+  //     }
+  //     if (cmd.endsWith(';')) {
+  //       // strip trailing ';'
+  //       cmd = cmd.substring(0, expression.length - 1);
+  //     }
+
+  //     // parse JSON (used for serialization)
+  //     cmd = JSON.parse(cmd);
+
+  //     // strip "dev:" and wrap in ()
+  //     cmd = `(${cmd.substring(4)})`;
+
+  //     // run
+  //     const res = eval(cmd);
+  //     const resJson = JSON.stringify(res);
+
+  //     const t = res !== undefined ? ` (type: ${typeof res})` : '';
+  //     // log(`[CHROMDEBUG] eval (dev) - cmd: "${cmd}", res:${t} "${resJson}"`);
+
+  //     return { result: { data: {}, returned: { value: resJson } } };
+  //   }
+  // },
+
+  // popCommandError() {
+  //   return gLastCommandErrors.shift();
+  // }
+};
+
 // Build a protocol Result object from a result/exceptionDetails CDP rval.
 function buildProtocolResult({ result, exceptionDetails }) {
   const value = remoteObjectToProtocolValue(result);
@@ -344,37 +433,65 @@ function buildProtocolResult({ result, exceptionDetails }) {
   return { result: protocolResult };
 }
 
+
 function Pause_evaluateInFrame({ frameId, expression }) {
-  const frames = getStackFrames();
-  const index = +frameId;
-  assert(index < frames.length);
-  const frame = frames[index];
+  try {
+    const result = window.DevOnly?.tryEvalDev(expression, frameId);
+    if (result) {
+      return result;
+    }
 
-  const rv = doEvaluation();
-  return buildProtocolResult(rv);
+    const frames = getStackFrames();
+    const index = +frameId;
+    assert(index < frames.length);
+    const frame = frames[index];
 
-  function doEvaluation() {
-    // In order to do the evaluation in the right frame, the same number of
-    // frames need to be on V8's stack when we do the evaluation as when we got
-    // the stack frames in the first place. The debugger agent extracts a frame
-    // index from the ID it is given and uses that to walk the stack to the
-    // frame where it will do the evaluation (see DebugStackTraceIterator).
-    return sendMessage(
-      "Debugger.evaluateOnCallFrame",
-      {
-        callFrameId: frame.callFrameId,
-        expression,
-      }
-    );
+    const rv = doEvaluation();
+    return buildProtocolResult(rv);
+
+    function doEvaluation() {
+      // In order to do the evaluation in the right frame, the same number of
+      // frames need to be on V8's stack when we do the evaluation as when we got
+      // the stack frames in the first place. The debugger agent extracts a frame
+      // index from the ID it is given and uses that to walk the stack to the
+      // frame where it will do the evaluation (see DebugStackTraceIterator).
+      return sendMessage(
+        "Debugger.evaluateOnCallFrame",
+        {
+          callFrameId: frame.callFrameId,
+          expression,
+        }
+      );
+    }
+  }
+  catch (err) {
+    return { result: { data: {}, exception: { value: err.stack } } };
   }
 }
 
 function Pause_evaluateInGlobal({ expression }) {
-  const rv = sendMessage("Runtime.evaluate", { expression });
-  return buildProtocolResult(rv);
+  try {
+    const result = window.DevOnly?.tryEvalDev(expression);
+    if (result) {
+      return result;
+    }
+
+    const rv = sendMessage("Runtime.evaluate", { expression });
+    return buildProtocolResult(rv);
+  }
+  catch (err) {
+    return { result: { data: {}, exception: { value: err.stack } } };
+  }
 }
 
+// function onMaybeNewPause() {
+// }
+
 function Pause_getAllFrames() {
+  // // we don't currently have an event for `Pause.createPause`, so we use this instead.
+  // //  (→ this is called first from `Pause.createPause`, but also from other places)
+  // onMaybeNewPause();
+
   const frames = getStackFrames().map((frame, index) => {
     // Use our own IDs for frames.
     const id = (index++).toString();
@@ -393,12 +510,13 @@ function Pause_getExceptionValue() {
 }
 
 function Pause_getObjectPreview({ object, level = "full" }) {
+  log(`DDBG getObjectPreview: ${JSON.stringify({ object })}`);
   const objectData = createProtocolObject(object, level);
   return { data: { objects: [objectData] } };
 }
 
 function Pause_getObjectProperty({ object, name }) {
-  const obj = protocolIdToRemoteObject(object);
+  const obj = getRemoteObjectById(object);
   const rv = sendMessage(
     "Runtime.callFunctionOn",
     {
@@ -418,6 +536,7 @@ function Graphics_getDevicePixelRatio() {
   return { ratio: window?.devicePixelRatio || 0 };
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // object.js
 ///////////////////////////////////////////////////////////////////////////////
@@ -425,44 +544,39 @@ function Graphics_getDevicePixelRatio() {
 // Manage association between remote objects and protocol object IDs.
 
 // Map protocol ObjectId => RemoteObject
-const gProtocolIdToObject = new Map();
+const gRemoteObjectsById = new Map();
 
-// Map RemoteObject.objectId => protocol ObjectId
-const gObjectIdToProtocolId = new Map();
-
-// Map protocol ScopeId => Debugger.Scope
-const gProtocolIdToScope = new Map();
+// Map protocol ObjectId => Debugger.Scope
+const gScopesById = new Map();
 
 let gNextObjectId = 1;
 
 function clearPauseDataCallback() {
   try {
-    gProtocolIdToObject.clear();
-    gObjectIdToProtocolId.clear();
-    gProtocolIdToScope.clear();
+    gRemoteObjectsById.clear();
+    gScopesById.clear();
+    gLastBoundingClientRectsByObjectId.clear();
+    gLastCommandErrors = [];
     gNextObjectId = 1;
   } catch (e) {
     log(`Error: clearPauseDataCallback exception: ${e}`);
   }
 }
 
-function remoteObjectToProtocolId(remoteObject) {
+function registerRemoteObject(remoteObject) {
   assert(remoteObject.objectId);
 
-  const existing = gObjectIdToProtocolId.get(remoteObject.objectId);
+  const existing = gRemoteObjectsById.get(remoteObject.objectId);
   if (existing) {
     return existing;
   }
 
-  const protocolObjectId = (gNextObjectId++).toString();
-  gObjectIdToProtocolId.set(remoteObject.objectId, protocolObjectId);
-  gProtocolIdToObject.set(protocolObjectId, remoteObject);
-
-  return protocolObjectId;
+  gRemoteObjectsById.set(remoteObject.objectId, remoteObject);
+  return remoteObject.objectId;
 }
 
-function protocolIdToRemoteObject(objectId) {
-  const remoteObject = gProtocolIdToObject.get(objectId);
+function getRemoteObjectById(objectId) {
+  const remoteObject = gRemoteObjectsById.get(objectId);
   assert(remoteObject);
   return remoteObject;
 }
@@ -495,7 +609,8 @@ function remoteObjectToProtocolValue(obj) {
       if (!obj.objectId) {
         return { value: null };
       }
-      const object = remoteObjectToProtocolId(obj);
+
+      const object = registerRemoteObject(obj);
       return { object };
     }
     case "symbol":
@@ -505,15 +620,14 @@ function remoteObjectToProtocolValue(obj) {
   }
 }
 
-function scopeToProtocolId(scope) {
-  // Use the scope object's ID as the ID for the scope itself.
-  const id = remoteObjectToProtocolId(scope.object);
-  gProtocolIdToScope.set(id, scope);
+function registerScope(scope) {
+  const id = registerRemoteObject(scope.object);
+  gScopesById.set(id, scope);
   return id;
 }
 
-function protocolIdToScope(scopeId) {
-  const scope = gProtocolIdToScope.get(scopeId);
+function getScopeById(scopeId) {
+  const scope = gScopesById.get(scopeId);
   assert(scope);
   return scope;
 }
@@ -525,8 +639,11 @@ function protocolIdToScope(scopeId) {
 // Logic for creating object previews for the record/replay protocol.
 
 function createProtocolObject(objectId, level) {
-  const obj = protocolIdToRemoteObject(objectId);
+  const obj = getRemoteObjectById(objectId);
+  // NOTE: `subtype` often won't be available, due to divergence
   const className = obj.subtype == "proxy" ? "Proxy" : (obj.className || "Function");
+
+  // NOTE: `persistentId` is added via V8 → `injected-script.cc`
   const { persistentId } = obj;
 
   let preview;
@@ -589,12 +706,16 @@ ProtocolObjectPreview.prototype = {
   },
 
   fill() {
+    // NOTE: we could also use "Runtime.evaluate" with `{ generatePreview: true }`
     const allProperties = sendMessage("Runtime.getProperties", {
       objectId: this.obj.objectId,
       ownProperties: true,
       generatePreview: false,
     });
     const properties = allProperties.result;
+
+    // Add data for DOM/CSS objects
+    this.extra = jsPreviewBlinkObjectForObjectId(this.obj.objectId) || {};
 
     // Add class-specific data.
     const previewer = CustomPreviewers[this.obj.className];
@@ -622,7 +743,8 @@ ProtocolObjectPreview.prototype = {
 
     let prototypeId;
     if (prototype && prototype.value && prototype.value.objectId) {
-      prototypeId = remoteObjectToProtocolId(prototype.value);
+      prototypeId = registerRemoteObject(prototype.value);
+      // TODO: in gecko-dev, we also `addPrototypeGetterValues` - should we do this here, too?
     }
     return {
       prototypeId,
@@ -733,6 +855,8 @@ function previewFunction(allProperties) {
   }
 }
 
+
+
 const CustomPreviewers = {
   Array: ["length"],
   Int8Array: [previewTypedArray],
@@ -783,10 +907,10 @@ function createProtocolPropertyDescriptor(desc) {
   }
 
   if (get && get.objectId) {
-    rv.get = remoteObjectToProtocolId(get);
+    rv.get = registerRemoteObject(get);
   }
   if (set && set.objectId) {
-    rv.set = remoteObjectToProtocolId(set);
+    rv.set = registerRemoteObject(set);
   }
 
   if (symbol) {
@@ -819,13 +943,13 @@ function createProtocolFrame(frameId, frame) {
     functionName: frame.functionName || undefined,
     functionLocation: createProtocolLocation(frame.functionLocation),
     location: createProtocolLocation(frame.location),
-    scopeChain: frame.scopeChain.map(scopeToProtocolId),
+    scopeChain: frame.scopeChain.map(registerScope),
     this: remoteObjectToProtocolValue(frame.this),
   };
 }
 
 function createProtocolScope(scopeId) {
-  const scope = protocolIdToScope(scopeId);
+  const scope = getScopeById(scopeId);
 
   let type;
   switch (scope.type) {
@@ -842,7 +966,7 @@ function createProtocolScope(scopeId) {
 
   let object, bindings;
   if (type == "global" || type == "with") {
-    object = remoteObjectToProtocolId(scope.object);
+    object = registerRemoteObject(scope.object);
   } else {
     bindings = [];
 
@@ -866,6 +990,582 @@ function createProtocolScope(scopeId) {
   };
 }
 
+
+
+
+
+
+
+/** ###########################################################################
+   * StackingContext
+   * ##########################################################################*/
+  // Mouse Targets Overview
+  //
+  // Mouse target data is used to figure out which element to highlight when the
+  // mouse is hovered/clicked on different parts of the screen when the element
+  // picker is used. To determine this, we need to know the bounding client rects
+  // of every element (easy) and the order in which different elements are stacked
+  // (not easy).
+  //
+  // To figure out the order in which elements are stacked, we reconstruct the
+  // stacking contexts on the page and the order in which elements are laid out
+  // within those stacking contexts, allowing us to assemble a sorted array of
+  // elements such that for any two elements that overlap, the frontmost element
+  // appears first in the array.
+  //
+  // References:
+  //
+  // https://www.w3.org/TR/CSS21/zindex.html
+  //
+  //   We try to follow this reference, although not all of its rules are
+  //   implemented yet.
+  //
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+  //
+  //   This is helpful but the rules for when stacking contexts are created are
+  //   quite baroque and don't seem to match up with the spec above, so they are
+  //   mostly ignored here.
+
+  // Information about an element needed to add it to a stacking context.
+  function StackingContextElement(node, parent, offset, style, clipBounds) {
+    assert(node.nodeType == Node.ELEMENT_NODE);
+
+    // Underlying element.
+    this.raw = node;
+
+    // Offset relative to the outer window of the window containing this context.
+    this.offset = offset;
+
+    // the parent StackingContextElement
+    this.parent = parent;
+
+    // Style and clipping information for the node.
+    this.style = style;
+    this.clipBounds = clipBounds;
+
+    // Any stacking context at which this element is the root.
+    this.context = null;
+  }
+
+  StackingContextElement.prototype = {
+    isPositioned() {
+      return this.style.getPropertyValue("position") != "static";
+    },
+
+    isAbsolutelyPositioned() {
+      return ["absolute", "fixed"].includes(this.style.getPropertyValue("position"));
+    },
+
+    isTable() {
+      return ["table", "inline-table"].includes(this.style.getPropertyValue("display"));
+    },
+
+    isFlexOrGridContainer() {
+      return ["flex", "inline-flex", "grid", "inline-grid"].includes(
+        this.style.getPropertyValue("display")
+      );
+    },
+
+    isBlockElement() {
+      return ["block", "table", "flex", "grid"].includes(this.style.getPropertyValue("display"));
+    },
+
+    isFloat() {
+      return this.style.getPropertyValue("float") != "none";
+    },
+
+    getPositionedAncestor() {
+      if (this.isPositioned()) {
+        return this;
+      }
+      return this.parent?.getPositionedAncestor();
+    },
+
+    // see https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Block_formatting_context
+    getFormattingContextElement() {
+      if (!this.parent) {
+        return this;
+      }
+      if (this.isFloat()) {
+        return this;
+      }
+      if (this.isAbsolutelyPositioned()) {
+        return this;
+      }
+      if (
+        [
+          "inline-block",
+          "table-cell",
+          "table-caption",
+          "table",
+          "table-row",
+          "table-row-group",
+          "table-header-group",
+          "table-footer-group",
+          "inline-table",
+          "flow-root",
+        ].includes(this.style.getPropertyValue("display"))
+      ) {
+        return this;
+      }
+      if (
+        this.isBlockElement() &&
+        !(
+          ["visible", "clip"].includes(this.style.getPropertyValue("overflow-x")) &&
+          ["visible", "clip"].includes(this.style.getPropertyValue("overflow-y"))
+        )
+      ) {
+        return this;
+      }
+      if (["layout", "content", "paint"].includes(this.style.getPropertyValue("contain"))) {
+        return this;
+      }
+      if (this.parent.isFlexOrGridContainer() && !this.isFlexOrGridContainer() && !this.isTable()) {
+        return this;
+      }
+      if (
+        this.style.getPropertyValue("column-count") != "auto" ||
+        this.style.getPropertyValue("column-width") != "auto"
+      ) {
+        return this;
+      }
+      if (this.style.getPropertyValue("column-span") == "all") {
+        return this;
+      }
+      return this.parent.getFormattingContextElement();
+    },
+
+    // toString() {
+    //   return getObjectIdRaw(this.raw);
+    // },
+  };
+
+  let gNextStackingContextId = 1;
+
+  // Information about all the nodes in the same stacking context.
+  // The spec says that some elements should be treated as if they
+  // "created a new stacking context, but any positioned descendants and
+  // descendants which actually create a new stacking context should be
+  // considered part of the parent stacking context, not this new one".
+  // For these elements we also create a StackingContext but pass the
+  // parent stacking context to the constructor as the "realStackingContext".
+  function StackingContext(window, root, offset, realStackingContext) {
+    this.window = window;
+    this.id = gNextStackingContextId++;
+
+    this.realStackingContext = realStackingContext || this;
+
+    // Offset relative to the outer window of the window containing this context.
+    this.offset = offset || { left: 0, top: 0 };
+
+    // The arrays below are filled in tree order (preorder depth first traversal).
+
+    // All non-positioned, non-floating elements.
+    this.nonPositionedElements = [];
+
+    // All floating elements.
+    this.floatingElements = [];
+
+    // All positioned elements with an auto or zero z-index.
+    this.positionedElements = [];
+
+    // Arrays of elements with non-zero z-indexes, indexed by that z-index.
+    this.zIndexElements = new Map();
+
+    this.root = root;
+    if (root) {
+      this.addChildrenWithParent(root);
+    }
+  }
+
+  StackingContext.prototype = {
+    toString() {
+      return `StackingContext:${this.id}`;
+    },
+
+    // Add node and its descendants to this stacking context.
+    add(node, parentElem, offset) {
+      const style = this.window.getComputedStyle(node);
+      if (!style) {
+        // It's not 100% clear why this is sometimes null, but it seems like
+        // this can happen if DOM commands are sent when the window is shutting
+        // down in some way or another.
+        return;
+      }
+
+      const position = style.getPropertyValue("position");
+      let clipBounds;
+      if (position == "absolute") {
+        clipBounds = parentElem?.getPositionedAncestor()?.clipBounds || {};
+      } else if (position == "fixed") {
+        clipBounds = {};
+      } else {
+        clipBounds = parentElem?.clipBounds || {};
+      }
+      clipBounds = Object.assign({}, clipBounds);
+      const elem = new StackingContextElement(node, parentElem, offset, style, clipBounds);
+      if (!["HTML", "BODY"].includes(elem.raw.tagName)) {
+        if (style.getPropertyValue("overflow-x") != "visible") {
+          const clipBounds2 = elem.getFormattingContextElement().raw.getBoundingClientRect();
+          elem.clipBounds.left =
+            clipBounds.left !== undefined
+              ? Math.max(clipBounds2.left, clipBounds.left)
+              : clipBounds2.left;
+          elem.clipBounds.right =
+            clipBounds.right !== undefined
+              ? Math.min(clipBounds2.right, clipBounds.right)
+              : clipBounds2.right;
+        }
+        if (style.getPropertyValue("overflow-y") != "visible") {
+          const clipBounds2 = elem.getFormattingContextElement().raw.getBoundingClientRect();
+          elem.clipBounds.top =
+            clipBounds.top !== undefined
+              ? Math.max(clipBounds2.top, clipBounds.top)
+              : clipBounds2.top;
+          elem.clipBounds.bottom =
+            clipBounds.bottom !== undefined
+              ? Math.min(clipBounds2.bottom, clipBounds.bottom)
+              : clipBounds2.bottom;
+        }
+      }
+
+      // Create a new stacking context for any iframes.
+      if (elem.raw.tagName == "IFRAME") {
+        const { left, top } = elem.raw.getBoundingClientRect();
+        this.addContext(elem, undefined, left, top);
+        elem.context.addChildren(elem.raw.contentWindow.document);
+      }
+
+      if (!elem.style) {
+        this.addNonPositionedElement(elem);
+        this.addChildrenWithParent(elem);
+        return;
+      }
+
+      const parentDisplay = elem.parent?.style?.getPropertyValue("display");
+      if (
+        position != "static" ||
+        ["flex", "inline-flex", "grid", "inline-grid"].includes(parentDisplay)
+      ) {
+        const zIndex = elem.style.getPropertyValue("z-index");
+        if (zIndex != "auto") {
+          this.addContext(elem);
+          // Elements with a zero z-index have their own stacking context but are
+          // grouped with other positioned children with an auto z-index.
+          const index = +zIndex | 0;
+          if (index) {
+            this.realStackingContext.addZIndexElement(elem, index);
+            return;
+          }
+        }
+
+        if (position != "static") {
+          this.realStackingContext.addPositionedElement(elem);
+          if (!elem.context) {
+            this.addContext(elem, this.realStackingContext);
+          }
+        } else {
+          this.addNonPositionedElement(elem);
+          if (!elem.context) {
+            this.addChildrenWithParent(elem);
+          }
+        }
+        return;
+      }
+
+      if (elem.isFloat()) {
+        // Group the element and its descendants.
+        this.addContext(elem, this.realStackingContext);
+        this.addFloatingElement(elem);
+        return;
+      }
+
+      const display = elem.style.getPropertyValue("display");
+      if (display == "inline-block" || display == "inline-table") {
+        // Group the element and its descendants.
+        this.addContext(elem, this.realStackingContext);
+        this.addNonPositionedElement(elem);
+        return;
+      }
+
+      this.addNonPositionedElement(elem);
+      this.addChildrenWithParent(elem);
+    },
+
+    addContext(elem, realStackingContext, left = 0, top = 0) {
+      if (elem.context) {
+        assert(!left && !top);
+        return;
+      }
+      const offset = {
+        left: this.offset.left + left,
+        top: this.offset.top + top,
+      };
+      elem.context = new StackingContext(this.window, elem, offset, realStackingContext);
+    },
+
+    addZIndexElement(elem, index) {
+      const existing = this.zIndexElements.get(index);
+      if (existing) {
+        existing.push(elem);
+      } else {
+        this.zIndexElements.set(index, [elem]);
+      }
+    },
+
+    addPositionedElement(elem) {
+      this.positionedElements.push(elem);
+    },
+
+    addFloatingElement(elem) {
+      this.floatingElements.push(elem);
+    },
+
+    addNonPositionedElement(elem) {
+      this.nonPositionedElements.push(elem);
+    },
+
+    addChildren(parentNode) {
+      for (const child of parentNode.children) {
+        this.add(child, undefined, this.offset);
+      }
+    },
+
+    addChildrenWithParent(parentElem) {
+      for (const child of parentElem.raw.children) {
+        this.add(child, parentElem, this.offset);
+      }
+    },
+
+    // Get the elements in this context ordered back-to-front.
+    flatten() {
+      const rv = [];
+
+      const pushElements = (elems) => {
+        for (const elem of elems) {
+          if (elem.context && elem.context != this) {
+            rv.push(...elem.context.flatten());
+          } else {
+            rv.push(elem);
+          }
+        }
+      };
+
+      const pushZIndexElements = (filter) => {
+        for (const z of zIndexes) {
+          if (filter(z)) {
+            pushElements(this.zIndexElements.get(z));
+          }
+        }
+      };
+
+      const zIndexes = [...this.zIndexElements.keys()];
+      zIndexes.sort((a, b) => a - b);
+
+      if (this.root) {
+        pushElements([this.root]);
+      }
+      pushZIndexElements((z) => z < 0);
+      pushElements(this.nonPositionedElements);
+      pushElements(this.floatingElements);
+      pushElements(this.positionedElements);
+      pushZIndexElements((z) => z > 0);
+
+      return rv;
+    },
+  };
+
+  /** ###########################################################################
+   * {@link shiftRect}
+   * ##########################################################################*/
+  function shiftRect(rect, offset) {
+    return {
+      left: rect.left !== undefined ? offset.left + rect.left : undefined,
+      top: rect.top !== undefined ? offset.top + rect.top : undefined,
+      right: rect.right !== undefined ? offset.left + rect.right : undefined,
+      bottom: rect.bottom !== undefined ? offset.top + rect.bottom : undefined,
+    };
+  }
+
+
+  /** ###########################################################################
+   * API, Blink and DOM bookkeeping
+   * ##########################################################################*/
+
+  function getObjectIdForObject(obj) {
+    return jsGetObjectIdForAnyObject(obj);
+  }
+
+  /** ###########################################################################
+   * {@link DOM_getDocument}
+   * ##########################################################################*/
+  function DOM_getDocument() {
+    const apiId = getAPIObjectId(window.document);
+
+    return {
+      data: {},
+      document: apiId
+    };
+  }
+
+  /** ###########################################################################
+   * {@link DOM_getAllBoundingClientRects}
+   * ##########################################################################*/
+
+  const gLastBoundingClientRectsByObjectId = new Map();
+
+  function getLastBoundingClientRect(objectId) {
+    return gLastBoundingClientRectsByObjectId.get(objectId);
+  }
+
+  /**
+   * @see https://static.replay.io/protocol/tot/DOM/#type-NodeBounds
+   */
+  function DOM_getAllBoundingClientRects() {
+    const cx = new StackingContext(window);
+    cx.addChildren(window.document);
+
+    const entries = cx.flatten();
+    // Get elements in front-to-back order.
+    entries.reverse();
+
+    const elements = entries
+      .map((elem, i) => {
+        const id = getObjectIdForObject(elem.raw) || i;
+
+        const { left, top, right, bottom } = shiftRect(elem.raw.getBoundingClientRect(), elem.offset);
+
+        if (left >= right || top >= bottom) {
+          return null;
+        }
+
+        const clipBounds = shiftRect(elem.clipBounds, elem.offset);
+        // ignore elements that are completely outside their clipBounds
+        if (
+          clipBounds.left > right ||
+          clipBounds.top > bottom ||
+          clipBounds.right < left ||
+          clipBounds.bottom < top
+        ) {
+          return null;
+        }
+        // only return the clipBounds that actually affect this element
+        if (clipBounds.left === undefined || clipBounds.left <= left) {
+          delete clipBounds.left;
+        }
+        if (clipBounds.top === undefined || clipBounds.top <= top) {
+          delete clipBounds.top;
+        }
+        if (clipBounds.right === undefined || clipBounds.right >= right) {
+          delete clipBounds.right;
+        }
+        if (clipBounds.bottom === undefined || clipBounds.bottom >= bottom) {
+          delete clipBounds.bottom;
+        }
+
+        const rects = [...elem.raw.getClientRects()]
+          .map(rect => shiftRect(rect, elem.offset))
+          .map(({ left, top, right, bottom }) => {
+            if (left >= right || top >= bottom) {
+              return null;
+            }
+            return [left, top, right, bottom];
+          })
+          .filter((v) => !!v);
+
+        const v = {
+          node: id,
+          rect: [left, top, right, bottom],
+        };
+        if (rects.length > 1) {
+          v.rects = rects;
+        }
+        if (Object.keys(clipBounds).length > 0) {
+          v.clipBounds = clipBounds;
+        }
+        if (elem.style?.getPropertyValue("visibility") === "hidden") {
+          v.visibility = "hidden";
+        }
+        if (elem.style?.getPropertyValue("pointer-events") === "none") {
+          v.pointerEvents = "none";
+        }
+
+        gLastBoundingClientRectsByObjectId.set(id, v);
+
+        return v;
+      })
+      .filter((v) => !!v);
+
+    return { elements };
+  };
+
+  /** ###########################################################################
+   * {@link DOM_getBoundingClientRect}
+   * ##########################################################################*/
+
+  /**
+   * @see https://static.replay.io/protocol/tot/DOM/#type-BoxModel
+   */
+  function DOM_getBoundingClientRect({ node }) {
+    if (!gLastBoundingClientRectsByObjectId.size) {
+      // compute all basic bounding client rect sizes
+      DOM_getAllBoundingClientRects();
+    }
+    const rectInfo = getLastBoundingClientRect(node)
+    const rect = rectInfo?.rect || [0, 0, 0, 0];
+
+    return { rect };
+  }
+
+  /** ###########################################################################
+   * {@link DOM_getBoxModel}
+   * ##########################################################################*/
+
+  /**
+   * @see https://static.replay.io/protocol/tot/DOM/#type-BoxModel
+   */
+  function DOM_getBoxModel({ node }) {
+
+    // TODO: use domAgent->getContentQuads for this instead?
+
+    if (!gLastBoundingClientRectsByObjectId.size) {
+      // compute all basic bounding client rect sizes
+      DOM_getAllBoundingClientRects();
+    }
+    const rectInfo = getLastBoundingClientRect(node)
+    const rects = rectInfo?.rects || (rectInfo?.rect ? [rectInfo.rect] : [[0, 0, 20, 20]]);
+
+    // hackfix: simply use the normal (not tight) bounding rects for all for now
+    const model = { node };
+    for (const box of ["content", "padding", "border", "margin"]) {
+      const quads = [];
+      for (const rect of rects) {
+        const [left, top, right, bottom] = rect;
+        quads.push(left, top, right, top, right, bottom, left, bottom);
+      }
+      model[box] = quads;
+    }
+
+
+    // const model = { node };
+    // for (const box of ["content", "padding", "border", "margin"]) {
+    //   const compactQuads = [];
+    //   // https://hacks.mozilla.org/2014/03/introducing-the-getboxquads-api/
+    //   if (nodeObj.getBoxQuads) {
+    //     const quads = nodeObj.getBoxQuads({
+    //       box,
+    //       relativeTo: window.document,
+    //     });
+    //     for (const { p1, p2, p3, p4 } of quads) {
+    //       compactQuads.push(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y);
+    //     }
+    //   // }
+    //   model[box] = compactQuads;
+    // }
+
+    return { model };
+  }
+
 } catch (e) {
   log(`Error: Initialization exception ${e}`);
 }
@@ -887,7 +1587,7 @@ const {
   writeToRecordingDirectory,
   addRecordingEvent,
   addNewScriptHandler,
-  getScriptSource,
+  getScriptSource
 } = __RECORD_REPLAY_ARGUMENTS__;
 
 addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
@@ -1051,7 +1751,7 @@ function collectUnresolvedSourceMapResources(mapText, mapURL) {
 
 function assert(v) {
   if (!v) {
-    log(`Assertion failed ${Error().stack}`);
+    log(`Error: Assertion failed ${Error().stack}`);
     throw new Error("Assertion failed");
   }
 }
@@ -1223,7 +1923,8 @@ struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
 static v8_inspector::V8Inspector* gInspector;
 static v8_inspector::V8InspectorSession* gInspectorSession;
 
-void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector) {
+void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
+                                     v8::Isolate* isolate) {
   if (v8::IsMainThread()) {
     gInspector = inspector;
 
@@ -1236,6 +1937,17 @@ void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector) {
   }
 }
 
+/**
+ * This only supports V8 CDP commands.
+ * That is because we do not have access to a complete DevToolsSession
+ * (The session in turn uses the UberDispatcher to distribute
+ * arbitrary commands to all parts of Chromium.)
+ * That is because a full session (i) might add a lot of overhead, and/or
+ * (ii) cause many more types of divergences.
+ * That is why we would need to create individual Inspectors/agents (e.g. InspectorDOMAgent) as needed instead.
+ * However, we might also opt to forego that option entirely, and do it all manually, since many inspectors/agents
+ * do not provide too much value if they are not hooked up to a `DevToolsSession` and the `UberDispatcher`.
+ */
 static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(v8::IsMainThread());
   CHECK(gInspectorSession);
@@ -1339,6 +2051,8 @@ static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 extern "C" void V8RecordReplayFinishRecording();
 
+
+
 // When JS assertions are enabled, this callback is used to get any pointer ID
 // associated with a given API object.
 static int GetAPIObjectIdCallback(v8::Local<v8::Object> object) {
@@ -1347,6 +2061,7 @@ static int GetAPIObjectIdCallback(v8::Local<v8::Object> object) {
     // ScriptWrappable itself doesn't have wrapper type info, so check subclasses.
     Node::GetStaticWrapperTypeInfo(),
     Event::GetStaticWrapperTypeInfo(),
+    CSSStyleDeclaration::GetStaticWrapperTypeInfo()
   };
   for (const WrapperTypeInfo* info : infos) {
     if (V8PerIsolateData::From(isolate)->HasInstance(info, object)) {
@@ -1356,6 +2071,30 @@ static int GetAPIObjectIdCallback(v8::Local<v8::Object> object) {
   }
   return 0;
 }
+
+static void SetDataProperty(v8::Isolate* isolate,
+                            v8::Local<v8::Object> obj,
+                            const char* property,
+                            v8::Local<v8::Value> value) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  obj->Set(context, ToV8String(isolate, property), value).Check();
+}
+
+// // Set `obj[property] = impl`
+// // NOTE: this should theoretically work
+// static void SetDataProperty(ScriptWrappable* impl,
+//                             v8::Local<v8::Object> obj,
+//                             const char* property) {
+//   ScriptState* scriptState = ToScriptStateForMainWorld(gLocalFrame);
+//   auto value = impl->WrapV2(scriptState).ToLocalChecked();
+//   auto isolate = scriptState->GetIsolate();
+//   v8::Local<v8::Context> context = isolate->GetCurrentContext();
+//   obj->Set(context, ToV8String(isolate, property), value).Check();
+// }
+
+/** ###########################################################################
+ * Networking
+ * ##########################################################################*/
 
 // Represents a known network request.  Created and added to
 // `gActiveNetworkRequests` when the request is first seen.  Removed
@@ -1610,6 +2349,293 @@ static void HandleNetworkDidReceiveDataEvent(const base::DictionaryValue& info) 
   request_info->second.response_data_received += length;
 }
 
+/** ###########################################################################
+ * DOM
+ * @see https://static.replay.io/protocol/tot/DOM/
+ * @see https://chromedevtools.github.io/devtools-protocol/tot/DOM/
+ * ##########################################################################*/
+
+static LocalFrame* gLocalFrame;
+// NOTE: the InspectorDOMAgent is not as helpful as we would like, since it is
+// not fully hooked up to `DevToolsSession` + `UberDispatcher`
+// static InspectorDOMAgent* gInspectorDOMAgent;
+
+// InspectorDOMAgent* getOrCreateInspectorDOMAgent(LocalFrame* frame,
+//                                                 v8::Isolate* isolate) {
+//   if (!gInspectorDOMAgent) {
+//     // NOTE: based on WebDevToolsAgentImpl::AttachSession
+//     InspectedFrames* inspected_frames =
+//         MakeGarbageCollected<InspectedFrames>(frame);
+//     gInspectorDOMAgent = MakeGarbageCollected<InspectorDOMAgent>(
+//         isolate, inspected_frames, gInspectorSession);
+//     gInspectorDOMAgent->enable();
+//   }
+//   return gInspectorDOMAgent;
+// }
+
+// static void DOM_AssertNode(const v8::FunctionCallbackInfo<v8::Value>& args) {
+//   v8::Isolate* isolate = args.GetIsolate();
+//   auto domAgent = getOrCreateInspectorDOMAgent(gLocalFrame, isolate);
+
+//   // ...
+// }
+
+// // Set `obj[property] = impl`
+// // NOTE: this should theoretically work
+// static void SetDataProperty(ScriptWrappable* impl,
+//                             v8::Local<v8::Object> obj,
+//                             const char* property) {
+//   ScriptState* scriptState = ToScriptStateForMainWorld(gLocalFrame);
+//   auto value = impl->WrapV2(scriptState).ToLocalChecked();
+//   auto isolate = scriptState->GetIsolate();
+//   v8::Local<v8::Context> context = isolate->GetCurrentContext();
+//   obj->Set(context, ToV8String(isolate, property), value).Check();
+// }
+
+
+static RemoteObjectIdType GetObjectIdForAnyObject(v8::Isolate* isolate,
+                                                  const v8::Local<v8::Value>& obj) {
+  // NOTE: adapted from ResolveNode
+  //    (third_party/blink/renderer/core/inspector/resolve_node.cc)
+  v8::HandleScope handle_scope(isolate);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(gLocalFrame);
+  if (!script_state) {
+    recordreplay::Print("GetObjectIdForBlinkObject, but script_state is gone");
+    return "";
+  }
+  auto context = script_state->GetContext();
+  v8::Context::Scope scope(context);
+  const String object_group("console"); // NOTE: object_group is used for cleaning up
+
+  // NOTE: This always creates (and deletes) a new `RemoteObject` and binds it to a new id.
+  // RemoteObjectIdTypeRaw remoteObjectId =
+  // v8_inspector::StringView result =
+  RemoteObjectIdTypeRaw result = gInspectorSession->wrapObjectGetObjectId(
+      context, obj, ToV8InspectorStringView(object_group), false);
+
+  auto converted = String(result.c_str(), result.length());
+  // recordreplay::Print("GetObjectIdForAnyObject -> '%s'",
+  //                     converted.Ascii().c_str());
+
+  return converted;
+
+  // Consider: we can call the serialized object in JS to access its contents
+  //    (partially based on
+  //    https://source.chromium.org/chromium/chromium/src/+/main:out/Debug/gen/third_party/blink/renderer/core/inspector/protocol/dom.cc;l=2026?q=resolveNode&ss=chromium%2Fchromium%2Fsrc)
+  // crdtp::ObjectSerializer serializer;
+  // serializer.AddField(crdtp::MakeSpan("object"), out_object);
+  // serializer.Finish();
+  //  (there is probably an easier way, but not sure how)
+  // v8::Local<v8::Function> callback = gCDPMessageCallback->Get(isolate);
+  // v8::MaybeLocal<v8::Value> rv =
+  //     callback->Call(context, v8::Undefined(isolate), 1, &arg);
+
+  // TODO: return objectId
+}
+
+static RemoteObjectIdType GetObjectIdForBlinkObject(v8::Isolate* isolate,
+                                                    ScriptWrappable* blinkObject) {
+    // InspectorDOMAgent* domAgent =
+    //     getOrCreateInspectorDOMAgent(gLocalFrame, isolate);
+
+    v8::HandleScope handle_scope(isolate);
+    auto context = isolate->GetCurrentContext();
+
+    auto blinkObjectV8 = ToV8(blinkObject, context->Global(), isolate);
+    return GetObjectIdForAnyObject(isolate, blinkObjectV8);
+}
+
+static ScriptWrappable* GetBlinkObjectForObjectId(v8::Isolate* isolate,
+                                                  RemoteObjectIdType objectId) {
+  v8::HandleScope handles(isolate);
+  v8::Local<v8::Value> object;
+  v8::Local<v8::Context> context;
+  std::unique_ptr<v8_inspector::StringBuffer> error;
+  if (!gInspectorSession->unwrapObject(&error,
+                                       ToV8InspectorStringView(objectId),
+                                       &object, &context, nullptr)) {
+    recordreplay::Print("ERROR: GetBlinkObjectForObjectId unwrapObject failed: %s",
+                        ToCoreString(std::move(error)).Ascii().c_str());
+    return nullptr;
+  }
+
+  //   return Response::ServerError(ToCoreString(std::move(error)).Utf8());
+  // if (!V8Node::HasInstance(value, isolate))
+  //   return Response::ServerError("Object id doesn't reference a Node");
+  // node = V8Node::ToImpl(v8::Local<v8::Object>::Cast(value));
+
+  const WrapperTypeInfo* infos[] = {
+      // ScriptWrappable itself doesn't have wrapper type info, so check
+      // subclasses.
+      Node::GetStaticWrapperTypeInfo(),
+      Event::GetStaticWrapperTypeInfo(),
+      CSSStyleDeclaration::GetStaticWrapperTypeInfo()
+  };
+  for (const WrapperTypeInfo* info : infos) {
+    if (V8PerIsolateData::From(isolate)->HasInstance(info, object)) {
+      ScriptWrappable* wrappable = ToScriptWrappable(object.As<v8::Object>());
+      return wrappable;
+    }
+  }
+  return nullptr;
+}
+
+/** ###########################################################################
+ * // DOM, blink js functions
+ * ##########################################################################*/
+
+// Used for Pause.getObjectPreview
+// see https://static.replay.io/protocol/tot/Pause/#type-ObjectPreview
+static void jsPreviewBlinkObjectForObjectId(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() && "must be called with a single string");
+
+  v8::Isolate* isolate = args.GetIsolate();
+  auto context = isolate->GetCurrentContext();
+  auto objectIdLocal = args[0].As<v8::String>();
+
+  // InspectorDOMAgent* domAgent = getOrCreateInspectorDOMAgent(gLocalFrame, isolate);
+
+  ScriptWrappable* obj = GetBlinkObjectForObjectId(isolate, ToCoreString(objectIdLocal));
+  // Node* node = DynamicTo<Node>(obj);
+  Node* node = static_cast<Node*>(obj);
+  if (node) {
+    // set `node` props
+
+    v8::Local<v8::Object> extra = v8::Object::New(isolate);
+    v8::Local<v8::Object> nodeInfo = v8::Object::New(isolate);
+    // see https://static.replay.io/protocol/tot/DOM/#type-Node
+    SetDataProperty(isolate, nodeInfo, "nodeType",
+                    v8::Number::New(isolate, node->getNodeType()));
+    SetDataProperty(isolate, nodeInfo, "nodeName", V8String(isolate, node->nodeName()));
+    SetDataProperty(isolate, nodeInfo, "nodeValue", V8String(isolate, node->nodeValue()));
+    SetDataProperty(isolate, nodeInfo, "isConnected", v8::Boolean::New(isolate, node->isConnected()));
+
+    auto* parent = node->parentNode();
+    auto parentObjectId = GetObjectIdForBlinkObject(isolate, parent);
+    SetDataProperty(isolate, nodeInfo, "parentNode", V8String(isolate, parentObjectId));
+
+    auto* children = node->childNodes();
+    v8::Local<v8::Array> childNodesArray =
+        v8::Array::New(isolate, children->length());
+    for (size_t i = 0; i < children->length(); ++i) {
+      auto childObjectId = GetObjectIdForBlinkObject(isolate, children->item(i));
+      childNodesArray->Set(context, i, V8String(isolate, childObjectId)).Check();
+    }
+    SetDataProperty(isolate, nodeInfo, "childNodes", childNodesArray);
+
+    auto* element = DynamicTo<Element>(node);
+    if (element) {
+      CSSStyleDeclaration* style = element->style();
+      auto styleObjectId = GetObjectIdForBlinkObject(isolate, (ScriptWrappable*)style);
+      SetDataProperty(isolate, nodeInfo, "style", V8String(isolate, styleObjectId));
+
+      auto attributes = element->Attributes();
+      v8::Local<v8::Array> attributesArray = v8::Array::New(isolate, attributes.size());
+      for (auto* it = attributes.begin(); it != attributes.end(); ++it) {
+        v8::Local<v8::Object> attribute = v8::Object::New(isolate);
+        SetDataProperty(isolate, attribute, "name",
+                        V8String(isolate, it->GetName().ToString()));
+        SetDataProperty(isolate, attribute, "value",
+                        V8String(isolate, it->Value().GetString()));
+        auto i = std::distance(attributes.begin(), it);
+        attributesArray->Set(context, i, attribute).Check();
+      }
+      SetDataProperty(isolate, nodeInfo, "attributes", attributesArray);
+
+      auto* pseudoElement = DynamicTo<PseudoElement>(element);
+      if (pseudoElement) {
+        auto pseudoType = PseudoElementTagName(pseudoElement->GetPseudoId())
+                                  .LocalName();
+        SetDataProperty(isolate, nodeInfo, "pseudoType", V8String(isolate, pseudoType));
+      }
+    }
+
+    auto* document = DynamicTo<Document>(node);
+    if (document) {
+      SetDataProperty(isolate, nodeInfo, "documentURL",
+                      V8String(isolate, document->urlForBinding().GetString()));
+    }
+
+    // TODO: if `node` is present, `devtools` will send `getObjectPreview` for each child
+    //    (which are not supported yet, resulting in an infinite "Loading..." message)
+    // SetDataProperty(isolate, extra, "node", nodeInfo);
+    args.GetReturnValue().Set(extra);
+  }
+  else {
+    // TODO:
+    // else if (CSSRule.(this.raw)) {
+    //   this.extra.rule = previewRuleContents(this.raw);
+    // } else if (CSSStyleDeclaration.isInstance(this.raw)) {
+    //   this.extra.style = previewStyleContents(this.raw);
+    // } else if (StyleSheet.isInstance(this.raw)) {
+    //   this.extra.styleSheet = previewStyleSheetContents(this.raw);
+    // }
+    // v8::String::Utf8Value objectIdStr(isolate, objectIdLocal);
+    // recordreplay::Print(
+    //     "[previewBlinkObjectForObjectId] failed to look up node (%s): %s",
+    //     *objectIdStr, response.Message().c_str());
+    args.GetReturnValue().SetNull();
+  }
+
+  // const String object_group("console");
+  // protocol::Maybe<int> v8_execution_context_id;
+  // ResolveNode(gInspectorSession, node, object_group, v8_execution_context_id);
+}
+
+static void jsGetObjectIdForAnyObject(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsObject() &&
+        "must be called with a single object");
+  v8::Isolate* isolate = args.GetIsolate();
+  auto context = isolate->GetCurrentContext();
+
+  auto obj = args[0]->ToObject(context).ToLocalChecked();
+  auto objectId = GetObjectIdForAnyObject(isolate, obj);
+  args.GetReturnValue().Set(V8String(isolate, objectId));
+}
+
+// static void DOM_requestNode(
+//     const v8::FunctionCallbackInfo<v8::Value>& args) {
+//   v8::Isolate* isolate = args.GetIsolate();
+//   InspectorDOMAgent* domAgent =
+//       getOrCreateInspectorDOMAgent(gLocalFrame, isolate);
+
+//   // CHECK(args[0]->IsFunction());
+//   // v8::Local<v8::Function> callback = args[0].As<v8::Function>();
+//   // CHECK(args.Length() == 1 && args[0]->IsString() &&
+//   //       "must be called with a single string");
+//   // v8::String::Utf8Value text(args.GetIsolate(), args[0]);
+
+//   auto context = isolate->GetCurrentContext();
+//   auto params =
+//     // args[0].As<v8::Object>();
+//     args[0]->ToObject(context).ToLocalChecked();
+//   auto objectIdVal = params->Get(context, ToV8String(isolate, "objectId"))
+//                       .ToLocalChecked()
+//                       .As<v8::String>();
+//   auto objectId = ToCoreString(objectIdVal);
+
+//   int nodeId;
+//   auto requestResult = domAgent->requestNode(objectId, &nodeId);
+
+//   v8::Local<v8::Object> rv = v8::Object::New(isolate);
+//   if (requestResult.IsSuccess()) {
+//     SetDataProperty(isolate, rv, "nodeId", v8::Number::New(isolate, nodeId));
+//     args.GetReturnValue().Set(rv);
+//   } else {
+//     v8::Local<v8::Object> err = v8::Object::New(isolate);
+//     SetDataProperty(isolate, err, "message", ToV8String(isolate, requestResult.Message().c_str()));
+//     SetDataProperty(isolate, rv, "error", err);
+//     args.GetReturnValue().Set(rv);
+//   }
+// }
+
+/** ###########################################################################
+ * misc
+ * ##########################################################################*/
+
 // Handle incoming browser events.
 static void HandleBrowserEvent(const char* name, const char* payload) {
   base::Value val = base::JSONReader::Read(payload).value_or(base::Value());
@@ -1666,6 +2692,8 @@ static void RunScript(v8::Isolate* isolate, v8::Local<v8::Context> context, cons
   v8::ScriptOrigin origin(filename_string);
 
   v8::Local<v8::String> source = ToV8String(isolate, script);
+
+  // TODO: check for errors after `Compile` and `Run`
   v8::Local<v8::Script> compiled = v8::Script::Compile(context, source, &origin).ToLocalChecked();
   compiled->Run(context).ToLocalChecked();
 }
@@ -1675,12 +2703,15 @@ static bool TestEnv(const char* env) {
   return v && v[0] && v[0] != '0';
 }
 
-void SetupRecordReplayCommands(v8::Isolate* isolate) {
+
+void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   V8RecordReplaySetAPIObjectIdCallback(GetAPIObjectIdCallback);
   V8RecordReplayRegisterBrowserEventCallback(HandleBrowserEvent);
 
+  gLocalFrame = localFrame;
+
   gActiveNetworkRequests =
-    new std::unordered_map<std::string, NetworkRequestStatus>();
+      new std::unordered_map<std::string, NetworkRequestStatus>();
   gCurrentNetworkStreamData = new std::vector<uint8_t>();
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -1695,20 +2726,31 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
 
   SetFunctionProperty(isolate, args, "log",
                       LogCallback);
+
+  // CDP debugger functionality
   SetFunctionProperty(isolate, args, "setCDPMessageCallback",
                       SetCDPMessageCallback);
   SetFunctionProperty(isolate, args, "sendCDPMessage",
                       SendCDPMessage);
   SetFunctionProperty(isolate, args, "setCommandCallback",
                       v8::FunctionCallbackRecordReplaySetCommandCallback);
-  SetFunctionProperty(isolate, args, "setClearPauseDataCallback",
-                      v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
-  SetFunctionProperty(isolate, args, "getCurrentError",
-                      GetCurrentError);
+
+  // networking
   SetFunctionProperty(isolate, args, "getCurrentNetworkRequestEvent",
                       GetCurrentNetworkRequestEvent);
   SetFunctionProperty(isolate, args, "getCurrentNetworkStreamData",
                       GetCurrentNetworkStreamData);
+
+  // DOM, blink, API stuff
+  SetFunctionProperty(isolate, args, "jsGetObjectIdForAnyObject",
+                      jsGetObjectIdForAnyObject);
+  SetFunctionProperty(isolate, args, "jsPreviewBlinkObjectForObjectId", jsPreviewBlinkObjectForObjectId);
+
+  // unsorted RR stuff
+  SetFunctionProperty(isolate, args, "setClearPauseDataCallback",
+                      v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
+  SetFunctionProperty(isolate, args, "getCurrentError",
+                      GetCurrentError);
   SetFunctionProperty(isolate, args, "getRecordingId",
                       GetRecordingId);
   SetFunctionProperty(isolate, args, "sha256DigestHex",
@@ -1768,12 +2810,6 @@ void RecordReplayOnErrorEvent(ErrorEvent* error_event) {
   V8RecordReplayOnConsoleMessage(bookmark);
 
   gCurrentErrorEvent = nullptr;
-}
-
-static void SetDataProperty(v8::Isolate* isolate, v8::Local<v8::Object> obj,
-                            const char* property, v8::Local<v8::Value> value) {
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  obj->Set(context, ToV8String(isolate, property), value).Check();
 }
 
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args) {

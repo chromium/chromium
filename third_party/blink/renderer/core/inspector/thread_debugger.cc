@@ -42,7 +42,7 @@ namespace blink {
 ThreadDebugger::ThreadDebugger(v8::Isolate* isolate)
     : isolate_(isolate),
       v8_inspector_(v8_inspector::V8Inspector::create(isolate, this)) {
-  RecordReplayRegisterV8Inspector(v8_inspector_.get());
+  RecordReplayRegisterV8Inspector(v8_inspector_.get(), isolate);
 }
 
 ThreadDebugger::~ThreadDebugger() = default;

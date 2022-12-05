@@ -204,7 +204,7 @@ void LocalWindowProxy::Initialize() {
       !origin->Host().IsEmpty() &&
       !gRecordReplayStateInitialized) {
     gRecordReplayStateInitialized = true;
-    SetupRecordReplayCommands(GetIsolate());
+    SetupRecordReplayCommands(GetIsolate(), GetFrame());
     V8RecordReplaySetDefaultContext(GetIsolate(), context);
     recordreplay::NewCheckpoint();
     RunInitialRecordReplayScripts(GetIsolate());

@@ -53,6 +53,12 @@ extern "C" void* V8RecordReplayIdPointer(int id);
 extern "C" bool V8RecordReplayFeatureEnabled(const char* feature);
 extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload);
 extern "C" bool V8IsMainThread();
+extern "C" void V8RecordReplayOnMouseEvent(const char* kind,
+                                           size_t clientX,
+                                           size_t clientY);
+extern "C" void V8RecordReplayOnKeyEvent(const char* kind, const char* key);
+extern "C" void V8RecordReplayOnNavigationEvent(const char* kind,
+                                                const char* url);
 
 bool IsRecordingOrReplaying(const char* feature) {
   return OP2(V8IsRecordingOrReplaying(feature), false);
@@ -205,7 +211,21 @@ void* IdPointer(int id) {
   return OP2(V8RecordReplayIdPointer(id), nullptr);
 }
 
-AutoLockMaybeEventsDisallowed::AutoLockMaybeEventsDisallowed(base::Lock& lock) : lock_(lock) {
+void OnMouseEvent(const char* kind,
+                                size_t clientX,
+                                size_t clientY) {
+  OP(V8RecordReplayOnMouseEvent(kind, clientX, clientY));
+}
+void OnKeyEvent(const char* kind, const char* key) {
+  OP(V8RecordReplayOnKeyEvent(kind, key));
+}
+void OnNavigationEvent(const char* kind, const char* url) {
+  OP(V8RecordReplayOnNavigationEvent(kind, url));
+}
+
+AutoLockMaybeEventsDisallowed::AutoLockMaybeEventsDisallowed(
+        base::Lock& lock)
+    : lock_(lock) {
   if (AreEventsDisallowed()) {
     AutoPassThroughEvents pt;
     lock.Acquire();

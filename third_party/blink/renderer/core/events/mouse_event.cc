@@ -22,6 +22,8 @@
 
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 
+#include "base/record_replay.h"
+
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -347,6 +349,14 @@ void MouseEvent::Trace(Visitor* visitor) const {
 
 DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
+
+  if (recordreplay::IsRecordingOrReplaying()) {
+    // NOTE: we can also get absolute location, after calling
+    // `ComputePageLocation`
+    size_t clientX = client_location_.X();
+    size_t clientY = client_location_.Y();
+    recordreplay::OnMouseEvent(type().Ascii().c_str(), clientX, clientY);
+  }
 
   bool is_click = type() == event_type_names::kClick;
   bool send_to_disabled_form_controls =

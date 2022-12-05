@@ -80,10 +80,16 @@ void UnregisterPointer(const void* ptr);
 int PointerId(const void* ptr);
 void* IdPointer(int id);
 
+void OnMouseEvent(const char* kind, size_t clientX, size_t clientY);
+void OnKeyEvent(const char* kind, const char* key);
+void OnNavigationEvent(const char* kind, const char* url);
+
 // Create new identifiers, as with RegisterPointer/PointerId but with less
 // overhead and requiring manual storage.
 int NewIdMainThread(const char* name);
 int NewIdAnyThread(const char* name);
+
+
 
 // stl comparator that uses pointer IDs to compare elements when recording/replaying,
 // giving a deterministic sort order.
