@@ -5,13 +5,17 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
+#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -60,7 +64,8 @@ struct DrivePathAndStatus {
 //  - Maintain pinning of files that are newly created.
 //  - Rebuild the progress of bulk pinned items (if turned off mid way through a
 //    bulk pinning event).
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
+    : public DriveFsHostObserver {
  public:
   DriveFsPinManager(bool enabled,
                     const base::FilePath& profile_path,
@@ -73,7 +78,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager {
   DriveFsPinManager(const DriveFsPinManager&) = delete;
   DriveFsPinManager& operator=(const DriveFsPinManager&) = delete;
 
-  ~DriveFsPinManager();
+  ~DriveFsPinManager() override;
 
   // Enable or disable the bulk pinning.
   void SetBulkPinningEnabled(bool enabled) { enabled_ = enabled; }
@@ -84,6 +89,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager {
   // automatically. The complete callback will be called once the initial
   // pinning has completed.
   void Start(base::OnceCallback<void(PinError)> complete_callback);
+
+  // drivefs::DriveFsHostObserver
+  void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) override;
 
  private:
   // Invoked on retrieval of available space in the `~/GCache` directory.
@@ -109,7 +117,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager {
       drive::FileError error,
       absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
-  void OnFilesPinned(std::vector<DrivePathAndStatus> pinned_files);
+  // After a file has been pinned, this ensures the in progress map has the item
+  // emplaced. Note the file being pinned is just an update in drivefs, not the
+  // actually completion of the file being downloaded, that is monitored via
+  // `OnSyncingStatusUpdate`.
+  void OnFilePinned(const base::FilePath& path, drive::FileError status);
 
   bool enabled_ = false;
   int64_t size_required_ = 0;
@@ -121,6 +133,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager {
   raw_ptr<mojom::DriveFs> drivefs_interface_;
   mojo::Remote<mojom::SearchQuery> search_query_;
   base::ElapsedTimer timer_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  // A map that tracks the in progress items by their key to a pair of `int64_t`
+  // with `first` being the number of bytes transferred and `second` being the
+  // `bytes_to_transfer` i.e. the total bytes of the syncing file.
+  using InProgressMap = std::map<std::string, std::pair<int64_t, int64_t>>;
+  InProgressMap in_progress_items_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<DriveFsPinManager> weak_ptr_factory_{this};
 };
