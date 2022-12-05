@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -100,7 +101,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     disable_wait_timer_and_login_operations_for_testing_ =
         KioskLaunchController::DisableWaitTimerAndLoginOperationsForTesting();
 
-    auto app_launcher = std::make_unique<MockWebKioskAppLauncher>();
+    auto app_launcher = std::make_unique<MockWebKioskAppLauncher>(&profile_);
     app_launcher_ = app_launcher.get();
 
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
@@ -163,6 +164,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
  private:
+  TestingProfile profile_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_;

@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/account_id/account_id.h"
@@ -34,7 +35,8 @@ class WebKioskAppData;
 // upon app launch.
 class WebKioskAppLauncher : public KioskAppLauncher,
                             public crosapi::BrowserManagerObserver,
-                            public exo::WMHelper::ExoWindowObserver {
+                            public exo::WMHelper::ExoWindowObserver,
+                            public ProfileObserver {
  public:
   WebKioskAppLauncher(Profile* profile,
                       const AccountId& account_id,
@@ -69,6 +71,9 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   // exo::WMHelper::ExoWindowObserver:
   void OnExoWindowCreated(aura::Window* window) override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // Callback method triggered after web application and its icon are obtained
   // from `WebKioskAppManager`.
   void OnAppDataObtained(
@@ -84,9 +89,11 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   const WebKioskAppData* GetCurrentApp() const;
 
   bool is_installed_ = false;  // Whether the installation was completed.
-  Profile* const profile_;
+  // |profile_| may become nullptr if the profile is being destroyed.
+  Profile* profile_;
   const AccountId account_id_;
   const bool should_skip_install_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   Browser* browser_ = nullptr;  // Browser instance that runs the web kiosk app.
 

@@ -8,11 +8,13 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class Profile;
+
 namespace ash {
 
 class MockWebKioskAppLauncher : public WebKioskAppLauncher {
  public:
-  MockWebKioskAppLauncher();
+  explicit MockWebKioskAppLauncher(Profile* profile);
   ~MockWebKioskAppLauncher() override;
 
   MOCK_METHOD0(Initialize, void());
