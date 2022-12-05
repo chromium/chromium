@@ -454,15 +454,15 @@ void NotificationHeaderView::UpdateColors() {
   SkColor actual_color = app_name_view_->GetEnabledColor();
 
   if (expand_button_) {
-    expand_button_->SetImage(
-        gfx::CreateVectorIcon(is_expanded_ ? kNotificationExpandLessIcon
-                                           : kNotificationExpandMoreIcon,
-                              kExpandIconSize, actual_color));
+    expand_button_->SetImage(ui::ImageModel::FromVectorIcon(
+        is_expanded_ ? kNotificationExpandLessIcon
+                     : kNotificationExpandMoreIcon,
+        actual_color, kExpandIconSize));
   }
 
   if (using_default_app_icon_ && app_icon_view_) {
-    app_icon_view_->SetImage(
-        gfx::CreateVectorIcon(kProductIcon, kSmallImageSizeMD, actual_color));
+    app_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        kProductIcon, actual_color, kSmallImageSizeMD));
   }
 }
 

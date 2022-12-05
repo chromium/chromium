@@ -220,10 +220,11 @@ void NotificationInputContainer::UpdateButtonImage() {
   auto icon_color_id = textfield_->GetText().empty()
                            ? ui::kColorNotificationInputPlaceholderForeground
                            : ui::kColorNotificationInputForeground;
-  button_->SetImage(
+  button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kNotificationInlineReplyIcon, kInputReplyButtonSize,
-                            GetColorProvider()->GetColor(icon_color_id)));
+      ui::ImageModel::FromVectorIcon(
+          kNotificationInlineReplyIcon,
+          GetColorProvider()->GetColor(icon_color_id), kInputReplyButtonSize));
 }
 
 }  // namespace message_center

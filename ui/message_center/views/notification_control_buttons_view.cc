@@ -57,10 +57,10 @@ void NotificationControlButtonsView::ShowCloseButton(bool show) {
             base::BindRepeating(&MessageView::OnCloseButtonPressed,
                                 base::Unretained(message_view_))));
     if (GetWidget()) {
-      close_button_->SetImage(
+      close_button_->SetImageModel(
           views::Button::STATE_NORMAL,
-          gfx::CreateVectorIcon(kNotificationCloseButtonIcon,
-                                DetermineButtonIconColor()));
+          ui::ImageModel::FromVectorIcon(kNotificationCloseButtonIcon,
+                                         DetermineButtonIconColor()));
     }
     close_button_->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_MESSAGE_CENTER_CLOSE_NOTIFICATION_BUTTON_ACCESSIBLE_NAME));
@@ -86,10 +86,10 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
                                 base::Unretained(message_view_))),
         position);
     if (GetWidget()) {
-      settings_button_->SetImage(
+      settings_button_->SetImageModel(
           views::Button::STATE_NORMAL,
-          gfx::CreateVectorIcon(kNotificationSettingsButtonIcon,
-                                DetermineButtonIconColor()));
+          ui::ImageModel::FromVectorIcon(kNotificationSettingsButtonIcon,
+                                         DetermineButtonIconColor()));
     }
     settings_button_->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
@@ -114,10 +114,10 @@ void NotificationControlButtonsView::ShowSnoozeButton(bool show) {
                                 base::Unretained(message_view_))),
         0);
     if (GetWidget()) {
-      snooze_button_->SetImage(
+      snooze_button_->SetImageModel(
           views::Button::STATE_NORMAL,
-          gfx::CreateVectorIcon(kNotificationSnoozeButtonIcon,
-                                DetermineButtonIconColor()));
+          ui::ImageModel::FromVectorIcon(kNotificationSnoozeButtonIcon,
+                                         DetermineButtonIconColor()));
     }
     snooze_button_->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP));
@@ -176,19 +176,21 @@ void NotificationControlButtonsView::SetNotificationControlButtonFactory(
 void NotificationControlButtonsView::UpdateButtonIconColors() {
   SkColor icon_color = DetermineButtonIconColor();
   if (close_button_) {
-    close_button_->SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(kNotificationCloseButtonIcon, icon_color));
+    close_button_->SetImageModel(views::Button::STATE_NORMAL,
+                                 ui::ImageModel::FromVectorIcon(
+                                     kNotificationCloseButtonIcon, icon_color));
   }
   if (settings_button_) {
-    settings_button_->SetImage(
+    settings_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(kNotificationSettingsButtonIcon, icon_color));
+        ui::ImageModel::FromVectorIcon(kNotificationSettingsButtonIcon,
+                                       icon_color));
   }
   if (snooze_button_) {
-    snooze_button_->SetImage(
+    snooze_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(kNotificationSnoozeButtonIcon, icon_color));
+        ui::ImageModel::FromVectorIcon(kNotificationSnoozeButtonIcon,
+                                       icon_color));
   }
 }
 
