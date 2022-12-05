@@ -6435,7 +6435,7 @@
             ]
         }
     ],
-    "LanguagePacksSpanishHandwriting": [
+    "LanguagePacksHandwriting": [
         {
             "platforms": [
                 "chromeos"
@@ -6444,8 +6444,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "HandwritingLegacyRecognition",
-                        "LanguagePacksHandwriting"
+                        "HandwritingLegacyRecognition"
                     ]
                 }
             ]
