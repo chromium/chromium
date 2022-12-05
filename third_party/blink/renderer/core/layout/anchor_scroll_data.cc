@@ -71,6 +71,8 @@ AnchorScrollData::AnchorScrollData(Element* element)
     : ScrollSnapshotClient(element->GetDocument().GetFrame()),
       owner_(element) {}
 
+AnchorScrollData::~AnchorScrollData() = default;
+
 bool AnchorScrollData::IsActive() const {
   return owner_->GetAnchorScrollData() == this;
 }
@@ -106,14 +108,12 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
 
   SnapshotDiff diff;
   if (scroll_container_layers_ != new_scroll_container_layers) {
-    diff = SnapshotDiff::kScrollers;
+    diff = SnapshotDiff::kScrollersOrFallbackPosition;
   } else if (accumulated_scroll_offset_ != new_accumulated_scroll_offset ||
              accumulated_scroll_origin_ != new_accumulated_scroll_origin) {
-    // TODO(crbug.com/1309178): An offset-only change may result in a change in
-    // a different fallback position, which needs a re-layout and must be
-    // distinguished from a "pure" offset-only change that only needs a repaint.
-    // Implement that.
-    diff = SnapshotDiff::kOffsetOnly;
+    diff = IsFallbackPositionValid(new_accumulated_scroll_offset)
+               ? SnapshotDiff::kOffsetOnly
+               : SnapshotDiff::kScrollersOrFallbackPosition;
   } else {
     diff = SnapshotDiff::kNone;
   }
@@ -127,6 +127,23 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
   return diff;
 }
 
+bool AnchorScrollData::IsFallbackPositionValid(
+    const gfx::Vector2dF& accumulated_scroll_offset) const {
+  if (!non_overflowing_rects_.size())
+    return true;
+
+  PhysicalOffset old_translation = TranslationAsPhysicalOffset();
+  PhysicalOffset new_translation =
+      -PhysicalOffset::FromVector2dFFloor(accumulated_scroll_offset);
+  for (const PhysicalRect& rect : non_overflowing_rects_) {
+    if (rect.ContainsInclusive(old_translation) !=
+        rect.ContainsInclusive(new_translation)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void AnchorScrollData::UpdateSnapshot() {
   if (!IsActive())
     return;
@@ -138,7 +155,7 @@ void AnchorScrollData::UpdateSnapshot() {
     case SnapshotDiff::kOffsetOnly:
       InvalidatePaint();
       return;
-    case SnapshotDiff::kScrollers:
+    case SnapshotDiff::kScrollersOrFallbackPosition:
       InvalidateLayout();
       return;
   }
@@ -158,7 +175,7 @@ bool AnchorScrollData::ValidateSnapshot() {
       // function is called at LayoutClean during lifecycle update, and
       // offset-only diff only needs paint update.
       return true;
-    case SnapshotDiff::kScrollers:
+    case SnapshotDiff::kScrollersOrFallbackPosition:
       InvalidateLayout();
       return false;
   }

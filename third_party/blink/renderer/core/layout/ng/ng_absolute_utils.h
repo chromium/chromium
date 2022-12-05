@@ -34,6 +34,12 @@ struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
   LayoutUnit MarginBoxBlockEnd() const {
     return inset.block_start + size.block_size + margins.block_end;
   }
+  LogicalRect MarginBoxRect() const {
+    return LogicalRect(
+        LogicalOffset(MarginBoxInlineStart(), MarginBoxBlockStart()),
+        LogicalSize(MarginBoxInlineEnd() - MarginBoxInlineStart(),
+                    MarginBoxBlockEnd() - MarginBoxBlockStart()));
+  }
 
   NGBoxStrut inset;
   LogicalSize size = {kIndefiniteSize, kIndefiniteSize};

@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -61,6 +62,22 @@ bool MayHaveAnchorQuery(
       return true;
   }
   return false;
+}
+
+// Calculates the range of offsets such that the margin box rect (of the given
+// oof) translated by the offset does not overflow the container. Used by
+// calculating fallback position constraints for anchor positioning.
+// See anchor_scroll_data.h for more documentation.
+PhysicalRect CalculateNonOverflowingRect(
+    const NGLogicalOutOfFlowDimensions& oof_logical_dimensions,
+    WritingDirectionMode oof_writing_mode,
+    const PhysicalSize& container_size) {
+  LogicalRect logical_margin_box_rect = oof_logical_dimensions.MarginBoxRect();
+  PhysicalRect margin_box_rect =
+      WritingModeConverter(oof_writing_mode, container_size)
+          .ToPhysical(logical_margin_box_rect);
+  return PhysicalRect(-margin_box_rect.offset,
+                      container_size - margin_box_rect.size);
 }
 
 }  // namespace
@@ -1566,38 +1583,57 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   const ComputedStyle* style = &node_info.node.Style();
 
   // If `@position-fallback` exists, let |TryCalculateOffset| check if the
-  // result fits.
+  // result fits the available space.
   Element* element = DynamicTo<Element>(node_info.node.GetDOMNode());
   const ComputedStyle* next_fallback_style = nullptr;
   const LayoutObject* implicit_anchor = nullptr;
+  AnchorScrollData* anchor_scroll_data = nullptr;
+  PhysicalOffset anchor_scroll_translation;
   if (element) {
     if (UNLIKELY(style->PositionFallback())) {
       DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
-      if (const ComputedStyle* fallback_style =
-              element->StyleForPositionFallback(0)) {
-        style = fallback_style;
-        next_fallback_style = element->StyleForPositionFallback(1);
+      next_fallback_style = element->StyleForPositionFallback(0);
+      anchor_scroll_data = element->GetAnchorScrollData();
+      if (anchor_scroll_data) {
+        anchor_scroll_translation =
+            anchor_scroll_data->TranslationAsPhysicalOffset();
       }
     }
     if (element->ImplicitAnchorElement())
       implicit_anchor = element->ImplicitAnchorElement()->GetLayoutObject();
   }
 
-  wtf_size_t fallback_index = 1;
-  while (true) {
-    const bool try_fit_available_space = next_fallback_style;
-    absl::optional<OffsetInfo> offset_info = TryCalculateOffset(
-        node_info, *style, only_layout, anchor_queries, implicit_anchor,
-        try_fit_available_space, is_first_run);
-    if (offset_info)
-      return *offset_info;
+  // See anchor_scroll_data.h for documentation of non-overflowing rects.
+  Vector<PhysicalRect> non_overflowing_rects;
+  wtf_size_t fallback_index = 0;
+  absl::optional<OffsetInfo> offset_info;
+  while (!offset_info) {
+    if (next_fallback_style) {
+      DCHECK(element);
+      style = next_fallback_style;
+      next_fallback_style = element->StyleForPositionFallback(++fallback_index);
+    }
 
-    // If the result doesn't fit its containing block, try the next rule.
-    DCHECK(next_fallback_style);
-    style = next_fallback_style;
-    DCHECK(element);
-    next_fallback_style = element->StyleForPositionFallback(++fallback_index);
+    const bool try_fit_available_space = next_fallback_style;
+    offset_info = TryCalculateOffset(node_info, *style, only_layout,
+                                     anchor_queries, implicit_anchor,
+                                     try_fit_available_space, is_first_run);
+
+    // Also check if it fits the containing block after applying scroll offset.
+    if (offset_info && next_fallback_style) {
+      PhysicalRect non_overflowing_rect = CalculateNonOverflowingRect(
+          offset_info->node_dimensions, style->GetWritingDirection(),
+          node_info.container_physical_content_size);
+      non_overflowing_rects.push_back(non_overflowing_rect);
+      if (!non_overflowing_rect.ContainsInclusive(anchor_scroll_translation))
+        offset_info = absl::nullopt;
+    }
   }
+  if (anchor_scroll_data) {
+    anchor_scroll_data->SetNonOverflowingRects(
+        std::move(non_overflowing_rects));
+  }
+  return *offset_info;
 }
 
 absl::optional<NGOutOfFlowLayoutPart::OffsetInfo>
