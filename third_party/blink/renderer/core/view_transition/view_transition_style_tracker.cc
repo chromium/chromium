@@ -120,19 +120,13 @@ PhysicalRect ComputeVisualOverflowRect(LayoutBoxModelObject& box) {
     result.Unite(overflow_rect);
   }
 
-  if (auto* layout_box = DynamicTo<LayoutBox>(&box)) {
-    // Clip self painting descendant overflow by the overflow clip rect, then
-    // add in the visual overflow from the own painting layer.
-    if (layout_box->ShouldClipOverflowAlongEitherAxis())
-      result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
-    result.Unite(layout_box->PhysicalVisualOverflowRectIncludingFilters());
-  } else {
-    // In this case we cannot clip children so just take the visual overflow
-    // rect.
-    // TODO(bokan): This does need to account for filters though.
-    // https://crbug.com/1379079.
-    result.Unite(box.PhysicalVisualOverflowRect());
+  // Clip self painting descendant overflow by the overflow clip rect, then
+  // add in the visual overflow from the own painting layer.
+  if (auto* layout_box = DynamicTo<LayoutBox>(&box);
+      layout_box && layout_box->ShouldClipOverflowAlongEitherAxis()) {
+    result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
   }
+  result.Unite(box.PhysicalVisualOverflowRectIncludingFilters());
 
   return result;
 }

@@ -199,6 +199,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   virtual PhysicalRect PhysicalVisualOverflowRect() const = 0;
 
+  // Returns the visual overflow rect, expanded to the area affected by any
+  // filters that paint outside of the box, in physical coordinates.
+  PhysicalRect PhysicalVisualOverflowRectIncludingFilters() const;
+
   bool UsesCompositedScrolling() const;
 
   // These return the CSS computed padding values.

@@ -659,10 +659,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return FlipForWritingMode(ContentsVisualOverflowRect());
   }
 
-  // Returns the visual overflow rect, expanded to the area affected by any
-  // filters that paint outside of the box, in physical coordinates.
-  PhysicalRect PhysicalVisualOverflowRectIncludingFilters() const;
-
   // These methods don't mean the box *actually* has top/left overflow. They
   // mean that *if* the box overflows, it will overflow to the top/left rather
   // than the bottom/right. This happens when child content is laid out

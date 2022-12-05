@@ -3411,6 +3411,8 @@ crbug.com/1303102 virtual/view-transition/external/wpt/css/css-view-transitions/
 crbug.com/1303102 virtual/view-transition/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Skip ]
 crbug.com/1377777 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-inline-child.html [ Skip ]
 crbug.com/1321217 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/element-with-overflow.html [ Skip ]
+crbug.com/1321217 virtual/view-transition/external/wpt/css/css-view-transitions/inline-child-with-filter.html [ Skip ]
+crbug.com/1321217 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/inline-child-with-filter.html [ Skip ]
 crbug.com/1321217 virtual/view-transition/external/wpt/css/css-view-transitions/element-with-overflow.html [ Skip ]
 
 crbug.com/1303102 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Skip ]
