@@ -103,7 +103,10 @@ public class PrivacyGuideFragment extends Fragment {
         getLayoutInflater().inflate(R.layout.privacy_guide_done, content);
 
         ButtonCompat doneButton = (ButtonCompat) mView.findViewById(R.id.done_button);
-        doneButton.setOnClickListener((View v) -> getActivity().onBackPressed());
+        doneButton.setOnClickListener((View v) -> {
+            PrivacyGuideMetricsDelegate.recordMetricsForDoneButton();
+            getActivity().onBackPressed();
+        });
     }
 
     private void nextStep() {

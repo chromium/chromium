@@ -171,4 +171,44 @@ public class PrivacyGuideFragmentTest {
         // page
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickWelcome"));
     }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testWelcomeCard_nextClickCompletionUserAction() {
+        launchPrivacyGuide();
+        mActionTester = new UserActionTester();
+        // Welcome page -> MSBB page
+        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+
+        // MSBB page -> Sync page
+        ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
+        testButtons(true, false, false);
+        onView(withText(R.string.next)).perform(click());
+
+        // Sync page -> SB page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        testButtons(true, true, false);
+        onView(withText(R.string.next)).perform(click());
+
+        // SB page -> Cookies page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_safe_browsing_intro));
+        testButtons(true, true, false);
+        onView(withText(R.string.next)).perform(click());
+
+        // Cookies page -> Complete page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_cookies_intro));
+        testButtons(false, true, true);
+        onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+
+        // Complete page -> EXIT
+        ViewUtils.waitForView(withText(R.string.privacy_guide_done_title));
+        onView(withText(R.string.done)).perform(click());
+
+        // Verify that the user action is emitted when the next/done button is clicked on the
+        // completion card
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickCompletion"));
+    }
 }

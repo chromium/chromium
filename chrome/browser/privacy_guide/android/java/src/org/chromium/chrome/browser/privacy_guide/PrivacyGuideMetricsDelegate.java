@@ -17,4 +17,11 @@ public class PrivacyGuideMetricsDelegate {
     static void recordMetricsForWelcomeCard() {
         RecordUserAction.record("Settings.PrivacyGuide.NextClickWelcome");
     }
+
+    /**
+     * A method to record metrics for the done click of the privacy guide completion page.
+     */
+    static void recordMetricsForDoneButton() {
+        RecordUserAction.record("Settings.PrivacyGuide.NextClickCompletion");
+    }
 }
