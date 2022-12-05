@@ -356,6 +356,91 @@ uint64_t RecordReplayNetworkRequestId(uint64_t inspector_id) {
   return recordreplay::RecordReplayValue("NetworkRequestId", inspector_id);
 }
 
+
+static const char* GetRequestCauseString(ResourceRequest& req) {
+  switch (req.GetRequestContext()) {
+    case mojom::blink::RequestContextType::SCRIPT:
+      return "script";
+    case mojom::blink::RequestContextType::STYLE:
+      return "stylesheet";
+    case mojom::blink::RequestContextType::OBJECT:
+      return "object";
+    case mojom::blink::RequestContextType::IMAGE:
+      return "img";
+    case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
+      return "xhr";
+    case mojom::blink::RequestContextType::BEACON:
+      return "beacon";
+    case mojom::blink::RequestContextType::FETCH:
+      return "fetch";
+    case mojom::blink::RequestContextType::XSLT:
+      return "xslt";
+    case mojom::blink::RequestContextType::MANIFEST:
+      return "webManifest";
+    case mojom::blink::RequestContextType::FONT:
+      return "font";
+    case mojom::blink::RequestContextType::PING:
+      return "ping";
+    case mojom::blink::RequestContextType::IMAGE_SET:
+      return "imageset";
+    case mojom::blink::RequestContextType::CSP_REPORT:
+      return "csp";
+    // ReplayIO/Kannan
+    // Remaining are guesses, not quite sure if they're correct (kv).
+    case mojom::blink::RequestContextType::IFRAME:
+    case mojom::blink::RequestContextType::FRAME:
+      return "subdocument";
+    case mojom::blink::RequestContextType::HYPERLINK:
+    case mojom::blink::RequestContextType::PREFETCH:
+      return "document";
+    case mojom::blink::RequestContextType::SUBRESOURCE:
+      return "subdocument";
+    case mojom::blink::RequestContextType::VIDEO:
+      return "media";
+    // ReplayIO/Kannan
+    // The following doesn't have an equivalent in gecko-dev
+    case mojom::blink::RequestContextType::FAVICON:
+      return "favicon";
+    case mojom::blink::RequestContextType::AUDIO:
+      return "audio";
+    case mojom::blink::RequestContextType::DOWNLOAD:
+      return "download";
+    case mojom::blink::RequestContextType::EMBED:
+      return "embed";
+    case mojom::blink::RequestContextType::EVENT_SOURCE:
+      return "eventSource";
+    case mojom::blink::RequestContextType::FORM:
+      return "form";
+    case mojom::blink::RequestContextType::INTERNAL:
+      return "internal";
+    case mojom::blink::RequestContextType::LOCATION:
+      return "location";
+    case mojom::blink::RequestContextType::PLUGIN:
+      return "plugin";
+    case mojom::blink::RequestContextType::SERVICE_WORKER:
+      return "serviceWorker";
+    case mojom::blink::RequestContextType::SHARED_WORKER:
+      return "sharedWorker";
+    case mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE:
+      return "subresourceWebbundle";
+    case mojom::blink::RequestContextType::TRACK:
+      return "track";
+    case mojom::blink::RequestContextType::IMPORT:
+      return "import";
+    case mojom::blink::RequestContextType::WORKER:
+      return "worker";
+    case mojom::blink::RequestContextType::UNSPECIFIED:
+    default:
+      return nullptr;
+  }
+  /* ReplayIO/Kannan
+   * No mappings yet for the following gecko content policy types:
+   * [Ci.nsIContentPolicy.TYPE_OBJECT_SUBREQUEST]: "objectSubdoc",
+   * [Ci.nsIContentPolicy.TYPE_DTD]: "dtd",
+   * [Ci.nsIContentPolicy.TYPE_WEBSOCKET]: "websocket",
+   */
+}
+
 void FrameFetchContext::PrepareRequest(
     ResourceRequest& request,
     ResourceLoaderOptions& options,
@@ -415,6 +500,10 @@ void FrameFetchContext::PrepareRequest(
     dict.SetString("requestUrl", url_string);
     dict.SetString("requestMethod", request.HttpMethod().Utf8());
     dict.SetString("requestId", request_id.Utf8());
+    const char* requestCause = GetRequestCauseString(request);
+    if (requestCause) {
+      dict.SetString("requestCause", requestCause);
+    }
 
     base::ListValue headers;
     for (auto header : request.HttpHeaderFields()) {
