@@ -716,15 +716,18 @@ def _write_perf_data_to_logfile(benchmark_name, output_file,
         logging.error('Error parsing perf results JSON for benchmark  %s' %
               benchmark_name)
     if results:
-      try:
-        output_json_file = logdog_helper.open_text(benchmark_name)
-        json.dump(results, output_json_file,
-                  indent=4, separators=(',', ': '))
-      except ValueError as e:
-        logging.error('ValueError: "%s" while dumping output to logdog' % e)
-      finally:
-        output_json_file.close()
-      viewer_url = output_json_file.get_viewer_url()
+      output_json_file = logdog_helper.open_text(benchmark_name)
+      if output_json_file:
+        viewer_url = output_json_file.get_viewer_url()
+        try:
+          json.dump(results, output_json_file, indent=4, separators=(',', ': '))
+        except ValueError as e:
+          logging.error('ValueError: "%s" while dumping output to logdog' % e)
+        finally:
+          output_json_file.close()
+      else:
+        logging.warning('Could not open output JSON file for benchmark %s' %
+                        benchmark_name)
   else:
     logging.warning("Perf results JSON file doesn't exist for benchmark %s" %
           benchmark_name)
