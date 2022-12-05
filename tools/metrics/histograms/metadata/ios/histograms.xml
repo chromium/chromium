@@ -1878,10 +1878,12 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
     enum="IOSTabSwitcherPageChangeInteraction" expires_after="2023-02-26">
   <owner>marq@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     The UI interaction by which the user changed the visible page in the tab
-    switcher.
+    switcher. Note that drag interactions can be recorded multiple time for a
+    single drag.
   </summary>
 </histogram>
 

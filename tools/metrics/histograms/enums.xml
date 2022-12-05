@@ -53901,6 +53901,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Scroll View Drag"/>
   <int value="2" label="Page Control Tap"/>
   <int value="3" label="Page Control Drag"/>
+  <int value="4" label="Item Drag"/>
 </enum>
 
 <enum name="IOSUserInterfaceStyle">

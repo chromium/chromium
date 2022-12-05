@@ -77,6 +77,8 @@ typedef NS_ENUM(NSUInteger, PageChangeInteraction) {
   PageChangeInteractionPageControlTap,
   // The user dragged the page control slider to change pages.
   PageChangeInteractionPageControlDrag,
+  // The user dragged an item in another scroll view to change pages.
+  PageChangeInteractionItemDrag,
 };
 
 // Key of the UMA IOS.TabSwitcher.PageChangeInteraction histogram.
@@ -89,7 +91,8 @@ enum class TabSwitcherPageChangeInteraction {
   kScrollDrag = 1,
   kControlTap = 2,
   kControlDrag = 3,
-  kMaxValue = kControlDrag,
+  kItemDrag = 4,
+  kMaxValue = kItemDrag,
 };
 
 // Convenience function to record a page change interaction.
@@ -386,7 +389,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
-  self.currentPage = GetPageFromScrollView(scrollView);
+  TabGridPage currentPage = GetPageFromScrollView(scrollView);
+  if (currentPage != self.currentPage) {
+    // This happens when the user drags an item from one scroll view into
+    // another.
+    self.pageChangeInteraction = PageChangeInteractionItemDrag;
+    [self recordActionSwitchingToPage:currentPage];
+  }
+  self.currentPage = currentPage;
   self.scrollViewAnimatingContentOffset = NO;
   [self broadcastIncognitoContentVisibility];
   [self configureButtonsForActiveAndCurrentPage];
@@ -1817,6 +1827,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case PageChangeInteractionPageControlDrag:
       RecordPageChangeInteraction(
           TabSwitcherPageChangeInteraction::kControlDrag);
+      break;
+    case PageChangeInteractionItemDrag:
+      RecordPageChangeInteraction(TabSwitcherPageChangeInteraction::kItemDrag);
       break;
   }
   // Don't reset `self.pageChangeInteraction` here, because a drag may still be
