@@ -165,9 +165,9 @@ class DIPSBounceDetectorDelegate {
   virtual ukm::SourceId GetPageUkmSourceId() const = 0;
   virtual blink::mojom::EngagementLevel GetEngagementLevel(
       const GURL&) const = 0;
-  virtual void RecordBounce(const GURL& url,
-                            const base::Time& time,
-                            bool stateful) = 0;
+  virtual void RecordEvent(DIPSRecordedEvent event,
+                           const GURL& url,
+                           const base::Time& time) = 0;
 };
 
 // ServerBounceDetectionState gets attached to NavigationHandle (which is a
@@ -228,6 +228,7 @@ class DIPSBounceDetector {
   DIPSBounceDetector(const DIPSBounceDetector&) = delete;
   DIPSBounceDetector& operator=(const DIPSBounceDetector&) = delete;
 
+  void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
   // The following methods are based on WebContentsObserver, simplified.
   void DidStartNavigation(DIPSNavigationHandle* navigation_handle);
   void OnClientCookiesAccessed(const GURL& url, CookieOperation op);
@@ -258,10 +259,16 @@ class DIPSWebContentsObserver
       public content::WebContentsUserData<DIPSWebContentsObserver>,
       public DIPSBounceDetectorDelegate {
  public:
+  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+
   ~DIPSWebContentsObserver() override;
 
   void SetRedirectHandlerForTesting(DIPSRedirectHandler handler) {
     detector_.SetRedirectHandlerForTesting(handler);
+  }
+
+  void SetClockForTesting(base::Clock* clock) {
+    detector_.SetClockForTesting(clock);
   }
 
  private:
@@ -274,9 +281,9 @@ class DIPSWebContentsObserver
   const GURL& GetLastCommittedURL() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
   blink::mojom::EngagementLevel GetEngagementLevel(const GURL&) const override;
-  void RecordBounce(const GURL& url,
-                    const base::Time& time,
-                    bool stateful) override;
+  void RecordEvent(DIPSRecordedEvent event,
+                   const GURL& url,
+                   const base::Time& time) override;
 
   // WebContentsObserver overrides:
   void DidStartNavigation(

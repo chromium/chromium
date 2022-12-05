@@ -199,21 +199,75 @@ reviewer.
     Whether a {DIPSRedirectType} redirect accessed cookies and whether its
     origin previously had user engagement. Recorded when redirecting between
     different sites, {DIPSCookieMode}.
+
+    In M-109, the DIPS Service was updated to explicitly not collect metrics for
+    non-user profiles, such as system profiles and ChromeOS Signin, LockScreen,
+    and LockScreenApp profiles.
   </summary>
   <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
   <token key="DIPSRedirectType" variants="DIPSRedirectType"/>
 </histogram>
 
-<histogram name="Privacy.DIPS.CookieAccessFilterResult{DIPSCookieMode}"
-    enum="Boolean" expires_after="2022-12-01">
+<histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
+    expires_after="2023-05-30">
   <owner>bcl@chromium.org</owner>
-  <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
-    The return value of CookieAccessFilter::Filter(). Recorded once per
-    navigation, {DIPSCookieMode}.
+    Number of entries present in the user's DIPS database (where there is 1
+    entry per eTLD+1). For each user profile, reported at profile open (which
+    usually happens at startup). Also reported approximately once every 24 hours
+    thereafter, while the profile remains open and active. If the database is
+    new and therefore empty at startup, such as when a Guest or other OTR
+    profile is opened, a count of 0 will be reported.
   </summary>
-  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+</histogram>
+
+<histogram name="Privacy.DIPS.DatabaseErrors" enum="SqliteLoggedResultCode"
+    expires_after="2023-05-30">
+  <owner>bcl@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    Errors reported by SQLite while initializing or using the DIPS database.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.DIPS.DatabaseHealthMetricsTime" units="ms"
+    expires_after="2023-05-30">
+  <owner>bcl@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The time taken to gather DIPS database health metrics. For each user
+    profile, these metrics are reported at profile open (which usually happens
+    at startup). They are also reported approximately once every 24 hours
+    thereafter, while the profile remains open and active. Note that Guest and
+    other OTR profiles (e.g. Incognito) will always startup with empty
+    databases, so that may explain why some databases collect health metrics so
+    quickly.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.DIPS.DatabaseInit" units="attempts"
+    expires_after="2023-05-30">
+  <owner>bcl@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    Logs how many attempts it took to initialize the DIPS database. Logs a value
+    of 0 if all attempts failed.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.DIPS.DatabaseSize" units="KB"
+    expires_after="2023-05-30">
+  <owner>bcl@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The size of the DIPS database file. For each user profile, reported at
+    profile open (which usually happens at startup). Also reported approximately
+    once every 24 hours thereafter, while the profile remains open and active.
+    Note that Guest and other OTR profiles (e.g. Incognito) will always startup
+    with empty databases, so that may explain why some database files are very
+    small.
+  </summary>
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromInteractionToStorage{DIPSCookieMode}"
@@ -226,6 +280,10 @@ reviewer.
     persists state (e.g. cookies), {DIPSCookieMode} (where site = eTLD+1). Not
     recorded if state is written before interaction takes place (see analogous
     histogram below).
+
+    In M-109, the DIPS Service was updated to explicitly not collect metrics for
+    non-user profiles, such as system profiles and ChromeOS Signin, LockScreen,
+    and LockScreenApp profiles.
   </summary>
   <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
 </histogram>
@@ -241,6 +299,10 @@ reviewer.
     initiated navigation (without user activation) is started to a different
     site. Not recorded if the redirecting site does not access state (e.g.
     cookies) or takes longer than 10 seconds to initiate the redirect (bounce).
+
+    In M-109, the DIPS Service was updated to explicitly not collect metrics for
+    non-user profiles, such as system profiles and ChromeOS Signin, LockScreen,
+    and LockScreenApp profiles.
   </summary>
 </histogram>
 
@@ -254,6 +316,10 @@ reviewer.
     interacts with the site, {DIPSCookieMode} (where site = eTLD+1). Not
     recorded if interaction takes place before state is written (see analogous
     histogram above).
+
+    In M-109, the DIPS Service was updated to explicitly not collect metrics for
+    non-user profiles, such as system profiles and ChromeOS Signin, LockScreen,
+    and LockScreenApp profiles.
   </summary>
   <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
 </histogram>

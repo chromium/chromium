@@ -12,7 +12,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "sql/sqlite_result_code_values.h"
+#include "sql/test/scoped_error_expecter.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,6 +26,13 @@ using base::Time;
 class DIPSDatabase;
 
 namespace {
+class TestDatabase : public DIPSDatabase {
+ public:
+  explicit TestDatabase(const absl::optional<base::FilePath>& db_path)
+      : DIPSDatabase(db_path) {}
+  void ComputeDatabaseMetricsForTesting() { ComputeDatabaseMetrics(); }
+};
+
 enum ColumnType {
   kSiteStorage,
   kUserInteraction,
@@ -34,19 +45,20 @@ class DIPSDatabaseTest : public testing::Test {
   explicit DIPSDatabaseTest(bool in_memory) : in_memory_(in_memory) {}
 
  protected:
-  std::unique_ptr<DIPSDatabase> db_;
-
+  std::unique_ptr<TestDatabase> db_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath db_path_;
   // Test setup.
   void SetUp() override {
     if (in_memory_) {
-      db_ = std::make_unique<DIPSDatabase>(absl::nullopt);
+      db_ = std::make_unique<TestDatabase>(absl::nullopt);
     } else {
       ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-      db_ = std::make_unique<DIPSDatabase>(
-          temp_dir_.GetPath().AppendASCII("DIPS.db"));
+      db_path_ = temp_dir_.GetPath().AppendASCII("DIPS.db");
+      db_ = std::make_unique<TestDatabase>(db_path_);
     }
 
-    ASSERT_EQ(db_->Init(), sql::INIT_OK);
+    ASSERT_TRUE(db_->CheckDBInit());
   }
 
   void TearDown() override {
@@ -58,7 +70,6 @@ class DIPSDatabaseTest : public testing::Test {
   }
 
  private:
-  base::ScopedTempDir temp_dir_;
   bool in_memory_;
 };
 
@@ -525,3 +536,83 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, OldestEntriesRemoved) {
 INSTANTIATE_TEST_SUITE_P(All,
                          DIPSDatabaseGarbageCollectionTest,
                          ::testing::Bool());
+
+// A test class that verifies DIPSDatabase database health metrics collection
+// behavior. Created on-disk so opening a corrupt database file can be tested.
+class DIPSDatabaseHistogramTest : public DIPSDatabaseTest {
+ public:
+  DIPSDatabaseHistogramTest() : DIPSDatabaseTest(false) {}
+
+  const base::HistogramTester& histograms() const { return histogram_tester_; }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(DIPSDatabaseHistogramTest, HealthMetrics) {
+  // The database was initialized successfully.
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseErrors", 0);
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseInit", 1);
+  histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 1);
+
+  // These should each have one sample after database initialization.
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseHealthMetricsTime", 1);
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseSize", 1);
+
+  // The database should be empty.
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseEntryCount", 1);
+  histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseEntryCount", 0, 1);
+
+  // Write an entry to the db.
+  db_->Write("https://url1.test", {},
+             /*interaction_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
+             {}, {});
+  db_->ComputeDatabaseMetricsForTesting();
+
+  // These should be unchanged.
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseErrors", 0);
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseInit", 1);
+  histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 1);
+
+  // These should each have two samples now.
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseHealthMetricsTime", 2);
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseSize", 2);
+
+  // The database should now have one entry.
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseEntryCount", 2);
+  histograms().ExpectBucketCount("Privacy.DIPS.DatabaseEntryCount", 1, 1);
+}
+
+TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
+  // The database was initialized successfully.
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseErrors", 0);
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseInit", 1);
+  histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 1);
+
+  // Write an entry to the db.
+  db_->Write("https://url1.test", {},
+             /*interaction_times=*/{Time::FromDoubleT(1), Time::FromDoubleT(1)},
+             {}, {});
+  EXPECT_EQ(db_->GetEntryCount(), static_cast<size_t>(1));
+
+  // Corrupt the database.
+  db_.reset();
+  EXPECT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
+
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_CORRUPT);
+
+  // Open that database and ensure that it does not fail.
+  EXPECT_NO_FATAL_FAILURE(db_ = std::make_unique<TestDatabase>(db_path_));
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseInit", 2);
+  histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 2);
+
+  // No data should be present as the database should have been razed.
+  EXPECT_EQ(db_->GetEntryCount(), static_cast<size_t>(0));
+
+  // Verify that the corruption error was reported.
+  EXPECT_TRUE(expecter.SawExpectedErrors());
+  histograms().ExpectTotalCount("Privacy.DIPS.DatabaseErrors", 1);
+  histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseErrors",
+                                  sql::SqliteLoggedResultCode::kCorrupt, 1);
+}

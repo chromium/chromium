@@ -52,8 +52,7 @@ DIPSService::DIPSService(content::BrowserContext* context)
     : browser_context_(context),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
-      repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))),
-      storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner())) {
+      repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
   absl::optional<base::FilePath> path;
 
   if (base::FeatureList::IsEnabled(dips::kFeature) &&
@@ -61,8 +60,8 @@ DIPSService::DIPSService(content::BrowserContext* context)
       !browser_context_->IsOffTheRecord()) {
     path = browser_context_->GetPath().Append(kDIPSFilename);
   }
+  storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path);
 
-  storage_.AsyncCall(&DIPSStorage::Init).WithArgs(path);
   // TODO: Prevent use of the DB until prepopulation starts.
   InitializeStorageWithEngagedSites();
   repeating_timer_->Start();

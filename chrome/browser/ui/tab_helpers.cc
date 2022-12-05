@@ -26,7 +26,6 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
-#include "chrome/browser/dips/dips_helper.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -341,10 +340,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
-  DIPSWebContentsObserver::CreateForWebContents(web_contents);
-  if (DIPSService* dips_service = DIPSService::Get(profile)) {
-    DIPSTabHelper::CreateForWebContents(web_contents, dips_service);
-  }
+  DIPSWebContentsObserver::MaybeCreateForWebContents(web_contents);
   ExternalProtocolObserver::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
   FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);

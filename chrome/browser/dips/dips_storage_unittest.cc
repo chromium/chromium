@@ -17,6 +17,8 @@ namespace {
 
 class TestStorage : public DIPSStorage {
  public:
+  TestStorage() : DIPSStorage(absl::nullopt) {}
+
   void WriteForTesting(GURL url, const StateValue& state) {
     Write(DIPSState(this, GetSiteForDIPS(url), state));
   }
@@ -42,10 +44,6 @@ class DIPSStorageTest : public testing::Test {
 
  protected:
   TestStorage storage_;
-
- private:
-  // Test setup.
-  void SetUp() override { storage_.Init(absl::nullopt); }
 };
 
 TEST(DirtyBit, Constructor) {
@@ -368,9 +366,8 @@ class DIPSStoragePrepopulateTest : public testing::Test {
   DIPSStoragePrepopulateTest()
       : task_environment_(base::test::TaskEnvironment(
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED)),
-        storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner())) {
-    storage_.AsyncCall(&DIPSStorage::Init).WithArgs(absl::nullopt);
-  }
+        storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner(),
+                                                  absl::nullopt)) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;

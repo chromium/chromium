@@ -72,10 +72,14 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
     return iter->second;
   }
 
-  void RecordBounce(const GURL& url,
-                    const base::Time& time,
-                    bool stateful) override {
-    recorded_bounces_.insert(std::make_tuple(url, time, stateful));
+  void RecordEvent(DIPSRecordedEvent event,
+                   const GURL& url,
+                   const base::Time& time) override {
+    if (event == DIPSRecordedEvent::kStatefulBounce ||
+        event == DIPSRecordedEvent::kStatelessBounce) {
+      recorded_bounces_.insert(std::make_tuple(
+          url, time, event == DIPSRecordedEvent::kStatefulBounce));
+    }
   }
 
   // Get the (committed) URL that the SourceId was generated for.
@@ -176,8 +180,11 @@ class DIPSBounceDetectorTest : public ::testing::Test {
   void RecordBouncesAndAppendRedirects(std::vector<std::string>* redirects,
                                        const DIPSRedirectInfo& redirect,
                                        const DIPSRedirectChainInfo& chain) {
-    delegate_.RecordBounce(redirect.url, test_clock_.Now(),
-                           redirect.access_type > CookieAccessType::kRead);
+    DCHECK(redirect.access_type != CookieAccessType::kUnknown);
+    delegate_.RecordEvent(redirect.access_type > CookieAccessType::kRead
+                              ? DIPSRecordedEvent::kStatefulBounce
+                              : DIPSRecordedEvent::kStatelessBounce,
+                          redirect.url, test_clock_.Now());
     AppendRedirect(redirects, redirect, chain);
   }
 

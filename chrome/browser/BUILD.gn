@@ -396,8 +396,6 @@ static_library("browser") {
     "dips/dips_database.h",
     "dips/dips_features.cc",
     "dips/dips_features.h",
-    "dips/dips_helper.cc",
-    "dips/dips_helper.h",
     "dips/dips_service.cc",
     "dips/dips_service.h",
     "dips/dips_service_factory.cc",
