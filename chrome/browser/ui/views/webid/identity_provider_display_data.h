@@ -15,7 +15,7 @@ class IdentityProviderDisplayData {
   IdentityProviderDisplayData(
       const std::u16string& idp_etld_plus_one,
       const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientIdData& client_data,
+      const content::ClientMetadata& client_metadata,
       const std::vector<content::IdentityRequestAccount>& accounts);
 
   IdentityProviderDisplayData(const IdentityProviderDisplayData& other);
@@ -24,7 +24,7 @@ class IdentityProviderDisplayData {
 
   std::u16string idp_etld_plus_one_;
   content::IdentityProviderMetadata idp_metadata_;
-  content::ClientIdData client_data_;
+  content::ClientMetadata client_metadata_;
   std::vector<content::IdentityRequestAccount> accounts_;
 };
 

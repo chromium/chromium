@@ -32,7 +32,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     account_selection_view()->Show(
         "rp-example.com",
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
-          content::ClientIdData(GURL::EmptyGURL(), GURL::EmptyGURL())}},
+          content::ClientMetadata(GURL::EmptyGURL(), GURL::EmptyGURL())}},
         Account::SignInMode::kExplicit);
   }
 

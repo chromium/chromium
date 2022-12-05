@@ -10,12 +10,12 @@
 
 namespace content {
 
-ClientIdData::ClientIdData(const GURL& terms_of_service_url,
-                           const GURL& privacy_policy_url)
+ClientMetadata::ClientMetadata(const GURL& terms_of_service_url,
+                               const GURL& privacy_policy_url)
     : terms_of_service_url{terms_of_service_url},
       privacy_policy_url(privacy_policy_url) {}
-ClientIdData::ClientIdData(const ClientIdData& other) = default;
-ClientIdData::~ClientIdData() = default;
+ClientMetadata::ClientMetadata(const ClientMetadata& other) = default;
+ClientMetadata::~ClientMetadata() = default;
 
 IdentityProviderMetadata::IdentityProviderMetadata() = default;
 IdentityProviderMetadata::~IdentityProviderMetadata() = default;
@@ -26,11 +26,11 @@ IdentityProviderData::IdentityProviderData(
     const std::string& idp_for_display,
     const std::vector<IdentityRequestAccount>& accounts,
     const IdentityProviderMetadata& idp_metadata,
-    const ClientIdData& client_id_data)
+    const ClientMetadata& client_metadata)
     : idp_for_display{idp_for_display},
       accounts{accounts},
       idp_metadata{idp_metadata},
-      client_id_data{client_id_data} {}
+      client_metadata{client_metadata} {}
 
 IdentityProviderData::IdentityProviderData(const IdentityProviderData& other) =
     default;

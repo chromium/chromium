@@ -27,7 +27,7 @@
 #include "url/gurl.h"
 
 using AccountList = content::IdpNetworkRequestManager::AccountList;
-using ClientMetadata = content::IdpNetworkRequestManager::ClientMetadata;
+using IdpClientMetadata = content::IdpNetworkRequestManager::ClientMetadata;
 using Endpoints = content::IdpNetworkRequestManager::Endpoints;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
@@ -203,7 +203,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     return {fetch_status, token};
   }
 
-  ClientMetadata SendClientMetadataRequestAndWaitForResponse(
+  IdpClientMetadata SendClientMetadataRequestAndWaitForResponse(
       const char* client_id,
       net::HttpStatusCode http_status = net::HTTP_OK) {
     const char response[] = R"({})";
@@ -212,10 +212,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         client_id_endpoint.spec() + "?client_id=" + client_id, response,
         http_status);
 
-    ClientMetadata data;
+    IdpClientMetadata data;
     base::RunLoop run_loop;
     auto callback = base::BindLambdaForTesting(
-        [&](FetchStatus status, ClientMetadata metadata) {
+        [&](FetchStatus status, IdpClientMetadata metadata) {
           data = metadata;
           run_loop.Quit();
         });
@@ -890,7 +890,7 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
         EXPECT_EQ(GURL(kTestRpUrl), request.referrer);
       });
   test_url_loader_factory().SetInterceptor(interceptor);
-  ClientMetadata data = SendClientMetadataRequestAndWaitForResponse("xxx");
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse("xxx");
   ASSERT_TRUE(called);
   ASSERT_EQ("", data.privacy_policy_url);
   ASSERT_EQ("", data.terms_of_service_url);

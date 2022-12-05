@@ -55,10 +55,10 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
 
 ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
     JNIEnv* env,
-    const content::ClientIdData& data) {
+    const content::ClientMetadata& metadata) {
   return Java_ClientIdMetadata_Constructor(
-      env, url::GURLAndroid::FromNativeGURL(env, data.terms_of_service_url),
-      url::GURLAndroid::FromNativeGURL(env, data.privacy_policy_url));
+      env, url::GURLAndroid::FromNativeGURL(env, metadata.terms_of_service_url),
+      url::GURLAndroid::FromNativeGURL(env, metadata.privacy_policy_url));
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
@@ -136,7 +136,7 @@ void AccountSelectionViewAndroid::Show(
           env, identity_provider_data[0].idp_metadata);
   ScopedJavaLocalRef<jobject> client_id_metadata_obj =
       ConvertToJavaClientIdMetadata(env,
-                                    identity_provider_data[0].client_id_data);
+                                    identity_provider_data[0].client_metadata);
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, ConvertUTF8ToJavaString(env, rp_for_display),
       ConvertUTF8ToJavaString(env, identity_provider_data[0].idp_for_display),

@@ -148,7 +148,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
                             account_info.second);
     }
     return IdentityProviderDisplayData(u"", content::IdentityProviderMetadata(),
-                                       content::ClientIdData(GURL(), GURL()),
+                                       content::ClientMetadata(GURL(), GURL()),
                                        std::move(accounts));
   }
 
@@ -159,7 +159,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     controller->Show(
         kRpEtldPlusOne,
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
-          content::ClientIdData(GURL(), GURL())}},
+          content::ClientMetadata(GURL(), GURL())}},
         SignInMode::kExplicit);
     return controller;
   }

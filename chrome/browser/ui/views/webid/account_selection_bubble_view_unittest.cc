@@ -76,10 +76,10 @@ std::vector<content::IdentityRequestAccount> CreateTestIdentityRequestAccounts(
   return accounts;
 }
 
-content::ClientIdData CreateTestClientIdData(
+content::ClientMetadata CreateTestClientMetadata(
     const std::string& terms_of_service_url) {
-  return content::ClientIdData((GURL(terms_of_service_url)),
-                               (GURL(kPrivacyPolicyUrl)));
+  return content::ClientMetadata((GURL(terms_of_service_url)),
+                                 (GURL(kPrivacyPolicyUrl)));
 }
 
 std::vector<std::string> GetChildClassNames(views::View* parent) {
@@ -131,7 +131,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     CreateAccountSelectionBubble();
     std::vector<IdentityProviderDisplayData> idp_data;
     idp_data.emplace_back(kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-                          CreateTestClientIdData(terms_of_service_url),
+                          CreateTestClientMetadata(terms_of_service_url),
                           accounts);
     dialog_->ShowAccountPicker(idp_data,
                                /*show_back_button=*/show_back_button);
@@ -460,7 +460,7 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
   IdentityProviderDisplayData idp_data(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-      content::ClientIdData(GURL(), GURL()), {account});
+      content::ClientMetadata(GURL(), GURL()), {account});
 
   CreateAccountSelectionBubble();
   dialog_->ShowVerifyingSheet(account, idp_data);
@@ -517,11 +517,11 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   std::vector<Account> accounts_first_idp = CreateTestIdentityRequestAccounts(
       kAccountSuffixes1, content::IdentityRequestAccount::LoginState::kSignUp);
   idp_data.emplace_back(kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-                        CreateTestClientIdData(kTermsOfServiceUrl),
+                        CreateTestClientMetadata(kTermsOfServiceUrl),
                         accounts_first_idp);
   idp_data.emplace_back(
       u"idp2.com", content::IdentityProviderMetadata(),
-      CreateTestClientIdData("https://tos-2.com"),
+      CreateTestClientMetadata("https://tos-2.com"),
       CreateTestIdentityRequestAccounts(
           kAccountSuffixes2,
           content::IdentityRequestAccount::LoginState::kSignUp));

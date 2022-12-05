@@ -18,10 +18,10 @@
 namespace content {
 class WebContents;
 
-struct CONTENT_EXPORT ClientIdData {
-  ClientIdData(const GURL& tos_url, const GURL& privacy_policy_url);
-  ClientIdData(const ClientIdData& other);
-  ~ClientIdData();
+struct CONTENT_EXPORT ClientMetadata {
+  ClientMetadata(const GURL& tos_url, const GURL& privacy_policy_url);
+  ClientMetadata(const ClientMetadata& other);
+  ~ClientMetadata();
 
   GURL terms_of_service_url;
   GURL privacy_policy_url;
@@ -46,14 +46,14 @@ struct CONTENT_EXPORT IdentityProviderData {
   IdentityProviderData(const std::string& idp_url_for_display,
                        const std::vector<IdentityRequestAccount>& accounts,
                        const IdentityProviderMetadata& idp_metadata,
-                       const ClientIdData& client_id_data);
+                       const ClientMetadata& client_metadata);
   IdentityProviderData(const IdentityProviderData& other);
   ~IdentityProviderData();
 
   std::string idp_for_display;
   std::vector<IdentityRequestAccount> accounts;
   IdentityProviderMetadata idp_metadata;
-  ClientIdData client_id_data;
+  ClientMetadata client_metadata;
 };
 
 // IdentityRequestDialogController is in interface for control of the UI

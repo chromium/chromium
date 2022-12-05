@@ -67,7 +67,7 @@ void FedCmAccountSelectionView::Show(
   for (const auto& identity_provider : identity_provider_data) {
     idp_data_list_.emplace_back(
         base::UTF8ToUTF16(identity_provider.idp_for_display),
-        identity_provider.idp_metadata, identity_provider.client_id_data,
+        identity_provider.idp_metadata, identity_provider.client_metadata,
         identity_provider.accounts);
     accounts_size += identity_provider.accounts.size();
   }

@@ -658,20 +658,20 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       views::CreateEmptyBorder(gfx::Insets::TLBR(5, 0, 0, 0)));
   disclosure_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 
-  const content::ClientIdData& client_data = idp_data.client_data_;
+  const content::ClientMetadata& client_metadata = idp_data.client_metadata_;
   int disclosure_resource_id = SelectDisclosureTextResourceId(
-      client_data.privacy_policy_url, client_data.terms_of_service_url);
+      client_metadata.privacy_policy_url, client_metadata.terms_of_service_url);
 
   // The order that the links are added to `link_data` should match the order of
   // the links in `disclosure_resource_id`.
   std::vector<std::pair<Observer::LinkType, GURL>> link_data;
-  if (!client_data.privacy_policy_url.is_empty()) {
+  if (!client_metadata.privacy_policy_url.is_empty()) {
     link_data.emplace_back(Observer::LinkType::PRIVACY_POLICY,
-                           client_data.privacy_policy_url);
+                           client_metadata.privacy_policy_url);
   }
-  if (!client_data.terms_of_service_url.is_empty()) {
+  if (!client_metadata.terms_of_service_url.is_empty()) {
     link_data.emplace_back(Observer::LinkType::TERMS_OF_SERVICE,
-                           client_data.terms_of_service_url);
+                           client_metadata.terms_of_service_url);
   }
 
   // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.

@@ -739,8 +739,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog(
       WebContents::FromRenderFrameHost(&render_frame_host());
   DCHECK(render_frame_host().GetMainFrame()->IsInPrimaryMainFrame());
 
-  ClientIdData client_id_data{GURL(client_metadata.terms_of_service_url),
-                              GURL(client_metadata.privacy_policy_url)};
+  ClientMetadata metadata{GURL(client_metadata.terms_of_service_url),
+                          GURL(client_metadata.privacy_policy_url)};
 
   show_accounts_dialog_time_ = base::TimeTicks::Now();
   fedcm_metrics_->RecordShowAccountsDialogTime(show_accounts_dialog_time_ -
@@ -749,7 +749,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog(
   GURL idp_provider_config_url = idp_info->provider.config_url;
   std::string idp_for_display = FormatUrlForDisplay(idp_provider_config_url);
   idp_info->data = IdentityProviderData(idp_for_display, accounts,
-                                        idp_info->metadata, client_id_data);
+                                        idp_info->metadata, metadata);
   idp_infos_[idp_provider_config_url] = std::move(idp_info);
   // Do not use `idp_info` after this line.
 
