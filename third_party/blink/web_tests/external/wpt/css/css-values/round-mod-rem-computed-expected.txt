@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 95 tests; 0 PASS, 95 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 117 tests; 0 PASS, 117 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL round(10,10) should be used-value-equivalent to 10 assert_not_equals: round(10,10) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL mod(1,1) should be used-value-equivalent to 0 assert_not_equals: mod(1,1) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL rem(1,1) should be used-value-equivalent to 0 assert_not_equals: rem(1,1) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
@@ -27,7 +27,7 @@ FAIL calc(mod(18,5) * 2 + mod(17,5)) should be used-value-equivalent to 8 assert
 FAIL calc(rem(mod(18,5),5)) should be used-value-equivalent to 3 assert_not_equals: calc(rem(mod(18,5),5)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL calc(rem(mod(18,5),mod(17,5))) should be used-value-equivalent to 1 assert_not_equals: calc(rem(mod(18,5),mod(17,5))) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL calc(mod(-140,-90)) should be used-value-equivalent to -50 assert_not_equals: calc(mod(-140,-90)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(mod(rem(1,18)* -1,5)) should be used-value-equivalent to -1 assert_not_equals: calc(mod(rem(1,18)* -1,5)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(mod(rem(1,18)* -1,5)) should be used-value-equivalent to 4 assert_not_equals: calc(mod(rem(1,18)* -1,5)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL round(10px,6px) should be used-value-equivalent to 12px assert_not_equals: round(10px,6px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 FAIL round(10cm,6cm) should be used-value-equivalent to 12cm assert_not_equals: round(10cm,6cm) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 FAIL round(10mm,6mm) should be used-value-equivalent to 12mm assert_not_equals: round(10mm,6mm) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
@@ -95,5 +95,27 @@ FAIL round(2rem,5px) should be used-value-equivalent to 30px assert_not_equals: 
 FAIL round(100px,1rem) should be used-value-equivalent to 96px assert_not_equals: round(100px,1rem) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 FAIL round(10s,6000ms) should be used-value-equivalent to 12s assert_not_equals: round(10s,6000ms) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
 FAIL round(10000ms,6s) should be used-value-equivalent to 12s assert_not_equals: round(10000ms,6s) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+FAIL mod(10%,1px) should be used-value-equivalent to 0.5px assert_not_equals: mod(10%,1px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL mod(10%,5px) should be used-value-equivalent to 2.5px assert_not_equals: mod(10%,5px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL mod(2rem,5px) should be used-value-equivalent to 2px assert_not_equals: mod(2rem,5px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL mod(100px,1rem) should be used-value-equivalent to 4px assert_not_equals: mod(100px,1rem) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL mod(10s,6000ms) should be used-value-equivalent to 4s assert_not_equals: mod(10s,6000ms) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+FAIL mod(10000ms,6s) should be used-value-equivalent to 4s assert_not_equals: mod(10000ms,6s) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+FAIL mod(18px,100% / 15) should be used-value-equivalent to 3px assert_not_equals: mod(18px,100% / 15) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL mod(-18px,100% / 15) should be used-value-equivalent to 2px assert_not_equals: mod(-18px,100% / 15) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL mod(18%,5%) should be used-value-equivalent to 3% assert_not_equals: mod(18%,5%) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL mod(-18%,5%) should be used-value-equivalent to 2% assert_not_equals: mod(-18%,5%) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL mod(18vw,5vw) should be used-value-equivalent to 3vw assert_not_equals: mod(18vw,5vw) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL mod(-18vw,5vw) should be used-value-equivalent to 2vw assert_not_equals: mod(-18vw,5vw) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL rem(10%,1px) should be used-value-equivalent to 0.5px assert_not_equals: rem(10%,1px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL rem(10%,5px) should be used-value-equivalent to 2.5px assert_not_equals: rem(10%,5px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL rem(2rem,5px) should be used-value-equivalent to 2px assert_not_equals: rem(2rem,5px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL rem(100px,1rem) should be used-value-equivalent to 4px assert_not_equals: rem(100px,1rem) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL rem(10s,6000ms) should be used-value-equivalent to 4s assert_not_equals: rem(10s,6000ms) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+FAIL rem(10000ms,6s) should be used-value-equivalent to 4s assert_not_equals: rem(10000ms,6s) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+FAIL rem(18px,100% / 15) should be used-value-equivalent to 3px assert_not_equals: rem(18px,100% / 15) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL rem(-18px,100% / 15) should be used-value-equivalent to -3px assert_not_equals: rem(-18px,100% / 15) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL rem(18vw,5vw) should be used-value-equivalent to 3vw assert_not_equals: rem(18vw,5vw) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL rem(-18vw,5vw) should be used-value-equivalent to -3vw assert_not_equals: rem(-18vw,5vw) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 Harness: the test ran to completion.
 
