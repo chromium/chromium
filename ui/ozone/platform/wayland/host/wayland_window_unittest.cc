@@ -3174,6 +3174,7 @@ TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
   });
 }
 
+// TODO(crbug.com/1393155): Flaky on Linux TSAN.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_ReattachesBackgroundOnShow DISABLED_ReattachesBackgroundOnShow
 #else
