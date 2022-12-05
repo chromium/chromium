@@ -12,6 +12,7 @@ namespace blink {
 ContextLifecycleNotifier::ContextLifecycleNotifier() {
   // https://linear.app/replay/issue/RUN-806
   recordreplay::RegisterPointer("ContextLifecycleNotifier", this);
+  observers_.record_replay_assert_id_ = recordreplay::PointerId(this);
 }
 
 ContextLifecycleNotifier::~ContextLifecycleNotifier() {
@@ -60,6 +61,17 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
   observers_.Clear();
 
   std::sort(observers.begin(), observers.end(), recordreplay::CompareByPointerId());
+
+  // https://linear.app/replay/issue/RUN-806
+  if (recordreplay::IsRecordingOrReplaying("values")) {
+    std::string observer_ids;
+    for (ContextLifecycleObserver* observer : observers) {
+      observer_ids += base::StringPrintf(" %d", recordreplay::PointerId(observer));
+    }
+    recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed #0%s",
+                         observer_ids.c_str());
+  }
+
   for (ContextLifecycleObserver* observer : observers) {
     // https://linear.app/replay/issue/RUN-806
     recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed #1 %d",
