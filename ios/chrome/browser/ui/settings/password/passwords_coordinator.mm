@@ -162,6 +162,10 @@
   self.passwordsInOtherAppsCoordinator.delegate = nil;
   self.passwordsInOtherAppsCoordinator = nil;
 
+  [self.passwordSettingsCoordinator stop];
+  self.passwordSettingsCoordinator.delegate = nil;
+  self.passwordSettingsCoordinator = nil;
+
   [self.mediator disconnect];
 }
 

@@ -30,6 +30,17 @@ using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 
 namespace {
+
+// Checks if the current device is running iOS 16 and above. This may seem
+// overly verbose, but the @available guard needs to be wrapped in an if() or
+// else the compiler complains.
+bool isIOS16AndAbove() {
+  if (@available(iOS 16, *)) {
+    return true;
+  }
+  return false;
+}
+
 // Matcher for view
 id<GREYMatcher> PasswordsInOtherAppsViewMatcher() {
   return grey_accessibilityID(kPasswordsInOtherAppsViewAccessibilityIdentifier);
@@ -60,9 +71,10 @@ id<GREYMatcher> PasswordsInOtherAppsListItemMatcher() {
 
 // Matcher for turn off instructions.
 id<GREYMatcher> PasswordsInOtherAppsTurnOffInstruction() {
-  NSString* turnOffInstructionText =
-      @"To turn off, open Settings and go to AutoFill Passwords.";
-  return grey_text(turnOffInstructionText);
+  return grey_text(
+      isIOS16AndAbove()
+          ? @"To turn off, open Settings and go to Password Options."
+          : @"To turn off, open Settings and go to AutoFill Passwords.");
 }
 
 // Matcher for the Show password button in Password Details view.
@@ -140,7 +152,10 @@ void OpensPasswordsInOtherApps() {
         : l10n_util::GetNSString(
               IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2),
-    l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
+    l10n_util::GetNSString(
+        isIOS16AndAbove()
+            ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16
+            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4)
   ];
   for (NSString* step in steps) {
@@ -160,7 +175,10 @@ void OpensPasswordsInOtherApps() {
         : l10n_util::GetNSString(
               IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2),
-    l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
+    l10n_util::GetNSString(
+        isIOS16AndAbove()
+            ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16
+            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4)
   ];
   for (NSString* step in steps) {
@@ -183,13 +201,9 @@ void OpensPasswordsInOtherApps() {
 
 #pragma mark - Test cases
 
-// TODO(crbug.com/1367807): Several tests in this file are disabled because
-// they are intermittently crashing on the bots. The crash is happening at
-// teardown and is likely related to the tests themselves.
-
 // Tests Passwords In Other Apps first shows instructions when auto-fill is off,
 // then shows the caption label after auto-fill is turned on.
-- (void)DISABLED_testTurnOnPasswordsInOtherApps {
+- (void)testTurnOnPasswordsInOtherApps {
   // Rewrites passwordInAppsViewController.useShortInstruction property.
   EarlGreyScopedBlockSwizzler longInstruction(
       @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
@@ -211,7 +225,7 @@ void OpensPasswordsInOtherApps() {
 
 // Tests Passwords In Other Apps first shows instructions when auto-fill is on,
 // then shows the caption label after auto-fill is turned off.
-- (void)DISABLED_testTurnOffPasswordsInOtherApps {
+- (void)testTurnOffPasswordsInOtherApps {
   // Rewrites passwordInAppsViewController.useShortInstruction property.
   EarlGreyScopedBlockSwizzler longInstruction(
       @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
@@ -233,7 +247,7 @@ void OpensPasswordsInOtherApps() {
 
 // Tests Passwords In Other Apps shows instructions when auto-fill is off with
 // short instruction.
-- (void)DISABLED_testShowPasswordsInOtherAppsWithShortInstruction {
+- (void)testShowPasswordsInOtherAppsWithShortInstruction {
   // Rewrites passwordInAppsViewController.useShortInstruction property.
   EarlGreyScopedBlockSwizzler shortInstruction(
       @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
@@ -251,7 +265,9 @@ void OpensPasswordsInOtherApps() {
   // Check backup instructions are visible.
   NSArray<NSString*>* steps = @[
     l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1),
+        isIOS16AndAbove()
+            ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16
+            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1),
     l10n_util::GetNSString(
         IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
   ];
@@ -265,7 +281,7 @@ void OpensPasswordsInOtherApps() {
 
 // Tests Passwords In Other Apps shows instructions when auto-fill state is
 // unknown.
-- (void)DISABLED_testOpenPasswordsInOtherAppsWithAutoFillUnknown {
+- (void)testOpenPasswordsInOtherAppsWithAutoFillUnknown {
   OpensPasswordsInOtherApps();
 
   [self checkThatCommonElementsAreVisible];
@@ -312,7 +328,7 @@ void OpensPasswordsInOtherApps() {
 
 // Tests Passwords In Other Apps doesn't show the image on iPhone landscape
 // mode, while showing it for iPad.
-- (void)DISABLED_testImageVisibilityForLandscapeMode {
+- (void)testImageVisibilityForLandscapeMode {
   OpensPasswordsInOtherApps();
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.2)];
