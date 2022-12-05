@@ -424,6 +424,11 @@ public abstract class org.chromium.net.apihelpers.ByteArrayCronetCallback extend
   public org.chromium.net.apihelpers.ImplicitFlowControlCallback addCompletionListener(org.chromium.net.apihelpers.CronetRequestCompletionListener);
   protected java.lang.Object transformBodyBytes(org.chromium.net.UrlResponseInfo, byte[]);
 }
+public interface org.chromium.net.apihelpers.CronetRequestCompletionListener<T> {
+  public abstract void onFailed(org.chromium.net.UrlResponseInfo, org.chromium.net.CronetException);
+  public abstract void onCanceled(org.chromium.net.UrlResponseInfo);
+  public abstract void onSucceeded(org.chromium.net.UrlResponseInfo, T);
+}
 public class org.chromium.net.apihelpers.CronetResponse<T> {
   public org.chromium.net.UrlResponseInfo getUrlResponseInfo();
   public T getResponseBody();
@@ -494,4 +499,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 816e06e55228226dc92379f3092b1318
+Stamp: 560e0de974756a16476ddc18d025692d

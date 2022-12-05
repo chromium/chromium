@@ -105,7 +105,7 @@ def find_api_calls(dump, api_classes, bad_calls):
   for i, line in enumerate(dump):
     try:
       if CLASS_RE.match(line):
-        caller_class = CLASS_RE.match(line).group(1)
+        caller_class = CLASS_RE.match(line).group(2)
       if METHOD_RE.match(line):
         caller_method = METHOD_RE.match(line).group(1)
       if line.startswith(': invoke', 8) and not line.startswith('dynamic', 16):

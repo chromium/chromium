@@ -33,7 +33,7 @@ INTERFACE_API_VERSION_FILENAME = os.path.abspath(os.path.join(
 
 # Regular expression that catches the beginning of lines that declare classes.
 # The first group returned by a match is the class name.
-CLASS_RE = re.compile(r'.*class ([^ ]*) .*\{')
+CLASS_RE = re.compile(r'.*(class|interface) ([^ ]*) .*\{')
 
 # Regular expression that matches a string containing an unnamed class name,
 # for example 'Foo$1'.
@@ -41,7 +41,8 @@ UNNAMED_CLASS_RE = re.compile(r'.*\$[0-9]')
 
 # javap still prints internal (package private, nested...) classes even though
 # -protected is passed so they need to be filtered out.
-INTERNAL_CLASS_RE = re.compile(r'^(?!public ((final|abstract) )?class).*')
+INTERNAL_CLASS_RE = re.compile(
+    r'^(?!public ((final|abstract) )?(class|interface)).*')
 
 JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
 JAVAP_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javap')
