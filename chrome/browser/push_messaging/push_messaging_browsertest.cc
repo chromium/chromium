@@ -612,7 +612,7 @@ class PushMessagingBrowserTest : public PushMessagingBrowserTestBase {
 };
 
 // This class is used to execute PushMessagingBrowserTest tests with
-// experimental web platform features both enabled/disabled.
+// third-party storage partitioning both enabled/disabled.
 class PushMessagingPartitionedBrowserTest
     : public PushMessagingBrowserTest,
       public testing::WithParamInterface<bool> {
