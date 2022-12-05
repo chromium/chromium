@@ -330412,15 +330412,15 @@
      "71a19de6904fd6fc6ef706a21a08168d65f87158",
      []
     ],
-    "direct-sockets-disabled-by-permissions-policy.https.sub.html.headers": [
+    "disabled-by-permissions-policy.https.sub.html.headers": [
      "ba6f09f55b393880aadf79a41d9220313ed294c8",
      []
     ],
-    "direct-sockets-disabled-by-permissions-policy.https.sub.html.ini": [
-     "a8d68a0d52b0e5d7ddc162498e60316505930ef3",
+    "disabled-by-permissions-policy.https.sub.html.ini": [
+     "baaf80bc574638bd608fa3aef51d005d262fa1b5",
      []
     ],
-    "direct-sockets-disabled-by-permissions-policy.js": [
+    "disabled-by-permissions-policy.js": [
      "a27d1ddf497a7fa0ccd8ecd40b94732a831da97c",
      []
     ]
@@ -460253,8 +460253,8 @@
     ]
    },
    "direct-sockets": {
-    "direct-sockets-disabled-by-permissions-policy.https.sub.html": [
-     "9e81223de1c90ff83bf09c5d6701e02f442a5b15",
+    "disabled-by-permissions-policy.https.sub.html": [
+     "f2f6e50be0fd2274b7c3b7e453d7661b6dd99daa",
      [
       null,
       {
@@ -495847,6 +495847,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "element-request-fullscreen-after-error.html": [
+      "42783827700419977d3339abf8547545e44e32bd",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "element-request-fullscreen-dialog.html": [
@@ -599276,6 +599285,13 @@
      ],
      "end-event.svg": [
       "aa0854d6924e43997330adad348f326f9a12103a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "eventbase-non-svg-element.html": [
+      "f4e7f793e41dd3de8b3e1c19da9387edffa62baf",
       [
        null,
        {}
