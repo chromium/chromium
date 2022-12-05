@@ -26,6 +26,7 @@
 * [Autoclick](accessibility/os/autoclick.md)
 * [ChromeVox for Developers](accessibility/os/chromevox.md)
 * [ChromeVox on Desktop Linux](accessibility/os/chromevox_on_desktop_linux.md)
+* [Dictation](accessibility/os/dictation.md)
 * [Updating brltty braille drivers](accessibility/os/brltty.md)
 * [Select-to-speak](accessibility/os/select_to_speak.md)
 * [Switch Access](accessibility/os/switch_access.md)
