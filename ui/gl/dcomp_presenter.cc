@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
-#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/vsync_thread_win.h"
 
 namespace gl {
@@ -41,17 +40,19 @@ DCompPresenter::PendingFrame::~PendingFrame() = default;
 DCompPresenter::PendingFrame& DCompPresenter::PendingFrame::operator=(
     PendingFrame&& other) = default;
 
-DCompPresenter::DCompPresenter(
-    GLDisplayEGL* display,
-    HWND parent_window,
-    VSyncCallback vsync_callback,
-    const DirectCompositionSurfaceWin::Settings& settings)
-    : SurfacelessEGL(display, gfx::Size(1, 1)),
+DCompPresenter::DCompPresenter(GLDisplayEGL* display,
+                               HWND parent_window,
+                               VSyncCallback vsync_callback,
+                               const Settings& settings)
+    : GLSurfaceEGL(display),
       child_window_(parent_window),
       vsync_callback_(std::move(vsync_callback)),
       vsync_thread_(VSyncThreadWin::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       max_pending_frames_(settings.max_pending_frames),
+      root_surface_(new DirectCompositionChildSurfaceWin(
+          display,
+          settings.use_angle_texture_offset)),
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
           settings.disable_vp_scaling,
@@ -77,6 +78,9 @@ bool DCompPresenter::Initialize(GLSurfaceFormat format) {
   if (!layer_tree_->Initialize(window_))
     return false;
 
+  if (!root_surface_->Initialize(GLSurfaceFormat()))
+    return false;
+
   return true;
 }
 
@@ -88,6 +92,7 @@ void DCompPresenter::Destroy() {
   if (vsync_thread_started_)
     vsync_thread_->RemoveObserver(this);
 
+  root_surface_->Destroy();
   // Freeing DComp resources such as visuals and surfaces causes the
   // device to become 'dirty'. We must commit the changes to the device
   // in order for the objects to actually be destroyed.
@@ -99,37 +104,45 @@ void DCompPresenter::Destroy() {
     dcomp_device->Commit();
 }
 
+gfx::Size DCompPresenter::GetSize() {
+  return root_surface_->GetSize();
+}
+
 bool DCompPresenter::IsOffscreen() {
   return false;
+}
+
+void* DCompPresenter::GetHandle() {
+  return root_surface_->GetHandle();
 }
 
 bool DCompPresenter::Resize(const gfx::Size& size,
                             float scale_factor,
                             const gfx::ColorSpace& color_space,
                             bool has_alpha) {
-  if (!SurfacelessEGL::Resize(size, scale_factor, color_space, has_alpha)) {
-    return false;
-  }
-
   // Force a resize and redraw (but not a move, activate, etc.).
   if (!SetWindowPos(window_, nullptr, 0, 0, size.width(), size.height(),
                     SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS |
                         SWP_NOOWNERZORDER | SWP_NOZORDER)) {
     return false;
   }
-  return true;
+  return root_surface_->Resize(size, scale_factor, color_space, has_alpha);
 }
 
 gfx::SwapResult DCompPresenter::SwapBuffers(PresentationCallback callback,
                                             FrameData data) {
   TRACE_EVENT0("gpu", "DCompPresenter::SwapBuffers");
 
-  // Callback will be dequeued on next vsync.
+  gfx::Rect swap_rect;
+  bool success = root_surface_->EndDraw(&swap_rect);
+  // Do not create query for empty damage so that 3D engine is not used when
+  // only presenting video in overlay. Callback will be dequeued on next vsync.
   EnqueuePendingFrame(std::move(callback),
-                      /*create_query=*/create_query_this_frame_);
-  create_query_this_frame_ = false;
+                      /*create_query=*/!swap_rect.IsEmpty());
+  if (!success)
+    return gfx::SwapResult::SWAP_FAILED;
 
-  if (!layer_tree_->CommitAndClearPendingOverlays(nullptr))
+  if (!layer_tree_->CommitAndClearPendingOverlays(root_surface_.get()))
     return gfx::SwapResult::SWAP_FAILED;
 
   return gfx::SwapResult::SWAP_ACK;
@@ -148,6 +161,10 @@ gfx::SwapResult DCompPresenter::PostSubBuffer(int x,
 
 gfx::VSyncProvider* DCompPresenter::GetVSyncProvider() {
   return vsync_thread_->vsync_provider();
+}
+
+void DCompPresenter::SetVSyncEnabled(bool enabled) {
+  root_surface_->SetVSyncEnabled(enabled);
 }
 
 void DCompPresenter::OnVSync(base::TimeTicks vsync_time,
@@ -178,12 +195,20 @@ void DCompPresenter::SetFrameRate(float frame_rate) {
   layer_tree_->SetFrameRate(frame_rate);
 }
 
+bool DCompPresenter::SetEnableDCLayers(bool enable) {
+  return root_surface_->SetEnableDCLayers(enable);
+}
+
 gfx::SurfaceOrigin DCompPresenter::GetOrigin() const {
   return gfx::SurfaceOrigin::kTopLeft;
 }
 
 bool DCompPresenter::SupportsPostSubBuffer() {
   return true;
+}
+
+bool DCompPresenter::OnMakeCurrent(GLContext* context) {
+  return root_surface_->OnMakeCurrent(context);
 }
 
 bool DCompPresenter::SupportsDCLayers() const {
@@ -197,10 +222,11 @@ bool DCompPresenter::SupportsProtectedVideo() const {
 }
 
 bool DCompPresenter::SetDrawRectangle(const gfx::Rect& rect) {
-  // Do not create query for empty damage so that 3D engine is not used when
-  // only presenting video in overlay.
-  create_query_this_frame_ = !rect.IsEmpty();
-  return true;
+  return root_surface_->SetDrawRectangle(rect);
+}
+
+gfx::Vector2d DCompPresenter::GetDrawOffset() const {
+  return root_surface_->GetDrawOffset();
 }
 
 bool DCompPresenter::SupportsGpuVSync() const {
@@ -233,12 +259,22 @@ void DCompPresenter::InitDelegatedInkPointRendererReceiver(
 
 scoped_refptr<base::TaskRunner>
 DCompPresenter::GetWindowTaskRunnerForTesting() {
-  return child_window_.GetTaskRunnerForTesting();  // IN-TEST
+  return child_window_.GetTaskRunnerForTesting();
 }
 
 Microsoft::WRL::ComPtr<IDXGISwapChain1>
 DCompPresenter::GetLayerSwapChainForTesting(size_t index) const {
-  return layer_tree_->GetLayerSwapChainForTesting(index);  // IN-TEST
+  return layer_tree_->GetLayerSwapChainForTesting(index);
+}
+
+Microsoft::WRL::ComPtr<IDXGISwapChain1>
+DCompPresenter::GetBackbufferSwapChainForTesting() const {
+  return root_surface_->swap_chain();
+}
+
+scoped_refptr<DirectCompositionChildSurfaceWin>
+DCompPresenter::GetRootSurfaceForTesting() const {
+  return root_surface_;
 }
 
 void DCompPresenter::GetSwapChainVisualInfoForTesting(

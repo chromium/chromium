@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -157,6 +156,9 @@ class DCompPresenterTest : public testing::Test {
       return;
     }
     surface_ = CreateDCompPresenter();
+    context_ = CreateGLContext(surface_);
+    if (surface_)
+      surface_->SetEnableDCLayers(true);
     SetDirectCompositionScaledOverlaysSupportedForTesting(false);
     SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_NV12);
   }
@@ -169,7 +171,7 @@ class DCompPresenterTest : public testing::Test {
   }
 
   scoped_refptr<DCompPresenter> CreateDCompPresenter() {
-    DirectCompositionSurfaceWin::Settings settings;
+    DCompPresenter::Settings settings;
     scoped_refptr<DCompPresenter> surface =
         base::MakeRefCounted<DCompPresenter>(
             gl::GLSurfaceEGL::GetGLDisplayEGL(), parent_window_,
@@ -190,6 +192,7 @@ class DCompPresenterTest : public testing::Test {
       scoped_refptr<DCompPresenter> surface) {
     scoped_refptr<GLContext> context =
         gl::init::CreateGLContext(nullptr, surface.get(), GLContextAttribs());
+    EXPECT_TRUE(context->MakeCurrent(surface.get()));
     return context;
   }
 
@@ -199,6 +202,132 @@ class DCompPresenterTest : public testing::Test {
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
   raw_ptr<GLDisplay> display_ = nullptr;
 };
+
+TEST_F(DCompPresenterTest, TestMakeCurrent) {
+  if (!surface_)
+    return;
+  EXPECT_TRUE(
+      surface_->Resize(gfx::Size(100, 100), 1.0, gfx::ColorSpace(), true));
+
+  // First SetDrawRectangle must be full size of surface.
+  EXPECT_FALSE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 50, 50)));
+  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+
+  // SetDrawRectangle can't be called again until swap.
+  EXPECT_FALSE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
+
+  EXPECT_TRUE(context_->IsCurrent(surface_.get()));
+
+  // SetDrawRectangle must be contained within surface.
+  EXPECT_FALSE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 101, 101)));
+  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+  EXPECT_TRUE(context_->IsCurrent(surface_.get()));
+
+  EXPECT_TRUE(
+      surface_->Resize(gfx::Size(50, 50), 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(context_->IsCurrent(surface_.get()));
+  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 50, 50)));
+  EXPECT_TRUE(context_->IsCurrent(surface_.get()));
+
+  scoped_refptr<DCompPresenter> surface2 = CreateDCompPresenter();
+  scoped_refptr<GLContext> context2 = CreateGLContext(surface2.get());
+
+  surface2->SetEnableDCLayers(true);
+  EXPECT_TRUE(
+      surface2->Resize(gfx::Size(100, 100), 1.0, gfx::ColorSpace(), true));
+  // The previous IDCompositionSurface should be suspended when another
+  // surface is being drawn to.
+  EXPECT_TRUE(surface2->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+  EXPECT_TRUE(context2->IsCurrent(surface2.get()));
+
+  // It should be possible to switch back to the previous surface and
+  // unsuspend it.
+  EXPECT_TRUE(context_->MakeCurrent(surface_.get()));
+  context2 = nullptr;
+  DestroySurface(std::move(surface2));
+}
+
+// Tests that switching using EnableDCLayers works.
+TEST_F(DCompPresenterTest, DXGIDCLayerSwitch) {
+  if (!surface_)
+    return;
+  surface_->SetEnableDCLayers(false);
+  EXPECT_TRUE(
+      surface_->Resize(gfx::Size(100, 100), 1.0, gfx::ColorSpace(), true));
+  EXPECT_FALSE(surface_->GetBackbufferSwapChainForTesting());
+
+  // First SetDrawRectangle must be full size of surface for DXGI swapchain.
+  EXPECT_FALSE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 50, 50)));
+  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+  EXPECT_TRUE(surface_->GetBackbufferSwapChainForTesting());
+
+  // SetDrawRectangle and SetEnableDCLayers can't be called again until swap.
+  EXPECT_FALSE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
+  EXPECT_TRUE(context_->IsCurrent(surface_.get()));
+
+  surface_->SetEnableDCLayers(true);
+
+  // Surface switched to use IDCompositionSurface, so must draw to entire
+  // surface.
+  EXPECT_FALSE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 50, 50)));
+  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+  EXPECT_FALSE(surface_->GetBackbufferSwapChainForTesting());
+
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
+  EXPECT_TRUE(context_->IsCurrent(surface_.get()));
+
+  surface_->SetEnableDCLayers(false);
+
+  // Surface switched to use IDXGISwapChain, so must draw to entire surface.
+  EXPECT_FALSE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 50, 50)));
+  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+  EXPECT_TRUE(surface_->GetBackbufferSwapChainForTesting());
+
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
+  EXPECT_TRUE(context_->IsCurrent(surface_.get()));
+}
+
+// Ensure that the swapchain's alpha is correct.
+TEST_F(DCompPresenterTest, SwitchAlpha) {
+  if (!surface_)
+    return;
+  surface_->SetEnableDCLayers(false);
+  EXPECT_TRUE(
+      surface_->Resize(gfx::Size(100, 100), 1.0, gfx::ColorSpace(), true));
+  EXPECT_FALSE(surface_->GetBackbufferSwapChainForTesting());
+
+  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      surface_->GetBackbufferSwapChainForTesting();
+  ASSERT_TRUE(swap_chain);
+  DXGI_SWAP_CHAIN_DESC1 desc;
+  swap_chain->GetDesc1(&desc);
+  EXPECT_EQ(DXGI_ALPHA_MODE_PREMULTIPLIED, desc.AlphaMode);
+
+  // Resize to the same parameters should have no effect.
+  EXPECT_TRUE(
+      surface_->Resize(gfx::Size(100, 100), 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(surface_->GetBackbufferSwapChainForTesting());
+
+  EXPECT_TRUE(
+      surface_->Resize(gfx::Size(100, 100), 1.0, gfx::ColorSpace(), false));
+  EXPECT_FALSE(surface_->GetBackbufferSwapChainForTesting());
+
+  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(0, 0, 100, 100)));
+
+  swap_chain = surface_->GetBackbufferSwapChainForTesting();
+  ASSERT_TRUE(swap_chain);
+  swap_chain->GetDesc1(&desc);
+  EXPECT_EQ(DXGI_ALPHA_MODE_IGNORE, desc.AlphaMode);
+}
 
 // Ensure that the GLImage isn't presented again unless it changes.
 TEST_F(DCompPresenterTest, NoPresentTwice) {
@@ -496,8 +625,8 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
     EXPECT_EQ(0u, hw_protected_flag);
   }
 
-  // TODO(magchen): Add a hardware protected video test when hardware protected
-  // video support is enabled by default in the Intel driver and Chrome
+  // TODO(magchen): Add a hardware protected video test when hardware procted
+  // video support is enabled by defaut in the Intel driver and Chrome
 }
 
 class DCompPresenterPixelTest : public DCompPresenterTest {
@@ -520,57 +649,15 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     DCompPresenterTest::TearDown();
   }
 
-  // DCompPresenter is surfaceless--it's root surface is achieved
-  // via an overlay the size of the window.
-  void InitializeRootAndScheduleRootSurface(const gfx::Size& window_size,
-                                            SkColor4f initial_color) {
-    Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
-        gl::GetDirectCompositionDevice();
-    Microsoft::WRL::ComPtr<IDCompositionSurface> root_surface;
-    ASSERT_HRESULT_SUCCEEDED(dcomp_device->CreateSurface(
-        window_size.width(), window_size.height(), DXGI_FORMAT_B8G8R8A8_UNORM,
-        DXGI_ALPHA_MODE_IGNORE, &root_surface));
-
-    // Clear the root surface to |initial_color|
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> update_texture;
-    RECT rect = gfx::Rect(window_size).ToRECT();
-    POINT update_offset;
-    ASSERT_HRESULT_SUCCEEDED(root_surface->BeginDraw(
-        &rect, IID_PPV_ARGS(&update_texture), &update_offset));
-
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        gl::QueryD3D11DeviceObjectFromANGLE();
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> immediate_context;
-    d3d11_device->GetImmediateContext(&immediate_context);
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv;
-    D3D11_RENDER_TARGET_VIEW_DESC desc;
-    desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-    desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    desc.Texture2D.MipSlice = 0;
-    ASSERT_HRESULT_SUCCEEDED(d3d11_device->CreateRenderTargetView(
-        update_texture.Get(), &desc, &rtv));
-    immediate_context->ClearRenderTargetView(rtv.Get(), initial_color.vec());
-
-    ASSERT_HRESULT_SUCCEEDED(root_surface->EndDraw());
-
-    // Schedule the root surface as a normal overlay
-    std::unique_ptr<ui::DCRendererLayerParams> params =
-        std::make_unique<ui::DCRendererLayerParams>();
-    params->z_order = 0;
-    params->quad_rect = gfx::Rect(window_size);
-    params->content_rect = params->quad_rect;
-    params->dcomp_visual_content = root_surface;
-    params->dcomp_surface_serial = 0;
-    EXPECT_TRUE(surface_->ScheduleDCLayer(std::move(params)));
-  }
-
   void InitializeForPixelTest(const gfx::Size& window_size,
                               const gfx::Size& texture_size,
                               const gfx::Rect& content_rect,
                               const gfx::Rect& quad_rect) {
     EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+    EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
 
-    InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
         QueryD3D11DeviceObjectFromANGLE();
@@ -604,9 +691,46 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     Sleep(1000);
   }
 
+  void PixelTestSwapChain(bool layers_enabled) {
+    if (!surface_)
+      return;
+    if (!layers_enabled)
+      surface_->SetEnableDCLayers(false);
+
+    gfx::Size window_size(100, 100);
+    EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+    EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
+
+    glClearColor(1.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+              surface_->SwapBuffers(base::DoNothing(), FrameData()));
+
+    // Ensure DWM swap completed.
+    Sleep(1000);
+
+    SkColor expected_color = SK_ColorRED;
+    SkColor actual_color =
+        GLTestHelper::ReadBackWindowPixel(window_.hwnd(), gfx::Point(75, 75));
+    EXPECT_EQ(expected_color, actual_color)
+        << std::hex << "Expected " << expected_color << " Actual "
+        << actual_color;
+
+    EXPECT_TRUE(context_->IsCurrent(surface_.get()));
+  }
+
   TestPlatformDelegate platform_delegate_;
   ui::WinWindow window_;
 };
+
+TEST_F(DCompPresenterPixelTest, DCLayersEnabled) {
+  PixelTestSwapChain(true);
+}
+
+TEST_F(DCompPresenterPixelTest, DCLayersDisabled) {
+  PixelTestSwapChain(false);
+}
 
 bool AreColorsSimilar(int a, int b) {
   // The precise colors may differ depending on the video processor, so allow
@@ -798,7 +922,8 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
   EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
   EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
 
-  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
+  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
@@ -964,7 +1089,8 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
   EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
   EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
 
-  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
+  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
@@ -1163,7 +1289,8 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
   EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
   EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
 
-  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
+  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
 
   DXGI_PRESENT_PARAMETERS present_params = {};
   present_params.DirtyRectsCount = 0;
@@ -1266,63 +1393,145 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
   }
 }
 
-class DCompPresenterBufferCountTest : public DCompPresenterTest,
-                                      public testing::WithParamInterface<bool> {
+// Offsets BeginDraw update rect so that the returned update offset is also
+// offset by at least the same amount from the original update rect.
+class DrawOffsetOverridingDCompositionSurface
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IDCompositionSurface> {
  public:
-  static const char* GetParamName(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "DCompTripleBufferVideoSwapChain" : "default";
+  DrawOffsetOverridingDCompositionSurface(
+      Microsoft::WRL::ComPtr<IDCompositionSurface> surface,
+      const gfx::Point& draw_offset)
+      : surface_(std::move(surface)), draw_offset_(draw_offset) {}
+
+  IFACEMETHODIMP BeginDraw(const RECT* updateRect,
+                           REFIID iid,
+                           void** updateObject,
+                           POINT* updateOffset) override {
+    RECT offsetRect = *updateRect;
+    offsetRect.left += draw_offset_.x();
+    offsetRect.right += draw_offset_.x();
+    offsetRect.top += draw_offset_.y();
+    offsetRect.bottom += draw_offset_.y();
+    return surface_->BeginDraw(&offsetRect, iid, updateObject, updateOffset);
   }
 
- protected:
-  void SetUp() override {
-    if (GetParam()) {
-      enabled_features_.InitWithFeatures(
-          {features::kDCompTripleBufferVideoSwapChain}, {});
-    } else {
-      enabled_features_.InitWithFeatures(
-          {}, {features::kDCompTripleBufferVideoSwapChain});
-    }
+  IFACEMETHODIMP EndDraw() override { return surface_->EndDraw(); }
 
-    DCompPresenterTest::SetUp();
+  IFACEMETHODIMP ResumeDraw() override { return surface_->ResumeDraw(); }
+
+  IFACEMETHODIMP SuspendDraw() override { return surface_->SuspendDraw(); }
+
+  IFACEMETHODIMP Scroll(const RECT* scrollRect,
+                        const RECT* clipRect,
+                        int offsetX,
+                        int offsetY) override {
+    return surface_->Scroll(scrollRect, clipRect, offsetX, offsetY);
   }
 
-  base::test::ScopedFeatureList enabled_features_;
+ private:
+  Microsoft::WRL::ComPtr<IDCompositionSurface> surface_;
+  const gfx::Point draw_offset_;
 };
 
-TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
+TEST_F(DCompPresenterPixelTest, RootSurfaceDrawOffset) {
   if (!surface_)
     return;
-
-  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   constexpr gfx::Size window_size(100, 100);
   EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
   EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
 
-  constexpr gfx::Size texture_size(50, 50);
-
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      QueryD3D11DeviceObjectFromANGLE();
-  ASSERT_TRUE(d3d11_device);
-
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
-      CreateNV12Texture(d3d11_device, texture_size, /*shared=*/false);
-  // The format doesn't matter, since we aren't binding.
-  scoped_refptr<GLImageDXGI> image_dxgi(new GLImageDXGI(texture_size, nullptr));
-  image_dxgi->SetTexture(texture, /*level=*/0);
-
-  std::unique_ptr<ui::DCRendererLayerParams> params =
-      std::make_unique<ui::DCRendererLayerParams>();
-  params->images[0] = image_dxgi;
-  params->content_rect = gfx::Rect(texture_size);
-  params->quad_rect = gfx::Rect(window_size);
-  EXPECT_TRUE(surface_->ScheduleDCLayer(std::move(params)));
+  glClearColor(0.0, 0.0, 1.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
 
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
             surface_->SwapBuffers(base::DoNothing(), FrameData()));
 
-  auto swap_chain = surface_->GetLayerSwapChainForTesting(0);
+  constexpr gfx::Point draw_offset(50, 50);
+  auto root_surface = surface_->GetRootSurfaceForTesting();
+  auto dcomp_surface =
+      Microsoft::WRL::Make<DrawOffsetOverridingDCompositionSurface>(
+          root_surface->dcomp_surface(), draw_offset);
+  root_surface->SetDCompSurfaceForTesting(std::move(dcomp_surface));
+
+  // Even though draw_rect is the first quadrant, the rendering will be limited
+  // to the third quadrant because the dcomp surface will return that offset.
+  constexpr gfx::Rect draw_rect(0, 0, 50, 50);
+  EXPECT_TRUE(surface_->SetDrawRectangle(draw_rect));
+
+  glClearColor(1.0, 0.0, 0.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+            surface_->SwapBuffers(base::DoNothing(), FrameData()));
+
+  Sleep(1000);
+
+  // Note: The colors read back are BGRA so the expected colors are inverted
+  // with respect to the clear color.
+  struct {
+    gfx::Point position;
+    SkColor expected_color;
+  } test_cases[] = {{gfx::Point(75, 75), SkColorSetRGB(255, 0, 0)},
+                    {gfx::Point(25, 25), SkColorSetRGB(0, 0, 255)}};
+
+  for (const auto& test_case : test_cases) {
+    SkColor actual_color =
+        GLTestHelper::ReadBackWindowPixel(window_.hwnd(), test_case.position);
+    EXPECT_TRUE(AreColorsSimilar(test_case.expected_color, actual_color))
+        << std::hex << "Expected " << test_case.expected_color << " Actual "
+        << actual_color;
+  }
+}
+
+void RunBufferCountTest(scoped_refptr<DCompPresenter> surface,
+                        UINT buffer_count,
+                        bool for_video) {
+  if (!surface)
+    return;
+
+  if (for_video) {
+    SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+    EXPECT_TRUE(surface->SetEnableDCLayers(true));
+  } else {
+    EXPECT_TRUE(surface->SetEnableDCLayers(false));
+  }
+
+  constexpr gfx::Size window_size(100, 100);
+  EXPECT_TRUE(surface->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(surface->SetDrawRectangle(gfx::Rect(window_size)));
+
+  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  constexpr gfx::Size texture_size(50, 50);
+  if (for_video) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+        QueryD3D11DeviceObjectFromANGLE();
+    ASSERT_TRUE(d3d11_device);
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+        CreateNV12Texture(d3d11_device, texture_size, /*shared=*/false);
+    // The format doesn't matter, since we aren't binding.
+    scoped_refptr<GLImageDXGI> image_dxgi(
+        new GLImageDXGI(texture_size, nullptr));
+    image_dxgi->SetTexture(texture, /*level=*/0);
+
+    std::unique_ptr<ui::DCRendererLayerParams> params =
+        std::make_unique<ui::DCRendererLayerParams>();
+    params->images[0] = image_dxgi;
+    params->content_rect = gfx::Rect(texture_size);
+    params->quad_rect = gfx::Rect(window_size);
+    EXPECT_TRUE(surface->ScheduleDCLayer(std::move(params)));
+  }
+
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+            surface->SwapBuffers(base::DoNothing(), FrameData()));
+
+  auto swap_chain = for_video ? surface->GetLayerSwapChainForTesting(0)
+                              : surface->GetBackbufferSwapChainForTesting();
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -1330,17 +1539,41 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
   // The expected size is window_size(100, 100).
   EXPECT_EQ(100u, desc.Width);
   EXPECT_EQ(100u, desc.Height);
-  if (GetParam()) {
-    EXPECT_EQ(3u, desc.BufferCount);
-  } else {
-    EXPECT_EQ(2u, desc.BufferCount);
-  }
+  EXPECT_EQ(buffer_count, desc.BufferCount);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         DCompPresenterBufferCountTest,
-                         testing::Bool(),
-                         &DCompPresenterBufferCountTest::GetParamName);
+TEST_F(DCompPresenterTest, RootSwapChainBufferCount) {
+  RunBufferCountTest(surface_, /*buffer_count=*/2u, /*for_video=*/false);
+}
+
+TEST_F(DCompPresenterTest, VideoSwapChainBufferCount) {
+  RunBufferCountTest(surface_, /*buffer_count=*/2u, /*for_video=*/true);
+}
+
+class DCompPresenterTripleBufferingTest : public DCompPresenterTest {
+ public:
+  DCompPresenterTripleBufferingTest() = default;
+  ~DCompPresenterTripleBufferingTest() override = default;
+
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeatures({features::kDCompTripleBufferRootSwapChain,
+                                    features::kDCompTripleBufferVideoSwapChain},
+                                   {});
+    DCompPresenterTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DCompPresenterTripleBufferingTest, MainSwapChainBufferCount) {
+  RunBufferCountTest(surface_, /*buffer_count=*/3u, /*for_video=*/false);
+}
+
+TEST_F(DCompPresenterTripleBufferingTest, VideoSwapChainBufferCount) {
+  RunBufferCountTest(surface_, /*buffer_count=*/3u, /*for_video=*/true);
+}
 
 }  // namespace
 }  // namespace gl
