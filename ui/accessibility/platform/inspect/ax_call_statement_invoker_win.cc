@@ -19,39 +19,10 @@
 
 namespace ui {
 
-std::string AXCallStatementInvokerWin::ToString(AXOptionalObject& optional) {
-  if (optional.HasValue()) {
-    Target value = *optional;
-
-    if (absl::holds_alternative<IAccessibleComPtr>(value))
-      return "IAccessible";
-
-    if (absl::holds_alternative<IA2ComPtr>(value))
-      return "IAccessible2Interface";
-
-    if (absl::holds_alternative<IA2HypertextComPtr>(value))
-      return "IAccessible2HyperlinkInferface";
-
-    if (absl::holds_alternative<IA2TableComPtr>(value))
-      return "IAccessible2TableInterface";
-
-    if (absl::holds_alternative<IA2TableCellComPtr>(value))
-      return "IAccessible2TableCellInterface";
-
-    if (absl::holds_alternative<IA2TextComPtr>(value))
-      return "IAccessible2TextInterface";
-
-    if (absl::holds_alternative<IA2ValueComPtr>(value))
-      return "IAccessible2ValueInterface";
-
-    if (absl::holds_alternative<std::string>(value)) {
-      return "\"" + absl::get<std::string>(value) + "\"";
-    }
-    if (absl::holds_alternative<int>(value)) {
-      return base::NumberToString(absl::get<int>(value));
-    }
-  }
-  return optional.StateToString();
+// static
+std::string AXCallStatementInvokerWin::ToString(
+    const AXOptionalObject& optional) {
+  return optional.HasValue() ? optional->ToString() : optional.StateToString();
 }
 
 AXCallStatementInvokerWin::AXCallStatementInvokerWin(
@@ -100,7 +71,7 @@ AXOptionalObject AXCallStatementInvokerWin::Invoke(
   // an accessible element by DOM id or by a line number (:LINE_NUM format) in
   // a result accessible tree. The tree indexer keeps the mappings between
   // accessible elements and their DOM ids and line numbers.
-  if (target.index() == 0) {
+  if (!target) {
     target = indexer_->NodeBy(property_node.name_or_value);
   }
 
@@ -131,47 +102,30 @@ AXOptionalObject AXCallStatementInvokerWin::Invoke(
 }
 
 AXOptionalObject AXCallStatementInvokerWin::InvokeFor(
-    const Target target,
+    const Target& target,
     const AXPropertyNode& property_node) const {
-  if (absl::holds_alternative<IAccessibleComPtr>(target)) {
-    IAccessibleComPtr AXElement = absl::get<IAccessibleComPtr>(target);
-    return InvokeForAXElement(AXElement, property_node);
-  }
+  if (target.Is<IAccessibleComPtr>())
+    return InvokeForAXElement(target.As<IAccessibleComPtr>(), property_node);
 
-  if (absl::holds_alternative<IAccessibleComPtr>(target)) {
-    IAccessibleComPtr AXElement = absl::get<IAccessibleComPtr>(target);
-    return InvokeForAXElement(AXElement, property_node);
-  }
+  if (target.Is<IA2ComPtr>())
+    return InvokeForIA2(target.As<IA2ComPtr>(), property_node);
 
-  if (absl::holds_alternative<IA2ComPtr>(target)) {
-    IA2ComPtr ia2 = absl::get<IA2ComPtr>(target);
-    return InvokeForIA2(ia2, property_node);
-  }
+  if (target.Is<IA2HypertextComPtr>())
+    return InvokeForIA2Hypertext(target.As<IA2HypertextComPtr>(),
+                                 property_node);
 
-  if (absl::holds_alternative<IA2HypertextComPtr>(target)) {
-    IA2HypertextComPtr ia2hypertext = absl::get<IA2HypertextComPtr>(target);
-    return InvokeForIA2Hypertext(ia2hypertext, property_node);
-  }
+  if (target.Is<IA2TableComPtr>())
+    return InvokeForIA2Table(target.As<IA2TableComPtr>(), property_node);
 
-  if (absl::holds_alternative<IA2TableComPtr>(target)) {
-    IA2TableComPtr ia2table = absl::get<IA2TableComPtr>(target);
-    return InvokeForIA2Table(ia2table, property_node);
-  }
+  if (target.Is<IA2TableCellComPtr>())
+    return InvokeForIA2TableCell(target.As<IA2TableCellComPtr>(),
+                                 property_node);
 
-  if (absl::holds_alternative<IA2TableCellComPtr>(target)) {
-    IA2TableCellComPtr ia2cell = absl::get<IA2TableCellComPtr>(target);
-    return InvokeForIA2TableCell(ia2cell, property_node);
-  }
+  if (target.Is<IA2TextComPtr>())
+    return InvokeForIA2Text(target.As<IA2TextComPtr>(), property_node);
 
-  if (absl::holds_alternative<IA2TextComPtr>(target)) {
-    IA2TextComPtr ia2text = absl::get<IA2TextComPtr>(target);
-    return InvokeForIA2Text(ia2text, property_node);
-  }
-
-  if (absl::holds_alternative<IA2ValueComPtr>(target)) {
-    IA2ValueComPtr ia2value = absl::get<IA2ValueComPtr>(target);
-    return InvokeForIA2Value(ia2value, property_node);
-  }
+  if (target.Is<IA2ValueComPtr>())
+    return InvokeForIA2Value(target.As<IA2ValueComPtr>(), property_node);
 
   LOG(ERROR) << "Unexpected target type for " << property_node.ToFlatString();
   return AXOptionalObject::Error();
@@ -404,12 +358,10 @@ AXOptionalObject AXCallStatementInvokerWin::HasIA2State(
   return AXOptionalObject::Error();
 }
 
-bool AXCallStatementInvokerWin::IsIAccessibleAndNotNull(Target target) const {
-  if (IAccessibleComPtr* ia_ptr = absl::get_if<IAccessibleComPtr>(&target)) {
-    if ((*ia_ptr).Get() != nullptr)
-      return true;
-  }
-  return false;
+bool AXCallStatementInvokerWin::IsIAccessibleAndNotNull(
+    const Target& target) const {
+  return target.Is<IAccessibleComPtr>() &&
+         target.As<IAccessibleComPtr>().Get() != nullptr;
 }
 
 }  // namespace ui

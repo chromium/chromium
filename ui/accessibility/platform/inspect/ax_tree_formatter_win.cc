@@ -191,7 +191,7 @@ std::string AXTreeFormatterWin::EvaluateScript(
 
   base::Value scripts(base::Value::Type::LIST);
   ui::AXTreeIndexerWin indexer(root);
-  std::map<std::string, ui::Target> storage;
+  std::map<std::string, AXTargetWin> storage;
   ui::AXCallStatementInvokerWin invoker(&indexer, &storage);
   for (size_t index = start_index; index < end_index; index++) {
     if (instructions[index].IsComment()) {

@@ -5,43 +5,25 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_CALL_STATEMENT_INVOKER_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_CALL_STATEMENT_INVOKER_WIN_H_
 
-#include <oleacc.h>
-
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/platform/inspect/ax_optional.h"
+#include "ui/accessibility/platform/inspect/ax_target_win.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer_win.h"
 
 namespace ui {
 
 class AXPropertyNode;
 
-using IAccessibleComPtr = Microsoft::WRL::ComPtr<IAccessible>;
-using IA2ComPtr = Microsoft::WRL::ComPtr<IAccessible2>;
-using IA2HypertextComPtr = Microsoft::WRL::ComPtr<IAccessibleHypertext>;
-using IA2TableComPtr = Microsoft::WRL::ComPtr<IAccessibleTable>;
-using IA2TableCellComPtr = Microsoft::WRL::ComPtr<IAccessibleTableCell>;
-using IA2TextComPtr = Microsoft::WRL::ComPtr<IAccessibleText>;
-using IA2ValueComPtr = Microsoft::WRL::ComPtr<IAccessibleValue>;
-using Target = absl::variant<absl::monostate,
-                             std::string,
-                             int,
-                             IAccessibleComPtr,
-                             IA2ComPtr,
-                             IA2HypertextComPtr,
-                             IA2TableComPtr,
-                             IA2TableCellComPtr,
-                             IA2TextComPtr,
-                             IA2ValueComPtr>;
-
 // Optional tri-state object.
-using AXOptionalObject = ui::AXOptional<Target>;
+using AXOptionalObject = ui::AXOptional<AXTargetWin>;
 
 // Invokes a script instruction describing a call unit which represents
 // a sequence of calls.
 class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
  public:
+  using Target = AXTargetWin;
+
   // All calls are executed in the context of property nodes.
   // Note: both |indexer| and |storage| must outlive this object.
   AXCallStatementInvokerWin(const AXTreeIndexerWin* indexer,
@@ -50,11 +32,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
   // Invokes an attribute matching a property filter.
   AXOptionalObject Invoke(const AXPropertyNode& property_node) const;
 
-  static std::string ToString(AXOptionalObject& optional);
+  static std::string ToString(const AXOptionalObject& optional);
 
  private:
   // Invokes a property node for a given target.
-  AXOptionalObject InvokeFor(const Target target,
+  AXOptionalObject InvokeFor(const Target& target,
                              const AXPropertyNode& property_node) const;
 
   // Invokes a property node for a given AXElement.
@@ -95,7 +77,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
                                    std::string attribute) const;
   AXOptionalObject HasIA2State(const IA2ComPtr target, std::string state) const;
 
-  bool IsIAccessibleAndNotNull(Target target) const;
+  bool IsIAccessibleAndNotNull(const Target& target) const;
 
   // Map between IAccessible objects and their DOMIds/accessible tree
   // line numbers. Owned by the caller and outlives this object.

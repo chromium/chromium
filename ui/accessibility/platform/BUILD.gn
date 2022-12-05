@@ -188,6 +188,8 @@ component("platform") {
         "inspect/ax_event_recorder_win_uia.h",
         "inspect/ax_inspect_utils_win.cc",
         "inspect/ax_inspect_utils_win.h",
+        "inspect/ax_target_win.cc",
+        "inspect/ax_target_win.h",
         "inspect/ax_tree_formatter_uia_win.cc",
         "inspect/ax_tree_formatter_uia_win.h",
         "inspect/ax_tree_formatter_win.cc",

@@ -44,8 +44,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXOptional final {
                       other_value_ != nullptr ? kValue : kNotApplicable);
   }
 
-  explicit constexpr AXOptional(ValueType value_)
+  explicit constexpr AXOptional(const ValueType& value_)
       : value_(value_), state_(kValue) {}
+  explicit constexpr AXOptional(ValueType&& value_)
+      : value_(std::forward<ValueType>(value_)), state_(kValue) {}
 
   bool constexpr IsUnsupported() const { return state_ == kUnsupported; }
   bool constexpr IsNotApplicable() const { return state_ == kNotApplicable; }
@@ -63,8 +65,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXOptional final {
     return true;
   }
 
-  bool constexpr HasValue() { return state_ == kValue; }
+  bool constexpr HasValue() const { return state_ == kValue; }
   constexpr const ValueType& operator*() const { return value_; }
+  constexpr const ValueType* operator->() const { return &value_; }
 
   bool HasStateText() const { return !state_text_.empty(); }
   std::string StateText() const { return state_text_; }
