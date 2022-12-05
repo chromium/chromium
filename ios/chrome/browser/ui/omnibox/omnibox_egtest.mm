@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
@@ -965,8 +966,7 @@ void FocusFakebox() {
       assertWithMatcher:grey_nil()];
 }
 
-// TODO(crbug.com/1253345) Re-enable this test
-- (void)DISABLED_testNoDefaultMatch {
+- (void)testNoDefaultMatch {
   NSString* copiedText = @"test no default match1";
 
   // Put some text in pasteboard.
@@ -994,10 +994,12 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText("")];
 
-  // Returns the popup row containing the `url` as suggestion.
-  id<GREYMatcher> textYouCopiedMatch =
-      grey_allOf(grey_kindOfClassName(@"OmniboxPopupRowCell"),
-                 grey_descendant(grey_accessibilityLabel(copiedText)), nil);
+  // Returns the "Text you copied" row.
+  NSString* textYouCopiedLabel =
+      l10n_util::GetNSString(IDS_TEXT_FROM_CLIPBOARD);
+  id<GREYMatcher> textYouCopiedMatch = grey_allOf(
+      grey_kindOfClassName(@"OmniboxPopupRowCell"),
+      grey_descendant(grey_accessibilityLabel(textYouCopiedLabel)), nil);
   [[EarlGrey selectElementWithMatcher:textYouCopiedMatch]
       assertWithMatcher:grey_notNil()];
 }
