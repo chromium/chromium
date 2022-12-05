@@ -1059,11 +1059,6 @@ void PasswordManager::OnPasswordFormsRendered(
 }
 
 void PasswordManager::OnLoginSuccessful() {
-  if (client_->IsAutofillAssistantUIVisible()) {
-    // Suppress prompts while Autofill Assistant UI is shown.
-    return;
-  }
-
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(

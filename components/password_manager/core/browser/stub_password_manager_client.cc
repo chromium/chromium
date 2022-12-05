@@ -184,10 +184,6 @@ FieldInfoManager* StubPasswordManagerClient::GetFieldInfoManager() const {
   return nullptr;
 }
 
-bool StubPasswordManagerClient::IsAutofillAssistantUIVisible() const {
-  return false;
-}
-
 version_info::Channel StubPasswordManagerClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }

@@ -156,7 +156,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         .WillByDefault(Return(false));
     ON_CALL(filter_, IsSyncAccountEmail(_)).WillByDefault(Return(false));
     ON_CALL(*this, IsNewTabPage()).WillByDefault(Return(false));
-    ON_CALL(*this, IsAutofillAssistantUIVisible()).WillByDefault(Return(false));
 
     ON_CALL(*this, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(&webauthn_credentials_delegate_));
@@ -220,7 +219,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (override));
   MOCK_METHOD(bool, IsNewTabPage, (), (const, override));
-  MOCK_METHOD(bool, IsAutofillAssistantUIVisible, (), (const, override));
   MOCK_METHOD(SyncState, GetPasswordSyncState, (), (const, override));
   MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
   MOCK_METHOD(profile_metrics::BrowserProfileType,
@@ -3808,85 +3806,6 @@ TEST_P(PasswordManagerTest, FormSubmittedOnIFramePrimaryMainFrameLoaded) {
   // Simulate finish loading of the main frame. Check that the prompt is shown.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_));
   manager()->OnPasswordFormsRendered(&driver_, {} /* observed */);
-}
-
-TEST_P(PasswordManagerTest, NoPromptAutofillAssistantManuallyCuratedScript) {
-  EXPECT_CALL(client_, IsAutofillAssistantUIVisible)
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
-      .WillRepeatedly(Return(true));
-
-  // Check that a save prompt is not shown.
-  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
-
-  // Simulate multiple submissions.
-  for (size_t i = 0; i < 2; i++) {
-    PasswordForm form(MakeSimpleForm());
-    manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
-    manager()->OnInformAboutUserInput(&driver_, form.form_data);
-
-    manager()->DidNavigateMainFrame(true /* form_may_be_submitted */);
-    manager()->OnPasswordFormsRendered(&driver_, {} /* observed */);
-  }
-}
-
-// Password Manager may store a pending credential that will cause a prompt when
-// Autofill Assistant has already handled the submission. This test ensures that
-// Password Manager forgots the pending credential and doesn't prompt to update
-// the password later (e.g., after navigation).
-TEST_P(PasswordManagerTest,
-       NoPromptAfterAutofillAssistantManuallyCuratedScript) {
-  for (bool set_owned_form_manager : {false, true}) {
-    SCOPED_TRACE(testing::Message("set_owned_form_manager = ")
-                 << set_owned_form_manager);
-
-    EXPECT_CALL(client_, IsSavingAndFillingEnabled)
-        .WillRepeatedly(Return(true));
-    EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
-
-    // Make several forms ready for saving.
-    PasswordForm form1(MakeFormWithOnlyNewPasswordField());
-    PasswordForm form2(MakeSimpleForm());
-    manager()->OnPasswordFormsParsed(&driver_,
-                                     {form1.form_data, form2.form_data});
-    task_environment_.RunUntilIdle();
-    manager()->OnInformAboutUserInput(&driver_, form1.form_data);
-    manager()->OnInformAboutUserInput(&driver_, form2.form_data);
-
-    // Simulate submission in different ways depending on whether
-    // |owned_submitted_form_manager_| should be set and |form_managers_|should
-    // be cleared OR the submitted form manager should be in |form_managers_|.
-    if (set_owned_form_manager)
-      manager()->DidNavigateMainFrame(true /* form_may_be_submitted */);
-    else
-      OnPasswordFormSubmitted(form2.form_data);
-
-    // Test that Autofill Assistant has finished a script before Password
-    // Manager detected a successful submission. As a script has finished,
-    // pending credentials have reset.
-    manager()->ResetPendingCredentials();
-    manager()->OnPasswordFormsRendered(&driver_, {} /* observed */);
-    task_environment_.RunUntilIdle();
-
-    // No form manager is ready for saving.
-    EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
-
-    Mock::VerifyAndClearExpectations(&client_);
-    EXPECT_CALL(client_, IsAutofillAssistantUIVisible).WillOnce(Return(false));
-
-    // A form reappears again and a user submits it manually. Now expect a
-    // prompt.
-    EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr);
-    EXPECT_CALL(client_, IsSavingAndFillingEnabled)
-        .WillRepeatedly(Return(true));
-
-    manager()->OnPasswordFormsParsed(&driver_, {form2.form_data});
-    task_environment_.RunUntilIdle();
-
-    OnPasswordFormSubmitted(form2.form_data);
-    manager()->OnPasswordFormsRendered(&driver_, {} /* observed */);
-    Mock::VerifyAndClearExpectations(&client_);
-  }
 }
 
 TEST_P(PasswordManagerTest, GenerationOnChangedForm) {

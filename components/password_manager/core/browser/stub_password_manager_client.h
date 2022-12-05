@@ -74,7 +74,6 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   autofill::LogManager* GetLogManager() override;
   const MockPasswordFeatureManager* GetPasswordFeatureManager() const override;
   MockPasswordFeatureManager* GetPasswordFeatureManager();
-  bool IsAutofillAssistantUIVisible() const override;
   version_info::Channel GetChannel() const override;
 
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()

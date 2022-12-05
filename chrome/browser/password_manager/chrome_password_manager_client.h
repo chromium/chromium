@@ -17,7 +17,6 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_assistant/browser/public/runtime_observer.h"
 #include "components/password_manager/content/browser/content_credential_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
@@ -95,8 +94,7 @@ class ChromePasswordManagerClient
       public content::WebContentsObserver,
       public content::WebContentsUserData<ChromePasswordManagerClient>,
       public autofill::mojom::PasswordGenerationDriver,
-      public content::RenderWidgetHost::InputEventObserver,
-      public autofill_assistant::RuntimeObserver {
+      public content::RenderWidgetHost::InputEventObserver {
  public:
   static void CreateForWebContentsWithAutofillClient(
       content::WebContents* contents,
@@ -150,7 +148,6 @@ class ChromePasswordManagerClient
   void OnPasswordSelected(const std::u16string& text) override;
 #endif
 
-  bool IsAutofillAssistantUIVisible() const override;
   // Returns a pointer to the BiometricAuthenticator which is created on demand.
   // This is currently only implemented for Android, Mac and Windows. On all
   // other platforms this will always be null.
@@ -334,9 +331,6 @@ class ChromePasswordManagerClient
     return &credential_cache_;
   }
 #endif
-
-  // AutofillAssistantRuntimeObserver:
-  void OnStateChanged(autofill_assistant::UIState state) override;
 
  protected:
   // Callable for tests.

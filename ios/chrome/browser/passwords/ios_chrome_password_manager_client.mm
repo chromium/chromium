@@ -338,10 +338,6 @@ IOSChromePasswordManagerClient::GetFieldInfoManager() const {
   return nullptr;
 }
 
-bool IOSChromePasswordManagerClient::IsAutofillAssistantUIVisible() const {
-  return false;
-}
-
 safe_browsing::PasswordProtectionService*
 IOSChromePasswordManagerClient::GetPasswordProtectionService() const {
   return ChromePasswordProtectionServiceFactory::GetForBrowserState(

@@ -93,7 +93,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                const std::vector<const PasswordForm*>*,
                bool was_autofilled_on_pageload),
               (override));
-  MOCK_METHOD(bool, IsAutofillAssistantUIVisible, (), (const override));
 
   explicit MockPasswordManagerClient(PasswordStoreInterface* profile_store,
                                      PasswordStoreInterface* account_store)
@@ -109,8 +108,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                                             true);
     prefs_->registry()->RegisterBooleanPref(::prefs::kSafeBrowsingEnhanced,
                                             false);
-    ON_CALL(*this, IsAutofillAssistantUIVisible)
-        .WillByDefault(testing::Return(false));
   }
   MockPasswordManagerClient(const MockPasswordManagerClient&) = delete;
   MockPasswordManagerClient& operator=(const MockPasswordManagerClient&) =
@@ -1479,21 +1476,6 @@ TEST_P(CredentialManagerImplTest, IncognitoZeroClickRequestCredential) {
   EXPECT_CALL(*client_, NotifyUserAutoSigninPtr()).Times(testing::Exactly(0));
 
   ExpectCredentialType(CredentialMediationRequirement::kSilent, true,
-                       federations, CredentialType::CREDENTIAL_TYPE_EMPTY);
-}
-
-TEST_P(CredentialManagerImplTest, AutofillAssistantZeroClickRequestCredential) {
-  store_->AddLogin(form_);
-
-  std::vector<GURL> federations;
-  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr)
-      .Times(testing::Exactly(0));
-  EXPECT_CALL(*client_, NotifyUserAutoSigninPtr()).Times(testing::Exactly(0));
-  EXPECT_CALL(*client_, IsIncognito()).WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*client_, IsAutofillAssistantUIVisible())
-      .WillRepeatedly(testing::Return(true));
-
-  ExpectCredentialType(CredentialMediationRequirement::kOptional, true,
                        federations, CredentialType::CREDENTIAL_TYPE_EMPTY);
 }
 

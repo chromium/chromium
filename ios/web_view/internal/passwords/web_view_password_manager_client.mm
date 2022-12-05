@@ -322,10 +322,6 @@ WebViewPasswordManagerClient::GetFieldInfoManager() const {
   return nullptr;
 }
 
-bool WebViewPasswordManagerClient::IsAutofillAssistantUIVisible() const {
-  return false;
-}
-
 safe_browsing::PasswordProtectionService*
 WebViewPasswordManagerClient::GetPasswordProtectionService() const {
   // TODO(crbug.com/1148229): Enable PhishGuard in web_view.
