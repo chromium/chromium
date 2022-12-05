@@ -59,7 +59,7 @@ class KnownUserTest : public testing::Test {
 
   PrefService* local_state() { return &local_state_; }
 
-  const base::Value* FindPrefs(const AccountId& account_id) {
+  const base::Value::Dict* FindPrefs(const AccountId& account_id) {
     return KnownUser(local_state()).FindPrefs(account_id);
   }
 
@@ -82,10 +82,10 @@ TEST_F(KnownUserTest, FindPrefsExisting) {
   const std::string kCustomPrefName = "custom_pref";
   known_user.SetStringPref(kDefaultAccountId, kCustomPrefName, "value");
 
-  const base::Value* value = FindPrefs(kDefaultAccountId);
+  const base::Value::Dict* value = FindPrefs(kDefaultAccountId);
   ASSERT_TRUE(value);
 
-  const std::string* pref_value = value->FindStringKey(kCustomPrefName);
+  const std::string* pref_value = value->FindString(kCustomPrefName);
   ASSERT_TRUE(pref_value);
   EXPECT_EQ(*pref_value, "value");
 }

@@ -271,7 +271,7 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   // Performs a lookup of properties associated with |account_id|. Returns
   // nullptr if not found.
-  const base::Value* FindPrefs(const AccountId& account_id) const;
+  const base::Value::Dict* FindPrefs(const AccountId& account_id) const;
 
   // Removes all user preferences associated with |account_id|.
   // Not exported as code should not be calling this outside this component

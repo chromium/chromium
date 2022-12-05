@@ -142,8 +142,8 @@ const char* kObsoleteKeys[] = {
 };
 
 // Checks if values in |dict| correspond with |account_id| identity.
-bool UserMatches(const AccountId& account_id, const base::Value& dict) {
-  const std::string* account_type = dict.FindStringKey(kAccountTypeKey);
+bool UserMatches(const AccountId& account_id, const base::Value::Dict& dict) {
+  const std::string* account_type = dict.FindString(kAccountTypeKey);
   if (account_id.GetAccountType() != AccountType::UNKNOWN && account_type &&
       account_id.GetAccountType() !=
           AccountId::StringToAccountType(*account_type)) {
@@ -155,13 +155,13 @@ bool UserMatches(const AccountId& account_id, const base::Value& dict) {
   // this function should likely be returning false even if the e-mail matches.
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE: {
-      const std::string* gaia_id = dict.FindStringKey(kGAIAIdKey);
+      const std::string* gaia_id = dict.FindString(kGAIAIdKey);
       if (gaia_id && account_id.GetGaiaId() == *gaia_id)
         return true;
       break;
     }
     case AccountType::ACTIVE_DIRECTORY: {
-      const std::string* obj_guid = dict.FindStringKey(kObjGuidKey);
+      const std::string* obj_guid = dict.FindString(kObjGuidKey);
       if (obj_guid && account_id.GetObjGuid() == *obj_guid)
         return true;
       break;
@@ -170,7 +170,7 @@ bool UserMatches(const AccountId& account_id, const base::Value& dict) {
     }
   }
 
-  const std::string* email = dict.FindStringKey(kCanonicalEmail);
+  const std::string* email = dict.FindString(kCanonicalEmail);
   if (email && account_id.GetUserEmail() == *email)
     return true;
 
@@ -178,27 +178,24 @@ bool UserMatches(const AccountId& account_id, const base::Value& dict) {
 }
 
 // Fills relevant |dict| values based on |account_id|.
-// TODO(crbug.com/1287074): Consider a refactor to use base::Value::DictStorage.
-// This would require |dict| to not be modified in-place.
-void UpdateIdentity(const AccountId& account_id, base::Value& dict) {
-  DCHECK(dict.is_dict());
+void UpdateIdentity(const AccountId& account_id, base::Value::Dict& dict) {
   if (!account_id.GetUserEmail().empty())
-    dict.SetStringKey(kCanonicalEmail, account_id.GetUserEmail());
+    dict.Set(kCanonicalEmail, account_id.GetUserEmail());
 
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE:
       if (!account_id.GetGaiaId().empty())
-        dict.SetStringKey(kGAIAIdKey, account_id.GetGaiaId());
+        dict.Set(kGAIAIdKey, account_id.GetGaiaId());
       break;
     case AccountType::ACTIVE_DIRECTORY:
       if (!account_id.GetObjGuid().empty())
-        dict.SetStringKey(kObjGuidKey, account_id.GetObjGuid());
+        dict.Set(kObjGuidKey, account_id.GetObjGuid());
       break;
     case AccountType::UNKNOWN:
       return;
   }
-  dict.SetStringKey(kAccountTypeKey, AccountId::AccountTypeToString(
-                                         account_id.GetAccountType()));
+  dict.Set(kAccountTypeKey,
+           AccountId::AccountTypeToString(account_id.GetAccountType()));
 }
 
 }  // namespace
@@ -209,7 +206,8 @@ KnownUser::KnownUser(PrefService* local_state) : local_state_(local_state) {
 
 KnownUser::~KnownUser() = default;
 
-const base::Value* KnownUser::FindPrefs(const AccountId& account_id) const {
+const base::Value::Dict* KnownUser::FindPrefs(
+    const AccountId& account_id) const {
   // UserManager is usually NULL in unit tests.
   if (account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY &&
       UserManager::IsInitialized() &&
@@ -222,11 +220,12 @@ const base::Value* KnownUser::FindPrefs(const AccountId& account_id) const {
 
   const base::Value::List& known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users) {
-    if (element_value.is_dict()) {
-      if (UserMatches(account_id, element_value)) {
-        return &element_value;
-      }
-    }
+    if (!element_value.is_dict())
+      continue;
+    const base::Value::Dict& dict = element_value.GetDict();
+    if (!UserMatches(account_id, dict))
+      continue;
+    return &dict;
   }
   return nullptr;
 }
@@ -246,34 +245,36 @@ void KnownUser::SetPath(const AccountId& account_id,
 
   ScopedListPrefUpdate update(local_state_, kKnownUsers);
   for (base::Value& element_value : *update) {
-    if (element_value.is_dict()) {
-      if (UserMatches(account_id, element_value)) {
-        if (opt_value.has_value())
-          element_value.SetPath(path, std::move(opt_value).value());
-        else
-          element_value.RemovePath(path);
-
-        UpdateIdentity(account_id, element_value);
-        return;
-      }
+    if (!element_value.is_dict())
+      continue;
+    base::Value::Dict& dict = element_value.GetDict();
+    if (!UserMatches(account_id, dict))
+      continue;
+    if (opt_value.has_value()) {
+      dict.SetByDottedPath(path, std::move(opt_value).value());
+    } else {
+      dict.RemoveByDottedPath(path);
     }
+
+    UpdateIdentity(account_id, dict);
+    return;
   }
   if (!opt_value.has_value())
     return;
 
-  base::Value new_dict(base::Value::Type::DICTIONARY);
-  new_dict.SetPath(path, std::move(opt_value).value());
+  base::Value::Dict new_dict;
+  new_dict.SetByDottedPath(path, std::move(opt_value).value());
   UpdateIdentity(account_id, new_dict);
   update->Append(std::move(new_dict));
 }
 
 const std::string* KnownUser::FindStringPath(const AccountId& account_id,
                                              base::StringPiece path) const {
-  const base::Value* user_pref_dict = FindPrefs(account_id);
+  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
     return nullptr;
 
-  return user_pref_dict->FindStringPath(path);
+  return user_pref_dict->FindStringByDottedPath(path);
 }
 
 bool KnownUser::GetStringPrefForTest(const AccountId& account_id,
@@ -293,11 +294,11 @@ void KnownUser::SetStringPref(const AccountId& account_id,
 
 absl::optional<bool> KnownUser::FindBoolPath(const AccountId& account_id,
                                              base::StringPiece path) const {
-  const base::Value* user_pref_dict = FindPrefs(account_id);
+  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
     return absl::nullopt;
 
-  return user_pref_dict->FindBoolPath(path);
+  return user_pref_dict->FindBoolByDottedPath(path);
 }
 
 bool KnownUser::GetBooleanPrefForTest(const AccountId& account_id,
@@ -318,11 +319,11 @@ void KnownUser::SetBooleanPref(const AccountId& account_id,
 
 absl::optional<int> KnownUser::FindIntPath(const AccountId& account_id,
                                            base::StringPiece path) const {
-  const base::Value* user_pref_dict = FindPrefs(account_id);
+  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
     return absl::nullopt;
 
-  return user_pref_dict->FindIntPath(path);
+  return user_pref_dict->FindIntByDottedPath(path);
 }
 
 bool KnownUser::GetIntegerPrefForTest(const AccountId& account_id,
@@ -350,11 +351,11 @@ bool KnownUser::GetPrefForTest(const AccountId& account_id,
 
 const base::Value* KnownUser::FindPath(const AccountId& account_id,
                                        const std::string& path) const {
-  const base::Value* user_pref_dict = FindPrefs(account_id);
+  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
     return nullptr;
 
-  return user_pref_dict->FindPath(path);
+  return user_pref_dict->FindByDottedPath(path);
 }
 
 void KnownUser::RemovePref(const AccountId& account_id,
@@ -468,32 +469,33 @@ std::vector<AccountId> KnownUser::GetKnownAccountIds() {
 
   const base::Value::List& known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users) {
-    if (element_value.is_dict()) {
-      const std::string* email = element_value.FindStringKey(kCanonicalEmail);
-      const std::string* gaia_id = element_value.FindStringKey(kGAIAIdKey);
-      const std::string* obj_guid = element_value.FindStringKey(kObjGuidKey);
-      AccountType account_type = AccountType::GOOGLE;
-      if (const std::string* account_type_string =
-              element_value.FindStringKey(kAccountTypeKey)) {
-        account_type = AccountId::StringToAccountType(*account_type_string);
-      }
-      switch (account_type) {
-        case AccountType::GOOGLE:
-          if (email || gaia_id) {
-            result.push_back(AccountId::FromUserEmailGaiaId(
-                email ? *email : std::string(),
-                gaia_id ? *gaia_id : std::string()));
-          }
-          break;
-        case AccountType::ACTIVE_DIRECTORY:
-          if (email && obj_guid) {
-            result.push_back(
-                AccountId::AdFromUserEmailObjGuid(*email, *obj_guid));
-          }
-          break;
-        default:
-          NOTREACHED() << "Unknown account type";
-      }
+    if (!element_value.is_dict())
+      continue;
+    const base::Value::Dict& dict = element_value.GetDict();
+    const std::string* email = dict.FindString(kCanonicalEmail);
+    const std::string* gaia_id = dict.FindString(kGAIAIdKey);
+    const std::string* obj_guid = dict.FindString(kObjGuidKey);
+    AccountType account_type = AccountType::GOOGLE;
+    if (const std::string* account_type_string =
+            dict.FindString(kAccountTypeKey)) {
+      account_type = AccountId::StringToAccountType(*account_type_string);
+    }
+    switch (account_type) {
+      case AccountType::GOOGLE:
+        if (email || gaia_id) {
+          result.push_back(AccountId::FromUserEmailGaiaId(
+              email ? *email : std::string(),
+              gaia_id ? *gaia_id : std::string()));
+        }
+        break;
+      case AccountType::ACTIVE_DIRECTORY:
+        if (email && obj_guid) {
+          result.push_back(
+              AccountId::AdFromUserEmailObjGuid(*email, *obj_guid));
+        }
+        break;
+      default:
+        NOTREACHED() << "Unknown account type";
     }
   }
   return result;
@@ -780,7 +782,7 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
   ScopedListPrefUpdate update(local_state_, kKnownUsers);
   base::Value::List& update_list = update.Get();
   for (auto it = update_list.begin(); it != update_list.end(); ++it) {
-    if (UserMatches(account_id, *it)) {
+    if (UserMatches(account_id, it->GetDict())) {
       update_list.erase(it);
       break;
     }
