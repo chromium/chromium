@@ -45,6 +45,22 @@ constexpr int kMaxRedirectsPerEntity = 10;
 // server. And after all, the favicon is somewhat optional.
 constexpr int kMaxFaviconUrlSizeToSync = 2048;
 
+bool ShouldSync(const GURL& url) {
+  // Note: Several types of uninteresting/undesired URLs are already excluded by
+  // the history system itself via CanAddURLToHistory(). No need to exclude them
+  // again here.
+  // "file:", "filesystem:", or "blob:" URLs don't make sense to sync.
+  if (url.SchemeIsFile() || url.SchemeIsFileSystem() || url.SchemeIsBlob()) {
+    return false;
+  }
+  // "data:" URLs can be arbitrarily large, and thus shouldn't be synced.
+  // (It's also questionable if it'd be at all useful to sync them.)
+  if (url.SchemeIs(url::kDataScheme)) {
+    return false;
+  }
+  return true;
+}
+
 std::string GetStorageKeyFromVisitRow(const VisitRow& row) {
   DCHECK(!row.visit_time.is_null());
   return HistorySyncMetadataDatabase::StorageKeyFromVisitTime(row.visit_time);
@@ -909,7 +925,7 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
     // the next iteration.
     subchain_begin = subchain_end;
 
-    // Convert the current subchain into a SyncEntity.
+    // Query the URL and annotation info for the current subchain.
     std::vector<AnnotatedVisit> annotated_visits =
         history_backend_->ToAnnotatedVisits(subchain_visits);
     if (annotated_visits.empty()) {
@@ -917,6 +933,17 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
       // skip this subchain but still try to handle any others.
       continue;
     }
+
+    // If there are any unsyncable URLs in the chain, skip the whole thing.
+    // (Typically, unsyncable URLs like file:// or data:// shouldn't have
+    // redirects anyway.)
+    for (const AnnotatedVisit& visit : annotated_visits) {
+      if (!ShouldSync(visit.url_row.url())) {
+        return {};
+      }
+    }
+
+    // Convert the current subchain into a SyncEntity.
     GURL referrer_url =
         GetURLForVisit(annotated_visits.front().visit_row.referring_visit);
     std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(

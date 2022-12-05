@@ -674,8 +674,10 @@ TEST_F(HistorySyncBridgeTest, UploadsNewLocalVisit) {
 }
 
 TEST_F(HistorySyncBridgeTest, DoesNotUploadPreexistingData) {
-  AddVisitToBackendAndAdvanceClock(GURL("https://www.url.com"),
-                                   ui::PAGE_TRANSITION_LINK);
+  auto [url_row, visit_row] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_LINK);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row, visit_row);
 
   ApplyInitialSyncChanges({});
 
@@ -685,6 +687,31 @@ TEST_F(HistorySyncBridgeTest, DoesNotUploadPreexistingData) {
   // The local data should still exist though.
   EXPECT_EQ(backend()->GetURLs().size(), 1u);
   EXPECT_EQ(backend()->GetVisits().size(), 1u);
+}
+
+TEST_F(HistorySyncBridgeTest, DoesNotUploadUnsyncableURLs) {
+  ApplyInitialSyncChanges({});
+
+  // file:// URLs don't make sense to sync.
+  auto [url_row1, visit_row1] = AddVisitToBackendAndAdvanceClock(
+      GURL("file:///path/to/file"), ui::PAGE_TRANSITION_TYPED);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row1, visit_row1);
+
+  // "data://" URLs can be arbitrarily large, and thus shouldn't be synced.
+  auto [url_row2, visit_row2] = AddVisitToBackendAndAdvanceClock(
+      GURL("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="),
+      ui::PAGE_TRANSITION_TYPED);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row2, visit_row2);
+
+  // Note: There are several other types of URLs that shouldn't be synced, but
+  // which are already filtered out by the history system before ever reaching
+  // the bridge, such as javascript://, about://, chrome:// etc - see
+  // CanAddURLToHistory().
+
+  // The data should *not* have been uploaded to Sync.
+  EXPECT_TRUE(processor()->GetEntities().empty());
 }
 
 TEST_F(HistorySyncBridgeTest, DoesNotUploadWhileSyncIsPaused) {

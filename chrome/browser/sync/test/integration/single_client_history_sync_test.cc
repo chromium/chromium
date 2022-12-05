@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/typed_urls_helper.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -15,8 +19,10 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/protocol/history_specifics.pb.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "sync_service_impl_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -145,6 +151,12 @@ MATCHER(StandardFieldsArePopulated, "") {
          arg.redirect_entries(0).originator_visit_id() > 0 &&
          !arg.redirect_entries(0).url().empty() && arg.has_browser_type() &&
          arg.window_id() > 0 && arg.tab_id() > 0 && arg.task_id() > 0;
+}
+
+GURL GetFileUrl(const char* file) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  return net::FilePathToFileURL(
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA).AppendASCII(file));
 }
 
 sync_pb::HistorySpecifics CreateSpecifics(
@@ -359,6 +371,13 @@ class SingleClientHistorySyncTest : public SyncTest {
     }
     content::NavigateToURLBlockUntilNavigationsComplete(GetActiveWebContents(),
                                                         params, 1);
+
+    // Ensure the navigation succeeded (i.e. whatever test URL was passed in was
+    // actually valid).
+    ASSERT_EQ(200, GetActiveWebContents()
+                       ->GetController()
+                       .GetLastCommittedEntry()
+                       ->GetHttpStatusCode());
   }
 
   bool WaitForServerHistory(
@@ -422,6 +441,27 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   // been synced.
   EXPECT_TRUE(WaitForServerHistory(UnorderedElementsAre(
       UrlIs(synced_url1.spec()), UrlIs(synced_url2.spec()))));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       DoesNotUploadUnsyncableURLs) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to some unsyncable URLs. Note that some of these are excluded by
+  // the history system itself (see CanAddURLToHistory()) and thus don't even
+  // make it to the history DB, while others are filtered by HistorySyncBridge.
+  NavigateToURL(GURL(chrome::kChromeUIVersionURL));
+  NavigateToURL(GetFileUrl("sync/simple.html"));
+  NavigateToURL(GURL("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="));
+
+  // Finally, navigate to a regular, syncable URL, so that there's something to
+  // wait for.
+  GURL synced_url =
+      embedded_test_server()->GetURL("synced.com", "/sync/simple.html");
+  NavigateToURL(synced_url);
+
+  // Only the regular, syncable URL should have arrived at the server.
+  WaitForServerHistory(UnorderedElementsAre(UrlIs(synced_url)));
 }
 
 // TODO(crbug.com/1373448): EnterSyncPausedStateForPrimaryAccount is currently
