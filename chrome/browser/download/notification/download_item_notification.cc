@@ -833,7 +833,7 @@ bool DownloadItemNotification::IsGalleryAppPdfEditNotificationEligible() const {
 
   file_manager::file_tasks::TaskDescriptor task_descriptor;
   if (!file_manager::file_tasks::GetDefaultTaskFromPrefs(
-          *(profile_->GetPrefs()), "application/pdf", "pdf",
+          *(profile_->GetPrefs()), "application/pdf", ".pdf",
           &task_descriptor)) {
     // GetDefaultTaskFromPrefs returns false if no default app is specified. If
     // no default app is specified, a pdf will be opened with Gallery app.
