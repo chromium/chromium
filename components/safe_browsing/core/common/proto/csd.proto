@@ -1606,7 +1606,7 @@ message ClientSafeBrowsingReportRequest {
   }
   optional SafeBrowsingClientProperties client_properties = 17;
 
-  // Only set if report type is DANGEROUS_DOWNLOAD_EXECUTION.
+  // Only set if report type is DANGEROUS_DOWNLOAD_OPENED.
   // True means user opened the folder where this download is in via browser.
   // False means user directly executed this download via download shelf or
   // other download UIs.
