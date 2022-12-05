@@ -3640,6 +3640,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHORTCUT_CUSTOMIZATION_KEYBOARD_SETTINGS" desc="Label for link to open keyboard settings in the Settings app." translateable="false">
         Keyboard settings
       </message>
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_SYSTEM" desc="Category named 'System' shown on the navigation sidebar" translateable="false">System</message>
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_WINDOWS_AND_DESK" desc="Category named 'Windows and Desk' shown on the navigation sidebar" translateable="false">Windows &#38; Desk</message>
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TABS_AND_PAGES" desc="Category named 'Tabs and Pages' shown on the navigation sidebar" translateable="false">Tabs &#38; Pages</message>
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TEXT_AND_INPUT" desc="Category named 'Text and Input' shown on the navigation sidebar" translateable="false">Text &#38; Input</message>
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEBUG" desc="Category named 'Debug' shown on the navigation sidebar" translateable="false">Debug</message>
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVELOPER" desc="Category named 'Developer' shown on the navigation sidebar" translateable="false">Developer</message>
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL" desc="Subcategory named 'General' shown within main shortcuts section" translateable="false">General</message>
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_SYSTEM_APPS" desc="Subcategory named 'System Apps' shown within main shortcuts section" translateable="false">System Apps</message>
+      <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_SYSTEM_CONTROLS" desc="Subcategory named 'System Controls' shown within main shortcuts section" translateable="false">System Controls</message>
       <!-- End of Shortcut Customization -->
 
       <!-- APN -->

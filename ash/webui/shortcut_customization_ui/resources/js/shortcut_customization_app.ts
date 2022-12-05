@@ -22,7 +22,7 @@ import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
-import {isCustomizationDisabled} from './shortcut_utils.js';
+import {getCategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
 
 export interface ShortcutCustomizationAppElement {
   $: {
@@ -99,7 +99,6 @@ export class ShortcutCustomizationAppElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addNavigationSelectors_();
     this.fetchAccelerators_();
     this.addEventListener('show-edit-dialog', this.showDialog_);
     this.addEventListener('edit-dialog-closed', this.onDialogClosed_);
@@ -128,28 +127,24 @@ export class ShortcutCustomizationAppElement extends
         ({layoutInfos}) => this.onLayoutInfosFetched_(layoutInfos));
   }
 
-  private onLayoutInfosFetched_(layoutInfos: MojoLayoutInfo[]) {
+  private onLayoutInfosFetched_(layoutInfos: MojoLayoutInfo[]): void {
+    this.addNavigationSelectors_(layoutInfos);
     this.acceleratorLookupManager_.setAcceleratorLayoutLookup(layoutInfos);
     // Notify pages to update their accelerators.
     this.$.navigationPanel.notifyEvent('updateAccelerators');
   }
 
-  private addNavigationSelectors_() {
-    const pages = [
-      this.$.navigationPanel.createSelectorItem(
-          'Chrome OS', 'shortcuts-page', '', 'chromeos-page-id',
-          {category: /**ChromeOS*/ 0}),
-      this.$.navigationPanel.createSelectorItem(
-          'Browser', 'shortcuts-page', '', 'browser-page-id',
-          {category: /**Browser*/ 1}),
-      this.$.navigationPanel.createSelectorItem(
-          'Android', 'shortcuts-page', '', 'android-page-id',
-          {category: /**Android*/ 2}),
-      this.$.navigationPanel.createSelectorItem(
-          'Accessibility', 'shortcuts-page', '', 'a11y-page-id',
-          {category: /**Accessbility*/ 3}),
-
-    ];
+  private addNavigationSelectors_(layoutInfos: MojoLayoutInfo[]): void {
+    // A Set is used here to remove duplicates from the array of categories.
+    const uniqueCategoriesInOrder =
+        new Set(layoutInfos.map(layoutInfo => layoutInfo.category));
+    const pages = Array.from(uniqueCategoriesInOrder).map(category => {
+      const categoryNameStringId = getCategoryNameStringId(category);
+      const categoryName = this.i18n(categoryNameStringId);
+      return this.$.navigationPanel.createSelectorItem(
+          categoryName, 'shortcuts-page', '', `${categoryNameStringId}-page-id`,
+          {category});
+    });
     this.$.navigationPanel.addSelectors(pages);
   }
 

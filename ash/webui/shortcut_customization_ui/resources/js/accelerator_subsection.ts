@@ -4,12 +4,13 @@
 
 import './accelerator_row.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_subsection.html.js';
-import {fakeSubCategories} from './fake_data.js';
 import {AcceleratorCategory, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo} from './shortcut_types.js';
+import {getSubcategoryNameStringId} from './shortcut_utils.js';
 
 /**
  * This interface is used to hold all the data needed by an
@@ -31,7 +32,9 @@ export interface AcceleratorSubsectionElement {
  * 'accelerator-subsection' is a wrapper component for a subsection of
  * shortcuts.
  */
-export class AcceleratorSubsectionElement extends PolymerElement {
+const AcceleratorSubsectionElementBase = I18nMixin(PolymerElement);
+export class AcceleratorSubsectionElement extends
+    AcceleratorSubsectionElementBase {
   static get is() {
     return 'accelerator-subsection';
   }
@@ -92,8 +95,7 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     const layoutInfos = this.lookupManager_.getAcceleratorLayout(
         this.category, this.subcategory);
 
-    // TODO(jimmyxgong): Fetch real string for title once available.
-    this.title = fakeSubCategories.get(this.subcategory) as string;
+    this.title = this.i18n(getSubcategoryNameStringId(this.subcategory));
 
     // Use an atomic replacement instead of using Polymer's array manipulation
     // functions. Polymer's array manipulation functions batch all slices

@@ -6,13 +6,7 @@ import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.moj
 
 import {keyToIconNameMap} from './input_key.js';
 import {stringToMojoString16} from './mojo_utils.js';
-import {AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo} from './shortcut_types.js';
-
-export const fakeSubCategories: Map<AcceleratorSubcategory, string> = new Map([
-  [0, 'Window Management'],
-  [1, 'Virtual Desks'],
-  [2, 'Tabs'],
-]);
+import {AcceleratorCategory, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo} from './shortcut_types.js';
 
 const fakeTimestamp: TimeTicks = {
   internalValue: BigInt(0),
@@ -97,40 +91,40 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
 
 export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
-    category: 0,     // Chrome OS.
-    subCategory: 0,  // Window Management.
+    category: AcceleratorCategory.kSystem,
+    subCategory: AcceleratorSubcategory.kGeneral,
     description: stringToMojoString16('Snap Window Left'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 0,
   },
   {
-    category: 0,     // Chrome OS.
-    subCategory: 0,  // Window Management.
+    category: AcceleratorCategory.kSystem,
+    subCategory: AcceleratorSubcategory.kGeneral,
     description: stringToMojoString16('Snap Window Right'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 1,
   },
   {
-    category: 0,     // Chrome OS.
-    subCategory: 1,  // Virtual Desks.
+    category: AcceleratorCategory.kSystem,
+    subCategory: AcceleratorSubcategory.kSystemApps,
     description: stringToMojoString16('Create Desk'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 2,
   },
   {
-    category: 0,     // Chrome OS.
-    subCategory: 1,  // Virtual Desks.
+    category: AcceleratorCategory.kSystem,
+    subCategory: AcceleratorSubcategory.kSystemApps,
     description: stringToMojoString16('Remove Desk'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kAsh,
     action: 3,
   },
   {
-    category: 1,     // Browser.
-    subCategory: 2,  // Tabs.
+    category: AcceleratorCategory.kWindowsAndDesk,
+    subCategory: AcceleratorSubcategory.kSystemControls,
     description: stringToMojoString16('New Tab'),
     style: LayoutStyle.kDefault,
     source: AcceleratorSource.kBrowser,
@@ -160,8 +154,8 @@ const createFakeMojoAccelInfo = (keyDisplay: string): MojoAcceleratorInfo => {
 const createFakeMojoLayoutInfo =
     (description: string, action: number): MojoLayoutInfo => {
       return {
-        category: 1,
-        subCategory: 2,
+        category: AcceleratorCategory.kWindowsAndDesk,
+        subCategory: AcceleratorSubcategory.kSystemControls,
         description: stringToMojoString16(description),
         style: LayoutStyle.kDefault,
         source: AcceleratorSource.kBrowser,

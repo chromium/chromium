@@ -41,6 +41,20 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appTitle", IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE},
       {"keyboardSettings", IDS_SHORTCUT_CUSTOMIZATION_KEYBOARD_SETTINGS},
+      {"categorySystem", IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_SYSTEM},
+      {"categoryWindowsAndDesk",
+       IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_WINDOWS_AND_DESK},
+      {"categoryTabsAndPages",
+       IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TABS_AND_PAGES},
+      {"categoryTextAndInput",
+       IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TEXT_AND_INPUT},
+      {"categoryDebug", IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEBUG},
+      {"categoryDeveloper", IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVELOPER},
+      {"subcategoryGeneral", IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL},
+      {"subcategorySystemApps",
+       IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_SYSTEM_APPS},
+      {"subcategorySystemControls",
+       IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_SYSTEM_CONTROLS},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

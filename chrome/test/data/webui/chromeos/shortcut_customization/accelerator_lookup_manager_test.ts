@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {Accelerator, AcceleratorInfo, AcceleratorSource, AcceleratorState, Modifier, MojoAccelerator, MojoAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorInfo, AcceleratorSource, AcceleratorState, Modifier, MojoAccelerator, MojoAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {areAcceleratorsEqual, createEmptyAccelInfoFromAccel} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -128,10 +128,14 @@ suite('acceleratorLookupManagerTest', function() {
 
       getManager().setAcceleratorLayoutLookup(result.layoutInfos);
 
-      // 2 layout infos for ChromeOS (Window Management, Virtual Desks).
-      assertEquals(2, getManager().getSubcategories(/*ChromeOS=*/ 0)!.size);
-      // 1 layout infos for Browser (Tabs).
-      assertEquals(1, getManager().getSubcategories(/*Browser=*/ 1)!.size);
+      // We expect 2 subcategories for kSystem: kGeneral and kSystemApps.
+      assertEquals(
+          2, getManager().getSubcategories(AcceleratorCategory.kSystem)!.size);
+      // We expect 1 subcategory for kWindowsAndDesk: kSystemControl.
+      assertEquals(
+          1,
+          getManager().getSubcategories(
+                          AcceleratorCategory.kWindowsAndDesk)!.size);
     });
   });
 
@@ -145,8 +149,12 @@ suite('acceleratorLookupManagerTest', function() {
 
       // If accelerators have not been initialized into the
       // AcceleratorLookupManager, we expect the subcategories to be undefined.
-      assertEquals(undefined, getManager().getSubcategories(/*ChromeOS=*/ 0));
-      assertEquals(undefined, getManager().getSubcategories(/*Browser=*/ 1));
+      assertEquals(
+          undefined,
+          getManager().getSubcategories(AcceleratorCategory.kSystem));
+      assertEquals(
+          undefined,
+          getManager().getSubcategories(AcceleratorCategory.kWindowsAndDesk));
     });
   });
 
