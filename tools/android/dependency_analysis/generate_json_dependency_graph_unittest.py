@@ -27,6 +27,7 @@ GN_DESC_OUTPUT = """
 
 class TestHelperFunctions(unittest.TestCase):
     """Unit tests for module-level helper functions."""
+
     def test_class_is_interesting(self):
         """Tests that the helper identifies a valid Chromium class name."""
         self.assertTrue(
@@ -60,59 +61,49 @@ class TestHelperFunctions(unittest.TestCase):
             generate_json_dependency_graph.class_is_interesting(
                 'java.lang.Object', prefixes=tuple()))
 
-    def test_list_original_targets_and_jars_legacy(self):
-        result = generate_json_dependency_graph.list_original_targets_and_jars(
-            GN_DESC_OUTPUT, 'out/Test', 761559)
-        # Before crrev.com/c/2161205, *.javac.jar were in gen/
+    def test_parse_original_targets_and_jars_legacy(self):
+        result = generate_json_dependency_graph.parse_original_targets_and_jars(
+            GN_DESC_OUTPUT, pathlib.Path('out/Test'), 761559)
         self.assertEqual(len(result), 3)
         self.assertEqual(
-            result[0],
-            ('//path/to/dep1:java',
-             pathlib.Path('out/Test/gen/path/to/dep1/java.javac.jar')))
-        self.assertEqual(
-            result[1],
-            ('//path/to/dep2:java',
-             pathlib.Path('out/Test/gen/path/to/dep2/java.javac.jar')))
-        self.assertEqual(
-            result[2],
-            ('//path/to/root:java',
-             pathlib.Path('out/Test/gen/path/to/root/java.javac.jar')))
+            result, {
+                '//path/to/dep1:java':
+                pathlib.Path('out/Test/gen/path/to/dep1/java.javac.jar'),
+                '//path/to/dep2:java':
+                pathlib.Path('out/Test/gen/path/to/dep2/java.javac.jar'),
+                '//path/to/root:java':
+                pathlib.Path('out/Test/gen/path/to/root/java.javac.jar')
+            })
 
-    def test_list_original_targets_and_jars_current(self):
+    def test_parse_original_targets_and_jars_current(self):
         # After crrev.com/c/2161205, *.javac.jar are in obj/
-        result = generate_json_dependency_graph.list_original_targets_and_jars(
-            GN_DESC_OUTPUT, 'out/Test', 761560)
+        result = generate_json_dependency_graph.parse_original_targets_and_jars(
+            GN_DESC_OUTPUT, pathlib.Path('out/Test'), 761560)
         self.assertEqual(len(result), 3)
         self.assertEqual(
-            result[0],
-            ('//path/to/dep1:java',
-             pathlib.Path('out/Test/obj/path/to/dep1/java.javac.jar')))
-        self.assertEqual(
-            result[1],
-            ('//path/to/dep2:java',
-             pathlib.Path('out/Test/obj/path/to/dep2/java.javac.jar')))
-        self.assertEqual(
-            result[2],
-            ('//path/to/root:java',
-             pathlib.Path('out/Test/obj/path/to/root/java.javac.jar')))
+            result, {
+                '//path/to/dep1:java':
+                pathlib.Path('out/Test/obj/path/to/dep1/java.javac.jar'),
+                '//path/to/dep2:java':
+                pathlib.Path('out/Test/obj/path/to/dep2/java.javac.jar'),
+                '//path/to/root:java':
+                pathlib.Path('out/Test/obj/path/to/root/java.javac.jar')
+            })
 
-    def test_list_original_targets_and_jars_branch(self):
+    def test_parse_original_targets_and_jars_branch(self):
         # A branch without Commit-Cr-Position should be considered modern
-        result = generate_json_dependency_graph.list_original_targets_and_jars(
-            GN_DESC_OUTPUT, 'out/Test', 0)
+        result = generate_json_dependency_graph.parse_original_targets_and_jars(
+            GN_DESC_OUTPUT, pathlib.Path('out/Test'), 0)
         self.assertEqual(len(result), 3)
         self.assertEqual(
-            result[0],
-            ('//path/to/dep1:java',
-             pathlib.Path('out/Test/obj/path/to/dep1/java.javac.jar')))
-        self.assertEqual(
-            result[1],
-            ('//path/to/dep2:java',
-             pathlib.Path('out/Test/obj/path/to/dep2/java.javac.jar')))
-        self.assertEqual(
-            result[2],
-            ('//path/to/root:java',
-             pathlib.Path('out/Test/obj/path/to/root/java.javac.jar')))
+            result, {
+                '//path/to/dep1:java':
+                pathlib.Path('out/Test/obj/path/to/dep1/java.javac.jar'),
+                '//path/to/dep2:java':
+                pathlib.Path('out/Test/obj/path/to/dep2/java.javac.jar'),
+                '//path/to/root:java':
+                pathlib.Path('out/Test/obj/path/to/root/java.javac.jar')
+            })
 
 
 class TestJavaClassJdepsParser(unittest.TestCase):

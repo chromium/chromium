@@ -8,17 +8,13 @@ import graph
 import group_json_consts
 import java_group
 
-_IGNORED_CLASSES = set([
-    # Every target that uses JNI depends on this generated file, so it's not
-    # useful to include this in dependency resolution, it results in a ton of
-    # spurious edges (e.g. A -> GEN_JNI and B -> GEN_JNI does not mean the
-    # targets A and B depend on each other).
-    'org.chromium.base.natives.GEN_JNI',
-])
 # Usually a class is in exactly one target, but due to jar_excluded_patterns and
 # android_library_factory some are in two or three. If there is a class that is
-# in more than 3 build targets, it's likely a good candidate to be added to the
-# _IGNORED_CLASSES list.
+# in more than 3 build targets, it will be removed from the build graph. Some
+# examples include:
+# - org.chromium.base.natives.GEN_JNI (in 100+ targets)
+# - org.chromium.android_webview.ProductConfig (in 15+ targets)
+# - org.chromium.content.R (in 60+ targets)
 _MAX_CONCURRENT_BUILD_TARGETS = 3
 
 
@@ -44,19 +40,15 @@ class JavaTargetDependencyGraph(graph.Graph[JavaTarget]):
         # Create list of all targets using class nodes
         # so we don't miss targets with no dependencies (edges).
         for class_node in class_graph.nodes:
-            if class_node.name in _IGNORED_CLASSES:
+            if len(class_node.build_targets) > _MAX_CONCURRENT_BUILD_TARGETS:
                 continue
-            targets = class_node.build_targets
-            assert len(targets) <= _MAX_CONCURRENT_BUILD_TARGETS, (
-                f'{class_node.name} is in {len(targets)} build targets, which '
-                'is more than expected. Perhaps it needs to be added to '
-                'the list of _IGNORED_CLASSES?')
-            for build_target in targets:
+            for build_target in class_node.build_targets:
                 self.add_node_if_new(build_target)
 
         for begin_class, end_class in class_graph.edges:
-            if (begin_class.name in _IGNORED_CLASSES
-                    or end_class.name in _IGNORED_CLASSES):
+            if len(begin_class.build_targets) > _MAX_CONCURRENT_BUILD_TARGETS:
+                continue
+            if len(end_class.build_targets) > _MAX_CONCURRENT_BUILD_TARGETS:
                 continue
             for begin_target in begin_class.build_targets:
                 for end_target in end_class.build_targets:

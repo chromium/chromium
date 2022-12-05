@@ -105,7 +105,45 @@ def _query_for_build_config_targets(output_dir):
   return ret
 
 
+def _query_json(*, json_dict: dict, query: str, path: str):
+  """Traverses through the json dictionary according to the query.
+
+  If at any point a key does not exist, return the empty string, but raise an
+  error if a key exists but is the wrong type.
+
+  This is roughly equivalent to returning
+  json_dict[queries[0]]?[queries[1]]?...[queries[N]]? where the ? means that if
+  the key doesn't exist, the empty string is returned.
+
+  Example:
+  Given json_dict = {'a': {'b': 'c'}}
+  - If queries = ['a', 'b']
+    Return: 'c'
+  - If queries = ['a', 'd']
+    Return ''
+  - If queries = ['x']
+    Return ''
+  - If queries = ['a', 'b', 'x']
+    Raise an error since json_dict['a']['b'] is the string 'c' instead of an
+    expected dict that can be indexed into.
+
+  Returns the final result after exhausting all the queries.
+  """
+  queries = query.split('.')
+  value = json_dict
+  try:
+    for key in queries:
+      value = value.get(key)
+      if value is None:
+        return ''
+  except AttributeError as e:
+    raise Exception(
+        f'Failed when attempting to get {queries} from {path}') from e
+  return value
+
+
 class _TargetEntry:
+
   def __init__(self, gn_target):
     assert gn_target.startswith('//'), f'{gn_target} does not start with //'
     assert ':' in gn_target, f'Non-root {gn_target} required'
@@ -183,13 +221,19 @@ def main():
                       help='Print counts of each target type.')
   parser.add_argument('--proguard-enabled',
                       action='store_true',
-                      help='Restrict to targets that have proguard enabled')
+                      help='Restrict to targets that have proguard enabled.')
+  parser.add_argument('--query',
+                      help='A dot separated string specifying a query for a '
+                      'build config json value of each target. Example: Use '
+                      '--query deps_info.unprocessed_jar_path to show a list '
+                      'of all targets that have a non-empty deps_info dict and '
+                      'non-empty "unprocessed_jar_path" value in that dict.')
   parser.add_argument('-v', '--verbose', default=0, action='count')
   parser.add_argument('-q', '--quiet', default=0, action='count')
   args = parser.parse_args()
 
   args.build |= bool(args.type or args.proguard_enabled or args.print_types
-                     or args.stats)
+                     or args.stats or args.query)
 
   logging.basicConfig(level=logging.WARNING + 10 * (args.quiet - args.verbose),
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
@@ -233,6 +277,13 @@ def main():
         to_print = f'{to_print}: {e.get_type()}'
       elif args.print_build_config_paths:
         to_print = f'{to_print}: {e.build_config_path}'
+      elif args.query:
+        value = _query_json(json_dict=e.build_config(),
+                            query=args.query,
+                            path=e.build_config_path)
+        if not value:
+          continue
+        to_print = f'{to_print}: {value}'
 
       print(to_print)
 
