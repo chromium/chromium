@@ -50,22 +50,13 @@ const struct {
   bool should_show_cancel_button;
   bool should_check_passwords;
 } kLeakTypesTestCases[] = {
-    {CreateLeakType(IsSaved(false),
-                    IsReused(false),
-                    IsSyncing(false),
-                    HasChangeScript(false)),
-     IDS_OK, IDS_CLOSE, GetLeakChangePasswordMessage(),
+    {CreateLeakType(IsSaved(false), IsReused(false), IsSyncing(false)), IDS_OK,
+     IDS_CLOSE, GetLeakChangePasswordMessage(),
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
-    {CreateLeakType(IsSaved(false),
-                    IsReused(false),
-                    IsSyncing(true),
-                    HasChangeScript(false)),
-     IDS_OK, IDS_CLOSE, GetLeakChangePasswordMessage(),
+    {CreateLeakType(IsSaved(false), IsReused(false), IsSyncing(true)), IDS_OK,
+     IDS_CLOSE, GetLeakChangePasswordMessage(),
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
-    {CreateLeakType(IsSaved(false),
-                    IsReused(true),
-                    IsSyncing(true),
-                    HasChangeScript(false)),
+    {CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
      IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
@@ -73,22 +64,13 @@ const struct {
      IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED,
 #endif
      IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM, true, true},
-    {CreateLeakType(IsSaved(false),
-                    IsReused(false),
-                    IsSyncing(true),
-                    HasChangeScript(true)),
-     IDS_OK, IDS_CLOSE, GetLeakChangePasswordMessage(),
+    {CreateLeakType(IsSaved(false), IsReused(false), IsSyncing(true)), IDS_OK,
+     IDS_CLOSE, GetLeakChangePasswordMessage(),
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
-    {CreateLeakType(IsSaved(true),
-                    IsReused(false),
-                    IsSyncing(true),
-                    HasChangeScript(false)),
-     IDS_OK, IDS_CLOSE, GetLeakChangePasswordMessage(),
+    {CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(true)), IDS_OK,
+     IDS_CLOSE, GetLeakChangePasswordMessage(),
      IDS_CREDENTIAL_LEAK_TITLE_CHANGE, false, false},
-    {CreateLeakType(IsSaved(true),
-                    IsReused(true),
-                    IsSyncing(true),
-                    HasChangeScript(false)),
+    {CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
      IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED,
@@ -102,31 +84,12 @@ struct BulkCheckParams {
   // Specifies the test case.
   CredentialLeakType leak_type;
   bool should_check_passwords;
-} kBulkCheckTestCases[] = {{CreateLeakType(IsSaved(false),
-                                           IsReused(false),
-                                           IsSyncing(false),
-                                           HasChangeScript(false)),
-                            false},
-                           {CreateLeakType(IsSaved(true),
-                                           IsReused(false),
-                                           IsSyncing(false),
-                                           HasChangeScript(false)),
-                            false},
-                           {CreateLeakType(IsSaved(false),
-                                           IsReused(true),
-                                           IsSyncing(false),
-                                           HasChangeScript(false)),
-                            true},
-                           {CreateLeakType(IsSaved(true),
-                                           IsReused(true),
-                                           IsSyncing(false),
-                                           HasChangeScript(false)),
-                            true},
-                           {CreateLeakType(IsSaved(true),
-                                           IsReused(true),
-                                           IsSyncing(true),
-                                           HasChangeScript(false)),
-                            true}};
+} kBulkCheckTestCases[] = {
+    {CreateLeakType(IsSaved(false), IsReused(false), IsSyncing(false)), false},
+    {CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(false)), false},
+    {CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(false)), true},
+    {CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(false)), true},
+    {CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)), true}};
 }  // namespace
 
 class CredentialLeakDialogUtilsTest : public testing::Test {
@@ -310,45 +273,21 @@ struct PasswordChangeParams {
   bool should_show_cancel_button;
   bool should_show_change_password_button;
 } kPasswordChangeTestCases[] = {
-    {CreateLeakType(IsSaved(false),
-                    IsReused(false),
-                    IsSyncing(false),
-                    HasChangeScript(true)),
-     IDS_OK, 0, false, false},
-    {CreateLeakType(IsSaved(false),
-                    IsReused(false),
-                    IsSyncing(true),
-                    HasChangeScript(true)),
-     IDS_OK, 0, false, false},
-    {CreateLeakType(IsSaved(false),
-                    IsReused(true),
-                    IsSyncing(false),
-                    HasChangeScript(true)),
+    {CreateLeakType(IsSaved(false), IsReused(false), IsSyncing(false)), IDS_OK,
+     0, false, false},
+    {CreateLeakType(IsSaved(false), IsReused(false), IsSyncing(true)), IDS_OK,
+     0, false, false},
+    {CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(false)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE, true, false},
-    {CreateLeakType(IsSaved(false),
-                    IsReused(true),
-                    IsSyncing(true),
-                    HasChangeScript(true)),
+    {CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE, true, false},
-    {CreateLeakType(IsSaved(true),
-                    IsReused(false),
-                    IsSyncing(false),
-                    HasChangeScript(true)),
-     IDS_OK, 0, false, false},
-    {CreateLeakType(IsSaved(true),
-                    IsReused(false),
-                    IsSyncing(true),
-                    HasChangeScript(true)),
-     IDS_OK, IDS_CLOSE, false, true},
-    {CreateLeakType(IsSaved(true),
-                    IsReused(true),
-                    IsSyncing(false),
-                    HasChangeScript(true)),
+    {CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(false)), IDS_OK,
+     0, false, false},
+    {CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(true)), IDS_OK,
+     IDS_CLOSE, false, true},
+    {CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(false)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE, true, false},
-    {CreateLeakType(IsSaved(true),
-                    IsReused(true),
-                    IsSyncing(true),
-                    HasChangeScript(true)),
+    {CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)),
      IDS_LEAK_CHECK_CREDENTIALS, IDS_CLOSE, true, true}};
 
 class PasswordChangeCredentialLeakDialogUtilsTest
@@ -361,9 +300,6 @@ class PasswordChangeCredentialLeakDialogUtilsTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-// Even with a change script, APC is no longer offered.
-// TODO (https://crbug.com/1386065): Clean-up the test cases according to the APC removal changes.
 
 TEST_P(PasswordChangeCredentialLeakDialogUtilsTest, ShouldShowCancelButton) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);

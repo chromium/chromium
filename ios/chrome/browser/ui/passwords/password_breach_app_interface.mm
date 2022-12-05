@@ -18,8 +18,7 @@
   auto leakType = password_manager::CreateLeakType(
       password_manager::IsSaved(true),
       password_manager::IsReused(checkButtonPresent),
-      password_manager::IsSyncing(true),
-      password_manager::HasChangeScript(false));
+      password_manager::IsSyncing(true));
   [(id<PasswordBreachCommands>)handler showPasswordBreachForLeakType:leakType];
 }
 

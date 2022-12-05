@@ -116,7 +116,6 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
 void LeakDetectionDelegate::OnShowLeakDetectionNotification(
     PasswordForm::Store in_stores,
     IsReused is_reused,
-    HasChangeScript has_change_script,
     GURL url,
     std::u16string username,
     std::vector<GURL> all_urls_with_leaked_credentials) {
@@ -149,7 +148,7 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
 
   CredentialLeakType leak_type =
       CreateLeakType(IsSaved(in_stores != PasswordForm::Store::kNotSet),
-                     is_reused, is_syncing, has_change_script);
+                     is_reused, is_syncing);
   base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordSaved",
                             IsPasswordSaved(leak_type));
   base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordReused",

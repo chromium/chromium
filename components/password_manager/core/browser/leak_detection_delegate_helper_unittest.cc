@@ -71,12 +71,10 @@ class LeakDetectionDelegateHelperTestBase {
   void SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store in_stores,
       IsReused is_reused,
-      HasChangeScript has_change_script,
       std::vector<GURL> all_urls_with_leaked_credentials = {}) {
-    EXPECT_CALL(
-        callback_,
-        Run(in_stores, is_reused, has_change_script, GURL(kLeakedOrigin),
-            std::u16string(kLeakedUsername), all_urls_with_leaked_credentials))
+    EXPECT_CALL(callback_, Run(in_stores, is_reused, GURL(kLeakedOrigin),
+                               std::u16string(kLeakedUsername),
+                               all_urls_with_leaked_credentials))
         .Times(1);
   }
 
@@ -131,8 +129,8 @@ TEST_F(LeakDetectionDelegateHelperTest, NeitherSaveNotReused) {
       CreateForm(kOtherOrigin, kOtherUsername, kOtherPassword)};
 
   SetGetAutofillableLoginsConsumerInvocation(std::move(password_forms));
-  SetOnShowLeakDetectionNotificationExpectation(
-      PasswordForm::Store::kNotSet, IsReused(false), HasChangeScript(false));
+  SetOnShowLeakDetectionNotificationExpectation(PasswordForm::Store::kNotSet,
+                                                IsReused(false));
   InitiateGetCredentialLeakType();
 }
 
@@ -144,7 +142,7 @@ TEST_F(LeakDetectionDelegateHelperTest, SavedLeakedCredentials) {
   SetGetAutofillableLoginsConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore, IsReused(false),
-      HasChangeScript(false), {GURL(kLeakedOrigin)});
+      {GURL(kLeakedOrigin)});
   EXPECT_CALL(*store_, UpdateLogin);
   InitiateGetCredentialLeakType();
 }
@@ -159,7 +157,7 @@ TEST_F(LeakDetectionDelegateHelperTest,
   SetGetAutofillableLoginsConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore, IsReused(true),
-      HasChangeScript(false), {GURL(kLeakedOrigin), GURL(kOtherOrigin)});
+      {GURL(kLeakedOrigin), GURL(kOtherOrigin)});
   EXPECT_CALL(*store_, UpdateLogin).Times(2);
   InitiateGetCredentialLeakType();
 }
@@ -175,7 +173,7 @@ TEST_F(LeakDetectionDelegateHelperTest,
   SetGetAutofillableLoginsConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore, IsReused(true),
-      HasChangeScript(false), {GURL(kLeakedOrigin)});
+      {GURL(kLeakedOrigin)});
   EXPECT_CALL(*store_, UpdateLogin);
   InitiateGetCredentialLeakType();
 }
@@ -189,8 +187,8 @@ TEST_F(LeakDetectionDelegateHelperTest, ReusedPasswordWithOtherUsername) {
   // Don't expect anything in |all_urls_with_leaked_credentials| since it should
   // only contain url:username pairs for which both the username and password
   // match.
-  SetOnShowLeakDetectionNotificationExpectation(
-      PasswordForm::Store::kNotSet, IsReused(true), HasChangeScript(false));
+  SetOnShowLeakDetectionNotificationExpectation(PasswordForm::Store::kNotSet,
+                                                IsReused(true));
   InitiateGetCredentialLeakType();
 }
 
@@ -201,8 +199,7 @@ TEST_F(LeakDetectionDelegateHelperTest, ReusedPasswordOnOtherOrigin) {
 
   SetGetAutofillableLoginsConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(
-      PasswordForm::Store::kNotSet, IsReused(true), HasChangeScript(false),
-      {GURL(kOtherOrigin)});
+      PasswordForm::Store::kNotSet, IsReused(true), {GURL(kOtherOrigin)});
   EXPECT_CALL(*store_, UpdateLogin);
   InitiateGetCredentialLeakType();
 }
@@ -214,8 +211,8 @@ TEST_F(LeakDetectionDelegateHelperTest, ReusedPassword) {
       CreateForm(kOtherOrigin, kOtherUsername)};
 
   SetGetAutofillableLoginsConsumerInvocation(std::move(password_forms));
-  SetOnShowLeakDetectionNotificationExpectation(
-      PasswordForm::Store::kNotSet, IsReused(true), HasChangeScript(false));
+  SetOnShowLeakDetectionNotificationExpectation(PasswordForm::Store::kNotSet,
+                                                IsReused(true));
   InitiateGetCredentialLeakType();
 }
 
@@ -233,7 +230,7 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentials) {
 
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore, IsReused(true),
-      HasChangeScript(false), {GURL(kLeakedOrigin), GURL(kOtherOrigin)});
+      {GURL(kLeakedOrigin), GURL(kOtherOrigin)});
   // The expected updated forms should have leaked entries.
   leaked_origin.password_issues.insert_or_assign(
       InsecureType::kLeaked,
@@ -252,8 +249,7 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
       kOtherOrigin, kLeakedUsernameNonCanonicalized, kLeakedPassword);
   SetGetAutofillableLoginsConsumerInvocation({non_canonicalized_username});
   SetOnShowLeakDetectionNotificationExpectation(
-      PasswordForm::Store::kNotSet, IsReused(true), HasChangeScript(false),
-      {GURL(kOtherOrigin)});
+      PasswordForm::Store::kNotSet, IsReused(true), {GURL(kOtherOrigin)});
 
   // The expected updated form should have leaked entries.
   non_canonicalized_username.password_issues.insert_or_assign(
@@ -273,8 +269,7 @@ TEST_F(LeakDetectionDelegateHelperTest, DontUpdateAlreadyLeakedCredentials) {
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   SetGetAutofillableLoginsConsumerInvocation({non_canonicalized_username});
   SetOnShowLeakDetectionNotificationExpectation(
-      PasswordForm::Store::kNotSet, IsReused(true), HasChangeScript(false),
-      {GURL(kOtherOrigin)});
+      PasswordForm::Store::kNotSet, IsReused(true), {GURL(kOtherOrigin)});
 
   EXPECT_CALL(*store_, UpdateLogin).Times(0);
   InitiateGetCredentialLeakType();
@@ -319,7 +314,7 @@ TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest, SavedLeakedCredentials) {
 
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore, IsReused(true),
-      HasChangeScript(false), {GURL(kLeakedOrigin), GURL(kOtherOrigin)});
+      {GURL(kLeakedOrigin), GURL(kOtherOrigin)});
 
   InitiateGetCredentialLeakType();
 
@@ -343,8 +338,7 @@ TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest,
 
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore,
-      IsReused(false), HasChangeScript(false),
-      {GURL(kLeakedOrigin), GURL(kLeakedOrigin)});
+      IsReused(false), {GURL(kLeakedOrigin), GURL(kLeakedOrigin)});
 
   InitiateGetCredentialLeakType();
 
@@ -431,7 +425,7 @@ TEST_F(LeakDetectionDelegateHelperWithScriptsFetcherTest,
   // The result should only be available once the script fetcher finishes.
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore, IsReused(false),
-      HasChangeScript(false), {GURL(kLeakedOrigin)});
+      {GURL(kLeakedOrigin)});
   scripts_fetcher_.RunScriptAvailabilityCallback(/*is_script_available=*/false);
 }
 
@@ -445,7 +439,7 @@ TEST_F(LeakDetectionDelegateHelperWithScriptsFetcherTest,
   // The result should only be available once the script fetcher finishes.
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore, IsReused(false),
-      HasChangeScript(true), {GURL(kLeakedOrigin)});
+      {GURL(kLeakedOrigin)});
   scripts_fetcher_.RunScriptAvailabilityCallback(/*is_script_available=*/true);
 }
 

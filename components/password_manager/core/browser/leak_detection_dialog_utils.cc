@@ -28,8 +28,7 @@ constexpr char kPasswordCheckupURL[] =
 
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,
-                                  IsSyncing is_syncing,
-                                  HasChangeScript has_change_script) {
+                                  IsSyncing is_syncing) {
   CredentialLeakType leak_type = 0;
   if (is_saved)
     leak_type |= kPasswordSaved;
@@ -37,8 +36,6 @@ CredentialLeakType CreateLeakType(IsSaved is_saved,
     leak_type |= kPasswordUsedOnOtherSites;
   if (is_syncing)
     leak_type |= kPasswordSynced;
-  if (has_change_script)
-    leak_type |= kAutomaticPasswordChangeScriptAvailable;
   return leak_type;
 }
 
@@ -52,11 +49,6 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type) {
 
 bool IsPasswordSynced(CredentialLeakType leak_type) {
   return leak_type & CredentialLeakFlags::kPasswordSynced;
-}
-
-bool IsAutomaticPasswordChangeScriptAvailable(CredentialLeakType leak_type) {
-  return leak_type &
-         CredentialLeakFlags::kAutomaticPasswordChangeScriptAvailable;
 }
 
 // Formats the `origin` to a human-friendly url string.

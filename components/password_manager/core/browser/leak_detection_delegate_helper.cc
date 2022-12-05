@@ -67,9 +67,11 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
   barrier_closure_.Run();
 }
 
+// TODO (https://crbug.com/1386065): Remove this function and its usages
+// as part of APC removal.
 void LeakDetectionDelegateHelper::ScriptAvailabilityDetermined(
     bool script_is_available) {
-  script_is_available_ = script_is_available;
+  script_is_available_ = false;
 
   barrier_closure_.Run();
 }
@@ -116,10 +118,8 @@ void LeakDetectionDelegateHelper::ProcessResults() {
                 form->username_value != username_);
       }));
 
-  HasChangeScript has_change_script(script_is_available_);
-
-  std::move(callback_).Run(in_stores, is_reused, has_change_script,
-                           std::move(url_), std::move(username_),
+  std::move(callback_).Run(in_stores, is_reused, std::move(url_),
+                           std::move(username_),
                            std::move(all_urls_with_leaked_credentials));
 }
 

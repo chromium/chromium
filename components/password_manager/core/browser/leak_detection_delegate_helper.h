@@ -30,7 +30,6 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   // Type alias for `callback_`.
   using LeakTypeReply = base::OnceCallback<void(PasswordForm::Store,
                                                 IsReused,
-                                                HasChangeScript,
                                                 GURL,
                                                 std::u16string,
                                                 std::vector<GURL>)>;
@@ -60,8 +59,8 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  // Called when it has been determined whether there is an automatic password
-  // change script available for this URL.
+  // TODO (https://crbug.com/1386065): Remove this function and its usages
+  // as part of APC removal.
   void ScriptAvailabilityDetermined(bool script_is_available);
 
   // Called when all password store results are available and the script

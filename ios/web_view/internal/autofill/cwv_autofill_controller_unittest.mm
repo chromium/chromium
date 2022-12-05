@@ -421,10 +421,9 @@ TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
 
   GURL leak_url("https://www.chromium.org");
   password_manager::CredentialLeakType leak_type =
-      password_manager::CreateLeakType(
-          password_manager::IsSaved(true), password_manager::IsReused(true),
-          password_manager::IsSyncing(true),
-          password_manager::HasChangeScript(false));
+      password_manager::CreateLeakType(password_manager::IsSaved(true),
+                                       password_manager::IsReused(true),
+                                       password_manager::IsSyncing(true));
   CWVPasswordLeakType expected_leak_type = CWVPasswordLeakTypeSaved |
                                            CWVPasswordLeakTypeUsedOnOtherSites |
                                            CWVPasswordLeakTypeSynced;
