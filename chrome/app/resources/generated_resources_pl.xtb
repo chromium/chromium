@@ -4113,7 +4113,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4838170306476614339">Wyświetlaj zdjęcia, pliki multimedialne i powiadomienia z telefonu</translation>
 <translation id="4838836835474292213">Przyznano uprawnienia do odczytu zawartości schowka</translation>
 <translation id="4838907349371614303">Hasło zostało zaktualizowane</translation>
-<translation id="4838958829619609362">Wybrany element jest niedostępny w tym języku (<ph name="LANGUAGE" />)</translation>
+<translation id="4838958829619609362">Wybrany fragment nie jest w tym języku (<ph name="LANGUAGE" />)</translation>
 <translation id="4839303808932127586">Za&amp;pisz film wideo jako...</translation>
 <translation id="4839910546484524995">Sprawdź urządzenie</translation>
 <translation id="4840096453115567876">Zamknąć tryb incognito mimo to?</translation>
@@ -6719,7 +6719,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7343372807593926528">Zanim wyślesz opinię, opisz problem.</translation>
 <translation id="7344585835349671209">Zarządzaj certyfikatami HTTPS/SSL na urządzeniu</translation>
 <translation id="7345706641791090287">Potwierdź hasło</translation>
-<translation id="7345919885156673810">Wybrany element jest niedostępny w tym języku (<ph name="LANGUAGE" />)</translation>
+<translation id="7345919885156673810">Wybrany fragment nie jest w tym języku (<ph name="LANGUAGE" />)</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
 <translation id="7347751611463936647">Aby skorzystać z tego rozszerzenia, wpisz „<ph name="EXTENSION_KEYWORD" />”, naciśnij klawisz TAB i wpisz odpowiednie polecenie lub wyszukiwany tekst.</translation>
 <translation id="7347943691222276892">Kliknij, by powrócić z podstrony <ph name="SUBPAGE_TITLE" />.</translation>

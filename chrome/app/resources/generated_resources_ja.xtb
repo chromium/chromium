@@ -4118,7 +4118,7 @@
 <translation id="4838170306476614339">スマートフォンの写真、メディア、通知を表示します</translation>
 <translation id="4838836835474292213">クリップボードへの読み取りアクセスが許可されています</translation>
 <translation id="4838907349371614303">パスワードの更新完了</translation>
-<translation id="4838958829619609362">選択内容は <ph name="LANGUAGE" /> ではありません</translation>
+<translation id="4838958829619609362">選択内容は<ph name="LANGUAGE" />ではありません</translation>
 <translation id="4839303808932127586">名前を付けて動画を保存(&amp;V)...</translation>
 <translation id="4839910546484524995">デバイスを確認する</translation>
 <translation id="4840096453115567876">シークレット モードを終了してもよろしいですか？</translation>
@@ -6718,7 +6718,7 @@
 <translation id="7343372807593926528">問題の詳細を記入してからフィードバックを送信してください。</translation>
 <translation id="7344585835349671209">デバイスの HTTPS / SSL 証明書を管理します</translation>
 <translation id="7345706641791090287">パスワードを再入力</translation>
-<translation id="7345919885156673810">選択内容は <ph name="LANGUAGE" /> ではありません</translation>
+<translation id="7345919885156673810">選択内容は<ph name="LANGUAGE" />ではありません</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347751611463936647">この拡張機能を使用するには、「<ph name="EXTENSION_KEYWORD" />」と入力して Tab キーを押してからコマンドまたは検索キーワードを入力してください。</translation>
 <translation id="7347943691222276892">クリックすると <ph name="SUBPAGE_TITLE" /> から移動します。</translation>
