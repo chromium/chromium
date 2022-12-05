@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -50,10 +52,6 @@ const TestParam kTestParams[] = {
     {.test_suffix = "LongerStringsFixedSize",
      .use_fixed_size = true,
      .use_longer_strings = true},
-
-    // This test will only be reproducible on Windows. You will need to change
-    // the language using LANGUAGE=ar (i.e LANGUAGE=ar out/Default/chrome)
-    // to be able to debug on Linux.
     {.test_suffix = "RightToLeftLanguage", .use_right_to_left_language = true},
 };
 
@@ -87,6 +85,12 @@ class FirstRunIntroPixelTest : public UiBrowserTest,
     }
     if (GetParam().use_right_to_left_language) {
       command_line->AppendSwitchASCII(switches::kLang, "ar");
+
+      // On Linux & Lacros the command line switch has no effect, we need to use
+      // environment variables to change the language.
+      scoped_env_override_ =
+          std::make_unique<base::ScopedEnvironmentVariableOverride>("LANGUAGE",
+                                                                    "ar");
     }
   }
 
@@ -134,6 +138,8 @@ class FirstRunIntroPixelTest : public UiBrowserTest,
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
+
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
 };
