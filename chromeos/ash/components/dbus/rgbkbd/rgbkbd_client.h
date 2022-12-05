@@ -57,6 +57,8 @@ class COMPONENT_EXPORT(RGBKBD_CLIENT) RgbkbdClient {
 
   virtual void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b) = 0;
 
+  virtual void SetZoneColor(int zone, uint8_t r, uint8_t g, uint8_t b) = 0;
+
   virtual void SetRainbowMode() = 0;
 
   virtual void SetAnimationMode(rgbkbd::RgbAnimationMode mode) = 0;

@@ -32,6 +32,10 @@ void FakeRgbkbdClient::ResetStoredRgbColors() {
   rgb_color_ = std::make_tuple(0u, 0u, 0u);
 }
 
+void FakeRgbkbdClient::SetZoneColor(int zone, uint8_t r, uint8_t g, uint8_t b) {
+  zone_colors_[zone] = std::make_tuple(r, g, b);
+}
+
 void FakeRgbkbdClient::SetRainbowMode() {
   is_rainbow_mode_set_ = true;
   ResetStoredRgbColors();

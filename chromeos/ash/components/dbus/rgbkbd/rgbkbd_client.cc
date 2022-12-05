@@ -68,6 +68,23 @@ class RgbkbdClientImpl : public RgbkbdClient {
                               base::DoNothing());
   }
 
+  void SetZoneColor(int zone, uint8_t r, uint8_t g, uint8_t b) override {
+    VLOG(1) << "rgbkbd: SetZoneColor Zone: " << zone
+            << "R: " << static_cast<int>(r) << "G: " << static_cast<int>(g)
+            << "B: " << static_cast<int>(b);
+    dbus::MethodCall method_call(rgbkbd::kRgbkbdServiceName,
+                                 rgbkbd::kSetZoneColor);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendInt32(zone);
+    writer.AppendByte(r);
+    writer.AppendByte(g);
+    writer.AppendByte(b);
+    CHECK(rgbkbd_proxy_);
+    rgbkbd_proxy_->CallMethod(&method_call,
+                              dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                              base::DoNothing());
+  }
+
   void SetRainbowMode() override {
     VLOG(1) << "rgbkbd: SetRainbowMode";
     dbus::MethodCall method_call(rgbkbd::kRgbkbdServiceName,

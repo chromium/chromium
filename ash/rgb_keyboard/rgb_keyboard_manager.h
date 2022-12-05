@@ -32,7 +32,9 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
   ~RgbKeyboardManager() override;
 
   rgbkbd::RgbKeyboardCapabilities GetRgbKeyboardCapabilities() const;
+  int GetZoneCount();
   void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b);
+  void SetZoneColor(int zone, uint8_t r, uint8_t g, uint8_t b);
   void SetRainbowMode();
   void SetAnimationMode(rgbkbd::RgbAnimationMode mode);
 

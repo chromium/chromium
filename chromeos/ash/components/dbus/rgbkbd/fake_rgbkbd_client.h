@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h"
 
 namespace ash {
@@ -28,6 +30,8 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
   void SetCapsLockState(bool enabled) override;
 
   void SetStaticBackgroundColor(uint8_t r, uint8_t g, uint8_t b) override;
+
+  void SetZoneColor(int zone, uint8_t r, uint8_t g, uint8_t b) override;
 
   void SetRainbowMode() override;
 
@@ -49,6 +53,10 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
 
   const RgbColor& recently_sent_rgb() const { return rgb_color_; }
 
+  const base::flat_map<int, RgbColor>& get_zone_colors() const {
+    return zone_colors_;
+  }
+
   void attempt_run_rgb_keyboard_capabilities_callback() {
     if (callback_.is_null() || !should_run_callback_)
       return;
@@ -69,6 +77,7 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
   bool caps_lock_state_ = false;
   bool is_rainbow_mode_set_ = false;
   RgbColor rgb_color_;
+  base::flat_map<int, RgbColor> zone_colors_;
   int animation_mode_call_count_ = 0;
   GetRgbKeyboardCapabilitiesCallback callback_;
 
