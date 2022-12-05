@@ -32,22 +32,20 @@ class GURL;
 @class NTPHomeMetrics;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
-class VoiceSearchAvailability;
 
 // Mediator for the NTP Home panel, handling the interactions with the
 // suggestions.
 @interface NTPHomeMediator
     : NSObject <ContentSuggestionsHeaderViewControllerDelegate>
 
-- (instancetype)
-           initWithWebState:(web::WebState*)webState
-         templateURLService:(TemplateURLService*)templateURLService
-                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                authService:(AuthenticationService*)authService
-            identityManager:(signin::IdentityManager*)identityManager
-      accountManagerService:(ChromeAccountManagerService*)accountManagerService
-                 logoVendor:(id<LogoVendor>)logoVendor
-    voiceSearchAvailability:(VoiceSearchAvailability*)voiceSearchAvailability
+- (instancetype)initWithWebState:(web::WebState*)webState
+              templateURLService:(TemplateURLService*)templateURLService
+                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                     authService:(AuthenticationService*)authService
+                 identityManager:(signin::IdentityManager*)identityManager
+           accountManagerService:
+               (ChromeAccountManagerService*)accountManagerService
+                      logoVendor:(id<LogoVendor>)logoVendor
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

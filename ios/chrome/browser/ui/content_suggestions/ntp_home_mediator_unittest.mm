@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/voice/fake_voice_search_availability.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -66,7 +65,6 @@ class NTPHomeMediatorTest : public PlatformTest {
     fake_web_state_ = std::make_unique<web::FakeWebState>();
     NewTabPageTabHelper::CreateForWebState(fake_web_state_.get());
     logo_vendor_ = OCMProtocolMock(@protocol(LogoVendor));
-    voice_availability_.SetVoiceProviderEnabled(true);
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
@@ -82,16 +80,15 @@ class NTPHomeMediatorTest : public PlatformTest {
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
     mediator_ = [[NTPHomeMediator alloc]
-               initWithWebState:fake_web_state_.get()
-             templateURLService:ios::TemplateURLServiceFactory::
-                                    GetForBrowserState(
-                                        chrome_browser_state_.get())
-                      URLLoader:url_loader_
-                    authService:auth_service_
-                identityManager:identity_manager_
-          accountManagerService:accountManagerService
-                     logoVendor:logo_vendor_
-        voiceSearchAvailability:&voice_availability_];
+             initWithWebState:fake_web_state_.get()
+           templateURLService:ios::TemplateURLServiceFactory::
+                                  GetForBrowserState(
+                                      chrome_browser_state_.get())
+                    URLLoader:url_loader_
+                  authService:auth_service_
+              identityManager:identity_manager_
+        accountManagerService:accountManagerService
+                   logoVendor:logo_vendor_];
     consumer_ = OCMProtocolMock(@protocol(NTPHomeConsumer));
     mediator_.consumer = consumer_;
     histogram_tester_.reset(new base::HistogramTester());
@@ -108,7 +105,6 @@ class NTPHomeMediatorTest : public PlatformTest {
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   id consumer_;
   id logo_vendor_;
-  FakeVoiceSearchAvailability voice_availability_;
   NTPHomeMediator* mediator_;
   ToolbarTestNavigationManager* navigation_manager_;
   FakeUrlLoadingBrowserAgent* url_loader_;

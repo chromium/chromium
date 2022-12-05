@@ -8,11 +8,10 @@
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_ui_bar_button_item.h"
-#import "ios/chrome/browser/ui/omnibox/keyboard_assist/voice_search_keyboard_bar_button_item.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/voice/voice_search_availability.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -30,12 +29,12 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
   UIImage* voiceSearchIcon =
       [[UIImage imageNamed:@"keyboard_accessory_voice_search"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-  UIBarButtonItem* voiceSearchItem = [[VoiceSearchKeyboardBarButtonItem alloc]
-                initWithImage:voiceSearchIcon
-                        style:UIBarButtonItemStylePlain
-                       target:delegate
-                       action:@selector(keyboardAccessoryVoiceSearchTapped:)
-      voiceSearchAvailability:std::make_unique<VoiceSearchAvailability>()];
+  UIBarButtonItem* voiceSearchItem = [[UIBarButtonItem alloc]
+      initWithImage:voiceSearchIcon
+              style:UIBarButtonItemStylePlain
+             target:delegate
+             action:@selector(keyboardAccessoryVoiceSearchTapped:)];
+  voiceSearchItem.enabled = ios::provider::IsVoiceSearchEnabled();
   NSString* accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH);
   voiceSearchItem.accessibilityLabel = accessibilityLabel;

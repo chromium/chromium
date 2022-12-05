@@ -5,11 +5,10 @@
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
-#import "ios/chrome/browser/ui/omnibox/keyboard_assist/voice_search_keyboard_accessory_button.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/voice/voice_search_availability.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -49,10 +48,9 @@ NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
     bool useLens) {
   NSMutableArray<UIControl*>* controls = [NSMutableArray<UIControl*> array];
 
-  UIButton* voiceSearchButton = [[VoiceSearchKeyboardAccessoryButton alloc]
-      initWithVoiceSearchAvailability:std::make_unique<
-                                          VoiceSearchAvailability>()];
+  UIButton* voiceSearchButton = [[UIButton alloc] initWithFrame:CGRectZero];
   SetUpButtonWithIcon(voiceSearchButton, @"keyboard_accessory_voice_search");
+  voiceSearchButton.enabled = ios::provider::IsVoiceSearchEnabled();
   NSString* accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH);
   voiceSearchButton.accessibilityLabel = accessibilityLabel;

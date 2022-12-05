@@ -17,10 +17,6 @@ source_set("keyboard_assist") {
     "omnibox_keyboard_accessory_view.mm",
     "omnibox_ui_bar_button_item.h",
     "omnibox_ui_bar_button_item.mm",
-    "voice_search_keyboard_accessory_button.h",
-    "voice_search_keyboard_accessory_button.mm",
-    "voice_search_keyboard_bar_button_item.h",
-    "voice_search_keyboard_bar_button_item.mm",
   ]
   deps = [
     "resources:keyboard_accessory_lens",

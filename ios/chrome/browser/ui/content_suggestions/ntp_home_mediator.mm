@@ -43,10 +43,10 @@
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/voice/voice_search_availability.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -77,8 +77,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 @interface NTPHomeMediator () <ChromeAccountManagerServiceObserver,
                                CRWWebStateObserver,
                                IdentityManagerObserverBridgeDelegate,
-                               SearchEngineObserving,
-                               VoiceSearchAvailabilityObserver> {
+                               SearchEngineObserving> {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
@@ -98,8 +97,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 @property(nonatomic, assign) AuthenticationService* authService;
 // Logo vendor to display the doodle on the NTP.
 @property(nonatomic, strong) id<LogoVendor> logoVendor;
-// The voice search availability.
-@property(nonatomic, assign) VoiceSearchAvailability* voiceSearchAvailability;
 // This is the object that knows how to update the Identity Disc UI.
 @property(nonatomic, weak) id<UserAccountImageUpdateDelegate> imageUpdater;
 
@@ -107,15 +104,14 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 @implementation NTPHomeMediator
 
-- (instancetype)
-           initWithWebState:(web::WebState*)webState
-         templateURLService:(TemplateURLService*)templateURLService
-                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                authService:(AuthenticationService*)authService
-            identityManager:(signin::IdentityManager*)identityManager
-      accountManagerService:(ChromeAccountManagerService*)accountManagerService
-                 logoVendor:(id<LogoVendor>)logoVendor
-    voiceSearchAvailability:(VoiceSearchAvailability*)voiceSearchAvailability {
+- (instancetype)initWithWebState:(web::WebState*)webState
+              templateURLService:(TemplateURLService*)templateURLService
+                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                     authService:(AuthenticationService*)authService
+                 identityManager:(signin::IdentityManager*)identityManager
+           accountManagerService:
+               (ChromeAccountManagerService*)accountManagerService
+                      logoVendor:(id<LogoVendor>)logoVendor {
   self = [super init];
   if (self) {
     _webState = webState;
@@ -132,7 +128,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
         self, self.templateURLService);
     _logoVendor = logoVendor;
-    _voiceSearchAvailability = voiceSearchAvailability;
   }
   return self;
 }
@@ -153,11 +148,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     self.webState->AddObserver(_webStateObserver.get());
   }
 
-  self.voiceSearchAvailability->AddObserver(self);
-
   [self.consumer setLogoVendor:self.logoVendor];
-  [self.consumer setVoiceSearchIsEnabled:self.voiceSearchAvailability
-                                             ->IsVoiceSearchAvailable()];
+  [self.consumer setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
 
   self.templateURLService->Load();
   [self searchEngineChanged];
@@ -168,10 +160,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   if (_webState && _webStateObserver) {
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
-  }
-  if (_voiceSearchAvailability) {
-    _voiceSearchAvailability->RemoveObserver(self);
-    _voiceSearchAvailability = nullptr;
   }
   _identityObserverBridge.reset();
   _accountManagerServiceObserver.reset();
@@ -330,13 +318,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
-}
-
-#pragma mark - VoiceSearchAvailabilityObserver
-
-- (void)voiceSearchAvailability:(VoiceSearchAvailability*)availability
-            updatedAvailability:(BOOL)available {
-  [self.consumer setVoiceSearchIsEnabled:available];
 }
 
 #pragma mark - Private

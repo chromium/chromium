@@ -12,8 +12,6 @@ source_set("voice") {
     "speech_input_locale_config_impl.mm",
     "speech_input_locale_match.h",
     "speech_input_locale_match.mm",
-    "voice_search_availability.h",
-    "voice_search_availability.mm",
     "voice_search_navigations_tab_helper.h",
     "voice_search_navigations_tab_helper.mm",
   ]
@@ -76,22 +74,6 @@ source_set("tts") {
   ]
 }
 
-source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-
-  sources = [
-    "fake_voice_search_availability.h",
-    "fake_voice_search_availability.mm",
-  ]
-  deps = [
-    ":voice",
-    "//base",
-    "//ios/chrome/test/providers/voice_search",
-    "//testing/gtest",
-  ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -100,12 +82,10 @@ source_set("unit_tests") {
     "speech_input_locale_config_impl_unittest.mm",
     "text_to_speech_listener_unittest.mm",
     "text_to_speech_parser_unittest.mm",
-    "voice_search_availability_unittest.mm",
     "voice_search_navigations_tab_helper_unittest.mm",
   ]
 
   deps = [
-    ":test_support",
     ":tts",
     ":voice",
     "//base",

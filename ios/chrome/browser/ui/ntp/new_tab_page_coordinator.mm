@@ -81,7 +81,6 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/voice/voice_search_availability.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
@@ -119,9 +118,6 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
                                      OverscrollActionsControllerDelegate,
                                      PrefObserverDelegate,
                                      SceneStateObserver> {
-  // Helper object managing the availability of the voice search feature.
-  VoiceSearchAvailability _voiceSearchAvailability;
-
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
@@ -549,18 +545,17 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 - (void)initializeNTPComponents {
   self.ntpViewController = [[NewTabPageViewController alloc] init];
   self.ntpMediator = [[NTPHomeMediator alloc]
-             initWithWebState:self.webState
-           templateURLService:self.templateURLService
-                    URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
-                  authService:self.authService
-              identityManager:IdentityManagerFactory::GetForBrowserState(
-                                  self.browser->GetBrowserState())
-        accountManagerService:ChromeAccountManagerServiceFactory::
-                                  GetForBrowserState(
-                                      self.browser->GetBrowserState())
-                   logoVendor:ios::provider::CreateLogoVendor(self.browser,
-                                                              self.webState)
-      voiceSearchAvailability:&_voiceSearchAvailability];
+           initWithWebState:self.webState
+         templateURLService:self.templateURLService
+                  URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
+                authService:self.authService
+            identityManager:IdentityManagerFactory::GetForBrowserState(
+                                self.browser->GetBrowserState())
+      accountManagerService:ChromeAccountManagerServiceFactory::
+                                GetForBrowserState(
+                                    self.browser->GetBrowserState())
+                 logoVendor:ios::provider::CreateLogoVendor(self.browser,
+                                                            self.webState)];
   self.headerController = [[ContentSuggestionsHeaderViewController alloc] init];
   self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
       initWithCollectionController:self.ntpViewController
