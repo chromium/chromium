@@ -13,6 +13,40 @@
 #include "content/public/browser/navigation_handle.h"
 #include "net/cert/cert_status_flags.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
+
+namespace {
+
+// Returns true if `handle`'s navigation is happening in a WebContents
+// that uses SSL interstitials. Returns false if a plain error page should be
+// used instead.
+bool WebContentsUsesInterstitials(content::NavigationHandle* handle) {
+  content::WebContents* web_contents = handle->GetWebContents();
+  if (web_contents == web_contents->GetResponsibleWebContents()) {
+    // Outermost contents (e.g. regular tabs) use interstitials.
+    return true;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  guest_view::GuestViewBase* guest =
+      guest_view::GuestViewBase::FromWebContents(web_contents);
+  if (!guest) {
+    // Non-guest view inner WebContents should always show error pages instead
+    // of interstitials.
+    return false;
+  }
+
+  // Some guest view types still show SSL interstitials.
+  return guest->RequiresSslInterstitials();
+#endif
+}
+
+}  // namespace
+
 SSLErrorNavigationThrottle::SSLErrorNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
@@ -48,7 +82,8 @@ SSLErrorNavigationThrottle::WillFailRequest() {
   // Do not set special error page HTML for non-primary pages (e.g. regular
   // subframe, prerendering, fenced-frame, portal). Those are handled as normal
   // network errors.
-  if (!handle->IsInPrimaryMainFrame() || handle->GetWebContents()->IsPortal()) {
+  if (!handle->IsInPrimaryMainFrame() ||
+      !WebContentsUsesInterstitials(handle)) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -85,7 +120,8 @@ SSLErrorNavigationThrottle::WillProcessResponse() {
   // Do not set special error page HTML for non-primary pages (e.g. regular
   // subframe, prerendering, fenced-frame, portal). Those are handled as normal
   // network errors.
-  if (!handle->IsInPrimaryMainFrame() || handle->GetWebContents()->IsPortal()) {
+  if (!handle->IsInPrimaryMainFrame() ||
+      !WebContentsUsesInterstitials(handle)) {
     return content::NavigationThrottle::PROCEED;
   }
 

@@ -61,6 +61,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/strings/grit/extensions_strings.h"
@@ -1057,6 +1058,11 @@ void WebViewGuest::WillAttachToEmbedder() {
   // TODO(alexmos): This may be redundant with the call in
   // RenderFrameCreated() and should be cleaned up.
   PushWebViewStateToIOThread(web_contents()->GetPrimaryMainFrame());
+}
+
+bool WebViewGuest::RequiresSslInterstitials() const {
+  return !base::FeatureList::IsEnabled(
+      extensions_features::kWebviewTagMPArchBehavior);
 }
 
 content::JavaScriptDialogManager* WebViewGuest::GetJavaScriptDialogManager(

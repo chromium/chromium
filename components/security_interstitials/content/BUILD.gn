@@ -125,6 +125,8 @@ static_library("security_interstitial_page") {
     ]
     deps +=
         [ "//components/security_interstitials/content/android:jni_headers" ]
+  } else {
+    deps += [ "//components/guest_view/browser" ]
   }
 }
 

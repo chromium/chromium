@@ -211,6 +211,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // <iframe> which is cross process.
   virtual bool CanBeEmbeddedInsideCrossProcessFrames() const;
 
+  // Returns true if an SSL error in the guest's main frame should show an
+  // interstitial instead of a plain error page.
+  virtual bool RequiresSslInterstitials() const;
+
   content::RenderFrameHost* GetGuestMainFrame() const;
 
  protected:

@@ -196,6 +196,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool IsAutoSizeSupported() const final;
   void SignalWhenReady(base::OnceClosure callback) final;
   void WillAttachToEmbedder() final;
+  bool RequiresSslInterstitials() const final;
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;

@@ -105,6 +105,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/identifiability_metrics.h"
@@ -2091,10 +2092,42 @@ IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestResizeWebviewResizesContent) {
              NO_TEST_SERVER);
 }
 
-class WebViewSSLErrorTest : public WebViewTest {
+class WebViewSSLErrorTest
+    : public WebViewTestBase,
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
-  WebViewSSLErrorTest() = default;
+  WebViewSSLErrorTest() {
+    auto [is_site_isolation_enabled, use_interstitials] = GetParam();
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
+    if (is_site_isolation_enabled) {
+      enabled_features.push_back(features::kSiteIsolationForGuests);
+    } else {
+      disabled_features.push_back(features::kSiteIsolationForGuests);
+    }
+
+    if (use_interstitials) {
+      disabled_features.push_back(
+          extensions_features::kWebviewTagMPArchBehavior);
+    } else {
+      enabled_features.push_back(
+          extensions_features::kWebviewTagMPArchBehavior);
+    }
+
+    scoped_feature_list_.InitWithFeatures(std::move(enabled_features),
+                                          std::move(disabled_features));
+  }
   ~WebViewSSLErrorTest() override = default;
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [is_site_isolation_enabled, use_interstitials] = info.param;
+    return base::StringPrintf(
+        "SiteIsolationForGuests%s_Use%s",
+        is_site_isolation_enabled ? "Enabled" : "Disabled",
+        use_interstitials ? "Interstitial" : "ErrorPage");
+  }
+
+  bool UseInterstitials() { return testing::get<1>(GetParam()); }
 
   // Loads the guest at "web_view/ssl/https_page.html" with an SSL error, and
   // asserts the security interstitial is not displayed for guest through the
@@ -2124,7 +2157,7 @@ class WebViewSSLErrorTest : public WebViewTest {
     ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
     // TODO(1338009): We intend to limit SSL errors to a plain error page
     // instead of an interstitial.
-    ASSERT_TRUE(IsShowingInterstitial(guest->web_contents()));
+    ASSERT_EQ(UseInterstitials(), IsShowingInterstitial(guest->web_contents()));
   }
 
   void LoadEmptyGuest() {
@@ -2173,12 +2206,15 @@ class WebViewSSLErrorTest : public WebViewTest {
       ASSERT_EQ(guest_navi_obs.last_committed_url(), GURL());
     }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(WebViewSSLErrorTests,
                          WebViewSSLErrorTest,
-                         testing::Bool(),
-                         WebViewTest::DescribeParams);
+                         testing::Combine(testing::Bool(), testing::Bool()),
+                         WebViewSSLErrorTest::DescribeParams);
 
 // Test makes sure that an error document is shown in `<webview>` with an SSL
 // error.
@@ -2334,10 +2370,10 @@ class WebViewHttpsFirstModeTest : public WebViewSSLErrorTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(WebViewTests,
+INSTANTIATE_TEST_SUITE_P(WebViewHttpsFirstModeTests,
                          WebViewHttpsFirstModeTest,
-                         testing::Bool(),
-                         WebViewTest::DescribeParams);
+                         testing::Combine(testing::Bool(), testing::Bool()),
+                         WebViewHttpsFirstModeTest::DescribeParams);
 
 // Tests that loading an HTTPS page in a guest <webview> with HTTPS-First Mode
 // enabled doesn't crash nor shows error page.

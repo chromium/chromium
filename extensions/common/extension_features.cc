@@ -123,4 +123,12 @@ BASE_FEATURE(kExtensionSourceUrlEnforcement,
              "ExtensionSourceUrlEnforcement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls the <webview> tag behaviour changes proposed as part of the guest
+// view MPArch migration. See
+// https://docs.google.com/document/d/1RVbtvklXUg9QCNvMT0r-1qDwJNeQFGoTCOD1Ur9mDa4/edit?usp=sharing
+// for details.
+BASE_FEATURE(kWebviewTagMPArchBehavior,
+             "WebviewTagMPArchBehavior",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features
