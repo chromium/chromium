@@ -4255,6 +4255,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "ios-force-translate-enabled",
+    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "ios-media-permissions-control",
     "owners": ["ginnyhuang","bling-flags@google.com"],
     "expiry_milestone": 110

@@ -369,6 +369,11 @@ extern const char kIOS3PIntentsInIncognitoDescription[];
 extern const char kIOSEnablePasswordManagerBrandingUpdateName[];
 extern const char kIOSEnablePasswordManagerBrandingUpdateDescription[];
 
+// Title and description for the flag to enable force translate when language
+// detection failed.
+extern const char kIOSForceTranslateEnabledName[];
+extern const char kIOSForceTranslateEnabledDescription[];
+
 // Title and description for the flag to enable the new iOS post-restore
 // sign-in prompt.
 extern const char kIOSNewPostRestoreExperienceName[];

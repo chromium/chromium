@@ -10,6 +10,7 @@
 namespace {
 // Pref keys passed through setupModalViewControllerWithPrefs:.
 NSString* kSourceLanguagePrefKey = @"sourceLanguage";
+NSString* kSourceLanguageIsUnknownPrefKey = @"sourceLanguageIsUnknown";
 NSString* kTargetLanguagePrefKey = @"targetLanguage";
 NSString* kEnableTranslateButtonPrefKey = @"enableTranslateButton";
 NSString* kUpdateLanguageBeforeTranslatePrefKey =

@@ -300,7 +300,7 @@ void IOSTranslateDriver::OnTranslateScriptReady(TranslateErrors error_type,
                            ? source_language_
                            : kAutoDetectionLanguage;
   TranslateController::FromWebState(web_state_)
-      ->StartTranslation(source_language_, target_language_);
+      ->StartTranslation(source, target_language_);
 }
 
 void IOSTranslateDriver::OnTranslateComplete(TranslateErrors error_type,

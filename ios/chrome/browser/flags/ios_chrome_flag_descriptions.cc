@@ -414,6 +414,10 @@ const char kIOSEnablePasswordManagerBrandingUpdateName[] =
 const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =
     "Updates icons, strings, and views for Google Password Manager.";
 
+const char kIOSForceTranslateEnabledName[] = "Allow force translate on iOS.";
+const char kIOSForceTranslateEnabledDescription[] =
+    "Enable the translate feature when language detection failed.";
+
 const char kIOSNewPostRestoreExperienceName[] = "New Post Restore Experience";
 const char kIOSNewPostRestoreExperienceDescription[] =
     "When enabled, a prompt will be presented after a device restore to "

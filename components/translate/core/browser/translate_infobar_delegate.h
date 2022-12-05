@@ -102,6 +102,8 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
 
   virtual std::u16string source_language_name() const;
 
+  virtual std::u16string unknown_language_name() const;
+
   virtual void UpdateSourceLanguage(const std::string& language_code);
 
   std::string target_language_code() const {

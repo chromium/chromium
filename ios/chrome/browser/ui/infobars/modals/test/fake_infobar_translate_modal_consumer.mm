@@ -11,6 +11,7 @@
 @implementation FakeInfobarTranslateModalConsumer
 - (void)setupModalViewControllerWithPrefs:(NSDictionary*)prefs {
   self.sourceLanguage = prefs[kSourceLanguagePrefKey];
+  self.sourceLanguageIsUnknown = prefs[kSourceLanguageIsUnknownPrefKey];
   self.targetLanguage = prefs[kTargetLanguagePrefKey];
   self.enableTranslateActionButton =
       [prefs[kEnableTranslateButtonPrefKey] boolValue];

@@ -22,6 +22,9 @@ BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionEnabled);
 // and the CLD3 version is used instead.
 BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled);
 
+// Controls whether force translate is enabled on iOS.
+BASE_DECLARE_FEATURE(kIOSForceTranslateEnabled);
+
 // Controls whether the Partial Translate function is available.
 BASE_DECLARE_FEATURE(kDesktopPartialTranslate);
 // The maximum number of characters allowed for a text selection in Partial
@@ -51,6 +54,9 @@ bool IsSubFrameTranslationEnabled();
 
 // Return whether sub frame language detection is enabled.
 bool IsSubFrameLanguageDetectionEnabled();
+
+// Return whether manual force translate is enabled.
+bool IsForceTranslateEnabled();
 
 // Return whether TFLite-based language detection is enabled.
 bool IsTFLiteLanguageDetectionEnabled();

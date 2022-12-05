@@ -127,6 +127,10 @@ std::u16string TranslateInfoBarDelegate::target_language_name() const {
   return language_name_at(ui_delegate_.GetTargetLanguageIndex());
 }
 
+std::u16string TranslateInfoBarDelegate::unknown_language_name() const {
+  return ui_delegate_.GetUnknownLanguageDisplayName();
+}
+
 void TranslateInfoBarDelegate::GetLanguagesNames(
     std::vector<std::u16string>* languages) const {
   DCHECK(languages != nullptr);

@@ -46,6 +46,10 @@ BASE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled,
              "TFLiteLanguageDetectionIgnoreEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSForceTranslateEnabled,
+             "IOSForceTranslateEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDesktopPartialTranslate,
              "DesktopPartialTranslate",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -80,6 +84,14 @@ bool IsSubFrameLanguageDetectionEnabled() {
   return base::FeatureList::IsEnabled(kTranslateSubFrames) &&
          base::GetFieldTrialParamByFeatureAsBool(
              kTranslateSubFrames, kDetectLanguageInSubFrames, true);
+}
+
+bool IsForceTranslateEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(kIOSForceTranslateEnabled);
+#else
+  return true;
+#endif
 }
 
 bool IsTFLiteLanguageDetectionEnabled() {

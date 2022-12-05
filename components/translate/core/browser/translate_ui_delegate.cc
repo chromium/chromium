@@ -162,13 +162,12 @@ TranslateUIDelegate::TranslateUIDelegate(
         return lhs.first < rhs.first;
       });
 
-  // Add unknown language option to the front of the list on all platforms
-  // except iOS.
-#if !BUILDFLAG(IS_IOS)
-  languages_.emplace_back(kUnknownLanguageCode,
-                          GetUnknownLanguageDisplayName());
-  std::rotate(languages_.rbegin(), languages_.rbegin() + 1, languages_.rend());
-#endif
+  if (translate::IsForceTranslateEnabled()) {
+    languages_.emplace_back(kUnknownLanguageCode,
+                            GetUnknownLanguageDisplayName());
+    std::rotate(languages_.rbegin(), languages_.rbegin() + 1,
+                languages_.rend());
+  }
 
   for (std::vector<LanguageNamePair>::const_iterator iter = languages_.begin();
        iter != languages_.end(); ++iter) {

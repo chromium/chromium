@@ -15,6 +15,8 @@
 @property(nonatomic, copy) NSString* sourceLanguage;
 // The target language to which to translate.
 @property(nonatomic, copy) NSString* targetLanguage;
+// Whether the source language is auto unknown.
+@property(nonatomic, assign) BOOL sourceLanguageIsUnknown;
 
 // YES if the pref is set to enable the Translate button.
 @property(nonatomic, assign) BOOL enableTranslateActionButton;

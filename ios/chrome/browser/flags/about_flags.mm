@@ -1313,6 +1313,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserBlueDotPromoName,
      flag_descriptions::kDefaultBrowserBlueDotPromoDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserBlueDotPromo)},
+    {"ios-force-translate-enabled",
+     flag_descriptions::kIOSForceTranslateEnabledName,
+     flag_descriptions::kIOSForceTranslateEnabledDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(translate::kIOSForceTranslateEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
