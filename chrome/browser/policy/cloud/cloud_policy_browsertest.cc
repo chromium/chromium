@@ -163,11 +163,11 @@ void GetExpectedTestPolicy(PolicyMap* expected, const char* homepage) {
   expected->Set(key::kDefaultPopupsSetting, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(4),
                 nullptr);
-  base::ListValue list;
+  base::Value::List list;
   list.Append("dev.chromium.org");
   list.Append("youtube.com");
   expected->Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
+                POLICY_SOURCE_CLOUD, base::Value(std::move(list)), nullptr);
   expected->Set(key::kDefaultSearchProviderName, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                 base::Value("MyDefaultSearchEngine"), nullptr);

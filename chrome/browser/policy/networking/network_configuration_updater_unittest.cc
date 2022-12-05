@@ -187,10 +187,6 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
     policy_service_ = std::make_unique<PolicyServiceImpl>(std::move(providers));
   }
 
-  base::Value* GetExpectedFakeGlobalNetworkConfig() {
-    return &fake_global_network_config_;
-  }
-
   void TearDown() override {
     network_configuration_updater_.reset();
     provider_.Shutdown();
@@ -230,7 +226,6 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
 
  private:
   base::Value fake_network_configs_;
-  base::DictionaryValue fake_global_network_config_;
 };
 
 TEST_F(NetworkConfigurationUpdaterTest, CaPolicyIsValidatedAndRepaired) {
