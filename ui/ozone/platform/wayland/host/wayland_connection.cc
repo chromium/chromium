@@ -63,12 +63,6 @@
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
-#if defined(USE_LIBWAYLAND_STUBS)
-#include <dlfcn.h>
-
-#include "third_party/wayland/libwayland_stubs.h"  // nogncheck
-#endif
-
 namespace ui {
 
 namespace {
@@ -132,35 +126,6 @@ WaylandConnection::WaylandConnection() = default;
 WaylandConnection::~WaylandConnection() = default;
 
 bool WaylandConnection::Initialize() {
-#if defined(USE_LIBWAYLAND_STUBS)
-  // Use RTLD_NOW to load all symbols, since the stubs will try to load all of
-  // them anyway.  Use RTLD_GLOBAL to add the symbols to the global namespace.
-  auto dlopen_flags = RTLD_NOW | RTLD_GLOBAL;
-  if (void* libwayland_client =
-          dlopen("libwayland-client.so.0", dlopen_flags)) {
-    third_party_wayland::InitializeLibwaylandclient(libwayland_client);
-  } else {
-    LOG(ERROR) << "Failed to load wayland client libraries.";
-    return false;
-  }
-
-  if (void* libwayland_egl = dlopen("libwayland-egl.so.1", dlopen_flags))
-    third_party_wayland::InitializeLibwaylandegl(libwayland_egl);
-
-  // TODO(crbug.com/1081784): consider handling this in more flexible way.
-  // libwayland-cursor is said to be part of the standard shipment of Wayland,
-  // and it seems unlikely (although possible) that it would be unavailable
-  // while libwayland-client was present.  To handle that gracefully, chrome can
-  // fall back to the generic Ozone behaviour.
-  if (void* libwayland_cursor =
-          dlopen("libwayland-cursor.so.0", dlopen_flags)) {
-    third_party_wayland::InitializeLibwaylandcursor(libwayland_cursor);
-  } else {
-    LOG(ERROR) << "Failed to load libwayland-cursor.so.0.";
-    return false;
-  }
-#endif
-
   // Register factories for classes that implement wl::GlobalObjectRegistrar<T>.
   // Keep alphabetical order for convenience.
   RegisterGlobalObjectFactory(GtkPrimarySelectionDeviceManager::kInterfaceName,

@@ -6,12 +6,9 @@ import("//build/config/ozone.gni")
 
 wayland_gn_dir = "//third_party/wayland"
 
-if (ozone_platform_wayland) {
-  # This defines use_system_libwayland
-  import("$wayland_gn_dir/features.gni")
-} else {
-  use_system_libwayland = false
-}
+# TODO(crbug.com/1385736): remove this once importers of this file do not
+# rely on this gn arg.
+use_system_libwayland = false
 
 # Path to Wayland sources
 wayland_dir = "$wayland_gn_dir/src"

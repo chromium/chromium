@@ -3,266 +3,187 @@
 # found in the LICENSE file.
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/sysroot.gni")
-import("//third_party/wayland/features.gni")
 import("//third_party/wayland/wayland_protocol.gni")
 import("//tools/generate_stubs/rules.gni")
 
 assert(is_linux || is_chromeos)
 
-# This should be open to both system and non - system libwayland as
-# wayland_stubs also uses this.
 wayland_protocol("wayland_protocol_c") {
-  if (use_system_libwayland && use_sysroot) {
-    sources = [ "${sysroot}/usr/share/wayland/wayland.xml" ]
-  } else {
-    sources = [ "src/protocol/wayland.xml" ]
-  }
+  sources = [ "src/protocol/wayland.xml" ]
   generator_type = "protocol-marshalling"
 }
 
-if (!use_system_libwayland) {
-  config("wayland_config") {
-    include_dirs = [
-      "include",
-      "include/src",
-      "src/cursor",
-      "src/egl",
-      "src/src",
-    ]
+config("wayland_config") {
+  include_dirs = [
+    "include",
+    "include/src",
+    "src/cursor",
+    "src/egl",
+    "src/src",
+  ]
 
-    # Client/Server headers are automatically generated. Though, we still need
-    # to pass the path where these headers are located.
-    include_dirs += [ "$root_gen_dir/third_party/wayland/src/protocol" ]
-  }
-
-  # Only used within this file. Should not be in a public_config entry and leak
-  # out. No relations to the "wayland_private" target below.
-  # TODO(thomasanderson): Remove this once
-  # https://patchwork.freedesktop.org/patch/242086/ lands.
-  config("wayland_build_workaround_private_config") {
-    cflags = [ "-Wno-macro-redefined" ]
-  }
-
-  wayland_protocol("wayland_server_protocol") {
-    sources = [ "src/protocol/wayland.xml" ]
-    generator_type = "protocol-server"
-  }
-
-  wayland_protocol("wayland_client_protocol") {
-    sources = [ "src/protocol/wayland.xml" ]
-    generator_type = "protocol-client"
-  }
-
-  source_set("wayland_util") {
-    sources = [
-      "src/src/wayland-private.h",
-      "src/src/wayland-util.c",
-      "src/src/wayland-util.h",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    public_configs = [ ":wayland_config" ]
-  }
-
-  static_library("wayland_private") {
-    sources = [
-      "src/src/connection.c",
-      "src/src/wayland-os.c",
-      "src/src/wayland-os.h",
-    ]
-
-    deps = [ ":wayland_util" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      ":wayland_build_workaround_private_config",
-      "//build/config/compiler:no_chromium_code",
-      "//build/config/linux/libffi",
-    ]
-
-    public_configs = [ ":wayland_config" ]
-  }
-
-  static_library("wayland_server") {
-    sources = [
-      "src/src/event-loop.c",
-      "src/src/wayland-server.c",
-      "src/src/wayland-shm.c",
-    ]
-
-    include_dirs = [ "include/" ]
-
-    deps = [
-      ":wayland_private",
-      ":wayland_protocol_c",
-      ":wayland_util",
-    ]
-
-    public_deps = [ ":wayland_server_protocol" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      ":wayland_build_workaround_private_config",
-      "//build/config/compiler:no_chromium_code",
-      "//build/config/linux/libffi",
-    ]
-
-    public_configs = [ ":wayland_config" ]
-  }
-
-  static_library("wayland_client") {
-    sources = [ "src/src/wayland-client.c" ]
-
-    deps = [
-      ":wayland_client_protocol",
-      ":wayland_private",
-      ":wayland_protocol_c",
-      ":wayland_util",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      ":wayland_build_workaround_private_config",
-      "//build/config/compiler:no_chromium_code",
-      "//build/config/linux/libffi",
-    ]
-
-    public_configs = [ ":wayland_config" ]
-  }
-
-  static_library("wayland_egl") {
-    sources = [
-      "src/egl/wayland-egl-backend.h",
-      "src/egl/wayland-egl-core.h",
-      "src/egl/wayland-egl.c",
-      "src/egl/wayland-egl.h",
-    ]
-
-    deps = [
-      ":wayland_client_protocol",
-      ":wayland_util",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    public_configs = [ ":wayland_config" ]
-  }
-
-  static_library("wayland_cursor") {
-    sources = [
-      "src/cursor/cursor-data.h",
-      "src/cursor/os-compatibility.c",
-      "src/cursor/os-compatibility.h",
-      "src/cursor/wayland-cursor.c",
-      "src/cursor/wayland-cursor.h",
-      "src/cursor/xcursor.c",
-      "src/cursor/xcursor.h",
-    ]
-
-    deps = [ ":wayland_client_protocol" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      "//build/config/compiler:no_chromium_code",
-      ":wayland_build_workaround_private_config",
-      ":wayland_config",
-    ]
-  }
-} else {
-  # use_system_libwayland
-  pkg_config("wayland_server_config") {
-    packages = [ "wayland-server" ]
-  }
-
-  group("wayland_server") {
-    public_configs = [ ":wayland_server_config" ]
-  }
-
-  group("wayland_util") {
-    public_configs = [ ":wayland_client_config" ]
-  }
-
-  pkg_config("wayland_client_config") {
-    packages = [ "wayland-client" ]
-  }
-
-  pkg_config("wayland_cursor_config") {
-    packages = [ "wayland-cursor" ]
-  }
-
-  pkg_config("wayland_egl_config") {
-    packages = [ "wayland-egl" ]
-  }
-
-  group("wayland_client") {
-    public_configs = [ ":wayland_client_config" ]
-  }
-
-  group("wayland_cursor") {
-    public_configs = [ ":wayland_cursor_config" ]
-  }
-
-  group("wayland_egl") {
-    public_configs = [ ":wayland_egl_config" ]
-  }
-
-  generate_stubs("wayland_wrappers") {
-    visibility = [ ":wayland_stubs" ]
-
-    extra_header = "stubs/libwayland.fragment"
-    sigs = [
-      "stubs/libwayland-client.sigs",
-      "stubs/libwayland-cursor.sigs",
-      "stubs/libwayland-egl.sigs",
-    ]
-
-    output_name = "libwayland_stubs"
-    deps = [ "//base" ]
-  }
-
-  # This is a source_set, not a component, because we don't want to leak
-  # our own wayland symbols in component builds, which can interfere with
-  # the system libEGL's usage of wayland.
-  source_set("wayland_stubs") {
-    public_deps = [ ":wayland_wrappers" ]
-    sources = [
-      # Provide implementations of C variadic functions, which
-      # generate_stubs.py cannot generate forwarding-functions for.
-      "stubs/libwayland_variadic_support.cc",
-    ]
-
-    # Provide data symbols which generate_stubs.py cannot wrap -- only
-    # functions are wrappable.  wayland-protocol.c contains only data and
-    # no code.
-    deps = [ ":wayland_protocol_c" ]
-  }
+  # Client/Server headers are automatically generated. Though, we still need
+  # to pass the path where these headers are located.
+  include_dirs += [ "$root_gen_dir/third_party/wayland/src/protocol" ]
 }
 
-if (!use_system_wayland_scanner) {
-  config("wayland_scanner_config") {
-    cflags = [
-      "-Wno-int-conversion",
-      "-Wno-implicit-function-declaration",
-    ]
+# Only used within this file. Should not be in a public_config entry and leak
+# out. No relations to the "wayland_private" target below.
+# TODO(thomasanderson): Remove this once
+# https://patchwork.freedesktop.org/patch/242086/ lands.
+config("wayland_build_workaround_private_config") {
+  cflags = [ "-Wno-macro-redefined" ]
+}
 
-    include_dirs = [ "include/" ]
-  }
+wayland_protocol("wayland_server_protocol") {
+  sources = [ "src/protocol/wayland.xml" ]
+  generator_type = "protocol-server"
+}
 
-  executable("wayland_scanner") {
-    sources = [ "src/src/scanner.c" ]
+wayland_protocol("wayland_client_protocol") {
+  sources = [ "src/protocol/wayland.xml" ]
+  generator_type = "protocol-client"
+}
 
-    deps = [
-      ":wayland_util",
-      "//third_party/expat:expat",
-    ]
+source_set("wayland_util") {
+  sources = [
+    "src/src/wayland-private.h",
+    "src/src/wayland-util.c",
+    "src/src/wayland-util.h",
+  ]
 
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      "//build/config/compiler:no_chromium_code",
-      ":wayland_scanner_config",
-    ]
-  }
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":wayland_config" ]
+}
+
+static_library("wayland_private") {
+  sources = [
+    "src/src/connection.c",
+    "src/src/wayland-os.c",
+    "src/src/wayland-os.h",
+  ]
+
+  deps = [ ":wayland_util" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":wayland_build_workaround_private_config",
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/linux/libffi",
+  ]
+
+  public_configs = [ ":wayland_config" ]
+}
+
+static_library("wayland_server") {
+  sources = [
+    "src/src/event-loop.c",
+    "src/src/wayland-server.c",
+    "src/src/wayland-shm.c",
+  ]
+
+  include_dirs = [ "include/" ]
+
+  deps = [
+    ":wayland_private",
+    ":wayland_protocol_c",
+    ":wayland_util",
+  ]
+
+  public_deps = [ ":wayland_server_protocol" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":wayland_build_workaround_private_config",
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/linux/libffi",
+  ]
+
+  public_configs = [ ":wayland_config" ]
+}
+
+static_library("wayland_client") {
+  sources = [ "src/src/wayland-client.c" ]
+
+  deps = [
+    ":wayland_client_protocol",
+    ":wayland_private",
+    ":wayland_protocol_c",
+    ":wayland_util",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":wayland_build_workaround_private_config",
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/linux/libffi",
+  ]
+
+  public_configs = [ ":wayland_config" ]
+}
+
+static_library("wayland_egl") {
+  sources = [
+    "src/egl/wayland-egl-backend.h",
+    "src/egl/wayland-egl-core.h",
+    "src/egl/wayland-egl.c",
+    "src/egl/wayland-egl.h",
+  ]
+
+  deps = [
+    ":wayland_client_protocol",
+    ":wayland_util",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":wayland_config" ]
+}
+
+static_library("wayland_cursor") {
+  sources = [
+    "src/cursor/cursor-data.h",
+    "src/cursor/os-compatibility.c",
+    "src/cursor/os-compatibility.h",
+    "src/cursor/wayland-cursor.c",
+    "src/cursor/wayland-cursor.h",
+    "src/cursor/xcursor.c",
+    "src/cursor/xcursor.h",
+  ]
+
+  deps = [ ":wayland_client_protocol" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":wayland_build_workaround_private_config",
+    ":wayland_config",
+  ]
+}
+
+config("wayland_scanner_config") {
+  cflags = [
+    "-Wno-int-conversion",
+    "-Wno-implicit-function-declaration",
+  ]
+
+  include_dirs = [ "include/" ]
+}
+
+executable("wayland_scanner") {
+  sources = [ "src/src/scanner.c" ]
+
+  deps = [
+    ":wayland_util",
+    "//third_party/expat:expat",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":wayland_scanner_config",
+  ]
 }

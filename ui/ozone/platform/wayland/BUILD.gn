@@ -8,7 +8,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/wayland/features.gni")
 import("//ui/ozone/platform/wayland/wayland.gni")
 
 assert(is_linux || is_chromeos_lacros)
@@ -239,6 +238,10 @@ source_set("wayland") {
     "//skia",
     "//third_party/libsync",
     "//third_party/re2",
+    "//third_party/wayland:wayland_client",
+    "//third_party/wayland:wayland_cursor",
+    "//third_party/wayland:wayland_egl",
+    "//third_party/wayland:wayland_util",
     "//third_party/wayland-protocols:alpha_compositing_protocol",
     "//third_party/wayland-protocols:content_type_protocol",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
@@ -331,18 +334,6 @@ source_set("wayland") {
     sources += [
       "host/wayland_cursor_factory.cc",
       "host/wayland_cursor_factory.h",
-    ]
-  }
-
-  if (use_system_libwayland) {
-    defines += [ "USE_LIBWAYLAND_STUBS" ]
-    deps += [ "//third_party/wayland:wayland_stubs" ]
-  } else {
-    deps += [
-      "//third_party/wayland:wayland_client",
-      "//third_party/wayland:wayland_cursor",
-      "//third_party/wayland:wayland_egl",
-      "//third_party/wayland:wayland_util",
     ]
   }
 
