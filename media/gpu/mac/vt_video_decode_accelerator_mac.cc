@@ -79,7 +79,7 @@ base::AtomicSequenceNumber g_memory_dump_ids;
 // A sequence of shared memory ids for CVPixelBufferRefs.
 base::AtomicSequenceNumber g_cv_pixel_buffer_ids;
 
-// Only H.264 with 4:2:0 chroma sampling is supported.
+// The video codec profiles that are supported.
 constexpr VideoCodecProfile kSupportedProfiles[] = {
     H264PROFILE_BASELINE, H264PROFILE_EXTENDED, H264PROFILE_MAIN,
     H264PROFILE_HIGH,
@@ -89,10 +89,10 @@ constexpr VideoCodecProfile kSupportedProfiles[] = {
 
     // These are only supported on macOS 11+.
     HEVCPROFILE_MAIN, HEVCPROFILE_MAIN10, HEVCPROFILE_MAIN_STILL_PICTURE,
-    // This is partially supported on macOS 11+, Apple Silicon Mac only supports
-    // 8 ~ 10 bit 400, 420, 422, 444 HW decoding, and Intel Mac supports 8 ~ 12
-    // bit 400, 420, 422 SW decoding, 444 content is decodable but has a green
-    // stripe issue.
+
+    // This is partially supported on macOS 11+, Apple Silicon Mac supports
+    // 8 ~ 10 bit 400, 420, 422, 444 HW decoding, Intel Mac supports 8 ~ 12
+    // bit 400, 420, 422, 444 SW decoding.
     HEVCPROFILE_REXT,
 
     // TODO(sandersd): Hi10p fails during
