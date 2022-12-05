@@ -166,7 +166,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   gfx::Rect GetBackgroundBounds() const;
 
   // ActionableView:
-  bool PerformAction(const ui::Event& event) override;
+  bool PerformAction(const ui::Event& event) final;
 
   // Sets whether the tray item should be shown by default (e.g. it is
   // activated). The effective visibility of the tray item is determined by the
