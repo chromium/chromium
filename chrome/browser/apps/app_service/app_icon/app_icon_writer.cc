@@ -117,7 +117,7 @@ void AppIconWriter::InstallIcon(AppPublisher* publisher,
 
     pending_results_it->second.scale_factors.insert(scale_factor);
     publisher->GetCompressedIconData(
-        app_id, icon_effects, icon_type, size_in_dip, scale_factor,
+        app_id, icon_type, size_in_dip, scale_factor,
         base::BindOnce(&AppIconWriter::OnIconLoad,
                        weak_ptr_factory_.GetWeakPtr(), app_id, size_in_dip,
                        icon_effects, icon_type, scale_factor));

@@ -110,7 +110,6 @@ void LoadIconFromWebApp(content::BrowserContext* context,
 // Requests a compressed icon data for an web app identified by `app_id`.
 void GetWebAppCompressedIconData(content::BrowserContext* context,
                                  const std::string& web_app_id,
-                                 IconEffects icon_effects,
                                  IconType icon_type,
                                  int size_in_dip,
                                  ui::ResourceScaleFactor scale_factor,

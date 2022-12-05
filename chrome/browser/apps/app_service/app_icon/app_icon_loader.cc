@@ -582,7 +582,7 @@ void AppIconLoader::GetWebAppCompressedIconData(
   absl::optional<IconPurpose> icon_purpose_to_read =
       GetIconPurpose(web_app_id, icon_manager, size_hint_in_dip_);
 
-  if (!icon_purpose_to_read.has_value()) {
+  if (!icon_purpose_to_read.has_value() || icon_type_ == IconType::kUnknown) {
     MaybeLoadFallbackOrCompleteEmpty();
     return;
   }
@@ -595,45 +595,12 @@ void AppIconLoader::GetWebAppCompressedIconData(
       web_app_id, {*icon_purpose_to_read}, icon_size_in_px_);
   DCHECK(size_and_purpose.has_value());
 
-  switch (icon_type_) {
-    case IconType::kCompressed:
-      // Only read IconPurpose::ANY icons compressed as other purposes would
-      // need to find the icon size to match the icon purpose.
-      //
-      // If the icon px size returned from FindIconMatchBigger doesn't match
-      // icon_size_in_px_, the returned compressed icon should be resized, so
-      // ReadSmallestCompressedIconAny can't be used.
-      //
-      // If `icon_effects_` is not none, the icon needs to be converted to the
-      // uncompressed icon to apply the icon effects. So ReadIcons is used to
-      // get the icon to match the size in px and icon purpose to keep the
-      // consistent implementation with LoadWebAppIcon.
-      if (icon_effects_ == apps::IconEffects::kNone &&
-          *icon_purpose_to_read == IconPurpose::ANY &&
-          icon_size_in_px_ == size_and_purpose->size_px) {
-        icon_manager.ReadSmallestCompressedIconAny(
-            web_app_id, icon_size_in_px_,
-            base::BindOnce(&AppIconLoader::CompleteWithCompressed,
-                           base::WrapRefCounted(this)));
-        return;
-      }
-      [[fallthrough]];
-    case IconType::kUncompressed:
-      [[fallthrough]];
-    case IconType::kStandard: {
-      std::vector<int> icon_pixel_sizes;
-      icon_pixel_sizes.emplace_back(size_and_purpose->size_px);
-      icon_manager.ReadIcons(
-          web_app_id, *icon_purpose_to_read, icon_pixel_sizes,
-          base::BindOnce(&AppIconLoader::OnReadWebAppForCompressedIconData,
-                         base::WrapRefCounted(this)));
-      return;
-    }
-    case IconType::kUnknown:
-      MaybeLoadFallbackOrCompleteEmpty();
-      return;
-  }
-  NOTREACHED();
+  std::vector<int> icon_pixel_sizes;
+  icon_pixel_sizes.emplace_back(size_and_purpose->size_px);
+  icon_manager.ReadIcons(
+      web_app_id, *icon_purpose_to_read, icon_pixel_sizes,
+      base::BindOnce(&AppIconLoader::OnReadWebAppForCompressedIconData,
+                     base::WrapRefCounted(this)));
 }
 
 std::unique_ptr<arc::IconDecodeRequest>

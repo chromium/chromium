@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -85,7 +84,6 @@ class AppPublisher {
   // is identified by `size_in_dip` and `scale_factor`. Calls `callback` with
   // the result.
   virtual void GetCompressedIconData(const std::string& app_id,
-                                     IconEffects icon_effects,
                                      IconType icon_type,
                                      int32_t size_in_dip,
                                      ui::ResourceScaleFactor scale_factor,

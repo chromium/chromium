@@ -47,7 +47,6 @@ void AppPublisher::RegisterPublisher(AppType app_type) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AppPublisher::GetCompressedIconData(const std::string& app_id,
-                                         IconEffects icon_effects,
                                          apps::IconType icon_type,
                                          int32_t size_in_dip,
                                          ui::ResourceScaleFactor scale_factor,

@@ -957,7 +957,6 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void WebAppPublisherHelper::GetCompressedIconData(
     const std::string& app_id,
-    apps::IconEffects icon_effects,
     apps::IconType icon_type,
     int32_t size_in_dip,
     ui::ResourceScaleFactor scale_factor,
@@ -967,9 +966,8 @@ void WebAppPublisherHelper::GetCompressedIconData(
     return;
   }
 
-  apps::GetWebAppCompressedIconData(profile_, app_id, icon_effects, icon_type,
-                                    size_in_dip, scale_factor,
-                                    std::move(callback));
+  apps::GetWebAppCompressedIconData(profile_, app_id, icon_type, size_in_dip,
+                                    scale_factor, std::move(callback));
 }
 #endif
 

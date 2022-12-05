@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
@@ -98,7 +97,6 @@ class WebApps : public apps::PublisherBase,
                 apps::LoadIconCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void GetCompressedIconData(const std::string& app_id,
-                             apps::IconEffects icon_effects,
                              apps::IconType icon_type,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,
