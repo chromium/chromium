@@ -130,32 +130,6 @@ ci.builder(
             "gclient_config": "chromium",
             "gclient_apply_config": ["android"],
         },
-        # TODO(crbug.com/1381614): Remove properties below after
-        # avd_packager is refactored to recipe_module in crrev.com/c/4021719
-        "avd_configs": [
-            "tools/android/avd/proto/creation/generic_android19.textpb",
-            "tools/android/avd/proto/creation/generic_android22.textpb",
-            "tools/android/avd/proto/creation/generic_android23.textpb",
-            "tools/android/avd/proto/creation/generic_android24.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android24.textpb",
-            "tools/android/avd/proto/creation/generic_android25.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android25.textpb",
-            "tools/android/avd/proto/creation/generic_android27.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android27.textpb",
-            "tools/android/avd/proto/creation/generic_android28.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android28.textpb",
-            "tools/android/avd/proto/creation/generic_android29.textpb",
-            "tools/android/avd/proto/creation/generic_android30.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android30.textpb",
-            "tools/android/avd/proto/creation/generic_android31.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android31.textpb",
-            "tools/android/avd/proto/creation/generic_android32_foldable.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android32_foldable.textpb",
-            "tools/android/avd/proto/creation/generic_android33.textpb",
-            "tools/android/avd/proto/creation/generic_playstore_android33.textpb",
-        ],
-        "gclient_config": "chromium",
-        "gclient_apply_config": ["android"],
     },
     # Triggered manually through the scheduler UI
     # https://luci-scheduler.appspot.com/jobs/chromium/android-avd-packager
