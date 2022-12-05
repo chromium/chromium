@@ -52,6 +52,8 @@ source_set("display") {
 
   if (is_mac) {
     frameworks = [ "OpenGL.framework" ]
+
+    defines = [ "GL_SILENCE_DEPRECATION" ]
   }
 
   if (is_ios) {
