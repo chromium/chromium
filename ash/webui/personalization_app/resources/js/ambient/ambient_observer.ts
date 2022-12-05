@@ -92,5 +92,5 @@ export class AmbientObserver implements AmbientObserverInterface {
     store.dispatch(setGooglePhotosAlbumsPreviewsAction(previews));
   }
 
-  onScreenSaverClosed() {}
+  onAmbientUiVisibilityChanged() {}
 }

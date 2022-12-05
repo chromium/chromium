@@ -33,6 +33,8 @@ using MojomOnlineImageType = ash::personalization_app::mojom::OnlineImageType;
 using MojomAnimationTheme = ash::personalization_app::mojom::AnimationTheme;
 using MojomTopicSource = ash::personalization_app::mojom::TopicSource;
 using MojomTemperatureUnit = ash::personalization_app::mojom::TemperatureUnit;
+using MojomAmbientUiVisibility =
+    ash::personalization_app::mojom::AmbientUiVisibility;
 
 MojomWallpaperLayout
 EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::ToMojom(
@@ -420,6 +422,42 @@ bool EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::
       return true;
     case MojomTemperatureUnit::kCelsius:
       *output = ash::AmbientModeTemperatureUnit::kCelsius;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+MojomAmbientUiVisibility
+EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::ToMojom(
+    ash::AmbientUiVisibility input) {
+  switch (input) {
+    case ash::AmbientUiVisibility::kShown:
+      return MojomAmbientUiVisibility::kShown;
+    case ash::AmbientUiVisibility::kPreview:
+      return MojomAmbientUiVisibility::kPreview;
+    case ash::AmbientUiVisibility::kHidden:
+      return MojomAmbientUiVisibility::kHidden;
+    case ash::AmbientUiVisibility::kClosed:
+      return MojomAmbientUiVisibility::kClosed;
+  }
+}
+
+bool EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::FromMojom(
+    MojomAmbientUiVisibility input,
+    ash::AmbientUiVisibility* output) {
+  switch (input) {
+    case MojomAmbientUiVisibility::kShown:
+      *output = ash::AmbientUiVisibility::kShown;
+      return true;
+    case MojomAmbientUiVisibility::kPreview:
+      *output = ash::AmbientUiVisibility::kPreview;
+      return true;
+    case MojomAmbientUiVisibility::kHidden:
+      *output = ash::AmbientUiVisibility::kHidden;
+      return true;
+    case MojomAmbientUiVisibility::kClosed:
+      *output = ash::AmbientUiVisibility::kClosed;
       return true;
   }
   NOTREACHED();

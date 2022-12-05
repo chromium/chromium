@@ -486,6 +486,15 @@ enum TemperatureUnit {
   kCelsius = 1,
 };
 
+// Enumeration of UI visibility states.
+// This should be kept in sync with |ash:AmbientUiVisibility|.
+enum AmbientUiVisibility {
+  kShown = 0,
+  kPreview = 1,
+  kHidden = 2,
+  kClosed = 3,
+};
+
 // Album metadaba to display. Contains necessary data for both topic sources.
 struct AmbientModeAlbum {
   // Unique identifier for this album. It assumes unique id across different
@@ -530,8 +539,8 @@ interface AmbientObserver {
   // albums.
   OnGooglePhotosAlbumsPreviewsFetched(array<url.mojom.Url> previews);
 
-  // Nofities the JS side when the screen saver is closed.
-  OnScreenSaverClosed();
+  // Notifies the JS side when ambient visibility is changed.
+  OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility);
 };
 
 // Provides APIs to expose Ambient mode settings.

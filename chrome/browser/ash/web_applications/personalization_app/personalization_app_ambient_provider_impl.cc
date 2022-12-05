@@ -15,6 +15,7 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/shell.h"
@@ -579,10 +580,9 @@ void PersonalizationAppAmbientProviderImpl::StartScreenSaverPreview() {
 }
 
 void PersonalizationAppAmbientProviderImpl::OnAmbientUiVisibilityChanged(
-    AmbientUiVisibility visibility) {
-  if (ambient_observer_remote_.is_bound() &&
-      visibility == AmbientUiVisibility::kClosed) {
-    ambient_observer_remote_->OnScreenSaverClosed();
+    ash::AmbientUiVisibility visibility) {
+  if (ambient_observer_remote_.is_bound()) {
+    ambient_observer_remote_->OnAmbientUiVisibilityChanged(visibility);
   }
 }
 

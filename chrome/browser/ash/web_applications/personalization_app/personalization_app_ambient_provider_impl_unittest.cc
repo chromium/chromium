@@ -70,7 +70,10 @@ class TestAmbientObserver
     previews_ = std::move(previews);
   }
 
-  void OnScreenSaverClosed() override { screen_saver_closed_ = true; }
+  void OnAmbientUiVisibilityChanged(
+      ash::AmbientUiVisibility visibility) override {
+    ambient_ui_visibility_ = visibility;
+  }
 
   mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
   pending_remote() {
@@ -106,6 +109,11 @@ class TestAmbientObserver
     return temperature_unit_;
   }
 
+  ash::AmbientUiVisibility visibility() {
+    ambient_observer_receiver_.FlushForTesting();
+    return ambient_ui_visibility_;
+  }
+
   std::vector<GURL> google_photos_albums_previews() {
     ambient_observer_receiver_.FlushForTesting();
     return previews_;
@@ -116,7 +124,6 @@ class TestAmbientObserver
       ambient_observer_receiver_{this};
 
   bool ambient_mode_enabled_ = false;
-  bool screen_saver_closed_ = false;
 
   ash::AmbientAnimationTheme animation_theme_ =
       ash::AmbientAnimationTheme::kSlideshow;
@@ -124,6 +131,8 @@ class TestAmbientObserver
       ash::AmbientModeTopicSource::kArtGallery;
   ash::AmbientModeTemperatureUnit temperature_unit_ =
       ash::AmbientModeTemperatureUnit::kFahrenheit;
+  ash::AmbientUiVisibility ambient_ui_visibility_ =
+      ash::AmbientUiVisibility::kClosed;
   std::vector<ash::personalization_app::mojom::AmbientModeAlbumPtr> albums_;
   std::vector<GURL> previews_;
 };
@@ -221,6 +230,11 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   ash::AmbientModeTemperatureUnit ObservedTemperatureUnit() {
     ambient_provider_remote_.FlushForTesting();
     return test_ambient_observer_.temperature_unit();
+  }
+
+  ash::AmbientUiVisibility ObservedAmbientUiVisibility() {
+    ambient_provider_remote_.FlushForTesting();
+    return test_ambient_observer_.visibility();
   }
 
   std::vector<GURL> ObservedGooglePhotosAlbumsPreviews() {
@@ -342,7 +356,6 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   std::unique_ptr<PersonalizationAppAmbientProviderImpl> ambient_provider_;
   TestAmbientObserver test_ambient_observer_;
 
-  std::unique_ptr<ash::AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<ash::FakeAmbientBackendControllerImpl>
       fake_backend_controller_;
   base::HistogramTester histogram_tester_;
@@ -456,6 +469,15 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kFahrenheit);
   EXPECT_EQ(ash::AmbientModeTemperatureUnit::kFahrenheit,
             ObservedTemperatureUnit());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       ShouldCallOnAmbientUiVisibilityChanged) {
+  SetAmbientObserver();
+  EXPECT_EQ(ash::AmbientUiVisibility::kClosed, ObservedAmbientUiVisibility());
+  Shell::Get()->ambient_controller()->ambient_ui_model()->SetUiVisibility(
+      ash::AmbientUiVisibility::kPreview);
+  EXPECT_EQ(ash::AmbientUiVisibility::kPreview, ObservedAmbientUiVisibility());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {

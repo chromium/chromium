@@ -68,6 +68,10 @@ mojom("mojom") {
           mojom = "ash.personalization_app.mojom.TemperatureUnit"
           cpp = "ash::AmbientModeTemperatureUnit"
         },
+        {
+          mojom = "ash.personalization_app.mojom.AmbientUiVisibility"
+          cpp = "ash::AmbientUiVisibility"
+        },
       ]
       traits_headers = [ "personalization_app_mojom_traits.h" ]
       traits_sources = [ "personalization_app_mojom_traits.cc" ]
