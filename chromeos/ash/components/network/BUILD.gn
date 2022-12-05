@@ -26,6 +26,7 @@ component("network") {
     "//chromeos/components/onc",
     "//chromeos/dbus/common",
     "//chromeos/dbus/permission_broker",
+    "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//components/account_id",
     "//components/device_event_log",
@@ -53,8 +54,12 @@ component("network") {
     "//chromeos/ash/components/network/metrics",
     "//chromeos/ash/components/network/onc",
     "//chromeos/ash/components/network/proxy",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/device_event_log",
   ]
   sources = [
+    "apn_migrator.cc",
+    "apn_migrator.h",
     "auto_connect_handler.cc",
     "auto_connect_handler.h",
     "cellular_connection_handler.cc",
@@ -259,11 +264,13 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network/metrics:unit_tests",
     "//chromeos/ash/components/network/onc:unit_tests",
     "//chromeos/ash/components/network/proxy:unit_tests",
+    "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/ash/services/hotspot_config/public/mojom",
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
     "//chromeos/dbus/permission_broker",
     "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//components/onc",
     "//components/prefs",
@@ -280,6 +287,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
+    "apn_migrator_unittest.cc",
     "auto_connect_handler_unittest.cc",
     "cellular_connection_handler_unittest.cc",
     "cellular_esim_installer_unittest.cc",

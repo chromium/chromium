@@ -1,0 +1,214 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/network/apn_migrator.h"
+
+#include "ash/constants/ash_features.h"
+#include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/mock_managed_cellular_pref_handler.h"
+#include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+
+namespace ash {
+
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Invoke;
+using ::testing::Return;
+using ::testing::SaveArg;
+using ::testing::Truly;
+using ::testing::WithArg;
+
+namespace {
+constexpr char kCellularName1[] = "cellular_device_1";
+constexpr char kTestCellularPath1[] = "/device/cellular_device_1";
+constexpr char kTestCellularIccid1[] = "test_iccid_1";
+constexpr char kTestCellularGuid1[] = "test_guid_1";
+
+constexpr char kCellularName2[] = "cellular_device_2";
+constexpr char kTestCellularPath2[] = "/device/cellular_device_2";
+constexpr char kTestCellularIccid2[] = "test_iccid_2";
+constexpr char kTestCellularGuid2[] = "test_guid_2";
+
+constexpr char kCellularName3[] = "cellular_device_3";
+constexpr char kTestCellularPath3[] = "/device/cellular_device_3";
+constexpr char kTestCellularIccid3[] = "test_iccid_3";
+constexpr char kTestCellularGuid3[] = "test_guid_3";
+
+constexpr char kCellularServicePattern[] =
+    R"({"GUID": "%s", "Type": "cellular",  "State": "idle",
+            "Strength": 0, "Cellular.NetworkTechnology": "LTE",
+            "Cellular.ActivationState": "activated", "Cellular.ICCID": "%s",
+            "Profile": "%s"})";
+}  // namespace
+
+class ApnMigratorTest : public testing::Test {
+ public:
+  ApnMigratorTest() = default;
+
+  ApnMigratorTest(const ApnMigratorTest&) = delete;
+  ApnMigratorTest& operator=(const ApnMigratorTest&) = delete;
+  ~ApnMigratorTest() override = default;
+
+  // testing::Test
+  void SetUp() override {
+    managed_cellular_pref_handler_ =
+        base::WrapUnique(new testing::NiceMock<MockManagedCellularPrefHandler>);
+    managed_network_configuration_handler_ = base::WrapUnique(
+        new testing::NiceMock<MockManagedNetworkConfigurationHandler>);
+
+    apn_migrator_ = std::make_unique<ApnMigrator>(
+        managed_cellular_pref_handler_.get(),
+        managed_network_configuration_handler_.get(),
+        network_state_helper_.network_state_handler());
+
+    SetupNetworks();
+  }
+
+  void TearDown() override {
+    apn_migrator_.reset();
+    managed_network_configuration_handler_.reset();
+    managed_cellular_pref_handler_.reset();
+  }
+
+  void TriggerNetworkListChanged() {
+    static_cast<NetworkStateHandlerObserver*>(apn_migrator_.get())
+        ->NetworkListChanged();
+  }
+
+ protected:
+  MockManagedCellularPrefHandler* managed_cellular_pref_handler() const {
+    return managed_cellular_pref_handler_.get();
+  }
+  MockManagedNetworkConfigurationHandler*
+  managed_network_configuration_handler() const {
+    return managed_network_configuration_handler_.get();
+  }
+
+  const std::string& cellular_service_path_1() const {
+    return cellular_service_path_1_;
+  }
+  const std::string& cellular_service_path_2() const {
+    return cellular_service_path_2_;
+  }
+  const std::string& cellular_service_path_3() const {
+    return cellular_service_path_3_;
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  NetworkStateTestHelper network_state_helper_{
+      /*use_default_devices_and_services=*/true};
+  NetworkHandlerTestHelper handler_test_helper_;
+
+  std::unique_ptr<MockManagedCellularPrefHandler>
+      managed_cellular_pref_handler_;
+  std::unique_ptr<MockManagedNetworkConfigurationHandler>
+      managed_network_configuration_handler_;
+
+  std::string cellular_service_path_1_;
+  std::string cellular_service_path_2_;
+  std::string cellular_service_path_3_;
+
+  // Class under test
+  std::unique_ptr<ApnMigrator> apn_migrator_;
+
+  void AddTestCellularDevice(const std::string& device_name,
+                             const std::string& device_path,
+                             const std::string& device_iccid) {
+    network_state_helper_.device_test()->AddDevice(
+        device_path, shill::kTypeCellular, device_name);
+    network_state_helper_.device_test()->SetDeviceProperty(
+        device_path, shill::kIccidProperty, base::Value(device_iccid),
+        /*notify_changed=*/false);
+  }
+
+  void SetupNetworks() {
+    network_state_helper_.manager_test()->AddTechnology(shill::kTypeCellular,
+                                                        /*enabled=*/true);
+
+    AddTestCellularDevice(kCellularName1, kTestCellularPath1,
+                          kTestCellularIccid1);
+    cellular_service_path_1_ =
+        network_state_helper_.ConfigureService(base::StringPrintf(
+            kCellularServicePattern, kTestCellularGuid1, kTestCellularIccid1,
+            NetworkProfileHandler::GetSharedProfilePath().c_str()));
+
+    AddTestCellularDevice(kCellularName2, kTestCellularPath2,
+                          kTestCellularIccid2);
+    cellular_service_path_2_ =
+        network_state_helper_.ConfigureService(base::StringPrintf(
+            kCellularServicePattern, kTestCellularGuid2, kTestCellularIccid2,
+            NetworkProfileHandler::GetSharedProfilePath().c_str()));
+
+    AddTestCellularDevice(kCellularName3, kTestCellularPath3,
+                          kTestCellularIccid3);
+    cellular_service_path_3_ =
+        network_state_helper_.ConfigureService(base::StringPrintf(
+            kCellularServicePattern, kTestCellularGuid3, kTestCellularIccid3,
+            NetworkProfileHandler::GetSharedProfilePath().c_str()));
+  }
+};
+
+TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
+
+  // Every network should be evaluated, pretend that two networks were already
+  // migrated.
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
+      .Times(1)
+      .WillOnce(Return(false));
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  // Expect that the function resets the UserApnList for the migrated networks
+  base::Value::Dict expected_onc1 = chromeos::network_config::UserApnListToOnc(
+      kTestCellularGuid1, base::Value::List());
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_1(),
+                            Truly([&expected_onc1](const base::Value& value) {
+                              return expected_onc1 == value.GetDict();
+                            }),
+                            _, _))
+      .Times(1);
+  base::Value::Dict expected_onc2 = chromeos::network_config::UserApnListToOnc(
+      kTestCellularGuid3, base::Value::List());
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_3(),
+                            Truly([&expected_onc2](const base::Value& value) {
+                              return expected_onc2 == value.GetDict();
+                            }),
+                            _, _))
+      .Times(1);
+
+  // Ensure that the function does not modify the non-migrated network
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_2(), _, _, _))
+      .Times(0);
+
+  // Function under test
+  TriggerNetworkListChanged();
+}
+}  // namespace ash
