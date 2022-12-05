@@ -274,6 +274,11 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void OnMetricsReply(
       absl::optional<rmad::RecordBrowserActionMetricReply> response);
 
+  // Handles the response when the RSU QR code is generated.
+  void OnQrCodeGenerated(
+      GetRsuDisableWriteProtectChallengeQrCodeCallback callback,
+      const std::string& qr_code_image);
+
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;

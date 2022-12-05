@@ -598,9 +598,9 @@ interface ShimlessRmaService {
   // Get the device hardware ID (HWID) to display during RSU.
   // Returns the HWID as a string.
   GetRsuDisableWriteProtectHwid() => (string hwid);
-  // Returns a QR Code image representing the URL to generate the RSU unlock
-  // code. A null value is returned if the QR Code could not be generated.
-  GetRsuDisableWriteProtectChallengeQrCode() => (QrCode? qr_code);
+  // Returns a QR Code image data encoded as a PNG representing the URL to
+  // generate the RSU unlock code.
+  GetRsuDisableWriteProtectChallengeQrCode() => (array<uint8> qr_code_data);
   // Attempt to disable HWWP using a RSU code.
   // Returns the next state to display and an error code.
   SetRsuDisableWriteProtectCode(string code)
