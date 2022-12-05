@@ -1578,6 +1578,9 @@ extern const char kSuggestionsWithSubStringMatchDescription[];
 extern const char kSyncAccessHandleAllSyncSurfaceName[];
 extern const char kSyncAccessHandleAllSyncSurfaceDescription[];
 
+extern const char kSyncAutofillWalletUsageDataName[];
+extern const char kSyncAutofillWalletUsageDataDescription[];
+
 extern const char kSyncEnableHistoryDataTypeName[];
 extern const char kSyncEnableHistoryDataTypeDescription[];
 

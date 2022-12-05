@@ -2788,6 +2788,11 @@ const char kSyncAccessHandleAllSyncSurfaceName[] =
 const char kSyncAccessHandleAllSyncSurfaceDescription[] =
     "Enables all-sync surface for SyncAccessHandle in File System Access API.";
 
+const char kSyncAutofillWalletUsageDataName[] =
+    "Sync Autofill Wallet Usage Data";
+const char kSyncAutofillWalletUsageDataDescription[] =
+    "When enabled, allows syncing of the autofill wallet usage data type.";
+
 const char kSyncEnableHistoryDataTypeName[] = "Enable History sync data type";
 const char kSyncEnableHistoryDataTypeDescription[] =
     "Enables the History sync data type instead of TypedURLs";

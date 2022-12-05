@@ -9564,6 +9564,11 @@ const FeatureEntry kFeatureEntries[] = {
          "GalleryAppPdfEditNotification")},
 #endif
 
+    {"sync-autofill-wallet-usage-data",
+     flag_descriptions::kSyncAutofillWalletUsageDataName,
+     flag_descriptions::kSyncAutofillWalletUsageDataDescription, kOsAll,
+     FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletUsageData)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"ui-enable-shared-image-cache-for-gpu",
      flag_descriptions::kUIEnableSharedImageCacheForGpuName,

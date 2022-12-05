@@ -6440,6 +6440,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "sync-autofill-wallet-usage-data",
+    "owners": [ "alexandertekle@google.com", "treib" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "sync-chromeos-explicit-passphrase-sharing",
     "owners": ["mmoskvitin@google.com", "chrome-sync-dev@google.com"],
     "expiry_milestone": 111
