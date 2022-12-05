@@ -146,10 +146,6 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
 
 // Applies constraints.
 - (void)applyGeneralConstraints {
-  NSLayoutConstraint* contentPreferredwidth = [self.contentStack.widthAnchor
-      constraintEqualToConstant:kDiscoverFeedContentWidth];
-  contentPreferredwidth.priority = UILayoutPriorityDefaultHigh;
-
   [NSLayoutConstraint activateConstraints:@[
     // Anchor content stack.
     [self.contentStack.topAnchor constraintEqualToAnchor:self.view.topAnchor],
@@ -158,8 +154,8 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
     [self.contentStack.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [self.contentStack.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.view.widthAnchor],
-    contentPreferredwidth,
+        constraintEqualToConstant:MIN(kDiscoverFeedContentWidth,
+                                      self.view.frame.size.width)],
   ]];
 }
 

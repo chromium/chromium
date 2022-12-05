@@ -525,10 +525,6 @@ NSInteger kFeedSymbolPointSize = 17;
 
   self.feedHeaderConstraints = [[NSMutableArray alloc] init];
 
-  NSLayoutConstraint* containerPreferredwidth = [self.container.widthAnchor
-      constraintEqualToConstant:kDiscoverFeedContentWidth];
-  containerPreferredwidth.priority = UILayoutPriorityDefaultHigh;
-
   [self.feedHeaderConstraints addObjectsFromArray:@[
     // Anchor container and menu button.
     [self.view.heightAnchor
@@ -541,8 +537,8 @@ NSInteger kFeedSymbolPointSize = 17;
     [self.container.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [self.container.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.view.widthAnchor],
-    containerPreferredwidth,
+        constraintEqualToConstant:MIN(kDiscoverFeedContentWidth,
+                                      self.view.frame.size.width)],
     [self.menuButton.trailingAnchor
         constraintEqualToAnchor:self.container.trailingAnchor
                        constant:-kButtonHorizontalMargin],

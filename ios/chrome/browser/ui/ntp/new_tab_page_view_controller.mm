@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
-#import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
@@ -905,8 +904,6 @@
           constraintEqualToAnchor:[self containerView].leadingAnchor],
       [self.feedHeaderViewController.view.trailingAnchor
           constraintEqualToAnchor:[self containerView].trailingAnchor],
-      [self.collectionView.widthAnchor
-          constraintEqualToConstant:kDiscoverFeedContentWidth],
     ]];
     [self setInitialFeedHeaderConstraints];
     if (IsDiscoverFeedTopSyncPromoEnabled() &&
