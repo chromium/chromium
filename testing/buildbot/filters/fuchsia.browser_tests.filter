@@ -1,10 +1,3 @@
-# TODO(crbug.com/1326643):
-# ../../chrome/browser/ui/views/page_info/accuracy_tip_bubble_view_browsertest.cc:368: Failure
-# Value of: hats_service->hats_next_dialog_exists_for_testing()
-#   Actual: false
-# Expected: true
--AccuracyTipBubbleViewBrowserTest.SurveyShownAfterShowingTip
-
 # TODO(crbug.com/1326645):
 # triggerDOMChangesOnTabsUpdated: API Test Error in triggerDOMChangesOnTabsUpdated
 # Actual: tabs.remove

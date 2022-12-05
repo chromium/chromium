@@ -51,7 +51,6 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
   bool IsNewTabPage() const override;
   bool IsNewTabPageURL(const GURL& url) const override;
   bool IsHomePage(const GURL& url) const override;
-  bool IsShowingAccuracyTip() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
   TemplateURLService* GetTemplateURLService() override;
 

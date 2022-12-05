@@ -87,9 +87,6 @@ ListInfos GetListInfos() {
   const bool kSyncAlways = true;
   const bool kSyncNever = false;
 
-  const bool kAccuracyTipsEnabled =
-      base::FeatureList::IsEnabled(kAccuracyTipsFeature);
-
   return ListInfos({
       ListInfo(kSyncOnDesktopBuilds, "IpMalware.store", GetIpMalwareId(),
                SB_THREAT_TYPE_UNUSED),
@@ -122,9 +119,6 @@ ListInfos GetListInfos() {
                "UrlHighConfidenceAllowlist.store",
                GetUrlHighConfidenceAllowlistId(),
                SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST),
-      ListInfo(kSyncOnChromeDesktopBuilds && kAccuracyTipsEnabled,
-               "UrlAccuracyTips.store", GetUrlAccuracyTipsId(),
-               SB_THREAT_TYPE_ACCURACY_TIPS),
   });
   // NOTE(vakh): IMPORTANT: Please make sure that the server already supports
   // any list before adding it to this list otherwise the prefix updates break
@@ -163,8 +157,6 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
       return 4;
     case BILLING:
       return 15;
-    case ACCURACY_TIPS:
-      return 1000;
     case CSD_DOWNLOAD_WHITELIST:
     case POTENTIALLY_HARMFUL_APPLICATION:
     case SOCIAL_ENGINEERING_PUBLIC:
@@ -539,22 +531,6 @@ bool V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
       HandleAllowlistCheck(std::move(check), /*allow_async_check=*/false);
   DCHECK_NE(AsyncMatch::ASYNC, result);
   return result == AsyncMatch::MATCH;
-}
-
-bool V4LocalDatabaseManager::CheckUrlForAccuracyTips(const GURL& url,
-                                                     Client* client) {
-  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
-
-  StoresToCheck stores_to_check({GetUrlAccuracyTipsId()});
-  if (!AreAnyStoresAvailableNow(stores_to_check) || !CanCheckUrl(url)) {
-    return true;
-  }
-
-  std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
-      client, ClientCallbackType::CHECK_ACCURACY_TIPS, stores_to_check,
-      std::vector<GURL>(1, url));
-
-  return HandleCheck(std::move(check));
 }
 
 bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
@@ -1087,14 +1063,6 @@ void V4LocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
         }
       }
       check->client->OnCheckExtensionsResult(unsafe_extension_ids);
-      break;
-    }
-
-    case ClientCallbackType::CHECK_ACCURACY_TIPS: {
-      DCHECK_EQ(1u, check->urls.size());
-      bool should_show_accuracy_tip =
-          check->most_severe_threat_type == SB_THREAT_TYPE_ACCURACY_TIPS;
-      check->client->OnCheckUrlForAccuracyTip(should_show_accuracy_tip);
       break;
     }
 

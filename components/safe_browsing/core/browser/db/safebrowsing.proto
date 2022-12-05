@@ -297,7 +297,7 @@ enum ThreatType {
   HIGH_CONFIDENCE_ALLOWLIST = 16;
 
   // List of URLs that should show an accuracy tip.
-  ACCURACY_TIPS = 17;
+  // DEPRECATED: ACCURACY_TIPS = 17;
 }
 
 // Types of platforms.

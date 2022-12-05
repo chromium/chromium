@@ -260,13 +260,6 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
       .StartHighConfidenceAllowlistCheck(url);
 }
 
-bool RemoteSafeBrowsingDatabaseManager::CheckUrlForAccuracyTips(
-    const GURL& url,
-    Client* client) {
-  NOTREACHED();
-  return true;
-}
-
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,
     Client* client) {

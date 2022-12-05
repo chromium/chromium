@@ -143,10 +143,6 @@ ListIdentifier GetIpMalwareId() {
   return ListIdentifier(GetCurrentPlatformType(), IP_RANGE, MALWARE_THREAT);
 }
 
-ListIdentifier GetUrlAccuracyTipsId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, ACCURACY_TIPS);
-}
-
 ListIdentifier GetUrlBillingId() {
   return ListIdentifier(GetCurrentPlatformType(), URL, BILLING);
 }

@@ -1,8 +1,0 @@
-This directory stores files related to Chrome's accuracy tips.
-
-When users visit news-related sites, Chrome may show a pop-up while visiting the
-page. This popup won't block users from entering a site and it will be strictly
-rate-limited to avoid being annoying.
-
-Currently this code is only used for Chrome on desktop but in the long term
-we have plans for Android and iOS and potentially Weblayer as well.

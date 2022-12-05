@@ -1,3 +1,2 @@
 file://chrome/browser/ui/page_info/OWNERS
 per-file safety_tip*=jdeblasio@chromium.org
-per-file accuracy_tip*=file://components/accuracy_tips/OWNERS

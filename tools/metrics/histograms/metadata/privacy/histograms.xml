@@ -86,6 +86,9 @@ reviewer.
 
 <histogram name="Privacy.AccuracyTip.AccuracyTipInteraction"
     enum="AccuracyTipInteraction" expires_after="2022-08-21">
+  <obsolete>
+    Deprecated as of 12/2022.
+  </obsolete>
   <owner>dullweber@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <summary>
@@ -96,6 +99,9 @@ reviewer.
 
 <histogram name="Privacy.AccuracyTip.AccuracyTipTimeOpen" units="ms"
     expires_after="M105">
+  <obsolete>
+    Deprecated as of 12/2022.
+  </obsolete>
   <owner>dullweber@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <summary>
@@ -106,6 +112,9 @@ reviewer.
 
 <histogram name="Privacy.AccuracyTip.NumDialogsShown" units="dialogs"
     expires_after="2022-08-28">
+  <obsolete>
+    Deprecated as of 12/2022.
+  </obsolete>
   <owner>dullweber@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <summary>
@@ -116,6 +125,9 @@ reviewer.
 
 <histogram name="Privacy.AccuracyTip.PageStatus" enum="AccuracyTipStatus"
     expires_after="2022-10-09">
+  <obsolete>
+    Deprecated as of 12/2022.
+  </obsolete>
   <owner>dullweber@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <summary>The accuracy status of a page. Recorded on each page load.</summary>

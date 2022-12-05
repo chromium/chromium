@@ -33,7 +33,6 @@ class Browser;
 class Profile;
 
 // Trigger identifiers currently used; duplicates not allowed.
-extern const char kHatsSurveyTriggerAccuracyTips[];
 extern const char kHatsSurveyTriggerAutofillAddress[];
 extern const char kHatsSurveyTriggerAutofillCard[];
 extern const char kHatsSurveyTriggerAutofillPassword[];

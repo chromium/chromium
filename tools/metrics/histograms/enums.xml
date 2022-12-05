@@ -1300,6 +1300,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AccuracyTipInteraction">
+  <obsolete>
+    Deprecated as of 12/2022.
+  </obsolete>
   <int value="0" label="kNoAction"/>
   <int value="1" label="kLearnMore"/>
   <int value="2" label="kOptOut"/>
@@ -1310,6 +1313,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AccuracyTipStatus">
+  <obsolete>
+    Deprecated as of 12/2022.
+  </obsolete>
   <int value="0" label="kNone"/>
   <int value="1" label="kShowAccuracyTip"/>
   <int value="2" label="kRateLimited"/>
@@ -89883,7 +89889,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="22" label="Billing"/>
   <int value="23" label="Apk download"/>
   <int value="24" label="High confidence allowlist"/>
-  <int value="25" label="Accuracy Tips"/>
+  <int value="25" label="(Obsolete) Accuracy Tips">
+    <obsolete>
+      Deprecated as of 12/2022.
+    </obsolete>
+  </int>
 </enum>
 
 <enum name="ScanAppEntryPoint">

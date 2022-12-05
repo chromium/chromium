@@ -91,9 +91,6 @@ class SafeBrowsingDatabaseManager
     // Called when the result of checking a allowlist is known.
     // Currently only used for CSD allowlist.
     virtual void OnCheckAllowlistUrlResult(bool did_match_allowlist) {}
-
-    // Called when the result of checking for accuracy tips is known.
-    virtual void OnCheckUrlForAccuracyTip(bool should_show_accuracy_tip) {}
   };
 
   //
@@ -188,13 +185,6 @@ class SafeBrowsingDatabaseManager
   // in the case of a match on this list, the realtime full URL Safe Browsing
   // lookup isn't performed.
   virtual bool CheckUrlForHighConfidenceAllowlist(const GURL& url) = 0;
-
-  // Called on the IO thread to check whether |url| should show an accuracy tip.
-  // If we can synchronously determine that the url shouldn't trigger an
-  // accuracy tip, it returns true.
-  // Otherwise it returns false, and |client| is called asynchronously with the
-  // result when it is ready.
-  virtual bool CheckUrlForAccuracyTips(const GURL& url, Client* client) = 0;
 
   //
   // Match*(): Methods to synchronously check if various types are safe.

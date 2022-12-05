@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "components/accuracy_tips/features.h"
 #include "components/history_clusters/core/features.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/permissions/constants.h"
@@ -39,7 +38,6 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/network_change_notifier.h"
 
-constexpr char kHatsSurveyTriggerAccuracyTips[] = "accuracy-tips";
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
@@ -288,13 +286,6 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       &features::kTrustSafetySentimentSurveyV2,
       kHatsSurveyTriggerTrustSafetyV2PrivacyGuide,
       features::kTrustSafetySentimentSurveyV2PrivacyGuideTriggerId.Get());
-
-  // Accuracy tips survey.
-  survey_configs.emplace_back(
-      &accuracy_tips::features::kAccuracyTipsSurveyFeature,
-      kHatsSurveyTriggerAccuracyTips,
-      /*presupplied_trigger_id=*/absl::nullopt, std::vector<std::string>{},
-      std::vector<std::string>{"Tip shown for URL", "UI interaction"});
 
   // Autofill surveys.
   survey_configs.emplace_back(&features::kAutofillAddressSurvey,

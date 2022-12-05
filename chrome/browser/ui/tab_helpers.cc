@@ -100,7 +100,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/accuracy_tips/features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
@@ -162,7 +161,6 @@
 #include "chrome/browser/video_tutorials/video_tutorial_tab_helper.h"
 #include "content/public/common/content_features.h"
 #else
-#include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
@@ -173,7 +171,6 @@
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "components/accuracy_tips/accuracy_web_contents_observer.h"
 #include "components/commerce/content/browser/hint/commerce_hint_tab_helper.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -476,10 +473,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   PluginObserverAndroid::CreateForWebContents(web_contents);
   video_tutorials::VideoTutorialTabHelper::CreateForWebContents(web_contents);
 #else
-  if (accuracy_tips::AccuracyWebContentsObserver::IsEnabled(web_contents)) {
-    accuracy_tips::AccuracyWebContentsObserver::CreateForWebContents(
-        web_contents, AccuracyServiceFactory::GetForProfile(profile));
-  }
   if (web_app::AreWebAppsUserInstallable(profile))
     webapps::AppBannerManagerDesktop::CreateForWebContents(web_contents);
   BookmarkTabHelper::CreateForWebContents(web_contents);
@@ -556,9 +549,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopDemo) ||
-      base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey) ||
-      base::FeatureList::IsEnabled(
-          accuracy_tips::features::kAccuracyTipsSurveyFeature)) {
+      base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey)) {
     HatsHelper::CreateForWebContents(web_contents);
   }
   SharedHighlightingPromo::CreateForWebContents(web_contents);

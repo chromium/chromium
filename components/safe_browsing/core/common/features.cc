@@ -21,10 +21,6 @@ namespace safe_browsing {
 // them to the ExperimentalFeaturesList below to start displaying their status
 // on the chrome://safe-browsing page.
 
-BASE_FEATURE(kAccuracyTipsFeature,
-             "AccuracyTips",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAdSamplerTriggerFeature,
              "SafeBrowsingAdSamplerTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -224,8 +220,7 @@ constexpr struct {
   // True if the feature's state should be listed on chrome://safe-browsing.
   bool show_state;
 } kExperimentalFeatures[]{
-  {&kAccuracyTipsFeature, true}, {&kAdSamplerTriggerFeature, false},
-      {&kClientSideDetectionKillswitch, true},
+  {&kAdSamplerTriggerFeature, false}, {&kClientSideDetectionKillswitch, true},
       {&kClientSideDetectionModelIsFlatBuffer, true},
       {&kClientSideDetectionReferrerChain, true},
       {&kComponentUpdaterAndroidProtegoAllowlist, true},

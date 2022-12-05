@@ -255,7 +255,6 @@ std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
     case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
     case safe_browsing::SB_THREAT_TYPE_APK_DOWNLOAD:
     case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-    case safe_browsing::SB_THREAT_TYPE_ACCURACY_TIPS:
     case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY:
       NOTREACHED();
       break;

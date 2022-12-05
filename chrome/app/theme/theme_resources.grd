@@ -257,8 +257,6 @@
       </if>
       <structure type="chrome_scaled_image" name="IDR_RESTORE_BUTTON_MASK" file="common/restore_button_mask.png" />
       <if expr="not is_android">
-        <structure type="chrome_scaled_image" name="IDR_ACCURACY_TIP_ILLUSTRATION_DARK" file="common/accuracy_tip_illustration_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_ACCURACY_TIP_ILLUSTRATION_LIGHT" file="common/accuracy_tip_illustration_light.png" />
         <structure type="chrome_scaled_image" name="IDR_SAFETY_TIP_ILLUSTRATION_DARK" file="common/safety_tip_illustration_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAFETY_TIP_ILLUSTRATION_LIGHT" file="common/safety_tip_illustration_light.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVED_PASSWORDS_NEUTRAL_STATE" file="common/passwords_neutral_state.png" />

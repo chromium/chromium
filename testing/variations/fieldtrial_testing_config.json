@@ -1,28 +1,4 @@
 {
-    "AccuracyTips": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_211129",
-                    "params": {
-                        "DisableUI": "true",
-                        "MaxSiteEngagementScore": "1",
-                        "TimeBetweenPrompts": "24h"
-                    },
-                    "enable_features": [
-                        "AccuracyTips"
-                    ]
-                }
-            ]
-        }
-    ],
     "ActivateMetricsReportingEnabledPolicyAndroid": [
         {
             "platforms": [

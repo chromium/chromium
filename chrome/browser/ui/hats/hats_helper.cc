@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -14,8 +13,6 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/accuracy_tips/accuracy_service.h"
-#include "components/accuracy_tips/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -34,13 +31,6 @@ void HatsHelper::PrimaryPageChanged(content::Page& page) {
   if (auto* sentiment_service =
           TrustSafetySentimentServiceFactory::GetForProfile(profile())) {
     sentiment_service->OpenedNewTabPage();
-  }
-
-  if (base::FeatureList::IsEnabled(safe_browsing::kAccuracyTipsFeature)) {
-    if (auto* accuracy_service =
-            AccuracyServiceFactory::GetForProfile(profile())) {
-      accuracy_service->MaybeShowSurvey();
-    }
   }
 
   // If the demo HaTS feature is enabled display a test survey on every NTP

@@ -64,29 +64,6 @@
     Attackers sometimes mimic sites by making hard-to-see changes to the web address.
   </message>
 
-  <!-- Accuracy Tip strings -->
-  <message name="IDS_PAGE_INFO_ACCURACY_TIP_TITLE" meaning="Text for feature that encourages the user to think about how accurate the content is" desc="With this feature, the user will see a reminder on the page they're visiting that encourages the user to think about how accurate the content is. You may translate 'Accuracy' as 'Trustworthiness' or 'Reliability,' if those terms work better in your language. This text appears in the page info bubble when a user visits a page.">
-    Take a moment to consider accuracy
-  </message>
-  <message name="IDS_PAGE_INFO_ACCURACY_TIP_LEARN_MORE_BUTTON" desc="Text of button to learn more about inaccurate pages. Shown on the accuracy tip page info bubble.">
-    Learn more
-  </message>
-  <message name="IDS_PAGE_INFO_ACCURACY_TIP_IGNORE_BUTTON" desc="Text of button to close the accuracy tip page info bubble.">
-    Ignore
-  </message>
-  <message name="IDS_PAGE_INFO_ACCURACY_TIP_OPT_OUT_BUTTON" desc="Text of button to close the accuracy tip page info bubble and not show it again.">
-    Don't show again
-  </message>
-  <message name="IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_1" meaning="Text for feature that encourages the user to think about how accurate the content is" desc="With this feature, the user will see a reminder on the page they're visiting that encourages the user to think about how accurate the content is. This text appears in the page info bubble when a user visits a page. It is the first item in a bulleted list.">
-    Who’s behind this information?
-  </message>
-  <message name="IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_2" meaning="Text for feature that encourages the user to think about how accurate the content is" desc="With this feature, the user will see a reminder on the page they're visiting that encourages the user to think about how accurate the content is. This text appears in the page info bubble when a user visits a page. It is the second item in a bulleted list.">
-    What evidence supports it?
-  </message>
-  <message name="IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_3" meaning="Text for feature that encourages the user to think about how accurate the content is" desc="With this feature, the user will see a reminder on the page they're visiting that encourages the user to think about how accurate the content is. This text appears in the page info bubble when a user visits a page. It is the third item in a bulleted list.">
-    What do other sources say?
-  </message>
-
   <!-- Viewing file strings -->
   <message name="IDS_PAGE_INFO_FILE_PAGE" desc="Message to display in the page info bubble when the page the user has navigated to is a file:// page">
     You're viewing a local or shared file

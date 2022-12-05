@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "components/accuracy_tips/accuracy_service.h"
 #include "components/google/core/common/google_util.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -233,28 +231,6 @@ bool ChromeLocationBarModelDelegate::IsHomePage(const GURL& url) const {
     return false;
 
   return url.spec() == profile->GetPrefs()->GetString(prefs::kHomePage);
-}
-
-bool ChromeLocationBarModelDelegate::IsShowingAccuracyTip() const {
-#if !BUILDFLAG(IS_ANDROID)
-  Profile* const profile = GetProfile();
-  if (!profile) {
-    return false;
-  }
-
-  content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return false;
-  }
-
-  if (base::FeatureList::IsEnabled(safe_browsing::kAccuracyTipsFeature)) {
-    if (auto* accuracy_service =
-            AccuracyServiceFactory::GetForProfile(profile)) {
-      return accuracy_service->IsShowingAccuracyTip(web_contents);
-    }
-  }
-#endif
-  return false;
 }
 
 content::NavigationController*

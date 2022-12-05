@@ -91,9 +91,6 @@ class LocationBarModelDelegate {
   // Returns whether |url| corresponds to the user's home page.
   virtual bool IsHomePage(const GURL& url) const;
 
-  // Returns whether there is an accuracy tip shown for the active web contents.
-  virtual bool IsShowingAccuracyTip() const;
-
   // Returns the AutocompleteClassifier instance for the current page.
   virtual AutocompleteClassifier* GetAutocompleteClassifier();
 

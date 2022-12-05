@@ -14,9 +14,6 @@
 namespace safe_browsing {
 // Features list, in alphabetical order.
 
-// Controls whether accuracy tips should be enabled.
-BASE_DECLARE_FEATURE(kAccuracyTipsFeature);
-
 // Controls various parameters related to occasionally collecting ad samples,
 // for example to control how often collection should occur.
 BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);

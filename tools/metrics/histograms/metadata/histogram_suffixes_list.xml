@@ -57,8 +57,16 @@ chromium-metrics-reviews@google.com.
   <suffix name="PermissionRequested"
       label="The Accuracy Tip was closed because the site requested a
              permission"/>
-  <affected-histogram name="Privacy.AccuracyTip.AccuracyTipTimeOpen"/>
-  <affected-histogram name="Privacy.AccuracyTip.NumDialogsShown"/>
+  <affected-histogram name="Privacy.AccuracyTip.AccuracyTipTimeOpen">
+    <obsolete>
+      Deprecated as of 12/2022.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Privacy.AccuracyTip.NumDialogsShown">
+    <obsolete>
+      Deprecated as of 12/2022.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="ActivityType" separator=".">
@@ -5472,7 +5480,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="ChromeExtMalware" label=""/>
   <suffix name="ChromeUrlClientIncident" label=""/>
   <suffix name="IpMalware" label=""/>
-  <suffix name="UrlAccuracyTips" label=""/>
+  <suffix name="UrlAccuracyTips" label="">
+    <obsolete>
+      Deprecated as of 12/2022.
+    </obsolete>
+  </suffix>
   <suffix name="UrlBilling" label=""/>
   <suffix name="UrlCsdAllowlist" label=""/>
   <suffix name="UrlCsdDownloadAllowlist" label=""/>
