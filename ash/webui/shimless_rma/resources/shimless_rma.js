@@ -913,6 +913,9 @@ export class ShimlessRma extends ShimlessRmaBase {
             this.logSavedStatusText_ =
                 this.i18n('rmaLogsSaveSuccessText', result.savePath.path);
             this.usbLogState_ = USBLogState.LOG_SAVE_SUCCESS;
+          } else if (result.error === RmadErrorCode.kUsbNotFound) {
+            this.logSavedStatusText_ = this.i18n('rmaLogsSaveUsbNotFound');
+            this.usbLogState_ = USBLogState.LOG_SAVE_FAIL;
           } else {
             this.logSavedStatusText_ = this.i18n('rmaLogsSaveFailText');
             this.usbLogState_ = USBLogState.LOG_SAVE_FAIL;

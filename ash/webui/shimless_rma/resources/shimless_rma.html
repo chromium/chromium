@@ -242,15 +242,17 @@
         [[logSavedStatusText_]]
       </span>
     </div>
-    <cr-button id="logRetryDialogButton" class="text-button action-button"
-        on-click="retrySaveLogs_"
-        hidden="[[!shouldShowRetryButton_(usbLogState_)]]">
-        [[i18n('retryButtonLabel')]]
-    </cr-button>
-    <cr-button id="logSaveDoneDialogButton" class="text-button action-button"
-        on-click="closeLogsDialog_">
-      [[i18n('doneButtonLabel')]]
-    </cr-button>
+    <div>
+      <cr-button id="logRetryDialogButton" class="text-button action-button"
+          on-click="retrySaveLogs_"
+          hidden="[[!shouldShowRetryButton_(usbLogState_)]]">
+          [[i18n('retryButtonLabel')]]
+      </cr-button>
+      <cr-button id="logSaveDoneDialogButton" class="text-button action-button"
+          on-click="closeLogsDialog_">
+        [[i18n('doneButtonLabel')]]
+      </cr-button>
+    </div>
   </div>
   <div id="logConnectUsbMessageContainer" class="dialog-footer"
         slot="button-container"

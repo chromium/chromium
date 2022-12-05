@@ -744,6 +744,44 @@ suite('shimlessRMAAppTest', function() {
     assertEquals(2, callCount);
   });
 
+  test('SaveLogFailsUsbNotFound', async () => {
+    const resolver = new PromiseResolver();
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+    service.triggerExternalDiskObserver(true, 0);
+    await flushTasks();
+
+    let callCount = 0;
+    service.saveLog = () => {
+      callCount++;
+      return resolver.promise;
+    };
+
+    await openLogsDialog();
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+
+    // Attempt to save the logs but it fails because the USB is not detected.
+    await clickButton('#saveLogDialogButton');
+    resolver.resolve(
+        {savePath: 'save/path', error: RmadErrorCode.kUsbNotFound});
+    await flushTasks();
+
+    assertEquals(1, callCount);
+
+    // The save log button should be replaced by the done button and the retry
+    // button.
+    assertFalse(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+    assertTrue(isVisible(
+        component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#logRetryDialogButton')));
+    assertEquals(
+        loadTimeData.getString('rmaLogsSaveUsbNotFound'),
+        component.shadowRoot.querySelector('#logSavedStatusText')
+            .textContent.trim());
+  });
+
   test('ExternalDiskConnectedShowsUsbActionButtons', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
     service.triggerExternalDiskObserver(true, 0);

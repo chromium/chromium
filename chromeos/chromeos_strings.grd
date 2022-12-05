@@ -3142,7 +3142,10 @@ Try tapping the mic to ask me anything.
         Saved to "<ph name="FILE_LOCATION">$1<ex>/USB/Home/MyFiles</ex></ph>"
       </message>
       <message name="IDS_SHIMLESS_RMA_LOGS_SAVE_FAIL" translateable="false" desc="The text telling the user that saving the logs to a external USB failed. The expectation would be for the user to try a different external storage device.">
-        File couldn't be saved. Try plugging in a different external storage, or try again later.
+        Can't save file. Plug in a different external storage or try again later.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LOGS_SAVE_USB_NOT_FOUND" translateable="false" desc="The text telling the user that saving the logs to a external USB failed because an external USB was not plugged in.">
+        Can't save file. Plug in external storage and try again.
       </message>
       <!-- Powerwash dialog -->
       <message name="IDS_SHIMLESS_RMA_POWERWASH_DIALOG_TITLE" translateable="false" desc="Title for the powerwash dialog displayed on the repair complete page and on the restock page">
