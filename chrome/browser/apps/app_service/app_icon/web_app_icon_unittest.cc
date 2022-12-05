@@ -64,69 +64,6 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #endif
 
-namespace {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class FakeIconLoader : public apps::IconLoader {
- public:
-  explicit FakeIconLoader(apps::AppServiceProxy* proxy) : proxy_(proxy) {}
-
- private:
-  std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
-      apps::AppType app_type,
-      const std::string& app_id,
-      const apps::IconKey& icon_key,
-      apps::IconType icon_type,
-      int32_t size_in_dip,
-      bool allow_placeholder_icon,
-      apps::LoadIconCallback callback) override {
-    if (proxy_) {
-      proxy_->ReadIconsForTesting(app_type, app_id, size_in_dip, icon_key,
-                                  icon_type, std::move(callback));
-    }
-    return nullptr;
-  }
-
-  apps::AppServiceProxy* proxy_ = nullptr;
-};
-
-class FakePublisherForProxyTest : public apps::AppPublisher {
- public:
-  FakePublisherForProxyTest(apps::AppServiceProxy* proxy,
-                            apps::AppType app_type)
-      : AppPublisher(proxy) {
-    RegisterPublisher(app_type);
-  }
-
-  ~FakePublisherForProxyTest() override = default;
-
-  void Launch(const std::string& app_id,
-              int32_t event_flags,
-              apps::LaunchSource launch_source,
-              apps::WindowInfoPtr window_info) override {}
-
-  void LaunchAppWithParams(apps::AppLaunchParams&& params,
-                           apps::LaunchCallback callback) override {}
-
-  void LoadIcon(const std::string& app_id,
-                const apps::IconKey& icon_key,
-                apps::IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                apps::LoadIconCallback callback) override {}
-
-  void GetCompressedIconData(const std::string& app_id,
-                             apps::IconType icon_type,
-                             int32_t size_in_dip,
-                             ui::ResourceScaleFactor scale_factor,
-                             apps::LoadIconCallback callback) override {
-    apps::GetWebAppCompressedIconData(proxy()->profile(), app_id, icon_type,
-                                      size_in_dip, scale_factor,
-                                      std::move(callback));
-  }
-};
-#endif
-}  // namespace
-
 namespace apps {
 
 class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
@@ -1093,10 +1030,10 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
     WebAppIconFactoryTest::SetUp();
 
     proxy_ = AppServiceProxyFactory::GetForProfile(profile());
-    fake_icon_loader_ = std::make_unique<FakeIconLoader>(proxy_);
+    fake_icon_loader_ = std::make_unique<apps::FakeIconLoader>(proxy_);
     OverrideAppServiceProxyInnerIconLoader(fake_icon_loader_.get());
     fake_publisher_ =
-        std::make_unique<FakePublisherForProxyTest>(proxy_, AppType::kWeb);
+        std::make_unique<apps::FakePublisherForIconTest>(proxy_, AppType::kWeb);
     scoped_decode_request_for_testing_ =
         std::make_unique<ScopedDecodeRequestForTesting>();
   }
@@ -1148,8 +1085,8 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
 
  private:
   raw_ptr<AppServiceProxy> proxy_;
-  std::unique_ptr<FakeIconLoader> fake_icon_loader_;
-  std::unique_ptr<FakePublisherForProxyTest> fake_publisher_;
+  std::unique_ptr<apps::FakeIconLoader> fake_icon_loader_;
+  std::unique_ptr<apps::FakePublisherForIconTest> fake_publisher_;
   std::unique_ptr<ScopedDecodeRequestForTesting>
       scoped_decode_request_for_testing_;
 

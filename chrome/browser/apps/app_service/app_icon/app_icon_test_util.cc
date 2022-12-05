@@ -7,13 +7,16 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/test/base/testing_profile.h"
+#endif
 
 namespace apps {
 
@@ -66,5 +69,41 @@ void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
   ASSERT_FALSE(icon.compressed.empty());
   ASSERT_EQ(src_data, icon.compressed);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+FakeIconLoader::FakeIconLoader(apps::AppServiceProxy* proxy) : proxy_(proxy) {}
+
+std::unique_ptr<apps::IconLoader::Releaser> FakeIconLoader::LoadIconFromIconKey(
+    apps::AppType app_type,
+    const std::string& app_id,
+    const apps::IconKey& icon_key,
+    apps::IconType icon_type,
+    int32_t size_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  if (proxy_) {
+    proxy_->ReadIconsForTesting(app_type, app_id, size_in_dip, icon_key,
+                                icon_type, std::move(callback));
+  }
+  return nullptr;
+}
+
+FakePublisherForIconTest::FakePublisherForIconTest(apps::AppServiceProxy* proxy,
+                                                   apps::AppType app_type)
+    : AppPublisher(proxy) {
+  RegisterPublisher(app_type);
+}
+
+void FakePublisherForIconTest::GetCompressedIconData(
+    const std::string& app_id,
+    apps::IconType icon_type,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    apps::LoadIconCallback callback) {
+  apps::GetWebAppCompressedIconData(proxy()->profile(), app_id, icon_type,
+                                    size_in_dip, scale_factor,
+                                    std::move(callback));
+}
+#endif
 
 }  // namespace apps
