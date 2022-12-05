@@ -146,6 +146,7 @@ public class StartSurfaceTabSwitcherTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    @DisabledTest(message = "https://crbug.com/1395518")
     public void testShow_SingleAsTabSwitcher() {
         if (mImmediateReturn) {
             StartSurfaceTestUtils.waitForStartSurfaceVisible(mLayoutChangedCallbackHelper,
