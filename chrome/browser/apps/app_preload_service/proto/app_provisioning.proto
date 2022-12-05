@@ -146,12 +146,14 @@ message AppProvisioningResponse {
 
   // For Web-only metadata.
   message WebExtras {
-    // |start_url| and |manifest_id| uniquely identify each Web app.
-    optional string start_url = 1;
-    optional string manifest_id = 2;
+    // |manifest_id| uniquely identifies a web app.
+    optional string manifest_id = 1;
 
     // The navigation scope of the web app.
-    optional string scope = 3;
+    optional string scope = 2;
+
+    // The start url that is loaded into the web app when it opens up.
+    optional string start_url = 3;
 
     // The display mode of the web app.
     optional DisplayMode display_mode = 4;

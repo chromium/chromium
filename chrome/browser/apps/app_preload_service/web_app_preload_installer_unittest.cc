@@ -48,6 +48,7 @@ TEST_F(WebAppPreloadInstallerTest, InstallOemApp) {
   app.set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
+  web_extras->set_manifest_id("https://www.example.com/home");
   web_extras->set_start_url("https://www.example.com/home");
   web_extras->set_scope("https://www.example.com/");
   web_extras->set_display_mode(
@@ -90,8 +91,8 @@ TEST_F(WebAppPreloadInstallerTest, InstallWithManifestId) {
   app.set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
+  web_extras->set_manifest_id("https://www.example.com/app");
   web_extras->set_start_url("https://www.example.com/home");
-  web_extras->set_manifest_id("app");
   web_extras->set_scope("https://www.example.com/");
   web_extras->set_display_mode(
       proto::AppProvisioningResponse::DISPLAY_MODE_STANDALONE);
@@ -124,6 +125,7 @@ TEST_F(WebAppPreloadInstallerTest, InstallOverUserApp) {
   app.set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
 
   auto* web_extras = app.mutable_web_extras();
+  web_extras->set_manifest_id(kStartUrl);
   web_extras->set_start_url(kStartUrl);
   web_extras->set_scope(kStartUrl);
   web_extras->set_display_mode(

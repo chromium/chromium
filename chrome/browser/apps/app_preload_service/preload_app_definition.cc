@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -76,7 +77,7 @@ PreloadAppDefinition::CreateWebAppInstallInfo() const {
 
   auto web_extras = app_proto_.web_extras();
 
-  const std::string& start_url = app_proto_.web_extras().start_url();
+  const std::string& start_url = web_extras.start_url();
   install_info->start_url = GURL(start_url);
 
   if (!install_info->start_url.is_valid()) {
@@ -86,10 +87,33 @@ PreloadAppDefinition::CreateWebAppInstallInfo() const {
     return nullptr;
   }
 
-  if (!web_extras.manifest_id().empty()) {
-    install_info->manifest_id = web_extras.manifest_id();
+  // The server returns a manifest ID which has already been resolved against
+  // the Start URL to make the processed manifest ID. WebAppInstallInfo requires
+  // the opposite, an ID string which can be added to the base URL to create the
+  // processed ID. So we need to 'unresolve' the URL by removing the base URL
+  // from it.
+  const std::string& manifest_id = web_extras.manifest_id();
+  if (!GURL(manifest_id).is_valid()) {
+    LOG(ERROR) << "Failed to convert app " << GetName()
+               << " into WebAppInstallInfo. Manifest ID is invalid: "
+               << manifest_id;
+    return nullptr;
   }
-  install_info->install_url = install_info->start_url;
+
+  std::string manifest_id_base_url =
+      GURL(manifest_id).GetWithEmptyPath().spec();
+  DCHECK(base::StartsWith(manifest_id, manifest_id_base_url));
+
+  if (manifest_id_base_url !=
+      install_info->start_url.GetWithEmptyPath().spec()) {
+    LOG(ERROR) << "Failed to convert app " << GetName()
+               << " into WebAppInstallInfo. Manifest ID (" << manifest_id
+               << ") does not have same origin as Start URL (" << start_url
+               << ")";
+    return nullptr;
+  }
+
+  install_info->manifest_id = manifest_id.substr(manifest_id_base_url.size());
 
   const std::string& scope = app_proto_.web_extras().scope();
   install_info->scope = GURL(scope);

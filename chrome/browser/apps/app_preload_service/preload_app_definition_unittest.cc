@@ -22,6 +22,7 @@ proto::AppProvisioningResponse_App CreateTestWebApp() {
   app.set_name("Test app");
   app.set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
   auto* web_extras = app.mutable_web_extras();
+  web_extras->set_manifest_id("https://www.example.com/home");
   web_extras->set_start_url("https://www.example.com/home");
   web_extras->set_scope("https://www.example.com/");
   web_extras->set_display_mode(
@@ -99,6 +100,7 @@ TEST_F(PreloadAppDefinitionTest, CreateWebAppInstallInfo) {
   app.set_name("Test app");
   app.set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
   auto* web_extras = app.mutable_web_extras();
+  web_extras->set_manifest_id("https://www.example.com/app_id");
   web_extras->set_start_url("https://www.example.com/home");
   web_extras->set_scope("https://www.example.com/");
   web_extras->set_display_mode(
@@ -111,9 +113,9 @@ TEST_F(PreloadAppDefinitionTest, CreateWebAppInstallInfo) {
   ASSERT_TRUE(install_info);
   EXPECT_EQ(u"Test app", install_info->title);
   EXPECT_EQ(GURL("https://www.example.com/home"), install_info->start_url);
+  EXPECT_EQ("app_id", install_info->manifest_id);
   EXPECT_EQ(GURL("https://www.example.com/"), install_info->scope);
   EXPECT_EQ(blink::mojom::DisplayMode::kStandalone, install_info->display_mode);
-  EXPECT_FALSE(install_info->manifest_id);
 }
 
 TEST_F(PreloadAppDefinitionTest, CreateWebAppInstallInfoNoExtras) {
@@ -164,7 +166,18 @@ TEST_F(PreloadAppDefinitionTest, CreateWebAppInstallInfoStartUrlOutsideScope) {
   ASSERT_FALSE(install_info);
 }
 
-TEST_F(PreloadAppDefinitionTest, CreateWebAppInstallInfoWithManifestId) {
+TEST_F(PreloadAppDefinitionTest, CreateWebAppInstallInfoWithNoManifestId) {
+  proto::AppProvisioningResponse_App app = CreateTestWebApp();
+  app.mutable_web_extras()->clear_manifest_id();
+
+  PreloadAppDefinition app_def(app);
+  std::unique_ptr<WebAppInstallInfo> install_info =
+      app_def.CreateWebAppInstallInfo();
+
+  ASSERT_FALSE(install_info);
+}
+
+TEST_F(PreloadAppDefinitionTest, CreateWebAppInstallInfoWithInvalidManifestId) {
   proto::AppProvisioningResponse_App app = CreateTestWebApp();
   app.mutable_web_extras()->set_manifest_id("/app_id");
 
@@ -172,7 +185,20 @@ TEST_F(PreloadAppDefinitionTest, CreateWebAppInstallInfoWithManifestId) {
   std::unique_ptr<WebAppInstallInfo> install_info =
       app_def.CreateWebAppInstallInfo();
 
-  EXPECT_EQ("/app_id", install_info->manifest_id);
+  ASSERT_FALSE(install_info);
+}
+
+TEST_F(PreloadAppDefinitionTest,
+       CreateWebAppInstallInfoWithDifferentOriginManifestId) {
+  proto::AppProvisioningResponse_App app = CreateTestWebApp();
+  app.mutable_web_extras()->set_manifest_id("https://www.foo.com/bar");
+  app.mutable_web_extras()->set_start_url("https://www.bar.com/foo");
+
+  PreloadAppDefinition app_def(app);
+  std::unique_ptr<WebAppInstallInfo> install_info =
+      app_def.CreateWebAppInstallInfo();
+
+  ASSERT_FALSE(install_info);
 }
 
 TEST_F(PreloadAppDefinitionTest,

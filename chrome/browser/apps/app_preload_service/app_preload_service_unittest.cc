@@ -176,6 +176,7 @@ TEST_F(AppPreloadServiceTest, WebAppInstall) {
   app->set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
   app->set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
   auto* web_extras = app->mutable_web_extras();
+  web_extras->set_manifest_id("https://peanuttypes.com/app");
   web_extras->set_start_url("https://peanuttypes.com/app");
   web_extras->set_scope("https://peanuttypes.com/");
   web_extras->set_display_mode(
