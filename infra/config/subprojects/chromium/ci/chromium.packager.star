@@ -135,6 +135,9 @@ ci.builder(
     # https://luci-scheduler.appspot.com/jobs/chromium/android-avd-packager
     schedule = "triggered",
     triggered_by = [],
+
+    # TODO(crbug.com/1366968): Default omit_python2 to True for all builders
+    omit_python2 = True,
 )
 
 ci.builder(
@@ -281,6 +284,9 @@ ci.builder(
     },
     schedule = "0 7 * * *",
     triggered_by = [],
+
+    # TODO(crbug.com/1366968): Default omit_python2 to True for all builders
+    omit_python2 = True,
 )
 
 ci.builder(
@@ -302,4 +308,7 @@ ci.builder(
     ],
     schedule = "0 9 * * *",  # at 1AM or 2AM PT (depending on DST), once a day.
     triggered_by = [],
+
+    # TODO(crbug.com/1366968): Default omit_python2 to True for all builders
+    omit_python2 = True,
 )
