@@ -1081,19 +1081,19 @@ chromium-metrics-reviews@google.com.
   <suffix name="SessionOnly" label="Session only"/>
   <affected-histogram name="ContentSettings.Exceptions.cookies">
     <obsolete>
-      Removed in M107. See ContentSettings.RegularProfile.Exceptions.cookies
+      Removed in M109. See ContentSettings.RegularProfile.Exceptions.cookies
       instead, which includes data only from regular profiles.
     </obsolete>
   </affected-histogram>
   <affected-histogram name="ContentSettings.Exceptions.popups">
     <obsolete>
-      Removed in M107. See ContentSettings.RegularProfile.Exceptions.popups
+      Removed in M109. See ContentSettings.RegularProfile.Exceptions.popups
       instead, which includes data only from regular profiles.
     </obsolete>
   </affected-histogram>
   <affected-histogram name="ContentSettings.Exceptions.subresource-filter">
     <obsolete>
-      Removed in M107. See
+      Removed in M109. See
       ContentSettings.RegularProfile.Exceptions.subresource-filter instead,
       which includes data only from regular profiles.
     </obsolete>
