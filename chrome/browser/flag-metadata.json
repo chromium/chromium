@@ -2301,7 +2301,12 @@
   {
     "name": "enable-expkit-calendar-text-classifier",
     "owners": [ "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 116
+  },
+  {
+    "name": "enable-expkit-text-classifier",
+    "owners": [ "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 116
   },
   {
     "name": "enable-external-keyboards-in-diagnostics-app",

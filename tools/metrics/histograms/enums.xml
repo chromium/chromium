@@ -60110,6 +60110,7 @@ from previous Chrome versions.
   <int value="-122458532" label="FilesExtractArchive:enabled"/>
   <int value="-121563330" label="SecurePaymentConfirmationBrowser:disabled"/>
   <int value="-120521482" label="DirectManipulationStylus:enabled"/>
+  <int value="-120430245" label="EnableExpKitTextClassifier:enabled"/>
   <int value="-120091289" label="CrostiniAppSearch:enabled"/>
   <int value="-119841719" label="ThreadingOptimizationsOnIo:disabled"/>
   <int value="-119055644" label="GenericSensor:enabled"/>
@@ -63197,6 +63198,7 @@ from previous Chrome versions.
   <int value="1766676896" label="affiliation-based-matching:disabled"/>
   <int value="1767218791" label="TouchDragAndContextMenu:enabled"/>
   <int value="1767411597" label="DisallowUnsafeHttpDownloads:enabled"/>
+  <int value="1768173143" label="EnableExpKitTextClassifier:disabled"/>
   <int value="1768759000" label="AutofillProfileServerValidation:disabled"/>
   <int value="1769483213" label="AudioUrl:disabled"/>
   <int value="1770189877" label="ConfirmNtpSuggestionRemovals:enabled"/>
