@@ -990,25 +990,10 @@ bool GetUserFallbackChoice(
   ash::office_fallback::DialogChoiceCallback callback =
       base::BindOnce(&OnDialogChoiceReceived, profile, task, first_url);
 
-  int task_title_id;
-  // Get title of task which fails to open file.
   const std::string parsed_action_id = ParseFilesAppActionId(task.action_id);
-  if (parsed_action_id == kActionIdWebDriveOfficeWord) {
-    task_title_id = IDS_FILE_BROWSER_TASK_OPEN_GDOC;
-  } else if (parsed_action_id == kActionIdWebDriveOfficeExcel) {
-    task_title_id = IDS_FILE_BROWSER_TASK_OPEN_GSHEET;
-  } else if (parsed_action_id == kActionIdWebDriveOfficePowerPoint) {
-    task_title_id = IDS_FILE_BROWSER_TASK_OPEN_GSLIDES;
-  } else if (parsed_action_id == kActionIdOpenInOffice) {
-    task_title_id = IDS_FILE_BROWSER_TASK_OPEN_MICROSOFT_365;
-  } else {
-    LOG(ERROR) << "Could not find a task with the given action_id";
-    return false;
-  }
-  std::u16string task_title = l10n_util::GetStringUTF16(task_title_id);
 
   return ash::office_fallback::OfficeFallbackDialog::Show(
-      first_url, fallback_reason, task_title, std::move(callback));
+      first_url, fallback_reason, parsed_action_id, std::move(callback));
 }
 
 void FindExtensionAndAppTasks(Profile* profile,

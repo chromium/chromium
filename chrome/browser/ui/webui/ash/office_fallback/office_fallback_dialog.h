@@ -36,7 +36,7 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
   // effectively created.
   static bool Show(const std::vector<storage::FileSystemURL>& file_urls,
                    const FallbackReason fallback_reason,
-                   const std::u16string& task_title,
+                   const std::string& action_id,
                    DialogChoiceCallback callback);
 
   // Receives user's dialog choice and runs callback.
@@ -46,8 +46,9 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
 
  protected:
   OfficeFallbackDialog(const std::vector<storage::FileSystemURL>& file_urls,
-                       const FallbackReason fallback_reason,
-                       const std::u16string& task_title,
+                       const std::string& title_text,
+                       const std::string& reason_message,
+                       const std::string& instructions_message,
                        DialogChoiceCallback callback);
   std::string GetDialogArgs() const override;
   void GetDialogSize(gfx::Size* size) const override;
@@ -55,8 +56,9 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
 
  private:
   const std::vector<storage::FileSystemURL> file_urls_;
-  const FallbackReason fallback_reason_;
-  const std::u16string task_title_;
+  const std::string title_text_;
+  const std::string reason_message_;
+  const std::string instructions_message_;
   DialogChoiceCallback callback_;
 };
 

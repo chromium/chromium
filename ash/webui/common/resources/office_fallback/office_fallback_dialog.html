@@ -25,21 +25,20 @@
 
 <div id="content">
   <div id="title">
-    Office Fallback
   </div>
   <div id="body">
     <div id="reason-message" style="margin-bottom: 13px;"></div>
-    <div id="options-message"></div>
+    <div id="instructions-message"></div>
   </div>
   <div id="button-container">
     <cr-button id="quick-office-button" custom-tab-index="-1">
-      Open in offline editor
+      $i18n{officeFallbackOpenWithOfflineEditor}
     </cr-button>
     <cr-button id="cancel-button" class="cancel-button" style="margin-left: auto;">
-      Cancel
+      $i18n{officeFallbackCancel}
     </cr-button>
     <cr-button id="try-again-button" class="action-button">
-      Try again
+      $i18n{officeFallbackTryAgain}
     </cr-button>
   </div>
 </div>

@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/office_fallback_resources.h"
 #include "chrome/grit/office_fallback_resources_map.h"
 #include "content/public/browser/web_ui.h"
@@ -26,6 +27,15 @@ OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOfficeFallbackHost);
+
+  // Set text for dialog buttons.
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"officeFallbackCancel", IDS_OFFICE_FALLBACK_CANCEL},
+      {"officeFallbackTryAgain", IDS_OFFICE_FALLBACK_TRY_AGAIN},
+      {"officeFallbackOpenWithOfflineEditor",
+       IDS_OFFICE_FALLBACK_OPEN_WITH_OFFLINE_EDITOR},
+  };
+  source->AddLocalizedStrings(kStrings);
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kOfficeFallbackResources, kOfficeFallbackResourcesSize),

@@ -10,27 +10,15 @@ import {DialogChoice} from './office_fallback.mojom-webui.js';
 import {OfficeFallbackBrowserProxy} from './office_fallback_browser_proxy.js';
 import {getTemplate} from './office_fallback_dialog.html.js';
 
-// The enum should be consistent with
-// ash::office_fallback::FallbackReason
-enum FallbackReason {
-  OFFLINE = 0,
-  DRIVE_UNAVAILABLE = 1,
-  ONEDRIVE_UNAVAILABLE = 2,
-  ERROR_OPENING_WEB = 3,
-  INVALID_GOOGLE_DOCS_URL = 4,
-}
-
 /**
  * The OfficeFallbackElement represents the dialog that allows the user to
  * choose what to do when failing to open office files.
  * @extends HTMLElement
  */
 export class OfficeFallbackElement extends HTMLElement {
-  /** Array of file names representing the files selected by the user. */
-  fileNames: string[] = [];
-  /** Title of the task that failed to open the files. */
-  taskTitle: string = '';
-  fallbackReason: FallbackReason|undefined;
+  titleText: string = '';
+  reasonMessage: string = '';
+  instructionsMessage: string = '';
   private root: ShadowRoot;
 
   constructor() {
@@ -61,25 +49,6 @@ export class OfficeFallbackElement extends HTMLElement {
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
   }
 
-  // The mapping should be consistent with
-  // ash::office_fallback::FallbackReasonToString()
-  stringToFallbackReason(fallbackReason: string): FallbackReason|undefined {
-    switch (fallbackReason) {
-      case 'Offline':
-        return FallbackReason.OFFLINE;
-      case 'Drive Unavailable':
-        return FallbackReason.DRIVE_UNAVAILABLE;
-      case 'OneDrive Unavailable':
-        return FallbackReason.ONEDRIVE_UNAVAILABLE;
-      case 'Error opening web':
-        return FallbackReason.ERROR_OPENING_WEB;
-      case 'Invalid Google Docs URL':
-        return FallbackReason.INVALID_GOOGLE_DOCS_URL;
-    }
-    console.error('No matching FallbackReason for given string');
-    return;
-  }
-
   /**
    * Initialises the class members based off the given dialog arguments.
    */
@@ -89,12 +58,12 @@ export class OfficeFallbackElement extends HTMLElement {
       assert(dialogArgs);
       const args = JSON.parse(dialogArgs);
       assert(args);
-      assert(args.fileNames);
-      assert(args.taskTitle);
-      assert(args.fallbackReason);
-      this.fileNames = args.fileNames;
-      this.taskTitle = args.taskTitle;
-      this.fallbackReason = this.stringToFallbackReason(args.fallbackReason);
+      assert(args.titleText);
+      assert(args.reasonMessage);
+      assert(args.instructionsMessage);
+      this.titleText = args.titleText;
+      this.reasonMessage = args.reasonMessage;
+      this.instructionsMessage = args.instructionsMessage;
     } catch (e) {
       console.error(`Unable to get dialog arguments. Error: ${e}.`);
     }
@@ -107,55 +76,12 @@ export class OfficeFallbackElement extends HTMLElement {
     const titleElement = fragment.querySelector('#title')! as HTMLElement;
     const reasonMessageElement =
         fragment.querySelector('#reason-message')! as HTMLElement;
-    const optionsMessageElement =
-        fragment.querySelector('#options-message')! as HTMLElement;
+    const instructionsMessageElement =
+        fragment.querySelector('#instructions-message')! as HTMLElement;
 
-    // TODO(cassycc): replace with UX chosen text.
-    // TODO(b/242685536) When multi-file selection is defined, implement
-    // `fileNamesDisplayed` appropriately. Currently, fileNames is a singleton
-    // array.
-    // TODO(cassycc): Handle long file name(s).
-    // TODO(cassycc): Translate the text based on the device's language.
-    const fileNamesDisplayed =
-        this.fileNames.map(name => `"${name}"`).join(', ');
-    optionsMessageElement.innerText = `Choose "Try again", or choose \
-          "Open in offline editor" to use limited view and editing options.`;
-    switch (this.fallbackReason) {
-      case FallbackReason.OFFLINE:
-        titleElement.innerText =
-            `Can't open ${fileNamesDisplayed} when offline`;
-        reasonMessageElement.innerText =
-            `The application ${this.taskTitle} isn’t available offline.`;
-        optionsMessageElement.innerText =
-            `Check your internet connection and choose "Try again", or choose \
-            "Open in offline editor" to use limited view and editing options.`;
-        break;
-      case FallbackReason.DRIVE_UNAVAILABLE:
-        titleElement.innerText =
-            `Can't open ${fileNamesDisplayed} when Drive is not available`;
-        reasonMessageElement.innerText =
-            `The application ${this.taskTitle} requires Drive to be \
-            available.`;
-        break;
-      case FallbackReason.ONEDRIVE_UNAVAILABLE:
-        titleElement.innerText =
-            `Can't open ${fileNamesDisplayed} when OneDrive is not available`;
-        reasonMessageElement.innerText =
-            `The application ${this.taskTitle} requires OneDrive \
-          to be available.`;
-        break;
-      case FallbackReason.ERROR_OPENING_WEB:
-        titleElement.innerText = `Can't open the URL for ${fileNamesDisplayed}`;
-        reasonMessageElement.innerText =
-            `The application ${this.taskTitle} requires OneDrive \
-          to be available.`;
-        break;
-      case FallbackReason.INVALID_GOOGLE_DOCS_URL:
-        titleElement.innerText = `Can't open the URL for ${fileNamesDisplayed}`;
-        reasonMessageElement.innerText = `The application ${
-            this.taskTitle} requires a valid ${this.taskTitle} URL.`;
-        break;
-    }
+    titleElement.innerText = this.titleText;
+    reasonMessageElement.innerText = this.reasonMessage;
+    instructionsMessageElement.innerHTML = this.instructionsMessage;
     return template;
   }
 

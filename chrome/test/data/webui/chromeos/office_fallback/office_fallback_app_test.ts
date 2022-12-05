@@ -7,17 +7,9 @@ import 'chrome://office-fallback/office_fallback_dialog.js';
 import {DialogChoice, PageHandlerRemote} from 'chrome://office-fallback/office_fallback.mojom-webui.js';
 import {OfficeFallbackBrowserProxy} from 'chrome://office-fallback/office_fallback_browser_proxy.js';
 import type {OfficeFallbackElement} from 'chrome://office-fallback/office_fallback_dialog.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-interface ProxyOptions {
-  fileNames?: string[];
-  taskTitle: string;
-  // The string will be converted to enum FallbackReason from
-  // office_fallback_dialog.ts in the mapping in
-  // OfficeFallbackElement.stringToFailureReason.
-  fallbackReason: string;
-}
 
 /**
  * A test OfficeFallbackBrowserProxy implementation that enables to mock various
@@ -27,13 +19,13 @@ class OfficeFallbackTestBrowserProxy implements OfficeFallbackBrowserProxy {
   handler: PageHandlerRemote&TestBrowserProxy;
   dialogArgs: string;
 
-  constructor(options: ProxyOptions) {
+  constructor() {
     this.handler = TestBrowserProxy.fromClass(PageHandlerRemote);
     // Creating JSON string as in OfficeFallbackDialog::GetDialogArgs().
     const args = {
-      'fileNames': options.fileNames,
-      'fallbackReason': options.fallbackReason,
-      'taskTitle': options.taskTitle,
+      'titleText': 'a title',
+      'reasonMessage': 'a reason',
+      'instructionsMessage': 'an instruction',
     };
     this.dialogArgs = JSON.stringify(args);
   }
@@ -53,8 +45,8 @@ suite('<office-fallback>', () => {
   // called.
   let testProxy: OfficeFallbackTestBrowserProxy;
 
-  const setUp = async (options: ProxyOptions) => {
-    testProxy = new OfficeFallbackTestBrowserProxy(options);
+  const setUp = async () => {
+    testProxy = new OfficeFallbackTestBrowserProxy();
     OfficeFallbackBrowserProxy.setInstance(testProxy);
 
     // Creates and attaches the <office-fallback> element to the DOM tree.
@@ -86,11 +78,7 @@ suite('<office-fallback>', () => {
    * mojo request.
    */
   test('Open in offline editor button', async () => {
-    await setUp({
-      fileNames: ['file.docx'],
-      taskTitle: 'testTitle',
-      fallbackReason: 'Offline',
-    });
+    await setUp();
 
     officeFallbackApp.$('#quick-office-button').click();
     await testProxy.handler.whenCalled('close');
@@ -104,11 +92,7 @@ suite('<office-fallback>', () => {
    * mojo request.
    */
   test('Try again button', async () => {
-    await setUp({
-      fileNames: ['file.docx'],
-      taskTitle: 'testTitle',
-      fallbackReason: 'Drive Unavailable',
-    });
+    await setUp();
 
     officeFallbackApp.$('#try-again-button').click();
     await testProxy.handler.whenCalled('close');
@@ -122,40 +106,12 @@ suite('<office-fallback>', () => {
    * mojo request.
    */
   test('Close button', async () => {
-    await setUp({
-      fileNames: ['file.docx'],
-      taskTitle: 'testTitle',
-      fallbackReason: 'OneDrive Unavailable',
-    });
+    await setUp();
 
     officeFallbackApp.$('#cancel-button').click();
     await testProxy.handler.whenCalled('close');
     assertEquals(1, testProxy.handler.getCallCount('close'));
     assertDeepEquals(
         [DialogChoice.kCancel], testProxy.handler.getArgs('close'));
-  });
-
-
-  /**
-   * Tests that the fileNames are displayed correctly in the title.
-   */
-  test('fileNames', async () => {
-    let fileName = `file1.docx`;
-    const fileNames = [fileName];
-    for (let i = 2; i < 12; i++) {
-      fileName = `file${i}.docx`;
-      fileNames.push(fileName);
-    }
-
-    await setUp({
-      fileNames: fileNames,
-      taskTitle: 'testTitle',
-      fallbackReason: 'Offline',
-    });
-
-    const title = officeFallbackApp.$('#title').innerText;
-    fileNames.forEach((fileName) => {
-      assertTrue(title.includes(fileName));
-    });
   });
 });

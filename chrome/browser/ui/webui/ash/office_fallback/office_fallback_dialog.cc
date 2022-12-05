@@ -4,11 +4,18 @@
 
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_dialog.h"
 
+#include <cstddef>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace {
 
@@ -16,6 +23,58 @@ namespace {
 const int kWidth = 496;
 const int kHeight = 198;
 
+// Return the task title id for the task represented by the `action_id`.
+int GetTaskTitleId(const std::string& action_id) {
+  if (action_id == file_manager::file_tasks::kActionIdWebDriveOfficeWord) {
+    return IDS_FILE_BROWSER_TASK_OPEN_GDOC;
+  } else if (action_id ==
+             file_manager::file_tasks::kActionIdWebDriveOfficeExcel) {
+    return IDS_FILE_BROWSER_TASK_OPEN_GSHEET;
+  } else if (action_id ==
+             file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint) {
+    return IDS_FILE_BROWSER_TASK_OPEN_GSLIDES;
+  } else if (action_id == file_manager::file_tasks::kActionIdOpenInOffice) {
+    return IDS_FILE_BROWSER_TASK_OPEN_MICROSOFT_365;
+  }
+  // TODO(cassycc): add test for this path.
+  LOG(ERROR) << "Could not find a task with the given action_id";
+  NOTREACHED();
+  return 0;
+}
+
+// TODO(cassycc): replace with UX chosen text.
+// Get the text ids for the `fallback_reason` specific translated strings that
+// will be displayed in dialog. Store them in the out parameters `title_id`,
+// `reason_message_id` and `instructions_message_id`.
+void GetDialogTextIds(
+    const ash::office_fallback::FallbackReason fallback_reason,
+    int& title_id,
+    int& reason_message_id,
+    int& instructions_message_id) {
+  instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS;
+  switch (fallback_reason) {
+    case ash::office_fallback::FallbackReason::kOffline:
+      title_id = IDS_OFFICE_FALLBACK_TITLE_OFFLINE;
+      reason_message_id = IDS_OFFICE_FALLBACK_REASON_OFFLINE;
+      instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS_OFFLINE;
+      break;
+    case ash::office_fallback::FallbackReason::kDriveUnavailable:
+      title_id = IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE;
+      reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE;
+      break;
+    case ash::office_fallback::FallbackReason::kOneDriveUnavailable:
+      title_id = IDS_OFFICE_FALLBACK_TITLE_ONEDRIVE_UNAVAILABLE;
+      reason_message_id = IDS_OFFICE_FALLBACK_REASON_ONEDRIVE_UNAVAILABLE;
+      break;
+    case ash::office_fallback::FallbackReason::kErrorOpeningWeb:
+      title_id = IDS_OFFICE_FALLBACK_TITLE_ERROR_OPENING_WEB;
+      reason_message_id = IDS_OFFICE_FALLBACK_REASON_ERROR_OPENING_WEB;
+      break;
+    case ash::office_fallback::FallbackReason::kInvalidGoogleDocsURL:
+      title_id = IDS_OFFICE_FALLBACK_TITLE_INVALID_GOOGLE_DOCS_URL;
+      reason_message_id = IDS_OFFICE_FALLBACK_REASON_INVALID_GOOGLE_DOCS_URL;
+  }
+}
 }  // namespace
 
 namespace ash::office_fallback {
@@ -24,7 +83,7 @@ namespace ash::office_fallback {
 bool OfficeFallbackDialog::Show(
     const std::vector<storage::FileSystemURL>& file_urls,
     const FallbackReason fallback_reason,
-    const std::u16string& task_title,
+    const std::string& action_id,
     DialogChoiceCallback callback) {
   // Allow no more than one office fallback dialog at a time. In the case of
   // multiple dialog requests, they should either be handled simultaneously or
@@ -39,10 +98,39 @@ bool OfficeFallbackDialog::Show(
     return false;
   }
 
+  // TODO(b/242685536) When multi-file selection is defined, display file names
+  // appropriately. Currently, file_urls_ is just a singleton array.
+  // TODO(cassycc): Handle long file name(s).
+  // Get file name to display.
+  const std::u16string file_name(
+      file_urls.front().path().BaseName().LossyDisplayName());
+
+  // Get title of task which fails to open file.
+  int task_title_id = GetTaskTitleId(action_id);
+  if (task_title_id == 0) {
+    return false;
+  }
+  const std::u16string task_title = l10n_util::GetStringUTF16(task_title_id);
+
+  // Get failure specific text to display in dialog.
+  int title_id;
+  int reason_message_id;
+  int instructions_message_id;
+  GetDialogTextIds(fallback_reason, title_id, reason_message_id,
+                   instructions_message_id);
+  // TODO(cassycc): Figure out how to add the web_drive to the placeholder in
+  // IDS_OFFICE_FALLBACK_TITLE_WEB_DRIVE_UNAVAILABLE.
+  const std::string title_text = l10n_util::GetStringFUTF8(title_id, file_name);
+  const std::string reason_message =
+      l10n_util::GetStringFUTF8(reason_message_id, task_title);
+  const std::string instructions_message =
+      l10n_util::GetStringUTF8(instructions_message_id);
+
   // The pointer is managed by an instance of `views::WebDialogView` and removed
   // in `SystemWebDialogDelegate::OnDialogClosed`.
-  OfficeFallbackDialog* dialog = new OfficeFallbackDialog(
-      file_urls, fallback_reason, task_title, std::move(callback));
+  OfficeFallbackDialog* dialog =
+      new OfficeFallbackDialog(file_urls, title_text, reason_message,
+                               instructions_message, std::move(callback));
 
   dialog->ShowSystemDialog();
   return true;
@@ -61,46 +149,25 @@ void OfficeFallbackDialog::OnDialogClosed(const std::string& choice) {
 
 OfficeFallbackDialog::OfficeFallbackDialog(
     const std::vector<storage::FileSystemURL>& file_urls,
-    const FallbackReason fallback_reason,
-    const std::u16string& task_title,
+    const std::string& title_text,
+    const std::string& reason_message,
+    const std::string& instructions_message,
     DialogChoiceCallback callback)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIOfficeFallbackURL),
                               std::u16string() /* title */),
       file_urls_(file_urls),
-      fallback_reason_(fallback_reason),
-      task_title_(task_title),
+      title_text_(title_text),
+      reason_message_(reason_message),
+      instructions_message_(instructions_message),
       callback_(std::move(callback)) {}
 
 OfficeFallbackDialog::~OfficeFallbackDialog() = default;
 
-// The mapping should be consistent with
-// OfficeFallbackElement.stringToFailureReason in office_fallback_dialog.ts.
-std::string FallbackReasonToString(FallbackReason fallback_reason) {
-  switch (fallback_reason) {
-    case FallbackReason::kOffline:
-      return "Offline";
-    case FallbackReason::kDriveUnavailable:
-      return "Drive Unavailable";
-    case FallbackReason::kOneDriveUnavailable:
-      return "OneDrive Unavailable";
-    case FallbackReason::kErrorOpeningWeb:
-      return "Error opening web";
-    case FallbackReason::kInvalidGoogleDocsURL:
-      return "Invalid Google Docs URL";
-  }
-}
-
 std::string OfficeFallbackDialog::GetDialogArgs() const {
   base::Value::Dict args;
-  base::Value::List file_names = base::Value::List();
-  for (const storage::FileSystemURL& file_url : file_urls_) {
-    file_names.Append(base::Value(file_url.path().BaseName().value()));
-  }
-  args.Set("fileNames", std::move(file_names));
-  args.Set("fallbackReason",
-           base::Value(FallbackReasonToString(fallback_reason_)));
-
-  args.Set("taskTitle", base::Value(task_title_));
+  args.Set("titleText", title_text_);
+  args.Set("reasonMessage", reason_message_);
+  args.Set("instructionsMessage", instructions_message_);
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;
