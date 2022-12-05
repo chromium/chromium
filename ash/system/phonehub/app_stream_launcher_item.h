@@ -11,7 +11,7 @@
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {
-class Label;
+class LabelButton;
 }
 
 namespace ash {
@@ -32,14 +32,14 @@ class ASH_EXPORT AppStreamLauncherItem : public views::View {
   void RequestFocus() override;
   const char* GetClassName() const override;
 
-  views::Label* GetLabelForTest();
+  views::LabelButton* GetLabelForTest();
   PhoneHubRecentAppButton* GetIconForTest();
 
  private:
   // Owned by views hierarchy.
   // TODO(b/259426750) refactor PhoneHubRecentAppButton to a more generic name.
   PhoneHubRecentAppButton* recent_app_button_ = nullptr;
-  views::Label* label_ = nullptr;
+  views::LabelButton* label_ = nullptr;
 };
 
 }  // namespace ash

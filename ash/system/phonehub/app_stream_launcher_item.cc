@@ -5,6 +5,9 @@
 #include "ash/system/phonehub/app_stream_launcher_item.h"
 
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -20,10 +23,6 @@ constexpr int kEcheAppNameLabelLineHeight = 14;
 constexpr int kEcheAppNameLabelFontSize = 11;
 
 void ConfigureLabel(views::Label* label, int line_height, int font_size) {
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetSubpixelRenderingEnabled(false);
-  label->SetCanProcessEventsWithinSubtree(false);
-
   label->SetLineHeight(line_height);
   label->SetTruncateLength(kEcheAppItemWidth);
 
@@ -34,6 +33,22 @@ void ConfigureLabel(views::Label* label, int line_height, int font_size) {
   gfx::FontList font_list(label_font);
   label->SetFontList(font_list);
 }
+
+class AppNameLabel : public views::LabelButton {
+ public:
+  explicit AppNameLabel(PressedCallback callback = PressedCallback(),
+                        const std::u16string& text = std::u16string())
+      : LabelButton(std::move(callback), text) {
+    ConfigureLabel(label(), kEcheAppNameLabelLineHeight,
+                   kEcheAppNameLabelFontSize);
+    SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  }
+
+  ~AppNameLabel() override = default;
+  AppNameLabel(AppNameLabel&) = delete;
+  AppNameLabel operator=(AppNameLabel&) = delete;
+};
 
 }  // namespace
 
@@ -51,10 +66,7 @@ AppStreamLauncherItem::AppStreamLauncherItem(
       app_metadata.icon, app_metadata.visible_app_name, callback));
 
   label_ = AddChildView(
-      std::make_unique<views::Label>(app_metadata.visible_app_name));
-  label_->SetTooltipText(app_metadata.visible_app_name);
-  ConfigureLabel(label_, kEcheAppNameLabelLineHeight,
-                 kEcheAppNameLabelFontSize);
+      std::make_unique<AppNameLabel>(callback, app_metadata.visible_app_name));
 }
 
 AppStreamLauncherItem::~AppStreamLauncherItem() = default;
@@ -71,7 +83,7 @@ const char* AppStreamLauncherItem::GetClassName() const {
   return "AppStreamLauncherItem";
 }
 
-views::Label* AppStreamLauncherItem::GetLabelForTest() {
+views::LabelButton* AppStreamLauncherItem::GetLabelForTest() {
   return label_;
 }
 PhoneHubRecentAppButton* AppStreamLauncherItem::GetIconForTest() {

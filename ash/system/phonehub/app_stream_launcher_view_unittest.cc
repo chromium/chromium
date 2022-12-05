@@ -17,6 +17,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
@@ -128,7 +129,7 @@ TEST_F(AppStreamLauncherViewTest, AddItems) {
                     ->children()
                     .size());
 
-  EXPECT_EQ(u"Fake App", GetItemView(0)->GetLabelForTest()->GetTooltipText());
+  EXPECT_EQ(u"Fake App", GetItemView(0)->GetLabelForTest()->GetText());
 }
 
 TEST_F(AppStreamLauncherViewTest, RemoveItem) {
@@ -151,7 +152,7 @@ TEST_F(AppStreamLauncherViewTest, RemoveItem) {
                     ->children()
                     .size());
 
-  EXPECT_EQ(u"Fake App", GetItemView(0)->GetLabelForTest()->GetTooltipText());
+  EXPECT_EQ(u"Fake App", GetItemView(0)->GetLabelForTest()->GetText());
 
   apps.clear();
   data_model->SetAppList(apps);
