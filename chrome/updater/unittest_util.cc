@@ -231,6 +231,11 @@ void StopProcmonLogging(const base::FilePath& pml_file) {
     LOG_IF(ERROR, !process.IsValid())
         << __func__ << ": failed to run: " << cmdline;
   }
+
+  // TODO(crbug/1396077): Make a copy of the PML file in case the original gets
+  // deleted.
+  if (!base::CopyFile(pml_file, pml_file.ReplaceExtension(L".PML.BAK")))
+    LOG(ERROR) << __func__ << ": failed to backup pml file";
 }
 
 #endif  // BUILDFLAG(IS_WIN)
