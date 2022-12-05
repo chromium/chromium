@@ -635,7 +635,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void CreateNotificationService(
       GlobalRenderFrameHostId rfh_id,
       NotificationServiceCreatorType creator_type,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver) = 0;
   virtual void CreateWebSocketConnector(
       const blink::StorageKey& storage_key,

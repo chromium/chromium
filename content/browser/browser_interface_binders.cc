@@ -344,15 +344,14 @@ void BindFileUtilitiesHost(
                      std::move(receiver)));
 }
 
-// The following two functions bind the RenderFrameHost ID, the origin and the
-// notification service creator type to the notification service creation
+// The following two functions bind the RenderFrameHost ID, the storage key, and
+// the notification service creator type to the notification service creation
 // function. The RenderFrameHost ID is used instead of the pointer because the
 // WorkerHost may outlive the RenderFrameHost and thus causing UAF issue when
 // the callback runs.
 template <typename WorkerHost>
 base::RepeatingCallback<
-    void(const url::Origin&,
-         mojo::PendingReceiver<blink::mojom::NotificationService>)>
+    void(mojo::PendingReceiver<blink::mojom::NotificationService>)>
 BindNotificationService(
     GlobalRenderFrameHostId rfh_id,
     RenderProcessHost::NotificationServiceCreatorType creator_type,
@@ -362,13 +361,12 @@ BindNotificationService(
   return base::BindRepeating(
       [](WorkerHost* host, GlobalRenderFrameHostId rfh_id,
          RenderProcessHost::NotificationServiceCreatorType creator_type,
-         const url::Origin& origin,
          mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
         auto* process_host =
             static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
         CHECK(process_host);
-        process_host->CreateNotificationService(rfh_id, creator_type, origin,
-                                                std::move(receiver));
+        process_host->CreateNotificationService(
+            rfh_id, creator_type, host->GetStorageKey(), std::move(receiver));
       },
       base::Unretained(host), rfh_id, creator_type);
 }
@@ -382,13 +380,12 @@ BindNotificationService(ServiceWorkerHost* host) {
       [](ServiceWorkerHost* host, const ServiceWorkerVersionBaseInfo& info,
          mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
         DCHECK_CURRENTLY_ON(BrowserThread::UI);
-        auto origin = info.storage_key.origin();
         auto* process_host = static_cast<RenderProcessHostImpl*>(
             RenderProcessHost::FromID(host->worker_process_id()));
         process_host->CreateNotificationService(
             GlobalRenderFrameHostId(),
             RenderProcessHost::NotificationServiceCreatorType::kServiceWorker,
-            origin, std::move(receiver));
+            info.storage_key, std::move(receiver));
       },
       base::Unretained(host));
 }
@@ -1211,6 +1208,10 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       &RenderProcessHostImpl::CreateLockManager, host));
   map->Add<blink::mojom::QuotaManagerHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindQuotaManagerHost, host));
+  map->Add<blink::mojom::NotificationService>(BindNotificationService(
+      host->GetAncestorRenderFrameHostId(),
+      RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
+      host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1221,11 +1222,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-
-  map->Add<blink::mojom::NotificationService>(BindNotificationService(
-      host->GetAncestorRenderFrameHostId(),
-      RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
-      host));
 }
 
 void PopulateBinderMap(DedicatedWorkerHost* host, mojo::BinderMap* map) {
@@ -1307,6 +1303,9 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &RenderProcessHostImpl::CreateLockManager, host));
   map->Add<blink::mojom::QuotaManagerHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindQuotaManagerHost, host));
+  map->Add<blink::mojom::NotificationService>(BindNotificationService(
+      GlobalRenderFrameHostId(),
+      RenderProcessHost::NotificationServiceCreatorType::kSharedWorker, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1317,10 +1316,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-
-  map->Add<blink::mojom::NotificationService>(BindNotificationService(
-      GlobalRenderFrameHostId(),
-      RenderProcessHost::NotificationServiceCreatorType::kSharedWorker, host));
 }
 
 void PopulateBinderMap(SharedWorkerHost* host, mojo::BinderMap* map) {
@@ -1442,7 +1437,6 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::QuotaManagerHost>(
       BindServiceWorkerReceiverForStorageKey(
           &RenderProcessHostImpl::BindQuotaManagerHost, host));
-
   map->Add<blink::mojom::NotificationService>(BindNotificationService(host));
 
   // This is called when `host` is constructed. ServiceWorkerVersion, which

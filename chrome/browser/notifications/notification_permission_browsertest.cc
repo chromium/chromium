@@ -225,3 +225,50 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
       "Registration failed - permission denied\"\n",
       EvalJs(iframe, "requestPushPermission()").error);
 }
+
+// Test that the Notifications.NonPersistentNotificationThirdPartyCount metric
+// triggers in third-party contexts. Note: This test doesn't exactly fit with
+// the others in this class, but the helper methods here are exactly what we
+// needed and this test will be removed once the metric is removed.
+IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
+                       NonPersistentNotificationThirdPartyCountMetricTest) {
+  GrantNotificationPermissionForTest(TesterUrl());
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), TesterUrl()));
+  content::RenderFrameHost* main_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+
+  base::HistogramTester histogram_tester;
+  const std::string histogram_name =
+      "Notifications.NonPersistentNotificationThirdPartyCount";
+
+  const std::string show_notification_js = R"(new Promise((resolve) => {
+     const notification = new Notification("done");
+     notification.onshow = () => {
+       const title = notification.title;
+       notification.close();
+       resolve(title);
+     };
+   });)";
+
+  EXPECT_EQ("done", EvalJs(main_frame, show_notification_js));
+
+  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
+  histogram_tester.ExpectBucketCount(histogram_name, true, 0);
+
+  content::RenderFrameHost* iframe = CreateChildIframe(main_frame, TesterUrl());
+
+  EXPECT_EQ("done", EvalJs(iframe, show_notification_js));
+
+  histogram_tester.ExpectBucketCount(histogram_name, false, 2);
+  histogram_tester.ExpectBucketCount(histogram_name, true, 0);
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), EmbedderUrl()));
+  main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
+  iframe = CreateChildIframe(main_frame, TesterUrl());
+
+  EXPECT_EQ("done", EvalJs(iframe, show_notification_js));
+
+  histogram_tester.ExpectBucketCount(histogram_name, false, 2);
+  histogram_tester.ExpectBucketCount(histogram_name, true, 1);
+}

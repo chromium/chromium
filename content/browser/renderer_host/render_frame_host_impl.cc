@@ -10467,7 +10467,7 @@ void RenderFrameHostImpl::CreateNotificationService(
   GetProcess()->CreateNotificationService(
       GetGlobalId(),
       RenderProcessHost::NotificationServiceCreatorType::kDocument,
-      GetLastCommittedOrigin(), std::move(receiver));
+      storage_key(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateInstalledAppProvider(

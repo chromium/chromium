@@ -269,7 +269,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void CreateNotificationService(
       GlobalRenderFrameHostId rfh_id,
       RenderProcessHost::NotificationServiceCreatorType creator_type,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver)
       override {}
   void CreateWebSocketConnector(

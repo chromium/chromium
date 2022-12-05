@@ -2104,7 +2104,7 @@ void RenderProcessHostImpl::CreatePaymentManagerForOrigin(
 void RenderProcessHostImpl::CreateNotificationService(
     GlobalRenderFrameHostId rfh_id,
     const RenderProcessHost::NotificationServiceCreatorType creator_type,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id);
@@ -2115,7 +2115,7 @@ void RenderProcessHostImpl::CreateNotificationService(
     case RenderProcessHost::NotificationServiceCreatorType::kSharedWorker:
     case RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker: {
       storage_partition_impl_->GetPlatformNotificationContext()->CreateService(
-          this, origin, /*document_url=*/GURL(), weak_document_ptr,
+          this, storage_key, /*document_url=*/GURL(), weak_document_ptr,
           creator_type, std::move(receiver));
       break;
     }
@@ -2123,7 +2123,7 @@ void RenderProcessHostImpl::CreateNotificationService(
       CHECK(rfh);
 
       storage_partition_impl_->GetPlatformNotificationContext()->CreateService(
-          this, origin, rfh->GetLastCommittedURL(), weak_document_ptr,
+          this, storage_key, rfh->GetLastCommittedURL(), weak_document_ptr,
           creator_type, std::move(receiver));
       break;
     }

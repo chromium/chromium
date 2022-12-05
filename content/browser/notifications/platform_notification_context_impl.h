@@ -37,10 +37,6 @@ namespace blink {
 class StorageKey;
 }  // namespace blink
 
-namespace url {
-class Origin;
-}
-
 namespace content {
 
 class BlinkNotificationServiceImpl;
@@ -82,7 +78,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   // service is created by a dedicated worker, or is `nullptr` otherwise.
   void CreateService(
       RenderProcessHost* render_process_host,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const GURL& document_url,
       const WeakDocumentPtr& weak_document_ptr,
       const RenderProcessHost::NotificationServiceCreatorType creator_type,

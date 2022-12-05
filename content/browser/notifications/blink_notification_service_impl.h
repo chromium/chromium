@@ -18,10 +18,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace blink {
 struct PlatformNotificationData;
@@ -44,7 +44,7 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
       BrowserContext* browser_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       RenderProcessHost* render_process_host,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const GURL& document_url,
       const WeakDocumentPtr& weak_document_ptr,
       RenderProcessHost::NotificationServiceCreatorType creator_type,
@@ -80,7 +80,7 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
   // Called when an error is detected on binding_.
   void OnConnectionError();
 
-  // Check the permission status for the current |origin_|.
+  // Check the permission status for the current `storage_key_`.
   blink::mojom::PermissionStatus CheckPermissionStatus();
 
   // Validate |notification_data| and |notification_resources| received in a
@@ -118,8 +118,15 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
 
   int render_process_host_id_;
 
-  // The origin that this notification service is communicating with.
-  url::Origin origin_;
+  // The storage key associated with the context that this notification service
+  // is communicating with.
+  const blink::StorageKey storage_key_;
+  // The same as `storage_key_` above but set as if third-party storage
+  // partitioning is enabled (regardless of whether it actually is). This is
+  // used for collecting metrics when deciding how best to partition
+  // notifications.
+  const blink::StorageKey storage_key_if_3psp_enabled;
+
   // The document url that this notification service is communicating with.
   // This is empty when the notification service is created by a worker
   // (including dedicated workers, thus the URL might not be the same as

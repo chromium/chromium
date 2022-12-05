@@ -131,10 +131,12 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
 
     contents_ = CreateTestWebContents();
 
+    storage_key_ = blink::StorageKey(url::Origin::Create(GURL(kTestOrigin)));
+
     notification_service_ = std::make_unique<BlinkNotificationServiceImpl>(
         notification_context_.get(), &browser_context_,
         embedded_worker_helper_->context_wrapper(), &render_process_host_,
-        url::Origin::Create(GURL(kTestOrigin)),
+        storage_key_,
         /*document_url=*/GURL(),
         contents_.get()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
         RenderProcessHost::NotificationServiceCreatorType::kDocument,
@@ -166,12 +168,10 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GURL(kTestOrigin);
 
-    blink::StorageKey key(url::Origin::Create(GURL(kTestOrigin)));
-
     {
       base::RunLoop run_loop;
       embedded_worker_helper_->context()->RegisterServiceWorker(
-          GURL(kTestServiceWorkerUrl), key, options,
+          GURL(kTestServiceWorkerUrl), storage_key_, options,
           blink::mojom::FetchClientSettingsObject::New(),
           base::BindOnce(
               &BlinkNotificationServiceImplTest::DidRegisterServiceWorker,
@@ -190,7 +190,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     {
       base::RunLoop run_loop;
       embedded_worker_helper_->context()->registry()->FindRegistrationForId(
-          service_worker_registration_id, key,
+          service_worker_registration_id, storage_key_,
           base::BindOnce(&BlinkNotificationServiceImplTest::
                              DidFindServiceWorkerRegistration,
                          base::Unretained(this), service_worker_registration,
@@ -426,6 +426,8 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
   void OnMojoError(const std::string& error) { bad_messages_.push_back(error); }
 
   BrowserTaskEnvironment task_environment_;  // Must be first member.
+
+  blink::StorageKey storage_key_;
 
   std::unique_ptr<EmbeddedWorkerTestHelper> embedded_worker_helper_;
 
