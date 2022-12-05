@@ -216,10 +216,11 @@ class DMPolicyFetchRequestCallbackHandler : public DMRequestCallbackHandler {
 
     std::unique_ptr<CachedPolicyInfo> info = storage_->GetCachedPolicyInfo();
     EXPECT_FALSE(info->public_key().empty());
-    if (expect_new_public_key_)
+    if (expect_new_public_key_) {
       EXPECT_EQ(info->public_key(), GetTestKey2()->GetPublicKeyString());
-    else
+    } else {
       EXPECT_EQ(info->public_key(), GetTestKey1()->GetPublicKeyString());
+    }
 
     if (result == DMClient::RequestResult::kSuccess) {
       std::unique_ptr<::wireless_android_enterprise_devicemanagement::
@@ -320,7 +321,7 @@ class DMClientTest : public ::testing::Test {
   net::HttpStatusCode response_http_status_ = net::HTTP_OK;
   std::string response_body_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 class DMRegisterClientTest : public DMClientTest {
