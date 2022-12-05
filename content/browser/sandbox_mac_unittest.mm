@@ -31,6 +31,7 @@
 #include "content/common/mac/font_loader.h"
 #include "crypto/openssl_util.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "sandbox/mac/sandbox_compiler.h"
 #include "sandbox/mac/seatbelt.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
@@ -66,15 +67,16 @@ class SandboxMacTest : public base::MultiProcessTest {
                          sandbox::mojom::Sandbox sandbox_type) {
     std::string profile =
         sandbox::policy::GetSandboxProfile(sandbox_type) + kTempDirSuffix;
-    sandbox::SeatbeltExecClient client;
-    client.SetProfile(profile);
+    sandbox::SandboxCompiler compiler;
+    compiler.SetProfile(profile);
     SetupSandboxParameters(sandbox_type,
                            *base::CommandLine::ForCurrentProcess(),
 #if BUILDFLAG(ENABLE_PPAPI)
                            /*plugins=*/{},
 #endif
-                           &client);
+                           &compiler);
 
+    sandbox::SeatbeltExecClient client;
     pipe_ = client.GetReadFD();
     ASSERT_GE(pipe_, 0);
 
@@ -83,7 +85,7 @@ class SandboxMacTest : public base::MultiProcessTest {
 
     base::Process process = SpawnChildWithOptions(procname, options);
     ASSERT_TRUE(process.IsValid());
-    ASSERT_TRUE(client.SendProfile());
+    ASSERT_TRUE(client.SendPolicy(compiler.CompilePolicyToProto()));
 
     int rv = -1;
     ASSERT_TRUE(base::WaitForMultiprocessTestChildExit(

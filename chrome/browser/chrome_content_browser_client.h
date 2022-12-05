@@ -79,7 +79,7 @@ class UrlCheckerDelegate;
 }  // namespace safe_browsing
 
 namespace sandbox {
-class SeatbeltExecClient;
+class SandboxCompiler;
 }  // namespace sandbox
 
 namespace ui {
@@ -779,7 +779,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_MAC)
   bool SetupEmbedderSandboxParameters(
       sandbox::mojom::Sandbox sandbox_type,
-      sandbox::SeatbeltExecClient* client) override;
+      sandbox::SandboxCompiler* compiler) override;
 #endif  // BUILDFLAG(IS_MAC)
 
   void GetHyphenationDictionary(

@@ -89,33 +89,16 @@ SeatbeltExecClient::~SeatbeltExecClient() {
     IGNORE_EINTR(close(pipe_[1]));
 }
 
-bool SeatbeltExecClient::SetBooleanParameter(const std::string& key,
-                                             bool value) {
-  google::protobuf::MapPair<std::string, std::string> pair(
-      key, value ? "TRUE" : "FALSE");
-  return policy_.mutable_params()->insert(pair).second;
-}
-
-bool SeatbeltExecClient::SetParameter(const std::string& key,
-                                      const std::string& value) {
-  google::protobuf::MapPair<std::string, std::string> pair(key, value);
-  return policy_.mutable_params()->insert(pair).second;
-}
-
-void SeatbeltExecClient::SetProfile(const std::string& policy) {
-  policy_.set_profile(policy);
-}
-
 int SeatbeltExecClient::GetReadFD() {
   return pipe_[0];
 }
 
-bool SeatbeltExecClient::SendProfile() {
+bool SeatbeltExecClient::SendPolicy(const mac::SandboxPolicy& policy) {
   IGNORE_EINTR(close(pipe_[0]));
   pipe_[0] = -1;
 
   std::string serialized_protobuf;
-  if (!policy_.SerializeToString(&serialized_protobuf)) {
+  if (!policy.SerializeToString(&serialized_protobuf)) {
     logging::Error("SeatbeltExecClient: Serializing the profile failed.");
     return false;
   }

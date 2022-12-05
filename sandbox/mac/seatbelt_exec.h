@@ -38,16 +38,6 @@ class SEATBELT_EXPORT SeatbeltExecClient {
   // inserted. Check the return value, which indicates if the parameter was
   // added successfully.
 
-  // Set a boolean parameter in the sandbox profile.
-  [[nodiscard]] bool SetBooleanParameter(const std::string& key, bool value);
-
-  // Set a string parameter in the sandbox profile.
-  [[nodiscard]] bool SetParameter(const std::string& key,
-                                  const std::string& value);
-
-  // Set the actual sandbox profile, using the scheme-like SBPL.
-  void SetProfile(const std::string& policy);
-
   // This returns the FD used for reading the sandbox profile in the child
   // process. The FD should be mapped into the sandboxed child process.
   // This must be called before SendProfile() or the returned FD will be -1.
@@ -55,18 +45,11 @@ class SEATBELT_EXPORT SeatbeltExecClient {
   int GetReadFD();
 
   // Sends the policy to the SeatbeltExecServer and returns success or failure.
-  bool SendProfile();
-
-  // Returns the underlying protobuf for testing purposes.
-  const mac::SandboxPolicy& GetPolicyForTesting() { return policy_; }
+  bool SendPolicy(const mac::SandboxPolicy& policy);
 
  private:
   // This writes a string (the serialized protobuf) to the |pipe_|.
   bool WriteString(const std::string& str);
-
-  // This is the protobuf which contains the sandbox profile and parameters,
-  // and is serialized and sent to the other process.
-  mac::SandboxPolicy policy_;
 
   // A file descriptor pair used for interprocess communication.
   int pipe_[2];

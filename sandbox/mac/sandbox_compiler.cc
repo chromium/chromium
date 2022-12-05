@@ -4,7 +4,6 @@
 
 #include "sandbox/mac/sandbox_compiler.h"
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -12,33 +11,44 @@
 
 namespace sandbox {
 
-SandboxCompiler::SandboxCompiler(const std::string& profile_str)
-    : params_map_(), profile_str_(profile_str) {}
+SandboxCompiler::SandboxCompiler() = default;
+
+SandboxCompiler::SandboxCompiler(const std::string& profile_str) {
+  SetProfile(profile_str);
+}
 
 SandboxCompiler::~SandboxCompiler() {}
 
-bool SandboxCompiler::InsertBooleanParam(const std::string& key, bool value) {
-  return params_map_.insert(std::make_pair(key, value ? "TRUE" : "FALSE"))
-      .second;
+void SandboxCompiler::SetProfile(const std::string& policy) {
+  policy_.set_profile(policy);
 }
 
-bool SandboxCompiler::InsertStringParam(const std::string& key,
-                                        const std::string& value) {
-  return params_map_.insert(std::make_pair(key, value)).second;
+bool SandboxCompiler::SetBooleanParameter(const std::string& key, bool value) {
+  return SetParameter(key, value ? "TRUE" : "FALSE");
+}
+
+bool SandboxCompiler::SetParameter(const std::string& key,
+                                   const std::string& value) {
+  google::protobuf::MapPair<std::string, std::string> pair(key, value);
+  return policy_.mutable_params()->insert(pair).second;
 }
 
 bool SandboxCompiler::CompileAndApplyProfile(std::string* error) {
   std::vector<const char*> params;
 
-  for (const auto& kv : params_map_) {
+  for (const auto& kv : policy_.params()) {
     params.push_back(kv.first.c_str());
     params.push_back(kv.second.c_str());
   }
   // The parameters array must be null terminated.
   params.push_back(static_cast<const char*>(0));
 
-  return sandbox::Seatbelt::InitWithParams(profile_str_.c_str(), 0,
+  return sandbox::Seatbelt::InitWithParams(policy_.profile().c_str(), 0,
                                            params.data(), error);
+}
+
+const mac::SandboxPolicy& SandboxCompiler::CompilePolicyToProto() {
+  return policy_;
 }
 
 }  // namespace sandbox

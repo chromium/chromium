@@ -167,7 +167,7 @@ struct ResourceRequest;
 }  // namespace network
 
 namespace sandbox {
-class SeatbeltExecClient;
+class SandboxCompiler;
 class TargetPolicy;
 namespace mojom {
 enum class Sandbox;
@@ -2249,7 +2249,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // parameters were set up.
   virtual bool SetupEmbedderSandboxParameters(
       sandbox::mojom::Sandbox sandbox_type,
-      sandbox::SeatbeltExecClient* client);
+      sandbox::SandboxCompiler* compiler);
 #endif  // BUILDFLAG(IS_MAC)
 
   virtual void GetHyphenationDictionary(

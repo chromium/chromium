@@ -46,7 +46,7 @@ MULTIPROCESS_TEST_MAIN(BasicProfileWithParamProcess) {
       "(allow file-read* file-write* (literal (param \"DIR\")))";
 
   SandboxCompiler compiler(profile);
-  CHECK(compiler.InsertStringParam("DIR", "/"));
+  CHECK(compiler.SetParameter("DIR", "/"));
 
   std::string error;
   CHECK(compiler.CompileAndApplyProfile(&error));
@@ -104,8 +104,8 @@ MULTIPROCESS_TEST_MAIN(ProfileFunctionalTestWithParamsProcess) {
 
   SandboxCompiler compiler(profile);
 
-  CHECK(compiler.InsertBooleanParam("ALLOW_FILE", true));
-  CHECK(compiler.InsertStringParam("URANDOM", "/dev/urandom"));
+  CHECK(compiler.SetBooleanParameter("ALLOW_FILE", true));
+  CHECK(compiler.SetParameter("URANDOM", "/dev/urandom"));
 
   std::string error;
   CHECK(compiler.CompileAndApplyProfile(&error));
@@ -155,6 +155,20 @@ TEST_F(SandboxCompilerTest, ProfileFunctionalityTestError) {
   EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
                                              &exit_code));
   EXPECT_EQ(exit_code, 0);
+}
+
+TEST_F(SandboxCompilerTest, DuplicateKeys) {
+  SandboxCompiler compiler("(version 1)(deny default)");
+
+  EXPECT_TRUE(compiler.SetBooleanParameter("key1", true));
+  EXPECT_FALSE(compiler.SetBooleanParameter("key1", false));
+  EXPECT_TRUE(compiler.SetBooleanParameter("key2", false));
+  EXPECT_TRUE(compiler.SetParameter("key3", "value"));
+  EXPECT_FALSE(compiler.SetParameter("key3", "value"));
+
+  mac::SandboxPolicy policy = compiler.CompilePolicyToProto();
+  EXPECT_EQ(3, policy.params_size());
+  EXPECT_FALSE(policy.profile().empty());
 }
 
 }  // namespace sandbox

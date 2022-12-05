@@ -20,7 +20,7 @@ class FilePath;
 }
 
 namespace sandbox {
-class SeatbeltExecClient;
+class SandboxCompiler;
 namespace mojom {
 enum class Sandbox;
 }  // namespace mojom
@@ -36,7 +36,7 @@ CONTENT_EXPORT void SetupSandboxParameters(
 #if BUILDFLAG(ENABLE_PPAPI)
     const std::vector<content::WebPluginInfo>& plugins,
 #endif
-    sandbox::SeatbeltExecClient* client);
+    sandbox::SandboxCompiler* compiler);
 
 // Expands the SandboxType::kNetwork policy to allow reading files from
 // the specified |path|, which stores TLS certificates used by the browser

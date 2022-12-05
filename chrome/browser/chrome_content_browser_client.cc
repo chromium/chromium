@@ -357,7 +357,7 @@
 #include "chrome/browser/mac/auth_session_request.h"
 #include "chrome/browser/mac/chrome_browser_main_extra_parts_mac.h"
 #include "components/soda/constants.h"
-#include "sandbox/mac/seatbelt_exec.h"
+#include "sandbox/mac/sandbox_compiler.h"
 #include "sandbox/policy/mac/params.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -6975,18 +6975,18 @@ void ChromeContentBrowserClient::OnKeepaliveRequestFinished() {
 #if BUILDFLAG(IS_MAC)
 bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     sandbox::mojom::Sandbox sandbox_type,
-    sandbox::SeatbeltExecClient* client) {
+    sandbox::SandboxCompiler* compiler) {
   if (sandbox_type == sandbox::mojom::Sandbox::kSpeechRecognition) {
     base::FilePath soda_component_path = speech::GetSodaDirectory();
     CHECK(!soda_component_path.empty());
-    CHECK(client->SetParameter(sandbox::policy::kParamSodaComponentPath,
-                               soda_component_path.value()));
+    CHECK(compiler->SetParameter(sandbox::policy::kParamSodaComponentPath,
+                                 soda_component_path.value()));
 
     base::FilePath soda_language_pack_path =
         speech::GetSodaLanguagePacksDirectory();
     CHECK(!soda_language_pack_path.empty());
-    CHECK(client->SetParameter(sandbox::policy::kParamSodaLanguagePackPath,
-                               soda_language_pack_path.value()));
+    CHECK(compiler->SetParameter(sandbox::policy::kParamSodaLanguagePackPath,
+                                 soda_language_pack_path.value()));
     return true;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   } else if (sandbox_type == sandbox::mojom::Sandbox::kScreenAI) {
@@ -6999,8 +6999,8 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
       return false;
     }
 
-    CHECK(client->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
-                               screen_ai_component_dir.value()));
+    CHECK(compiler->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
+                                 screen_ai_component_dir.value()));
 
     return true;
 #endif

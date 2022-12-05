@@ -19,6 +19,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "sandbox/mac/sandbox_compiler.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
 #include "sandbox/policy/sandbox.h"
@@ -86,22 +87,21 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
       sandbox::policy::IsUnsandboxedSandboxType(sandbox_type);
 
   if (!no_sandbox) {
-    // Generate the profile string.
-    std::string profile = sandbox::policy::GetSandboxProfile(sandbox_type);
-
     // Disable os logging to com.apple.diagnosticd which is a performance
     // problem.
     options->environment.insert(std::make_pair("OS_ACTIVITY_MODE", "disable"));
 
-    seatbelt_exec_client_ = std::make_unique<sandbox::SeatbeltExecClient>();
-    seatbelt_exec_client_->SetProfile(profile);
-
+    // Generate the sandbox policy profile.
+    sandbox::SandboxCompiler compiler;
+    compiler.SetProfile(sandbox::policy::GetSandboxProfile(sandbox_type));
     SetupSandboxParameters(sandbox_type, *command_line_.get(),
 #if BUILDFLAG(ENABLE_PPAPI)
                            plugins_,
 #endif
-                           seatbelt_exec_client_.get());
+                           &compiler);
+    policy_ = compiler.CompilePolicyToProto();
 
+    seatbelt_exec_client_ = std::make_unique<sandbox::SeatbeltExecClient>();
     int pipe = seatbelt_exec_client_->GetReadFD();
     if (pipe < 0) {
       LOG(ERROR) << "The file descriptor for the sandboxed child is invalid.";
@@ -144,7 +144,7 @@ void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
   // Send the sandbox profile after launch so that the child will exist and be
   // waiting for the message on its side of the pipe.
   if (process.process.IsValid() && seatbelt_exec_client_.get() != nullptr) {
-    seatbelt_exec_client_->SendProfile();
+    seatbelt_exec_client_->SendPolicy(policy_);
   }
 }
 

@@ -260,6 +260,7 @@ class ChildProcessLauncherHelper
 
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<sandbox::SeatbeltExecClient> seatbelt_exec_client_;
+  sandbox::mac::SandboxPolicy policy_;
 
 #if BUILDFLAG(ENABLE_PPAPI)
   std::vector<content::WebPluginInfo> plugins_;

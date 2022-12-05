@@ -26,7 +26,7 @@
 #include "content/public/common/content_switches.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "sandbox/mac/seatbelt_exec.h"
+#include "sandbox/mac/sandbox_compiler.h"
 #include "sandbox/policy/mac/params.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -60,65 +60,66 @@ std::string GetOSVersion() {
 }
 
 // Retrieves the users shared darwin dirs and adds it to the profile.
-void AddDarwinDirs(sandbox::SeatbeltExecClient* client) {
+void AddDarwinDirs(sandbox::SandboxCompiler* compiler) {
   char dir_path[PATH_MAX + 1];
 
   size_t rv = confstr(_CS_DARWIN_USER_CACHE_DIR, dir_path, sizeof(dir_path));
   PCHECK(rv != 0);
-  CHECK(client->SetParameter(
+  CHECK(compiler->SetParameter(
       sandbox::policy::kParamDarwinUserCacheDir,
       sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
 
   rv = confstr(_CS_DARWIN_USER_DIR, dir_path, sizeof(dir_path));
   PCHECK(rv != 0);
-  CHECK(client->SetParameter(
+  CHECK(compiler->SetParameter(
       sandbox::policy::kParamDarwinUserDir,
       sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
 
   rv = confstr(_CS_DARWIN_USER_TEMP_DIR, dir_path, sizeof(dir_path));
   PCHECK(rv != 0);
-  CHECK(client->SetParameter(
+  CHECK(compiler->SetParameter(
       sandbox::policy::kParamDarwinUserTempDir,
       sandbox::policy::GetCanonicalPath(base::FilePath(dir_path)).value()));
 }
 
-// All of the below functions populate the |client| with the parameters that the
-// sandbox needs to resolve information that cannot be known at build time, such
-// as the user's home directory.
+// All of the below functions populate the `compiler` with the parameters that
+// the sandbox needs to resolve information that cannot be known at build time,
+// such as the user's home directory.
 void SetupCommonSandboxParameters(
-    sandbox::SeatbeltExecClient* client,
+    sandbox::SandboxCompiler* compiler,
     const base::CommandLine& target_command_line) {
   const base::CommandLine* browser_command_line =
       base::CommandLine::ForCurrentProcess();
   bool enable_logging = browser_command_line->HasSwitch(
       sandbox::policy::switches::kEnableSandboxLogging);
 
-  CHECK(client->SetParameter(
+  CHECK(compiler->SetParameter(
       sandbox::policy::kParamExecutablePath,
       sandbox::policy::GetCanonicalPath(target_command_line.GetProgram())
           .value()));
 
-  CHECK(client->SetBooleanParameter(sandbox::policy::kParamEnableLogging,
-                                    enable_logging));
-  CHECK(client->SetBooleanParameter(
+  CHECK(compiler->SetBooleanParameter(sandbox::policy::kParamEnableLogging,
+                                      enable_logging));
+  CHECK(compiler->SetBooleanParameter(
       sandbox::policy::kParamDisableSandboxDenialLogging, !enable_logging));
 
   std::string bundle_path =
       sandbox::policy::GetCanonicalPath(base::mac::MainBundlePath()).value();
-  CHECK(client->SetParameter(sandbox::policy::kParamBundlePath, bundle_path));
+  CHECK(compiler->SetParameter(sandbox::policy::kParamBundlePath, bundle_path));
 
   std::string bundle_id = base::mac::BaseBundleID();
   DCHECK(!bundle_id.empty()) << "base::mac::OuterBundle is unset";
-  CHECK(client->SetParameter(sandbox::policy::kParamBundleId, bundle_id));
+  CHECK(compiler->SetParameter(sandbox::policy::kParamBundleId, bundle_id));
 
-  CHECK(client->SetParameter(sandbox::policy::kParamBrowserPid,
-                             std::to_string(getpid())));
+  CHECK(compiler->SetParameter(sandbox::policy::kParamBrowserPid,
+                               base::NumberToString(getpid())));
 
   std::string logging_path = GetContentClient()
                                  ->browser()
                                  ->GetLoggingFileName(*browser_command_line)
                                  .value();
-  CHECK(client->SetParameter(sandbox::policy::kParamLogFilePath, logging_path));
+  CHECK(
+      compiler->SetParameter(sandbox::policy::kParamLogFilePath, logging_path));
 
 #if defined(COMPONENT_BUILD)
   // For component builds, allow access to one directory level higher, where
@@ -126,45 +127,47 @@ void SetupCommonSandboxParameters(
   base::FilePath component_path = base::mac::MainBundlePath().Append("..");
   std::string component_path_canonical =
       sandbox::policy::GetCanonicalPath(component_path).value();
-  CHECK(client->SetParameter(sandbox::policy::kParamComponentPath,
-                             component_path_canonical));
+  CHECK(compiler->SetParameter(sandbox::policy::kParamComponentPath,
+                               component_path_canonical));
 #endif
 
-  CHECK(client->SetParameter(sandbox::policy::kParamOsVersion, GetOSVersion()));
+  CHECK(
+      compiler->SetParameter(sandbox::policy::kParamOsVersion, GetOSVersion()));
 
   std::string homedir =
       sandbox::policy::GetCanonicalPath(base::GetHomeDir()).value();
-  CHECK(client->SetParameter(sandbox::policy::kParamHomedirAsLiteral, homedir));
+  CHECK(
+      compiler->SetParameter(sandbox::policy::kParamHomedirAsLiteral, homedir));
 
-  CHECK(client->SetBooleanParameter(
+  CHECK(compiler->SetBooleanParameter(
       sandbox::policy::kParamFilterSyscalls,
       base::FeatureList::IsEnabled(features::kMacSyscallSandbox)));
 
-  CHECK(client->SetBooleanParameter(sandbox::policy::kParamFilterSyscallsDebug,
-                                    false));
+  CHECK(compiler->SetBooleanParameter(
+      sandbox::policy::kParamFilterSyscallsDebug, false));
 }
 
-void SetupNetworkSandboxParameters(sandbox::SeatbeltExecClient* client,
+void SetupNetworkSandboxParameters(sandbox::SandboxCompiler* compiler,
                                    const base::CommandLine& command_line) {
-  SetupCommonSandboxParameters(client, command_line);
+  SetupCommonSandboxParameters(compiler, command_line);
 
   std::vector<base::FilePath> storage_paths =
       GetContentClient()->browser()->GetNetworkContextsParentDirectory();
 
-  AddDarwinDirs(client);
+  AddDarwinDirs(compiler);
 
-  CHECK(client->SetParameter(
+  CHECK(compiler->SetParameter(
       sandbox::policy::kParamNetworkServiceStoragePathsCount,
       base::NumberToString(storage_paths.size())));
   for (size_t i = 0; i < storage_paths.size(); ++i) {
     base::FilePath path = sandbox::policy::GetCanonicalPath(storage_paths[i]);
     std::string param_name = base::StringPrintf(
         "%s%zu", sandbox::policy::kParamNetworkServiceStoragePathN, i);
-    CHECK(client->SetParameter(param_name, path.value())) << param_name;
+    CHECK(compiler->SetParameter(param_name, path.value())) << param_name;
   }
 
   if (GetNetworkTestCertsDirectory().has_value()) {
-    CHECK(client->SetParameter(
+    CHECK(compiler->SetParameter(
         sandbox::policy::kParamNetworkServiceTestCertsDir,
         sandbox::policy::GetCanonicalPath(*GetNetworkTestCertsDirectory())
             .value()));
@@ -174,9 +177,9 @@ void SetupNetworkSandboxParameters(sandbox::SeatbeltExecClient* client,
 #if BUILDFLAG(ENABLE_PPAPI)
 void SetupPPAPISandboxParameters(
     const std::vector<content::WebPluginInfo>& plugins,
-    sandbox::SeatbeltExecClient* client,
+    sandbox::SandboxCompiler* compiler,
     const base::CommandLine& command_line) {
-  SetupCommonSandboxParameters(client, command_line);
+  SetupCommonSandboxParameters(compiler, command_line);
 
   base::FilePath bundle_path =
       sandbox::policy::GetCanonicalPath(base::mac::MainBundlePath());
@@ -188,7 +191,7 @@ void SetupPPAPISandboxParameters(
     if (!bundle_path.IsParent(plugin.path) && plugin.path.IsAbsolute()) {
       std::string param_name =
           param_base_name + base::StringPrintf("%d", index++);
-      CHECK(client->SetParameter(param_name, plugin.path.value()));
+      CHECK(compiler->SetParameter(param_name, plugin.path.value()));
     }
   }
 
@@ -198,11 +201,11 @@ void SetupPPAPISandboxParameters(
 }
 #endif
 
-void SetupGpuSandboxParameters(sandbox::SeatbeltExecClient* client,
+void SetupGpuSandboxParameters(sandbox::SandboxCompiler* compiler,
                                const base::CommandLine& command_line) {
-  SetupCommonSandboxParameters(client, command_line);
-  AddDarwinDirs(client);
-  CHECK(client->SetBooleanParameter(
+  SetupCommonSandboxParameters(compiler, command_line);
+  AddDarwinDirs(compiler);
+  CHECK(compiler->SetBooleanParameter(
       sandbox::policy::kParamDisableMetalShaderCache,
       command_line.HasSwitch(
           sandbox::policy::switches::kDisableMetalShaderCache)));
@@ -215,7 +218,7 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
 #if BUILDFLAG(ENABLE_PPAPI)
                             const std::vector<content::WebPluginInfo>& plugins,
 #endif
-                            sandbox::SeatbeltExecClient* client) {
+                            sandbox::SandboxCompiler* compiler) {
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:
@@ -229,18 +232,18 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kUtility:
-      SetupCommonSandboxParameters(client, command_line);
+      SetupCommonSandboxParameters(compiler, command_line);
       break;
     case sandbox::mojom::Sandbox::kGpu: {
-      SetupGpuSandboxParameters(client, command_line);
+      SetupGpuSandboxParameters(compiler, command_line);
       break;
     }
     case sandbox::mojom::Sandbox::kNetwork:
-      SetupNetworkSandboxParameters(client, command_line);
+      SetupNetworkSandboxParameters(compiler, command_line);
       break;
 #if BUILDFLAG(ENABLE_PPAPI)
     case sandbox::mojom::Sandbox::kPpapi:
-      SetupPPAPISandboxParameters(plugins, client, command_line);
+      SetupPPAPISandboxParameters(plugins, compiler, command_line);
       break;
 #endif
     case sandbox::mojom::Sandbox::kNoSandbox:
@@ -252,9 +255,9 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kScreenAI:
 #endif
     case sandbox::mojom::Sandbox::kSpeechRecognition:
-      SetupCommonSandboxParameters(client, command_line);
+      SetupCommonSandboxParameters(compiler, command_line);
       CHECK(GetContentClient()->browser()->SetupEmbedderSandboxParameters(
-          sandbox_type, client));
+          sandbox_type, compiler));
   }
 }
 

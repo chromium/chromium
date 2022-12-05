@@ -55,30 +55,4 @@ TEST_F(SeatbeltExecTest, ServerTest) {
   EXPECT_EQ(exit_code, 0);
 }
 
-MULTIPROCESS_TEST_MAIN(ClientTest) {
-  SeatbeltExecClient exec_client;
-
-  CHECK(exec_client.SetBooleanParameter("key1", true));
-  CHECK(!exec_client.SetBooleanParameter("key1", false));
-  CHECK(exec_client.SetBooleanParameter("key2", false));
-  CHECK(exec_client.SetParameter("key3", "value"));
-  CHECK(!exec_client.SetParameter("key3", "value"));
-  exec_client.SetProfile("(version 1)(deny default)");
-
-  mac::SandboxPolicy policy = exec_client.GetPolicyForTesting();
-  CHECK(policy.params_size() == 3);
-  CHECK(!policy.profile().empty());
-
-  return 0;
-}
-
-TEST_F(SeatbeltExecTest, ClientTest) {
-  base::Process process = SpawnChild("ClientTest");
-  ASSERT_TRUE(process.IsValid());
-  int exit_code = 42;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
-                                             &exit_code));
-  EXPECT_EQ(exit_code, 0);
-}
-
 }  // namespace sandbox
