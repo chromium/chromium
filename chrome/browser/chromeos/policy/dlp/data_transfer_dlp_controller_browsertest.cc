@@ -522,13 +522,7 @@ class DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<FakeDlpController> dlp_controller_;
 };
 
-// Flaky on MSan bots: crbug.com/1230617
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_ProceedOnWarn DISABLED_ProceedOnWarn
-#else
-#define MAYBE_ProceedOnWarn ProceedOnWarn
-#endif
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, ProceedOnWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -780,13 +774,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
 }
 
 // Test case for crbug.com/1213143
-// Flaky on MSan bots: crbug.com/1230617
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_Reporting DISABLED_Reporting
-#else
-#define MAYBE_Reporting Reporting
-#endif
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, Reporting) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(embedded_test_server()->Start());
