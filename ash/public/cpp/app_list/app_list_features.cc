@@ -32,9 +32,6 @@ BASE_FEATURE(kQuickActionShowBubbleLauncher,
 BASE_FEATURE(kDynamicSearchUpdateAnimation,
              "DynamicSearchUpdateAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kCompactBubbleLauncher,
-             "CompactBubbleLauncher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLauncherPlayStoreSearch,
              "LauncherPlayStoreSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -76,10 +73,6 @@ base::TimeDelta DynamicSearchUpdateAnimationDuration() {
 
 bool IsForceShowContinueSectionEnabled() {
   return base::FeatureList::IsEnabled(kForceShowContinueSection);
-}
-
-bool IsCompactBubbleLauncherEnabled() {
-  return base::FeatureList::IsEnabled(kCompactBubbleLauncher);
 }
 
 bool IsLauncherPlayStoreSearchEnabled() {

@@ -39,10 +39,6 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kQuickActionShowBubbleLauncher);
 // are interrupted by search model updates.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kDynamicSearchUpdateAnimation);
 
-// Controls the bubble launcher (productivity launcher in clamshell) width. When
-// enabled, the bubble UI will be narrower.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kCompactBubbleLauncher);
-
 // Enables Play Store search in the launcher.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kLauncherPlayStoreSearch);
 
@@ -60,7 +56,6 @@ ASH_PUBLIC_EXPORT bool IsSearchResultInlineIconEnabled();
 ASH_PUBLIC_EXPORT bool IsQuickActionShowBubbleLauncherEnabled();
 ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
 ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
-ASH_PUBLIC_EXPORT bool IsCompactBubbleLauncherEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAnimateScaleOnTabletModeTransitionEnabled();
 

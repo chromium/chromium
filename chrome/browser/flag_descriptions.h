@@ -2888,9 +2888,6 @@ extern const char kCameraAppLowStorageWarningDescription[];
 extern const char kCameraAppMultiPageDocScanName[];
 extern const char kCameraAppMultiPageDocScanDescription[];
 
-extern const char kCompactBubbleLauncherName[];
-extern const char kCompactBubbleLauncherDescription[];
-
 extern const char kCryptAuthV2DedupDeviceLastActivityTimeName[];
 extern const char kCryptAuthV2DedupDeviceLastActivityTimeDescription[];
 

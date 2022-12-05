@@ -1028,11 +1028,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "compact-bubble-launcher",
-    "owners": ["tbarzic@chromium.org"],
-    "expiry_milestone": 105
-  },
-  {
     "name": "compositor-threaded-scrollbar-scrolling",
     "owners": [ "arakeri@microsoft.com" ],
     "expiry_milestone": 90

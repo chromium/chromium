@@ -274,10 +274,6 @@ TEST_F(AssistantInteractionControllerImplTest, CompactBubbleLauncher) {
   static constexpr int kStandardLayoutAshWebViewWidth = 592;
   static constexpr int kNarrowLayoutAshWebViewWidth = 496;
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      app_list_features::kCompactBubbleLauncher);
-
   UpdateDisplay("1200x800");
   ShowAssistantUi();
   StartInteraction();

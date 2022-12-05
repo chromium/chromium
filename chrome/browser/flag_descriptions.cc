@@ -5010,11 +5010,6 @@ const char kCameraAppMultiPageDocScanDescription[] =
     "Enables this flag to show multi-page UI for document scanning featrue in "
     "the camera app";
 
-const char kCompactBubbleLauncherName[] = "Make bubble launcher more compact";
-
-const char kCompactBubbleLauncherDescription[] =
-    "Decreases the width of clamshell mode productivity (bubble) launcher.";
-
 const char kCryptAuthV2DedupDeviceLastActivityTimeName[] =
     "Dedup devices by last activity time";
 const char kCryptAuthV2DedupDeviceLastActivityTimeDescription[] =
