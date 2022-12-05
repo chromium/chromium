@@ -76,22 +76,6 @@ void RecordOutcomeSample(RequestOutcome outcome) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestOutcome", outcome);
 }
 
-StorageAccessRequestType GetStorageAccessRequestType(
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    content::RenderFrameHost* render_frame_host) {
-  // `requestStorageAccessForOrigin` can only be called from the main frame, and
-  // standard `requestStorageAccess` calls pass the same origin for requesting
-  // and embedding in a top-level context. Any `requestStorageAccessForOrigin`
-  // calls passing the same origin as the current page are automatically granted
-  // upstream.
-  if (render_frame_host->IsInPrimaryMainFrame() &&
-      requesting_origin != embedding_origin) {
-    return StorageAccessRequestType::kRequestStorageAccessForOrigin;
-  }
-  return StorageAccessRequestType::kRequestStorageAccess;
-}
-
 }  // namespace
 
 StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
@@ -148,8 +132,6 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(id.global_render_frame_host_id());
   DCHECK(rfh);
-  StorageAccessRequestType request_type =
-      GetStorageAccessRequestType(requesting_origin, embedding_origin, rfh);
 
   net::SchemefulSite embedding_site(embedding_origin);
 
@@ -161,8 +143,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
           base::BindOnce(&StorageAccessGrantPermissionContext::
                              CheckForAutoGrantOrAutoDenial,
                          weak_factory_.GetWeakPtr(), id, requesting_origin,
-                         embedding_origin, user_gesture, request_type,
-                         std::move(callback)));
+                         embedding_origin, user_gesture, std::move(callback)));
 }
 
 void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
@@ -170,7 +151,6 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     bool user_gesture,
-    const StorageAccessRequestType request_type,
     permissions::BrowserPermissionCallback callback,
     net::FirstPartySetMetadata metadata) {
   // We should only run this method if something might need the FPS metadata.
@@ -192,10 +172,8 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
       if (net::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
         // Service domains are not allowed to request storage access on behalf
         // of other domains, even in the same First-Party Set.
-        if (request_type ==
-                StorageAccessRequestType::kRequestStorageAccessForOrigin &&
-            metadata.top_frame_entry()->site_type() ==
-                net::SiteType::kService) {
+        if (metadata.top_frame_entry()->site_type() ==
+            net::SiteType::kService) {
           NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                       std::move(callback),
                                       /*persist=*/true, CONTENT_SETTING_BLOCK,

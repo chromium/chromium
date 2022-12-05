@@ -45,11 +45,6 @@ enum class RequestOutcome {
   kMaxValue = kReusedPreviousDecision,
 };
 
-enum class StorageAccessRequestType {
-  kRequestStorageAccess,
-  kRequestStorageAccessForOrigin
-};
-
 class StorageAccessGrantPermissionContext
     : public permissions::PermissionContextBase {
  public:
@@ -116,7 +111,6 @@ class StorageAccessGrantPermissionContext
       const GURL& requesting_origin,
       const GURL& embedding_origin,
       bool user_gesture,
-      const StorageAccessRequestType request_type,
       permissions::BrowserPermissionCallback callback,
       net::FirstPartySetMetadata metadata);
 

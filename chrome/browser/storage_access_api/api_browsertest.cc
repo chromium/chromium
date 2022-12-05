@@ -1244,8 +1244,8 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
     command_line->AppendSwitchASCII(
         network::switches::kUseFirstPartySet,
         base::StrCat({R"({"primary": "https://)", kHostA,
-                      R"(", "associatedSites": ["https://)", kHostB,
-                      R"("]})"}));
+                      R"(", "associatedSites": ["https://)", kHostB, R"("])",
+                      R"(, "serviceSites": ["https://)", kHostD, R"("]})"}));
   }
 
  protected:
@@ -1308,6 +1308,36 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_THAT(histogram_tester.GetBucketCount(
                   kRequestOutcomeHistogram,
                   0 /*RequestOutcome::kGrantedByFirstPartySet*/),
+              Gt(0));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
+                       Permission_AutodeniedForServiceDomain) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  SetCrossSiteCookieOnHost(kHostA);
+
+  NavigateToPageWithFrame(kHostD);
+
+  NavigateFrameTo(kHostA, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(), "None");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // The promise should be rejected; `khostD` is a service domain.
+  EXPECT_FALSE(storage::test::RequestStorageAccessForFrame(GetFrame()));
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  NavigateFrameTo(kHostA, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(), "None");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  content::FetchHistogramsFromChildProcesses();
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kRequestOutcomeHistogram,
+                  5 /*RequestOutcome::kDeniedByPrerequisites*/),
               Gt(0));
 }
 
