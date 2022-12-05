@@ -1,2 +1,2 @@
-Please see [//docs/rust.md](../docs/rust.md) for documentation on the Rust
+Please see [//docs/rust.md](../rust.md) for documentation on the Rust
 toolchain in Chromium.
