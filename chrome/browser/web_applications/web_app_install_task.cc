@@ -330,6 +330,8 @@ base::Value WebAppInstallTask::TakeErrorDict() {
 void WebAppInstallTask::CheckInstallPreconditions() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  DCHECK(!profile_->ShutdownStarted());
+
   // Concurrent calls are not allowed.
   DCHECK(!web_contents());
   CHECK(!install_callback_);
@@ -371,7 +373,8 @@ bool WebAppInstallTask::ShouldStopInstall() const {
   // Install should stop early if WebContents is being destroyed.
   // WebAppInstallTask::WebContentsDestroyed will get called eventually and
   // the callback will be invoked at that point.
-  return !web_contents() || web_contents()->IsBeingDestroyed();
+  return !web_contents() || web_contents()->IsBeingDestroyed() ||
+         profile_->ShutdownStarted();
 }
 
 void WebAppInstallTask::OnWebAppUrlLoadedGetWebAppInstallInfo(
