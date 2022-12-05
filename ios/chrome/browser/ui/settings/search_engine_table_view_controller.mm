@@ -597,12 +597,11 @@ const char kUmaSelectDefaultSearchEngine[] =
         if (!strongSelf)
           return;
 
+        TableViewModel* model = strongSelf.tableViewModel;
         [strongSelf removeFromModelItemAtIndexPaths:indexPaths];
         [strongSelf.tableView
             deleteRowsAtIndexPaths:indexPaths
                   withRowAnimation:UITableViewRowAnimationAutomatic];
-
-        TableViewModel* model = strongSelf.tableViewModel;
 
         // Update the first prepopulated engine if it's reset as default.
         if (resetDefaultEngine) {
@@ -626,7 +625,7 @@ const char kUmaSelectDefaultSearchEngine[] =
           [model removeSectionWithIdentifier:SectionIdentifierSecondList];
           [strongSelf.tableView
                 deleteSections:[NSIndexSet indexSetWithIndex:section]
-              withRowAnimation:UITableViewRowAnimationAutomatic];
+              withRowAnimation:UITableViewRowAnimationFade];
         }
 
         _updatingBackend = NO;
@@ -635,6 +634,7 @@ const char kUmaSelectDefaultSearchEngine[] =
         SearchEngineTableViewController* strongSelf = weakSelf;
         if (!strongSelf)
           return;
+
         // Update editing status.
         if (![strongSelf editButtonEnabled]) {
           [strongSelf setEditing:NO animated:YES];
