@@ -13,7 +13,7 @@ namespace blink {
 
 InspectorTaskRunner::InspectorTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> isolate_task_runner)
-    : isolate_task_runner_(isolate_task_runner), task_queue_cv_(&lock_) {}
+    : isolate_task_runner_(isolate_task_runner) {}
 
 InspectorTaskRunner::~InspectorTaskRunner() = default;
 
@@ -27,7 +27,6 @@ void InspectorTaskRunner::Dispose() {
   disposed_ = true;
   isolate_ = nullptr;
   isolate_task_runner_ = nullptr;
-  task_queue_cv_.Broadcast();
 }
 
 bool InspectorTaskRunner::AppendTask(Task task) {
@@ -44,7 +43,6 @@ bool InspectorTaskRunner::AppendTask(Task task) {
     AddRef();
     isolate_->RequestInterrupt(&V8InterruptCallback, this);
   }
-  task_queue_cv_.Signal();
   return true;
 }
 
@@ -54,34 +52,6 @@ bool InspectorTaskRunner::AppendTaskDontInterrupt(Task task) {
     return false;
   PostCrossThreadTask(*isolate_task_runner_, FROM_HERE, std::move(task));
   return true;
-}
-
-void InspectorTaskRunner::ProcessInterruptingTasks() {
-  while (true) {
-    InspectorTaskRunner::Task task = WaitForNextInterruptingTaskOrQuitRequest();
-    if (!task)
-      break;
-    std::move(task).Run();
-  }
-}
-
-void InspectorTaskRunner::RequestQuitProcessingInterruptingTasks() {
-  base::AutoLock locker(lock_);
-  quit_requested_ = true;
-  task_queue_cv_.Broadcast();
-}
-
-InspectorTaskRunner::Task
-InspectorTaskRunner::WaitForNextInterruptingTaskOrQuitRequest() {
-  base::AutoLock locker(lock_);
-
-  while (!quit_requested_ && !disposed_) {
-    if (!interrupting_task_queue_.empty())
-      return interrupting_task_queue_.TakeFirst();
-    task_queue_cv_.Wait();
-  }
-  quit_requested_ = false;
-  return Task();
 }
 
 InspectorTaskRunner::Task InspectorTaskRunner::TakeNextInterruptingTask() {
