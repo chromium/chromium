@@ -85,6 +85,7 @@ Code of Conduct and the Geek Feminism Wiki "Effective codes of conduct" guide.
 This Code of Conduct is available for reuse under the Creative Commons Zero
 (CC0) license.
 
+```c
 
 //
 //                       _oo0oo_
@@ -111,3 +112,4 @@ This Code of Conduct is available for reuse under the Creative Commons Zero
 //
 //               佛祖保佑         永无BUG
 //
+```
