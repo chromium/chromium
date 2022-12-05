@@ -159,7 +159,8 @@ function insertDocumentRule(predicate, extra_options={}) {
 
 function assert_prefetched (requestHeaders, description) {
   assert_in_array(requestHeaders.purpose, ["", "prefetch"], "The vendor-specific header Purpose, if present, must be 'prefetch'.");
-  assert_equals(requestHeaders.sec_purpose, "prefetch", description);
+  assert_in_array(requestHeaders.sec_purpose,
+                  ["prefetch", "prefetch;anonymous-client-ip"], description);
 }
 
 function assert_not_prefetched (requestHeaders, description){

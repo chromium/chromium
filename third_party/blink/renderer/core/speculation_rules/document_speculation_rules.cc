@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -28,12 +29,12 @@ namespace blink {
 namespace {
 
 // https://wicg.github.io/nav-speculation/prefetch.html#list-of-sufficiently-strict-speculative-navigation-referrer-policies
-bool AcceptableReferrerPolicy(mojom::blink::SpeculationAction action,
-                              const Referrer& referrer) {
-  // Lax referrer policies are acceptable for same-site prerenders. The browser
-  // is responsible for aborting a cross-site prerender with a lax referrer
-  // policy.
-  if (action == mojom::blink::SpeculationAction::kPrerender)
+bool AcceptableReferrerPolicy(const Referrer& referrer,
+                              bool is_initially_same_site) {
+  // Lax referrer policies are acceptable for same-site. The browser is
+  // responsible for aborting in the case of cross-site redirects with lax
+  // referrer policies.
+  if (is_initially_same_site)
     return true;
 
   switch (referrer.referrer_policy) {
@@ -104,10 +105,13 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
 
   String outgoing_referrer = execution_context->OutgoingReferrer();
   KURL url = link ? link->HrefURL() : opt_url.value();
+  scoped_refptr<const SecurityOrigin> url_origin = SecurityOrigin::Create(url);
+  const bool is_initially_same_site =
+      url_origin->IsSameSiteWith(execution_context->GetSecurityOrigin());
   Referrer referrer =
       SecurityPolicy::GenerateReferrer(referrer_policy, url, outgoing_referrer);
 
-  if (!AcceptableReferrerPolicy(action, referrer)) {
+  if (!AcceptableReferrerPolicy(referrer, is_initially_same_site)) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
