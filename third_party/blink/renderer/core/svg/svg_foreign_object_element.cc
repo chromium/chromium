@@ -146,14 +146,6 @@ LayoutObject* SVGForeignObjectElement::CreateLayoutObject(
   return LayoutObjectFactory::CreateSVGForeignObject(*this, style, legacy);
 }
 
-bool SVGForeignObjectElement::TypeShouldForceLegacyLayout() const {
-  // As long as the foreignObject element itself creates a legacy layout object,
-  // we need to use legacy layout for the entire block formatting context
-  // established by the foreignObject. For simplicity, just force legacy for the
-  // entire subtree.
-  return !RuntimeEnabledFeatures::LayoutNGForeignObjectEnabled();
-}
-
 bool SVGForeignObjectElement::SelfHasRelativeLengths() const {
   return x_->CurrentValue()->IsRelative() || y_->CurrentValue()->IsRelative() ||
          width_->CurrentValue()->IsRelative() ||

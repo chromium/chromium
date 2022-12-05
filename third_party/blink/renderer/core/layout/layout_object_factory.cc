@@ -413,11 +413,9 @@ LayoutObject* LayoutObjectFactory::CreateSVGForeignObject(
     Node& node,
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  const bool disable_ng_for_type =
-      !RuntimeEnabledFeatures::LayoutNGForeignObjectEnabled();
   return CreateObject<LayoutBlockFlow, LayoutNGSVGForeignObject,
                       LayoutSVGForeignObject>(node, legacy,
-                                              disable_ng_for_type);
+                                              /*disable_ng_for_type=*/false);
 }
 
 LayoutObject* LayoutObjectFactory::CreateSVGText(Node& node,

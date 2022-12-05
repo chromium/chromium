@@ -48,7 +48,6 @@ class SVGForeignObjectElement final : public SVGGraphicsElement {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
-  bool TypeShouldForceLegacyLayout() const override;
 
   bool SelfHasRelativeLengths() const override;
 

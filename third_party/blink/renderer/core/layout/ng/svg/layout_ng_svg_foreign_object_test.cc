@@ -10,9 +10,6 @@ namespace blink {
 class LayoutNGSVGForeignObjectTest : public NGLayoutTest {
  public:
   LayoutNGSVGForeignObjectTest() = default;
-
- private:
-  ScopedLayoutNGForeignObjectForTest foreign_object_ng_{true};
 };
 
 // crbug.com/1372886

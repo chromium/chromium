@@ -965,8 +965,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // legacy layout on the entire subtree, unless this is overridden by
   // ShouldForceNGLayout().
   bool ShouldForceLegacyLayout() const {
-    if (TypeShouldForceLegacyLayout())
-      return true;
     if (!HasRareData())
       return false;
     return StyleShouldForceLegacyLayout() || ShouldForceLegacyLayoutForChild();
@@ -1512,9 +1510,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DetachAllAttrNodesFromElement();
   void DetachAttrNodeFromElementWithValue(Attr*, const AtomicString& value);
   void DetachAttrNodeAtIndex(Attr*, wtf_size_t index);
-
-  // Return whether this element type requires legacy layout.
-  virtual bool TypeShouldForceLegacyLayout() const { return false; }
 
   // Return whether the computed style of this element causes need for legacy
   // layout.

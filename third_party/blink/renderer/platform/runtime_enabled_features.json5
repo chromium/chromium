@@ -1592,12 +1592,6 @@
       status: "stable",
     },
     {
-      // crbug.com/989916
-      name: "LayoutNGForeignObject",
-      depends_on: ["LayoutNG"],
-      status: "stable",
-    },
-    {
       // crbug.com/1346221
       name: "LayoutNGFrameSet",
       depends_on: ["LayoutNG"],
