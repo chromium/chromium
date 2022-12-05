@@ -367,6 +367,17 @@ class LibcapBuilder(InstrumentedPackageBuilder):
                                           self.dest_libdir()))
 
 
+class LibcurlBuilder(DebianBuilder):
+  def build_and_install(self):
+    super().build_and_install()
+    # The libcurl packages don't specify a default libcurl.so, but this is
+    # required since libcurl.so is dlopen()ed by crashpad.  Normally,
+    # libcurl.so is installed by one of libcurl-{gnutls,nss,openssl}-dev.
+    # Doing a standalone instrumented build of a dev package is tricky,
+    # so we manually symlink libcurl.so instead.
+    os.symlink('libcurl.so.4', os.path.join(self.dest_libdir(), 'libcurl.so'))
+
+
 class Libpci3Builder(InstrumentedPackageBuilder):
   def package_version(self):
     """Guesses libpci3 version from source directory name."""
@@ -563,6 +574,8 @@ def main():
     builder = NSSBuilder(args, clobber)
   elif args.build_method == 'custom_libcap':
     builder = LibcapBuilder(args, clobber)
+  elif args.build_method == 'custom_libcurl':
+    builder = LibcurlBuilder(args, clobber)
   elif args.build_method == 'custom_libpci3':
     builder = Libpci3Builder(args, clobber)
   elif args.build_method == 'debian':

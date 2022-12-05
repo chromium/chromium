@@ -315,7 +315,7 @@ instrumented_library("libcups2") {
 }
 
 instrumented_library("libcurl3-gnutls") {
-  build_method = "debian"
+  build_method = "custom_libcurl"
 
   # Don't generate zsh or fish completions.
   patches = [ "patches/libcurl3-gnutls.diff" ]
