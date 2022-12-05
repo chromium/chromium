@@ -618,27 +618,6 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
 
   audio_delay_ = delay;
 
-  // If there are skipped frames, pull and throw away the same amount. We always
-  // pull 10 ms of data from the source (see PrepareSink()), so the fifo is only
-  // required if the number of frames to drop doesn't correspond to 10 ms.
-  if (prior_frames_skipped > 0) {
-    const int source_frames_per_buffer = sink_params_.sample_rate() / 100;
-    if (!audio_fifo_ && prior_frames_skipped != source_frames_per_buffer) {
-      audio_fifo_ = std::make_unique<media::AudioPullFifo>(
-          sink_params_.channels(), source_frames_per_buffer,
-          ConvertToBaseRepeatingCallback(
-              CrossThreadBindRepeating(&WebRtcAudioRenderer::SourceCallback,
-                                       CrossThreadUnretained(this))));
-    }
-
-    std::unique_ptr<media::AudioBus> drop_bus =
-        media::AudioBus::Create(audio_bus->channels(), prior_frames_skipped);
-    if (audio_fifo_)
-      audio_fifo_->Consume(drop_bus.get(), drop_bus->frames());
-    else
-      SourceCallback(0, drop_bus.get());
-  }
-
   // Pull the data we will deliver.
   if (audio_fifo_)
     audio_fifo_->Consume(audio_bus, audio_bus->frames());
