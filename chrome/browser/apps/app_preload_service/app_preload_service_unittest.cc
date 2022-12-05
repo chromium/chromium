@@ -100,8 +100,8 @@ TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
   EXPECT_EQ(nullptr,
             AppPreloadServiceFactory::GetForProfile(incognito_profile));
 
-  // We expect the App Preload Service to not be available in a guest profile as
-  // the App Service isn't available.
+  // We expect the App Preload Service to not be available in either regular or
+  // OTR guest profiles.
   TestingProfile::Builder guest_builder;
   guest_builder.SetGuestSession();
   auto guest_profile = guest_builder.Build();
@@ -109,17 +109,28 @@ TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
   EXPECT_EQ(nullptr,
             AppPreloadServiceFactory::GetForProfile(guest_profile.get()));
 
-  // The service is available for the OTR profile in guest mode, as the App
-  // Service supports this mode.
   auto* guest_otr_profile =
       guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  EXPECT_TRUE(AppPreloadServiceFactory::IsAvailable(guest_otr_profile));
-  auto* otr_guest_service =
-      AppPreloadServiceFactory::GetForProfile(guest_otr_profile);
-  EXPECT_NE(nullptr, otr_guest_service);
+  EXPECT_FALSE(AppPreloadServiceFactory::IsAvailable(guest_otr_profile));
+  EXPECT_EQ(nullptr,
+            AppPreloadServiceFactory::GetForProfile(guest_otr_profile));
 
-  // We expect a different service in the Guest Session profile.
-  EXPECT_NE(otr_guest_service, service);
+  // The service is unsupported for managed and supervised accounts.
+  TestingProfile::Builder child_builder;
+  child_builder.SetIsSupervisedProfile();
+  std::unique_ptr<TestingProfile> child_profile = child_builder.Build();
+
+  EXPECT_FALSE(AppPreloadServiceFactory::IsAvailable(child_profile.get()));
+  EXPECT_EQ(nullptr,
+            AppPreloadServiceFactory::GetForProfile(child_profile.get()));
+
+  TestingProfile::Builder managed_builder;
+  managed_builder.OverridePolicyConnectorIsManagedForTesting(true);
+  std::unique_ptr<TestingProfile> managed_profile = managed_builder.Build();
+
+  EXPECT_FALSE(AppPreloadServiceFactory::IsAvailable(managed_profile.get()));
+  EXPECT_EQ(nullptr,
+            AppPreloadServiceFactory::GetForProfile(managed_profile.get()));
 }
 
 TEST_F(AppPreloadServiceTest, FirstLoginStartedPrefSet) {

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -16,11 +17,12 @@ namespace apps {
 AppPreloadServiceFactory::AppPreloadServiceFactory()
     : ProfileKeyedServiceFactory(
           "AppPreloadService",
-          // Service is available in Kiosk, Chrome OS Guest mode (OTR), and
-          // Regular but not in incognito profiles.
+          // Service is currently only available in non-OTR regular profiles.
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .WithGuest(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
@@ -51,6 +53,13 @@ bool AppPreloadServiceFactory::IsAvailable(Profile* profile) {
   }
 
   if (!web_app::AreWebAppsEnabled(profile)) {
+    return false;
+  }
+
+  // App Preload Service is currently only available for unmanaged, unsupervised
+  // accounts.
+  if (profile->IsGuestSession() || profile->IsChild() ||
+      profile->GetProfilePolicyConnector()->IsManaged()) {
     return false;
   }
 
