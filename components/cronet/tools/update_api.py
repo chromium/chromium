@@ -162,24 +162,37 @@ def main(args):
                       help='Path to API jar (i.e. cronet_api.jar)',
                       required=True,
                       metavar='path/to/cronet_api.jar')
+  parser.add_argument('--ignore_check_errors',
+                      help='If true, ignore errors from verification checks',
+                      required=False,
+                      default=False,
+                      action='store_true')
   opts = parser.parse_args(args)
 
   if check_up_to_date(opts.api_jar):
     return True
 
   [_, temp_filename] = tempfile.mkstemp()
-  if (generate_api(opts.api_jar, temp_filename) and
-      check_api_update(API_FILENAME, temp_filename)):
-    # Update API version number to new version number
-    with open(INTERFACE_API_VERSION_FILENAME,'r+') as f:
-      version = int(f.read())
-      f.seek(0)
-      f.write(str(version + 1))
-    # Update API file to new API
-    shutil.move(temp_filename, API_FILENAME)
-    return True
-  os.remove(temp_filename)
-  return False
+  if not generate_api(opts.api_jar, temp_filename):
+    os.remove(temp_filename)
+    return False
+
+  update_ok = check_api_update(API_FILENAME, temp_filename)
+  if not update_ok:
+    if opts.ignore_check_errors:
+      print('ignore_check_errors set, updating API anyway')
+    else:
+      os.remove(temp_filename)
+      return False
+
+  # Update API version number to new version number
+  with open(INTERFACE_API_VERSION_FILENAME, 'r+') as f:
+    version = int(f.read())
+    f.seek(0)
+    f.write(str(version + 1))
+  # Update API file to new API
+  shutil.move(temp_filename, API_FILENAME)
+  return True
 
 
 if __name__ == '__main__':
