@@ -127,7 +127,7 @@ GetSignalsContract() {
   contract[names::kOsFirewall] =
       base::BindRepeating(VerifyIsSettingInteger, names::kOsFirewall);
   contract[names::kSystemDnsServers] = base::BindRepeating(
-      VerifyIsStringArray, names::kSystemDnsServers, /*enforce_value=*/true);
+      VerifyIsStringArray, names::kSystemDnsServers, /*enforce_value=*/false);
 
   // Signals added for both CrOS and Browser but from different collection
   // locations.

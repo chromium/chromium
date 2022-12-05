@@ -23,15 +23,18 @@ class WinKeyRotationCommand : public KeyRotationCommand {
   static const HRESULT GOOPDATE_E_APP_USING_EXTERNAL_UPDATER = 0xA043081D;
 
   using RunGoogleUpdateElevatedCommandFn =
-      HRESULT (*)(const wchar_t* command,
-                  const std::vector<std::string>& args,
-                  DWORD* return_code);
+      base::RepeatingCallback<HRESULT(const wchar_t* command,
+                                      const std::vector<std::string>& args,
+                                      DWORD* return_code)>;
 
   // The second constructor is used in tests to override the behaviour of
   // Google Update.
   WinKeyRotationCommand();
   explicit WinKeyRotationCommand(
       RunGoogleUpdateElevatedCommandFn run_elevated_command);
+  WinKeyRotationCommand(
+      RunGoogleUpdateElevatedCommandFn run_elevated_command,
+      scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner);
   ~WinKeyRotationCommand() override;
 
   // KeyRotationCommand:
@@ -43,7 +46,7 @@ class WinKeyRotationCommand : public KeyRotationCommand {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner_;
   bool waiting_enabled_ = true;
-  RunGoogleUpdateElevatedCommandFn run_elevated_command_ = nullptr;
+  RunGoogleUpdateElevatedCommandFn run_elevated_command_;
 };
 
 }  // namespace enterprise_connectors
