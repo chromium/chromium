@@ -557,11 +557,6 @@ TEST_F(PhoneHubTrayTest, StartOnboardingFlow) {
 }
 
 TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByClickingAckButton) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHub, features::kPhoneHubCameraRoll,
-                            features::kEcheSWA},
-      /*disabled_features=*/{});
   // Simulate a pending setup state to show the onboarding screen.
   GetFeatureStatusProvider()->SetStatus(
       phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);

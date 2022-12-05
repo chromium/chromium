@@ -241,7 +241,6 @@ void PhoneHubTray::ShowBubble() {
   phone_status_view_dont_use_ = phone_status.get();
   DCHECK(phone_status_view_dont_use_);
   bubble_view->AddChildView(std::move(phone_status));
-  UpdateHeaderVisibility();
 
   // Other contents, i.e. the connected view and the interstitial views,
   // will be positioned underneath the phone status view and updated based
@@ -258,6 +257,7 @@ void PhoneHubTray::ShowBubble() {
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
+  UpdateHeaderVisibility();
 
   SetIsActive(true);
 
