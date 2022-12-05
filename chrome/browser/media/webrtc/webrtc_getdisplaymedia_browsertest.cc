@@ -62,7 +62,6 @@ static const char kCapturedTabTitle[] = "totally-unique-captured-page-title";
 static const char kCapturedPageMain[] = "/webrtc/captured_page_main.html";
 static const std::u16string kShareThisTabInsteadMessage =
     u"Share this tab instead";
-static const std::u16string kViewTabMessagePrefix = u"View tab:";
 
 enum class DisplaySurfaceType { kTab, kWindow, kScreen };
 
