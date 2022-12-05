@@ -618,6 +618,7 @@ void CreditCard::operator=(const CreditCard& credit_card) {
   temp_card_last_name_ = credit_card.temp_card_last_name_;
   nickname_ = credit_card.nickname_;
   card_issuer_ = credit_card.card_issuer_;
+  issuer_id_ = credit_card.issuer_id_;
   instrument_id_ = credit_card.instrument_id_;
   virtual_card_enrollment_state_ = credit_card.virtual_card_enrollment_state_;
   card_art_url_ = GURL(credit_card.card_art_url_);
@@ -710,6 +711,10 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
       static_cast<int>(credit_card.card_issuer_)) {
     return 1;
   }
+
+  comparison = issuer_id_.compare(credit_card.issuer_id_);
+  if (comparison != 0)
+    return comparison;
 
   if (static_cast<int>(virtual_card_enrollment_state_) <
       static_cast<int>(credit_card.virtual_card_enrollment_state_)) {
@@ -1185,6 +1190,7 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << credit_card.use_count() << " " << credit_card.use_date() << " "
             << credit_card.billing_address_id() << " " << credit_card.nickname()
             << " " << credit_card.card_issuer() << " "
+            << " " << credit_card.issuer_id() << " "
             << credit_card.instrument_id() << " "
             << credit_card.virtual_card_enrollment_state() << " "
             << credit_card.card_art_url().spec() << " "

@@ -96,6 +96,9 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   wallet_specifics_card1.mutable_masked_card()
       ->set_virtual_card_enrollment_state(
           sync_pb::WalletMaskedCreditCard::UNENROLLED);
+  wallet_specifics_card1.mutable_masked_card()
+      ->mutable_card_issuer()
+      ->set_issuer_id("amex");
   // Add the second card that has nickname.
   std::string nickname("Grocery card");
   sync_pb::AutofillWalletSpecifics wallet_specifics_card2 =
@@ -106,6 +109,9 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   wallet_specifics_card2.mutable_masked_card()
       ->mutable_card_issuer()
       ->set_issuer(sync_pb::CardIssuer::GOOGLE);
+  wallet_specifics_card2.mutable_masked_card()
+      ->mutable_card_issuer()
+      ->set_issuer_id("google");
   wallet_specifics_card2.mutable_masked_card()
       ->set_virtual_card_enrollment_state(
           sync_pb::WalletMaskedCreditCard::ENROLLED);
@@ -154,9 +160,11 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   // Make sure the second card's nickname is correctly populated from sync data.
   EXPECT_EQ(base::UTF8ToUTF16(nickname), wallet_cards.back().nickname());
 
-  // Verify that the card_issuer is set correctly.
-  EXPECT_EQ(wallet_cards.front().card_issuer(), CreditCard::ISSUER_UNKNOWN);
+  // Verify that the issuer and the issuer id are set correctly.
+  EXPECT_EQ(wallet_cards.front().card_issuer(), CreditCard::EXTERNAL_ISSUER);
+  EXPECT_EQ(wallet_cards.front().issuer_id(), "amex");
   EXPECT_EQ(wallet_cards.back().card_issuer(), CreditCard::GOOGLE);
+  EXPECT_EQ(wallet_cards.back().issuer_id(), "google");
 
   // Verify that the virtual_card_enrollment_state is set correctly.
   EXPECT_EQ(wallet_cards.front().virtual_card_enrollment_state(),

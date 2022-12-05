@@ -183,9 +183,8 @@ class CreditCard : public AutofillDataModel {
 
   Issuer card_issuer() const { return card_issuer_; }
   void set_card_issuer(Issuer card_issuer) { card_issuer_ = card_issuer; }
-
-  // Return true if card_issuer_ is set to Issuer::GOOGLE.
-  [[nodiscard]] bool IsGoogleIssuedCard() const;
+  const std::string& issuer_id() const { return issuer_id_; }
+  void set_issuer_id(const std::string& issuer_id) { issuer_id_ = issuer_id; }
 
   // For use in STL containers.
   void operator=(const CreditCard& credit_card);
@@ -459,9 +458,15 @@ class CreditCard : public AutofillDataModel {
   // The nickname of the card. May be empty when nickname is not set.
   std::u16string nickname_;
 
+  // TODO(crbug.com/1394514): Consider removing this field and all its usage
+  // after `issuer_id_` is used.
   // The issuer for the card. This is populated from the sync response. It has a
   // default value of CreditCard::ISSUER_UNKNOWN.
   Issuer card_issuer_;
+
+  // The issuer id of the card. This is set for server cards only (both actual
+  // cards and virtual cards).
+  std::string issuer_id_;
 
   // For masked server cards, this is the ID assigned by the server to uniquely
   // identify this card. |server_id_| is the legacy version of this.

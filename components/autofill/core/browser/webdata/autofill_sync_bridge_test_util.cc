@@ -30,6 +30,9 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForCard(
   sync_pb::WalletMaskedCreditCard* card_specifics =
       wallet_specifics.mutable_masked_card();
   card_specifics->set_id(client_tag);
+  card_specifics->mutable_card_issuer()->set_issuer(
+      sync_pb::CardIssuer::EXTERNAL_ISSUER);
+  card_specifics->mutable_card_issuer()->set_issuer_id("capitalone");
   card_specifics->set_billing_address_id(billing_address_id);
   if (!nickname.empty())
     card_specifics->set_nickname(nickname);

@@ -858,16 +858,28 @@ TEST(CreditCardTest, Compare) {
   a.set_record_type(MASKED_SERVER_CARD);
   b.set_record_type(LOCAL_CARD);
   EXPECT_LT(0, a.Compare(b));
+  a.set_record_type(MASKED_SERVER_CARD);
+  b.set_record_type(MASKED_SERVER_CARD);
 
   // Card with UNKNOWN_ISSUER is different from GOOGLE issued card.
   a.set_card_issuer(CreditCard::ISSUER_UNKNOWN);
   b.set_card_issuer(CreditCard::GOOGLE);
   EXPECT_GT(0, a.Compare(b));
-
   // Card with UNKNOWN_ISSUER is different from EXTERNAL_ISSUER issued card.
   a.set_card_issuer(CreditCard::ISSUER_UNKNOWN);
   b.set_card_issuer(CreditCard::EXTERNAL_ISSUER);
   EXPECT_GT(0, a.Compare(b));
+  a.set_card_issuer(CreditCard::EXTERNAL_ISSUER);
+  b.set_card_issuer(CreditCard::EXTERNAL_ISSUER);
+
+  // Difference in issuer id.
+  a.set_issuer_id("amex");
+  b.set_issuer_id("capitalone");
+  EXPECT_NE(0, a.Compare(b));
+  // Reset the issuer ids to empty, and empty ids are considered the same.
+  a.set_issuer_id("");
+  b.set_issuer_id("");
+  EXPECT_EQ(0, a.Compare(b));
 
   // Different values produce non-zero results.
   test::SetCreditCardInfo(&a, "Jimmy", nullptr, nullptr, nullptr, "");
