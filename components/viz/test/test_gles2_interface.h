@@ -135,7 +135,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   void set_gpu_rasterization(bool gpu_rasterization);
   void set_avoid_stencil_buffers(bool avoid_stencil_buffers);
   void set_support_multisample_compatibility(bool support);
-  void set_support_texture_storage_image(bool support);
+  void set_supports_scanout_shared_images(bool support);
   void set_support_texture_npot(bool support);
   void set_supports_oop_raster(bool support);
   void set_max_texture_size(int size);

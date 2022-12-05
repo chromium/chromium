@@ -50,7 +50,7 @@ class CanvasResourceProviderTest : public Test {
     test_context_provider_ = viz::TestContextProvider::Create();
     auto* test_gl = test_context_provider_->UnboundTestContextGL();
     test_gl->set_max_texture_size(kMaxTextureSize);
-    test_gl->set_support_texture_storage_image(true);
+    test_gl->set_supports_scanout_shared_images(true);
     test_gl->set_supports_shared_image_swap_chain(true);
     test_gl->set_supports_gpu_memory_buffer_format(gfx::BufferFormat::RGBA_8888,
                                                    true);

@@ -106,6 +106,8 @@ class GPU_GLES2_EXPORT SharedImageManager
     return display_context_on_another_thread_;
   }
 
+  static bool SupportsScanoutImages();
+
   // Returns the NativePixmap backing |mailbox|. Returns null if the SharedImage
   // doesn't exist or is not backed by a NativePixmap. The caller is not
   // expected to read from or write into the provided NativePixmap because it

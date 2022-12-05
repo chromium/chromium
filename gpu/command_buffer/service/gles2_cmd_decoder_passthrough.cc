@@ -1080,13 +1080,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   InitializeFeatureInfo(attrib_helper.context_type, DisallowedFeatures(),
                         false);
 
-  // Support for texture_storage_image depends on the underlying
-  // ImageFactory's ability to create anonymous images.
-  gpu::ImageFactory* image_factory = group_->image_factory();
-  if (image_factory && image_factory->SupportsCreateAnonymousImage()) {
-    feature_info_->EnableTextureStorageImage();
-  }
-
   // Check for required extensions
   // TODO(geofflang): verify
   // feature_info_->feature_flags().angle_robust_resource_initialization and
@@ -1765,8 +1758,8 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       caps.shared_image_d3d && D3DImageBackingFactory::IsSwapChainSupported();
 #endif  // BUILDFLAG(IS_WIN)
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
-  caps.texture_storage_image =
-      feature_info_->feature_flags().texture_storage_image;
+  caps.supports_scanout_shared_images =
+      SharedImageManager::SupportsScanoutImages();
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.chromium_nonblocking_readback = true;
   caps.mesa_framebuffer_flip_y =
@@ -2239,11 +2232,6 @@ void GLES2DecoderPassthroughImpl::InitializeFeatureInfo(
     bool force_reinitialize) {
   feature_info_->Initialize(context_type, true /* is_passthrough_cmd_decoder */,
                             disallowed_features, force_reinitialize);
-
-  gpu::ImageFactory* image_factory = group_->image_factory();
-  if (image_factory && image_factory->SupportsCreateAnonymousImage()) {
-    feature_info_->EnableTextureStorageImage();
-  }
 }
 
 template <typename T>

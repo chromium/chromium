@@ -311,12 +311,6 @@ bool IsGL_REDSupportedOnFBOs() {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void FeatureInfo::EnableTextureStorageImage() {
-  if (!feature_flags_.texture_storage_image) {
-    feature_flags_.texture_storage_image = true;
-  }
-}
-
 void FeatureInfo::EnableEXTFloatBlend() {
   if (!feature_flags_.ext_float_blend) {
     AddExtensionString("GL_EXT_float_blend");

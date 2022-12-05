@@ -4031,13 +4031,6 @@ error::Error GLES2DecoderPassthroughImpl::DoRequestExtensionCHROMIUM(
   InitializeFeatureInfo(feature_info_->context_type(),
                         feature_info_->disallowed_features(), true);
 
-  // Support for texture_storage_image depends on the underlying
-  // ImageFactory's ability to create anonymous images.
-  gpu::ImageFactory* image_factory = group_->image_factory();
-  if (image_factory && image_factory->SupportsCreateAnonymousImage()) {
-    feature_info_->EnableTextureStorageImage();
-  }
-
   return error::kNoError;
 }
 

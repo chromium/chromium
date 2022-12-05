@@ -1589,7 +1589,7 @@ class CanvasRenderingContext2DTestImageChromium
     auto context_provider = viz::TestContextProvider::Create();
     auto* test_gl = context_provider->UnboundTestContextGL();
     test_gl->set_max_texture_size(1024);
-    test_gl->set_support_texture_storage_image(true);
+    test_gl->set_supports_scanout_shared_images(true);
     test_gl->set_supports_gpu_memory_buffer_format(gfx::BufferFormat::BGRA_8888,
                                                    true);
     return context_provider;

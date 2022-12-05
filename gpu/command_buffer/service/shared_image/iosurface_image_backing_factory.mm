@@ -338,10 +338,7 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
       image_factory_(image_factory) {
   gpu_memory_buffer_formats_ =
       feature_info->feature_flags().gpu_memory_buffer_formats;
-  // Return if scanout images are not supported
-  if (!(image_factory_ && image_factory_->SupportsCreateAnonymousImage())) {
-    return;
-  }
+
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
     auto format = static_cast<viz::ResourceFormat>(i);
     FormatInfo& info = format_info_[i];

@@ -492,7 +492,7 @@ class VideoResourceUpdater::HardwarePlaneResource
             ? raster_context_provider_->ContextCapabilities()
             : context_provider_->ContextCapabilities();
     overlay_candidate_ = use_gpu_memory_buffer_resources &&
-                         caps.texture_storage_image &&
+                         caps.supports_scanout_shared_images &&
                          IsGpuMemoryBufferFormatSupported(format);
     uint32_t shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;

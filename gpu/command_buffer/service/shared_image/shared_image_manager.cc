@@ -27,6 +27,14 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_hardware_buffer_compat.h"
+#endif
+
 #if DCHECK_IS_ON()
 #define CALLED_ON_VALID_THREAD()                      \
   do {                                                \
@@ -436,6 +444,22 @@ scoped_refptr<gfx::NativePixmap> SharedImageManager::GetNativePixmap(
   if (found == images_.end())
     return nullptr;
   return (*found)->GetNativePixmap();
+}
+
+bool SharedImageManager::SupportsScanoutImages() {
+#if BUILDFLAG(IS_MAC)
+  return true;
+#elif BUILDFLAG(IS_ANDROID)
+  return base::AndroidHardwareBufferCompat::IsSupportAvailable();
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformRuntimeProperties()
+      .supports_native_pixmaps;
+#elif BUILDFLAG(IS_WIN)
+  return false;
+#else
+  return false;
+#endif
 }
 
 }  // namespace gpu

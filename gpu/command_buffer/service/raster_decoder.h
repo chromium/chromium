@@ -15,7 +15,6 @@ namespace gpu {
 class DecoderClient;
 struct GpuFeatureInfo;
 struct GpuPreferences;
-class ImageFactory;
 class MemoryTracker;
 class ServiceTransferCache;
 class SharedContextState;
@@ -42,7 +41,6 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
       const GpuPreferences& gpu_preferences,
       MemoryTracker* memory_tracker,
       SharedImageManager* shared_image_manager,
-      ImageFactory* image_factory,
       scoped_refptr<SharedContextState> shared_context_state,
       bool is_priviliged);
 

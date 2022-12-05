@@ -471,8 +471,8 @@ void TestGLES2Interface::set_support_multisample_compatibility(bool support) {
   test_capabilities_.multisample_compatibility = support;
 }
 
-void TestGLES2Interface::set_support_texture_storage_image(bool support) {
-  test_capabilities_.texture_storage_image = support;
+void TestGLES2Interface::set_supports_scanout_shared_images(bool support) {
+  test_capabilities_.supports_scanout_shared_images = support;
 }
 
 void TestGLES2Interface::set_support_texture_npot(bool support) {

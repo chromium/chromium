@@ -3628,12 +3628,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     }
   }
 
-  // Support for texture_storage_image depends on the underlying
-  // ImageFactory's ability to create anonymous images.
-  gpu::ImageFactory* image_factory = group_->image_factory();
-  if (image_factory && image_factory->SupportsCreateAnonymousImage())
-    feature_info_->EnableTextureStorageImage();
-
   // In theory |needs_emulation| needs to be true on Desktop GL 4.1 or lower.
   // However, we set it to true everywhere, not to trust drivers to handle
   // out-of-bounds buffer accesses.
@@ -4280,8 +4274,8 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
     caps.disable_2d_canvas_copy_on_write = true;
   }
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
-  caps.texture_storage_image =
-      feature_info_->feature_flags().texture_storage_image;
+  caps.supports_scanout_shared_images =
+      SharedImageManager::SupportsScanoutImages();
   caps.supports_oop_raster = false;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.chromium_nonblocking_readback =

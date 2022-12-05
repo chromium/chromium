@@ -79,7 +79,7 @@ void ResourcePool::GpuBacking::InitOverlayCandidateAndTextureTarget(
     const gpu::Capabilities& caps,
     bool use_gpu_memory_buffer_resources) {
   overlay_candidate = use_gpu_memory_buffer_resources &&
-                      caps.texture_storage_image &&
+                      caps.supports_scanout_shared_images &&
                       IsGpuMemoryBufferFormatSupported(format);
   if (overlay_candidate) {
     texture_target = gpu::GetBufferTextureTarget(gfx::BufferUsage::SCANOUT,
