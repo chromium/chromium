@@ -15,7 +15,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
@@ -45,7 +44,8 @@ std::string ComputeNetworkId(
   return base::ToLowerASCII(base::HexEncode(hash.data(), hash.length()));
 }
 
-base::LazyInstance<DiscoveryNetworkMonitor>::Leaky g_discovery_monitor;
+base::LazyInstance<DiscoveryNetworkMonitor>::Leaky g_discovery_monitor =
+    LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -74,16 +74,16 @@ void DiscoveryNetworkMonitor::RemoveObserver(Observer* const observer) {
 }
 
 void DiscoveryNetworkMonitor::Refresh(NetworkIdCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&DiscoveryNetworkMonitor::UpdateNetworkInfo,
                      base::Unretained(this)),
       std::move(callback));
 }
 
 void DiscoveryNetworkMonitor::GetNetworkId(NetworkIdCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&DiscoveryNetworkMonitor::GetNetworkIdOnSequence,
                      base::Unretained(this)),
       std::move(callback));
