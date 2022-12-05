@@ -13,11 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pytest
+
 from _helpers import *
 
 
 @pytest.mark.asyncio
-async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(websocket,
+async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(
+      websocket,
       iframe_id):
     url = "data:text/html,<h2>test</h2>"
     url_with_hash_1 = url + "#1"
@@ -45,7 +48,8 @@ async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(w
 
 
 @pytest.mark.asyncio
-async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket, iframe_id):
+async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket,
+      iframe_id):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
     # Send command.
@@ -88,7 +92,8 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket, ifram
 
 
 @pytest.mark.asyncio
-async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(websocket, iframe_id):
+async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
+      websocket, iframe_id):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
 
@@ -131,7 +136,8 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(websocket
 
 
 @pytest.mark.asyncio
-async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket, iframe_id):
+async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket,
+      iframe_id):
     await subscribe(websocket, ["browsingContext.domContentLoaded",
                                 "browsingContext.load"])
 

@@ -16,7 +16,7 @@
 import json
 import os
 
-import pytest
+import pytest_asyncio
 import websockets
 
 _command_counter = 1
@@ -28,7 +28,7 @@ def get_next_command_id():
     return _command_counter
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def websocket():
     port = os.getenv("PORT", 8080)
     url = f"ws://localhost:{port}"
@@ -36,7 +36,7 @@ async def websocket():
         yield connection
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def default_realm(context_id, websocket):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
@@ -50,7 +50,7 @@ async def default_realm(context_id, websocket):
     return result["realm"]
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def sandbox_realm(context_id, websocket):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
@@ -64,7 +64,7 @@ async def sandbox_realm(context_id, websocket):
     return result["realm"]
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def context_id(websocket):
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
@@ -72,7 +72,7 @@ async def context_id(websocket):
     return result["contexts"][0]["context"]
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def iframe_id(context_id, websocket):
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
                               f'<iframe src="about:blank" />'
@@ -91,7 +91,7 @@ async def iframe_id(context_id, websocket):
     return iframe_id
 
 
-@pytest.fixture(autouse=True)
+@pytest_asyncio.fixture(autouse=True)
 async def before_each_test(websocket):
     # This method can be used for browser state preparation.
     assert True

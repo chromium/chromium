@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pytest
+
 from _helpers import *
 
 
@@ -84,6 +86,7 @@ async def test_channel_non_empty(websocket):
         "result": {
             "ready": False,
             "message": "already connected"}}
+
 
 @pytest.mark.asyncio
 async def test_channel_empty(websocket):
