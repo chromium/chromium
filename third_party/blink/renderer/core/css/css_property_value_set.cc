@@ -25,10 +25,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/logical_group_properties.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/property_bitsets.h"
 #include "third_party/blink/renderer/core/css/style_property_serializer.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"

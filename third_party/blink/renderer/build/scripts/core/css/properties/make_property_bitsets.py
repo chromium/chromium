@@ -8,9 +8,9 @@ import json5_generator
 import template_expander
 
 
-class LogicalPropertiesWriter(json5_generator.Writer):
+class PropertyBitsetsWriter(json5_generator.Writer):
     def __init__(self, json5_file_paths, output_dir):
-        super(LogicalPropertiesWriter, self).__init__([], output_dir)
+        super(PropertyBitsetsWriter, self).__init__([], output_dir)
 
         self._input_files = json5_file_paths
         properties = (css_properties.CSSProperties(json5_file_paths)
@@ -21,18 +21,23 @@ class LogicalPropertiesWriter(json5_generator.Writer):
             and p.logical_property_group['is_logical']
         ]
 
+        self._known_exposed_properties = [
+            p.enum_key for p in properties if p.known_exposed
+        ]
+
         self._outputs = {
-            'logical_group_properties.cc': self.generate_list,
+            'property_bitsets.cc': self.generate_list,
         }
 
     @template_expander.use_jinja(
-        'core/css/properties/templates/logical_group_properties.cc.tmpl')
+        'core/css/properties/templates/property_bitsets.cc.tmpl')
     def generate_list(self):
         return {
             'input_files': self._input_files,
             'logical_group_properties': self._logical_group_properties,
+            'known_exposed_properties': self._known_exposed_properties,
         }
 
 
 if __name__ == '__main__':
-    json5_generator.Maker(LogicalPropertiesWriter).main()
+    json5_generator.Maker(PropertyBitsetsWriter).main()

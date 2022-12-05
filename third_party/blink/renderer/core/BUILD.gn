@@ -778,18 +778,12 @@ css_properties("make_core_generated_cssom_types") {
   ]
 }
 
-css_properties("make_core_generated_known_exposed_properties") {
-  script =
-      "../build/scripts/core/css/properties/make_known_exposed_properties.py"
-  other_inputs = [ "../build/scripts/core/css/properties/templates/known_exposed_properties.cc.tmpl" ]
-  outputs = [ "$blink_core_output_dir/known_exposed_properties.cc" ]
-}
-
-css_properties("make_core_generated_logical_group_properties") {
-  script =
-      "../build/scripts/core/css/properties/make_logical_group_properties.py"
-  other_inputs = [ "../build/scripts/core/css/properties/templates/logical_group_properties.cc.tmpl" ]
-  outputs = [ "$blink_core_output_dir/logical_group_properties.cc" ]
+css_properties("make_core_generated_property_bitsets") {
+  script = "../build/scripts/core/css/properties/make_property_bitsets.py"
+  other_inputs = [
+    "../build/scripts/core/css/properties/templates/property_bitsets.cc.tmpl",
+  ]
+  outputs = [ "$blink_core_output_dir/property_bitsets.cc" ]
 }
 
 code_generator("make_core_generated_css_value_keywords") {
@@ -1177,8 +1171,6 @@ targets_generating_sources = [
   ":make_core_generated_html_tokenizer_names",
   ":make_core_generated_input_type_names",
   ":make_core_generated_keywords",
-  ":make_core_generated_known_exposed_properties",
-  ":make_core_generated_logical_group_properties",
   ":make_core_generated_mathml_element_type_helpers",
   ":make_core_generated_mathml_names",
   ":make_core_generated_media_feature_names",
@@ -1187,6 +1179,7 @@ targets_generating_sources = [
   ":make_core_generated_performance_entry_names",
   ":make_core_generated_permissions_policy_helper",
   ":make_core_generated_pointer_type_names",
+  ":make_core_generated_property_bitsets",
   ":make_core_generated_script_type_names",
   ":make_core_generated_securitypolicyviolation_disposition_names",
   ":make_core_generated_shadow_element_names",

@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/hash_tools.h"
-#include "third_party/blink/renderer/core/css/known_exposed_properties.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
@@ -16,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/shorthand.h"
+#include "third_party/blink/renderer/core/css/property_bitsets.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 

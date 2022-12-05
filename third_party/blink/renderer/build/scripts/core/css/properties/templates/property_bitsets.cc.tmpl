@@ -5,7 +5,7 @@
 {% from 'templates/macros.tmpl' import source_files_for_generated_file %}
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#include "third_party/blink/renderer/core/css/logical_group_properties.h"
+#include "third_party/blink/renderer/core/css/property_bitsets.h"
 
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include <array>
@@ -14,6 +14,12 @@ namespace blink {
 
 const CSSBitset kLogicalGroupProperties{ {
   {% for property in logical_group_properties %}
+    CSSPropertyID::{{ property }},
+  {% endfor %}
+} };
+
+const CSSBitset kKnownExposedProperties{ {
+  {% for property in known_exposed_properties %}
     CSSPropertyID::{{ property }},
   {% endfor %}
 } };
