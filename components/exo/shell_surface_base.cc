@@ -1464,6 +1464,7 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   aura::Window* window = widget_->GetNativeWindow();
   window->SetName(base::StringPrintf("ExoShellSurface-%d", shell_id++));
   window->AddChild(host_window());
+  // Works for both mash and non-mash. https://crbug.com/839521
   window->SetEventTargetingPolicy(
       aura::EventTargetingPolicy::kTargetAndDescendants);
   InstallCustomWindowTargeter();
