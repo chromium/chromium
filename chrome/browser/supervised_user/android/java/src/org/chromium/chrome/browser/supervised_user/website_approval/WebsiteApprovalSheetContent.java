@@ -19,6 +19,7 @@ import androidx.appcompat.widget.DialogTitle;
 import org.chromium.chrome.browser.supervised_user.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.ElidedUrlTextView;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
 
@@ -34,6 +35,16 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
 
     private final Context mContext;
     private final View mContentView;
+
+    static final class StringSpecs {
+        String mFormattedString;
+        int mVisibleUrlLength;
+
+        StringSpecs(String formattedString, int length) {
+            mFormattedString = formattedString;
+            mVisibleUrlLength = length;
+        }
+    }
 
     public WebsiteApprovalSheetContent(Context context) {
         mContext = context;
@@ -139,13 +150,18 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     }
 
     @VisibleForTesting
-    static String truncateLongUrl(GURL url) {
+    static StringSpecs truncateLongUrl(GURL url) {
         // Omit user-specific and trivial url parts.
         String formattedUrl =
                 UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(url.getSpec());
 
-        if (formattedUrl.length() <= MAX_FULL_URL_SIZE) {
-            return formattedUrl;
+        if (formattedUrl.length() <= MAX_HOST_SIZE) {
+            // Display the full url.
+            return new StringSpecs(formattedUrl, formattedUrl.length());
+        } else if (formattedUrl.length() <= MAX_FULL_URL_SIZE) {
+            // By default display the host and url up to MAX_HOST_SIZE chars.
+            // On click display the full url.
+            return new StringSpecs(formattedUrl, MAX_HOST_SIZE);
         } else {
             // Omit scheme, credentials, path and trivial subdomains
             String formattedHost =
@@ -162,16 +178,22 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
             } else {
                 truncatedUrlBuilder.append(url.getPath());
             }
-            return truncatedUrlBuilder.toString();
+            // By default display the host and url up to MAX_HOST_SIZE chars.
+            // On click display the expanded url (which we may have truncated).
+            return new StringSpecs(truncatedUrlBuilder.toString(), MAX_HOST_SIZE);
         }
     }
 
     public void setFullUrlText(GURL url) {
-        TextView urlTextView = mContentView.findViewById(R.id.full_url);
-        String truncatedUrl = truncateLongUrl(url);
-        urlTextView.setText(truncatedUrl);
+        ElidedUrlTextView fullUrlView = mContentView.findViewById(R.id.full_url);
+        StringSpecs specs = truncateLongUrl(url);
+        fullUrlView.setUrl(specs.mFormattedString, specs.mVisibleUrlLength);
+
+        LinearLayout urlWrapper = mContentView.findViewById(R.id.url_container);
+        urlWrapper.setOnClickListener(v -> { fullUrlView.toggleTruncation(); });
+
         // Set for accessibility announcement.
-        urlTextView.setContentDescription(truncatedUrl);
+        fullUrlView.setContentDescription(specs.mFormattedString);
     }
 
     public void setFaviconBitmap(Bitmap bitmap) {

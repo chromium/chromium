@@ -37,9 +37,10 @@ public class WebsiteApprovalSheetContentUnitTest {
         GURL url = new GURL(PREFIX + expectedUri);
 
         Assert.assertTrue(url.getSpec().length() < WebsiteApprovalSheetContent.MAX_HOST_SIZE);
-        String formattedString = WebsiteApprovalSheetContent.truncateLongUrl(url);
+        WebsiteApprovalSheetContent.StringSpecs specs =
+                WebsiteApprovalSheetContent.truncateLongUrl(url);
 
-        assertEquals(expectedUri, formattedString);
+        assertEquals(expectedUri, specs.mFormattedString);
     }
 
     @Test
@@ -61,9 +62,10 @@ public class WebsiteApprovalSheetContentUnitTest {
         GURL url = new GURL(PREFIX + urlWithPathWithElipsisLimit);
         Assert.assertTrue(url.getSpec().length() > WebsiteApprovalSheetContent.MAX_FULL_URL_SIZE);
 
-        String formattedString = WebsiteApprovalSheetContent.truncateLongUrl(url);
+        WebsiteApprovalSheetContent.StringSpecs specs =
+                WebsiteApprovalSheetContent.truncateLongUrl(url);
 
-        assertEquals(urlWithPathWithElipsisLimit, formattedString);
+        assertEquals(urlWithPathWithElipsisLimit, specs.mFormattedString);
     }
 
     @SmallTest
@@ -90,9 +92,10 @@ public class WebsiteApprovalSheetContentUnitTest {
         GURL url = new GURL(PREFIX + uri);
 
         Assert.assertTrue(url.getSpec().length() > WebsiteApprovalSheetContent.MAX_FULL_URL_SIZE);
-        String formattedString = WebsiteApprovalSheetContent.truncateLongUrl(url);
+        WebsiteApprovalSheetContent.StringSpecs specs =
+                WebsiteApprovalSheetContent.truncateLongUrl(url);
 
         String expected = BASE_URL + subpath + "...";
-        assertEquals(expected, formattedString);
+        assertEquals(expected, specs.mFormattedString);
     }
 }

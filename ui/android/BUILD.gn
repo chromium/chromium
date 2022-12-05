@@ -213,12 +213,14 @@ java_group("ui_java") {
 # unused JNI functions.
 android_library("ui_utils_java") {
   sources = [
+    "java/src/org/chromium/ui/ElidedUrlTextView.java",
     "java/src/org/chromium/ui/KeyboardVisibilityDelegate.java",
     "java/src/org/chromium/ui/UiUtils.java",
   ]
   deps = [
     "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
   ]

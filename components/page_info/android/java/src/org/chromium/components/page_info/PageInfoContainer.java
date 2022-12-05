@@ -14,6 +14,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import org.chromium.ui.ElidedUrlTextView;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**

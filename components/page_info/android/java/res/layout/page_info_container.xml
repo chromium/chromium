@@ -41,7 +41,7 @@
 
             <view
                 android:id="@+id/page_info_url"
-                class="org.chromium.components.page_info.ElidedUrlTextView"
+                class="org.chromium.ui.ElidedUrlTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"

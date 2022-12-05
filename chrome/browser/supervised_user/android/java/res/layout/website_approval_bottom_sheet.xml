@@ -101,8 +101,9 @@ found in the LICENSE file.
                     android:importantForAccessibility="yes"
                     android:focusable="false"
                     android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-                <TextView
+                <view
                     android:id="@+id/full_url"
+                    class="org.chromium.ui.ElidedUrlTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="20dp"
