@@ -225,16 +225,6 @@ export class Background extends ChromeVoxState {
     this.pageSel_ = newPageSel;
   }
 
-  /** @override */
-  get typingEcho() {
-    return LocalStorage.get('typingEcho');
-  }
-
-  /** @override */
-  set typingEcho(newTypingEcho) {
-    LocalStorage.set('typingEcho', newTypingEcho);
-  }
-
   /**
    * Navigate to the given range - it both sets the range and outputs it.
    * @param {!CursorRange} range The new range.
