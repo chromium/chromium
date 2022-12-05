@@ -50,36 +50,32 @@ class TabSharingInfoBarDelegateTest
     : public BrowserWithTestWindowTest,
       public ::testing::WithParamInterface<bool> {
  public:
+  struct Preferences {
+    std::u16string shared_tab_name;
+    std::u16string app_name;
+    bool shared_tab;
+    bool can_share_instead;
+    int tab_index = 0;
+    absl::optional<FocusTarget> focus_target;
+  };
+
   TabSharingInfoBarDelegateTest()
       : favicons_used_for_switch_to_tab_button_(GetParam()) {}
 
-  infobars::InfoBar* CreateInfobar(
-      std::u16string shared_tab_name,
-      std::u16string app_name,
-      bool shared_tab,
-      bool can_share_instead,
-      int tab_index = 0,
-      absl::optional<FocusTarget> focus_target = absl::nullopt) {
+  infobars::InfoBar* CreateInfobar(const Preferences& prefs) {
     return TabSharingInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(
-            browser()->tab_strip_model()->GetWebContentsAt(tab_index)),
-        shared_tab_name, app_name, shared_tab,
-        can_share_instead ? TabSharingInfoBarDelegate::ButtonState::ENABLED
-                          : TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN,
-        focus_target, tab_sharing_mock_ui(),
+            browser()->tab_strip_model()->GetWebContentsAt(prefs.tab_index)),
+        prefs.shared_tab_name, prefs.app_name, prefs.shared_tab,
+        prefs.can_share_instead
+            ? TabSharingInfoBarDelegate::ButtonState::ENABLED
+            : TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN,
+        prefs.focus_target, tab_sharing_mock_ui(),
         favicons_used_for_switch_to_tab_button_);
   }
 
-  ConfirmInfoBarDelegate* CreateDelegate(
-      std::u16string shared_tab_name,
-      std::u16string app_name,
-      bool shared_tab,
-      bool can_share_instead,
-      int tab_index = 0,
-      absl::optional<FocusTarget> focus_target = absl::nullopt) {
-    infobars::InfoBar* infobar =
-        CreateInfobar(shared_tab_name, app_name, shared_tab, can_share_instead,
-                      tab_index, focus_target);
+  ConfirmInfoBarDelegate* CreateDelegate(const Preferences& prefs) {
+    infobars::InfoBar* infobar = CreateInfobar(prefs);
     return static_cast<ConfirmInfoBarDelegate*>(infobar->delegate());
   }
 
@@ -117,8 +113,11 @@ INSTANTIATE_TEST_SUITE_P(All, TabSharingInfoBarDelegateTest, testing::Bool());
 
 TEST_P(TabSharingInfoBarDelegateTest, StartSharingOnCancel) {
   AddTab(browser(), GURL("about:blank"));
-  infobars::InfoBar* infobar =
-      CreateInfobar(kSharedTabName, kAppName, false, true);
+  infobars::InfoBar* const infobar =
+      CreateInfobar({.shared_tab_name = kSharedTabName,
+                     .app_name = kAppName,
+                     .shared_tab = false,
+                     .can_share_instead = true});
   ConfirmInfoBarDelegate* delegate =
       static_cast<ConfirmInfoBarDelegate*>(infobar->delegate());
   EXPECT_CALL(*tab_sharing_mock_ui(), StartSharing(infobar)).Times(1);
@@ -127,8 +126,11 @@ TEST_P(TabSharingInfoBarDelegateTest, StartSharingOnCancel) {
 
 TEST_P(TabSharingInfoBarDelegateTest, StopSharingOnAccept) {
   AddTab(browser(), GURL("about:blank"));
-  ConfirmInfoBarDelegate* delegate =
-      CreateDelegate(kSharedTabName, kAppName, false, true);
+  ConfirmInfoBarDelegate* const delegate =
+      CreateDelegate({.shared_tab_name = kSharedTabName,
+                      .app_name = kAppName,
+                      .shared_tab = false,
+                      .can_share_instead = true});
   EXPECT_CALL(*tab_sharing_mock_ui(), StopSharing).Times(1);
   EXPECT_FALSE(delegate->Accept());
 }
@@ -147,9 +149,13 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
                     gfx::kFaviconSize)))
           : ui::ImageModel();
 
-  ConfirmInfoBarDelegate* delegate =
-      CreateDelegate(std::u16string(), kAppName, true, true, 1,
-                     FocusTarget{GetGlobalId(0), favicon});
+  ConfirmInfoBarDelegate* const delegate =
+      CreateDelegate({.shared_tab_name = std::u16string(),
+                      .app_name = kAppName,
+                      .shared_tab = true,
+                      .can_share_instead = true,
+                      .tab_index = 1,
+                      .focus_target = FocusTarget{GetGlobalId(0), favicon}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
@@ -181,9 +187,13 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
                     gfx::kFaviconSize)))
           : ui::ImageModel();
 
-  ConfirmInfoBarDelegate* delegate =
-      CreateDelegate(std::u16string(), kAppName, true, true, 0,
-                     FocusTarget{GetGlobalId(1), favicon});
+  ConfirmInfoBarDelegate* const delegate =
+      CreateDelegate({.shared_tab_name = std::u16string(),
+                      .app_name = kAppName,
+                      .shared_tab = true,
+                      .can_share_instead = true,
+                      .tab_index = 0,
+                      .focus_target = FocusTarget{GetGlobalId(1), favicon}});
 
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
@@ -205,8 +215,11 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
 // |icon| Sharing |shared_tab| to |app| [Stop sharing] [Share this tab instead]
 TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotSharedTab) {
   AddTab(browser(), GURL("about:blank"));
-  ConfirmInfoBarDelegate* delegate =
-      CreateDelegate(kSharedTabName, kAppName, false, true);
+  ConfirmInfoBarDelegate* const delegate =
+      CreateDelegate({.shared_tab_name = kSharedTabName,
+                      .app_name = kAppName,
+                      .shared_tab = false,
+                      .can_share_instead = true});
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
   EXPECT_EQ(delegate->GetMessageText(),
@@ -227,15 +240,23 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotSharedTab) {
 TEST_P(TabSharingInfoBarDelegateTest, InfobarWhenSharingNotAllowed) {
   // Create infobar for shared tab.
   AddTab(browser(), GURL("about:blank"));
-  ConfirmInfoBarDelegate* delegate_shared_tab = CreateDelegate(
-      std::u16string(), kAppName, true, false /* can_share_instead */, 0);
+  ConfirmInfoBarDelegate* const delegate_shared_tab =
+      CreateDelegate({.shared_tab_name = std::u16string(),
+                      .app_name = kAppName,
+                      .shared_tab = true,
+                      .can_share_instead = false,
+                      .tab_index = 0});
   EXPECT_EQ(delegate_shared_tab->GetButtons(),
             ConfirmInfoBarDelegate::BUTTON_OK);
 
   // Create infobar for another not shared tab.
   AddTab(browser(), GURL("about:blank"));
-  ConfirmInfoBarDelegate* delegate = CreateDelegate(
-      kSharedTabName, kAppName, false, false /* can_share_instead */, 1);
+  ConfirmInfoBarDelegate* const delegate =
+      CreateDelegate({.shared_tab_name = kSharedTabName,
+                      .app_name = kAppName,
+                      .shared_tab = false,
+                      .can_share_instead = false,
+                      .tab_index = 1});
   EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK);
 }
 
@@ -246,9 +267,15 @@ TEST_P(TabSharingInfoBarDelegateTest, MultipleInfobarsOnSameTab) {
       infobars::ContentInfoBarManager::FromWebContents(
           browser()->tab_strip_model()->GetWebContentsAt(0));
   EXPECT_EQ(infobar_manager->infobar_count(), 0u);
-  CreateInfobar(kSharedTabName, kAppName, false, true);
+  CreateInfobar({.shared_tab_name = kSharedTabName,
+                 .app_name = kAppName,
+                 .shared_tab = false,
+                 .can_share_instead = true});
   EXPECT_EQ(infobar_manager->infobar_count(), 1u);
-  CreateInfobar(kSharedTabName, kAppName, false, true);
+  CreateInfobar({.shared_tab_name = kSharedTabName,
+                 .app_name = kAppName,
+                 .shared_tab = false,
+                 .can_share_instead = true});
   EXPECT_EQ(infobar_manager->infobar_count(), 2u);
 }
 
@@ -258,7 +285,10 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarNotDismissedOnNavigation) {
       browser()->tab_strip_model()->GetWebContentsAt(0);
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  CreateInfobar(kSharedTabName, kAppName, false, true);
+  CreateInfobar({.shared_tab_name = kSharedTabName,
+                 .app_name = kAppName,
+                 .shared_tab = false,
+                 .can_share_instead = true});
   EXPECT_EQ(infobar_manager->infobar_count(), 1u);
   NavigateAndCommit(web_contents, GURL("http://bar"));
   EXPECT_EQ(infobar_manager->infobar_count(), 1u);
