@@ -340,7 +340,7 @@ void PersonalDataManager::Init(
 }
 
 PersonalDataManager::~PersonalDataManager() {
-  CancelPendingLocalQuery(&pending_local_profiles_query_);
+  CancelPendingLocalQuery(&pending_synced_local_profiles_query_);
   CancelPendingLocalQuery(&pending_creditcards_query_);
   CancelPendingLocalQuery(&pending_upi_ids_query_);
   CancelPendingServerQueries();
@@ -424,21 +424,22 @@ void PersonalDataManager::OnURLsDeleted(
 void PersonalDataManager::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
-  DCHECK(pending_local_profiles_query_ || pending_account_profiles_query_ ||
-         pending_server_profiles_query_ || pending_creditcards_query_ ||
-         pending_server_creditcards_query_ ||
+  DCHECK(pending_synced_local_profiles_query_ ||
+         pending_account_profiles_query_ ||
+         pending_creditcard_billing_addresses_query_ ||
+         pending_creditcards_query_ || pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
          pending_ibans_query_ || pending_customer_data_query_ ||
          pending_upi_ids_query_ || pending_offer_data_query_);
 
   if (!result) {
     // Error from the web database.
-    if (h == pending_local_profiles_query_)
-      pending_local_profiles_query_ = 0;
+    if (h == pending_synced_local_profiles_query_)
+      pending_synced_local_profiles_query_ = 0;
     else if (h == pending_account_profiles_query_)
       pending_account_profiles_query_ = 0;
-    else if (h == pending_server_profiles_query_)
-      pending_server_profiles_query_ = 0;
+    else if (h == pending_creditcard_billing_addresses_query_)
+      pending_creditcard_billing_addresses_query_ = 0;
     else if (h == pending_creditcards_query_)
       pending_creditcards_query_ = 0;
     else if (h == pending_server_creditcards_query_)
@@ -456,19 +457,20 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   } else {
     switch (result->GetType()) {
       case AUTOFILL_PROFILES_RESULT:
-        if (h == pending_local_profiles_query_) {
-          ReceiveLoadedDbValues(h, result.get(), &pending_local_profiles_query_,
-                                &web_profiles_);
+        if (h == pending_synced_local_profiles_query_) {
+          ReceiveLoadedDbValues(h, result.get(),
+                                &pending_synced_local_profiles_query_,
+                                &synced_local_profiles_);
         } else if (h == pending_account_profiles_query_) {
           ReceiveLoadedDbValues(h, result.get(),
                                 &pending_account_profiles_query_,
                                 &account_profiles_);
         } else {
-          DCHECK_EQ(h, pending_server_profiles_query_)
+          DCHECK_EQ(h, pending_creditcard_billing_addresses_query_)
               << "received profiles from invalid request.";
           ReceiveLoadedDbValues(h, result.get(),
-                                &pending_server_profiles_query_,
-                                &server_profiles_);
+                                &pending_creditcard_billing_addresses_query_,
+                                &credit_card_billing_addresses_);
         }
         break;
       case AUTOFILL_CREDITCARDS_RESULT:
@@ -1011,7 +1013,7 @@ void PersonalDataManager::ClearAllServerData() {
   // that the data changed and then this class will re-fetch. Preemptively
   // clear so that tests can synchronously verify that this data was cleared.
   server_credit_cards_.clear();
-  server_profiles_.clear();
+  credit_card_billing_addresses_.clear();
   payments_customer_data_.reset();
   server_credit_card_cloud_token_data_.clear();
   autofill_offer_data_.clear();
@@ -1021,7 +1023,7 @@ void PersonalDataManager::ClearAllServerData() {
 void PersonalDataManager::ClearAllLocalData() {
   database_helper_->GetLocalDatabase()->ClearAllLocalData();
   local_credit_cards_.clear();
-  web_profiles_.clear();
+  synced_local_profiles_.clear();
   // Even though `account_profiles_` are not "local", the local/server
   // distinction in the PersonalDataManager only exists for historical reasons
   // and all AutofillProfiles fall in the local category.
@@ -1165,8 +1167,8 @@ std::vector<AutofillProfile*> PersonalDataManager::GetServerProfiles() const {
   std::vector<AutofillProfile*> result;
   if (!IsAutofillProfileEnabled())
     return result;
-  result.reserve(server_profiles_.size());
-  for (const auto& profile : server_profiles_)
+  result.reserve(credit_card_billing_addresses_.size());
+  for (const auto& profile : credit_card_billing_addresses_)
     result.push_back(profile.get());
   return result;
 }
@@ -1541,7 +1543,7 @@ const std::vector<std::unique_ptr<AutofillProfile>>&
 PersonalDataManager::GetProfileStorage(AutofillProfile::Source source) const {
   switch (source) {
     case AutofillProfile::Source::kLocalOrSyncable:
-      return web_profiles_;
+      return synced_local_profiles_;
     case AutofillProfile::Source::kAccount:
       return account_profiles_;
   }
@@ -1805,11 +1807,11 @@ void PersonalDataManager::LoadProfiles() {
     return;
   }
 
-  CancelPendingLocalQuery(&pending_local_profiles_query_);
+  CancelPendingLocalQuery(&pending_synced_local_profiles_query_);
   CancelPendingLocalQuery(&pending_account_profiles_query_);
-  CancelPendingServerQuery(&pending_server_profiles_query_);
+  CancelPendingServerQuery(&pending_creditcard_billing_addresses_query_);
 
-  pending_local_profiles_query_ =
+  pending_synced_local_profiles_query_ =
       database_helper_->GetLocalDatabase()->GetAutofillProfiles(
           AutofillProfile::Source::kLocalOrSyncable, this);
   if (base::FeatureList::IsEnabled(
@@ -1819,7 +1821,7 @@ void PersonalDataManager::LoadProfiles() {
             AutofillProfile::Source::kAccount, this);
   }
   if (database_helper_->GetServerDatabase()) {
-    pending_server_profiles_query_ =
+    pending_creditcard_billing_addresses_query_ =
         database_helper_->GetServerDatabase()->GetServerProfiles(this);
   }
 }
@@ -1909,7 +1911,7 @@ void PersonalDataManager::CancelPendingServerQuery(
 }
 
 void PersonalDataManager::CancelPendingServerQueries() {
-  CancelPendingServerQuery(&pending_server_profiles_query_);
+  CancelPendingServerQuery(&pending_creditcard_billing_addresses_query_);
   CancelPendingServerQuery(&pending_server_creditcards_query_);
   CancelPendingServerQuery(&pending_customer_data_query_);
   CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
@@ -1937,7 +1939,7 @@ std::string PersonalDataManager::SaveImportedProfile(
   // TODO(crbug.com/1348294): Merge into `account_profiles_` once `kAccount`
   // imports are supported.
   std::string guid = AutofillProfileComparator::MergeProfile(
-      imported_profile, web_profiles_, app_locale_, &profiles);
+      imported_profile, synced_local_profiles_, app_locale_, &profiles);
   SetProfilesForAllSources(&profiles);
   return guid;
 }
@@ -2423,10 +2425,10 @@ void PersonalDataManager::ClearOnGoingProfileChanges() {
 }
 
 bool PersonalDataManager::HasPendingQueries() {
-  return pending_local_profiles_query_ != 0 ||
+  return pending_synced_local_profiles_query_ != 0 ||
          pending_account_profiles_query_ != 0 ||
          pending_creditcards_query_ != 0 ||
-         pending_server_profiles_query_ != 0 ||
+         pending_creditcard_billing_addresses_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||
          pending_server_creditcard_cloud_token_data_query_ != 0 ||
          pending_customer_data_query_ != 0 || pending_upi_ids_query_ != 0 ||

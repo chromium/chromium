@@ -161,16 +161,16 @@ bool TestPersonalDataManager::SetProfilesForSource(
 void TestPersonalDataManager::LoadProfiles() {
   // Overridden to avoid a trip to the database. This should be a no-op except
   // for the side-effect of logging the profile count.
-  pending_local_profiles_query_ = 123;
+  pending_synced_local_profiles_query_ = 123;
   pending_account_profiles_query_ = 124;
-  pending_server_profiles_query_ = 125;
+  pending_creditcard_billing_addresses_query_ = 125;
   {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
-    web_profiles_.swap(profiles);
+    synced_local_profiles_.swap(profiles);
     auto result = std::make_unique<
         WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
         AUTOFILL_PROFILES_RESULT, std::move(profiles));
-    OnWebDataServiceRequestDone(pending_local_profiles_query_,
+    OnWebDataServiceRequestDone(pending_synced_local_profiles_query_,
                                 std::move(result));
   }
   if (base::FeatureList::IsEnabled(
@@ -185,11 +185,11 @@ void TestPersonalDataManager::LoadProfiles() {
   }
   {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
-    server_profiles_.swap(profiles);
+    credit_card_billing_addresses_.swap(profiles);
     auto result = std::make_unique<
         WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
         AUTOFILL_PROFILES_RESULT, std::move(profiles));
-    OnWebDataServiceRequestDone(pending_server_profiles_query_,
+    OnWebDataServiceRequestDone(pending_creditcard_billing_addresses_query_,
                                 std::move(result));
   }
 }
@@ -326,7 +326,7 @@ TestPersonalDataManager::GetProfileUpdateStrikeDatabase() const {
 }
 
 void TestPersonalDataManager::ClearProfiles() {
-  web_profiles_.clear();
+  synced_local_profiles_.clear();
   account_profiles_.clear();
 }
 
