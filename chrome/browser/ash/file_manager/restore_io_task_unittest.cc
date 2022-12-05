@@ -47,16 +47,16 @@ class RestoreIOTaskTest : public TrashBaseTest {
     // The TrashService launches a sandboxed process to perform parsing in, in
     // unit tests this is not possible. So instead override the launcher to
     // start an in-process TrashService and have `LaunchTrashService` invoke it.
-    chromeos::trash_service::SetTrashServiceLaunchOverrideForTesting(
+    ash::trash_service::SetTrashServiceLaunchOverrideForTesting(
         base::BindRepeating(&RestoreIOTaskTest::CreateInProcessTrashService,
                             base::Unretained(this)));
   }
 
-  mojo::PendingRemote<chromeos::trash_service::mojom::TrashService>
+  mojo::PendingRemote<ash::trash_service::mojom::TrashService>
   CreateInProcessTrashService() {
-    mojo::PendingRemote<chromeos::trash_service::mojom::TrashService> remote;
+    mojo::PendingRemote<ash::trash_service::mojom::TrashService> remote;
     trash_service_impl_ =
-        std::make_unique<chromeos::trash_service::TrashServiceImpl>(
+        std::make_unique<ash::trash_service::TrashServiceImpl>(
             remote.InitWithNewPipeAndPassReceiver());
     return remote;
   }
@@ -68,8 +68,7 @@ class RestoreIOTaskTest : public TrashBaseTest {
 
  private:
   // Maintains ownership fo the in-process parsing service.
-  std::unique_ptr<chromeos::trash_service::TrashServiceImpl>
-      trash_service_impl_;
+  std::unique_ptr<ash::trash_service::TrashServiceImpl> trash_service_impl_;
 };
 
 TEST_F(RestoreIOTaskTest, NoSourceUrlsShouldReturnSuccess) {
@@ -303,11 +302,10 @@ TEST_F(RestoreIOTaskTest, ItemWithExistingConflictAreRenamed) {
 }
 
 class TrashServiceMojoDisconnector
-    : public chromeos::trash_service::mojom::TrashService {
+    : public ash::trash_service::mojom::TrashService {
  public:
   explicit TrashServiceMojoDisconnector(
-      mojo::PendingReceiver<chromeos::trash_service::mojom::TrashService>
-          receiver) {
+      mojo::PendingReceiver<ash::trash_service::mojom::TrashService> receiver) {
     receivers_.Add(this, std::move(receiver));
   }
   ~TrashServiceMojoDisconnector() override = default;
@@ -321,12 +319,12 @@ class TrashServiceMojoDisconnector
   // invoked.
   void ParseTrashInfoFile(
       base::File trash_info_file,
-      chromeos::trash_service::ParseTrashInfoCallback callback) override {
+      ash::trash_service::ParseTrashInfoCallback callback) override {
     receivers_.Clear();
   }
 
  private:
-  mojo::ReceiverSet<chromeos::trash_service::mojom::TrashService> receivers_;
+  mojo::ReceiverSet<ash::trash_service::mojom::TrashService> receivers_;
 };
 
 class RestoreIOTaskDisconnectMojoTest : public TrashBaseTest {
@@ -344,15 +342,15 @@ class RestoreIOTaskDisconnectMojoTest : public TrashBaseTest {
     // Override the TrashService launch method to instead create an instance of
     // our mock class which will immediately disconnect all receivers when
     // invoked.
-    chromeos::trash_service::SetTrashServiceLaunchOverrideForTesting(
+    ash::trash_service::SetTrashServiceLaunchOverrideForTesting(
         base::BindRepeating(
             &RestoreIOTaskDisconnectMojoTest::CreateInProcessTrashService,
             base::Unretained(this)));
   }
 
-  mojo::PendingRemote<chromeos::trash_service::mojom::TrashService>
+  mojo::PendingRemote<ash::trash_service::mojom::TrashService>
   CreateInProcessTrashService() {
-    mojo::PendingRemote<chromeos::trash_service::mojom::TrashService> remote;
+    mojo::PendingRemote<ash::trash_service::mojom::TrashService> remote;
     trash_service_test_impl_ = std::make_unique<TrashServiceMojoDisconnector>(
         remote.InitWithNewPipeAndPassReceiver());
     return remote;

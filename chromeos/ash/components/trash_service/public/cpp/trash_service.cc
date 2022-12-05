@@ -10,7 +10,7 @@
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
-namespace chromeos::trash_service {
+namespace ash::trash_service {
 
 namespace {
 
@@ -39,4 +39,4 @@ void SetTrashServiceLaunchOverrideForTesting(LaunchCallback callback) {
   GetLaunchOverride() = std::move(callback);
 }
 
-}  // namespace chromeos::trash_service
+}  // namespace ash::trash_service

@@ -75,7 +75,7 @@ TrashInfoValidator::TrashInfoValidator(Profile* profile,
   enabled_trash_locations_ =
       trash::GenerateEnabledTrashLocationsForProfile(profile, base_path);
 
-  parser_ = std::make_unique<chromeos::trash_service::TrashInfoParser>();
+  parser_ = std::make_unique<ash::trash_service::TrashInfoParser>();
 }
 
 TrashInfoValidator::~TrashInfoValidator() = default;

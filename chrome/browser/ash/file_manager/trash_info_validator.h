@@ -125,7 +125,7 @@ class TrashInfoValidator {
 
   // Holds the connection open to the `TrashService`. This is a sandboxed
   // process that performs parsing of the trashinfo files.
-  std::unique_ptr<chromeos::trash_service::TrashInfoParser> parser_ = nullptr;
+  std::unique_ptr<ash::trash_service::TrashInfoParser> parser_ = nullptr;
 
   base::WeakPtrFactory<TrashInfoValidator> weak_ptr_factory_{this};
 };

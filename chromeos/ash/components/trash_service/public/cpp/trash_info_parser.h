@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos::trash_service {
+namespace ash::trash_service {
 
 // A class that manages the lifetime and mojo connection of the Trash service.
 class TrashInfoParser {
@@ -36,6 +36,6 @@ class TrashInfoParser {
   base::WeakPtrFactory<TrashInfoParser> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos::trash_service
+}  // namespace ash::trash_service
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_INFO_PARSER_H_

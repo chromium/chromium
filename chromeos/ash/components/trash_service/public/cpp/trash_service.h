@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos::trash_service {
+namespace ash::trash_service {
 
 using ParseTrashInfoCallback = base::OnceCallback<
     void(base::File::Error, const base::FilePath&, base::Time)>;
@@ -30,6 +30,6 @@ using LaunchCallback =
     base::RepeatingCallback<mojo::PendingRemote<mojom::TrashService>()>;
 void SetTrashServiceLaunchOverrideForTesting(LaunchCallback callback);
 
-}  // namespace chromeos::trash_service
+}  // namespace ash::trash_service
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_

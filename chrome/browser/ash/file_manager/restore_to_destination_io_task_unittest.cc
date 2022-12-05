@@ -44,17 +44,17 @@ class RestoreToDestinationIOTaskTest : public TrashBaseTest {
     // The TrashService launches a sandboxed process to perform parsing in, in
     // unit tests this is not possible. So instead override the launcher to
     // start an in-process TrashService and have `LaunchTrashService` invoke it.
-    chromeos::trash_service::SetTrashServiceLaunchOverrideForTesting(
+    ash::trash_service::SetTrashServiceLaunchOverrideForTesting(
         base::BindRepeating(
             &RestoreToDestinationIOTaskTest::CreateInProcessTrashService,
             base::Unretained(this)));
   }
 
-  mojo::PendingRemote<chromeos::trash_service::mojom::TrashService>
+  mojo::PendingRemote<ash::trash_service::mojom::TrashService>
   CreateInProcessTrashService() {
-    mojo::PendingRemote<chromeos::trash_service::mojom::TrashService> remote;
+    mojo::PendingRemote<ash::trash_service::mojom::TrashService> remote;
     trash_service_impl_ =
-        std::make_unique<chromeos::trash_service::TrashServiceImpl>(
+        std::make_unique<ash::trash_service::TrashServiceImpl>(
             remote.InitWithNewPipeAndPassReceiver());
     return remote;
   }
@@ -66,8 +66,7 @@ class RestoreToDestinationIOTaskTest : public TrashBaseTest {
 
  private:
   // Maintains ownership fo the in-process parsing service.
-  std::unique_ptr<chromeos::trash_service::TrashServiceImpl>
-      trash_service_impl_;
+  std::unique_ptr<ash::trash_service::TrashServiceImpl> trash_service_impl_;
 };
 
 TEST_F(RestoreToDestinationIOTaskTest,

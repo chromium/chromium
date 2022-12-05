@@ -26,7 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::trash_service {
+namespace ash::trash_service {
 
 using ::base::test::RunClosure;
 using ::testing::_;
@@ -278,4 +278,4 @@ TEST_F(TrashServiceTest, ValidDeletionDateKeyValueScenarios) {
   }
 }
 
-}  // namespace chromeos::trash_service
+}  // namespace ash::trash_service

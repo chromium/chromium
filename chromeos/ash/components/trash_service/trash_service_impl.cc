@@ -17,7 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 
-namespace chromeos::trash_service {
+namespace ash::trash_service {
 
 namespace {
 
@@ -168,4 +168,4 @@ void TrashServiceImpl::ParseTrashInfoFile(base::File trash_info_file,
                           std::move(deletion_date));
 }
 
-}  // namespace chromeos::trash_service
+}  // namespace ash::trash_service

@@ -374,9 +374,8 @@ auto RunSharing(mojo::PendingReceiver<sharing::mojom::Sharing> receiver) {
 }
 
 auto RunTrashService(
-    mojo::PendingReceiver<chromeos::trash_service::mojom::TrashService>
-        receiver) {
-  return std::make_unique<chromeos::trash_service::TrashServiceImpl>(
+    mojo::PendingReceiver<ash::trash_service::mojom::TrashService> receiver) {
+  return std::make_unique<ash::trash_service::TrashServiceImpl>(
       std::move(receiver));
 }
 

@@ -9,7 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 
-namespace chromeos::trash_service {
+namespace ash::trash_service {
 
 namespace {
 
@@ -59,4 +59,4 @@ void TrashInfoParser::OnGotFile(ParseTrashInfoCallback callback,
   service_->ParseTrashInfoFile(std::move(file), std::move(callback));
 }
 
-}  // namespace chromeos::trash_service
+}  // namespace ash::trash_service
