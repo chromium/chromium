@@ -13,6 +13,9 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
                                         const std::vector<std::string>& inputs,
                                         AnnotationType annotation_type) {
   annotation_requests_.emplace_back(std::make_pair(inputs, annotation_type));
+  if (always_hang_) {
+    return;
+  }
 
   std::vector<BatchAnnotationResult> results;
 
@@ -53,6 +56,10 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
   }
 
   std::move(callback).Run(results);
+}
+
+void TestPageContentAnnotator::SetAlwaysHang(bool hang) {
+  always_hang_ = hang;
 }
 
 absl::optional<ModelInfo> TestPageContentAnnotator::GetModelInfoForType(

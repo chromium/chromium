@@ -40,6 +40,9 @@ class TestPageContentAnnotator : public PageContentAnnotator {
       const absl::optional<ModelInfo>& model_info,
       const base::flat_map<std::string, double>& visibility_scores_for_input);
 
+  // When set, |Annotate| will never call its callback.
+  void SetAlwaysHang(bool hang);
+
   // Returns true iff |RequestAndNotifyWhenModelAvailable| was called for
   // |type|.
   bool ModelRequestedForType(AnnotationType type) const;
@@ -61,6 +64,9 @@ class TestPageContentAnnotator : public PageContentAnnotator {
       base::OnceCallback<void(bool)> callback) override;
 
  private:
+  // When set, |Annotate| will never call its callback.
+  bool always_hang_ = false;
+
   absl::optional<ModelInfo> topics_model_info_;
   base::flat_map<std::string, std::vector<WeightedIdentifier>> topics_by_input_;
 

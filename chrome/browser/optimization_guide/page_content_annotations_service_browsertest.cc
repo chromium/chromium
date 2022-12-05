@@ -354,6 +354,11 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     load_model_on_startup_ = load_model_on_startup;
   }
 
+  PageContentAnnotationsService* service() {
+    return PageContentAnnotationsServiceFactory::GetForProfile(
+        browser()->profile());
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     InProcessBrowserTest::SetUpOnMainThread();
@@ -455,10 +460,15 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   bool load_model_on_startup_ = true;
 };
 
-// Disabled. https://crbug.com/1338408
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       DISABLED_ModelExecutes) {
+                       ModelExecutes) {
   base::HistogramTester histogram_tester;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  TestPageContentAnnotator test_annotator;
+  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  service()->OverridePageContentAnnotatorForTesting(&test_annotator);
+#endif
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -572,17 +582,15 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   run_loop.Run();
 }
 
-#if !defined(NDEBUG)
-// Flaky timeout in debug builds (crbug.com/1338408).
-#define MAYBE_NoVisitsForUrlInHistory DISABLED_NoVisitsForUrlInHistory
-#else
-#define MAYBE_NoVisitsForUrlInHistory NoVisitsForUrlInHistory
-#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       MAYBE_NoVisitsForUrlInHistory) {
+                       NoVisitsForUrlInHistory) {
   HistoryVisit history_visit;
   history_visit.url = GURL("https://probablynotarealurl.com/");
   history_visit.text_to_annotate = "sometext";
+
+  TestPageContentAnnotator test_annotator;
+  test_annotator.UseVisibilityScores(absl::nullopt, {{"sometext", 0.5}});
+  service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
   {
     base::HistogramTester histogram_tester;
@@ -898,16 +906,12 @@ class PageContentAnnotationsServiceNoHistoryTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky on Linux Tests (dbg): crbug.com/1338040
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_ModelExecutesButDoesntWriteToHistory \
-  DISABLED_ModelExecutesButDoesntWriteToHistory
-#else
-#define MAYBE_ModelExecutesButDoesntWriteToHistory \
-  ModelExecutesButDoesntWriteToHistory
-#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
-                       MAYBE_ModelExecutesButDoesntWriteToHistory) {
+                       ModelExecutesButDoesntWriteToHistory) {
+  TestPageContentAnnotator test_annotator;
+  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  service()->OverridePageContentAnnotatorForTesting(&test_annotator);
+
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
@@ -934,15 +938,12 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   EXPECT_FALSE(ModelAnnotationsFieldsAreSetForURL(url));
 }
 
-// Flaky on Linux Tests (dbg): crbug.com/1338408
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_ModelExecutesAndUsesCachedResult \
-  DISABLED_ModelExecutesAndUsesCachedResult
-#else
-#define MAYBE_ModelExecutesAndUsesCachedResult ModelExecutesAndUsesCachedResult
-#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
-                       MAYBE_ModelExecutesAndUsesCachedResult) {
+                       ModelExecutesAndUsesCachedResult) {
+  TestPageContentAnnotator test_annotator;
+  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  service()->OverridePageContentAnnotatorForTesting(&test_annotator);
+
   {
     base::HistogramTester histogram_tester;
 
@@ -1080,7 +1081,7 @@ class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
         {{features::kOptimizationHints, {}},
          {features::kPageContentAnnotations,
           {{"write_to_history_service", "false"},
-           {"annotate_visit_batch_size", "2"}}},
+           {"annotate_visit_batch_size", "1"}}},
          {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{});
   }
@@ -1090,27 +1091,26 @@ class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(https://crbug/1291486): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitNoAnnotateTest,
-                       DISABLED_QueueFullAndVisitBatchActive) {
-  base::HistogramTester histogram_tester;
-  HistoryVisit history_visit(base::Time::Now(),
-                             GURL("https://probablynotarealurl.com/"), 0);
-  HistoryVisit history_visit2(base::Time::Now(),
-                              GURL("https://probablynotarealurl.com/"), 0);
-  HistoryVisit history_visit3(base::Time::Now(),
-                              GURL("https://probablynotarealurl.com/"), 0);
-  HistoryVisit history_visit4(base::Time::Now(),
-                              GURL("https://probablynotarealurl.com/"), 0);
-  history_visit.text_to_annotate = "sometext";
-  history_visit2.text_to_annotate = "sometext";
-  history_visit3.text_to_annotate = "sometext";
-  history_visit4.text_to_annotate = "sometext";
+                       QueueFullAndVisitBatchActive) {
+  TestPageContentAnnotator test_annotator;
+  test_annotator.SetAlwaysHang(true);
+  service()->OverridePageContentAnnotatorForTesting(&test_annotator);
 
-  Annotate(history_visit);
+  base::HistogramTester histogram_tester;
+  HistoryVisit history_visit1(base::Time::Now(),
+                              GURL("https://probablynotarealurl1.com/"), 1);
+  HistoryVisit history_visit2(base::Time::Now(),
+                              GURL("https://probablynotarealurl2.com/"), 2);
+  HistoryVisit history_visit3(base::Time::Now(),
+                              GURL("https://probablynotarealurl3.com/"), 3);
+  history_visit1.text_to_annotate = "sometext1";
+  history_visit2.text_to_annotate = "sometext2";
+  history_visit3.text_to_annotate = "sometext3";
+
+  Annotate(history_visit1);
   Annotate(history_visit2);
   Annotate(history_visit3);
-  Annotate(history_visit4);
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -1123,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitNoAnnotateTest,
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
-      false, 4);
+      false, 3);
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentAnnotationsService."
@@ -1156,68 +1156,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
   // (because some other code added some annotations), the model-related fields
   // should be empty/unset.
   EXPECT_FALSE(ModelAnnotationsFieldsAreSetForURL(url));
-}
-
-class PageContentAnnotationsServiceModelNotLoadedOnStartupTest
-    : public PageContentAnnotationsServiceBrowserTest {
- public:
-  PageContentAnnotationsServiceModelNotLoadedOnStartupTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOptimizationHints,
-                              features::kPageContentAnnotations,
-                              features::kPageVisibilityPageContentAnnotations},
-        /*disabled_features=*/{});
-    set_load_model_on_startup(false);
-  }
-  ~PageContentAnnotationsServiceModelNotLoadedOnStartupTest() override =
-      default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Flaky on Win 7 Tests x64: crbug.com/1223172
-// Flaky timeout in debug builds: crbug.com/1338408.
-#if BUILDFLAG(IS_WIN) || !defined(NDEBUG)
-#define MAYBE_ModelNotAvailableForFirstNavigation \
-  DISABLED_ModelNotAvailableForFirstNavigation
-#else
-#define MAYBE_ModelNotAvailableForFirstNavigation \
-  ModelNotAvailableForFirstNavigation
-#endif
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceModelNotLoadedOnStartupTest,
-                       MAYBE_ModelNotAvailableForFirstNavigation) {
-  base::HistogramTester histogram_tester;
-
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.ModelExecutor.ExecutionStatus.PageVisibility", 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecutor.ExecutionStatus.PageVisibility",
-      ExecutionStatus::kErrorModelFileNotAvailable, 1);
-
-  LoadAndWaitForModel();
-
-  GURL url2(
-      embedded_test_server()->GetURL("a.com", "/hello.html?totally=different"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.ModelExecutor.ExecutionStatus.PageVisibility", 2);
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.ModelExecutor.ExecutionStatus.PageVisibility",
-      ExecutionStatus::kErrorModelFileNotAvailable, 1);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.ModelExecutor.ExecutionStatus.PageVisibility",
-      ExecutionStatus::kSuccess, 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutor.ExecutionStatus.PageVisibility", 2);
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
