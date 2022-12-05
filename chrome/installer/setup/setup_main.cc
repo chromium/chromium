@@ -586,6 +586,8 @@ installer::InstallStatus RenameChromeExecutables(
       google_update::kRegCriticalVersionField);
   installer::AppCommand(installer::kCmdRenameChromeExe, {})
       .AddDeleteAppCommandWorkItems(reg_root, install_list.get());
+  installer::AppCommand(installer::kCmdAlternateRenameChromeExe, {})
+      .AddDeleteAppCommandWorkItems(reg_root, install_list.get());
 
   if (!installer_state->system_install()) {
     install_list->AddDeleteRegValueWorkItem(

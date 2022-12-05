@@ -226,6 +226,7 @@ extern const wchar_t kChromeOldExe[];
 extern const wchar_t kChromeProxyExe[];
 extern const wchar_t kChromeProxyNewExe[];
 extern const wchar_t kChromeProxyOldExe[];
+extern const wchar_t kCmdAlternateRenameChromeExe[];
 extern const wchar_t kCmdRenameChromeExe[];
 extern const wchar_t kCmdOnOsUpgrade[];
 extern const wchar_t kCmdRotateDeviceTrustKey[];

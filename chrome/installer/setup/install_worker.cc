@@ -670,6 +670,12 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
     AppCommand(installer::kCmdRenameChromeExe,
                product_rename_cmd.GetCommandLineString())
         .AddCreateAppCommandWorkItems(root, in_use_update_work_items.get());
+    // Some clients in Chrome 110 look for an alternate rename command id. Write
+    // that one as well so those can find it and be able to finish updating.
+    // TODO(floresa): Remove all uses of the alternate id in Chrome 111.
+    AppCommand(installer::kCmdAlternateRenameChromeExe,
+               product_rename_cmd.GetCommandLineString())
+        .AddCreateAppCommandWorkItems(root, in_use_update_work_items.get());
 
     if (!installer_state.system_install()) {
       in_use_update_work_items->AddSetRegValueWorkItem(
@@ -707,6 +713,8 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
         root, clients_key, KEY_WOW64_32KEY,
         google_update::kRegCriticalVersionField);
     AppCommand(installer::kCmdRenameChromeExe, {})
+        .AddDeleteAppCommandWorkItems(root, regular_update_work_items.get());
+    AppCommand(installer::kCmdAlternateRenameChromeExe, {})
         .AddDeleteAppCommandWorkItems(root, regular_update_work_items.get());
 
     if (!installer_state.system_install()) {

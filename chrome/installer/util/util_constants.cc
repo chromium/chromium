@@ -223,6 +223,7 @@ const wchar_t kChromeOldExe[] = L"old_chrome.exe";
 const wchar_t kChromeProxyExe[] = L"chrome_proxy.exe";
 const wchar_t kChromeProxyNewExe[] = L"new_chrome_proxy.exe";
 const wchar_t kChromeProxyOldExe[] = L"old_chrome_proxy.exe";
+const wchar_t kCmdAlternateRenameChromeExe[] = L"rename-chrome-exe";
 const wchar_t kCmdRenameChromeExe[] = L"cmd";
 const wchar_t kCmdOnOsUpgrade[] = L"on-os-upgrade";
 const wchar_t kCmdRotateDeviceTrustKey[] = L"rotate-dtkey";
