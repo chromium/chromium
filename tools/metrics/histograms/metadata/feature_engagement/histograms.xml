@@ -502,7 +502,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.AbortStep" units="int"
-    expires_after="2022-12-31">
+    expires_after="2023-12-31">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -513,7 +513,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.Completion" enum="BooleanSuccess"
-    expires_after="2022-12-31">
+    expires_after="2023-12-31">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.IPHLinkClicked" enum="BooleanSuccess"
-    expires_after="2022-12-31">
+    expires_after="2023-12-31">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -536,7 +536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.StartedFromWhatsNewPage"
-    enum="BooleanSuccess" expires_after="2022-12-31">
+    enum="BooleanSuccess" expires_after="2023-12-31">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
