@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_page_handler.h"
+
+#include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
-#include "chrome/browser/web_applications/commands/install_from_info_command.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -19,6 +21,10 @@
 #include "url/gurl.h"
 
 namespace ash::cloud_upload {
+
+namespace {
+const char kMicrosoft365WebAppUrl[] = "https://www.office.com/?from=Homescreen";
+}  // namespace
 
 CloudUploadPageHandler::CloudUploadPageHandler(
     Profile* profile,
@@ -37,8 +43,8 @@ void CloudUploadPageHandler::GetDialogArgs(GetDialogArgsCallback callback) {
                                        : mojom::DialogArgs::New());
 }
 
-void CloudUploadPageHandler::IsOfficePWAInstalled(
-    IsOfficePWAInstalledCallback callback) {
+void CloudUploadPageHandler::IsOfficeWebAppInstalled(
+    IsOfficeWebAppInstalledCallback callback) {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
           profile_)) {
     std::move(callback).Run(false);
@@ -52,6 +58,43 @@ void CloudUploadPageHandler::IsOfficePWAInstalled(
         installed = apps_util::IsInstalled(update.Readiness());
       });
   std::move(callback).Run(installed);
+}
+
+void CloudUploadPageHandler::InstallOfficeWebApp(
+    InstallOfficeWebAppCallback callback) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  if (provider == nullptr) {
+    // TODO(b/259869338): This means that web apps are managed in Lacros, so we
+    // need to add a crosapi to install the web app.
+    std::move(callback).Run(false);
+    return;
+  }
+  auto wrapped_callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
+
+  web_app::ExternalInstallOptions options(
+      GURL(kMicrosoft365WebAppUrl), web_app::UserDisplayMode::kStandalone,
+      web_app::ExternalInstallSource::kInternalMicrosoft365Setup);
+  options.fallback_app_name = "Microsoft 365";
+  options.add_to_quick_launch_bar = false;
+
+  provider->externally_managed_app_manager().InstallNow(
+      std::move(options),
+      base::BindOnce(&CloudUploadPageHandler::OnOfficeWebAppInstalled,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(wrapped_callback)));
+  return;
+}
+
+void CloudUploadPageHandler::OnOfficeWebAppInstalled(
+    InstallOfficeWebAppCallback callback,
+    const GURL& install_url,
+    web_app::ExternallyManagedAppManager::InstallResult result) {
+  if (webapps::IsSuccess(result.code)) {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+    proxy->SetSupportedLinksPreference(*result.app_id);
+  }
+  std::move(callback).Run(webapps::IsSuccess(result.code));
 }
 
 void CloudUploadPageHandler::RespondAndClose(mojom::UserAction action) {

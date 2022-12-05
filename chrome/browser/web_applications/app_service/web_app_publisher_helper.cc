@@ -226,6 +226,7 @@ apps::mojom::InstallReason GetHighestPriorityInstallReason(
     case WebAppManagement::kSubApp:
       return apps::mojom::InstallReason::kSubApp;
     case WebAppManagement::kWebAppStore:
+    case WebAppManagement::kOneDriveIntegration:
       return apps::mojom::InstallReason::kUser;
     case WebAppManagement::kSync:
       return apps::mojom::InstallReason::kSync;
@@ -260,6 +261,7 @@ apps::mojom::InstallSource ConvertInstallSourceToMojom(
     case webapps::WebappInstallSource::SUB_APP:
     case webapps::WebappInstallSource::CHROME_SERVICE:
     case webapps::WebappInstallSource::KIOSK:
+    case webapps::WebappInstallSource::MICROSOFT_365_SETUP:
       return apps::mojom::InstallSource::kBrowser;
     case webapps::WebappInstallSource::ARC:
       return apps::mojom::InstallSource::kPlayStore;

@@ -117,6 +117,9 @@ enum class WebappInstallSource {
   // OEM apps installed by the App Preload Service.
   PRELOADED_OEM = 24,
 
+  // Installed via the Microsoft 365 setup dialog.
+  MICROSOFT_365_SETUP = 25,
+
   // Add any new values above this one.
   COUNT,
 };

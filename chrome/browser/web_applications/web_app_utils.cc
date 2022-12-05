@@ -605,6 +605,7 @@ bool CanUserUninstallWebApp(WebAppSources sources) {
            WebAppManagement::kSubApp,
            WebAppManagement::kOem,
            WebAppManagement::kCommandLine,
+           WebAppManagement::kOneDriveIntegration,
        }) {
     specified_sources.set(type);
   }

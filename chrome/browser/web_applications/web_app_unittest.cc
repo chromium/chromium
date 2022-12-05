@@ -191,6 +191,12 @@ TEST(WebAppTest, WasInstalledByUser) {
   app.RemoveSource(WebAppManagement::kWebAppStore);
   EXPECT_FALSE(app.WasInstalledByUser());
 
+  app.AddSource(WebAppManagement::kOneDriveIntegration);
+  EXPECT_TRUE(app.WasInstalledByUser());
+
+  app.RemoveSource(WebAppManagement::kOneDriveIntegration);
+  EXPECT_FALSE(app.WasInstalledByUser());
+
   app.AddSource(WebAppManagement::kDefault);
   EXPECT_FALSE(app.WasInstalledByUser());
 
@@ -236,6 +242,8 @@ TEST(WebAppTest, CanUserUninstallWebApp) {
   EXPECT_TRUE(app.CanUserUninstallWebApp());
   app.AddSource(WebAppManagement::kSubApp);
   EXPECT_TRUE(app.CanUserUninstallWebApp());
+  app.AddSource(WebAppManagement::kOneDriveIntegration);
+  EXPECT_TRUE(app.CanUserUninstallWebApp());
 
   app.AddSource(WebAppManagement::kPolicy);
   EXPECT_FALSE(app.CanUserUninstallWebApp());
@@ -258,6 +266,9 @@ TEST(WebAppTest, CanUserUninstallWebApp) {
   EXPECT_FALSE(app.CanUserUninstallWebApp());
 
   app.RemoveSource(WebAppManagement::kPolicy);
+  EXPECT_TRUE(app.CanUserUninstallWebApp());
+
+  app.RemoveSource(WebAppManagement::kOneDriveIntegration);
   EXPECT_TRUE(app.CanUserUninstallWebApp());
 
   EXPECT_TRUE(app.IsPreinstalledApp());

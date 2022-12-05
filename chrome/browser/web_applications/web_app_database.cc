@@ -257,6 +257,8 @@ WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
       return WebAppManagement::Type::kCommandLine;
     case WebAppManagementProto::OEM:
       return WebAppManagement::Type::kOem;
+    case WebAppManagementProto::ONEDRIVEINTEGRATION:
+      return WebAppManagement::Type::kOneDriveIntegration;
   }
 }
 
@@ -280,6 +282,8 @@ WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
       return WebAppManagementProto::COMMAND_LINE;
     case WebAppManagement::Type::kOem:
       return WebAppManagementProto::OEM;
+    case WebAppManagement::Type::kOneDriveIntegration:
+      return WebAppManagementProto::ONEDRIVEINTEGRATION;
   }
 }
 
@@ -414,6 +418,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.sources_[WebAppManagement::kCommandLine]);
   local_data->mutable_sources()->set_oem(
       web_app.sources_[WebAppManagement::kOem]);
+  local_data->mutable_sources()->set_one_drive_integration(
+      web_app.sources_[WebAppManagement::kOneDriveIntegration]);
 
   local_data->set_is_locally_installed(web_app.is_locally_installed());
 
@@ -838,6 +844,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.sources().has_command_line()) {
     sources[WebAppManagement::kCommandLine] =
         local_data.sources().command_line();
+  }
+  if (local_data.sources().has_one_drive_integration()) {
+    sources[WebAppManagement::kOneDriveIntegration] =
+        local_data.sources().one_drive_integration();
   }
   if (!sources.any() && !local_data.is_uninstalling()) {
     DLOG(ERROR) << "WebApp proto parse error: no any source in sources field, "

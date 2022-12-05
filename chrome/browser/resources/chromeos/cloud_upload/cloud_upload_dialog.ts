@@ -50,16 +50,16 @@ export class CloudUploadElement extends HTMLElement {
   }
 
   async init(): Promise<void> {
-    const [, {installed: isOfficePwaInstalled}] = await Promise.all([
+    const [, {installed: isOfficeWebAppInstalled}] = await Promise.all([
       this.processDialogArgs(),
-      this.proxy.handler.isOfficePWAInstalled(),
+      this.proxy.handler.isOfficeWebAppInstalled(),
     ]);
     const odfsMounted = false;
 
     // TODO(b/251046341): Adjust this once the rest of the pages are in place.
     this.pages.push(new WelcomePageElement());
 
-    if (!isOfficePwaInstalled) {
+    if (!isOfficeWebAppInstalled) {
       this.pages.push(new OfficePwaInstallPageElement());
     }
 

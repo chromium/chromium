@@ -39,6 +39,7 @@ enum Type {
   kOem,
   kSubApp,
   kWebAppStore,
+  kOneDriveIntegration,
   // User-installed web apps are managed by the sync system.or
   // user-installed apps without overlaps this is the only source that will be
   // set.
@@ -151,6 +152,12 @@ enum class ExternalInstallSource {
   // The corresponding ExternallyManagedAppManager::SynchronizeInstalledApps
   // call site is in ash::AppManagerImpl::AddAppToLockScreenProfile.
   kExternalLockScreen = 6,
+
+  // Installed through the user-initiated Microsoft 365 setup dialog. There is
+  // no call to SynchronizeInstalledApps for this type as these apps are
+  // directly installed/uninstalled by the user, rather than being sync'd from
+  // somewhere else.
+  kInternalMicrosoft365Setup = 7,
 };
 
 // Icon size in pixels.

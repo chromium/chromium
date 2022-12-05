@@ -385,6 +385,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->AddSource(WebAppManagement::kOem);
     management_types.push_back(WebAppManagement::kOem);
   }
+  if (random.next_bool()) {
+    app->AddSource(WebAppManagement::kOneDriveIntegration);
+    management_types.push_back(WebAppManagement::kOneDriveIntegration);
+  }
 
   // Must always be at least one source.
   if (!app->HasAnySources()) {

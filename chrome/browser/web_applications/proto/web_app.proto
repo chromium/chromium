@@ -65,6 +65,7 @@ message SourcesProto {
   optional bool kiosk = 7;
   optional bool command_line = 8;
   optional bool oem = 9;
+  optional bool one_drive_integration = 10;
 }
 
 // Properties for integrating with Chrome OS UI surfaces.
@@ -118,6 +119,7 @@ enum WebAppManagementProto {
   KIOSK = 7;
   COMMAND_LINE = 8;
   OEM = 9;
+  ONEDRIVEINTEGRATION = 10;
 }
 
 message ManagementToExternalConfigInfo {

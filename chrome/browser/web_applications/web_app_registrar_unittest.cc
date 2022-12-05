@@ -894,7 +894,7 @@ TEST_F(WebAppRegistrarTest, CountUserInstalledApps) {
     RegisterApp(std::move(web_app));
   }
 
-  EXPECT_EQ(2, registrar().CountUserInstalledApps());
+  EXPECT_EQ(3, registrar().CountUserInstalledApps());
 }
 
 TEST_F(WebAppRegistrarTest,

@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,12 +41,19 @@ class CloudUploadPageHandler : public mojom::PageHandler {
 
   // mojom::PageHandler:
   void GetDialogArgs(GetDialogArgsCallback callback) override;
-  void IsOfficePWAInstalled(IsOfficePWAInstalledCallback callback) override;
+  void IsOfficeWebAppInstalled(
+      IsOfficeWebAppInstalledCallback callback) override;
+  void InstallOfficeWebApp(InstallOfficeWebAppCallback callback) override;
   void RespondAndClose(mojom::UserAction action) override;
   void SetOfficeAsDefaultHandler() override;
   void SetAlwaysMoveOfficeFiles(bool always_move) override;
 
  private:
+  void OnOfficeWebAppInstalled(
+      InstallOfficeWebAppCallback callback,
+      const GURL& install_url,
+      web_app::ExternallyManagedAppManager::InstallResult result);
+
   Profile* profile_;
 
   mojom::DialogArgsPtr dialog_args_;

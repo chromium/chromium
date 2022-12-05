@@ -13,12 +13,12 @@
       "system_web_app_data": null
    },
    "current_os_integration_states": null,
-   "dark_mode_background_color": "rgba(34,214,187,1)",
-   "dark_mode_theme_color": "none",
+   "dark_mode_background_color": "none",
+   "dark_mode_theme_color": "rgba(34,214,187,1)",
    "data_size_in_bytes": "3687618762",
    "description": "Description1234",
    "disallowed_launch_protocols": [ "web+disallowed_1234_0", "web+disallowed_1234_1", "web+disallowed_1234_2", "web+disallowed_1234_3" ],
-   "display_mode": "standalone",
+   "display_mode": "fullscreen",
    "display_override": [ "standalone", "fullscreen" ],
    "downloaded_icon_sizes": {
       "ANY": [ 256 ],
@@ -144,11 +144,11 @@
       "launch_type": "kSingleClient",
       "name": "2591174844 file"
    } ],
-   "install_source_for_metrics": 22,
-   "install_time": "1970-01-21 15:31:39.413 UTC",
-   "is_from_sync_and_pending_installation": true,
+   "install_source_for_metrics": 23,
+   "install_time": "1970-01-12 10:04:48.382 UTC",
+   "is_from_sync_and_pending_installation": false,
    "is_generated_icon": true,
-   "is_locally_installed": false,
+   "is_locally_installed": true,
    "is_storage_isolated": true,
    "is_uninstalling": false,
    "isolation_data": {
@@ -158,12 +158,12 @@
          }
       }
    },
-   "last_badging_time": "1970-02-04 02:14:21.221 UTC",
-   "last_launch_time": "1970-01-15 16:10:56.662 UTC",
+   "last_badging_time": "1970-01-15 16:10:56.662 UTC",
+   "last_launch_time": "1970-01-21 15:31:39.413 UTC",
    "launch_handler": {
       "client_mode": "kNavigateExisting"
    },
-   "launch_query_params": null,
+   "launch_query_params": "944292860",
    "lock_screen_start_url": "https://example.com/scope1234/lock_screen_start_url3206632378",
    "management_type_to_external_configuration_map": {
       "Default": {

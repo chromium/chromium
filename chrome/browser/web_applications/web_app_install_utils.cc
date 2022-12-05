@@ -831,6 +831,8 @@ webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
       return webapps::WebappInstallSource::KIOSK;
     case ExternalInstallSource::kExternalLockScreen:
       return webapps::WebappInstallSource::EXTERNAL_LOCK_SCREEN;
+    case ExternalInstallSource::kInternalMicrosoft365Setup:
+      return webapps::WebappInstallSource::MICROSOFT_365_SETUP;
   }
 }
 
@@ -852,6 +854,9 @@ webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
       return webapps::WebappUninstallSource::kUnknown;
     case ExternalInstallSource::kExternalLockScreen:
       return webapps::WebappUninstallSource::kExternalLockScreen;
+    case ExternalInstallSource::kInternalMicrosoft365Setup:
+      NOTREACHED() << "Microsoft 365 apps should not be unistalled externally";
+      return webapps::WebappUninstallSource::kUnknown;
   }
 }
 
@@ -900,6 +905,9 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
 
     case webapps::WebappInstallSource::SUB_APP:
       return WebAppManagement::kSubApp;
+
+    case webapps::WebappInstallSource::MICROSOFT_365_SETUP:
+      return WebAppManagement::kOneDriveIntegration;
 
     case webapps::WebappInstallSource::COUNT:
       NOTREACHED();

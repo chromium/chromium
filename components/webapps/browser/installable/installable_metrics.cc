@@ -38,14 +38,15 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::EXTERNAL_LOCK_SCREEN:
     case WebappInstallSource::EXTERNAL_POLICY:
     case WebappInstallSource::INTERNAL_DEFAULT:
+    case WebappInstallSource::KIOSK:
     case WebappInstallSource::MENU_BROWSER_TAB:
     case WebappInstallSource::MENU_CREATE_SHORTCUT:
     case WebappInstallSource::MENU_CUSTOM_TAB:
+    case WebappInstallSource::MICROSOFT_365_SETUP:
     case WebappInstallSource::OMNIBOX_INSTALL_ICON:
+    case WebappInstallSource::PRELOADED_OEM:
     case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
     case WebappInstallSource::SYSTEM_DEFAULT:
-    case WebappInstallSource::KIOSK:
-    case WebappInstallSource::PRELOADED_OEM:
       return true;
     case WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
     case WebappInstallSource::MANAGEMENT_API:

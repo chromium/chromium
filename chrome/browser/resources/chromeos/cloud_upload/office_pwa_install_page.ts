@@ -14,7 +14,7 @@ import {getTemplate} from './office_pwa_install_page.html.js';
 
 /**
  * The OfficePwaInstallPageElement guides the user through installing the
- * Microsoft 365 PWA.
+ * Microsoft 365 web app.
  */
 export class OfficePwaInstallPageElement extends BaseSetupPageElement {
   connectedCallback() {
@@ -37,21 +37,29 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
     actionButton.disabled = true;
 
     // Keep the installing state shown for at least 2 seconds to give the
-    // impression that the PWA is being installed.
-    // TODO(b/251045239): Call out to actually install the PWA.
-    await new Promise(
-        resolve => setTimeout(resolve, proxy.isTest() ? 20 : 2000));
+    // impression that the web app is being installed.
+    const [{installed: install_result}] = await Promise.all([
+      proxy.handler.installOfficeWebApp(),
+      new Promise(resolve => setTimeout(resolve, proxy.isTest() ? 20 : 2000)),
+    ]);
 
-    actionButton.innerText = 'Installed';
-    actionButton.classList.replace('installing', 'installed');
+    if (install_result) {
+      actionButton.innerText = 'Installed';
+      actionButton.classList.replace('installing', 'installed');
 
-    // Keep the installed state shown for a second before changing pages to
-    // give the user feedback that the PWA has been installed.
-    await new Promise(
-        resolve => setTimeout(resolve, proxy.isTest() ? 10 : 1000));
+      // Keep the installed state shown for a second before changing pages to
+      // give the user feedback that the web app has been installed.
+      await new Promise(
+          resolve => setTimeout(resolve, proxy.isTest() ? 10 : 1000));
 
-    this.dispatchEvent(
-        new CustomEvent(NEXT_PAGE_EVENT, {bubbles: true, composed: true}));
+      this.dispatchEvent(
+          new CustomEvent(NEXT_PAGE_EVENT, {bubbles: true, composed: true}));
+    } else {
+      // TODO(b:251046341): Proper error display.
+      actionButton.innerText = 'Install';
+      actionButton.classList.replace('installing', 'install');
+      actionButton.disabled = false;
+    }
   }
 
   private onCancelButtonClick() {

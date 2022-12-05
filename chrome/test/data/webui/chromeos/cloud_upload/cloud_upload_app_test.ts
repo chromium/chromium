@@ -17,7 +17,8 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 interface ProxyOptions {
   fileName?: string|null;
-  officePWAInstalled: boolean;
+  officeWebAppInstalled: boolean;
+  installOfficeWebAppResult: boolean;
 }
 
 /**
@@ -38,7 +39,9 @@ class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
     }
     this.handler.setResultFor('getDialogArgs', {args: args});
     this.handler.setResultFor(
-        'isOfficePWAInstalled', {installed: options.officePWAInstalled});
+        'isOfficeWebAppInstalled', {installed: options.officeWebAppInstalled});
+    this.handler.setResultFor(
+        'installOfficeWebApp', {installed: options.installOfficeWebAppResult});
   }
 
   isTest() {
@@ -144,7 +147,8 @@ suite('<cloud-upload>', () => {
   test('Set up OneDrive with file', async () => {
     await setUp({
       fileName: 'file.docx',
-      officePWAInstalled: false,
+      officeWebAppInstalled: false,
+      installOfficeWebAppResult: true,
     });
 
     // Go to the OneDrive upload page.
@@ -163,7 +167,8 @@ suite('<cloud-upload>', () => {
    */
   test('Set up OneDrive without file', async () => {
     await setUp({
-      officePWAInstalled: false,
+      officeWebAppInstalled: false,
+      installOfficeWebAppResult: true,
     });
 
     // Go to the OneDrive upload page.
@@ -178,7 +183,8 @@ suite('<cloud-upload>', () => {
 
   test('Set up OneDrive with Office PWA already installed', async () => {
     await setUp({
-      officePWAInstalled: true,
+      officeWebAppInstalled: true,
+      installOfficeWebAppResult: true,
     });
 
     await doWelcomePage();
@@ -202,7 +208,8 @@ suite('<cloud-upload>', () => {
   test('Open file button', async () => {
     await setUp({
       fileName: 'file.docx',
-      officePWAInstalled: false,
+      officeWebAppInstalled: false,
+      installOfficeWebAppResult: true,
     });
     checkIsWelcomePage();
 
@@ -228,7 +235,8 @@ suite('<cloud-upload>', () => {
   test('Close button on last page', async () => {
     await setUp({
       fileName: 'file.docx',
-      officePWAInstalled: false,
+      officeWebAppInstalled: false,
+      installOfficeWebAppResult: true,
     });
 
     // Go to the OneDrive upload page.
@@ -250,7 +258,10 @@ suite('<cloud-upload>', () => {
    */
   [1, 2, 3].forEach(
       page => test(`Close button on page ${page}`, async () => {
-        await setUp({officePWAInstalled: false});
+        await setUp({
+          officeWebAppInstalled: false,
+          installOfficeWebAppResult: true,
+        });
 
         // Go to the specified page.
         if (page > 1) {

@@ -138,7 +138,8 @@ bool WebApp::CanUserUninstallWebApp() const {
 
 bool WebApp::WasInstalledByUser() const {
   return sources_[WebAppManagement::kSync] ||
-         sources_[WebAppManagement::kWebAppStore];
+         sources_[WebAppManagement::kWebAppStore] ||
+         sources_[WebAppManagement::kOneDriveIntegration];
 }
 
 WebAppManagement::Type WebApp::GetHighestPrioritySource() const {
