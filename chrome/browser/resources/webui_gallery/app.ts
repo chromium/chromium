@@ -5,17 +5,16 @@
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
-import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
 
+import {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {getTemplate} from './app.html.js';
 
 export interface WebuiGalleryAppElement {
   $: {
     iframe: HTMLIFrameElement,
-    selector: IronSelectorElement,
+    selector: CrMenuSelector,
   };
 }
 

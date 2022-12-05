@@ -31,8 +31,7 @@ suite('SettingsMenu', function() {
   test('clearsUrlSearchParam', function() {
     // As of iron-selector 2.x, need to force iron-selector to update before
     // clicking items on it, or wait for 'iron-items-changed'
-    const ironSelector =
-        settingsMenu.shadowRoot!.querySelector('iron-selector')!;
+    const ironSelector = settingsMenu.$.menu;
     ironSelector.forceSynchronousItemUpdate();
 
     const urlParams = new URLSearchParams('search=foo');

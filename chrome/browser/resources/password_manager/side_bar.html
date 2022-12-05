@@ -10,25 +10,23 @@
   }
 </style>
 <div role="navigation">
-  <cr-menu-selector>
-    <iron-selector id="menu" selectable=".page-item" attr-for-selected="path"
-        selected-attribute="selected" on-iron-activate="onSelectorActivate_"
-        selected="[[getSelectedPage_(selectedPage_)]]" role="presentation">
-      <a id="passwords" role="menuitem" class="page-item cr-nav-menu-item"
-          path="passwords" href="/passwords" on-click="onItemClick_">
-        <iron-icon icon="passwords-icon:password"></iron-icon>
-        $i18n{passwords}
-      </a>
-      <a id="checkup" role="menuitem" class="page-item cr-nav-menu-item"
-          path="checkup" href="/checkup" on-click="onItemClick_">
-        <iron-icon icon="passwords-icon:checkup"></iron-icon>
-        $i18n{checkup}
-      </a>
-      <a id="settings" role="menuitem" class="page-item cr-nav-menu-item"
-          path="settings" href="/settings" on-click="onItemClick_">
-        <iron-icon icon="passwords-icon:settings"></iron-icon>
-        $i18n{settings}
-      </a>
-    </iron-selector>
+  <cr-menu-selector id="menu" selectable=".page-item" attr-for-selected="path"
+      selected-attribute="selected" on-iron-activate="onSelectorActivate_"
+      selected="[[getSelectedPage_(selectedPage_)]]">
+    <a id="passwords" role="menuitem" class="page-item cr-nav-menu-item"
+        path="passwords" href="/passwords" on-click="onItemClick_">
+      <iron-icon icon="passwords-icon:password"></iron-icon>
+      $i18n{passwords}
+    </a>
+    <a id="checkup" role="menuitem" class="page-item cr-nav-menu-item"
+        path="checkup" href="/checkup" on-click="onItemClick_">
+      <iron-icon icon="passwords-icon:checkup"></iron-icon>
+      $i18n{checkup}
+    </a>
+    <a id="settings" role="menuitem" class="page-item cr-nav-menu-item"
+        path="settings" href="/settings" on-click="onItemClick_">
+      <iron-icon icon="passwords-icon:settings"></iron-icon>
+      $i18n{settings}
+    </a>
   </cr-menu-selector>
 </div>

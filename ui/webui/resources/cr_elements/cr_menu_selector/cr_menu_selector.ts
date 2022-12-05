@@ -2,29 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {IronSelectableBehavior} from '//resources/polymer/v3_0/iron-selector/iron-selectable.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {assert} from '../../js/assert_ts.js';
 import {FocusOutlineManager} from '../../js/focus_outline_manager.js';
 
-export class CrMenuSelector extends HTMLElement {
+const CrMenuSelectorBase =
+    mixinBehaviors([IronSelectableBehavior], PolymerElement) as
+    {new (): PolymerElement & IronSelectableBehavior};
+
+export class CrMenuSelector extends CrMenuSelectorBase {
   static get is() {
     return 'cr-menu-selector';
   }
 
   private focusOutlineManager_: FocusOutlineManager;
 
-  constructor() {
-    super();
+  override connectedCallback() {
+    super.connectedCallback();
+    this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
+  }
 
+  override ready() {
+    super.ready();
+    this.setAttribute('role', 'menu');
     this.addEventListener('focusin', this.onFocusin_.bind(this));
     this.addEventListener('keydown', this.onKeydown_.bind(this));
   }
 
-  connectedCallback() {
-    this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
-    this.setAttribute('role', 'menu');
-  }
-
-  private getItems_(): HTMLElement[] {
+  private getAllFocusableItems_(): HTMLElement[] {
+    // Note that this is different from IronSelectableBehavior's items property
+    // as some items are focusable and actionable but not selectable (eg. an
+    // external link).
     return Array.from(
         this.querySelectorAll('[role=menuitem]:not([disabled]):not([hidden])'));
   }
@@ -39,12 +49,12 @@ export class CrMenuSelector extends HTMLElement {
     const focusMovedFromOutside = e.relatedTarget === null ||
         !this.contains(e.relatedTarget as HTMLElement);
     if (focusMovedWithKeyboard && focusMovedFromOutside) {
-      this.getItems_()[0]!.focus();
+      this.getAllFocusableItems_()[0]!.focus();
     }
   }
 
   private onKeydown_(event: KeyboardEvent) {
-    const items = this.getItems_();
+    const items = this.getAllFocusableItems_();
     assert(items.length >= 1);
     const currentFocusedIndex =
         items.indexOf(this.querySelector<HTMLElement>(':focus')!);

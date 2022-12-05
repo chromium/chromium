@@ -26,14 +26,11 @@
   }
 </style>
 <div id="sidebar">
-  <cr-menu-selector>
-    <iron-selector id="selector" selectable="a" selected-attribute="selected"
-        role="presentation">
-      <template is="dom-repeat" items="[[demos]]">
-        <a role="menuitem" href="[[item.path]]"
-            class="cr-nav-menu-item">[[item.name]]</a>
-      </template>
-    </iron-selector>
+  <cr-menu-selector id="selector" selectable="a" selected-attribute="selected">
+    <template is="dom-repeat" items="[[demos]]">
+      <a role="menuitem" href="[[item.path]]"
+          class="cr-nav-menu-item">[[item.name]]</a>
+    </template>
   </cr-menu-selector>
 </div>
 

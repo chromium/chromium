@@ -54,124 +54,121 @@
     </style>
 
     <div role="navigation">
-      <cr-menu-selector>
-        <iron-selector id="menu" selectable="a:not(#extensionsLink)"
-            attr-for-selected="href" on-iron-activate="onSelectorActivate_"
-            on-click="onLinkClick_" selected-attribute="selected"
-            role="presentation">
-          <a role="menuitem"
-              id="people" href="/people" hidden="[[!pageVisibility.people]]"
-              class="cr-nav-menu-item">
-            <iron-icon icon="cr:person"></iron-icon>
-            $i18n{peoplePageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-          <a role="menuitem" id="autofill" href="/autofill"
-              hidden="[[!pageVisibility.autofill]]"
-              class="cr-nav-menu-item">
-            <iron-icon icon="settings:assignment"></iron-icon>
-            $i18n{autofillPageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-          <a role="menuitem" href="/privacy"
-              hidden="[[!pageVisibility.privacy]]"
-              class="cr-nav-menu-item">
-            <iron-icon icon="cr:security"></iron-icon>
-            $i18n{privacyPageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-          <template is="dom-if" id="performanceDomIf"
-              if="[[performanceFeaturesAvailable_]]">
-            <a role="menuitem" id="performance" href="/performance"
-                class="cr-nav-menu-item"
-                hidden="[[!pageVisibility.performance]]">
-              <iron-icon icon="settings:performance"></iron-icon>
-              $i18n{performancePageTitle}
-              <paper-ripple></paper-ripple>
-            </a>
-          </template>
-          <a role="menuitem" id="appearance" href="/appearance"
-              hidden="[[!pageVisibility.appearance]]"
-              class="cr-nav-menu-item">
-            <iron-icon icon="settings:palette"></iron-icon>
-            $i18n{appearancePageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-          <a role="menuitem" href="/search" class="cr-nav-menu-item">
-            <iron-icon icon="cr:search"></iron-icon>
-            $i18n{searchPageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-    <if expr="not is_chromeos">
-          <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
-            href="/defaultBrowser"
-            hidden="[[!pageVisibility.defaultBrowser]]">
-            <iron-icon icon="settings:web"></iron-icon>
-            $i18n{defaultBrowser}
-            <paper-ripple></paper-ripple>
-          </a>
-    </if>
-          <a role="menuitem" id="onStartup" href="/onStartup"
+      <cr-menu-selector id="menu" selectable="a:not(#extensionsLink)"
+          attr-for-selected="href" on-iron-activate="onSelectorActivate_"
+          on-click="onLinkClick_" selected-attribute="selected">
+        <a role="menuitem"
+            id="people" href="/people" hidden="[[!pageVisibility.people]]"
+            class="cr-nav-menu-item">
+          <iron-icon icon="cr:person"></iron-icon>
+          $i18n{peoplePageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+        <a role="menuitem" id="autofill" href="/autofill"
+            hidden="[[!pageVisibility.autofill]]"
+            class="cr-nav-menu-item">
+          <iron-icon icon="settings:assignment"></iron-icon>
+          $i18n{autofillPageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+        <a role="menuitem" href="/privacy"
+            hidden="[[!pageVisibility.privacy]]"
+            class="cr-nav-menu-item">
+          <iron-icon icon="cr:security"></iron-icon>
+          $i18n{privacyPageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+        <template is="dom-if" id="performanceDomIf"
+            if="[[performanceFeaturesAvailable_]]">
+          <a role="menuitem" id="performance" href="/performance"
               class="cr-nav-menu-item"
-              hidden="[[!pageVisibility.onStartup]]">
-            <iron-icon icon="settings:power-settings-new"></iron-icon>
-            $i18n{onStartup}
+              hidden="[[!pageVisibility.performance]]">
+            <iron-icon icon="settings:performance"></iron-icon>
+            $i18n{performancePageTitle}
             <paper-ripple></paper-ripple>
           </a>
-          <div class="menu-separator"></div>
-          <a role="menuitem" id="languages" href="/languages"
-              class="cr-nav-menu-item"
-              hidden="[[!pageVisibility.languages]]">
-            <iron-icon icon="settings:language"></iron-icon>
-            $i18n{languagesPageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-          <a role="menuitem" id="downloads" href="/downloads"
-              class="cr-nav-menu-item"
-              hidden="[[!pageVisibility.downloads]]">
-            <iron-icon icon="cr:file-download"></iron-icon>
-            $i18n{downloadsPageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-          <a role="menuitem" id="accessibility" href="/accessibility"
-              class="cr-nav-menu-item"
-              hidden="[[!pageVisibility.a11y]]">
-            <iron-icon icon="settings:accessibility"></iron-icon>
-            $i18n{a11yPageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-    <if expr="not chromeos_ash">
-          <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
-              hidden="[[!pageVisibility.system]]">
-            <iron-icon icon="settings:build"></iron-icon>
-            $i18n{systemPageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-    </if>
-          <a role="menuitem" id="reset" href="/reset"
-              hidden="[[!pageVisibility.reset]]" class="cr-nav-menu-item">
-            <iron-icon icon="settings:restore"></iron-icon>
-            $i18n{resetPageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-          <div hidden="[[!pageVisibility.advancedSettings]]"
-              class="menu-separator"></div>
-          <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
-              href="chrome://extensions" target="_blank"
-              hidden="[[!pageVisibility.extensions]]"
-              on-click="onExtensionsLinkClick_"
-              title="$i18n{extensionsLinkTooltip}">
-            <iron-icon icon="cr:extension"></iron-icon>
-            <span>$i18n{extensionsPageTitle}</span>
-            <div class="cr-icon icon-external"></div>
-            <paper-ripple></paper-ripple>
-          </a>
-          <a role="menuitem" id="about-menu" href="/help"
-              class="cr-nav-menu-item">
-            <span id="aboutIcon" class="cr-icon" role="presentation"></span>
-            $i18n{aboutPageTitle}
-            <paper-ripple></paper-ripple>
-          </a>
-        </iron-selector>
+        </template>
+        <a role="menuitem" id="appearance" href="/appearance"
+            hidden="[[!pageVisibility.appearance]]"
+            class="cr-nav-menu-item">
+          <iron-icon icon="settings:palette"></iron-icon>
+          $i18n{appearancePageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+        <a role="menuitem" href="/search" class="cr-nav-menu-item">
+          <iron-icon icon="cr:search"></iron-icon>
+          $i18n{searchPageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+  <if expr="not is_chromeos">
+        <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
+          href="/defaultBrowser"
+          hidden="[[!pageVisibility.defaultBrowser]]">
+          <iron-icon icon="settings:web"></iron-icon>
+          $i18n{defaultBrowser}
+          <paper-ripple></paper-ripple>
+        </a>
+  </if>
+        <a role="menuitem" id="onStartup" href="/onStartup"
+            class="cr-nav-menu-item"
+            hidden="[[!pageVisibility.onStartup]]">
+          <iron-icon icon="settings:power-settings-new"></iron-icon>
+          $i18n{onStartup}
+          <paper-ripple></paper-ripple>
+        </a>
+        <div class="menu-separator"></div>
+        <a role="menuitem" id="languages" href="/languages"
+            class="cr-nav-menu-item"
+            hidden="[[!pageVisibility.languages]]">
+          <iron-icon icon="settings:language"></iron-icon>
+          $i18n{languagesPageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+        <a role="menuitem" id="downloads" href="/downloads"
+            class="cr-nav-menu-item"
+            hidden="[[!pageVisibility.downloads]]">
+          <iron-icon icon="cr:file-download"></iron-icon>
+          $i18n{downloadsPageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+        <a role="menuitem" id="accessibility" href="/accessibility"
+            class="cr-nav-menu-item"
+            hidden="[[!pageVisibility.a11y]]">
+          <iron-icon icon="settings:accessibility"></iron-icon>
+          $i18n{a11yPageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+  <if expr="not chromeos_ash">
+        <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
+            hidden="[[!pageVisibility.system]]">
+          <iron-icon icon="settings:build"></iron-icon>
+          $i18n{systemPageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+  </if>
+        <a role="menuitem" id="reset" href="/reset"
+            hidden="[[!pageVisibility.reset]]" class="cr-nav-menu-item">
+          <iron-icon icon="settings:restore"></iron-icon>
+          $i18n{resetPageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
+        <div hidden="[[!pageVisibility.advancedSettings]]"
+            class="menu-separator"></div>
+        <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
+            href="chrome://extensions" target="_blank"
+            hidden="[[!pageVisibility.extensions]]"
+            on-click="onExtensionsLinkClick_"
+            title="$i18n{extensionsLinkTooltip}">
+          <iron-icon icon="cr:extension"></iron-icon>
+          <span>$i18n{extensionsPageTitle}</span>
+          <div class="cr-icon icon-external"></div>
+          <paper-ripple></paper-ripple>
+        </a>
+        <a role="menuitem" id="about-menu" href="/help"
+            class="cr-nav-menu-item">
+          <span id="aboutIcon" class="cr-icon" role="presentation"></span>
+          $i18n{aboutPageTitle}
+          <paper-ripple></paper-ripple>
+        </a>
       </cr-menu-selector>
     </div>
