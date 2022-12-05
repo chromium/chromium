@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/viz/service/debugger/viz_debugger_unittests/viz_debugger_unittest_base.h"
+
 #include <algorithm>
 #include <string>
+
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if VIZ_DEBUGGER_IS_ON()
@@ -57,26 +60,26 @@ VisualDebuggerTestBase::VisualDebuggerTestBase() = default;
 VisualDebuggerTestBase::~VisualDebuggerTestBase() = default;
 
 void VisualDebuggerTestBase::SetFilter(std::vector<TestFilter> filters) {
-  base::DictionaryValue filters_json;
-  base::ListValue filters_list;
+  base::Value::Dict filters_json;
+  base::Value::List filters_list;
   for (auto&& each : filters) {
-    base::DictionaryValue full_filter;
-    base::DictionaryValue selector;
+    base::Value::Dict full_filter;
+    base::Value::Dict selector;
     if (!each.file.empty())
-      selector.SetString("file", each.file);
+      selector.Set("file", each.file);
 
     if (!each.func.empty())
-      selector.SetString("func", each.func);
+      selector.Set("func", each.func);
 
-    selector.SetString("anno", each.anno);
+    selector.Set("anno", each.anno);
 
-    full_filter.SetKey("selector", std::move(selector));
-    full_filter.SetBoolean("active", each.active);
-    full_filter.SetBoolean("enabled", each.enabled);
+    full_filter.Set("selector", std::move(selector));
+    full_filter.Set("active", each.active);
+    full_filter.Set("enabled", each.enabled);
     filters_list.Append(std::move(full_filter));
   }
-  filters_json.SetKey("filters", std::move(filters_list));
-  GetInternal()->FilterDebugStream(std::move(filters_json));
+  filters_json.Set("filters", std::move(filters_list));
+  GetInternal()->FilterDebugStream(base::Value(std::move(filters_json)));
   GetInternal()->GetRWLock()->WriteLock();
   GetInternal()->UpdateFilters();
   GetInternal()->GetRWLock()->WriteUnLock();
