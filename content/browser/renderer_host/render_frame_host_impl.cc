@@ -7791,6 +7791,10 @@ void RenderFrameHostImpl::BeginNavigation(
         initiator_policy_container_host_keep_alive_handle,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener) {
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::BeginNavigation",
+              ChromeTrackEvent::kRenderFrameHost, this, "url",
+              common_params->url.possibly_invalid_spec());
+
   // Only active and prerendered documents are allowed to start navigation in
   // their frame.
   if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
@@ -7808,10 +7812,6 @@ void RenderFrameHostImpl::BeginNavigation(
     // attaching an inner delegate.
     return;
   }
-
-  TRACE_EVENT("navigation", "RenderFrameHostImpl::BeginNavigation",
-              ChromeTrackEvent::kRenderFrameHost, this, "url",
-              common_params->url.possibly_invalid_spec());
 
   DCHECK(navigation_client.is_valid());
 
