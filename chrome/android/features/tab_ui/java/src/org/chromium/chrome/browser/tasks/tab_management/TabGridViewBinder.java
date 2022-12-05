@@ -355,7 +355,7 @@ class TabGridViewBinder {
     }
 
     private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
-        TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
+        final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         TabGridThumbnailView thumbnail =
                 (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
         thumbnail.maybeAdjustThumbnailHeight();
@@ -366,6 +366,7 @@ class TabGridViewBinder {
         // Use placeholder drawable before the real thumbnail is available.
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
         thumbnail.setColorThumbnailPlaceHolder(model.get(TabProperties.IS_INCOGNITO), isSelected);
+        // TODO(crbug/1395467): Consider unsetting the bitmap early to allow memory reuse if needed.
 
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
         final Size thumbnailSize =
@@ -375,6 +376,12 @@ class TabGridViewBinder {
                 : null;
         Callback<Bitmap> callback = result -> {
             if (result != null) {
+                // TODO(crbug/1395467): look into cancelling if there are multiple in-flight
+                // requests. Ensure only the most recently requested bitmap it used.
+                if (fetcher != model.get(TabProperties.THUMBNAIL_FETCHER)) {
+                    result.recycle();
+                    return;
+                }
                 if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())
                         && model.get(TabProperties.GRID_CARD_SIZE) != null) {
                     // Adjust bitmap to thumbnail.

@@ -882,18 +882,8 @@ class TabListMediator {
                     Tab groupTab = filter.getTabAt(prevFilterIndex);
                     boolean isUngroupingLastTabInGroup = groupTab.getId() == movedTab.getId();
                     if (mActionsOnAllRelatedTabs) {
-                        if (isUngroupingLastTabInGroup) {
-                            // TODO(crbug/1374935): Find out why this is required and remove if
-                            // possible.
-                            if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
-                                boolean isSelected = mTabModelSelector.getCurrentTabId()
-                                        == filter.getTabAt(prevFilterIndex).getId();
-                                updateTab(mModel.indexOfNthTabCard(prevFilterIndex),
-                                        PseudoTab.fromTab(filter.getTabAt(prevFilterIndex)),
-                                        isSelected, false, false);
-                            }
-                            return;
-                        }
+                        if (isUngroupingLastTabInGroup) return;
+
                         Tab currentSelectedTab = mTabModelSelector.getCurrentTab();
                         if (isShowingTabsInMRUOrder()) {
                             int groupTabIndex = mModel.indexFromId(groupTab.getId());
@@ -903,8 +893,7 @@ class TabListMediator {
                                 groupTabIndex = mModel.indexFromId(movedTab.getId());
                             }
                             if (!isValidMovePosition(groupTabIndex)) return;
-                            boolean isSelected =
-                                    mTabModelSelector.getCurrentTabId() == groupTab.getId();
+                            boolean isSelected = currentSelectedTab.getId() == groupTab.getId();
                             // We may need to adjust the group's index after removing the movedTab
                             // from the group.
                             int newGroupTabIndexMRU =
@@ -928,18 +917,18 @@ class TabListMediator {
                         } else {
                             // Only add a tab to the model if it represents a new card (new group or
                             // new singular tab). However, always update the previous group to clean
-                            // up old state.
+                            // up old state. The addition of the new tab to an existing group is
+                            // handled in didMergeTabToGroup().
                             if (!filter.hasOtherRelatedTabs(movedTab)) {
                                 int filterIndex = filter.indexOf(movedTab);
                                 addTabInfoToModel(PseudoTab.fromTab(movedTab),
                                         mModel.indexOfNthTabCard(filterIndex),
                                         currentSelectedTab.getId() == movedTab.getId());
                             }
-                            boolean isSelected = mTabModelSelector.getCurrentTabId()
-                                    == filter.getTabAt(prevFilterIndex).getId();
+                            boolean isSelected =
+                                    mTabModelSelector.getCurrentTabId() == groupTab.getId();
                             updateTab(mModel.indexOfNthTabCard(prevFilterIndex),
-                                    PseudoTab.fromTab(filter.getTabAt(prevFilterIndex)), isSelected,
-                                    true, false);
+                                    PseudoTab.fromTab(groupTab), isSelected, true, false);
                         }
                     } else {
                         int curTabListModelIndex = mModel.indexFromId(movedTab.getId());
