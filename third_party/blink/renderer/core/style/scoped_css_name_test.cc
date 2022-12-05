@@ -45,4 +45,23 @@ TEST(ScopedCSSNameTest, HashEqualNames) {
   EXPECT_FALSE(hash_set.insert(foo3).is_new_entry);
 }
 
+TEST(ScopedCSSNameTest, LookupEmpty) {
+  ScopedCSSName* foo = MakeGarbageCollected<ScopedCSSName>("foo", nullptr);
+
+  HeapHashSet<Member<const ScopedCSSName>> hash_set;
+  EXPECT_EQ(hash_set.end(), hash_set.find(foo));
+}
+
+TEST(ScopedCSSNameTest, LookupDeleted) {
+  ScopedCSSName* foo = MakeGarbageCollected<ScopedCSSName>("foo", nullptr);
+
+  HeapHashSet<Member<const ScopedCSSName>> hash_set;
+  EXPECT_TRUE(hash_set.insert(foo).is_new_entry);
+  EXPECT_EQ(1u, hash_set.size());
+  hash_set.erase(foo);
+  EXPECT_EQ(0u, hash_set.size());
+  // Don't crash:
+  EXPECT_EQ(hash_set.end(), hash_set.find(foo));
+}
+
 }  // namespace blink

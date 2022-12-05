@@ -107,7 +107,9 @@ struct ScopedCSSNameWrapperPtrHash {
                     const ScopedCSSNameWrapperPtr& b) {
     return base::ValuesEquivalent(a, b);
   }
-  static const bool safe_to_compare_to_empty_or_deleted = true;
+  // Set this flag to 'false', otherwise Equal above will see gibberish values
+  // that aren't safe to call ValuesEquivalent on.
+  static const bool safe_to_compare_to_empty_or_deleted = false;
 };
 
 template <>
