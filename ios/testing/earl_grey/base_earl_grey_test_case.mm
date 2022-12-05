@@ -39,11 +39,8 @@ bool g_needs_set_up_for_test_case = true;
 }
 
 + (void)setUp {
-  // TODO(crbug.com/1316613): app-measurement.com network request started
-  // causing EG synchronization timeouts since iOS 15.4 on simulators. Remove
-  // when the root cause is fixed.
   NSArray<NSString*>* blockedURLs = @[
-    @"https://app-measurement.com/.*",
+    @".*app-measurement\\.com.*",
   ];
   [[GREYConfiguration sharedConfiguration]
           setValue:blockedURLs
