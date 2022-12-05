@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/values.h"
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/extension_function.h"
 
@@ -57,9 +58,8 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
   }
 
  protected:
-  std::unique_ptr<base::ListValue> BuildSpeakArgs(
-      content::TtsUtterance* utterance,
-      const content::VoiceData& voice);
+  base::Value::List BuildSpeakArgs(content::TtsUtterance* utterance,
+                                   const content::VoiceData& voice);
 
   bool disable_built_in_tts_engine_for_testing_ = false;
 };

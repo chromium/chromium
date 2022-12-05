@@ -301,7 +301,7 @@ void TtsExtensionEngine::GetVoices(
 
 void TtsExtensionEngine::Speak(content::TtsUtterance* utterance,
                                const content::VoiceData& voice) {
-  std::unique_ptr<base::ListValue> args = BuildSpeakArgs(utterance, voice);
+  base::Value::List args = BuildSpeakArgs(utterance, voice);
   Profile* profile =
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   extensions::EventRouter* event_router = EventRouter::Get(profile);
@@ -315,7 +315,7 @@ void TtsExtensionEngine::Speak(content::TtsUtterance* utterance,
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_SPEAK, tts_engine_events::kOnSpeak,
-      std::move(*args).TakeList(), profile);
+      std::move(args), profile);
   event_router->DispatchEventToExtension(engine_id, std::move(event));
 }
 
@@ -368,7 +368,7 @@ bool TtsExtensionEngine::IsBuiltInTtsEngineInitialized(
   return true;
 }
 
-std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
+base::Value::List TtsExtensionEngine::BuildSpeakArgs(
     content::TtsUtterance* utterance,
     const content::VoiceData& voice) {
   // See if the engine supports the "end" event; if so, we can keep the
@@ -377,8 +377,8 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
   bool sends_end_event =
       voice.events.find(content::TTS_EVENT_END) != voice.events.end();
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->GetList().Append(utterance->GetText());
+  base::Value::List args;
+  args.Append(utterance->GetText());
 
   // Pass through most options to the speech engine, but remove some
   // that are handled internally.
@@ -414,8 +414,8 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
   if (!options.Find(constants::kLangKey))
     options.Set(constants::kLangKey, voice.lang);
 
-  args->GetList().Append(std::move(options));
-  args->GetList().Append(utterance->GetId());
+  args.Append(std::move(options));
+  args.Append(utterance->GetId());
   return args;
 }
 
