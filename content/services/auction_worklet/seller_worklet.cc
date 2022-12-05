@@ -520,6 +520,7 @@ void SellerWorklet::V8State::ScoreAd(
     base::ScopedClosureRunner cleanup_score_ad_task,
     ScoreAdCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  base::TimeTicks start = base::TimeTicks::Now();
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
 
@@ -614,6 +615,8 @@ void SellerWorklet::V8State::ScoreAd(
                       "scoreAd", args, std::move(seller_timeout), errors_out)
           .ToLocal(&score_ad_result);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
+  base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdTime",
+                          base::TimeTicks::Now() - start);
 
   if (!got_return_value) {
     // Keep debug loss reports and Private Aggregation API requests since

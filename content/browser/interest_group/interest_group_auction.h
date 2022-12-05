@@ -744,6 +744,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // The time the auction started. Use a single base time for all Worklets, to
   // present a more consistent view of the universe.
   const base::Time auction_start_time_;
+  // The time when this InterestGroupAuction was created; used for UMA.
+  const base::TimeTicks creation_time_;
 
   // Holds the computed subresource URLs (renderer-supplied prefix + browser
   // produced suffix).

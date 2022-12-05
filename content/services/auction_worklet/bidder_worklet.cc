@@ -660,6 +660,8 @@ BidderWorklet::V8State::GenerateSingleBid(
     context_recycler = context_recycler_for_origin_group_mode_.get();
     reused_context = true;
   }
+  base::UmaHistogramBoolean("Ads.InterestGroup.Auction.ContextReused",
+                            reused_context);
 
   if (!context_recycler) {
     fresh_context_recycler =
@@ -854,6 +856,8 @@ BidderWorklet::V8State::GenerateSingleBid(
               "generateBid", args, std::move(per_buyer_timeout), errors_out)
           .ToLocal(&generate_bid_result);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "generate_bid", trace_id);
+  base::UmaHistogramTimes("Ads.InterestGroup.Auction.GenerateBidTime",
+                          base::TimeTicks::Now() - start);
 
   if (got_return_value) {
     context_recycler->set_bid_bindings()->SetBid(

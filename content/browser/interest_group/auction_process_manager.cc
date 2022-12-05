@@ -10,7 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
@@ -44,6 +46,7 @@ class AuctionProcessManager::WorkletProcess
       : render_process_host_(render_process_host),
         worklet_type_(worklet_type),
         origin_(origin),
+        start_time_(base::TimeTicks::Now()),
         uses_shared_process_(uses_shared_process),
         auction_process_manager_(auction_process_manager),
         service_(std::move(service)) {
@@ -85,6 +88,8 @@ class AuctionProcessManager::WorkletProcess
   }
 
   void OnLaunchedWithPid(base::ProcessId pid) {
+    base::UmaHistogramTimes("Ads.InterestGroup.Auction.ProcessLaunchTime",
+                            base::TimeTicks::Now() - start_time_);
     DCHECK(!pid_.has_value());
     pid_ = absl::make_optional<base::ProcessId>(pid);
     std::vector<base::OnceCallback<void(base::ProcessId)>> waiting_for_pid =
@@ -132,6 +137,7 @@ class AuctionProcessManager::WorkletProcess
 
   const WorkletType worklet_type_;
   const url::Origin origin_;
+  const base::TimeTicks start_time_;
   bool uses_shared_process_;
 
   absl::optional<base::ProcessId> pid_;

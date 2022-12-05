@@ -414,6 +414,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.BidFiltered" enum="Boolean"
+    expires_after="2023-10-31">
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the trusted bidding signals specified a per-interest-group
+    priorityVector whose sparse dot product with the browser generated
+    prioritySignals was negative, indicating the generateBid() should not be
+    invoked.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.CompletedWithoutWinnerTime"
     units="ms" expires_after="2023-07-31">
   <owner>mmenke@chromium.org</owner>
@@ -424,6 +439,20 @@ chromium-metrics-reviews@google.com.
     seller script rejecting all bidders. Not recoded when there are no bidders,
     or when an auction fails due to the seller worklet failing to load. Recorded
     on auction complete.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.ContextReused" enum="Boolean"
+    expires_after="2023-10-31">
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if the browser can reuse an existing context when calling generateBid()
+    whose corresponding interest group has the executionMode set to
+    groupByOrigin.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -472,6 +501,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.GenerateBidTime" units="ms"
+    expires_after="2023-10-31">
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to initialize the context and arguments, and
+    evaluate generateBid() once.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.GroupFreshness.{Type}"
     units="minutes" expires_after="2023-07-31">
   <owner>caraitto@chromium.org</owner>
@@ -492,6 +534,34 @@ chromium-metrics-reviews@google.com.
     <variant name="WithDailyUpdates"
         summary="interest groups that specify a dailyUpdateUrl"/>
   </token>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.LoadGroupsTime" units="ms"
+    expires_after="2023-10-31">
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to start a FLEDGE auction and complete loading
+    the interest groups that should participate in the auction; only recorded
+    when at least one interest group was loaded.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.LoadNoGroupsTime" units="ms"
+    expires_after="2023-10-31">
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to start a FLEDGE auction and complete loading
+    the interest groups that should participate in the auction; only recorded
+    when no interest groups were loaded.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.NumAuctionsPerPage" units="auctions"
@@ -596,6 +666,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.ProcessLaunchTime" units="ms"
+    expires_after="2023-10-31">
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to launch a process to execute FLEDGE worklets.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.Result" enum="AuctionResult"
     expires_after="2023-07-31">
   <owner>mmenke@chromium.org</owner>
@@ -603,6 +685,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     The final result type of running a FLEDGE auction. Recorded on auction
     completion/cancellation.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.ScoreAdTime" units="ms"
+    expires_after="2023-10-31">
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to initialize the context and arguments, and
+    evaluate scoreAd() once.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
