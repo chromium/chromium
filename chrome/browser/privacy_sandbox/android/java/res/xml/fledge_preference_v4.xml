@@ -10,8 +10,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="fledge_toggle"
         android:title="@string/settings_fledge_page_toggle_label"
-        android:summary="@string/settings_fledge_page_toggle_sub_label"
-        app:allowDividerBelow="false" />
+        android:summary="@string/settings_fledge_page_toggle_sub_label" />
 
     <PreferenceCategory
         android:key="current_fledge_sites"
@@ -19,6 +18,7 @@ found in the LICENSE file.
         android:title="@string/settings_fledge_page_current_sites_heading"
         android:summary="@string/settings_fledge_page_current_sites_description"
         app:isPreferenceVisible="false"
+        app:allowDividerAbove="false"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
@@ -38,18 +38,15 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="fledge_all_sites"
         android:title="@string/settings_fledge_page_see_all_sites_label"
-        app:isPreferenceVisible="false"
-        app:allowDividerBelow="true" />
+        app:isPreferenceVisible="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="blocked_fledge_sites"
-        android:title="@string/settings_fledge_page_blocked_sites_heading"
-        app:allowDividerBelow="false" />
+        android:key="fledge_blocked_sites"
+        android:title="@string/settings_fledge_page_blocked_sites_heading" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fledge_page_footer"
         android:summary="@string/settings_fledge_page_footer"
-        app:isPreferenceVisible="false"
         app:allowDividerBelow="false" />
 
 </PreferenceScreen>

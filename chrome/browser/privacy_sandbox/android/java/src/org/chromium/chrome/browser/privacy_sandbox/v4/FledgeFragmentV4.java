@@ -5,17 +5,21 @@
 package org.chromium.chrome.browser.privacy_sandbox.v4;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -25,8 +29,16 @@ import org.chromium.components.user_prefs.UserPrefs;
 public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener {
     private static final String FLEDGE_TOGGLE_PREFERENCE = "fledge_toggle";
+    private static final String CURRENT_SITES_PREFERENCE = "current_fledge_sites";
+    private static final String EMPTY_FLEDGE_PREFERENCE = "fledge_empty";
+    private static final String DISABLED_FLEDGE_PREFERENCE = "fledge_disabled";
+    private static final String ALL_SITES_PREFERENCE = "fledge_all_sites";
 
     private ChromeSwitchPreference mFledgeTogglePreference;
+    private PreferenceCategory mCurrentSitesCategory;
+    private TextMessagePreference mEmptyFledgePreference;
+    private TextMessagePreference mDisabledFledgePreference;
+    private ChromeBasePreference mAllSitesPreference;
 
     static boolean isFledgePrefEnabled() {
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
@@ -45,18 +57,53 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_preference_v4);
 
         mFledgeTogglePreference = findPreference(FLEDGE_TOGGLE_PREFERENCE);
+        mCurrentSitesCategory = findPreference(CURRENT_SITES_PREFERENCE);
+        mEmptyFledgePreference = findPreference(EMPTY_FLEDGE_PREFERENCE);
+        mDisabledFledgePreference = findPreference(DISABLED_FLEDGE_PREFERENCE);
+        mAllSitesPreference = findPreference(ALL_SITES_PREFERENCE);
+
         mFledgeTogglePreference.setChecked(isFledgePrefEnabled());
         mFledgeTogglePreference.setOnPreferenceChangeListener(this);
         // TODO(http://b/254411473): Make the preference managed.
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Disable animations on preference changes.
+        getListView().setItemAnimator(null);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updatePreferenceVisibility();
+    }
+
+    @Override
     public boolean onPreferenceChange(@NonNull Preference preference, Object value) {
         if (preference.getKey().equals(FLEDGE_TOGGLE_PREFERENCE)) {
             setFledgePrefEnabled((boolean) value);
+            updatePreferenceVisibility();
             return true;
         }
 
         return false;
+    }
+
+    private void updatePreferenceVisibility() {
+        boolean fledgeEnabled = isFledgePrefEnabled();
+        boolean sitesEmpty = mCurrentSitesCategory.getPreferenceCount() == 0;
+
+        // Visible when Fledge is disabled.
+        mDisabledFledgePreference.setVisible(!fledgeEnabled);
+
+        // Visible when Fledge is enabled, but the current sites list is empty.
+        mEmptyFledgePreference.setVisible(fledgeEnabled && sitesEmpty);
+
+        // Visible when Fledge is enabled and the current sites list is not empty.
+        mCurrentSitesCategory.setVisible(fledgeEnabled && !sitesEmpty);
+        mAllSitesPreference.setVisible(fledgeEnabled && !sitesEmpty);
     }
 }

@@ -23,12 +23,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.clickImageButtonNextToText;
+import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.withTopic;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 
-import androidx.annotation.StringRes;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -116,11 +116,8 @@ public final class TopicsFragmentV4Test {
                         hasDescendant(withText(R.string.settings_topics_page_toggle_label)))));
     }
 
-    private View getRootView(@StringRes int text) {
-        View[] view = {null};
-        onView(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
-        return view[0];
+    private View getTopicsRootView() {
+        return getRootViewSanitized(R.string.settings_topics_page_title);
     }
 
     private void setTopicsPrefEnabled(boolean isEnabled) {
@@ -139,7 +136,7 @@ public final class TopicsFragmentV4Test {
     public void testRenderTopicsOff() throws IOException {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
-        mRenderTestRule.render(getRootView(R.string.settings_topics_page_title), "topics_page_off");
+        mRenderTestRule.render(getTopicsRootView(), "topics_page_off");
     }
 
     @Test
@@ -148,8 +145,7 @@ public final class TopicsFragmentV4Test {
     public void testRenderTopicsEmpty() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
-        mRenderTestRule.render(
-                getRootView(R.string.settings_topics_page_title), "topics_page_empty");
+        mRenderTestRule.render(getTopicsRootView(), "topics_page_empty");
     }
 
     @Test
@@ -159,8 +155,7 @@ public final class TopicsFragmentV4Test {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
-        mRenderTestRule.render(
-                getRootView(R.string.settings_topics_page_title), "topic_page_populated");
+        mRenderTestRule.render(getTopicsRootView(), "topic_page_populated");
     }
 
     @Test
