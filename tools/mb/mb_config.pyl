@@ -755,7 +755,7 @@
       'WebRTC Chromium Android Builder': 'android_debug_static_bot_arm64',
       'WebRTC Chromium Linux Builder': 'gpu_tests_release_bot',
       'WebRTC Chromium Mac Builder': 'gpu_tests_release_bot',
-      'WebRTC Chromium Win Builder': 'release_bot_x86_minimal_symbols_no_com_init_hooks_with_codecs',
+      'WebRTC Chromium Win Builder': 'release_bot_minimal_symbols_no_com_init_hooks_with_codecs',
     },
 
     'chromium.webrtc.fyi': {
@@ -766,8 +766,8 @@
       'WebRTC Chromium FYI Linux Builder (dbg)': 'debug_bot',
       'WebRTC Chromium FYI Mac Builder': 'gpu_tests_release_bot',
       'WebRTC Chromium FYI Mac Builder (dbg)': 'debug_bot',
-      'WebRTC Chromium FYI Win Builder': 'release_bot_x86_minimal_symbols_no_com_init_hooks_with_codecs',
-      'WebRTC Chromium FYI Win Builder (dbg)': 'debug_bot_x86_no_com_init_hooks_with_codecs',
+      'WebRTC Chromium FYI Win Builder': 'release_bot_minimal_symbols_no_com_init_hooks_with_codecs',
+      'WebRTC Chromium FYI Win Builder (dbg)': 'debug_bot_no_com_init_hooks_with_codecs',
       'WebRTC Chromium FYI ios-device': 'ios_device_release_compile_only',
       'WebRTC Chromium FYI ios-simulator': 'ios_simulator_debug_static_bot_xctest',
     },
@@ -2494,6 +2494,10 @@
       'debug_bot_local_build',
     ],
 
+    'debug_bot_no_com_init_hooks_with_codecs': [
+      'debug_bot', 'no_com_init_hooks', 'chrome_with_codecs'
+    ],
+
     'debug_bot_reclient': [
       'debug_bot_reclient',
     ],
@@ -2504,10 +2508,6 @@
 
     'debug_bot_rust_linux_x64_reclient': [
       'debug_bot_reclient', 'enable_rust', 'x64',
-    ],
-
-    'debug_bot_x86_no_com_init_hooks_with_codecs': [
-      'debug_bot', 'x86', 'no_com_init_hooks', 'chrome_with_codecs'
     ],
 
     'debug_bot_x86_reclient': [
@@ -3509,6 +3509,10 @@
       'release_bot', 'minimal_symbols', 'no_clang', 'no_goma',
     ],
 
+    'release_bot_minimal_symbols_no_com_init_hooks_with_codecs': [
+      'release_bot', 'minimal_symbols', 'no_com_init_hooks', 'chrome_with_codecs'
+    ],
+
     'release_bot_minimal_symbols_reclient': [
       'release_bot_reclient', 'minimal_symbols',
     ],
@@ -3531,10 +3535,6 @@
 
     'release_bot_x86_minimal_symbols_enable_archive_compression_reclient': [
       'release_bot_reclient', 'x86', 'minimal_symbols', 'enable_archive_compression'
-    ],
-
-    'release_bot_x86_minimal_symbols_no_com_init_hooks_with_codecs': [
-      'release_bot', 'x86', 'minimal_symbols', 'no_com_init_hooks', 'chrome_with_codecs'
     ],
 
     'release_bot_x86_minimal_symbols_reclient': [
