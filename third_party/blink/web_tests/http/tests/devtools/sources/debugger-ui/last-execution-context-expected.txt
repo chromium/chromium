@@ -4,8 +4,8 @@ Tests how execution context and target are selected.
 Adding page target
 Target selected: Main
 Execution context selected: Main
-Execution context selected: page-target
-Target selected: page-target
+Execution context selected: Main
+Target selected: Main
 
 Adding frame target
 
@@ -15,7 +15,7 @@ User selected content script
 Execution context selected: content-script-context
 
 Removing content script
-Execution context selected: page-target
+Execution context selected: Main
 
 Readding content script
 
@@ -24,8 +24,8 @@ Target selected: worker-target
 Execution context selected: worker-target
 
 Switching to page target
-Target selected: page-target
-Execution context selected: page-target
+Target selected: Main
+Execution context selected: Main
 
 User selected content script
 Execution context selected: content-script-context
@@ -35,8 +35,8 @@ Target selected: worker-target
 Execution context selected: worker-target
 
 Switching to page target
-Target selected: page-target
-Execution context selected: page-target
+Target selected: Main
+Execution context selected: Main
 
 User selected iframe1
 Execution context selected: frame-target
@@ -47,8 +47,8 @@ Target selected: worker-target
 Execution context selected: worker-target
 
 Removing worker
-Execution context selected: page-target
-Target selected: page-target
+Execution context selected: Main
+Target selected: Main
 
 User selected content script
 Execution context selected: content-script-context
@@ -60,6 +60,6 @@ Execution context selected: frame-target
 Removing content script
 
 Switching to page target
-Target selected: page-target
-Execution context selected: page-target
+Target selected: Main
+Execution context selected: Main
 
