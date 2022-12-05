@@ -70,11 +70,6 @@ import xvfb
 import test_env
 from scripts import common
 
-# Unfortunately we need to copy these variables from ../test_env.py.
-# Importing it and using its get_sandbox_env breaks test runs on Linux
-# (it seems to unset DISPLAY).
-CHROME_SANDBOX_ENV = 'CHROME_DEVEL_SANDBOX'
-CHROME_SANDBOX_PATH = '/opt/chromium/chrome_sandbox'
 SHARD_MAPS_DIRECTORY = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir,
                  'tools', 'perf', 'core', 'shard_maps'))
@@ -306,10 +301,6 @@ def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False,
   start = time.time()
 
   env = os.environ.copy()
-  # Assume we want to set up the sandbox environment variables all the
-  # time; doing so is harmless on non-Linux platforms and is needed
-  # all the time on Linux.
-  env[CHROME_SANDBOX_ENV] = CHROME_SANDBOX_PATH
   env['CHROME_HEADLESS'] = '1'
   #TODO(crbug/1138988): Some gtests do not implements the unit_test_launcher.cc.
   # As a result, they will not respect the arguments added by
@@ -512,10 +503,6 @@ def execute_telemetry_benchmark(
 
   env = os.environ.copy()
   env['CHROME_HEADLESS'] = '1'
-  # Assume we want to set up the sandbox environment variables all the
-  # time; doing so is harmless on non-Linux platforms and is needed
-  # all the time on Linux.
-  env[CHROME_SANDBOX_ENV] = CHROME_SANDBOX_PATH
 
   return_code = 1
   temp_dir = tempfile.mkdtemp('telemetry')
