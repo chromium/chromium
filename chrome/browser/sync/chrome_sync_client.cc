@@ -43,6 +43,7 @@
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -208,18 +209,13 @@ syncer::ModelTypeSet GetDisabledCommonDataTypes() {
   return {};
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Denotes whether app sync may occur on profiles other than the main profile.
-// This may be modified by ChromeSyncClient::SkipMainProfileCheckForTesting().
-bool g_skip_main_profile_check_for_testing = false;
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // App sync is enabled by default, with the exception of Lacros secondary
 // profiles.
 bool IsAppSyncEnabled(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile() && !g_skip_main_profile_check_for_testing) {
+  if (!profile->IsMainProfile() &&
+      !web_app::IsMainProfileCheckSkippedForTesting()) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -721,13 +717,6 @@ syncer::SyncTypePreferenceProvider* ChromeSyncClient::GetPreferenceProvider() {
 void ChromeSyncClient::OnLocalSyncTransportDataCleared() {
   metrics::ClearDemographicsPrefs(profile_->GetPrefs());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// static
-void ChromeSyncClient::SkipMainProfileCheckForTesting() {
-  g_skip_main_profile_check_for_testing = true;
-}
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 std::unique_ptr<syncer::ModelTypeController>

@@ -18,6 +18,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications:web_applications_unit_tests",
     "//components/services/app_service/public/cpp:intents",
     "//content/test:test_support",

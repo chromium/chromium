@@ -79,7 +79,7 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Denotes whether user web apps may be installed on profiles other than the
-// main profile. This may be modified by SkipMainProfileCheckForTesting().
+// main profile. This may be modified by SetSkipMainProfileCheckForTesting().
 bool g_skip_main_profile_check_for_testing = false;
 #endif
 
@@ -547,8 +547,12 @@ bool IsWebAppsCrosapiEnabled() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SkipMainProfileCheckForTesting() {
-  g_skip_main_profile_check_for_testing = true;
+void SetSkipMainProfileCheckForTesting(bool skip_check) {
+  g_skip_main_profile_check_for_testing = skip_check;
+}
+
+bool IsMainProfileCheckSkippedForTesting() {
+  return g_skip_main_profile_check_for_testing;
 }
 #endif
 

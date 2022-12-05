@@ -154,7 +154,9 @@ bool IsWebAppsCrosapiEnabled();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Allow user web apps on profiles other than the main profile.
-void SkipMainProfileCheckForTesting();
+void SetSkipMainProfileCheckForTesting(bool skip_check);
+
+bool IsMainProfileCheckSkippedForTesting();
 #endif
 
 constexpr char kAppSettingsPageEntryPointsHistogramName[] =

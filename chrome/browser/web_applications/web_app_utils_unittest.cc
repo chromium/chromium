@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -190,7 +191,7 @@ TEST(WebAppTest, ResolveEffectiveDisplayModeWithIsolatedWebApp) {
 
 TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  SkipMainProfileCheckForTesting();
+  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   Profile* regular_profile = profile();
@@ -287,7 +288,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
 
 TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  SkipMainProfileCheckForTesting();
+  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   Profile* regular_profile = profile();
@@ -330,7 +331,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
 
 TEST_F(WebAppUtilsTest, GetBrowserContextForWebApps) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  SkipMainProfileCheckForTesting();
+  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   Profile* regular_profile = profile();
@@ -364,7 +365,7 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebApps) {
 
 TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  SkipMainProfileCheckForTesting();
+  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   Profile* regular_profile = profile();

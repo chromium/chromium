@@ -70,11 +70,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
   void OnLocalSyncTransportDataCleared() override;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Allow app sync on profiles other than the main profile.
-  static void SkipMainProfileCheckForTesting();
-#endif
-
  private:
   // Convenience function used during controller creation.
   base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(

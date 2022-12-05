@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -60,10 +61,6 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    SkipMainProfileCheckForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     WebAppProvider::GetForLocalAppsUnchecked(profile())->Start();
   }
 
@@ -120,6 +117,11 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
     EXPECT_EQ(actual_results.protocol_handler_launch_url,
               expected_results.protocol_handler_launch_url);
   }
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication) {

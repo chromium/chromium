@@ -4,8 +4,6 @@
 
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 
-#include "build/chromeos_buildflags.h"
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #endif
@@ -38,11 +36,6 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
 #endif
 
   scoped_feature_list_.InitWithFeatures({}, disabled_features);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  SkipMainProfileCheckForTesting();
-  browser_sync::ChromeSyncClient::SkipMainProfileCheckForTesting();
-#endif
 }
 
 WebAppsSyncTestBase::~WebAppsSyncTestBase() = default;

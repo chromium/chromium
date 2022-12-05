@@ -60,6 +60,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -739,6 +740,17 @@ void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
   prefs.Insert(url, app_id, source);
   prefs.SetIsPlaceholder(url, is_placeholder);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+ScopedSkipMainProfileCheck::ScopedSkipMainProfileCheck() {
+  EXPECT_FALSE(IsMainProfileCheckSkippedForTesting());
+  SetSkipMainProfileCheckForTesting(/*skip_check=*/true);
+}
+
+ScopedSkipMainProfileCheck::~ScopedSkipMainProfileCheck() {
+  SetSkipMainProfileCheckForTesting(/*skip_check=*/false);
+}
+#endif
 
 }  // namespace test
 }  // namespace web_app
