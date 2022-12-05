@@ -30,5 +30,4 @@ tabs.json
 terminal_private.json
 tts.json
 users_private.idl
-webview_tag.json
 windows.json
