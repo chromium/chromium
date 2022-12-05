@@ -42,6 +42,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'recordPasswordCheckInteraction',
       'removeBlockedSite',
       'requestCredentialsDetails',
+      'requestExportProgressStatus',
       'startBulkPasswordCheck',
     ]);
 
@@ -156,5 +157,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   removeBlockedSite(id: number) {
     this.methodCalled('removeBlockedSite', id);
+  }
+
+  requestExportProgressStatus() {
+    this.methodCalled('requestExportProgressStatus');
+    return Promise.resolve(
+        chrome.passwordsPrivate.ExportProgressStatus.NOT_STARTED);
   }
 }

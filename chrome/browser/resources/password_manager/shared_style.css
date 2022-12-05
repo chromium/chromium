@@ -47,3 +47,13 @@
    */
   unicode-bidi: bidi-override;
 }
+
+.dialog-title {
+  color: var(--cr-primary-text-color);
+  font-size: 15px;
+  font-weight: normal;
+  line-height: 22px;
+  margin: 0;
+  padding-block-end: 16px;
+  padding-block-start: 16px;
+}

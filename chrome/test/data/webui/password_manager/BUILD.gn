@@ -23,12 +23,13 @@ ts_library("build_ts") {
 
   in_files = [
     "checkup_section_test.ts",
+    "password_details_card_test.ts",
+    "password_details_section_test.ts",
     "password_manager_app_test.ts",
     "password_manager_routing_test.ts",
     "password_manager_side_bar_test.ts",
+    "passwords_export_dialog_test.ts",
     "passwords_section_test.ts",
-    "password_details_section_test.ts",
-    "password_details_card_test.ts",
     "settings_section_test.ts",
     "site_favicon_test.ts",
     "test_password_manager_proxy.ts",

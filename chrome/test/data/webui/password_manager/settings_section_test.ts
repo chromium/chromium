@@ -161,4 +161,16 @@ suite('SettingsSectionTest', function() {
 
     assertFalse(!!settings!.shadowRoot!.querySelector('#addShortcutBanner'));
   });
+
+  test('Export dialog appears after clicking on banner', async function() {
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+
+    settings.$.exportPasswordsBanner.click();
+    await flushTasks();
+    const exportPasswordsDialog =
+        settings!.shadowRoot!.querySelector('passwords-export-dialog');
+    assertTrue(!!exportPasswordsDialog);
+  });
 });

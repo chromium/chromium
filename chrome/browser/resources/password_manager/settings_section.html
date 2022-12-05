@@ -57,8 +57,8 @@
       label="$i18n{importPasswords}"
       sub-label="$i18n{importPasswordsDescription}" hide-icon>
   </cr-link-row>
-  <cr-link-row id="exportPasswords" class="cr-row"
-      label="$i18n{exportPasswords}"
+  <cr-link-row id="exportPasswordsBanner" class="cr-row"
+      on-click="onExportClick_" label="$i18n{exportPasswords}"
       sub-label="$i18n{exportPasswordsDescription}" hide-icon>
   </cr-link-row>
   <template is="dom-if" if="[[!isPasswordManagerShortcutInstalled_]]" restamp>
@@ -93,3 +93,8 @@
     </template>
   </div>
 </div>
+<template is="dom-if" if="[[showPasswordsExportDialog_]]" restamp>
+  <passwords-export-dialog
+    on-passwords-export-dialog-close="onPasswordsExportDialogClosed_">
+  </passwords-export-dialog>
+</template>

@@ -4,6 +4,8 @@
 
 import './password_manager_app.js';
 
+export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+export {PasswordsExportDialogElement} from './dialogs/passwords_export_dialog.js';
 export {PasswordDetailsCardElement} from './password_details_card.js';
 export {PasswordDetailsSectionElement} from './password_details_section.js';
 export {PasswordListItemElement} from './password_list_item.js';

@@ -145,6 +145,12 @@ export interface PasswordManagerProxy {
    *     is not in the list.
    */
   removeBlockedSite(id: number): void;
+
+  /**
+   * Queries the status of any ongoing export.
+   */
+  requestExportProgressStatus():
+      Promise<chrome.passwordsPrivate.ExportProgressStatus>;
 }
 
 /**
@@ -231,6 +237,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   removeBlockedSite(id: number) {
     chrome.passwordsPrivate.removePasswordException(id);
+  }
+
+  requestExportProgressStatus() {
+    return chrome.passwordsPrivate.requestExportProgressStatus();
   }
 
   static getInstance(): PasswordManagerProxy {

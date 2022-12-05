@@ -21,6 +21,7 @@ build_webui("build") {
   ]
   web_component_files = [
     "checkup_section.ts",
+    "dialogs/passwords_export_dialog.ts",
     "password_details_card.ts",
     "password_details_section.ts",
     "password_list_item.ts",
