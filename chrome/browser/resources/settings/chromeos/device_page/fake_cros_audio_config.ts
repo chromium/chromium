@@ -9,7 +9,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AudioDevice, AudioDeviceType, AudioSystemProperties, AudioSystemPropertiesObserverInterface, CrosAudioConfigInterface, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
+import {AudioDevice, AudioDeviceType, AudioSystemProperties as AudioSystemPropertiesMojom, CrosAudioConfigInterface, MuteState} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 
 export const defaultFakeMicJack: AudioDevice = {
   id: BigInt(1),
@@ -39,10 +39,35 @@ export const defaultFakeSpeaker: AudioDevice = {
   deviceType: AudioDeviceType.kInternalSpeaker,
 };
 
+export const fakeInternalFrontMic: AudioDevice = {
+  id: BigInt(5),
+  displayName: 'FrontMic',
+  isActive: true,
+  deviceType: AudioDeviceType.kFrontMic,
+};
+
+export const fakeBluetoothMic: AudioDevice = {
+  id: BigInt(6),
+  displayName: 'Bluetooth Mic',
+  isActive: false,
+  deviceType: AudioDeviceType.kBluetoothNbMic,
+};
+
+// TODO(b/260277007): Remove type alias and unused types when mojo updated to
+// handle audio input.
+export interface AudioSystemProperties extends AudioSystemPropertiesMojom {
+  inputDevices: AudioDevice[];
+}
+
+export interface FakePropertiesObserverInterface {
+  onPropertiesUpdated(properties: AudioSystemProperties): void;
+}
+
 export const defaultFakeAudioSystemProperties: AudioSystemProperties = {
   outputDevices: [defaultFakeSpeaker, defaultFakeMicJack],
   outputVolumePercent: 75,
   outputMuteState: MuteState.kNotMuted,
+  inputDevices: [fakeInternalFrontMic, fakeBluetoothMic],
 };
 
 /** Creates an audio device based on provided device and isActive override. */
@@ -59,10 +84,10 @@ export interface FakeCrosAudioConfigInterface extends CrosAudioConfigInterface {
 export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
   private audioSystemProperties: AudioSystemProperties =
       defaultFakeAudioSystemProperties;
-  private observers: AudioSystemPropertiesObserverInterface[] = [];
+  private observers: FakePropertiesObserverInterface[] = [];
 
-  observeAudioSystemProperties(
-      observer: AudioSystemPropertiesObserverInterface): void {
+  observeAudioSystemProperties(observer: FakePropertiesObserverInterface):
+      void {
     this.observers.push(observer);
     this.notifyAudioSystemPropertiesUpdated();
   }
@@ -100,9 +125,8 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
 
   /** Notifies the observer list that `audioSystemProperties` has changed. */
   private notifyAudioSystemPropertiesUpdated(): void {
-    this.observers.forEach(
-        (observer: AudioSystemPropertiesObserverInterface) => {
-          observer.onPropertiesUpdated(this.audioSystemProperties);
-        });
+    this.observers.forEach((observer: FakePropertiesObserverInterface) => {
+      observer.onPropertiesUpdated(this.audioSystemProperties);
+    });
   }
 }

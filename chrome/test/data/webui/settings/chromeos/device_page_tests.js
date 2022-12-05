@@ -774,6 +774,7 @@ suite('SettingsDevicePage', function() {
       crosAudioConfig.setAudioSystemProperties(
           activeSpeakerFakeAudioSystemProperties);
       await flushTasks();
+
       assertEquals(
           fakeCrosAudioConfig.fakeSpeakerActive.id,
           BigInt(outputDeviceDropdown.value));
@@ -801,6 +802,21 @@ suite('SettingsDevicePage', function() {
       const expectedUpdatedSelectionId =
           `${fakeCrosAudioConfig.defaultFakeSpeaker.id}`;
       assertEquals(expectedUpdatedSelectionId, outputDeviceDropdown.value);
+    });
+
+    test('input device mojo test', async function() {
+      const inputDeviceDropdown =
+          audioPage.shadowRoot.querySelector('#audioInputDeviceDropdown');
+      assertTrue(!!inputDeviceDropdown);
+
+      // Test default properties.
+      assertEquals(
+          `${fakeCrosAudioConfig.fakeInternalFrontMic.id}`,
+          inputDeviceDropdown.value);
+      assertEquals(
+          fakeCrosAudioConfig.defaultFakeAudioSystemProperties.inputDevices
+              .length,
+          inputDeviceDropdown.length);
     });
   });
 

@@ -127,7 +127,14 @@
       <div id="audioInputSection">
         <div id="audioInputDeviceSubsection">
           <div id="audioInputDeviceLabel">Device</div>
-          <select id="audioInputDeviceDropdown"></select>
+          <select id="audioInputDeviceDropdown">
+            <template is="dom-repeat"
+              items="[[audioSystemProperties_.inputDevices]]">
+              <option value="[[item.id]]" selected="[[item.isActive]]">
+                [[item.displayName]]
+              </option>
+            </template>
+          </select>
         </div>
       </div>
     </div>
