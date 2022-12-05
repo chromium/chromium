@@ -8,7 +8,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
 
 import {XfTree} from './xf_tree.js';
-import {TreeItemCollapsedEvent, TreeItemExpandedEvent, XfTreeItem} from './xf_tree_item.js';
+import {TREE_ITEM_INDENT, TreeItemCollapsedEvent, TreeItemExpandedEvent, XfTreeItem} from './xf_tree_item.js';
 
 /** Construct a single tree item. */
 async function setUpSingleTreeItem() {
@@ -105,7 +105,7 @@ export async function testRenderWithSingleTreeItem(done: () => void) {
   assertEquals(treeLabel.id, root.getAttribute('aria-labelledby'));
 
   // Test inner elements.
-  assertEquals('0px', treeRow.style.paddingInlineStart);
+  assertEquals('0px', window.getComputedStyle(treeRow).paddingInlineStart);
   assertEquals('hidden', window.getComputedStyle(expandIcon).visibility);
   assertEquals('item1', treeLabel.textContent);
   assertEquals('group', treeChildren.getAttribute('role'));
@@ -172,11 +172,34 @@ export async function testTreeItemLevel(done: () => void) {
   const item1bi = getTreeItemById('item1bi');
   const item2 = getTreeItemById('item2');
 
+  const tree = getTree();
+  tree.style.setProperty('--xf-tree-item-indent', TREE_ITEM_INDENT.toString());
+
+  const {treeRow: treeRow1} = getTreeItemInnerElements(item1);
   assertEquals(1, item1.level);
+  assertEquals('0px', window.getComputedStyle(treeRow1).paddingInlineStart);
+
+  const {treeRow: treeRow1a} = getTreeItemInnerElements(item1a);
   assertEquals(2, item1a.level);
+  assertEquals(
+      `${TREE_ITEM_INDENT}px`,
+      window.getComputedStyle(treeRow1a).paddingInlineStart);
+
+  const {treeRow: treeRow1b} = getTreeItemInnerElements(item1b);
   assertEquals(2, item1b.level);
+  assertEquals(
+      `${TREE_ITEM_INDENT}px`,
+      window.getComputedStyle(treeRow1b).paddingInlineStart);
+
+  const {treeRow: treeRow1bi} = getTreeItemInnerElements(item1bi);
   assertEquals(3, item1bi.level);
+  assertEquals(
+      `${TREE_ITEM_INDENT * 2}px`,
+      window.getComputedStyle(treeRow1bi).paddingInlineStart);
+
+  const {treeRow: treeRow2} = getTreeItemInnerElements(item2);
   assertEquals(1, item2.level);
+  assertEquals('0px', window.getComputedStyle(treeRow2).paddingInlineStart);
 
   done();
 }

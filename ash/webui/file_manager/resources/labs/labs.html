@@ -8,6 +8,7 @@
 
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
   <style>
     body {
       background-color: var(--cros-bg-color);
@@ -16,10 +17,19 @@
     xf-tree {
       width: 300px;
     }
-
     .trailing-icon {
       box-sizing: border-box;
       padding: 5px 0 0 5px;
+    }
+    .container {
+      display: flex;
+      justify-content: space-around;
+    }
+    xf-tree:not(:defined) {
+      display: none;
+    }
+    xf-tree:defined {
+      display: block;
     }
   </style>
 
@@ -33,18 +43,40 @@
   <xf-breadcrumb path="My Files/Downloads"></xf-breadcrumb>
   <xf-breadcrumb path="My Files/Downloads/AAA/BBB/CCC"></xf-breadcrumb>
 
-  <xf-tree>
-    <xf-tree-item label="Level 1 (2 children)">
-      <xf-tree-item label="Level 1.1 (2 children)">
-        <xf-tree-item label="Level 1.1.1 (no children)" selected></xf-tree-item>
-        <xf-tree-item label="Level 1.1.2 (no children)" disabled></xf-tree-item>
-      </xf-tree-item>
-      <xf-tree-item label="Level 1.2 (no children)"></xf-tree-item>
-    </xf-tree-item>
-    <xf-tree-item label="Level 2 (may have children)" may-have-children separator></xf-tree-item>
-    <xf-tree-item label="Level 3 (no children)">
-      <span class="trailing-icon" tabindex="0" slot="trailingIcon">X</span>
-    </xf-tree-item>
-  </xf-tree>
+  <div class="container">
+    <div theme="legacy">
+      <h2>Legacy</h2>
+      <xf-tree>
+        <xf-tree-item label="Level 1 (2 children)">
+          <xf-tree-item label="Level 1.1 (2 children)">
+            <xf-tree-item label="Level 1.1.1 (no children)" selected></xf-tree-item>
+            <xf-tree-item label="Level 1.1.2 (no children)" disabled></xf-tree-item>
+          </xf-tree-item>
+          <xf-tree-item label="Level 1.2 (no children)"></xf-tree-item>
+        </xf-tree-item>
+        <xf-tree-item label="Level 2 (may have children)" may-have-children separator></xf-tree-item>
+        <xf-tree-item label="Level 3 (no children)">
+          <span class="trailing-icon" tabindex="0" slot="trailingIcon">X</span>
+        </xf-tree-item>
+      </xf-tree>
+    </div>
+
+    <div theme="refresh23">
+      <h2>Refresh23</h2>
+      <xf-tree>
+        <xf-tree-item label="Level 1 (2 children)">
+          <xf-tree-item label="Level 1.1 (2 children)">
+            <xf-tree-item label="Level 1.1.1 (no children)" selected></xf-tree-item>
+            <xf-tree-item label="Level 1.1.2 (no children)" disabled></xf-tree-item>
+          </xf-tree-item>
+          <xf-tree-item label="Level 1.2 (no children)"></xf-tree-item>
+        </xf-tree-item>
+        <xf-tree-item label="Level 2 (may have children)" may-have-children separator></xf-tree-item>
+        <xf-tree-item label="Level 3 (no children)">
+          <span class="trailing-icon" tabindex="0" slot="trailingIcon">X</span>
+        </xf-tree-item>
+      </xf-tree>
+    </div>
+  </div>
 </body>
 </html>

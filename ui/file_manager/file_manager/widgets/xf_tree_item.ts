@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+
+import {util} from '../common/js/util.js';
+
 import {css, customElement, html, ifDefined, property, PropertyValues, query, state, styleMap, XfBase} from './xf_base.js';
 import type {XfTree} from './xf_tree.js';
 import {isTree, isTreeItem} from './xf_tree_util.js';
@@ -9,7 +13,7 @@ import {isTree, isTreeItem} from './xf_tree_util.js';
 /**
  * The number of pixels to indent per level.
  */
-const INDENT = 22;
+export const TREE_ITEM_INDENT = 20;
 
 @customElement('xf-tree-item')
 export class XfTreeItem extends XfBase {
@@ -163,7 +167,8 @@ export class XfTreeItem extends XfBase {
   override render() {
     const showExpandIcon = this.hasChildren() && !this.disabled;
     const treeRowStyles = {
-      paddingInlineStart: `${Math.max(0, INDENT * (this.level_ - 1))}px`,
+      paddingInlineStart:
+          `max(0px, calc(var(--xf-tree-item-indent) * ${this.level_ - 1}px))`,
     };
 
     return html`
@@ -180,6 +185,7 @@ export class XfTreeItem extends XfBase {
           class="tree-row"
           style=${styleMap(treeRowStyles)}
         >
+          <paper-ripple></paper-ripple>
           <span class="expand-icon"></span>
           <span
             class="tree-label-icon"
@@ -303,7 +309,11 @@ export class XfTreeItem extends XfBase {
 }
 
 function getCSS() {
-  return css`
+  const commonCSS = css`
+    :host {
+      --xf-tree-item-indent: ${TREE_ITEM_INDENT};
+    }
+
     ul {
       list-style: none;
       margin: 0;
@@ -329,42 +339,21 @@ function getCSS() {
 
     .tree-row {
       align-items: center;
-      border: 2px solid transparent;
       border-inline-start-width: 0 !important;
-      border-radius: 0 20px 20px 0;
       box-sizing: border-box;
-      color: var(--cros-text-color-primary);
-      cursor: default;
+      cursor: pointer;
       display: flex;
-      height: 32px;
-      margin-inline-end: 6px;
-      padding: 4px 0;
       position: relative;
       user-select: none;
       white-space: nowrap;
     }
 
-    :host-context(html[dir=rtl]) .tree-row {
-      border-radius: 20px 0 0 20px;
-    }
-
     li:focus-visible .tree-row {
-      border: 2px solid var(--cros-focus-ring-color);
       z-index: 2;
-    }
-
-    :host([selected]) .tree-row {
-      background-color: var(--cros-highlight-color);
-      color: var(--cros-text-color-selection);
     }
 
     :host([disabled]) .tree-row {
       pointer-events: none;
-      opacity: var(--cros-disabled-opacity);
-    }
-
-    :host(:not([selected]):not([disabled])) .tree-row:hover {
-      background-color: var(--cros-ripple-color);
     }
 
     .expand-icon {
@@ -372,15 +361,13 @@ function getCSS() {
       -webkit-mask-position: center;
       -webkit-mask-repeat: no-repeat;
       background-color: currentColor;
-      box-sizing: border-box;
       flex: none;
-      height: 32px;
-      padding: 6px;
+      height: 20px;
       position: relative;
       transform: rotate(-90deg);
       transition: all 150ms;
       visibility: hidden;
-      width: 32px;
+      width: 20px;
     }
 
     li[aria-expanded] .expand-icon {
@@ -402,21 +389,14 @@ function getCSS() {
       background-image: none;
       flex: none;
       height: 20px;
-      left: -4px;
       position: relative;
-      right: -4px;
       width: 20px;
-    }
-
-   :host[selected] .tree-label-icon {
-      background-color: var(--cros-icon-color-selection);
     }
 
     .tree-label {
       display: block;
       flex: auto;
       font-weight: 500;
-      margin: 0 12px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: pre;
@@ -442,6 +422,104 @@ function getCSS() {
       width: 20px;
     }
   `;
+
+  const legacyStyle = css`
+    :host {
+      --xf-tree-item-indent: 22;
+    }
+
+    .tree-row {
+      border: 2px solid transparent;
+      border-radius: 0 20px 20px 0;
+      color: var(--cros-text-color-primary);
+      height: 32px;
+      margin-inline-end: 6px;
+      padding: 4px 0;
+    }
+
+    :host-context(html[dir=rtl]) .tree-row {
+      border-radius: 20px 0 0 20px;
+    }
+
+    :host(:not([selected]):not([disabled])) .tree-row:hover {
+      background-color: var(--cros-ripple-color);
+    }
+
+    :host([selected]) .tree-row {
+      background-color: var(--cros-highlight-color);
+      color: var(--cros-text-color-selection);
+    }
+
+    :host([disabled]) .tree-row {
+      opacity: var(--cros-disabled-opacity);
+    }
+
+    li:focus-visible .tree-row {
+      border: 2px solid var(--cros-focus-ring-color);
+    }
+
+    .expand-icon {
+      padding: 6px;
+    }
+
+    .tree-label-icon {
+      left: -4px;
+      right: -4px;
+    }
+
+    .tree-label {
+      margin: 0 12px;
+    }
+
+    paper-ripple {
+      display: none;
+    }
+  `;
+
+  const refresh23Style = css`
+    .tree-row {
+      border-radius: 20px;
+      color: var(--cros-sys-on_surface);
+      height: 40px;
+      margin: 8px 0;
+    }
+
+    :host(:not([selected]):not([disabled])) .tree-row:hover {
+      background-color: var(--cros-sys-hover_on_subtle);
+    }
+
+    :host([selected]) .tree-row {
+      background-color: var(--cros-sys-primary);
+      color: var(--cros-sys-on_primary);
+    }
+
+    :host([disabled]) .tree-row {
+      color: var(--cros-sys-disabled);
+    }
+
+    li:focus-visible .tree-row {
+      outline: 2px solid var(--cros-sys-focus_ring);
+      outline-offset: 2px;
+    }
+
+    .expand-icon {
+      margin-inline-start: 28px;
+    }
+
+    .tree-label {
+      margin-inline-start: 8px;
+    }
+
+    paper-ripple {
+      color: var(--cros-sys-ripple_primary);
+    }
+  `;
+
+  return [
+    commonCSS,
+    util.addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
+    util.addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
+  ];
 }
 
 /** Type of the tree item expanded custom event. */
