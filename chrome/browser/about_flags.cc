@@ -9496,7 +9496,8 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     {"chrome-root-store-enabled",
      flag_descriptions::kChromeRootStoreEnabledName,
-     flag_descriptions::kChromeRootStoreEnabledDescription, kOsWin | kOsMac,
+     flag_descriptions::kChromeRootStoreEnabledDescription,
+     kOsWin | kOsMac | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kChromeRootStoreUsed)},
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
