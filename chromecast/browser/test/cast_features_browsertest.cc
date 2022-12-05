@@ -140,16 +140,16 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
   // setting features from the server.
   virtual void SetExperimentIds(
       const std::unordered_set<int32_t>& experiment_ids) {
-    base::ListValue list;
+    base::Value::List list;
     for (auto id : experiment_ids)
       list.Append(id);
-    pref_service()->Set(prefs::kActiveDCSExperiments, list);
+    pref_service()->SetList(prefs::kActiveDCSExperiments, std::move(list));
     pref_service()->CommitPendingWrite();
   }
 
   // Clear the set experiment id's.
   void ClearExperimentIds() {
-    pref_service()->Set(prefs::kActiveDCSExperiments, base::ListValue());
+    pref_service()->SetList(prefs::kActiveDCSExperiments, base::Value::List());
     pref_service()->CommitPendingWrite();
   }
 };

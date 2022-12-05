@@ -44,8 +44,6 @@ class CastWebUI : public mojom::WebUi, public content::WebUIController {
   content::BrowserContext* const browser_context_;
 
  private:
-  void AddWebviewSupport();
-  void OnWebUIReady(const base::ListValue* args);
   void InvokeCallback(const std::string& message,
                       const base::Value::List& args);
 
