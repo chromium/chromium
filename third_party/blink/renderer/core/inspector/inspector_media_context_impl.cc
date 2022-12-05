@@ -109,9 +109,13 @@ void MediaInspectorContextImpl::TrimPlayer(const WebString& playerId) {
 
 void MediaInspectorContextImpl::CullPlayers(const WebString& prefer_keep) {
   // Erase all the dead players, but only erase the required number of others.
-  for (const auto& playerId : dead_players_)
+  while (!dead_players_.empty()) {
+    auto playerId = dead_players_.back();
+    // remove it first, since |RemovePlayer| can cause a GC event which can
+    // potentially caues more players to get added to |dead_players_|.
+    dead_players_.pop_back();
     RemovePlayer(playerId);
-  dead_players_.clear();
+  }
 
   while (!expendable_players_.empty()) {
     if (total_event_count_ <= kMaxCachedPlayerEvents)
