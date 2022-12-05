@@ -20,7 +20,7 @@ BASE_FEATURE(kLensImageCompression,
 
 BASE_FEATURE(kLensSearchOptimizations,
              "LensSearchOptimizations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchImageInScreenshotSharing,
              "LensSearchImageInScreenshotSharing",
@@ -79,7 +79,7 @@ constexpr base::FeatureParam<int> kMaxPixelsForImageSearch{
     &kLensImageCompression, "dimensions-max-pixels", 1000};
 
 const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider{
-    &kLensSearchOptimizations, "use-google-as-visual-search-provider", false};
+    &kLensSearchOptimizations, "use-google-as-visual-search-provider", true};
 
 const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1{
     &kLensSearchOptimizations, "use-menu-item-alt-text-1", false};
@@ -103,11 +103,8 @@ const base::FeatureParam<bool> kUseSelectionIconWithImage{
 const base::FeatureParam<bool> kUseAltChipString{
     &kLensInstructionChipImprovements, "use-alt-chip-string", false};
 
-// Default is set to true but it is only enabled if kLensSearchOptimizations is
-// enabled. This setup allows us to have fullscreen search as a toggleable
-// experience in chrome://flags
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
-    &kLensSearchOptimizations, "enable-lens-fullscreen-search", true};
+    &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
 
 const base::FeatureParam<bool> kUseWebpInImageSearch{
     &kLensImageFormatOptimizations, "use-webp-image-search", true};
