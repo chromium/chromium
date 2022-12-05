@@ -4,20 +4,26 @@
 
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 
+#import <string>
 #import <utility>
 
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -119,6 +125,28 @@ bool IsUpdateInfobar(PasswordInfobarType infobar_type) {
 
 using password_manager::PasswordFormManagerForUI;
 
+IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
+    NSString* user_email,
+    bool is_sync_user,
+    bool password_update,
+    std::unique_ptr<PasswordFormManagerForUI> form_to_save)
+    : form_to_save_(std::move(form_to_save)),
+      is_sync_user_(is_sync_user),
+      infobar_type_(password_update
+                        ? PasswordInfobarType::kPasswordInfobarTypeUpdate
+                        : PasswordInfobarType::kPasswordInfobarTypeSave),
+      user_email_(user_email),
+      password_update_(password_update) {}
+
+IOSChromeSavePasswordInfoBarDelegate::~IOSChromeSavePasswordInfoBarDelegate() {
+    // If by any reason this delegate gets dealloc before the Infobar is
+    // dismissed, record the dismissal metrics.
+    if (infobar_presenting_) {
+      RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
+                             IsUpdateInfobar(infobar_type_));
+    }
+}
+
 // static
 IOSChromeSavePasswordInfoBarDelegate*
 IOSChromeSavePasswordInfoBarDelegate::FromInfobarDelegate(
@@ -128,31 +156,44 @@ IOSChromeSavePasswordInfoBarDelegate::FromInfobarDelegate(
              : nullptr;
 }
 
-IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
-    NSString* user_email,
-    bool is_sync_user,
-    bool password_update,
-    std::unique_ptr<PasswordFormManagerForUI> form_manager)
-    : IOSChromePasswordManagerInfoBarDelegate(user_email,
-                                              is_sync_user,
-                                              std::move(form_manager)),
-      password_update_(password_update),
-      infobar_type_(password_update
-                        ? PasswordInfobarType::kPasswordInfobarTypeUpdate
-                        : PasswordInfobarType::kPasswordInfobarTypeSave) {}
+NSString* IOSChromeSavePasswordInfoBarDelegate::GetDetailsMessageText() const {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    return is_sync_user_ ? l10n_util::GetNSString(IDS_SAVE_PASSWORD_FOOTER)
+                         : @"";
+  }
 
-IOSChromeSavePasswordInfoBarDelegate::~IOSChromeSavePasswordInfoBarDelegate() {
-    // If by any reason this delegate gets dealloc before the Infobar is
-    // dismissed, record the dismissal metrics.
-    if (infobar_presenting_) {
-      RecordDismissalMetrics(form_to_save(), infobar_response(),
-                             IsUpdateInfobar(infobar_type_));
-    }
+  return is_sync_user_
+             ? l10n_util::GetNSStringF(
+                   IDS_SAVE_PASSWORD_FOOTER_DISPLAYING_USER_EMAIL,
+                   base::SysNSStringToUTF16(user_email_))
+             : l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING);
 }
 
-infobars::InfoBarDelegate::InfoBarIdentifier
-IOSChromeSavePasswordInfoBarDelegate::GetIdentifier() const {
-  return SAVE_PASSWORD_INFOBAR_DELEGATE_MOBILE;
+NSString* IOSChromeSavePasswordInfoBarDelegate::GetUserNameText() const {
+  return base::SysUTF16ToNSString(
+      form_to_save_->GetPendingCredentials().username_value);
+}
+
+NSString* IOSChromeSavePasswordInfoBarDelegate::GetPasswordText() const {
+  return base::SysUTF16ToNSString(
+      form_to_save_->GetPendingCredentials().password_value);
+}
+
+NSString* IOSChromeSavePasswordInfoBarDelegate::GetURLHostText() const {
+  return base::SysUTF8ToNSString(form_to_save_->GetURL().host());
+}
+
+void IOSChromeSavePasswordInfoBarDelegate::set_handler(
+    id<ApplicationCommands> handler) {
+  handler_ = handler;
+}
+
+bool IOSChromeSavePasswordInfoBarDelegate::ShouldExpire(
+    const NavigationDetails& details) const {
+  return !details.is_form_submission && !details.is_redirect &&
+         ConfirmInfoBarDelegate::ShouldExpire(details);
 }
 
 std::u16string IOSChromeSavePasswordInfoBarDelegate::GetMessageText() const {
@@ -161,11 +202,6 @@ std::u16string IOSChromeSavePasswordInfoBarDelegate::GetMessageText() const {
   }
   return l10n_util::GetStringUTF16(
       IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT);
-}
-
-NSString* IOSChromeSavePasswordInfoBarDelegate::GetInfobarModalTitleText()
-    const {
-  return l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_TITLE);
 }
 
 std::u16string IOSChromeSavePasswordInfoBarDelegate::GetButtonLabel(
@@ -188,31 +224,25 @@ std::u16string IOSChromeSavePasswordInfoBarDelegate::GetButtonLabel(
 }
 
 bool IOSChromeSavePasswordInfoBarDelegate::Accept() {
-  DCHECK(form_to_save());
-  form_to_save()->Save();
-  set_infobar_response(password_manager::metrics_util::CLICKED_ACCEPT);
+  DCHECK(form_to_save_);
+  form_to_save_->Save();
+  infobar_response_ = password_manager::metrics_util::CLICKED_ACCEPT;
   password_update_ = true;
   current_password_saved_ = true;
   return true;
 }
 
 bool IOSChromeSavePasswordInfoBarDelegate::Cancel() {
-  DCHECK(form_to_save());
+  DCHECK(form_to_save_);
   DCHECK(!password_update_);
-  form_to_save()->Blocklist();
-  set_infobar_response(password_manager::metrics_util::CLICKED_NEVER);
+  form_to_save_->Blocklist();
+  infobar_response_ = password_manager::metrics_util::CLICKED_NEVER;
   return true;
 }
 
 void IOSChromeSavePasswordInfoBarDelegate::InfoBarDismissed() {
-  DCHECK(form_to_save());
-  set_infobar_response(password_manager::metrics_util::CLICKED_CANCEL);
-}
-
-bool IOSChromeSavePasswordInfoBarDelegate::ShouldExpire(
-    const NavigationDetails& details) const {
-  return !details.is_form_submission && !details.is_redirect &&
-         ConfirmInfoBarDelegate::ShouldExpire(details);
+  DCHECK(form_to_save_);
+  infobar_response_ = password_manager::metrics_util::CLICKED_CANCEL;
 }
 
 void IOSChromeSavePasswordInfoBarDelegate::UpdateCredentials(
@@ -221,14 +251,14 @@ void IOSChromeSavePasswordInfoBarDelegate::UpdateCredentials(
   const std::u16string username_string = base::SysNSStringToUTF16(username);
   const std::u16string password_string = base::SysNSStringToUTF16(password);
   UpdatePasswordFormUsernameAndPassword(username_string, password_string,
-                                        form_to_save());
+                                        form_to_save_.get());
 }
 
 void IOSChromeSavePasswordInfoBarDelegate::InfobarPresenting(bool automatic) {
   if (infobar_presenting_)
     return;
 
-  RecordPresentationMetrics(form_to_save(), current_password_saved_,
+  RecordPresentationMetrics(form_to_save_.get(), current_password_saved_,
                             IsUpdateInfobar(infobar_type_), automatic);
   infobar_presenting_ = YES;
 }
@@ -237,10 +267,10 @@ void IOSChromeSavePasswordInfoBarDelegate::InfobarDismissed() {
   if (!infobar_presenting_)
     return;
 
-  RecordDismissalMetrics(form_to_save(), infobar_response(),
+  RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
                          IsUpdateInfobar(infobar_type_));
   // After the metrics have been recorded we can reset the response.
-  set_infobar_response(password_manager::metrics_util::NO_DIRECT_INTERACTION);
+  infobar_response_ = password_manager::metrics_util::NO_DIRECT_INTERACTION;
   infobar_presenting_ = NO;
 }
 
@@ -250,4 +280,18 @@ bool IOSChromeSavePasswordInfoBarDelegate::IsPasswordUpdate() const {
 
 bool IOSChromeSavePasswordInfoBarDelegate::IsCurrentPasswordSaved() const {
   return current_password_saved_;
+}
+
+NSString* IOSChromeSavePasswordInfoBarDelegate::GetInfobarModalTitleText()
+    const {
+  return l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_TITLE);
+}
+
+int IOSChromeSavePasswordInfoBarDelegate::GetIconId() const {
+  return IDR_IOS_INFOBAR_SAVE_PASSWORD;
+}
+
+infobars::InfoBarDelegate::InfoBarIdentifier
+IOSChromeSavePasswordInfoBarDelegate::GetIdentifier() const {
+  return SAVE_PASSWORD_INFOBAR_DELEGATE_MOBILE;
 }

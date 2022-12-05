@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+
 #import "ios/chrome/browser/passwords/ios_chrome_password_infobar_metrics_recorder.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_manager_infobar_delegate.h"
 
 @protocol ApplicationCommands;
 
@@ -22,8 +24,7 @@ class PasswordFormManagerForUI;
 // with the "save password" infobar.
 // If `password_update` is true the delegate will use "Update" related strings,
 // and should Update the credentials instead of Saving new ones.
-class IOSChromeSavePasswordInfoBarDelegate
-    : public IOSChromePasswordManagerInfoBarDelegate {
+class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   IOSChromeSavePasswordInfoBarDelegate(
       NSString* user_email,
@@ -42,6 +43,22 @@ class IOSChromeSavePasswordInfoBarDelegate
   // if it is of another type.
   static IOSChromeSavePasswordInfoBarDelegate* FromInfobarDelegate(
       infobars::InfoBarDelegate* delegate);
+
+  // Getter for the message displayed in addition to the title. If no message
+  // was set, this returns an empty string.
+  NSString* GetDetailsMessageText() const;
+
+  // The Username being saved or updated by the Infobar.
+  NSString* GetUserNameText() const;
+
+  // The Password being saved or updated by the Infobar.
+  NSString* GetPasswordText() const;
+
+  // The URL host for which the credentials are being saved for.
+  NSString* GetURLHostText() const;
+
+  // Sets the dispatcher for this delegate.
+  void set_handler(id<ApplicationCommands> handler);
 
   // InfoBarDelegate implementation
   bool ShouldExpire(const NavigationDetails& details) const override;
@@ -71,6 +88,7 @@ class IOSChromeSavePasswordInfoBarDelegate
   // TODO(crbug.com/1040653): This function is only virtual so it can be mocked
   // for testing purposes.  It should become non-virtual once this test is
   // refactored for testability.
+  // TODO(crbug.com/1394793): Fix dismissal handlers.
   virtual void InfobarDismissed();
 
   // true if password is being updated at the moment the InfobarModal is
@@ -86,7 +104,29 @@ class IOSChromeSavePasswordInfoBarDelegate
 
  private:
   // ConfirmInfoBarDelegate implementation.
+  int GetIconId() const override;
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
+
+  // The password_manager::PasswordFormManager managing the form we're asking
+  // the user about, and should save as per their decision.
+  const std::unique_ptr<password_manager::PasswordFormManagerForUI>
+      form_to_save_;
+
+  // Whether to show the additional footer.
+  const bool is_sync_user_;
+
+  // The PasswordInfobarType for this delegate. Set at initialization and won't
+  // change throughout the life of the delegate.
+  const PasswordInfobarType infobar_type_;
+
+  // Used to track the results we get from the info bar.
+  password_manager::metrics_util::UIDismissalReason infobar_response_ =
+      password_manager::metrics_util::NO_DIRECT_INTERACTION;
+
+  NSString* user_email_;
+
+  // Handler for calling Application commands.
+  __weak id<ApplicationCommands> handler_ = nil;
 
   // true if password is being updated at the moment the InfobarModal is
   // created.
@@ -95,10 +135,6 @@ class IOSChromeSavePasswordInfoBarDelegate
   // true if the current set of credentials has already been saved at the moment
   // the InfobarModal is created.
   bool current_password_saved_ = false;
-
-  // The PasswordInfobarType for this delegate. Set at initialization and won't
-  // change throughout the life of the delegate.
-  const PasswordInfobarType infobar_type_;
 
   // YES if an Infobar is being presented by this delegate.
   bool infobar_presenting_ = false;

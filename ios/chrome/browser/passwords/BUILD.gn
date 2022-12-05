@@ -153,8 +153,6 @@ source_set("store_factory") {
 source_set("infobar_delegates") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "ios_chrome_password_manager_infobar_delegate.h",
-    "ios_chrome_password_manager_infobar_delegate.mm",
     "ios_chrome_save_password_infobar_delegate.h",
     "ios_chrome_save_password_infobar_delegate.mm",
   ]
