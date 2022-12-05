@@ -31,7 +31,9 @@ source_set("unit_tests") {
   sources = [ "default_browser_settings_table_view_controller_unittest.mm" ]
   deps = [
     ":default_browser",
+    "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/table_view:test_support",
     "//testing/gtest",
   ]

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 
+#import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/platform_test.h"
@@ -15,19 +17,24 @@
 namespace {
 
 // Tests the items shown in DefaultBrowserSettingTableViewController.
-class DefaultBrowserSettingTableViewControllerTest
+class DefaultBrowserSettingsTableViewControllerTest
     : public ChromeTableViewControllerTest {
  protected:
-  DefaultBrowserSettingTableViewControllerTest() {}
+  DefaultBrowserSettingsTableViewControllerTest() {}
 
   void SetUp() override { ChromeTableViewControllerTest::SetUp(); }
 
+  void TearDown() override {
+    [base::mac::ObjCCastStrict<DefaultBrowserSettingsTableViewController>(
+        controller()) settingsWillBeDismissed];
+    ChromeTableViewControllerTest::TearDown();
+  }
   ChromeTableViewController* InstantiateController() override {
     return [[DefaultBrowserSettingsTableViewController alloc] init];
   }
 };
 
-TEST_F(DefaultBrowserSettingTableViewControllerTest, TestModel) {
+TEST_F(DefaultBrowserSettingsTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
 

@@ -43,6 +43,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
+@interface DefaultBrowserSettingsTableViewController () {
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
+}
+@end
+
 @implementation DefaultBrowserSettingsTableViewController
 
 - (instancetype)init {
@@ -125,12 +131,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
        toSectionWithIdentifier:SectionIdentifierOpenSettings];
 }
 
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+}
+
+- (void)reportBackUserAction {
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  // No-op as there are no C++ objects or observers.
+
+  _settingsAreDismissed = YES;
+}
+
 #pragma mark UITableViewDelegate
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  if (_settingsAreDismissed)
+    return cell;
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
   if (itemType == ItemTypeOpenSettingsStep ||

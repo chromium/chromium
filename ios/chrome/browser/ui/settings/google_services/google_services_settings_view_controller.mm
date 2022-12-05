@@ -25,7 +25,10 @@
 #endif
 
 @interface GoogleServicesSettingsViewController () <
-    PopoverLabelViewControllerDelegate>
+    PopoverLabelViewControllerDelegate> {
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
+}
 
 @property(nonatomic, strong)
     EnterpriseInfoPopoverViewController* bubbleViewController;
@@ -104,6 +107,8 @@
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  if (_settingsAreDismissed)
+    return cell;
   if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
     TableViewSwitchCell* switchCell =
         base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
@@ -147,6 +152,14 @@
 - (void)reportBackUserAction {
   base::RecordAction(
       base::UserMetricsAction("MobileGoogleServicesSettingsBack"));
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  // No-op as there are no C++ objects or observers.
+
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark - GoogleServicesSettingsConsumer
