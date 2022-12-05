@@ -73,9 +73,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   OutputFormat VideoFrameOutputFormat(VideoPixelFormat pixel_format) override {
     return video_frame_output_format_;
   }
-  bool UseSharedImagePerPlane(OutputFormat output_format) override {
-    return use_shared_image_per_plane_;
-  }
 
   gpu::SharedImageInterface* SharedImageInterface() override { return sii_; }
   gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() override {
@@ -84,10 +81,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   void SetVideoFrameOutputFormat(const OutputFormat video_frame_output_format) {
     video_frame_output_format_ = video_frame_output_format;
-  }
-
-  void SetUseSharedImagePerPlane(bool use_shared_image_per_plane) {
-    use_shared_image_per_plane_ = use_shared_image_per_plane;
   }
 
   void SetFailToAllocateGpuMemoryBufferForTesting(bool fail) {
@@ -113,7 +106,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
  private:
   base::Lock lock_;
   OutputFormat video_frame_output_format_ = OutputFormat::I420;
-  bool use_shared_image_per_plane_ = false;
 
   bool fail_to_allocate_gpu_memory_buffer_ = false;
 

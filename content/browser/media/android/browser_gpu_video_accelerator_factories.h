@@ -59,8 +59,6 @@ class BrowserGpuVideoAcceleratorFactories
   unsigned ImageTextureTarget(gfx::BufferFormat format) override;
   media::GpuVideoAcceleratorFactories::OutputFormat VideoFrameOutputFormat(
       media::VideoPixelFormat pixel_format) override;
-  bool UseSharedImagePerPlane(
-      media::GpuVideoAcceleratorFactories::OutputFormat output_format) override;
   gpu::SharedImageInterface* SharedImageInterface() override;
   gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() override;
   base::UnsafeSharedMemoryRegion CreateSharedMemoryRegion(size_t size) override;

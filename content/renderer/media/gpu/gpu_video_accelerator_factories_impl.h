@@ -103,7 +103,6 @@ class GpuVideoAcceleratorFactoriesImpl
   unsigned ImageTextureTarget(gfx::BufferFormat format) override;
   OutputFormat VideoFrameOutputFormat(
       media::VideoPixelFormat pixel_format) override;
-  bool UseSharedImagePerPlane(OutputFormat output_format) override;
 
   // Called on the media thread. Returns the SharedImageInterface unless the
   // ContextProvider has been lost, in which case it returns null.

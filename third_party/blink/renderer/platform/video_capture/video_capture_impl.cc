@@ -512,8 +512,11 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   const auto output_format =
       buffer_context_->gpu_factories()->VideoFrameOutputFormat(
           frame_info_->pixel_format);
-  DCHECK_EQ(output_format,
-            media::GpuVideoAcceleratorFactories::OutputFormat::NV12);
+  DCHECK(
+      output_format ==
+          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
+      output_format ==
+          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB);
 
   std::vector<gfx::BufferPlane> planes;
 
@@ -528,8 +531,17 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
       buffer_context_->gpu_factories()->ImageTextureTarget(
           gpu_memory_buffer_->GetFormat());
 
-  if (base::FeatureList::IsEnabled(
-          media::kMultiPlaneVideoCaptureSharedImages)) {
+  // TODO(sunnyps): Get rid of NV12_DUAL_GMB format and instead rely on enabled
+  // by default multi plane shared images on Windows.
+
+  const bool use_multiplane =
+#if BUILDFLAG(IS_WIN)
+      output_format ==
+          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB ||
+#endif
+      base::FeatureList::IsEnabled(media::kMultiPlaneVideoCaptureSharedImages);
+
+  if (use_multiplane) {
     planes.push_back(gfx::BufferPlane::Y);
     planes.push_back(gfx::BufferPlane::UV);
   } else {

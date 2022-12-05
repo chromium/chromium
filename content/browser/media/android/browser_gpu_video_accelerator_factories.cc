@@ -176,11 +176,6 @@ BrowserGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
   return GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
 }
 
-bool BrowserGpuVideoAcceleratorFactories::UseSharedImagePerPlane(
-    media::GpuVideoAcceleratorFactories::OutputFormat output_format) {
-  return false;
-}
-
 gpu::SharedImageInterface*
 BrowserGpuVideoAcceleratorFactories::SharedImageInterface() {
   NOTREACHED();

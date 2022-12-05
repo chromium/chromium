@@ -60,14 +60,15 @@ class MediaLog;
 class MEDIA_EXPORT GpuVideoAcceleratorFactories {
  public:
   enum class OutputFormat {
-    UNDEFINED = 0,  // Unset state
-    I420,           // 3 x R8 GMBs
-    NV12,           // One NV12 GMB
-    XR30,           // 10:10:10:2 BGRX in one GMB (Usually Mac)
-    XB30,           // 10:10:10:2 RGBX in one GMB
-    RGBA,           // One 8:8:8:8 RGBA
-    BGRA,           // One 8:8:8:8 BGRA (Usually Mac)
-    P010,           // One P010 GMB.
+    UNDEFINED = 0,    // Unset state
+    I420,             // 3 x R8 GMBs
+    NV12_SINGLE_GMB,  // One NV12 GMB
+    NV12_DUAL_GMB,    // One R8, one RG88 GMB
+    XR30,             // 10:10:10:2 BGRX in one GMB (Usually Mac)
+    XB30,             // 10:10:10:2 RGBX in one GMB
+    RGBA,             // One 8:8:8:8 RGBA
+    BGRA,             // One 8:8:8:8 BGRA (Usually Mac)
+    P010,             // One P010 GMB.
   };
 
   enum class Supported {
@@ -181,10 +182,6 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   // video frames are enabled.
   virtual OutputFormat VideoFrameOutputFormat(
       VideoPixelFormat pixel_format) = 0;
-
-  // Whether we're required to use a separate shared image per GpuMemoryBuffer
-  // plane for given output format.
-  virtual bool UseSharedImagePerPlane(OutputFormat output_format) = 0;
 
   // Returns a SharedImageInterface that can be used (on any thread) to allocate
   // and update shared images.
