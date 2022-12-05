@@ -34,8 +34,6 @@ interface ITestWebLayer {
 
   void setAccessibilityEnabled(in boolean enabled) = 8;
 
-  boolean canBrowserControlsScroll(in ITab tab) = 9;
-
   // Creates and shows a test infobar in |tab|, calling |runnable| when the addition (including
   // animations) is complete.
   void addInfoBar(in ITab tab, in IObjectWrapper runnable) = 10;

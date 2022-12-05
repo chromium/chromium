@@ -31,7 +31,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.autofill.AutofillActionModeCallback;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
@@ -128,11 +127,6 @@ public final class TabImpl extends ITab.Stub {
     private List<BrowserControlsVisibilityDelegate> mBrowserControlsDelegates;
     // Computes a net browser control visibility constraint from constituent constraints.
     private ComposedBrowserControlsVisibilityDelegate mComposedBrowserControlsVisibility;
-    // Which BrowserControlsVisibilityDelegate is currently controlling the visibility. The active
-    // delegate changes from mComposedBrowserControlsVisibility to the delegate for visibility
-    // reason RENDERER_UNAVAILABLE if onlyExpandControlsAtPageTop is enabled, in which case we don't
-    // want to ever force the controls to be visible unless the renderer isn't responsive.
-    private BrowserControlsVisibilityDelegate mActiveBrowserControlsVisibilityDelegate;
     // Invoked when the computed visibility constraint changes.
     private Callback<Integer> mConstraintsUpdatedCallback;
 
@@ -750,11 +744,6 @@ public final class TabImpl extends ITab.Stub {
         BrowserViewController controller = getViewController();
         if (controller == null) return false;
 
-        // Refuse to start a find session when the browser controls are forced hidden.
-        if (mActiveBrowserControlsVisibilityDelegate.get() == BrowserControlsState.HIDDEN) {
-            return false;
-        }
-
         mFindInPageCallbackClient = client;
         assert mFindInPageBridge == null;
         mFindInPageBridge = new FindInPageBridge(mWebContents);
@@ -1043,10 +1032,6 @@ public final class TabImpl extends ITab.Stub {
 
         sTabMap.remove(mId);
 
-        // ObservableSupplierImpl.addObserver() posts a task to notify the observer, ensure the
-        // callback isn't run after destroy() is called (otherwise we'll get crashes as the native
-        // tab has been deleted).
-        mActiveBrowserControlsVisibilityDelegate.removeObserver(mConstraintsUpdatedCallback);
         hideFindInPageUiAndNotifyClient();
         mFindInPageCallbackClient = null;
         mNavigationController = null;
@@ -1118,11 +1103,6 @@ public final class TabImpl extends ITab.Stub {
                 ObjectWrapper.wrap(nonEmptyOrNull(params.getSrcUrl().getSpec())), params.isImage(),
                 params.isVideo(), canDownload,
                 new NativeContextMenuParamsHolder(nativeContextMenuParams));
-    }
-
-    @VisibleForTesting
-    public boolean canBrowserControlsScrollForTesting() {
-        return mActiveBrowserControlsVisibilityDelegate.get() == BrowserControlsState.BOTH;
     }
 
     @VisibleForTesting

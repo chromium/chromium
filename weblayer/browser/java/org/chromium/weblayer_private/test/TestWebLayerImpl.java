@@ -156,11 +156,6 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
     }
 
     @Override
-    public boolean canBrowserControlsScroll(ITab tab) {
-        return ((TabImpl) tab).canBrowserControlsScrollForTesting();
-    }
-
-    @Override
     public void setIgnoreMissingKeyForTranslateManager(boolean ignore) {
         TestWebLayerImplJni.get().setIgnoreMissingKeyForTranslateManager(ignore);
     }
