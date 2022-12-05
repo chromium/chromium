@@ -45,12 +45,12 @@
   // was added implicitly by adding flavors to the owned pasteboard of
   // OwningProvider, so call -types to actually get data.
   //
-  // Merge in the ui::kChromeDragDummyPboardType type, so that all of Chromium
+  // Merge in the ui::kUTTypeChromiumInitiatedDrag type, so that all of Chromium
   // is marked to receive the drags. TODO(avi): Wire up MacViews so that
   // BridgedContentView properly registers the result of View::GetDropFormats()
   // rather than OSExchangeDataProviderMac::SupportedPasteboardTypes().
   return [[_pasteboardItem types]
-      arrayByAddingObject:ui::kChromeDragDummyPboardType];
+      arrayByAddingObject:ui::kUTTypeChromiumInitiatedDrag];
 }
 
 - (NSPasteboardWritingOptions)writingOptionsForType:(NSString*)type
@@ -64,7 +64,7 @@
 }
 
 - (id)pasteboardPropertyListForType:(NSString*)type {
-  if ([type isEqual:ui::kChromeDragDummyPboardType])
+  if ([type isEqual:ui::kUTTypeChromiumInitiatedDrag])
     return [NSData data];
 
   // Like above, an NSPasteboardItem added to a pasteboard will return nil from
@@ -360,10 +360,10 @@ NSDraggingItem* OSExchangeDataProviderMac::GetDraggingItem() const {
 // static
 NSArray* OSExchangeDataProviderMac::SupportedPasteboardTypes() {
   return @[
-    kWebCustomDataPboardType, ClipboardUtil::UTIForWebURLsAndTitles(),
-    NSURLPboardType, NSFilenamesPboardType, kChromeDragDummyPboardType,
+    kUTTypeChromiumWebCustomData, ClipboardUtil::UTIForWebURLsAndTitles(),
+    NSURLPboardType, NSFilenamesPboardType, kUTTypeChromiumInitiatedDrag,
     NSStringPboardType, NSHTMLPboardType, NSRTFPboardType,
-    NSFilenamesPboardType, kWebCustomDataPboardType, NSPasteboardTypeString
+    NSFilenamesPboardType, kUTTypeChromiumWebCustomData, NSPasteboardTypeString
   ];
 }
 

@@ -403,7 +403,7 @@ void PopulateDropDataFromPasteboard(content::DropData* data,
   base::scoped_nsobject<NSArray> types([[pboard types] retain]);
 
   data->did_originate_from_renderer =
-      [types containsObject:ui::kChromeDragDummyPboardType];
+      [types containsObject:ui::kUTTypeChromiumInitiatedDrag];
 
   // Get URL if possible. To avoid exposing file system paths to web content,
   // filenames in the drag are not converted to file URLs.
@@ -422,8 +422,8 @@ void PopulateDropDataFromPasteboard(content::DropData* data,
   if ([types containsObject:NSHTMLPboardType]) {
     NSString* html = [pboard stringForType:NSHTMLPboardType];
     data->html = base::SysNSStringToUTF16(html);
-  } else if ([types containsObject:ui::kChromeDragImageHTMLPboardType]) {
-    NSString* html = [pboard stringForType:ui::kChromeDragImageHTMLPboardType];
+  } else if ([types containsObject:ui::kUTTypeChromiumImageAndHTML]) {
+    NSString* html = [pboard stringForType:ui::kUTTypeChromiumImageAndHTML];
     data->html = base::SysNSStringToUTF16(html);
   } else if ([types containsObject:NSRTFPboardType]) {
     NSString* html = ui::ClipboardUtil::GetHTMLFromRTFOnPasteboard(pboard);
@@ -450,8 +450,8 @@ void PopulateDropDataFromPasteboard(content::DropData* data,
   // TODO(pinkerton): Get file contents. http://crbug.com/34661
 
   // Get custom MIME data.
-  if ([types containsObject:ui::kWebCustomDataPboardType]) {
-    NSData* customData = [pboard dataForType:ui::kWebCustomDataPboardType];
+  if ([types containsObject:ui::kUTTypeChromiumWebCustomData]) {
+    NSData* customData = [pboard dataForType:ui::kUTTypeChromiumWebCustomData];
     ui::ReadCustomDataIntoMap([customData bytes],
                               [customData length],
                               &data->custom_data);

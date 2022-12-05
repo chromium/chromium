@@ -8,9 +8,10 @@
 
 namespace ui {
 
-NSString* const kImageSvg = @"public.svg-image";
-// TODO(dcheng): This name is temporary. See crbug.com/106449.
-NSString* const kWebCustomDataPboardType = @"org.chromium.web-custom-data";
+NSString* const kUTTypeChromiumWebCustomData = @"org.chromium.web-custom-data";
+
+// This drag constant is still used by WebKit; see
+// https://github.com/WebKit/WebKit/search?q=WebSmartPastePboardType
 NSString* const kWebSmartPastePboardType = @"NeXT smart paste pasteboard type";
 
 // It is the common convention on the Mac and on iOS that password managers tag

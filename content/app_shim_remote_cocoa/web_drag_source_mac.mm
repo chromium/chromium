@@ -103,7 +103,7 @@ using content::DropData;
 
   // HTML.
   if ([type isEqualToString:NSHTMLPboardType] ||
-      [type isEqualToString:ui::kChromeDragImageHTMLPboardType]) {
+      [type isEqualToString:ui::kUTTypeChromiumImageAndHTML]) {
     DCHECK(_dropData->html && !_dropData->html->empty());
     // See comment on |kHtmlHeader| above.
     [pboard setString:SysUTF16ToNSString(kHtmlHeader + *_dropData->html)
@@ -124,6 +124,7 @@ using content::DropData;
       url = [NSURL URLWithString:SysUTF8ToNSString(escapedUrlString)];
     }
     [url writeToPasteboard:pboard];
+
   // URL title.
   } else if ([type isEqualToString:ui::kUTTypeURLName]) {
     [pboard setString:SysUTF16ToNSString(_dropData->url_title)
@@ -142,17 +143,16 @@ using content::DropData;
               forType:NSStringPboardType];
 
   // Custom MIME data.
-  } else if ([type isEqualToString:ui::kWebCustomDataPboardType]) {
+  } else if ([type isEqualToString:ui::kUTTypeChromiumWebCustomData]) {
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(_dropData->custom_data, &pickle);
     [pboard setData:[NSData dataWithBytes:pickle.data() length:pickle.size()]
-            forType:ui::kWebCustomDataPboardType];
+            forType:ui::kUTTypeChromiumWebCustomData];
 
-  // Dummy type.
-  } else if ([type isEqualToString:ui::kChromeDragDummyPboardType]) {
-    // The dummy type _was_ promised and someone decided to call the bluff.
-    [pboard setData:[NSData data]
-            forType:ui::kChromeDragDummyPboardType];
+  // Other Chromium-initiated drag.
+  } else if ([type isEqualToString:ui::kUTTypeChromiumInitiatedDrag]) {
+    // The type _was_ promised and someone decided to call the bluff.
+    [pboard setData:[NSData data] forType:ui::kUTTypeChromiumInitiatedDrag];
 
   // Oops!
   } else {
@@ -269,7 +269,7 @@ using content::DropData;
 
   DCHECK(_pasteboard.get());
 
-  _changeCount = [_pasteboard declareTypes:@[ ui::kChromeDragDummyPboardType ]
+  _changeCount = [_pasteboard declareTypes:@[ ui::kUTTypeChromiumInitiatedDrag ]
                                      owner:self];
 
   // URL (and title).
@@ -371,7 +371,7 @@ using content::DropData;
                       UTTypeConformsTo(_fileUTI.get(), kUTTypeImage);
   if (hasHTMLData) {
     if (hasImageData) {
-      [_pasteboard addTypes:@[ ui::kChromeDragImageHTMLPboardType ] owner:self];
+      [_pasteboard addTypes:@[ ui::kUTTypeChromiumImageAndHTML ] owner:self];
     } else {
       [_pasteboard addTypes:@[ NSHTMLPboardType ] owner:self];
     }
@@ -383,7 +383,7 @@ using content::DropData;
   }
 
   if (!_dropData->custom_data.empty()) {
-    [_pasteboard addTypes:@[ ui::kWebCustomDataPboardType ] owner:self];
+    [_pasteboard addTypes:@[ ui::kUTTypeChromiumWebCustomData ] owner:self];
   }
 }
 

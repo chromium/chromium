@@ -5,7 +5,10 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 
 #import <Cocoa/Cocoa.h>
+#import <CoreServices/CoreServices.h>  // pre-macOS 11
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h> // macOS 11
 
+#include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -118,8 +121,14 @@ const ClipboardFormatType& ClipboardFormatType::HtmlType() {
 }
 
 const ClipboardFormatType& ClipboardFormatType::SvgType() {
-  static base::NoDestructor<ClipboardFormatType> type(kImageSvg);
-  return *type;
+  if (@available(macOS 11, *)) {
+    static base::NoDestructor<ClipboardFormatType> type(UTTypeSVG.identifier);
+    return *type;
+  } else {
+    static base::NoDestructor<ClipboardFormatType> type(
+        base::mac::CFToNSCast(kUTTypeScalableVectorGraphics));
+    return *type;
+  }
 }
 
 // static
@@ -148,7 +157,8 @@ const ClipboardFormatType& ClipboardFormatType::WebKitSmartPasteType() {
 
 // static
 const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
-  static base::NoDestructor<ClipboardFormatType> type(kWebCustomDataPboardType);
+  static base::NoDestructor<ClipboardFormatType> type(
+      kUTTypeChromiumWebCustomData);
   return *type;
 }
 
