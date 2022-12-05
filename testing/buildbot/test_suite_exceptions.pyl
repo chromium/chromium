@@ -2551,6 +2551,16 @@
       'lacros-arm-generic-chrome': {
         'experiment_percentage': 100,
       },
+      'lacros-arm-generic-rel': {
+        'ci_only': True,
+      },
+    },
+  },
+  'lacros_cq_tast_tests_jacuzzi jacuzzi': {
+    'modifications': {
+      'lacros-arm-generic-rel': {
+        'ci_only': True,
+      },
     },
   },
   'maps_pixel_passthrough_test': {
