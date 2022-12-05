@@ -6166,7 +6166,6 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   FormStructure form_structure(form);
 
-  base::HistogramTester histogram_tester;
   BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
       profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
@@ -6175,6 +6174,85 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   ServerFieldTypeSet possible_types = form_structure.field(0)->possible_types();
   EXPECT_EQ(possible_types, expected_possible_types);
 }
+
+// TODO(crbug.com/1395740). Remove parameter, once
+// kAutofillVoteForSelectOptionValues has settled on stable.
+class DeterminePossibleFieldTypesForUploadOfSelectTest
+    : public BrowserAutofillManagerTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override { BrowserAutofillManagerTest::SetUp(); }
+};
+
+// Tests that DeterminePossibleFieldTypesForUpload considers both the value
+// and the human readable part of an <option> element in a <select> element:
+// <option value="this is the value">this is the human readable part</option>
+//
+// In particular <option value="US">USA (+1)</option> is probably part of a
+// phone number country code.
+TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
+       DeterminePossibleFieldTypesForUploadOfSelect) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(
+      features::kAutofillVoteForSelectOptionValues, GetParam());
+
+  // Set up a profile and no credit cards.
+  std::vector<AutofillProfile> profiles(1);
+  test::SetProfileInfo(&profiles[0], "Elvis", "Aaron", "Presley",
+                       "theking@gmail.com", "RCA", "3734 Elvis Presley Blvd.",
+                       "Apt. 10", "Memphis", "Tennessee", "38116", "US",
+                       "+1 (234) 567-8901");
+  profiles[0].set_guid("00000000-0000-0000-0000-000000000001");
+  std::vector<CreditCard> credit_cards;
+
+  // Set up the form to be tested.
+  FormData form;
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+
+  // We want the "Memphis" in <option value="2">Memphis</option> to be
+  // recognized.
+  FormFieldData city_field;
+  test::CreateTestSelectField(
+      "label", "name", /*value=*/"2",
+      /*values=*/{"1", "2", "3"},
+      /*contents=*/{"New York", "Memphis", "Gotham City"}, 3, &city_field);
+
+  // We want the +1 in <option value="US">USA (+1)</option> to be recognized
+  // as a phone country code. Despite the value "US", we don't want this to be
+  // recognized as a country field.
+  FormFieldData phone_country_code_field;
+  test::CreateTestSelectField(
+      "label", "name", /*value=*/"US", /*values=*/{"US", "DE"},
+      /*contents=*/{"USA (+1)", "Germany (+49)"}, 2, &phone_country_code_field);
+
+  form.fields = {city_field, phone_country_code_field};
+
+  FormStructure form_structure(form);
+
+  // Validate expectations.
+  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
+
+  ASSERT_EQ(2U, form_structure.field_count());
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillVoteForSelectOptionValues)) {
+    EXPECT_EQ(form_structure.field(0)->possible_types(),
+              ServerFieldTypeSet({ADDRESS_HOME_CITY}));
+    EXPECT_EQ(form_structure.field(1)->possible_types(),
+              ServerFieldTypeSet({PHONE_HOME_COUNTRY_CODE}));
+  } else {
+    EXPECT_EQ(form_structure.field(0)->possible_types(),
+              ServerFieldTypeSet({UNKNOWN_TYPE}));
+    EXPECT_EQ(form_structure.field(1)->possible_types(),
+              ServerFieldTypeSet({ADDRESS_HOME_COUNTRY}));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeterminePossibleFieldTypesForUploadOfSelectTest,
+                         testing::Bool());
 
 // Tests that DeterminePossibleFieldTypesForUpload is called when a form is
 // submitted.

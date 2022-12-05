@@ -563,6 +563,14 @@ const base::FeatureParam<bool> kAutofillAblationStudyEnabledForPaymentsParam{
 const base::FeatureParam<int> kAutofillAblationStudyAblationWeightPerMilleParam{
     &kAutofillEnableAblationStudy, "ablation_weight_per_mille", 10};
 
+// If enabled, crowdsourcing considers not just the value V but also the human
+// readable text HRT of an <option value="V">HRT</option> for voting.
+// TODO(crbug.com/1395740). This is a kill switch, remove once the feature has
+// settled.
+BASE_FEATURE(kAutofillVoteForSelectOptionValues,
+             "AutofillVoteForSelectOptionValues",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether the Autofill manual fallback for Addresses and Payments is
 // present on Android.

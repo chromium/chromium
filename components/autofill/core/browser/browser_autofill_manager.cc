@@ -89,6 +89,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_data.h"
@@ -2583,13 +2584,47 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     std::u16string value;
     base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
 
+    // Consider the textual values of <select> element <option>s as well.
+    // If a phone country code <select> element looks as follows:
+    // <select> <option value="US">+1</option> </select>
+    // We want to consider the <option>'s content ("+1") to classify this as a
+    // PHONE_HOME_COUNTRY_CODE field. It is insufficient to just consider the
+    // <option>'s value ("US").
+    absl::optional<std::u16string> select_content;
+    // TODO(crbug.com/1395740) Remove the flag check once the feature has
+    // settled.
+    if (field->form_control_type == "select-one" &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillVoteForSelectOptionValues)) {
+      auto it = base::ranges::find(field->options, field->value,
+                                   &SelectOption::value);
+      if (it != field->options.end()) {
+        select_content = it->content;
+        base::TrimWhitespace(*select_content, base::TRIM_ALL, &*select_content);
+      }
+    }
+
     for (const AutofillProfile& profile : profiles) {
       profile.GetMatchingTypes(value, app_locale, &matching_types);
+      if (select_content)
+        profile.GetMatchingTypes(*select_content, app_locale, &matching_types);
     }
 
     // TODO(crbug/880531) set possible_types_validities for credit card too.
     for (const CreditCard& card : credit_cards) {
       card.GetMatchingTypes(value, app_locale, &matching_types);
+      if (select_content)
+        card.GetMatchingTypes(*select_content, app_locale, &matching_types);
+    }
+
+    // In case a select element has options like this
+    //  <option value="US">+1</option>,
+    // meaning that it contains a phone country code, we treat that as
+    // sufficient evidence to only vote for phone country code.
+    if (select_content && matching_types.contains(ADDRESS_HOME_COUNTRY) &&
+        MatchesRegex<kAugmentedPhoneCountryCodeRe>(*select_content)) {
+      matching_types.erase(ADDRESS_HOME_COUNTRY);
+      matching_types.insert(PHONE_HOME_COUNTRY_CODE);
     }
 
     if (IsUPIVirtualPaymentAddress(value))
