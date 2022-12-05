@@ -23,7 +23,7 @@ void ChromeOriginTrialsComponentInstallerPolicy::ComponentReady(
   // If an individual configuration value is missing, treat as a reset to the
   // browser defaults.
   embedder_support::ReadOriginTrialsConfigAndPopulateLocalState(
-      g_browser_process->local_state(), std::move(manifest));
+      g_browser_process->local_state(), std::move(manifest.GetDict()));
 }
 
 void RegisterOriginTrialsComponent(ComponentUpdateService* updater_service) {

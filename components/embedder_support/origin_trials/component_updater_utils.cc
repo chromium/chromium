@@ -29,21 +29,18 @@ constexpr char kManifestDisabledTokenSignaturesPath[] =
 namespace embedder_support {
 
 void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
-                                                 base::Value manifest) {
+                                                 base::Value::Dict manifest) {
   DCHECK(local_state);
 
-  base::Value::Dict& manifest_dict = manifest.GetDict();
-
   if (std::string* override_public_key =
-          manifest_dict.FindStringByDottedPath(kManifestPublicKeyPath)) {
-    local_state->Set(prefs::kOriginTrialPublicKey,
-                     base::Value(*override_public_key));
+          manifest.FindStringByDottedPath(kManifestPublicKeyPath)) {
+    local_state->SetString(prefs::kOriginTrialPublicKey, *override_public_key);
   } else {
     local_state->ClearPref(prefs::kOriginTrialPublicKey);
   }
 
   base::Value::List* override_disabled_feature_list =
-      manifest_dict.FindListByDottedPath(kManifestDisabledFeaturesPath);
+      manifest.FindListByDottedPath(kManifestDisabledFeaturesPath);
   if (override_disabled_feature_list &&
       !override_disabled_feature_list->empty()) {
     local_state->SetList(prefs::kOriginTrialDisabledFeatures,
@@ -53,7 +50,7 @@ void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
   }
 
   base::Value::List* disabled_tokens_list =
-      manifest_dict.FindListByDottedPath(kManifestDisabledTokenSignaturesPath);
+      manifest.FindListByDottedPath(kManifestDisabledTokenSignaturesPath);
   if (disabled_tokens_list && !disabled_tokens_list->empty()) {
     local_state->SetList(prefs::kOriginTrialDisabledTokens,
                          std::move(*disabled_tokens_list));

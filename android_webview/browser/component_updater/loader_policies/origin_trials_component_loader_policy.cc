@@ -45,8 +45,7 @@ void OriginTrialsComponentLoaderPolicy::ComponentLoaded(
   // browser defaults.
   embedder_support::ReadOriginTrialsConfigAndPopulateLocalState(
       android_webview::AwBrowserProcess::GetInstance()->local_state(),
-      manifest ? std::move(*manifest.get())
-               : base::Value(base::Value::Type::DICTIONARY));
+      manifest ? std::move(manifest->GetDict()) : base::Value::Dict());
 }
 
 void OriginTrialsComponentLoaderPolicy::ComponentLoadFailed(
