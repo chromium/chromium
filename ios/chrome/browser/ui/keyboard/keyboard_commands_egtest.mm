@@ -116,8 +116,7 @@ using chrome_test_util::SettingsDoneButton;
 
 // Tests that keyboard commands are not registered when the bookmark UI is
 // shown.
-// TODO(crbug.com/1341363): Disabled due to flakiness. Re-enabled when fixed.
-- (void)DISABLED_testKeyboardCommandsNotRegistered_AddBookmarkPresented {
+- (void)testKeyboardCommandsNotRegistered_AddBookmarkPresented {
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [ChromeEarlGrey clearBookmarks];
 
@@ -126,29 +125,31 @@ using chrome_test_util::SettingsDoneButton;
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
 
   // Bookmark page
-    [ChromeEarlGreyUI openToolsMenu];
-    [[[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                kToolsMenuAddToBookmarks),
-                                            grey_sufficientlyVisible(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-        onElementWithMatcher:grey_accessibilityID(
-                                 kPopupMenuToolsMenuTableViewId)]
-        performAction:grey_tap()];
+  [ChromeEarlGreyUI openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kToolsMenuAddToBookmarks),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      performAction:grey_tap()];
 
-    // Tap on the HUD.
-    id<GREYMatcher> edit = chrome_test_util::ButtonWithAccessibilityLabelId(
-        IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(edit, grey_sufficientlyVisible(),
-                                            nil)] performAction:grey_tap()];
+  // Edit the bookmark.
+  [ChromeEarlGreyUI openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuEditBookmark),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      performAction:grey_tap()];
 
-    [self waitForSingleBookmarkEditorToDisplay];
+  [self waitForSingleBookmarkEditorToDisplay];
 
-    [self verifyNoKeyboardCommandsAreRegistered];
+  [self verifyNoKeyboardCommandsAreRegistered];
 
-    id<GREYMatcher> cancel = grey_accessibilityID(@"Cancel");
-    [[EarlGrey selectElementWithMatcher:cancel] performAction:grey_tap()];
+  id<GREYMatcher> cancel = grey_accessibilityID(@"Cancel");
+  [[EarlGrey selectElementWithMatcher:cancel] performAction:grey_tap()];
 }
 
 // Tests that keyboard commands are not registered when the Bookmarks UI is
