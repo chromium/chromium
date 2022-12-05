@@ -203,7 +203,7 @@ public class WebApkUpdateIntegrationTest {
         assertEquals(proto.getManifest().getStartUrl(), mTestServer.getURL(WEBAPK_START_URL));
         assertEquals(proto.getManifest().getScopes(0), mTestServer.getURL(WEBAPK_SCOPE_URL));
         assertEquals(proto.getManifest().getId(), mTestServer.getURL(WEBAPK_START_URL));
-        assertEquals(proto.getManifest().getIconsCount(), 3);
+        assertEquals(proto.getManifest().getIconsCount(), 2);
         assertEquals(proto.getManifest().getOrientation(), "landscape");
         assertEquals(proto.getManifest().getDisplayMode(), "standalone");
     }

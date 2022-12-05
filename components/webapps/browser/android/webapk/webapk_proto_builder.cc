@@ -182,20 +182,23 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     } else {
       best_primary_icon_image->add_purposes(webapk::Image::ANY);
     }
+  }
 
-    if (!splash_icon_data.empty()) {
-      webapk::Image* splash_icon_image = web_app_manifest->add_icons();
-      splash_icon_image->set_image_data(splash_icon_data);
-      splash_icon_image->add_usages(webapk::Image::SPLASH_ICON);
-      if (shortcut_info.is_splash_image_maskable) {
-        splash_icon_image->add_purposes(webapk::Image::MASKABLE);
-      } else {
-        splash_icon_image->add_purposes(webapk::Image::ANY);
-      }
+  if (shortcut_info.splash_image_url.is_empty() && !splash_icon_data.empty()) {
+    webapk::Image* splash_icon_image = web_app_manifest->add_icons();
+    splash_icon_image->set_image_data(splash_icon_data);
+    splash_icon_image->add_usages(webapk::Image::SPLASH_ICON);
+    if (shortcut_info.is_splash_image_maskable) {
+      splash_icon_image->add_purposes(webapk::Image::MASKABLE);
+    } else {
+      splash_icon_image->add_purposes(webapk::Image::ANY);
     }
   }
 
   for (const std::string& icon_url : shortcut_info.icon_urls) {
+    if (icon_url.empty())
+      continue;
+
     webapk::Image* image = web_app_manifest->add_icons();
     auto it = icon_url_to_murmur2_hash.find(icon_url);
     image->set_src(icon_url);

@@ -437,3 +437,69 @@ TEST_F(WebApkProtoBuilderTest, BuildWebApkProtoManifestIdAndKey) {
   EXPECT_EQ(webapk_request->app_key(), app_key_1.spec());
   EXPECT_EQ(webapk_request->manifest().id(), manifest_id_1.spec());
 }
+
+TEST_F(WebApkProtoBuilderTest, MapContainsEmptyIconUrl) {
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
+  icon_url_to_murmur2_hash[""] = {"data", "0"};
+
+  std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
+  runner->BuildSync(GURL() /* primary_icon_url */, GURL() /*splash_icon_url*/,
+                    icon_url_to_murmur2_hash, "primary_icon_data",
+                    "splash_icon_data", GURL() /*manifest_id*/,
+                    GURL() /*app_key*/, false /* is_manifest_stale*/,
+                    false /* is_app_identity_update_supported */, {});
+  webapk::WebApk* webapk_request = runner->GetWebApkRequest();
+  ASSERT_NE(nullptr, webapk_request);
+
+  webapk::WebAppManifest manifest = webapk_request->manifest();
+  ASSERT_EQ(3, manifest.icons_size());
+
+  // Checks the request contains primary icon and splash icon with no url and
+  // hash.
+  EXPECT_EQ(manifest.icons(0).src(), "");
+  EXPECT_FALSE(manifest.icons(0).has_hash());
+  EXPECT_EQ(manifest.icons(0).image_data(), "primary_icon_data");
+  EXPECT_THAT(manifest.icons(0).usages(),
+              testing::ElementsAre(webapk::Image::PRIMARY_ICON));
+
+  EXPECT_EQ(manifest.icons(1).src(), "");
+  EXPECT_FALSE(manifest.icons(0).has_hash());
+  EXPECT_EQ(manifest.icons(1).image_data(), "splash_icon_data");
+  EXPECT_THAT(manifest.icons(1).usages(),
+              testing::ElementsAre(webapk::Image::SPLASH_ICON));
+}
+
+TEST_F(WebApkProtoBuilderTest, EmptyPrimaryIconUrlValidSplashIcon) {
+  std::string splash_icon_url =
+      test_server()->GetURL(kBestSplashIconUrl).spec();
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
+  icon_url_to_murmur2_hash[splash_icon_url] = {"data2", "2"};
+
+  std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
+  runner->BuildSync(GURL(), GURL(splash_icon_url), icon_url_to_murmur2_hash,
+                    "primary_icon_data", "splash_icon_data",
+                    GURL() /*manifest_id*/, GURL() /*app_key*/,
+                    false /* is_manifest_stale*/,
+                    false /* is_app_identity_update_supported */, {});
+  webapk::WebApk* webapk_request = runner->GetWebApkRequest();
+  ASSERT_NE(nullptr, webapk_request);
+
+  webapk::WebAppManifest manifest = webapk_request->manifest();
+  ASSERT_EQ(3, manifest.icons_size());
+
+  // Check protobuf fields for icons.
+  EXPECT_EQ(manifest.icons(0).src(), "");
+  EXPECT_FALSE(manifest.icons(0).has_hash());
+  EXPECT_EQ(manifest.icons(0).image_data(), "primary_icon_data");
+  EXPECT_THAT(manifest.icons(0).usages(),
+              testing::ElementsAre(webapk::Image::PRIMARY_ICON));
+
+  EXPECT_EQ(manifest.icons(1).src(), splash_icon_url);
+  EXPECT_EQ(manifest.icons(1).hash(),
+            icon_url_to_murmur2_hash[splash_icon_url].hash);
+  EXPECT_EQ(manifest.icons(1).image_data(), "splash_icon_data");
+  EXPECT_THAT(manifest.icons(1).usages(),
+              testing::ElementsAre(webapk::Image::SPLASH_ICON));
+}
