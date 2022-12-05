@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
@@ -51,6 +57,19 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
   }
+
+ protected:
+  auto CheckInconitoWindowOpened() {
+    return Check(base::BindLambdaForTesting([]() {
+      Browser* new_browser;
+      if (BrowserList::GetIncognitoBrowserCount() == 1) {
+        new_browser = BrowserList::GetInstance()->GetLastActive();
+      } else {
+        new_browser = ui_test_utils::WaitForBrowserToOpen();
+      }
+      return new_browser->profile()->IsIncognitoProfile();
+    }));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
@@ -61,4 +80,20 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
                   WaitForWebContentsNavigation(
                       kPrimaryTabPageElementId,
                       GURL(chrome::kChromeUIPerformanceSettingsURL)));
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoMenuItem) {
+  RunTestSequence(PressButton(kAppMenuButtonElementId),
+                  SelectMenuItem(AppMenuModel::kIncognitoMenuItem),
+                  CheckInconitoWindowOpened());
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoAccelerator) {
+  ui::Accelerator incognito_accelerator;
+  chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+      IDC_NEW_INCOGNITO_WINDOW, &incognito_accelerator);
+
+  RunTestSequence(
+      SendAccelerator(kAppMenuButtonElementId, incognito_accelerator),
+      CheckInconitoWindowOpened());
 }

@@ -112,6 +112,7 @@ using content::WebContents;
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kMoreToolsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 
 namespace {
@@ -877,8 +878,12 @@ void AppMenuModel::Build() {
 
   // This menu item is not visible in Guest Mode. If incognito mode is not
   // available, it will be shown in disabled state. (crbug.com/1100791)
-  if (!browser_->profile()->IsGuestSession())
+  if (!browser_->profile()->IsGuestSession()) {
     AddItemWithStringId(IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(IDC_NEW_INCOGNITO_WINDOW).value(),
+        kIncognitoMenuItem);
+  }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
