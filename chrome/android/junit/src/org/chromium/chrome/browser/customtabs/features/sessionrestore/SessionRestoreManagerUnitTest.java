@@ -74,6 +74,7 @@ public class SessionRestoreManagerUnitTest {
 
     @Before
     public void setup() {
+        ChromeFeatureList.sCctRetainableStateInMemory.setForTesting(true);
         ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
             final Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -98,7 +99,6 @@ public class SessionRestoreManagerUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.CCT_RETAINING_STATE_IN_MEMORY)
     public void getSessionManagerWithFeature() {
         Mockito.doCallRealMethod().when(env.connection).getSessionRestoreManager();
         Assert.assertNotNull(
@@ -106,8 +106,8 @@ public class SessionRestoreManagerUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.CCT_RETAINING_STATE_IN_MEMORY)
     public void nullSessionManagerWithoutFeature() {
+        ChromeFeatureList.sCctRetainableStateInMemory.setForTesting(false);
         Mockito.doCallRealMethod().when(env.connection).getSessionRestoreManager();
         Assert.assertNull(
                 "SessionRestoreManager should be null.", env.connection.getSessionRestoreManager());

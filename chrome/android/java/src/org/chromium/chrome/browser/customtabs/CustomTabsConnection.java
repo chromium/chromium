@@ -547,7 +547,7 @@ public class CustomTabsConnection {
 
     /* Return the SessionRestoreManager for session restore. */
     public @Nullable SessionRestoreManager getSessionRestoreManager() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RETAINING_STATE_IN_MEMORY)) {
+        if (!ChromeFeatureList.sCctRetainableStateInMemory.isEnabled()) {
             return null;
         }
         if (mSessionRestoreManager == null) {
