@@ -12,7 +12,7 @@ export interface WelcomeBrowserProxy {
 
   handleUserDecline(): void;
   goToNewTabPage(replace?: boolean): void;
-  goToURL(url: string): void;
+  goToUrl(url: string): void;
 }
 
 export class WelcomeBrowserProxyImpl implements WelcomeBrowserProxy {
@@ -32,7 +32,7 @@ export class WelcomeBrowserProxyImpl implements WelcomeBrowserProxy {
     }
   }
 
-  goToURL(url: string): void {
+  goToUrl(url: string): void {
     window.location.assign(url);
   }
 

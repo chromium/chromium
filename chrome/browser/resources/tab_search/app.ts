@@ -290,9 +290,9 @@ export class TabSearchAppElement extends PolymerElement {
       // The infinite-list produces viewport-filled events whenever a data or
       // scroll position change triggers the the viewport fill logic.
       listenOnce(this.$.tabsList, 'viewport-filled', () => {
-        // Push showUI() to the event loop to allow reflow to occur following
+        // Push showUi() to the event loop to allow reflow to occur following
         // the DOM update.
-        setTimeout(() => this.apiProxy_.showUI(), 0);
+        setTimeout(() => this.apiProxy_.showUi(), 0);
       });
 
       // TODO(crbug.com/c/1349350): Determine why no active window is reported

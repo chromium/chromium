@@ -7,7 +7,7 @@ import {PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.
 
 /** @interface */
 export interface EmojiPickerApiProxy {
-  showUI(): void;
+  showUi(): void;
 
   insertEmoji(emoji: string, isVariant: boolean, searchLength: number): void;
 
@@ -25,7 +25,7 @@ export class EmojiPickerApiProxyImpl {
   }
 
   /** @override */
-  showUI() {
+  showUi() {
     this.handler.showUI();
   }
   /** @override */

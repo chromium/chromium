@@ -89,7 +89,7 @@ class BrowserProxy {
                 }]);
   }
 
-  requestNativeUITree(
+  requestNativeUiTree(
       sessionId: number, requestType: RequestType, allow: string,
       allowEmpty: string, deny: string) {
     chrome.send('requestNativeUITree', [{
@@ -181,7 +181,7 @@ function requestTree(data: BrowserData|PageData|WidgetData, element: Element) {
     const delay =
         getRequiredElement<HTMLInputElement>('native-ui-delay').valueAsNumber;
     setTimeout(() => {
-      browserProxy.requestNativeUITree(
+      browserProxy.requestNativeUiTree(
           (data as BrowserData).sessionId, requestType, allow, allowEmpty,
           deny);
     }, delay);

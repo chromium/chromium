@@ -151,11 +151,11 @@
           $i18n{sitelistNotFetched}
         </template>
         <template is="dom-if" if="[[lastFetch_]]">
-          [[getXMLSitelistsLastDownloadLabel()]]
+          [[getXmlSitelistsLastDownloadLabel()]]
         </template>
       </p>
       <template is="dom-if" if="[[nextFetch_]]">
-        <p>[[getXMLSitelistsNextDownloadLabel()]]</p>
+        <p>[[getXmlSitelistsNextDownloadLabel()]]</p>
       </template>
       <p>
         <button on-click="refreshXml">$i18n{sitelistDownloadButton}</button>
@@ -216,7 +216,7 @@
     </h4>
 
     <p>
-      <p>[[getIgnoreURLMatchingLabel()]]</p>
+      <p>[[getIgnoreUrlMatchingLabel()]]</p>
     </p>
     <table>
       <tr>

@@ -105,7 +105,7 @@ export class SupportToolElement extends SupportToolElementBase {
   }
 
   private onDataCollectionCompleted_(piiItems: PiiDataItem[]) {
-    this.$.piiSelection.updateDetectedPIIItems(piiItems);
+    this.$.piiSelection.updateDetectedPiiItems(piiItems);
     this.selectedPage_ = SupportToolPageIndex.PII_SELECTION;
   }
 

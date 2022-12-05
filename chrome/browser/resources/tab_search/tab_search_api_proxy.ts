@@ -27,7 +27,7 @@ export interface TabSearchApiProxy {
 
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
-  showUI(): void;
+  showUi(): void;
 }
 
 export class TabSearchApiProxyImpl implements TabSearchApiProxy {
@@ -77,7 +77,7 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.saveRecentlyClosedExpandedPref(expanded);
   }
 
-  showUI() {
+  showUi() {
     this.handler.showUI();
   }
 

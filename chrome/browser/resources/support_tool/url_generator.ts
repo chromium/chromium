@@ -103,8 +103,8 @@ export class UrlGeneratorElement extends PolymerElement {
     }
   }
 
-  private onCopyURLClick_() {
-    this.browserProxy_.generateCustomizedURL(this.caseId_, this.dataCollectors_)
+  private onCopyUrlClick_() {
+    this.browserProxy_.generateCustomizedUrl(this.caseId_, this.dataCollectors_)
         .then(this.onUrlGenerationResult_.bind(this));
   }
 

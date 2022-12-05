@@ -56,7 +56,7 @@ export interface BrowserProxy {
 
   showExportedDataInFolder(): void;
 
-  generateCustomizedURL(caseId: string, dataCollectors: DataCollectorItem[]):
+  generateCustomizedUrl(caseId: string, dataCollectors: DataCollectorItem[]):
       Promise<UrlGenerationResult>;
 }
 
@@ -90,8 +90,8 @@ export class BrowserProxyImpl implements BrowserProxy {
     chrome.send('showExportedDataInFolder');
   }
 
-  generateCustomizedURL(caseId: string, dataCollectors: DataCollectorItem[]) {
-    return sendWithPromise('generateCustomizedURL', caseId, dataCollectors);
+  generateCustomizedUrl(caseId: string, dataCollectors: DataCollectorItem[]) {
+    return sendWithPromise('generateCustomizedUrl', caseId, dataCollectors);
   }
 
   static getInstance(): BrowserProxy {

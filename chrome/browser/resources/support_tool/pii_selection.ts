@@ -67,7 +67,7 @@ export class PiiSelectionElement extends PiiSelectionElementBase {
   private detectedPIIItems_: PiiDataItem[];
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  updateDetectedPIIItems(items: PiiDataItem[]) {
+  updateDetectedPiiItems(items: PiiDataItem[]) {
     items.forEach((item) => {
       item.expandDetails = false;
     });

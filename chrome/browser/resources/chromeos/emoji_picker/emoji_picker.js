@@ -242,7 +242,7 @@ export class EmojiPicker extends PolymerElement {
 
     // Show the UI after the initial data is rendered.
     afterNextRender(this, () => {
-      this.apiProxy_.showUI();
+      this.apiProxy_.showUi();
     });
 
     // Filter data urls based on the version. Remove the first url as it is

@@ -12,7 +12,7 @@ export class TestWelcomeBrowserProxy extends TestBrowserProxy implements
       'handleActivateSignIn',
       'handleUserDecline',
       'goToNewTabPage',
-      'goToURL',
+      'goToUrl',
     ]);
   }
 
@@ -28,7 +28,7 @@ export class TestWelcomeBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('goToNewTabPage');
   }
 
-  goToURL(url: string) {
-    this.methodCalled('goToURL', url);
+  goToUrl(url: string) {
+    this.methodCalled('goToUrl', url);
   }
 }

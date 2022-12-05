@@ -86,7 +86,7 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
       'startDataExport',
       'showExportedDataInFolder',
       'getAllDataCollectors',
-      'generateCustomizedURL',
+      'generateCustomizedUrl',
     ]);
   }
 
@@ -135,8 +135,8 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   // Returns this.urlGenerationResult as response. Please call
   // this.setUrlGenerationResult() before using this function in tests.
-  generateCustomizedURL(caseId: string, dataCollectors: DataCollectorItem[]) {
-    this.methodCalled('generateCustomizedURL', caseId, dataCollectors);
+  generateCustomizedUrl(caseId: string, dataCollectors: DataCollectorItem[]) {
+    this.methodCalled('generateCustomizedUrl', caseId, dataCollectors);
     return Promise.resolve(this.urlGenerationResult_);
   }
 }
@@ -302,7 +302,7 @@ suite('UrlGeneratorTest', function() {
     browserProxy.setUrlGenerationResult(expectedResult);
     // Click the button to generate URL and copy to clipboard.
     copyLinkButton.click();
-    await browserProxy.whenCalled('generateCustomizedURL');
+    await browserProxy.whenCalled('generateCustomizedUrl');
     // Check the URL value copied to clipboard if it's as expected.
     const copiedLink = await navigator.clipboard.readText();
     assertEquals(copiedLink, expectedLink);
@@ -323,7 +323,7 @@ suite('UrlGeneratorTest', function() {
     copyLinkButton.disabled = false;
     // Click the button to generate URL.
     copyLinkButton!.click();
-    await browserProxy.whenCalled('generateCustomizedURL');
+    await browserProxy.whenCalled('generateCustomizedUrl');
     // Check that there's an error message shown to user.
     assertTrue(urlGenerator.$.errorMessageToast.open);
   });

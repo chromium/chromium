@@ -18,7 +18,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'openRecentlyClosedEntry',
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
-      'showUI',
+      'showUi',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -50,8 +50,8 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
     this.methodCalled('saveRecentlyClosedExpandedPref', [expanded]);
   }
 
-  showUI() {
-    this.methodCalled('showUI');
+  showUi() {
+    this.methodCalled('showUi');
   }
 
   getCallbackRouter() {

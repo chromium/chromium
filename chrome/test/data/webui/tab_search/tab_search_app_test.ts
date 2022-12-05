@@ -597,16 +597,16 @@ suite('TabSearchAppTest', () => {
     });
   });
 
-  test('Verify showUI() is called correctly', async () => {
+  test('Verify showUi() is called correctly', async () => {
     await setupTest(createProfileData());
     await waitAfterNextRender(tabSearchApp);
 
     // Make sure that tab data has been received.
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
 
-    // Ensure that showUI() has been called after the initial data has been
+    // Ensure that showUi() has been called after the initial data has been
     // rendered.
-    await testProxy.whenCalled('showUI');
+    await testProxy.whenCalled('showUi');
 
     // Force a change to filtered tab data that would result in a
     // re-render.
@@ -616,8 +616,8 @@ suite('TabSearchAppTest', () => {
     await waitAfterNextRender(tabSearchApp);
     verifyTabIds(queryRows(), [2]);
 
-    // |showUI()| should still have only been called once.
-    assertEquals(1, testProxy.getCallCount('showUI'));
+    // |showUi()| should still have only been called once.
+    assertEquals(1, testProxy.getCallCount('showUi'));
   });
 
   test('Sort by most recent active tabs', async () => {

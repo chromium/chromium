@@ -368,7 +368,7 @@ export class RealboxMatchElement extends PolymerElement {
    * ACMatchClassification style field, maps each entry to a CSS
    * class and returns them.
    */
-  private convertClassificationStyleToCSSClasses_(style: number): string[] {
+  private convertClassificationStyleToCssClasses_(style: number): string[] {
     const classes = [];
     if (style & AcMatchClassificationStyle.DIM) {
       classes.push('dim');
@@ -403,7 +403,7 @@ export class RealboxMatchElement extends PolymerElement {
         .map(({offset, style}, index) => {
           const next = classifications[index + 1] || {offset: text.length};
           const subText = text.substring(offset, next.offset);
-          const classes = this.convertClassificationStyleToCSSClasses_(style);
+          const classes = this.convertClassificationStyleToCssClasses_(style);
           return this.createSpanWithClasses_(subText, classes);
         })
         .reduce((container, currentElement) => {
