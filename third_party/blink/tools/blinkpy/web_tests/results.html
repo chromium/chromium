@@ -540,9 +540,8 @@ class PathParser {
     this.testHref = this.testBaseHref() + href;
   }
 
-  // If these are not null, we should fetch artifacts from ResultDB.
-  static buildId = null;
-  static testSuite = null;
+  // If invocations is not empty, we should fetch artifacts from ResultDB.
+  static invocations = [];
   static resultDBArtifacts = {};
   static resultNameToArtifactName = {
     '-actual.png': 'actual_image',
@@ -562,22 +561,27 @@ class PathParser {
   static numCachedTests = 0;
   static numCachedArtifacts = 0;
 
-  static initGlobals(fullResults, buildId, testSuite) {
+  static initGlobals(fullResults) {
     for (let p in PathParserGlobals)
       PathParserGlobals[p] = fullResults[p];
-    PathParser.buildId = buildId;
-    PathParser.testSuite = testSuite;
+  }
+
+  static setTaskIds(taskIds) {
+    for (let taskId of taskIds) {
+      // ResultDB invocations need run_ids which end with '1'.
+      if (taskId.endsWith('0'))
+        taskId[taskId.length - 1] = '1';
+      PathParser.invocations.push(
+          'invocations/task-chromium-swarm.appspot.com-' + taskId);
+    }
     // Pre-load artifacts for tests with unexpected results. If a test that is
     // not included in this pre-loading is expanded, we'll request artifacts
-    // for the test.
-    PathParser.queryArtifacts({
-      expectancy: 'VARIANTS_WITH_UNEXPECTED_RESULTS',
-      variant: {contains: {def: {test_suite: testSuite}}},
-    });
+    // for the test in getArtifacts().
+    PathParser.queryArtifacts({expectancy: 'VARIANTS_WITH_UNEXPECTED_RESULTS'});
   }
 
   async resultLink(resultName) {
-    if (!PathParser.buildId || !PathParser.testSuite) {
+    if (!PathParser.invocations.length) {
       return this.dir + this.resultPrefix + resultName;
     }
     let artifacts = await this.getArtifacts();
@@ -629,7 +633,7 @@ class PathParser {
     cache = PathParser.resultDBArtifacts[this.path] =
         { artifacts: {}, expiration: 0 };
     let promise = PathParser.queryArtifacts({
-      testIdRegexp: `ninja://:${PathParser.testSuite}${this.path}`,
+      testIdRegexp: `ninja://:[^/]*${this.path}`,
       expectancy: 'ALL',
     }).then(() => { return Promise.resolve(cache.artifacts); });
     // If the promise is not fulfilled immediately, save the promise in the
@@ -644,6 +648,7 @@ class PathParser {
     let timeId = "queryArtifacts: " + JSON.stringify(testResultPredicate) +
                  (pageToken || '');
     console.time(timeId);
+    console.log('Requesting: ' + timeId);
     return new Promise((resolve, reject) => {
       let xhr = new XMLHttpRequest();
       xhr.open('POST', 'https://results.api.cr.dev/prpc/luci.resultdb.v1.ResultDB/QueryArtifacts');
@@ -679,6 +684,7 @@ class PathParser {
               }
             }
             if (responseJson.nextPageToken) {
+              console.log('Requesting next page');
               PathParser.queryArtifacts(testResultPredicate,
                                         responseJson.nextPageToken);
             }
@@ -690,6 +696,8 @@ class PathParser {
           reject(e);
         } finally {
           console.timeEnd(timeId);
+          console.log('Fetched total tests: ' + PathParser.numCachedTests +
+                      ' total artifacts: ' + PathParser.numCachedArtifacts);
         }
       };
       xhr.onerror = () => {
@@ -697,7 +705,7 @@ class PathParser {
         reject(xhr.statusText);
       };
       let request = {
-        invocations: [`invocations/build-${PathParser.buildId}`],
+        invocations: PathParser.invocations,
         predicate: {testResultPredicate: testResultPredicate},
         pageSize: 1000,
       };
@@ -1292,7 +1300,7 @@ const Filters = {
 
 // Event handling, initialization.
 const GUI = {
-  initPage: function(results, buildId, testSuite) {
+  initPage: function(results) {
     results.tests = GUI.convertToMap(results.tests);
     globalResults = results;
     if (window.localStorage.getItem("reportFormat")) {
@@ -1301,7 +1309,7 @@ const GUI = {
     GUI.optimizeResults(globalResults);
     GUI.printSummary(globalResults);
     GUI.initEvents();
-    PathParser.initGlobals(results, buildId, testSuite);
+    PathParser.initGlobals(results);
     // Show regressions on startup.
     document.querySelector("#button_regressions").click();
   },
@@ -2891,40 +2899,44 @@ class AudioResultsViewer {
 </script>
 <script>
 (function() {
-  // Initialization.
+  // Initialization. Requirements are:
+  // 1. For local usage, results.html is expected to be in layout-test-results
+  //    directory which contains full_results_jsonp.js and test result
+  //    artifacts.
+  // 2. For bot usage, a link to results.html should have the following
+  //    parameters:
+  //    - json=<URI to full_results_jsonp.js>
+  //    If the full_results_jsonp.js calls SET_TASK_IDS(<list of task_ids>),
+  //    We'll fetch test result artifacts from ResultDB through the
+  //    QueryArtifacts rpc interface. The task ids are ids of the swarming
+  //    tasks of the corresponding web tests step that produced the test
+  //    that produced the test results. They are used to construct
+  //    invocation ids of the corresponding web tests step.
+  //    If there is no SET_TASK_IDS() in full_results_jsonp.js, we'll expect
+  //    test result artifacts to be in the same directory of
+  //    full_results_jsonp.js.
+  //
   let jsonpUrl = 'full_results_jsonp.js';
-  let buildId = '';
-  let testSuite = '';
   if (location.search) {
-    let matches = location.search.match(/\?json=([^&]*)(&build_id=([^&]*))?/);
+    let matches = location.search.match(/\?json=([^&]*)/);
     if (matches[1])
       jsonpUrl = decodeURIComponent(matches[1]);
-    if (matches[3])
-      buildId = decodeURIComponent(matches[3]);
   }
   let slashPos = jsonpUrl.lastIndexOf('/');
   if (slashPos != -1) {
     let base = document.createElement('base');
     base.href = jsonpUrl.substring(0, slashPos + 1);
     document.head.appendChild(base);
-    let nextSlashPos = jsonpUrl.lastIndexOf('/', slashPos - 1);
-    if (nextSlashPos != -1) {
-      testSuite = jsonpUrl.substring(nextSlashPos + 1, slashPos);
-      if (testSuite == "layout-test-results") {
-        let nextNextSlashPos = jsonpUrl.lastIndexOf('/', nextSlashPos - 1);
-        testSuite = jsonpUrl.substring(nextNextSlashPos + 1, nextSlashPos);
-      }
-      // Remove suffixes like " (with patch)".
-      let spacePos = testSuite.indexOf(' ');
-      if (spacePos != -1)
-        testSuite = testSuite.substring(0, spacePos);
-    }
   }
 
-  // jsonp callback
+  // jsonp callbacks
   window.ADD_FULL_RESULTS = function(results) {
-    GUI.initPage(results, buildId, testSuite);
+    GUI.initPage(results);
   };
+  window.SET_TASK_IDS = function(taskIds) {
+    PathParser.setTaskIds(taskIds);
+  };
+
   let script = document.createElement('script');
   script.src = jsonpUrl.substring(slashPos + 1);
   document.body.appendChild(script);
