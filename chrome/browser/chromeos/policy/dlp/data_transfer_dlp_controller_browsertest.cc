@@ -614,8 +614,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
   EXPECT_TRUE(!widget || widget->IsClosed());
 }
 
-// Flaky on MSan bots: crbug.com/1230617
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1395711): The test is flaky. Re-enable it.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CancelWarn DISABLED_CancelWarn
 #else
 #define MAYBE_CancelWarn CancelWarn
