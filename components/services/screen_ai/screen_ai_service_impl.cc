@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
@@ -44,6 +45,24 @@ enum class ScreenAILoadLibraryResult {
   kMaxValue = kOcrFailed,
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void HandleLibraryLogging(int severity, const char* message) {
+  switch (severity) {
+    case logging::LOG_VERBOSE:
+    case logging::LOG_INFO:
+      VLOG(2) << message;
+      break;
+    case logging::LOG_WARNING:
+      VLOG(1) << message;
+      break;
+    case logging::LOG_ERROR:
+    case logging::LOG_FATAL:
+      VLOG(0) << message;
+      break;
+  }
+}
+#endif
+
 std::vector<char> LoadModelFile(base::File& model_file) {
   std::vector<char> buffer;
   int64_t length = model_file.GetLength();
@@ -72,6 +91,15 @@ std::string CallGetLibraryVersionFunction(LibraryFunctions* library_functions) {
   delete library_version;
   return version_string;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+NO_SANITIZE("cfi-icall")
+void CallSetLoggerFunction(LibraryFunctions* library_functions) {
+  DCHECK(library_functions);
+  DCHECK(library_functions->set_logger_);
+  library_functions->set_logger_(&HandleLibraryLogging);
+}
+#endif
 
 NO_SANITIZE("cfi-icall")
 bool CallInitLayoutExtractionFunction(LibraryFunctions* library_functions,
@@ -120,7 +148,11 @@ std::unique_ptr<LibraryFunctions> LoadAndInitializeLibrary(
       std::make_unique<LibraryFunctions>(library_path);
 
   VLOG(2) << "Screen AI library version: "
-          << CallGetLibraryVersionFunction(library_functions.get());
+          << CallGetLibraryVersionFunction(library_functions.get()) << "\n";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CallSetLoggerFunction(library_functions.get());
+#endif
 
   if (features::IsScreenAIDebugModeEnabled())
     CallEnableDebugMode(library_functions.get());
@@ -177,14 +209,20 @@ ScreenAIService::~ScreenAIService() = default;
 
 LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
   library_ = base::ScopedNativeLibrary(library_path);
+  VLOG(2) << "Library load result: " << library_.GetError()->ToString();
 
   // General functions.
-  get_library_version_ = reinterpret_cast<GetLibraryVersion>(
+  get_library_version_ = reinterpret_cast<GetLibraryVersionFn>(
       library_.GetFunctionPointer("GetLibraryVersion"));
   DCHECK(get_library_version_);
-  enable_debug_mode_ = reinterpret_cast<EnableDebugMode>(
+  enable_debug_mode_ = reinterpret_cast<EnableDebugModeFn>(
       library_.GetFunctionPointer("EnableDebugMode"));
   DCHECK(enable_debug_mode_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  set_logger_ =
+      reinterpret_cast<SetLoggerFn>(library_.GetFunctionPointer("SetLogger"));
+  DCHECK(set_logger_);
+#endif
 
   // Main Content Extraction functions.
   if (features::IsReadAnythingWithScreen2xEnabled()) {
@@ -192,12 +230,9 @@ LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
         reinterpret_cast<InitMainContentExtractionFn>(
             library_.GetFunctionPointer("InitMainContentExtraction"));
     DCHECK(init_main_content_extraction_);
-    extract_main_content_ = reinterpret_cast<ExtractMainContent>(
+    extract_main_content_ = reinterpret_cast<ExtractMainContentFn>(
         library_.GetFunctionPointer("ExtractMainContent"));
     DCHECK(extract_main_content_);
-  } else {
-    init_main_content_extraction_ = nullptr;
-    extract_main_content_ = nullptr;
   }
 
   // Layout Extraction.
@@ -208,9 +243,6 @@ LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
     extract_layout_ = reinterpret_cast<ExtractLayoutFn>(
         library_.GetFunctionPointer("ExtractLayout"));
     DCHECK(extract_layout_);
-  } else {
-    init_layout_extraction_ = nullptr;
-    extract_layout_ = nullptr;
   }
 
   // OCR.
@@ -221,9 +253,6 @@ LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
     perform_ocr_ = reinterpret_cast<PerformOcrFn>(
         library_.GetFunctionPointer("PerformOCR"));
     DCHECK(perform_ocr_);
-  } else {
-    init_ocr_ = nullptr;
-    perform_ocr_ = nullptr;
   }
 }
 

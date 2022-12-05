@@ -84,20 +84,25 @@ class LibraryFunctions {
   // returns the main content ids. The input is in form of a serialized
   // ViewHierarchy proto. `content_node_ids` will be allocated for the outputs
   // and the ownership of the array will be passed to the caller function.
-  typedef bool (*ExtractMainContent)(
+  typedef bool (*ExtractMainContentFn)(
       const char* /*serialized_view_hierarchy*/,
       uint32_t /*serialized_view_hierarchy_length*/,
       int32_t*& /*&content_node_ids*/,
       uint32_t& /*content_node_ids_length*/);
-  ExtractMainContent extract_main_content_ = nullptr;
+  ExtractMainContentFn extract_main_content_ = nullptr;
 
   // Enables the debug mode which stores all i/o protos in the temp folder.
-  typedef void (*EnableDebugMode)();
-  EnableDebugMode enable_debug_mode_ = nullptr;
+  typedef void (*EnableDebugModeFn)();
+  EnableDebugModeFn enable_debug_mode_ = nullptr;
+
+  // Sets a function to receive library logs and add them to Chrome logs.
+  typedef void (*SetLoggerFn)(void (*logger_func)(int /*severity*/,
+                                                  const char* /*message*/));
+  SetLoggerFn set_logger_ = nullptr;
 
   // Gets the library version number.
-  typedef void (*GetLibraryVersion)(char*& version_string);
-  GetLibraryVersion get_library_version_ = nullptr;
+  typedef void (*GetLibraryVersionFn)(char*& version_string);
+  GetLibraryVersionFn get_library_version_ = nullptr;
 
  private:
   base::ScopedNativeLibrary library_;
