@@ -149,7 +149,7 @@ std::unique_ptr<SkiaImageRepresentation> PbufferImageBacking::ProduceSkia(
 
 bool PbufferImageBacking::GLTextureImageRepresentationBeginAccess(
     bool readonly) {
-  passthrough_texture_->set_is_bind_pending(false);
+  passthrough_texture_->clear_bind_pending();
   return true;
 }
 

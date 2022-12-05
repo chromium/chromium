@@ -391,7 +391,7 @@ IOSurfaceImageBacking::RetainGLTexture() {
   // Set the IOSurface to be initially unbound from the GL texture.
   gl_texture->SetEstimatedSize(
       viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
-  gl_texture->set_is_bind_pending(true);
+  gl_texture->set_bind_pending();
 
   return new IOSurfaceBackingEGLState(this, egl_display, gl_params_.target,
                                       gl_texture);
@@ -615,7 +615,7 @@ void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
     egl_fence->ServerWait();
   }
   for (auto iter : egl_state_map_) {
-    iter.second->gl_texture_->set_is_bind_pending(true);
+    iter.second->gl_texture_->set_bind_pending();
   }
 }
 
@@ -691,7 +691,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     LOG(ERROR) << "Failed to bind ScopedEGLSurfaceIOSurface to target";
     return false;
   }
-  egl_state->gl_texture_->set_is_bind_pending(false);
+  egl_state->gl_texture_->clear_bind_pending();
   return true;
 }
 
@@ -777,7 +777,7 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
                                             egl_state->GetGLServiceId());
         egl_state->egl_surface_->ReleaseTexImage();
       }
-      egl_state->gl_texture_->set_is_bind_pending(true);
+      egl_state->gl_texture_->set_bind_pending();
     }
   }
 }

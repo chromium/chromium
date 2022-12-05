@@ -2098,12 +2098,6 @@ void GLES2DecoderPassthroughImpl::BindImageInternal(uint32_t client_texture_id,
                                                     uint32_t texture_target,
                                                     gl::GLImage* image,
                                                     bool can_bind_to_sampler) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  CHECK(!can_bind_to_sampler);
-#else
-  CHECK(can_bind_to_sampler);
-#endif
-
   scoped_refptr<TexturePassthrough> passthrough_texture;
   if (!resources_->texture_object_map.GetServiceID(client_texture_id,
                                                    &passthrough_texture) ||
@@ -2115,7 +2109,13 @@ void GLES2DecoderPassthroughImpl::BindImageInternal(uint32_t client_texture_id,
 
   // |can_bind_to_sampler| indicates that we don't need to take any action.
   // Otherwise, we do it when the texture is first used for drawing.
-  passthrough_texture->set_is_bind_pending(!can_bind_to_sampler);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  CHECK(!can_bind_to_sampler);
+  passthrough_texture->set_bind_pending();
+#else
+  CHECK(can_bind_to_sampler);
+  passthrough_texture->clear_bind_pending();
+#endif
 
   GLenum bind_target = GLES2Util::GLFaceTargetToTextureTarget(texture_target);
   if (passthrough_texture->target() != bind_target) {
@@ -2173,7 +2173,7 @@ void GLES2DecoderPassthroughImpl::BindOnePendingImage(
 
   // If copy / bind fail, then we could keep the bind state the same.
   // However, for now, we only try once.
-  texture->set_is_bind_pending(false);
+  texture->clear_bind_pending();
 
   // Re-bind the previous texture
   const BoundTexture& bound_texture =

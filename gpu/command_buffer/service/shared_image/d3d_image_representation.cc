@@ -50,7 +50,7 @@ bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
       DCHECK(image->ShouldBindOrCopy() == gl::GLImage::BIND);
       image->BindTexImage(target);
 
-      texture->set_is_bind_pending(false);
+      texture->clear_bind_pending();
     }
   }
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());

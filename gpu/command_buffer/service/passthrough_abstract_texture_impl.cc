@@ -59,12 +59,6 @@ void PassthroughAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
 
 void PassthroughAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
                                                        bool client_managed) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  CHECK(!client_managed);
-#else
-  CHECK(client_managed);
-#endif
-
   if (!texture_passthrough_)
     return;
 
@@ -83,7 +77,16 @@ void PassthroughAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
 
   // Configure the new image.
   decoder_managed_image_ = image && !client_managed;
-  texture_passthrough_->set_is_bind_pending(decoder_managed_image_);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  CHECK(!client_managed);
+  if (decoder_managed_image_)
+    texture_passthrough_->set_bind_pending();
+  else
+    texture_passthrough_->clear_bind_pending();
+#else
+  CHECK(client_managed);
+  texture_passthrough_->clear_bind_pending();
+#endif
   texture_passthrough_->SetLevelImage(target, level, image);
 }
 
@@ -98,7 +101,7 @@ void PassthroughAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
   const GLuint target = texture_passthrough_->target();
   const GLint level = 0;
 
-  texture_passthrough_->set_is_bind_pending(true);
+  texture_passthrough_->set_bind_pending();
   texture_passthrough_->SetStreamLevelImage(target, level, image, service_id);
 }
 

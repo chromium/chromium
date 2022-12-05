@@ -145,7 +145,7 @@ void AbstractTextureImplPassthrough::BindStreamTextureImage(gl::GLImage* image,
   const GLint level = 0;
   const GLuint target = texture_->target();
   texture_->SetStreamLevelImage(target, level, image, service_id);
-  texture_->set_is_bind_pending(true);
+  texture_->set_bind_pending();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

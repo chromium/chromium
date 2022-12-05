@@ -89,9 +89,8 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   // Return true if and only if the decoder should BindTexImage / CopyTexImage
   // us before sampling.
   bool is_bind_pending() const { return is_bind_pending_; }
-  void set_is_bind_pending(bool is_bind_pending) {
-    is_bind_pending_ = is_bind_pending;
-  }
+  void set_bind_pending() { is_bind_pending_ = true; }
+  void clear_bind_pending() { is_bind_pending_ = false; }
 
   void SetEstimatedSize(size_t size);
   size_t estimated_size() const { return estimated_size_; }

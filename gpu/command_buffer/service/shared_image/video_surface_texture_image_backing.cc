@@ -193,7 +193,7 @@ class VideoSurfaceTextureImageBacking::
 
     // If we passed a GLImage to BindStreamTextureImage(), mark it as bound.
     if (!base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture)) {
-      passthrough_texture_->set_is_bind_pending(false);
+      passthrough_texture_->clear_bind_pending();
     }
 
     return true;
@@ -202,7 +202,7 @@ class VideoSurfaceTextureImageBacking::
   void EndAccess() override {
     // NOTE: It is not necessary to mark |texture_passthrough_| as needing
     // binding here: if there is a subsequent flow that requires that the
-    // texture be bound, that flow will itself invoke set_is_bind_pending() on
+    // texture be bound, that flow will itself invoke set_bind_pending() on
     // the texture.
   }
 
