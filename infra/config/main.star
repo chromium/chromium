@@ -201,6 +201,7 @@ exec("//recipes.star")
 exec("//notifiers.star")
 
 exec("//subprojects/chromium/subproject.star")
+exec("//subprojects/chrome/subproject.star")
 branches.exec("//subprojects/codesearch/subproject.star")
 branches.exec("//subprojects/findit/subproject.star")
 branches.exec("//subprojects/flakiness/subproject.star")

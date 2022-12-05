@@ -1,0 +1,213 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is used to list trybots in Chromium's commit-queue.cfg that
+# are defined in src-internal. Note that the recipe these builders run have
+# certain ACL restrictions. For more info, see
+# http://go/chromium-cq#internal-builders-on-the-cq.
+
+load("//lib/branches.star", "branches")
+load("//project.star", "settings")
+
+def chrome_internal_verifier(
+        *,
+        builder,
+        include_owner_whitelist = True,
+        **kwargs):
+    owner_whitelist = []
+    if include_owner_whitelist:
+        owner_whitelist = [
+            "googlers",
+            "project-chromium-robot-committers",
+        ]
+    branches.cq_tryjob_verifier(
+        builder = "{}:try/{}".format(settings.chrome_project, builder),
+        cq_group = "cq",
+        includable_only = True,
+        owner_whitelist = owner_whitelist,
+        **kwargs
+    )
+
+chrome_internal_verifier(
+    builder = "android-internal-binary-size",
+)
+
+chrome_internal_verifier(
+    builder = "android-internal-rel",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-betty-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-betty-pi-arc-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-eve-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-eve-compile-chrome",
+)
+
+# TODO(crbug.com/1295085): Migrate to gitfooter based trigger
+# During Nearby Connection library autoroller uprev, we want
+# chromeos-jacuzzi-nearby-chrome-fyi to run as an experimental builder
+# and not block the auto-submission of the CL.
+# Currently there is no support for gitfooter based trigger like
+# "Cq-Include-Trybots" for experimental builders, we are using the following
+# workaround until the support is available.
+# Autoroller generated CL keeps an additional githash bookkeeping in
+# third_party/nearby/README.chromium. This file serves as a unique marker for
+# Nearby uprev and is used to trigger the Nearby builder.
+branches.cq_tryjob_verifier(
+    builder = "{}:try/{}".format(settings.chrome_project, "chromeos-jacuzzi-nearby-chrome-fyi"),
+    cq_group = "cq",
+    experiment_percentage = 100,
+    includable_only = False,
+    location_filters = [cq.location_filter(path_regexp = "third_party/nearby/README.chromium")],
+    owner_whitelist = [
+        "googlers",
+        "project-chromium-robot-committers",
+    ],
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-kevin-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-kevin-compile-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-octopus-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-octopus-compile-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-reven-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-fyi-astro",
+)
+
+chrome_internal_verifier(
+    builder = "ipad-device",
+)
+
+chrome_internal_verifier(
+    builder = "iphone-device",
+)
+
+chrome_internal_verifier(
+    builder = "lacros-amd64-generic-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "lacros-amd64-generic-chrome-skylab",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "lacros-arm-generic-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "lacros-arm-generic-chrome-skylab",
+)
+
+chrome_internal_verifier(
+    builder = "lacros-arm64-generic-chrome-skylab",
+)
+
+chrome_internal_verifier(
+    builder = "linux-chrome",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "linux-chrome-stable",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "linux-chromeos-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "linux-chromeos-compile-chrome",
+    # We skip the owner_whitelist here since the recipe it runs enforces the
+    # restrictions outlined in http://shortn/_ulOm5v8gA2.
+    include_owner_whitelist = False,
+)
+
+chrome_internal_verifier(
+    builder = "linux-nearby-chrome-fyi",
+)
+
+chrome_internal_verifier(
+    builder = "linux-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "mac-chrome",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "mac-chrome-stable",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "mac-arm-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "mac-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "test-o-emulator",
+)
+
+chrome_internal_verifier(
+    builder = "win-chrome",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "win-chrome-stable",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "win32-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "win64-chrome",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "win64-chrome-stable",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+)
+
+chrome_internal_verifier(
+    builder = "win64-pgo",
+    branch_selector = branches.STANDARD_MILESTONE,
+)
