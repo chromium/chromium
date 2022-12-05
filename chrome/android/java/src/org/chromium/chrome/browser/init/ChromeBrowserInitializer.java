@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
 import org.chromium.chrome.browser.download.DownloadManagerService;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
@@ -215,9 +214,7 @@ public class ChromeBrowserInitializer {
         ThreadUtils.assertOnUiThread();
         if (mPreInflationStartupComplete) return;
 
-        if (ChromeFeatureList.sCreateSafebrowsingOnStartup.isEnabled()) {
-            new Thread(SafeBrowsingApiBridge::ensureInitialized).start();
-        }
+        new Thread(SafeBrowsingApiBridge::ensureInitialized).start();
 
         // Ensure critical files are available, so they aren't blocked on the file-system
         // behind long-running accesses in next phase.

@@ -113,17 +113,4 @@ public final class SafeBrowsingTest {
         loadUrlNonBlocking(url);
         waitForInterstitial(true);
     }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.CREATE_SAFEBROWSING_ON_STARTUP)
-    public void interstitialPageWithEarlyInit() throws Exception {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-        String url = mTestServer.getURL("/chrome/test/data/android/about.html");
-        MockSafeBrowsingApiHandler.addMockResponse(url, "{\"matches\":[{\"threat_type\":\"5\"}]}");
-        mActivityTestRule.startMainActivityOnBlankPage();
-
-        loadUrlNonBlocking(url);
-        waitForInterstitial(true);
-    }
 }

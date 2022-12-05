@@ -95,7 +95,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sCommandLineOnNonRooted);
                 add(ChromeFeatureList.sConditionalTabStripAndroid);
                 add(ChromeFeatureList.sCommerceCoupons);
-                add(ChromeFeatureList.sCreateSafebrowsingOnStartup);
                 add(ChromeFeatureList.sCriticalPersistedTabData);
                 add(ChromeFeatureList.sDiscoverMultiColumn);
                 add(ChromeFeatureList.sTabStripRedesign);

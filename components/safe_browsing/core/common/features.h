@@ -52,13 +52,6 @@ BASE_DECLARE_FEATURE(kConnectorsScanningAccessToken);
 // instead of just showing an "Open Now" button with the blocking UI.
 BASE_DECLARE_FEATURE(kConnectorsScanningReportOnlyUI);
 
-// Controls whether to connect to the Safe Browsing service early on startup.
-// The alternative is to connect as soon as the first Safe Browsing check is
-// made associated with a URK request. Android only. On this platform getting
-// the notification about the success of establishing the connection can be
-// delayed by several seconds.
-BASE_DECLARE_FEATURE(kCreateSafebrowsingOnStartup);
-
 // Controls whether the delayed warning experiment is enabled.
 BASE_DECLARE_FEATURE(kDelayedWarnings);
 // True if mouse clicks should undelay the warnings immediately when delayed
