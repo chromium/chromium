@@ -63,7 +63,6 @@ class PersonalDatabaseHelper;
 }  // namespace autofill
 
 namespace autofill_helper {
-void SetProfiles(int, std::vector<autofill::AutofillProfile>*);
 void SetCreditCards(int, std::vector<autofill::CreditCard>*);
 }  // namespace autofill_helper
 
@@ -496,7 +495,8 @@ class PersonalDataManager : public KeyedService,
   // the current state and `new_profiles`.
   // `web_profiles_` and `account_profiles_` need to be updated at the end of
   // the function, since some tasks cannot tolerate database delays.
-  virtual void SetProfiles(std::vector<AutofillProfile>* new_profiles);
+  virtual void SetProfilesForAllSources(
+      std::vector<AutofillProfile>* new_profiles);
 
   // Returns true if the import of new profiles should be blocked on `url`.
   // Returns false if the strike database is not available, the `url` is not
@@ -597,9 +597,6 @@ class PersonalDataManager : public KeyedService,
   friend class VirtualCardEnrollmentManagerTest;
   friend class ::RemoveAutofillTester;
   friend std::default_delete<PersonalDataManager>;
-  friend void autofill_helper::SetProfiles(
-      int,
-      std::vector<autofill::AutofillProfile>*);
   friend void autofill_helper::SetCreditCards(
       int,
       std::vector<autofill::CreditCard>*);
@@ -622,10 +619,10 @@ class PersonalDataManager : public KeyedService,
   // database by adding, updating and removing credit cards.
   void SetCreditCards(std::vector<CreditCard>* credit_cards);
 
-  // Like `SetProfiles()`, but assumes that all profiles in `new_profiles` have
-  // the given `source`.
+  // Like `SetProfilesForAllSources()`, but assumes that all profiles in
+  // `new_profiles` have the given `source`.
   // Returns true if a change happened.
-  virtual bool SetProfilesFromSource(
+  virtual bool SetProfilesForSource(
       base::span<const AutofillProfile> new_profiles,
       AutofillProfile::Source source);
 

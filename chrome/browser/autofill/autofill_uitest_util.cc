@@ -84,7 +84,7 @@ void SetTestProfile(Profile* base_profile, const AutofillProfile& profile) {
 void SetTestProfiles(Profile* base_profile,
                      std::vector<AutofillProfile>* profiles) {
   PdmChangeWaiter observer(base_profile);
-  GetPersonalDataManager(base_profile)->SetProfiles(profiles);
+  GetPersonalDataManager(base_profile)->SetProfilesForAllSources(profiles);
   observer.Wait();
 }
 

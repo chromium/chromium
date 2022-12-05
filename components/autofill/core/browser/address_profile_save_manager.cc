@@ -157,7 +157,7 @@ void AddressProfileSaveManager::FinalizeProfileImport(
   if (import_process->ProfilesChanged()) {
     std::vector<AutofillProfile> resulting_profiles =
         import_process->GetResultingProfiles();
-    personal_data_manager_->SetProfiles(&resulting_profiles);
+    personal_data_manager_->SetProfilesForAllSources(&resulting_profiles);
   }
 
   AutofillProfileImportType import_type = import_process->import_type();

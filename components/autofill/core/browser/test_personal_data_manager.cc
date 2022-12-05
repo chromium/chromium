@@ -140,7 +140,7 @@ const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
   return default_country_code_;
 }
 
-void TestPersonalDataManager::SetProfiles(
+void TestPersonalDataManager::SetProfilesForAllSources(
     std::vector<AutofillProfile>* profiles) {
   // Copy all the profiles. Called by functions like
   // PersonalDataManager::SaveImportedProfile, which impact metrics.
@@ -149,7 +149,7 @@ void TestPersonalDataManager::SetProfiles(
     AddProfile(profile);
 }
 
-bool TestPersonalDataManager::SetProfilesFromSource(
+bool TestPersonalDataManager::SetProfilesForSource(
     base::span<const AutofillProfile> new_profiles,
     AutofillProfile::Source source) {
   GetProfileStorage(source).clear();

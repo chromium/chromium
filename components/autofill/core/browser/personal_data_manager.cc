@@ -1609,7 +1609,7 @@ void PersonalDataManager::DedupeCreditCardToSuggest(
   }
 }
 
-void PersonalDataManager::SetProfiles(
+void PersonalDataManager::SetProfilesForAllSources(
     std::vector<AutofillProfile>* new_profiles) {
   if (is_off_the_record_ || !database_helper_->GetLocalDatabase())
     return;
@@ -1621,10 +1621,10 @@ void PersonalDataManager::SetProfiles(
         return profile.source() == AutofillProfile::Source::kLocalOrSyncable;
       });
   bool change_happened =
-      SetProfilesFromSource({new_profiles->begin(), split_point},
-                            AutofillProfile::Source::kLocalOrSyncable);
-  change_happened |= SetProfilesFromSource({split_point, new_profiles->end()},
-                                           AutofillProfile::Source::kAccount);
+      SetProfilesForSource({new_profiles->begin(), split_point},
+                           AutofillProfile::Source::kLocalOrSyncable);
+  change_happened |= SetProfilesForSource({split_point, new_profiles->end()},
+                                          AutofillProfile::Source::kAccount);
 
   if (!change_happened) {
     // When a change happens (add, update, remove), we would consequently call
@@ -1634,7 +1634,7 @@ void PersonalDataManager::SetProfiles(
   }
 }
 
-bool PersonalDataManager::SetProfilesFromSource(
+bool PersonalDataManager::SetProfilesForSource(
     base::span<const AutofillProfile> new_profiles,
     AutofillProfile::Source source) {
   DCHECK(
@@ -1660,7 +1660,7 @@ bool PersonalDataManager::SetProfilesFromSource(
   // Update the web database with the new and existing profiles.
   for (const AutofillProfile& it : new_profiles) {
     const auto* existing_profile = GetProfileByGUID(it.guid());
-    // In `SetProfilesFromSource()`, exceptionally, profiles are directly added/
+    // In `SetProfilesForSource()`, exceptionally, profiles are directly added/
     // updated on the `profiles` before they are ready to be added or get
     // updated in the database. Enforce the changes to make sure the database is
     // also updated.
@@ -1938,7 +1938,7 @@ std::string PersonalDataManager::SaveImportedProfile(
   // imports are supported.
   std::string guid = AutofillProfileComparator::MergeProfile(
       imported_profile, web_profiles_, app_locale_, &profiles);
-  SetProfiles(&profiles);
+  SetProfilesForAllSources(&profiles);
   return guid;
 }
 

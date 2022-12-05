@@ -178,7 +178,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
 
   void ResetProfiles() {
     std::vector<AutofillProfile> empty_profiles;
-    personal_data_->SetProfiles(&empty_profiles);
+    personal_data_->SetProfilesForAllSources(&empty_profiles);
     WaitForOnPersonalDataChanged();
   }
 
@@ -569,7 +569,8 @@ TEST_F(PersonalDataManagerTest, GetProfiles) {
               ElementsAre(Pointee(kLocalProfile)));
 }
 
-// Tests that `SetProfiles()` overwrites profiles with the correct source.
+// Tests that `SetProfilesForAllSources()` overwrites profiles with the correct
+// source.
 TEST_F(PersonalDataManagerTest, SetProfiles) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kAutofillAccountProfilesUnionView);
@@ -580,7 +581,7 @@ TEST_F(PersonalDataManagerTest, SetProfiles) {
 
   // Set `kAccount` profiles only.
   std::vector<AutofillProfile> profiles = {kAccountProfile};
-  personal_data_->SetProfiles(&profiles);
+  personal_data_->SetProfilesForAllSources(&profiles);
   WaitForOnPersonalDataChanged();
   EXPECT_THAT(
       personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount),
@@ -593,7 +594,7 @@ TEST_F(PersonalDataManagerTest, SetProfiles) {
   // Set `kLocalOrSyncable` profiles only. This clear the existing `kAccount`
   // profiles
   profiles = {kLocalProfile};
-  personal_data_->SetProfiles(&profiles);
+  personal_data_->SetProfilesForAllSources(&profiles);
   WaitForOnPersonalDataChanged();
   EXPECT_TRUE(
       personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount)
@@ -604,7 +605,7 @@ TEST_F(PersonalDataManagerTest, SetProfiles) {
 
   // Set profiles of both sources.
   profiles = {kAccountProfile, kLocalProfile};
-  personal_data_->SetProfiles(&profiles);
+  personal_data_->SetProfilesForAllSources(&profiles);
   WaitForOnPersonalDataChanged();
   EXPECT_THAT(
       personal_data_->GetProfilesFromSource(AutofillProfile::Source::kAccount),
@@ -783,7 +784,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
   profile7.FinalizeAfterImport();
   profiles.push_back(profile7);
 
-  personal_data_->SetProfiles(&profiles);
+  personal_data_->SetProfilesForAllSources(&profiles);
 
   WaitForOnPersonalDataChanged();
 
@@ -811,7 +812,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_Invalid) {
 
   std::vector<AutofillProfile> profiles;
   profiles.push_back(with_invalid);
-  personal_data_->SetProfiles(&profiles);
+  personal_data_->SetProfilesForAllSources(&profiles);
   WaitForOnPersonalDataChanged();
   ASSERT_EQ(1u, personal_data_->GetProfiles().size());
   AutofillProfile profile = *personal_data_->GetProfiles()[0];

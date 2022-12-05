@@ -313,7 +313,8 @@ void AddressProfileSaveManagerTest::TestImportScenario(
   }
 
   // Set the existing profiles to the personal data manager.
-  mock_personal_data_manager_.SetProfiles(&test_scenario.existing_profiles);
+  mock_personal_data_manager_.SetProfilesForAllSources(
+      &test_scenario.existing_profiles);
 
   // Initiate the profile import.
   save_manager.ImportProfileFromForm(

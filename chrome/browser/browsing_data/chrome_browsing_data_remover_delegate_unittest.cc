@@ -977,7 +977,7 @@ class RemoveAutofillTester {
     profile.set_origin(autofill::kSettingsOrigin);
     profiles.push_back(profile);
 
-    personal_data_manager_->SetProfiles(&profiles);
+    personal_data_manager_->SetProfilesForAllSources(&profiles);
 
     WaitForOnPersonalDataFinishedProfileTasks();
 
