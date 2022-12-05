@@ -7780,12 +7780,6 @@ void RenderFrameHostImpl::BeginNavigation(
         initiator_policy_container_host_keep_alive_handle,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener) {
-  if (frame_tree_node_->render_manager()->is_attaching_inner_delegate()) {
-    // Avoid starting any new navigations since this frame is in the process of
-    // attaching an inner delegate.
-    return;
-  }
-
   // Only active and prerendered documents are allowed to start navigation in
   // their frame.
   if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
@@ -7794,6 +7788,14 @@ void RenderFrameHostImpl::BeginNavigation(
     if (IsInactiveAndDisallowActivation(
             DisallowActivationReasonId::kBeginNavigation))
       return;
+  }
+
+  // `owner_` can not be null since the lifecycle state is checked above.
+  DCHECK(owner_);
+  if (owner_->GetRenderFrameHostManager().is_attaching_inner_delegate()) {
+    // Avoid starting any new navigations since this frame is in the process of
+    // attaching an inner delegate.
+    return;
   }
 
   TRACE_EVENT("navigation", "RenderFrameHostImpl::BeginNavigation",
@@ -7902,7 +7904,7 @@ void RenderFrameHostImpl::BeginNavigation(
   // result of this function's execution, we don't need to pass
   // |initiator_policy_container_host_keep_alive_handle| along.
 
-  frame_tree_node()->navigator().OnBeginNavigation(
+  owner_->GetCurrentNavigator().OnBeginNavigation(
       frame_tree_node(), std::move(validated_params), std::move(begin_params),
       std::move(blob_url_loader_factory), std::move(navigation_client),
       EnsurePrefetchedSignedExchangeCache(),
