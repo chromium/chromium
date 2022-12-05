@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/json/json_writer.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -142,16 +143,16 @@ void InternetConfigDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 std::string InternetConfigDialog::GetDialogArgs() const {
-  base::DictionaryValue args;
-  args.SetKey("type", base::Value(network_type_));
-  args.SetKey("guid", base::Value(network_id_));
+  base::Value::Dict args;
+  args.Set("type", network_type_);
+  args.Set("guid", network_id_);
 
   // Provide the UI with information on whether a user is currently logged in.
   // This information is used to avoid an edge case when configuring a network.
   // For more information see b/253247084.
   if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration)) {
-    args.SetKey("loggedIn", base::Value(LoginState::IsInitialized() &&
-                                        LoginState::Get()->IsUserLoggedIn()));
+    args.Set("loggedIn", base::Value(LoginState::IsInitialized() &&
+                                     LoginState::Get()->IsUserLoggedIn()));
   }
   std::string json;
   base::JSONWriter::Write(args, &json);

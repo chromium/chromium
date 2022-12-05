@@ -88,11 +88,10 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
   const base::Value& result_value = args[0];
   CHECK(result_value.is_dict());
-  const base::DictionaryValue& result =
-      base::Value::AsDictionaryValue(result_value);
+  const base::Value::Dict& result = result_value.GetDict();
 
   // Wallpaper sync status is stored directly to the profile's prefs.
-  bool wallpaper_synced = result.FindBoolPath(kWallpaperEnabledKey).value();
+  bool wallpaper_synced = result.FindBool(kWallpaperEnabledKey).value();
   profile_->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
                                    wallpaper_synced);
 
@@ -104,13 +103,13 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
   if (!service || !service->IsEngineInitialized())
     return;
 
-  bool sync_all_os_types = result.FindBoolKey("syncAllOsTypes").value();
+  bool sync_all_os_types = result.FindBool("syncAllOsTypes").value();
 
   UserSelectableOsTypeSet selected_types;
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     std::string key =
         syncer::GetUserSelectableOsTypeName(type) + std::string("Synced");
-    absl::optional<bool> sync_value = result.FindBoolPath(key);
+    absl::optional<bool> sync_value = result.FindBool(key);
     CHECK(sync_value.has_value()) << key;
     if (sync_value.value())
       selected_types.Put(type);

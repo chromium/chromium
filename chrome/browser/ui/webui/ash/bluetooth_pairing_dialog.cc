@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/bluetooth_shared_load_time_data_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -91,12 +92,11 @@ BluetoothPairingDialog::BluetoothPairingDialog(
                               /*title=*/std::u16string()),
       dialog_id_(dialog_id) {
   if (canonical_device_address.has_value())
-    device_data_.SetStringKey("address", canonical_device_address.value());
+    device_data_.Set("address", canonical_device_address.value());
 
-  device_data_.SetBoolKey(
-      "shouldOmitLinks",
-      session_manager::SessionManager::Get()->session_state() !=
-          session_manager::SessionState::ACTIVE);
+  device_data_.Set("shouldOmitLinks",
+                   session_manager::SessionManager::Get()->session_state() !=
+                       session_manager::SessionState::ACTIVE);
 }
 
 BluetoothPairingDialog::~BluetoothPairingDialog() = default;

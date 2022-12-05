@@ -31,6 +31,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -428,7 +429,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     }
 
     base::Value::Dict connection_status;
-    connection_status.Set("status", status);
+    connection_status.Set("status", std::move(status));
     drive::DriveNotificationManager* drive_notification_manager =
         drive::DriveNotificationManagerFactory::FindForBrowserContext(
             profile());
@@ -674,18 +675,18 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
         integration_service->event_logger()->GetHistory();
 
     base::Value::List list;
-    for (size_t i = 0; i < log.size(); ++i) {
+    for (const drive::EventLogger::Event& event : log) {
       // Skip events which were already sent.
-      if (log[i].id <= last_sent_event_id_)
+      if (event.id <= last_sent_event_id_)
         continue;
 
       const char* const severity =
-          kLogLevelName[SeverityToLogLevelNameIndex(log[i].severity)];
-      AppendKeyValue(
-          list, google_apis::util::FormatTimeAsStringLocaltime(log[i].when),
-          base::StrCat({"[", severity, "] ", log[i].what}),
-          base::StrCat({"log-", severity}));
-      last_sent_event_id_ = log[i].id;
+          kLogLevelName[SeverityToLogLevelNameIndex(event.severity)];
+      AppendKeyValue(list,
+                     google_apis::util::FormatTimeAsStringLocaltime(event.when),
+                     base::StrCat({"[", severity, "] ", event.what}),
+                     base::StrCat({"log-", severity}));
+      last_sent_event_id_ = event.id;
     }
     if (!list.empty()) {
       MaybeCallJavascript("updateEventLog", base::Value(std::move(list)));

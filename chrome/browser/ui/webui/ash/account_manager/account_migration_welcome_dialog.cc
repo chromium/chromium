@@ -77,8 +77,8 @@ void AccountMigrationWelcomeDialog::GetDialogSize(gfx::Size* size) const {
 
 std::string AccountMigrationWelcomeDialog::GetDialogArgs() const {
   std::string data;
-  base::DictionaryValue dialog_args;
-  dialog_args.SetStringKey("email", email_);
+  base::Value::Dict dialog_args;
+  dialog_args.Set("email", email_);
   base::JSONWriter::Write(dialog_args, &data);
   return data;
 }

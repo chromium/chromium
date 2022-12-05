@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
@@ -53,7 +54,7 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   // otherwise |kChromeUIBluetoothPairingURL|.
   std::string dialog_id_;
 
-  base::DictionaryValue device_data_;
+  base::Value::Dict device_data_;
 };
 
 class BluetoothPairingDialogUI;

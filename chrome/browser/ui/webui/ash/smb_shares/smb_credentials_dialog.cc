@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -95,9 +96,9 @@ void SmbCredentialsDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 std::string SmbCredentialsDialog::GetDialogArgs() const {
-  base::DictionaryValue args;
-  args.SetKey("mid", base::Value(mount_id_));
-  args.SetKey("path", base::Value(share_path_));
+  base::Value::Dict args;
+  args.Set("mid", mount_id_);
+  args.Set("path", share_path_);
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;

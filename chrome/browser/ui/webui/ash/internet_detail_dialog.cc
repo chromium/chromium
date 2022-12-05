@@ -8,6 +8,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -151,10 +152,10 @@ void InternetDetailDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 std::string InternetDetailDialog::GetDialogArgs() const {
-  base::DictionaryValue args;
-  args.SetKey("type", base::Value(network_type_));
-  args.SetKey("guid", base::Value(network_id_));
-  args.SetKey("name", base::Value(network_name_));
+  base::Value::Dict args;
+  args.Set("type", network_type_);
+  args.Set("guid", network_id_);
+  args.Set("name", network_name_);
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;
