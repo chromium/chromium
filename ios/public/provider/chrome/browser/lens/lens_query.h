@@ -22,6 +22,9 @@ enum class LensEntrypoint;
 // The entry point from which Lens was entered.
 @property(nonatomic, assign) LensEntrypoint entrypoint;
 
+// The serialized viewport state to send to Lens. Can be nil.
+@property(nonatomic, strong) NSString* serializedViewportState;
+
 @end
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_LENS_LENS_QUERY_H_
