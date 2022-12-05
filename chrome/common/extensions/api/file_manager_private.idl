@@ -353,6 +353,8 @@ enum DlpLevel {
 enum SyncStatus {
   // No sync status available for file.
   not_found,
+  // File is queued up for syncing.
+  queued,
   // File is currently being synced.
   in_progress,
   // There was an error syncing the file.

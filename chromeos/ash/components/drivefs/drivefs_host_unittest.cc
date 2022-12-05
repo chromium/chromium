@@ -551,8 +551,9 @@ TEST_F(DriveFsHostTest, OnError_ForwardToObservers) {
   base::ScopedObservation<DriveFsHost, DriveFsHostObserver> observation_scoper(
       &observer);
   observation_scoper.Observe(host_.get());
-  auto error = mojom::DriveError::New(
-      mojom::DriveError::Type::kCantUploadStorageFull, base::FilePath("/foo"));
+  auto error =
+      mojom::DriveError::New(mojom::DriveError::Type::kCantUploadStorageFull,
+                             base::FilePath("/foo"), 1);
   mojom::DriveErrorPtr observed_error;
   EXPECT_CALL(observer, OnError(_)).WillOnce(CloneStruct(&observed_error));
   delegate_->OnError(error.Clone());
@@ -574,7 +575,7 @@ TEST_F(DriveFsHostTest, OnError_IgnoreUnknownErrorTypes) {
           static_cast<std::underlying_type_t<mojom::DriveError::Type>>(
               mojom::DriveError::Type::kMaxValue) +
           1),
-      base::FilePath("/foo")));
+      base::FilePath("/foo"), 1));
   delegate_.FlushForTesting();
 }
 
@@ -900,7 +901,7 @@ TEST_F(DriveFsHostTest, OnSyncingStatusUpdate_SyncStatusTracksStatus) {
 
   auto second_status = mojom::SyncingStatus::New();
   second_status->item_events.emplace_back(
-      absl::in_place, 12, 34, "/foo/bar/filename_error.txt",
+      absl::in_place, 13, 35, "/foo/bar/filename_error.txt",
       mojom::ItemEvent::State::kFailed, 123, 456,
       mojom::ItemEventReason::kTransfer);
   delegate_->OnSyncingStatusUpdate(std::move(second_status));
@@ -917,7 +918,7 @@ TEST_F(DriveFsHostTest, OnSyncingStatusUpdate_SyncStatusTracksStatus) {
 
   auto third_status = mojom::SyncingStatus::New();
   third_status->item_events.emplace_back(
-      absl::in_place, 12, 34, "/foo/bar/filename_error.txt",
+      absl::in_place, 13, 35, "/foo/bar/filename_error.txt",
       mojom::ItemEvent::State::kCompleted, 123, 456,
       mojom::ItemEventReason::kTransfer);
   delegate_->OnSyncingStatusUpdate(std::move(third_status));
@@ -931,7 +932,7 @@ TEST_F(DriveFsHostTest, OnSyncingStatusUpdate_SyncStatusTracksStatus) {
 
   delegate_->OnError(
       mojom::DriveError::New(mojom::DriveError::Type::kCantUploadStorageFull,
-                             base::FilePath("/foo/bar/filename.txt")));
+                             base::FilePath("/foo/bar/filename.txt"), 1));
   delegate_.FlushForTesting();
   EXPECT_EQ(host_->GetSyncStatusForPath(
                 host_->GetMountPath().Append("foo/bar/filename.txt")),
@@ -939,7 +940,7 @@ TEST_F(DriveFsHostTest, OnSyncingStatusUpdate_SyncStatusTracksStatus) {
 
   auto fourth_status = mojom::SyncingStatus::New();
   fourth_status->item_events.emplace_back(
-      absl::in_place, 12, 34, "relative/path.txt",
+      absl::in_place, 14, 36, "relative/path.txt",
       mojom::ItemEvent::State::kInProgress, 123, 456,
       mojom::ItemEventReason::kTransfer);
   delegate_->OnSyncingStatusUpdate(std::move(fourth_status));

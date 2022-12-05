@@ -133,22 +133,22 @@ class DriveFsHost::MountState : public DriveFsSession,
         }
         switch (event->state) {
           case mojom::ItemEvent::State::kQueued:
-            sync_status_tracker_->AddSyncStatusForPath(path,
+            sync_status_tracker_->AddSyncStatusForPath(event->stable_id, path,
                                                        SyncStatus::kQueued);
             break;
           case mojom::ItemEvent::State::kInProgress:
-            sync_status_tracker_->AddSyncStatusForPath(path,
+            sync_status_tracker_->AddSyncStatusForPath(event->stable_id, path,
                                                        SyncStatus::kInProgress);
             break;
           case mojom::ItemEvent::State::kFailed:
             // This state only comes through for failed downloads of pinned
             // files. Other transfer failures are reported through the OnError()
             // event.
-            sync_status_tracker_->AddSyncStatusForPath(path,
+            sync_status_tracker_->AddSyncStatusForPath(event->stable_id, path,
                                                        SyncStatus::kError);
             break;
           case mojom::ItemEvent::State::kCompleted:
-            sync_status_tracker_->RemovePath(path);
+            sync_status_tracker_->RemovePath(event->stable_id, path);
             break;
           default:
             break;
@@ -180,11 +180,18 @@ class DriveFsHost::MountState : public DriveFsSession,
 
   void OnError(mojom::DriveErrorPtr error) override {
     base::FilePath path = host_->GetMountPath();
-    if (base::FilePath("/").AppendRelativePath(base::FilePath(error->path),
-                                               &path)) {
-      sync_status_tracker_->AddSyncStatusForPath(path, SyncStatus::kError);
-    } else {
-      LOG(ERROR) << "Failed to make path relative to drive root";
+
+    // Verify if we have a valid stable_id. It could be invalid because the
+    // DriveFs version that reports stable_id for DriveErrors hasn't been
+    // uprreved into ChromeOS yet, but it could be due to some actual error.
+    if (error->stable_id > 0) {
+      if (base::FilePath("/").AppendRelativePath(base::FilePath(error->path),
+                                                 &path)) {
+        sync_status_tracker_->AddSyncStatusForPath(error->stable_id, path,
+                                                   SyncStatus::kError);
+      } else {
+        LOG(ERROR) << "Failed to make path relative to drive root";
+      }
     }
 
     if (!IsKnownEnumValue(error->type)) {

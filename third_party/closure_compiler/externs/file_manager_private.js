@@ -768,6 +768,7 @@ chrome.fileManagerPrivate.DlpLevel = {
 /** @enum {string} */
 chrome.fileManagerPrivate.SyncStatus = {
   NOT_FOUND: 'not_found',
+  QUEUED: 'queued',
   IN_PROGRESS: 'in_progress',
   ERROR: 'error'
 };

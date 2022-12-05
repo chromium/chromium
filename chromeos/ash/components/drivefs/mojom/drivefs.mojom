@@ -295,6 +295,7 @@ enum FileError {
 };
 
 // Errors received from DriveFS to be forwarded to the file manager UI.
+// Next MinVersion: 2
 struct DriveError {
   [Extensible] enum Type {
     kCantUploadStorageFull,
@@ -306,6 +307,10 @@ struct DriveError {
 
   // The path to the file where an error was encountered, if there was one.
   mojo_base.mojom.FilePath path;
+
+  // The stable id of the file where an error was encountered, if there was one.
+  // Note: 0 is an invalid stable id.
+  [MinVersion=1] int64 stable_id = 0;
 };
 
 struct DialogReason {
