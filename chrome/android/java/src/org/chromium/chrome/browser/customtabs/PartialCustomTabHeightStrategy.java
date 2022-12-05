@@ -14,9 +14,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -119,6 +121,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final @Px int mUnclampedInitialHeight;
     private final FullscreenManager mFullscreenManager;
     private final boolean mAlwaysShowNavbarButtons;
+    private final Rect mFullscreenRestoreRect = new Rect();
 
     private static boolean sHasLoggedImmersiveModeConfirmationSetting;
 
@@ -603,6 +606,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return mIsFixedHeight;
     }
 
+    private boolean isFullscreen() {
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        return attrs.x == 0 && attrs.y == 0 && attrs.width == MATCH_PARENT
+                && attrs.height == MATCH_PARENT;
+    }
+
     private boolean canInteractWithBackground() {
         return mInteractWithBackground;
     }
@@ -898,20 +907,39 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-        WindowManager.LayoutParams attrs = new WindowManager.LayoutParams();
-        attrs.copyFrom(mActivity.getWindow().getAttributes());
+        if (isFullscreen()) return;
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        mFullscreenRestoreRect.set(attrs.x, attrs.y, attrs.width, attrs.height);
         attrs.x = 0;
         attrs.y = 0;
-        attrs.height = MATCH_PARENT;
         attrs.width = MATCH_PARENT;
+        attrs.height = MATCH_PARENT;
         mActivity.getWindow().setAttributes(attrs);
         setTopMargins(0, 0);
     }
 
     @Override
     public void onExitFullscreen(Tab tab) {
-        setTopMargins(mShadowOffset, getHandleHeight() + mShadowOffset);
-        initializeHeight();
+        if (!isFullscreen()) return;
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        attrs.x = mFullscreenRestoreRect.left;
+        attrs.y = mFullscreenRestoreRect.top;
+        attrs.width = mFullscreenRestoreRect.right;
+        attrs.height = mFullscreenRestoreRect.bottom;
+        mActivity.getWindow().setAttributes(attrs);
+        updateShadowOffset();
+
+        // Status/navigation bar are not restored on T+. This makes host app visible
+        // at the area. To work around this, simulate user dragging the tab by 1 pixel
+        // upon exiting fullscreen.                                                                          
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
+            int startY = attrs.y;
+            new Handler().post(() -> {
+                onDragStart(startY);
+                onDragMove(startY + 1);
+                onDragEnd(0);
+            });
+        }
     }
 
     @Override
