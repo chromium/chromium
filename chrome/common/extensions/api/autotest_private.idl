@@ -335,7 +335,6 @@ namespace autotestPrivate {
     DOMString lastBackupAndroidId;
     double lastBackupTime;
     boolean shouldSync;
-    boolean system;
     boolean vpnProvider;
   };
   callback GetArcPackageCallback = void (ArcPackageDict package);

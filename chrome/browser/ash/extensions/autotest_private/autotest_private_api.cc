@@ -2163,7 +2163,6 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcPackageFunction::Run() {
                           base::Microseconds(package_info->last_backup_time))
                           .ToJsTime());
     package_value.Set("shouldSync", package_info->should_sync);
-    package_value.Set("system", package_info->system);
     package_value.Set("vpnProvider", package_info->vpn_provider);
   }
   return RespondNow(WithArguments(std::move(package_value)));

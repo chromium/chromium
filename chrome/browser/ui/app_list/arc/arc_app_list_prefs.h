@@ -160,7 +160,6 @@ class ArcAppListPrefs : public KeyedService,
                 int64_t last_backup_android_id,
                 int64_t last_backup_time,
                 bool should_sync,
-                bool system,
                 bool vpn_provider,
                 bool preinstalled,
                 base::flat_map<arc::mojom::AppPermission,
@@ -173,7 +172,6 @@ class ArcAppListPrefs : public KeyedService,
     int64_t last_backup_android_id;
     int64_t last_backup_time;
     bool should_sync;
-    bool system;  // TODO(b/255671011): This is unused. Remove this.
     bool vpn_provider;
     // If the package is pre-installed in the system image. This is true even
     // after the package is updated.

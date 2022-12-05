@@ -861,7 +861,6 @@ class AppNotificationsArcNotificationTest
     package_info->last_backup_android_id = 1;
     package_info->last_backup_time = 1;
     package_info->sync = package_synced;
-    package_info->system = false;
     app_instance_->SendPackageAdded(std::move(package_info));
     base::RunLoop().RunUntilIdle();
   }

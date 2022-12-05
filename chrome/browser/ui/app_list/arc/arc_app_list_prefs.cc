@@ -83,7 +83,6 @@ constexpr char kSticky[] = "sticky";
 constexpr char kShortcut[] = "shortcut";
 constexpr char kShouldSync[] = "should_sync";
 constexpr char kSuspended[] = "suspended";
-constexpr char kSystem[] = "system";
 constexpr char kUninstalled[] = "uninstalled";
 constexpr char kVPNProvider[] = "vpnprovider";
 constexpr char kPermissionStateGranted[] = "granted";
@@ -103,6 +102,8 @@ constexpr char kWindowBounds[] = "window_bounds";
 constexpr char kVersionName[] = "version_name";
 constexpr char kAppSizeBytesString[] = "app_size_bytes_string";
 constexpr char kDataSizeBytesString[] = "data_size_bytes_string";
+// Deprecated perfs fields.
+constexpr char kDeprecatePackagePrefsSystem[] = "system";
 
 // Defines maximum number of showing splash screen per user.
 const int kMaxNumSplashScreen = 2;
@@ -368,6 +369,12 @@ enum class UninstallCounterReasonEnum {
   USER = 0,  // Uninstall triggered by user.
   kMaxValue = USER
 };
+
+// Remove deprecated package prefs. Otherwise deprecated fields will stay on
+// disks.
+void MaybeRemoveDeprecatedPackagePrefs(arc::ArcAppScopedPrefUpdate&& update) {
+  update.Get().Remove(kDeprecatePackagePrefsSystem);
+}
 
 }  // namespace
 
@@ -800,7 +807,6 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
       package_name, package->FindInt(kPackageVersion).value_or(0),
       last_backup_android_id, last_backup_time,
       package->FindBool(kShouldSync).value_or(false),
-      package->FindBool(kSystem).value_or(false),
       package->FindBool(kVPNProvider).value_or(false),
       package->FindBool(kPreinstalled).value_or(false), std::move(permissions),
       std::move(web_app_info));
@@ -1656,7 +1662,6 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
   package_dict.Set(kPackageVersion, package.package_version);
   package_dict.Set(kLastBackupAndroidId, id_str);
   package_dict.Set(kLastBackupTime, time_str);
-  package_dict.Set(kSystem, package.system);
   package_dict.Set(kUninstalled, false);
   package_dict.Set(kVPNProvider, package.vpn_provider);
   package_dict.Set(kPreinstalled, package.preinstalled);
@@ -2188,6 +2193,9 @@ void ArcAppListPrefs::OnPackageListRefreshed(
     if (!base::Contains(old_packages, package->package_name)) {
       for (auto& observer : observer_list_)
         observer.OnPackageInstalled(*package);
+    } else {
+      MaybeRemoveDeprecatedPackagePrefs(arc::ArcAppScopedPrefUpdate(
+          prefs_, package->package_name, arc::prefs::kArcPackages));
     }
     current_packages.insert(package->package_name);
   }
@@ -2440,7 +2448,6 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
     int64_t last_backup_android_id,
     int64_t last_backup_time,
     bool should_sync,
-    bool system,
     bool vpn_provider,
     bool preinstalled,
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
@@ -2451,7 +2458,6 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
       last_backup_android_id(last_backup_android_id),
       last_backup_time(last_backup_time),
       should_sync(should_sync),
-      system(system),
       vpn_provider(vpn_provider),
       preinstalled(preinstalled),
       permissions(std::move(permissions)),

@@ -99,7 +99,7 @@ struct ArcPackageInfo {
   bool sync;  // true if package installation should be synced
   // true if package is signed with the system certificate.
   // TODO(b/255671011): This is unused. Remove this.
-  [MinVersion=11] bool system;
+  [MinVersion=11] bool deprecated_system;
   // true if package registers VPNService intent.
   [MinVersion=25] bool vpn_provider;
 

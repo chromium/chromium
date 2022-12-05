@@ -78,7 +78,6 @@ void AppRestoreArcTestHelper::SendPackageAdded(
   package_info.last_backup_android_id = 1;
   package_info.last_backup_time = 1;
   package_info.sync = false;
-  package_info.system = false;
   GetAppHost()->OnPackageAdded(arc::mojom::ArcPackageInfo::From(package_info));
 
   base::RunLoop().RunUntilIdle();

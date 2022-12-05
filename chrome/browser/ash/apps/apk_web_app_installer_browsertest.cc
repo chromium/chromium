@@ -223,7 +223,6 @@ class ApkWebAppInstallerBrowserTest
     package->last_backup_android_id = 1;
     package->last_backup_time = 1;
     package->sync = true;
-    package->system = false;
 
     return package;
   }
