@@ -127,9 +127,10 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     private static boolean shouldUseSystemBack() {
         // https://developer.android.com/about/versions/12/behavior-changes-all#back-press
         // Starting from 12, root launcher activities are no longer finished on Back press.
-        boolean isAtLeastS = (sVersionForTesting == null ? VERSION.SDK_INT : sVersionForTesting)
-                >= VERSION_CODES.S;
-        return isAtLeastS
+        // Limiting to T, since some OEMs seem to still finish activity on 12.
+        boolean isAtLeastT = (sVersionForTesting == null ? VERSION.SDK_INT : sVersionForTesting)
+                >= VERSION_CODES.TIRAMISU;
+        return isAtLeastT
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.BACK_GESTURE_REFACTOR, "system_back", false);
     }
