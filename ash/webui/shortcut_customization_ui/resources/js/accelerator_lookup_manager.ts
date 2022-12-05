@@ -133,7 +133,6 @@ export class AcceleratorLookupManager {
           };
           const sanitizedAccelInfo: AcceleratorInfo = {
             accelerator: sanitizedAccelerator,
-            hasKeyEvent: info.hasKeyEvent,
             keyDisplay: mojoString16ToString(info.keyDisplay),
             locked: info.locked,
             state: info.state,

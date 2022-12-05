@@ -32,7 +32,6 @@ export const createEmptyAccelInfoFromAccel =
     (accel: Accelerator): AcceleratorInfo => {
       return {
         accelerator: accel,
-        hasKeyEvent: true,
         keyDisplay: '',
         locked: false,
         state: AcceleratorState.kEnabled,

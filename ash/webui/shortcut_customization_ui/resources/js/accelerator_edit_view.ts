@@ -33,7 +33,6 @@ const accelerator: Accelerator = {
 
 const defaultAcceleratorInfoState: AcceleratorInfo = {
   accelerator,
-  hasKeyEvent: true,
   keyDisplay: '',
   locked: false,
   state: AcceleratorState.kEnabled,

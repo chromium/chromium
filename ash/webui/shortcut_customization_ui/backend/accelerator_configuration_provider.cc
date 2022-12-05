@@ -63,14 +63,12 @@ constexpr auto kSixPackKeyToSystemKeyMap =
 mojom::AcceleratorInfoPtr CreateAcceleratorInfo(
     const ui::Accelerator& accelerator,
     bool locked,
-    bool has_key_event,
     mojom::AcceleratorType type,
     mojom::AcceleratorState state) {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
   info_mojom->accelerator = accelerator;
   info_mojom->key_display = KeycodeToKeyString(accelerator.key_code());
   info_mojom->locked = locked;
-  info_mojom->has_key_event = has_key_event;
   info_mojom->type = type;
   info_mojom->state = state;
 
@@ -269,12 +267,9 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
 mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateBaseAcceleratorInfo(
     ui::Accelerator accelerator) const {
-  // TODO(longbowei): |locked| and and |has_key_event| are both default to
-  // true now. For |locked|, ash accelerators should not be locked when
-  // customization is allowed. For |has_key_event|, we need to determine
-  // its state based off of a keyboard device id.
+  // TODO(longbowei): Some accelerators should not be locked when customization
+  // is allowed.
   return CreateAcceleratorInfo(accelerator, /*locked=*/true,
-                               /*has_key_event=*/true,
                                GetAcceleratorType(accelerator),
                                mojom::AcceleratorState::kEnabled);
 }

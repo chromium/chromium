@@ -19,7 +19,6 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: true,
-      hasKeyEvent: true,
       keyDisplay: stringToMojoString16('['),
       accelerator: {
         modifiers: Modifier.ALT,
@@ -33,7 +32,6 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: false,
-      hasKeyEvent: true,
       keyDisplay: stringToMojoString16(']'),
       accelerator: {
         modifiers: Modifier.ALT,
@@ -47,7 +45,6 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: false,
-      hasKeyEvent: true,
       keyDisplay: stringToMojoString16('+'),
       accelerator: {
         modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -61,7 +58,6 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: false,
-      hasKeyEvent: true,
       keyDisplay: stringToMojoString16('-'),
       accelerator: {
         modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -77,7 +73,6 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
       locked: true,
-      hasKeyEvent: true,
       keyDisplay: stringToMojoString16('t'),
       accelerator: {
         modifiers: Modifier.CONTROL,
@@ -140,7 +135,6 @@ const createFakeMojoAccelInfo = (keyDisplay: string): MojoAcceleratorInfo => {
     type: AcceleratorType.kDefault,
     state: AcceleratorState.kEnabled,
     locked: true,
-    hasKeyEvent: true,
     keyDisplay: stringToMojoString16(keyDisplay),
     accelerator: {
       modifiers: 0,
