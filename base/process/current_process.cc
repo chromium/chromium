@@ -103,6 +103,7 @@ const char* GetNameForProcessType(CurrentProcessType process_type) {
 
 // Used for logging histograms for IPC metrics based on their process type.
 ShortProcessType CurrentProcess::GetShortType(TypeKey key) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   CurrentProcessType process = static_cast<CurrentProcessType>(
       process_type_.load(std::memory_order_relaxed));
   switch (process) {
@@ -161,6 +162,9 @@ ShortProcessType CurrentProcess::GetShortType(TypeKey key) {
     case CurrentProcessType::PROCESS_SERVICE_SHAPEDETECTION:
       return ShortProcessType::kService;
   }
+#else
+  return ShortProcessType::kUnspecified;
+#endif
 }
 
 // static

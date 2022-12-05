@@ -9,6 +9,7 @@
 #include "base/base_export.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
+#include "base/synchronization/lock.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/buildflag.h"
 
