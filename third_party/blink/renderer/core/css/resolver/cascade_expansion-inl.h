@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/resolver/cascade_expansion.h"
 
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/property_bitsets.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 
 namespace blink {
@@ -70,7 +71,7 @@ void ExpandCascade(const MatchedProperties& matched_properties,
         callback(priority, property, CSSPropertyName(id), reference.Value(),
                  matched_properties.types_.tree_order);
       }
-      if (expand_visited) {
+      if (expand_visited && kPropertiesWithVisited.Has(id)) {
         const CSSProperty* visited_property = property.GetVisitedProperty();
         if (visited_property && !filter.Rejects(*visited_property)) {
           callback(priority, *visited_property,

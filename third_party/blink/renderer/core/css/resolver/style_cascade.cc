@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/property_bitsets.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_expansion-inl.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_expansion.h"
@@ -388,8 +389,11 @@ void StyleCascade::AnalyzeInterpolations() {
       // interpolation of the visited property, add the visited property to
       // the map as well.
       // TODO(crbug.com/1062217): Interpolate visited colors separately
-      if (const CSSProperty* visited = property.GetVisitedProperty())
-        map_.Add(visited->GetCSSPropertyName(), priority);
+      if (kPropertiesWithVisited.Has(property.PropertyID())) {
+        if (const CSSProperty* visited = property.GetVisitedProperty()) {
+          map_.Add(visited->GetCSSPropertyName(), priority);
+        }
+      }
     }
   }
 }
@@ -607,15 +611,17 @@ void StyleCascade::ApplyInterpolation(
   // if its priority is higher.
   //
   // TODO(crbug.com/1062217): Interpolate visited colors separately
-  if (const CSSProperty* visited = property.GetVisitedProperty()) {
-    CascadePriority* visited_priority =
-        map_.Find(visited->GetCSSPropertyName());
-    if (visited_priority && priority < *visited_priority) {
-      DCHECK(visited_priority->IsImportant());
-      // Resetting generation to zero makes it possible to apply the
-      // visited property again.
-      *visited_priority = CascadePriority(*visited_priority, 0);
-      LookupAndApply(*visited, resolver);
+  if (kPropertiesWithVisited.Has(property.PropertyID())) {
+    if (const CSSProperty* visited = property.GetVisitedProperty()) {
+      CascadePriority* visited_priority =
+          map_.Find(visited->GetCSSPropertyName());
+      if (visited_priority && priority < *visited_priority) {
+        DCHECK(visited_priority->IsImportant());
+        // Resetting generation to zero makes it possible to apply the
+        // visited property again.
+        *visited_priority = CascadePriority(*visited_priority, 0);
+        LookupAndApply(*visited, resolver);
+      }
     }
   }
 }
