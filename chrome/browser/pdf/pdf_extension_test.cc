@@ -1910,17 +1910,17 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionScrollTest, WithArrowDownUp) {
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, SelectAllShortcut) {
-  content::WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  SetInputFocusOnPlugin(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
 
-  content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
+  content::RenderFrameHost* frame = GetPluginFrame(guest);
   ASSERT_TRUE(frame);
   content::RenderWidgetHostView* view = frame->GetView();
   EXPECT_THAT(view->GetSelectedText(), IsEmpty());
 
   base::RunLoop run_loop;
-  content::TextInputManagerTester input_tester(guest_contents);
+  content::TextInputManagerTester input_tester(GetActiveWebContents());
   input_tester.SetOnTextSelectionChangedCallback(run_loop.QuitClosure());
 
   bool control = false;
@@ -1930,8 +1930,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, SelectAllShortcut) {
 #else
   control = true;
 #endif
-  content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter('a'),
-                            ui::DomCode::US_A, ui::VKEY_A, control,
+  content::SimulateKeyPress(GetActiveWebContents(),
+                            ui::DomKey::FromCharacter('a'), ui::DomCode::US_A,
+                            ui::VKEY_A, control,
                             /*shift=*/false,
                             /*alt=*/false, command);
   run_loop.Run();
