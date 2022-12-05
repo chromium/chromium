@@ -93,15 +93,27 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
   }
 
   /**
-   * Sets the active output device and notifies observers.
+   * Sets the active output or input device and notifies observers.
    */
-  setActiveDevice(outputDevice: AudioDevice): void {
-    const devices = this.audioSystemProperties.outputDevices.map(
-        (device: AudioDevice): AudioDevice =>
-            createAudioDevice(device, device.id === outputDevice.id));
-    assert(
-        devices.find((device: AudioDevice) => device.id === outputDevice.id));
-    this.audioSystemProperties.outputDevices = devices;
+  setActiveDevice(nextActiveDevice: AudioDevice): void {
+    const isOutputDevice: boolean =
+        !!(this.audioSystemProperties.outputDevices.find(
+            (device: AudioDevice) => device.id === nextActiveDevice.id));
+    if (isOutputDevice) {
+      const devices = this.audioSystemProperties.outputDevices.map(
+          (device: AudioDevice): AudioDevice =>
+              createAudioDevice(device, device.id === nextActiveDevice.id));
+      this.audioSystemProperties.outputDevices = devices;
+    } else {
+      // Device must be an input device otherwise an invalid device was
+      // provided.
+      assert(this.audioSystemProperties.inputDevices.find(
+          (device: AudioDevice) => device.id === nextActiveDevice.id));
+      const devices = this.audioSystemProperties.inputDevices.map(
+          (device: AudioDevice): AudioDevice =>
+              createAudioDevice(device, device.id === nextActiveDevice.id));
+      this.audioSystemProperties.inputDevices = devices;
+    }
     this.notifyAudioSystemPropertiesUpdated();
   }
 

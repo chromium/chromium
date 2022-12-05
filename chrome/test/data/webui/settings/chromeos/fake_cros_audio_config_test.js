@@ -7,14 +7,20 @@ import {assertDeepEquals, assertFalse} from 'chrome://webui-test/chai_assert.js'
 import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
 
 suite('FakeCrosAudioConfig', function() {
+  // Observer for testing updates which have not been added to mojo yet.
+  // Implements `fakeCrosAudioConfig.FakePropertiesObserverInterface`.
+  class TestPropertiesObserver {
+    onPropertiesUpdated(properties) {}
+  }
+
   /** @type {crosAudioConfigMojomWebui.AudioSystemProperties} */
   const defaultProperties =
       fakeCrosAudioConfig.defaultFakeAudioSystemProperties;
 
   /** @type {?fakeCrosAudioConfig.FakeCrosAudioConfig} */
   let crosAudioConfig = null;
-  /** @type {?crosAudioConfigMojomWebui.AudioSystemPropertiesObserverRemote} */
-  let audioSystemPropertiesObserverRemote = null;
+  /** @type {?TestPropertiesObserver} */
+  let fakeObserver = null;
 
   /** @type {?MockController} */
   let mockController = null;
@@ -23,30 +29,27 @@ suite('FakeCrosAudioConfig', function() {
 
   setup(() => {
     crosAudioConfig = new fakeCrosAudioConfig.FakeCrosAudioConfig();
-    audioSystemPropertiesObserverRemote =
-        new crosAudioConfigMojomWebui.AudioSystemPropertiesObserverRemote();
+    fakeObserver = new TestPropertiesObserver();
     mockController = new MockController();
-    onPropertiesUpdated = mockController.createFunctionMock(
-        audioSystemPropertiesObserverRemote, 'onPropertiesUpdated');
+    onPropertiesUpdated =
+        mockController.createFunctionMock(fakeObserver, 'onPropertiesUpdated');
     onPropertiesUpdated.addExpectation(defaultProperties);
-    crosAudioConfig.observeAudioSystemProperties(
-        audioSystemPropertiesObserverRemote);
+    crosAudioConfig.observeAudioSystemProperties(fakeObserver);
   });
 
   teardown(() => {
     crosAudioConfig = null;
-    audioSystemPropertiesObserverRemote = null;
+    fakeObserver = null;
     mockController = null;
     onPropertiesUpdated = null;
   });
 
   test('VerifyObserversReceiveAudioSystemProperitesUpdates', () => {
-    // `audioSystemPropertiesObserverRemote` observer initialized during setup.
+    // `fakeObserver` observer initialized during setup.
     assertDeepEquals(defaultProperties, onPropertiesUpdated.calls_[0][0]);
 
-    /** @type {crosAudioConfigMojomWebui.AudioSystemPropertiesObserverRemote} */
-    const observer =
-        new crosAudioConfigMojomWebui.AudioSystemPropertiesObserverRemote();
+    /** @type {crosAudioConfigMojomWebui.fakeObserver} */
+    const observer = new TestPropertiesObserver();
     /** @type {MockMethod} */
     const onObserverPropertiesUpdated =
         mockController.createFunctionMock(observer, 'onPropertiesUpdated');
@@ -84,19 +87,37 @@ suite('FakeCrosAudioConfig', function() {
     mockController.verifyMocks();
   });
 
-  test('VerifySetActiveDeviceTriggersMatchingPropertyUpdate', () => {
-    /** @type {crosAudioConfigMojomWebui.AudioSystemProperties} */
-    const updatedProperties = {
+  test(
+      'VerifySetActiveDeviceOutputDeviceTriggersMatchingPropertyUpdate', () => {
+        /** @type {AudioSystemProperties} */
+        const updateActiveOutputDevice = {
+          ...defaultProperties,
+          outputDevices: [
+            fakeCrosAudioConfig.createAudioDevice(
+                fakeCrosAudioConfig.defaultFakeSpeaker, /*isActive=*/ true),
+            fakeCrosAudioConfig.createAudioDevice(
+                fakeCrosAudioConfig.defaultFakeMicJack, /*isActive=*/ false),
+          ],
+        };
+        onPropertiesUpdated.addExpectation(updateActiveOutputDevice);
+        crosAudioConfig.setActiveDevice(fakeCrosAudioConfig.defaultFakeSpeaker);
+
+        mockController.verifyMocks();
+      });
+
+  test('VerifySetActiveDeviceInputDeviceTriggersMatchingPropertyUpdate', () => {
+    /** @type {AudioSystemProperties} */
+    const updateActiveInputDevice = {
       ...defaultProperties,
-      outputDevices: [
+      inputDevices: [
         fakeCrosAudioConfig.createAudioDevice(
-            fakeCrosAudioConfig.defaultFakeSpeaker, /*isActive=*/ true),
+            fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ false),
         fakeCrosAudioConfig.createAudioDevice(
-            fakeCrosAudioConfig.defaultFakeMicJack, /*isActive=*/ false),
+            fakeCrosAudioConfig.fakeBluetoothMic, /*isActive=*/ true),
       ],
     };
-    onPropertiesUpdated.addExpectation(updatedProperties);
-    crosAudioConfig.setActiveDevice(fakeCrosAudioConfig.defaultFakeSpeaker);
+    onPropertiesUpdated.addExpectation(updateActiveInputDevice);
+    crosAudioConfig.setActiveDevice(fakeCrosAudioConfig.fakeBluetoothMic);
 
     mockController.verifyMocks();
   });
