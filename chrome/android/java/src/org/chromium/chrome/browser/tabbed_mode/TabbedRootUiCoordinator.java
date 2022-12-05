@@ -670,7 +670,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             PrivacySandboxDialogLaunchContext.BROWSER_START, mActivity,
                             new SettingsLauncherImpl(),
                             mTabModelSelectorSupplier.get().isIncognitoSelected(),
-                            /*bottomSheetController = */ null);
+                            getBottomSheetController());
         }
 
         if (!didTriggerPromo) {
