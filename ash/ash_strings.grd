@@ -5402,9 +5402,6 @@ New install
       <message name="IDS_APP_LIST_CLEAR_SEARCHBOX" desc="Tooltip for the button that clears all text from the search box in the app list.">
         Clear searchbox text
       </message>
-      <message name="IDS_APP_LIST_SEARCHBOX_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_ZERO_STATE" desc="The accessibility announcement notifying the user that app list search is displaying a set of suggested items - i.e. items  shown as search results by default when the user has not entered any search query.">
-        Displaying suggestions
-      </message>
       <message name="IDS_APP_LIST_SEARCHBOX_RESULTS_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement notifying the user about the number of results shown in app list search, and the query for which the results are displayed.">
           Displaying <ph name="result_count">$1<ex>10</ex></ph> results for <ph name="query">$2<ex>search query</ex></ph>
       </message>

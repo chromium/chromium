@@ -13,7 +13,6 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/contents_view.h"
-#include "ash/app_list/views/legacy_remove_query_confirmation_dialog.h"
 #include "ash/app_list/views/remove_query_confirmation_dialog.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_actions_view.h"
@@ -1290,25 +1289,11 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
 
   switch (button_action) {
     case SearchResultActionType::kRemove: {
-      // Zero state suggestions are only available when productivity launcher
-      // is not enabled, so don't record zero-state metric when the feature is
-      // turned on.
-      if (!features::IsProductivityLauncherEnabled()) {
-        RecordZeroStateSearchResultUserActionHistogram(
-            ZeroStateSearchResultUserActionType::kRemoveResult);
-      }
-      std::unique_ptr<views::WidgetDelegate> dialog;
-      if (features::IsProductivityLauncherEnabled()) {
-        dialog = std::make_unique<RemoveQueryConfirmationDialog>(
-            base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
-                           weak_ptr_factory_.GetWeakPtr()),
-            result()->title());
-      } else {
-        dialog = std::make_unique<LegacyRemoveQueryConfirmationDialog>(
-            base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
-                           weak_ptr_factory_.GetWeakPtr()),
-            result()->title());
-      }
+      std::unique_ptr<views::WidgetDelegate> dialog =
+          std::make_unique<RemoveQueryConfirmationDialog>(
+              base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
+                             weak_ptr_factory_.GetWeakPtr()),
+              result()->title());
       dialog_controller_->Show(std::move(dialog));
       break;
     }

@@ -105,8 +105,6 @@ source_set("app_list") {
     "views/folder_header_view_delegate.h",
     "views/ghost_image_view.cc",
     "views/ghost_image_view.h",
-    "views/legacy_remove_query_confirmation_dialog.cc",
-    "views/legacy_remove_query_confirmation_dialog.h",
     "views/page_switcher.cc",
     "views/page_switcher.h",
     "views/paged_apps_grid_view.cc",

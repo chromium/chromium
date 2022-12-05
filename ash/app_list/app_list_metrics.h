@@ -38,16 +38,6 @@ ASH_EXPORT extern const char kContinueSectionFilesRemovedInSessionHistogram[];
 
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
-// AppListZeroStateSearchResultUserActionType enum listing in
-// tools/metrics/histograms/enums.xml.
-enum class ZeroStateSearchResultUserActionType {
-  kRemoveResult = 0,
-  kAppendResult = 1,
-  kMaxValue = kAppendResult,
-};
-
-// These are used in histograms, do not remove/renumber entries. If you're
-// adding to this enum with the intention that it will be logged, update the
 // AppListResultRemovalConfirmation enum listing in
 // tools/metrics/histograms/enums.xml.
 enum class SearchResultRemovalConfirmation {
@@ -222,9 +212,6 @@ struct AppLaunchedMetricParams {
 void AppListRecordPageSwitcherSourceByEventType(ui::EventType type);
 
 void RecordPageSwitcherSource(AppListPageSwitcherSource source);
-
-void RecordZeroStateSearchResultUserActionHistogram(
-    ZeroStateSearchResultUserActionType action);
 
 void RecordSearchResultRemovalDialogDecision(
     SearchResultRemovalConfirmation removal_decision);

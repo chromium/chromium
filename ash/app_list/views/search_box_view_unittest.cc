@@ -172,13 +172,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
     view()->SetSearchBoxActive(active, type);
   }
 
-  void SetContentsView(ContentsView* contents_view) {
-    view()->set_contents_view(contents_view);
-    view()->SetResultSelectionController(
-        contents_view->search_result_page_view()
-            ->result_selection_controller());
-  }
-
   void KeyPress(ui::KeyboardCode key_code, bool is_shift_down = false) {
     ui::KeyEvent event(ui::ET_KEY_PRESSED, key_code,
                        is_shift_down ? ui::EF_SHIFT_DOWN : ui::EF_NONE);

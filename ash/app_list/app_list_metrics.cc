@@ -47,11 +47,6 @@ constexpr char kCardifiedStateAnimationSmoothnessExit[] =
     "Apps.AppList.CardifiedStateAnimation.AnimationSmoothness."
     "ExitCardifiedState";
 
-// The UMA hisotogram that logs the action user performs on zero state
-// search result.
-constexpr char kAppListZeroStateSearchResultUserActionHistogram[] =
-    "Apps.AppList.ZeroStateSearchResultUserActionType";
-
 // The UMA histogram that logs user's decision (remove or cancel) for search
 // result removal confirmation. Result removal is enabled outside zero state
 // search.
@@ -197,12 +192,6 @@ void RecordSearchResultOpenSource(const SearchResult* result,
   UMA_HISTOGRAM_ENUMERATION(
       kAppListSearchResultOpenSourceHistogram, source,
       ApplistSearchResultOpenedSource::kMaxApplistSearchResultOpenedSource);
-}
-
-void RecordZeroStateSearchResultUserActionHistogram(
-    ZeroStateSearchResultUserActionType action) {
-  UMA_HISTOGRAM_ENUMERATION(kAppListZeroStateSearchResultUserActionHistogram,
-                            action);
 }
 
 void RecordSearchResultRemovalDialogDecision(

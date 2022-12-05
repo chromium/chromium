@@ -27,6 +27,7 @@
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
+#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -594,13 +595,15 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->SetState(state);
   }
 
-  void Show() { view_->Show(AppListViewState::kFullscreenAllApps); }
-
-  SearchResultListView* GetSearchResultListView() {
+  SearchResultContainerView* GetSearchResultListView() {
+    constexpr int kBestMatchContainerIndex = 1;
     return contents_view()
         ->search_result_page_view()
-        ->GetSearchResultListViewForTest();
+        ->productivity_launcher_search_view_for_test()
+        ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
+
+  void Show() { view_->Show(AppListViewState::kFullscreenAllApps); }
 
   AppsGridViewTestApi* test_api() { return test_api_.get(); }
 
@@ -1070,16 +1073,7 @@ TEST_F(AppListViewFocusTest, CtrlASelectsAllTextInSearchbox) {
 
 // Tests that the first search result's view is selected after search results
 // are updated when the focus is on search box.
-// crbug.com/1242053: flaky on chromeos
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FirstResultSelectedAfterSearchResultsUpdated \
-  DISABLED_FirstResultSelectedAfterSearchResultsUpdated
-#else
-#define MAYBE_FirstResultSelectedAfterSearchResultsUpdated \
-  FirstResultSelectedAfterSearchResultsUpdated
-#endif
-TEST_F(AppListViewFocusTest,
-       MAYBE_FirstResultSelectedAfterSearchResultsUpdated) {
+TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
   Show();
 
   // Type something in search box to transition to search state and populate
@@ -1089,15 +1083,16 @@ TEST_F(AppListViewFocusTest,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kListResults = 2;
   SetUpSearchResults(kListResults);
-  SearchResultListView* list_view = GetSearchResultListView();
 
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
-  EXPECT_EQ(list_view->GetResultViewAt(0),
-            contents_view()->search_result_page_view()->first_result_view());
+  SearchResultContainerView* list_view = GetSearchResultListView();
   EXPECT_TRUE(list_view->GetResultViewAt(0)->selected());
 
   ResultSelectionController* selection_controller =
-      contents_view()->search_result_page_view()->result_selection_controller();
+      contents_view()
+          ->search_result_page_view()
+          ->productivity_launcher_search_view_for_test()
+          ->result_selection_controller_for_test();
 
   // Ensures the |ResultSelectionController| selects the correct result.
   EXPECT_EQ(selection_controller->selected_result(),
@@ -1106,8 +1101,6 @@ TEST_F(AppListViewFocusTest,
   // Clear up all search results.
   SetUpSearchResults(0);
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
-  EXPECT_EQ(nullptr,
-            contents_view()->search_result_page_view()->first_result_view());
 }
 
 // Tests hitting Enter key when focus is on search box.

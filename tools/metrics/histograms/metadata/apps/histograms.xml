@@ -1219,17 +1219,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.ZeroStateSearchResultUserActionType"
-    enum="AppListZeroStateSearchResultUserActionType"
-    expires_after="2022-05-01">
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The type of the action user performed on zero state search result. This is
-    gathered per click of a remove or append button of a search result.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppList.ZeroStateSuggestionOpenType"
     enum="AppListSearchResult" expires_after="2021-03-15">
   <owner>jennyz@chromium.org</owner>

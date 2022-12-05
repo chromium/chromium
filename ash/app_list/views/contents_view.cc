@@ -91,8 +91,8 @@ void ContentsView::Init() {
 
   // Search results UI.
   auto search_result_page_view = std::make_unique<SearchResultPageView>();
-  search_result_page_view->InitializeContainers(
-      view_delegate, GetAppListMainView(), GetSearchBoxView());
+  search_result_page_view->InitializeContainers(view_delegate,
+                                                GetSearchBoxView());
 
   search_result_page_view_ = AddLauncherPage(std::move(search_result_page_view),
                                              AppListState::kStateSearchResults);

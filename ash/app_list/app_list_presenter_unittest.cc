@@ -29,6 +29,7 @@
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/remove_query_confirmation_dialog.h"
+#include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_actions_view.h"
@@ -274,17 +275,14 @@ class AppListPresenterTest : public AshTestBase,
         ->search_result_page_view();
   }
 
-  AppsGridView* apps_grid_view() {
-    return GetAppListTestHelper()->GetScrollableAppsGridView();
+  SearchResultContainerView* GetDefaultSearchResultListView() {
+    return search_result_page()
+        ->productivity_launcher_search_view_for_test()
+        ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
 
-  SearchResultBaseView* GetSearchResultListViewItemAt(int index) {
-    return GetAppListView()
-        ->app_list_main_view()
-        ->contents_view()
-        ->search_result_page_view()
-        ->GetSearchResultListViewForTest()
-        ->GetResultViewAt(index);
+  AppsGridView* apps_grid_view() {
+    return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
 
   void ClickMouseAt(const gfx::Point& point) {
@@ -3111,9 +3109,8 @@ TEST_P(AppListPresenterTest, SearchBoxDeactivatedOnModelChange) {
   Shell::Get()->app_list_controller()->ClearActiveModel();
 }
 
-// Tests that search UI gets closed if search model gets changed.
-// TODO(crbug.com/1360501): Fix to work with the new launcher.
-TEST_F(AppListPresenterTest, DISABLED_SearchClearedOnModelChange) {
+// Tests that search UI gets closed if search model changes.
+TEST_F(AppListPresenterTest, SearchClearedOnModelChange) {
   EnableTabletMode(true);
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -3136,6 +3133,7 @@ TEST_F(AppListPresenterTest, DISABLED_SearchClearedOnModelChange) {
   // Give this item a name so that the accessibility paint checks pass.
   // (Focusable items should have accessible names.)
   test_list_result->SetAccessibleName(u"test_list");
+  test_list_result->set_best_match(true);
   test_list_result->set_display_type(SearchResultDisplayType::kList);
   search_model->results()->Add(std::move(test_list_result));
 
@@ -3146,9 +3144,10 @@ TEST_F(AppListPresenterTest, DISABLED_SearchClearedOnModelChange) {
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
   SearchResultContainerView* item_list_container =
-      search_result_page()->GetSearchResultListViewForTest();
+      GetDefaultSearchResultListView();
   ASSERT_EQ(1, item_list_container->num_results());
-  EXPECT_EQ("test", item_list_container->GetResultViewAt(0)->result()->id());
+  EXPECT_EQ("test_list",
+            item_list_container->GetResultViewAt(0)->result()->id());
 
   // Switch the active app list and search model, and verify the search UI gets
   // cleared.
@@ -3164,20 +3163,13 @@ TEST_F(AppListPresenterTest, DISABLED_SearchClearedOnModelChange) {
   // model.
   PressAndReleaseKey(ui::VKEY_A);
 
-  auto test_result_override = std::make_unique<TestSearchResult>();
-  test_result_override->set_result_id("test_override");
-  // Give this item a name so that the accessibility paint checks pass.
-  // (Focusable items should have accessible names.)
-  test_result_override->SetAccessibleName(u"test_override");
-  test_result_override->set_display_type(SearchResultDisplayType::kList);
-  search_model_override->results()->Add(std::move(test_result_override));
-
   auto test_list_result_override = std::make_unique<TestSearchResult>();
   test_list_result_override->set_result_id("test_list_override");
   // Give this item a name so that the accessibility paint checks pass.
   // (Focusable items should have accessible names.)
   test_list_result_override->SetAccessibleName(u"test_list_override");
   test_list_result_override->set_display_type(SearchResultDisplayType::kList);
+  test_list_result_override->set_best_match(true);
   search_model_override->results()->Add(std::move(test_list_result_override));
 
   // The results are updated asynchronously. Wait until the update is finished.
@@ -3186,8 +3178,9 @@ TEST_F(AppListPresenterTest, DISABLED_SearchClearedOnModelChange) {
   EXPECT_TRUE(search_box_view->is_search_box_active());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
+  item_list_container = GetDefaultSearchResultListView();
   ASSERT_EQ(1, item_list_container->num_results());
-  EXPECT_EQ("test_override",
+  EXPECT_EQ("test_list_override",
             item_list_container->GetResultViewAt(0)->result()->id());
 
   Shell::Get()->app_list_controller()->ClearActiveModel();
