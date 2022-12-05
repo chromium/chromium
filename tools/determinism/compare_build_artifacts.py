@@ -1,12 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Compare the artifacts from two builds."""
-
-from __future__ import division
-from __future__ import print_function
 
 import ast
 import binascii
@@ -137,28 +134,15 @@ def diff_binary(first_filepath, second_filepath, file_len):
   result = '%d out of %d bytes are different (%.2f%%)' % (
         num_diffs, file_len, 100.0 * num_diffs / file_len)
   if streams:
+    encode = lambda text: ''.join(chr(i) if 31 < i < 127 else '.' for i in text)
 
-    if sys.version_info.major == 2:
-      encode = lambda text: ''.join(
-          i if 31 < ord(i) < 127 else '.' for i in text)
+    for offset, lhs_data, rhs_data in streams:
+      lhs_line = '%s \'%s\'' % (lhs_data.hex(), encode(lhs_data))
+      rhs_line = '%s \'%s\'' % (rhs_data.hex(), encode(rhs_data))
+      diff = list(difflib.Differ().compare([lhs_line], [rhs_line]))[-1][2:-1]
+      result += '\n  0x%-8x: %s\n              %s\n              %s' % (
+          offset, lhs_line, rhs_line, diff)
 
-      for offset, lhs_data, rhs_data in streams:
-        lhs_line = '%s \'%s\'' % (lhs_data.encode('hex'), encode(lhs_data))
-        rhs_line = '%s \'%s\'' % (rhs_data.encode('hex'), encode(rhs_data))
-        diff = list(difflib.Differ().compare([lhs_line], [rhs_line]))[-1][2:-1]
-        result += '\n  0x%-8x: %s\n              %s\n              %s' % (
-            offset, lhs_line, rhs_line, diff)
-
-    else:
-      encode = lambda text: ''.join(
-          chr(i) if 31 < i < 127 else '.' for i in text)
-
-      for offset, lhs_data, rhs_data in streams:
-        lhs_line = '%s \'%s\'' % (lhs_data.hex(), encode(lhs_data))
-        rhs_line = '%s \'%s\'' % (rhs_data.hex(), encode(rhs_data))
-        diff = list(difflib.Differ().compare([lhs_line], [rhs_line]))[-1][2:-1]
-        result += '\n  0x%-8x: %s\n              %s\n              %s' % (
-            offset, lhs_line, rhs_line, diff)
   return result
 
 
