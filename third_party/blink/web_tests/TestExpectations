@@ -8171,3 +8171,4 @@ crbug.com/1395549 webaudio/codec-tests/vorbis/vbr-96kbps-44khz.html [ Failure Pa
 crbug.com/1395551 webaudio/codec-tests/vorbis/vbr-70kbps-44khz.html [ Failure Pass ]
 crbug.com/1395552 webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html [ Failure Pass ]
 crbug.com/1395450 http/tests/devtools/layers/layer-tree-model.js [ Failure Pass ]
+crbug.com/1395744 [ Linux ] external/wpt/css/filter-effects/effect-reference-on-transparent-element.html [ Failure ]
