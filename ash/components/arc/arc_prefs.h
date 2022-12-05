@@ -19,6 +19,8 @@ ARC_EXPORT extern const char kArcActiveDirectoryPlayUserId[];
 ARC_EXPORT extern const char kArcApps[];
 ARC_EXPORT extern const char kArcBackupRestoreEnabled[];
 ARC_EXPORT extern const char kArcCompatibleFilesystemChosen[];
+ARC_EXPORT extern const char kArcDailyMetricsKills[];
+ARC_EXPORT extern const char kArcDailyMetricsSample[];
 ARC_EXPORT extern const char kArcDataRemoveRequested[];
 ARC_EXPORT extern const char kArcEnabled[];
 ARC_EXPORT extern const char kArcFastAppReinstallPackages[];
@@ -31,6 +33,7 @@ ARC_EXPORT extern const char kArcManagementTransition[];
 ARC_EXPORT extern const char kArcPackages[];
 ARC_EXPORT extern const char kArcPackagesIsUpToDate[];
 ARC_EXPORT extern const char kArcPaiStarted[];
+ARC_EXPORT extern const char kArcPlayStoreLaunchMetricCanBeRecorded[];
 ARC_EXPORT extern const char kArcPolicyComplianceReported[];
 ARC_EXPORT extern const char kArcProvisioningInitiatedFromOobe[];
 ARC_EXPORT extern const char kArcPushInstallAppsPending[];
@@ -46,7 +49,6 @@ ARC_EXPORT extern const char kArcVmDataMigrationStatus[];
 ARC_EXPORT extern const char kArcIsManaged[];
 ARC_EXPORT extern const char kEcryptfsMigrationStrategy[];
 ARC_EXPORT extern const char kEngagementPrefsPrefix[];
-ARC_EXPORT extern const char kArcPlayStoreLaunchMetricCanBeRecorded[];
 
 // Local state prefs in lexicographical order.
 ARC_EXPORT extern const char kAnrPendingCount[];

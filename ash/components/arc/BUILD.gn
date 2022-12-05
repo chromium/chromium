@@ -64,6 +64,8 @@ static_library("arc") {
     "memory/arc_memory_bridge.h",
     "memory_pressure/arc_memory_pressure_bridge.cc",
     "memory_pressure/arc_memory_pressure_bridge.h",
+    "metrics/arc_daily_metrics.cc",
+    "metrics/arc_daily_metrics.h",
     "metrics/arc_metrics_anr.cc",
     "metrics/arc_metrics_anr.h",
     "metrics/arc_metrics_service.cc",
@@ -179,6 +181,7 @@ static_library("prefs") {
     "arc_export.h",
     "arc_prefs.cc",
     "arc_prefs.h",
+    "metrics/arc_daily_metrics_prefs.h",
   ]
 
   defines = [ "ARC_IMPLEMENTATION" ]

@@ -51,6 +51,22 @@ chromium-metrics-reviews@google.com.
   <variant name="TalkBack"/>
 </variants>
 
+<variants name="ArcAppKillDailyBackgroundVms">
+  <variant name="" summary="Total"/>
+  <variant name=".Crostini" summary="When Crostini is also running"/>
+  <variant name=".OnlyArc" summary="When no other VMs are running"/>
+  <variant name=".PluginVm" summary="When a plugin VM is also running"/>
+  <variant name=".Steam" summary="When Steam is also running"/>
+  <variant name=".UnknownVm" summary="When an unknown VM is also running"/>
+</variants>
+
+<variants name="ArcAppKillDailyType">
+  <variant name=".Cached" summary="with cached priority"/>
+  <variant name=".ForegroundDaily" summary="when foreground"/>
+  <variant name=".OomDaily" summary="by Linux's OOM killer"/>
+  <variant name=".PerceptibleDaily" summary="when perceptible"/>
+</variants>
+
 <variants name="ArcAppKillType">
   <variant name="LinuxOOM" summary="ARCVM's Linux OOM Killer"/>
   <variant name="LMKD.Cached"
@@ -354,7 +370,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.App.LowMemoryKills.{ArcAppKillType}Count10Minutes"
     units="Apps" expires_after="2023-04-07">
   <owner>cwd@google.com</owner>
-  <owner>cros-platform-kernel-core@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
   <summary>
     Number of ARC Apps killed by {ArcAppKillType} in each interval of 10
     minutes.
@@ -366,13 +382,27 @@ chromium-metrics-reviews@google.com.
     name="Arc.App.LowMemoryKills.{ArcBackgroundVms}.{ArcAppKillType}Count10Minutes"
     units="Apps" expires_after="2023-04-07">
   <owner>cwd@google.com</owner>
-  <owner>cros-platform-kernel-core@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
   <summary>
     Number of ARC Apps killed by {ArcAppKillType} in each interval of 10 minutes
     when {ArcBackgroundVms}.
   </summary>
   <token key="ArcAppKillType" variants="ArcAppKillType"/>
   <token key="ArcBackgroundVms" variants="ArcBackgroundVms"/>
+</histogram>
+
+<histogram
+    name="Arc.App.LowMemoryKills{ArcAppKillDailyBackgroundVms}{ArcAppKillDailyType}"
+    units="Apps" expires_after="2023-04-24">
+  <owner>cwd@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
+  <summary>
+    Number of ARC Apps killed each day {ArcAppKillDailyType}.
+    {ArcAppKillDailyBackgroundVms}.
+  </summary>
+  <token key="ArcAppKillDailyType" variants="ArcAppKillDailyType"/>
+  <token key="ArcAppKillDailyBackgroundVms"
+      variants="ArcAppKillDailyBackgroundVms"/>
 </histogram>
 
 <histogram name="Arc.App.PrimaryAbi" enum="AppPrimaryAbi"

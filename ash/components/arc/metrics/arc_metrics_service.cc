@@ -351,9 +351,10 @@ static void LogLowMemoryKillCount(const char* vm_desc,
 }
 
 // Helper that logs kill counts for a specific background VM.
-static void LogLowMemoryKillCounts(const char* vm_desc,
-                                   const mojom::LowMemoryKillCountsPtr& prev,
-                                   const mojom::LowMemoryKillCountsPtr& curr) {
+static void LogLowMemoryKillCountsForVm(
+    const char* vm_desc,
+    const mojom::LowMemoryKillCountsPtr& prev,
+    const mojom::LowMemoryKillCountsPtr& curr) {
   LogLowMemoryKillCount(vm_desc, ".LinuxOOMCount10Minutes", prev->guest_oom,
                         curr->guest_oom);
   LogLowMemoryKillCount(vm_desc, ".LMKD.ForegroundCount10Minutes",
@@ -368,6 +369,62 @@ static void LogLowMemoryKillCounts(const char* vm_desc,
                         prev->pressure_perceptible, curr->pressure_perceptible);
   LogLowMemoryKillCount(vm_desc, ".Pressure.CachedCount10Minutes",
                         prev->pressure_cached, curr->pressure_cached);
+}
+
+static void LogLowMemoryKillCounts(
+    const mojom::LowMemoryKillCountsPtr& prev,
+    const mojom::LowMemoryKillCountsPtr& curr,
+    absl::optional<vm_tools::concierge::ListVmsResponse> vms_list) {
+  // Only log to the histograms if we have a previous sample to compute deltas
+  // from.
+  if (!prev)
+    return;
+
+  LogLowMemoryKillCountsForVm("", prev, curr);
+
+  // Only log the background VMs counters if we have a valid list of background
+  // VMs.
+  if (!vms_list || !vms_list->success())
+    return;
+
+  // Use a set to de-duplicate VM types.
+  std::unordered_set<vm_tools::concierge::VmInfo_VmType> vm_types;
+  for (int i = 0; i < vms_list->vms_size(); i++) {
+    const auto& vm = vms_list->vms(i);
+    if (vm.has_vm_info()) {
+      const auto& info = vm.vm_info();
+      vm_types.emplace(info.vm_type());
+    } else {
+      LOG(WARNING) << "OnLowMemoryKillCounts got VM " << vm.name()
+                   << " with no vm_info.";
+    }
+  }
+  for (auto vm_type : vm_types) {
+    switch (vm_type) {
+      case vm_tools::concierge::VmInfo_VmType_ARC_VM:
+        if (vm_types.size() == 1) {
+          // Only ARCVM, log to a special set of counters.
+          LogLowMemoryKillCountsForVm(".OnlyArc", prev, curr);
+        }
+        break;
+
+      case vm_tools::concierge::VmInfo_VmType_BOREALIS:
+        LogLowMemoryKillCountsForVm(".Steam", prev, curr);
+        break;
+
+      case vm_tools::concierge::VmInfo_VmType_TERMINA:
+        LogLowMemoryKillCountsForVm(".Crostini", prev, curr);
+        break;
+
+      case vm_tools::concierge::VmInfo_VmType_PLUGIN_VM:
+        LogLowMemoryKillCountsForVm(".PluginVm", prev, curr);
+        break;
+
+      default:
+        LogLowMemoryKillCountsForVm(".UnknownVm", prev, curr);
+        break;
+    }
+  }
 }
 
 void ArcMetricsService::RequestKillCountsForTesting() {
@@ -403,57 +460,32 @@ void ArcMetricsService::OnListVmsResponse(
 void ArcMetricsService::OnLowMemoryKillCounts(
     absl::optional<vm_tools::concierge::ListVmsResponse> vms_list,
     mojom::LowMemoryKillCountsPtr counts) {
-  if (prev_logged_memory_kills_) {
-    // Only log to the histograms if we have a previous sample to compute deltas
-    // from.
-    LogLowMemoryKillCounts("", prev_logged_memory_kills_, counts);
-
-    // Log background VMs counters.
-    if (vms_list && vms_list->success()) {
-      // Use a set to de-duplicate VM types.
-      std::unordered_set<vm_tools::concierge::VmInfo_VmType> vm_types;
-      for (int i = 0; i < vms_list->vms_size(); i++) {
-        const auto& vm = vms_list->vms(i);
-        if (vm.has_vm_info()) {
-          const auto& info = vm.vm_info();
-          vm_types.emplace(info.vm_type());
-        } else {
-          LOG(WARNING) << "OnLowMemoryKillCounts got VM " << vm.name()
-                       << " with no vm_info.";
-        }
-      }
-      for (auto vm_type : vm_types) {
-        switch (vm_type) {
-          case vm_tools::concierge::VmInfo_VmType_ARC_VM:
-            if (vm_types.size() == 1) {
-              // Only ARCVM, log to a special set of counters.
-              LogLowMemoryKillCounts(".OnlyArc", prev_logged_memory_kills_,
-                                     counts);
-            }
-            break;
-
-          case vm_tools::concierge::VmInfo_VmType_BOREALIS:
-            LogLowMemoryKillCounts(".Steam", prev_logged_memory_kills_, counts);
-            break;
-
-          case vm_tools::concierge::VmInfo_VmType_TERMINA:
-            LogLowMemoryKillCounts(".Crostini", prev_logged_memory_kills_,
-                                   counts);
-            break;
-
-          case vm_tools::concierge::VmInfo_VmType_PLUGIN_VM:
-            LogLowMemoryKillCounts(".PluginVm", prev_logged_memory_kills_,
-                                   counts);
-            break;
-
-          default:
-            LogLowMemoryKillCounts(".UnknownVm", prev_logged_memory_kills_,
-                                   counts);
-            break;
-        }
-      }
+  DCHECK(daily_);
+  if (daily_) {
+    int oom = counts->guest_oom;
+    int foreground = counts->lmkd_foreground + counts->pressure_foreground;
+    int perceptible = counts->lmkd_perceptible + counts->pressure_foreground;
+    int cached = counts->lmkd_cached + counts->pressure_cached;
+    if (prev_logged_memory_kills_) {
+      oom -= prev_logged_memory_kills_->guest_oom;
+      foreground -= prev_logged_memory_kills_->lmkd_foreground +
+                    prev_logged_memory_kills_->pressure_foreground;
+      perceptible -= prev_logged_memory_kills_->lmkd_perceptible +
+                     prev_logged_memory_kills_->pressure_perceptible;
+      cached -= prev_logged_memory_kills_->lmkd_cached +
+                prev_logged_memory_kills_->pressure_cached;
+    }
+    if (oom >= 0 && foreground >= 0 && perceptible >= 0 && cached >= 0) {
+      daily_->OnLowMemoryKillCounts(vms_list, oom, foreground, perceptible,
+                                    cached);
+    } else {
+      LOG(WARNING) << "OnLowMemoryKillCounts observed a decrease in monotonic "
+                      "kill counters";
     }
   }
+
+  LogLowMemoryKillCounts(prev_logged_memory_kills_, counts, vms_list);
+
   prev_logged_memory_kills_ = std::move(counts);
 }
 
@@ -756,6 +788,11 @@ void ArcMetricsService::ReportMemoryPressure(
   base::UmaHistogramCustomCounts(
       kPSIMemoryPressureFullARC, metric_full, metrics::kMemPressureMin,
       metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
+}
+
+void ArcMetricsService::SetPrefService(PrefService* prefs) {
+  prefs_ = prefs;
+  daily_ = std::make_unique<ArcDailyMetrics>(prefs);
 }
 
 void ArcMetricsService::ReportProvisioningStartTime(

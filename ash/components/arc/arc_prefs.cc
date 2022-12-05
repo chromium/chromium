@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/metrics/arc_daily_metrics_prefs.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "components/guest_os/guest_os_prefs.h"
@@ -32,6 +33,10 @@ const char kArcActiveDirectoryPlayUserId[] =
 const char kArcApps[] = "arc.apps";
 // A preference to store backup and restore state for Android apps.
 const char kArcBackupRestoreEnabled[] = "arc.backup_restore.enabled";
+// Cumulative daily counts of app kills by priority and with other VM context.
+const char kArcDailyMetricsKills[] = "arc.dialy_metrics_kills";
+//  Timestamp of the last time daily metrics have been reported.
+const char kArcDailyMetricsSample[] = "arc.daily_metrics_sample";
 // A preference to indicate that Android's data directory should be removed.
 const char kArcDataRemoveRequested[] = "arc.data.remove_requested";
 // A preference representing whether a user has opted in to use Google Play
@@ -154,6 +159,7 @@ const char kWebViewProcessStarted[] = "arc.webview.started";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Sorted in lexicographical order.
+  RegisterDailyMetricsPrefs(registry);
   registry->RegisterStringPref(kArcSerialNumberSalt, std::string());
   registry->RegisterDictionaryPref(kArcSnapshotHours);
   registry->RegisterDictionaryPref(kArcSnapshotInfo);

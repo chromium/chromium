@@ -61,7 +61,7 @@ ArcMetricsServiceProxy::ArcMetricsServiceProxy(
   arc_app_list_prefs_->AddObserver(this);
   arc::ArcSessionManager::Get()->AddObserver(this);
   arc_metrics_service_->AddAppKillObserver(this);
-  arc_metrics_service_->set_prefs(g_browser_process->local_state());
+  arc_metrics_service_->SetPrefService(g_browser_process->local_state());
 }
 
 void ArcMetricsServiceProxy::Shutdown() {

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/metrics/arc_daily_metrics.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/mojom/anr.mojom.h"
 #include "ash/components/arc/mojom/metrics.mojom.h"
@@ -219,13 +220,15 @@ class ArcMetricsService : public KeyedService,
   // ArcProcessService for kill counts. Public for testing.
   void RequestKillCountsForTesting();
 
-  void set_prefs(PrefService* prefs) { prefs_ = prefs; }
+  void SetPrefService(PrefService* prefs);
 
   // Sets the UserId hash (cryptohome ID). Required to not have a dependency on
   // browser codebase.
   void set_user_id_hash(const std::string& user_id_hash) {
     user_id_hash_ = user_id_hash;
   }
+
+  ArcDailyMetrics* get_daily_metrics_for_testing() { return daily_.get(); }
 
   // Record the starting time of ARC provisioning, for later use.
   void ReportProvisioningStartTime(const base::TimeTicks& start_time,
@@ -358,6 +361,10 @@ class ArcMetricsService : public KeyedService,
   base::RepeatingTimer request_kill_count_timer_;
 
   mojom::LowMemoryKillCountsPtr prev_logged_memory_kills_;
+
+  // Tracks metrics that should be logged daily. Lazily initialized in
+  // SetPrefService because we need PrefService to create.
+  std::unique_ptr<ArcDailyMetrics> daily_;
 
   ArcBridgeServiceObserver arc_bridge_service_observer_;
   IntentHelperObserver intent_helper_observer_;
