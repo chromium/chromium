@@ -290,6 +290,10 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
 
   ManagedDisplayInfo new_info = ManagedDisplayInfo(id, name, has_overscan);
 
+  new_info.set_port_display_id(snapshot->port_display_id());
+  new_info.set_edid_display_id(snapshot->edid_display_id());
+  new_info.set_connector_index(snapshot->connector_index());
+
   if (snapshot->product_code() != DisplaySnapshot::kInvalidProductCode) {
     uint16_t manufacturer_id = 0;
     uint16_t product_id = 0;

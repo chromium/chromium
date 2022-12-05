@@ -146,6 +146,15 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
 
   int64_t id() const { return id_; }
 
+  int64_t port_display_id() const { return port_display_id_; }
+  void set_port_display_id(int64_t id) { port_display_id_ = id; }
+
+  int64_t edid_display_id() const { return edid_display_id_; }
+  void set_edid_display_id(int64_t id) { edid_display_id_ = id; }
+
+  uint16_t connector_index() const { return connector_index_; }
+  void set_connector_index(uint16_t index) { connector_index_ = index; }
+
   // The name of the display.
   const std::string& name() const { return name_; }
 
@@ -326,6 +335,18 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
       Display::Rotation rotation) const;
 
   int64_t id_;
+  // Legacy port-based display ID
+  int64_t port_display_id_ = kInvalidDisplayId;
+  // EDID-based display ID
+  int64_t edid_display_id_ = kInvalidDisplayId;
+
+  // A connector's index is a combination of:
+  // 1) the display's index in DRM          bits 0-7
+  // 2) the display's DRM's index in KMS    bits 8-15
+  // e.g. - A 3rd display in a 2nd DRM would produce a connector index == 0x0102
+  //        (since display index == 2 and DRM index == 1)
+  uint16_t connector_index_ = 0u;
+
   std::string name_;
   std::string manufacturer_id_;
   std::string product_id_;

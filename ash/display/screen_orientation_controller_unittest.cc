@@ -45,8 +45,12 @@ const float kDegreesToRadians = 3.1415926f / 180.0f;
 
 display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
                                               const gfx::Rect& bounds) {
+  // Output index is stored in the first 8 bits.
+  const uint8_t connector_index = id & 0xFF;
+
   display::ManagedDisplayInfo info(id, "dummy", false);
   info.SetBounds(bounds);
+  info.set_connector_index(connector_index);
   return info;
 }
 

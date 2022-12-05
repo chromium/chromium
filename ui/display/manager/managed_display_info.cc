@@ -298,6 +298,9 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   }
   ManagedDisplayInfo display_info(
       id, base::StringPrintf("Display-%d", static_cast<int>(id)), has_overscan);
+  // Output index is stored in the first 8 bits.
+  const uint8_t connector_index = id & 0xFF;
+  display_info.set_connector_index(connector_index);
   display_info.set_device_scale_factor(device_scale_factor);
   display_info.SetRotation(rotation, Display::RotationSource::ACTIVE);
   display_info.SetRotation(rotation, Display::RotationSource::USER);
@@ -401,6 +404,9 @@ Display::Rotation ManagedDisplayInfo::GetRotation(
 
 void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   DCHECK(id_ == native_info.id_);
+  port_display_id_ = native_info.port_display_id_;
+  edid_display_id_ = native_info.edid_display_id_;
+  connector_index_ = native_info.connector_index_;
   manufacturer_id_ = native_info.manufacturer_id_;
   product_id_ = native_info.product_id_;
   year_of_manufacture_ = native_info.year_of_manufacture_;

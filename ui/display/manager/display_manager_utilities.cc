@@ -192,8 +192,12 @@ std::string DisplayIdListToString(const DisplayIdList& list) {
 
 display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
                                               const gfx::Rect& bounds) {
+  // Output index is stored in the first 8 bits.
+  const uint8_t connector_index = id & 0xFF;
+
   display::ManagedDisplayInfo info(id, "x-" + base::NumberToString(id), false);
   info.SetBounds(bounds);
+  info.set_connector_index(connector_index);
   return info;
 }
 
