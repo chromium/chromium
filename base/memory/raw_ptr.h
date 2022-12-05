@@ -15,10 +15,10 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -384,8 +384,8 @@ struct MTECheckedPtrImpl {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-BASE_EXPORT void CheckThatAddressIsntWithinFirstPartitionPage(
-    uintptr_t address);
+PA_COMPONENT_EXPORT(RAW_PTR)
+void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address);
 #endif
 
 template <bool AllowDangling = false>
@@ -688,11 +688,14 @@ struct BackupRefPtrImpl {
   // lightweight |IsManagedByPartitionAllocBRPPool()| check was inlined.
   // Therefore, we've extracted the rest into the functions below and marked
   // them as PA_NOINLINE to prevent unintended LTO effects.
-  static BASE_EXPORT PA_NOINLINE void AcquireInternal(uintptr_t address);
-  static BASE_EXPORT PA_NOINLINE void ReleaseInternal(uintptr_t address);
-  static BASE_EXPORT PA_NOINLINE bool IsPointeeAlive(uintptr_t address);
-  static BASE_EXPORT PA_NOINLINE void ReportIfDanglingInternal(
-      uintptr_t address);
+  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
+      void AcquireInternal(uintptr_t address);
+  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
+      void ReleaseInternal(uintptr_t address);
+  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
+      bool IsPointeeAlive(uintptr_t address);
+  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
+      void ReportIfDanglingInternal(uintptr_t address);
   template <typename Z, typename = std::enable_if_t<offset_type<Z>, void>>
   static PA_ALWAYS_INLINE partition_alloc::PtrPosWithinAlloc IsValidDelta(
       uintptr_t address,
@@ -702,10 +705,12 @@ struct BackupRefPtrImpl {
     else
       return IsValidUnsignedDelta(address, size_t{delta_in_bytes});
   }
-  static BASE_EXPORT PA_NOINLINE partition_alloc::PtrPosWithinAlloc
-  IsValidSignedDelta(uintptr_t address, ptrdiff_t delta_in_bytes);
-  static BASE_EXPORT PA_NOINLINE partition_alloc::PtrPosWithinAlloc
-  IsValidUnsignedDelta(uintptr_t address, size_t delta_in_bytes);
+  static PA_COMPONENT_EXPORT(RAW_PTR)
+      PA_NOINLINE partition_alloc::PtrPosWithinAlloc
+      IsValidSignedDelta(uintptr_t address, ptrdiff_t delta_in_bytes);
+  static PA_COMPONENT_EXPORT(RAW_PTR)
+      PA_NOINLINE partition_alloc::PtrPosWithinAlloc
+      IsValidUnsignedDelta(uintptr_t address, size_t delta_in_bytes);
 };
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -784,12 +789,12 @@ struct AsanBackupRefPtrImpl {
   static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
 
  private:
-  static BASE_EXPORT PA_NOINLINE void AsanCheckIfValidInstantiation(
-      void const volatile* ptr);
-  static BASE_EXPORT PA_NOINLINE void AsanCheckIfValidDereference(
-      void const volatile* ptr);
-  static BASE_EXPORT PA_NOINLINE void AsanCheckIfValidExtraction(
-      void const volatile* ptr);
+  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
+      void AsanCheckIfValidInstantiation(void const volatile* ptr);
+  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
+      void AsanCheckIfValidDereference(void const volatile* ptr);
+  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
+      void AsanCheckIfValidExtraction(void const volatile* ptr);
 };
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
