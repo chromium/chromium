@@ -31,16 +31,6 @@ void RecordAboutThisSiteInteraction(AboutThisSiteInteraction interaction) {
 
 }  // namespace
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Keep in sync with AboutThisSiteBannerInteraction in enums.xml.
-enum class BannerInteraction {
-  kUrlOpened = 0,
-  kDismissed = 1,
-
-  kMaxValue = kDismissed
-};
-
 AboutThisSiteService::AboutThisSiteService(
     std::unique_ptr<Client> client,
     TemplateURLService* template_url_service,

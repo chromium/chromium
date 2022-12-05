@@ -78,7 +78,6 @@ class AboutThisSiteService : public KeyedService {
 
  private:
   std::unique_ptr<Client> client_;
-  base::flat_set<url::Origin> dismissed_banners_;
   raw_ptr<TemplateURLService> template_url_service_;
   const bool allow_missing_description_;
 

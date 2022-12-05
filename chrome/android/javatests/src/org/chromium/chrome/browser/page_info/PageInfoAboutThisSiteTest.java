@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.page_info;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeRight;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -15,10 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -44,9 +40,6 @@ import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -94,7 +87,6 @@ Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP
 public class PageInfoAboutThisSiteTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sAboutHtml = "/chrome/test/data/android/about.html";
-    private static final String sBannerText = "This is an example website";
 
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
@@ -334,53 +326,5 @@ public class PageInfoAboutThisSiteTest {
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
         verify(mMockAboutThisSiteJni).onAboutThisSiteRowClicked(false);
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
-            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
-            ChromeFeatureList.ABOUT_THIS_SITE_BANNER})
-    @DisabledTest(message = "https://crbug.com/1311192")
-    public void
-    testAboutThisSiteBanner() throws Exception {
-        String bannerUrl = mTestServerRule.getServer().getURLWithHostName(
-                "example.com", sSimpleHtml + "#banner");
-        sActivityTestRule.loadUrl(bannerUrl);
-        onView(withText(sBannerText)).check(matches(isDisplayed()));
-
-        // Check that bannerUrl is loaded.
-        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> assertThat("Initial URL state", tab.getUrl().getSpec(), equalTo(bannerUrl)));
-
-        // Expect that we navigate to a different page when Message link is clicked.
-        onView(withText("Example URL")).perform(click());
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Opened URL", sActivityTestRule.getActivity().getActivityTab(),
-                    not(equalTo(tab)));
-        });
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
-            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
-            ChromeFeatureList.ABOUT_THIS_SITE_BANNER})
-    @DisabledTest(message = "https://crbug.com/1311192")
-    public void
-    testAboutThisSiteBannerDismissed() {
-        String bannerUrl = mTestServerRule.getServer().getURLWithHostName(
-                "example.com", sSimpleHtml + "#banner");
-        sActivityTestRule.loadUrl(bannerUrl);
-        onView(withText(sBannerText)).check(matches(isDisplayed()));
-
-        // Swipe banner away.
-        onView(withText(sBannerText)).perform(swipeRight());
-        onView(withText(sBannerText)).check(doesNotExist());
-
-        // Banner does not show again after dismissal.
-        sActivityTestRule.loadUrl(bannerUrl);
-        onView(withText(sBannerText)).check(doesNotExist());
     }
 }
