@@ -637,6 +637,9 @@ crbug.com/1382796 [ android android-pixel-4 ] conformance2/textures/video/* [ Re
 
 crbug.com/1215700 [ chromeos no-passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
 crbug.com/1380411 [ chromeos passthrough ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Skip ]
+crbug.com/1380411 [ chromeos passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
+crbug.com/1380411 [ chromeos passthrough ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
+crbug.com/1380411 [ chromeos passthrough ] conformance2/textures/webgl_canvas/tex-3d-* [ Skip ]
 crbug.com/1210240 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1210240 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1213198 [ chromeos chromeos-board-amd64-generic ] WebglExtension_OVR_multiview2 [ Failure ]
