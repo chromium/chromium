@@ -17,10 +17,13 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     onCreated: FakeChromeEvent,
     onMoved: FakeChromeEvent,
     onRemoved: FakeChromeEvent,
+    onTabActivated: FakeChromeEvent,
+    onTabUpdated: FakeChromeEvent,
   };
 
   constructor() {
     super([
+      'getActiveUrl',
       'getFolders',
       'bookmarkCurrentTab',
       'openBookmark',
@@ -37,7 +40,14 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       onCreated: new FakeChromeEvent(),
       onMoved: new FakeChromeEvent(),
       onRemoved: new FakeChromeEvent(),
+      onTabActivated: new FakeChromeEvent(),
+      onTabUpdated: new FakeChromeEvent(),
     };
+  }
+
+  getActiveUrl() {
+    this.methodCalled('getActiveUrl');
+    return Promise.resolve('http://www.test.com');
   }
 
   getFolders() {

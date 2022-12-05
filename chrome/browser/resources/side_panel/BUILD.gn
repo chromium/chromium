@@ -87,6 +87,7 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
   ]
   deps = [
     "//third_party/polymer/v3_0:library",

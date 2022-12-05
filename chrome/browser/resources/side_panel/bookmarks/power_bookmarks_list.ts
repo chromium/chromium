@@ -129,6 +129,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private activeSortIndex_: number;
   private sortTypes_: string[];
   private searchQuery_: string|undefined;
+  private currentUrl_: string|undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -154,6 +155,16 @@ export class PowerBookmarksListElement extends PolymerElement {
           (_id: string, movedInfo: chrome.bookmarks.MoveInfo) =>
               this.onMoved_(movedInfo));
       this.addListener_('onRemoved', (id: string) => this.onRemoved_(id));
+      this.addListener_('onTabActivated', (_info: chrome.tabs.ActiveInfo) => {
+        this.bookmarksApi_.getActiveUrl().then(url => this.currentUrl_ = url);
+      });
+      this.addListener_(
+          'onTabUpdated',
+          (_tabId: number, _changeInfo: object, tab: chrome.tabs.Tab) => {
+            if (tab.active) {
+              this.currentUrl_ = tab.url;
+            }
+          });
     });
     this.shoppingListApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
@@ -165,6 +176,7 @@ export class PowerBookmarksListElement extends PolymerElement {
             'Commerce.PriceTracking.SidePanel.TrackedProductsShown');
       }
     });
+    this.bookmarksApi_.getActiveUrl().then(url => this.currentUrl_ = url);
     const callbackRouter = this.shoppingListApi_.getCallbackRouter();
     this.shoppingListenerIds_.push(
         callbackRouter.priceTrackedForBookmark.addListener(
@@ -440,6 +452,24 @@ export class PowerBookmarksListElement extends PolymerElement {
     } else {
       this.shownBookmarks_ = shownBookmarks;
     }
+  }
+
+  private canAddCurrentUrl_(): boolean {
+    if (!loadTimeData.getBoolean('canModifyBookmarks')) {
+      return false;
+    }
+    const activeFolder =
+        this.activeFolderPath_[this.activeFolderPath_.length - 1];
+    let unfilteredShownBookmarks: chrome.bookmarks.BookmarkTreeNode[] = [];
+    if (activeFolder) {
+      unfilteredShownBookmarks = activeFolder.children!;
+    } else {
+      this.folders_.forEach(
+          folder => unfilteredShownBookmarks =
+              unfilteredShownBookmarks.concat(folder.children!));
+    }
+    return unfilteredShownBookmarks.findIndex(
+               b => b.url === this.currentUrl_) === -1;
   }
 
   private nodeMatchesContentFilters_(

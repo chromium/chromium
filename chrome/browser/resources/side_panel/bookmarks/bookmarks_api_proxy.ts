@@ -14,6 +14,7 @@ export interface BookmarksApiProxy {
   bookmarkCurrentTab(): void;
   cutBookmark(id: string): void;
   copyBookmark(id: string): Promise<void>;
+  getActiveUrl(): Promise<string|undefined>;
   getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
   openBookmark(
       id: string, depth: number, clickModifiers: ClickModifiers,
@@ -34,6 +35,8 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
       onCreated: chrome.bookmarks.onCreated,
       onMoved: chrome.bookmarks.onMoved,
       onRemoved: chrome.bookmarks.onRemoved,
+      onTabActivated: chrome.tabs.onActivated,
+      onTabUpdated: chrome.tabs.onUpdated,
     };
 
     this.handler = new BookmarksPageHandlerRemote();
@@ -54,6 +57,15 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   copyBookmark(id: string) {
     return new Promise<void>(resolve => {
       chrome.bookmarkManagerPrivate.copy([id], resolve);
+    });
+  }
+
+  getActiveUrl() {
+    return chrome.tabs.query({active: true, currentWindow: true}).then(tabs => {
+      if (tabs[0]) {
+        return tabs[0].url;
+      }
+      return undefined;
     });
   }
 

@@ -2,6 +2,7 @@
   :host {
     --back-button-size: 14px;
     --border-color: var(--google-grey-300);
+    --disabled-text-color: var(--google-grey-600);
     --empty-state-image: url(../images/bookmarks_empty.svg);
     --label-selected-color: var(--google-blue-50);
     --price-tracking-chip-background: var(--google-green-50);
@@ -12,6 +13,7 @@
   @media (prefers-color-scheme: dark) {
     :host {
       --border-color: var(--google-grey-700);
+      --disabled-text-color: var(--google-grey-500);
       --empty-state-image: url(../images/bookmarks_empty_dark.svg);
       --price-tracking-chip-background: var(--google-green-900);
       --price-tracking-discount-color: white;
@@ -113,6 +115,10 @@
     gap: 8px;
     margin: 8px;
     padding: 6px;
+  }
+
+  .footer-button[disabled] > .label-icon {
+    color: var(--disabled-text-color);
   }
 
   .heading-row {
@@ -273,7 +279,8 @@
       <div class="empty-title">$i18n{emptyTitle}</div>
       <div class="empty-body">$i18n{emptyBody}</div>
     </div>
-    <cr-button class="footer-button" on-click="onAddTabClicked_">
+    <cr-button class="footer-button" on-click="onAddTabClicked_"
+        disabled="[[!canAddCurrentUrl_(activeFolderPath_.*, currentUrl_)]]">
       <iron-icon icon="bookmarks:add-tab" class="label-icon"></iron-icon>
       $i18n{addCurrentTab}
     </cr-button>

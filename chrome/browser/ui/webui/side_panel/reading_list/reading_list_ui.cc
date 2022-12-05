@@ -114,6 +114,9 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   source->AddBoolean("unifiedSidePanel",
                      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
+  source->AddBoolean("canModifyBookmarks", !profile->IsGuestSession() &&
+                                               !profile->IsIncognitoProfile());
+
   source->AddBoolean(
       "showPowerBookmarks",
       base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel));

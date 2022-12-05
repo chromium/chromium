@@ -107,6 +107,8 @@ declare global {
 
       export function reload(tabId: number): void;
 
+      export function query(queryInfo: QueryInfo): Promise<Tab[]>;
+
       export function setZoom(
           tabId: number|undefined, zoomFactor: number,
           callback?: () => void): void;
@@ -119,11 +121,26 @@ declare global {
           tabId: number|undefined,
           callback: (settings: ZoomSettings) => void): void;
 
+      interface ActiveInfo {
+        tabId: number;
+        windowId: number;
+      }
+
+      interface ChangeInfo {}
+
+      interface QueryInfo {
+        active?: boolean;
+        currentWindow?: boolean;
+      }
+
       interface ZoomChangeInfo {
         tabId: number;
         newZoomFactor: number;
       }
 
+      export const onActivated: ChromeEvent<(info: ActiveInfo) => void>;
+      export const onUpdated: ChromeEvent<(
+        tabId: number, changeInfo: ChangeInfo, tab: Tab) => void>;
       export const onZoomChange: ChromeEvent<(info: ZoomChangeInfo) => void>;
     }
   }
