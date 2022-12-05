@@ -2117,34 +2117,6 @@ void AutofillMetrics::LogAutofillPerfectFilling(bool is_address,
   }
 }
 
-// static
-void AutofillMetrics::LogNumberOfFramesWithDetectedFields(size_t num_frames) {
-  if (num_frames == 0)
-    return;
-  base::UmaHistogramCounts100(
-      "Autofill.Iframes.NumberOfFramesWithDetectedFields", num_frames);
-}
-
-// static
-void AutofillMetrics::LogNumberOfFramesWithDetectedCreditCardFields(
-    size_t num_frames) {
-  if (num_frames == 0)
-    return;
-  base::UmaHistogramCounts100(
-      "Autofill.Iframes.NumberOfFramesWithDetectedCreditCardFields",
-      num_frames);
-}
-
-// static
-void AutofillMetrics::LogNumberOfFramesWithAutofilledCreditCardFields(
-    size_t num_frames) {
-  if (num_frames == 0)
-    return;
-  base::UmaHistogramCounts100(
-      "Autofill.Iframes.NumberOfFramesWithAutofilledCreditCardFields",
-      num_frames);
-}
-
 AutofillMetrics::CreditCardSeamlessness::CreditCardSeamlessness(
     const ServerFieldTypeSet& filled_types)
     : name_(filled_types.contains(CREDIT_CARD_NAME_FULL) ||

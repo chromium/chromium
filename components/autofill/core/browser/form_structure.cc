@@ -1294,13 +1294,6 @@ void FormStructure::LogQualityMetrics(
     AutofillMetrics::LogFieldFillingStats(FormType::kCreditCardForm,
                                           cc_field_stats);
 
-    AutofillMetrics::LogNumberOfFramesWithDetectedFields(
-        frames_of_detected_fields.size());
-    AutofillMetrics::LogNumberOfFramesWithDetectedCreditCardFields(
-        frames_of_detected_credit_card_fields.size());
-    AutofillMetrics::LogNumberOfFramesWithAutofilledCreditCardFields(
-        frames_of_autofilled_credit_card_fields.size());
-
     if (card_form) {
       AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
           autofilled_field_types);

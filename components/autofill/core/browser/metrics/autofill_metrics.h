@@ -1458,13 +1458,6 @@ class AutofillMetrics {
   // If |is_address| an address was filled, otherwise it was a credit card.
   static void LogAutofillPerfectFilling(bool is_address, bool perfect_filling);
 
-  // Log across how many frames the detected and/or autofilled [credit card]
-  // fields of a submitted form are distributed.
-  static void LogNumberOfFramesWithDetectedFields(size_t num_frames);
-  static void LogNumberOfFramesWithDetectedCreditCardFields(size_t num_frames);
-  static void LogNumberOfFramesWithAutofilledCreditCardFields(
-      size_t num_frames);
-
   struct LogCreditCardSeamlessnessParam {
     const raw_ref<const FormEventLoggerBase> event_logger;
     const raw_ref<const FormStructure> form;

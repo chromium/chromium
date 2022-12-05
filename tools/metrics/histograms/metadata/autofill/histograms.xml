@@ -2035,6 +2035,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Iframes.NumberOfFramesWithAutofilledCreditCardFields"
     units="frames" expires_after="2023-01-01">
+  <obsolete>
+    The metric has been not produced meaningful results.
+  </obsolete>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2051,6 +2054,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Iframes.NumberOfFramesWithDetectedCreditCardFields"
     units="frames" expires_after="2023-01-01">
+  <obsolete>
+    The metric has been not produced meaningful results.
+  </obsolete>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2067,6 +2073,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Iframes.NumberOfFramesWithDetectedFields"
     units="frames" expires_after="2023-01-01">
+  <obsolete>
+    The metric has been not produced meaningful results.
+  </obsolete>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
