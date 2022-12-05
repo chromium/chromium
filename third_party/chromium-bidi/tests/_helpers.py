@@ -38,28 +38,35 @@ async def websocket():
 
 @pytest_asyncio.fixture
 async def default_realm(context_id, websocket):
-    result = await execute_command(websocket, {
-        "method": "script.evaluate",
-        "params": {
-            "expression": "globalThis",
-            "target": {
-                "context": context_id,
-            },
-            "awaitPromise": True}})
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "globalThis",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": True
+            }
+        })
 
     return result["realm"]
 
 
 @pytest_asyncio.fixture
 async def sandbox_realm(context_id, websocket):
-    result = await execute_command(websocket, {
-        "method": "script.evaluate",
-        "params": {
-            "expression": "globalThis",
-            "target": {
-                "context": context_id,
-                "sandbox": 'some_sandbox'},
-            "awaitPromise": True}})
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "globalThis",
+                "target": {
+                    "context": context_id,
+                    "sandbox": 'some_sandbox'
+                },
+                "awaitPromise": True
+            }
+        })
 
     return result["realm"]
 
@@ -68,7 +75,8 @@ async def sandbox_realm(context_id, websocket):
 async def context_id(websocket):
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
-        "params": {}})
+        "params": {}
+    })
     return result["contexts"][0]["context"]
 
 
@@ -80,7 +88,10 @@ async def iframe_id(context_id, websocket):
     await goto_url(websocket, context_id, page_with_nested_iframe)
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
-        "params": {"root": context_id}})
+        "params": {
+            "root": context_id
+        }
+    })
 
     iframe_id = result["contexts"][0]["children"][0]["context"]
 
@@ -105,7 +116,9 @@ async def subscribe(websocket, event_names, context_ids=None, channel=None):
     command = {
         "method": "session.subscribe",
         "params": {
-            "events": event_names}}
+            "events": event_names
+        }
+    }
 
     if context_ids is not None:
         command["params"]["contexts"] = context_ids
@@ -191,12 +204,15 @@ async def read_JSON_message(websocket):
 
 # Open given URL in the given context.
 async def goto_url(websocket, context_id, url):
-    await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": url,
-            "context": context_id,
-            "wait": "interactive"}})
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+                "wait": "interactive"
+            }
+        })
 
 
 # noinspection PySameParameterValue
@@ -214,7 +230,8 @@ async def execute_command(websocket, command):
                 return resp["result"]
             raise Exception({
                 "error": resp["error"],
-                "message": resp["message"]})
+                "message": resp["message"]
+            })
 
 
 # Wait and return a specific event from Bidi server
@@ -222,5 +239,5 @@ async def wait_for_event(websocket, event_method):
     while True:
         event_response = await read_JSON_message(websocket)
         if "method" in event_response and event_response[
-            "method"] == event_method:
+                "method"] == event_method:
             return event_response

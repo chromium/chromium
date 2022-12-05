@@ -18,6 +18,7 @@ import os
 import requests
 import websockets
 
+
 async def get_websocket():
     port = os.getenv('PORT', 8080)
 
@@ -26,22 +27,25 @@ async def get_websocket():
     try:
         websocket = await websockets.connect(f'ws://localhost:{port}/session')
         # Init BiDi session.
-        await run_and_wait_command({
-            "id": 0,
-            "method": "session.new",
-            "params": {}}, websocket)
+        await run_and_wait_command(
+            {
+                "id": 0,
+                "method": "session.new",
+                "params": {}
+            }, websocket)
         return websocket
     except websockets.exceptions.InvalidStatusCode:
         # Fall back. Try to connect via WebDriver Classic, and upgrade to BiDi.
         # Create a WebDriver Classic session with BiDi capabilities.
-        new_session = requests.post(
-            f'http://localhost:{port}/session',
-            json={
-                "capabilities": {
-                    "alwaysMatch": {
-                        "acceptInsecureCerts": True,
-                        "webSocketUrl": True}}}
-        ).json()
+        new_session = requests.post(f'http://localhost:{port}/session',
+                                    json={
+                                        "capabilities": {
+                                            "alwaysMatch": {
+                                                "acceptInsecureCerts": True,
+                                                "webSocketUrl": True
+                                            }
+                                        }
+                                    }).json()
 
         # Get BiDi websocket URL.
         ws_url = new_session["value"]["capabilities"]["webSocketUrl"]

@@ -10,6 +10,7 @@
     "e2e-headless": "npm run server-no-build & npm run e2e-only",
     "e2e-only": "python3 -m pytest --rootdir=tests",
     "e2e": "npm run e2e-headless",
+    "format": "npm run prettier & npm run yapf",
     "lint": "npx prettier --check .",
     "prepare": "npm run clean",
     "prettier": "npx prettier --write .",
@@ -17,7 +18,8 @@
     "server-no-build": "node lib/cjs/bidiServer/index.js",
     "server": "npm run build && npm run server-no-build --",
     "test": "npm run unit",
-    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha"
+    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
+    "yapf": "yapf --in-place --parallel --recursive --verbose --exclude=wpt examples/ tests/"
   },
   "files": [
     "lib"

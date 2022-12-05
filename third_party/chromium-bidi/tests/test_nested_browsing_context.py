@@ -20,55 +20,67 @@ from _helpers import *
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(
-      websocket,
-      iframe_id):
+        websocket, iframe_id):
     url = "data:text/html,<h2>test</h2>"
     url_with_hash_1 = url + "#1"
 
     # Initial navigation.
-    await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": url_with_hash_1,
-            "wait": "complete",
-            "context": iframe_id}})
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_1,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
 
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
         "params": {
-            "root": iframe_id}})
+            "root": iframe_id
+        }
+    })
 
-    recursive_compare({
-        "contexts": [{
-            "context": iframe_id,
-            "children": [],
-            "parent": any_string,
-            "url": url_with_hash_1}]},
-        result)
+    recursive_compare(
+        {
+            "contexts": [{
+                "context": iframe_id,
+                "children": [],
+                "parent": any_string,
+                "url": url_with_hash_1
+            }]
+        }, result)
 
 
 @pytest.mark.asyncio
-async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket,
-      iframe_id):
-    await subscribe(websocket, ["browsingContext.domContentLoaded",
-                                "browsingContext.load"])
+async def test_nestedBrowsingContext_navigateWaitNone_navigated(
+        websocket, iframe_id):
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
     # Send command.
-    await send_JSON_command(websocket, {
-        "id": 13,
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": "data:text/html,<h2>test</h2>",
-            "wait": "none",
-            "context": iframe_id}})
+    await send_JSON_command(
+        websocket, {
+            "id": 13,
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "data:text/html,<h2>test</h2>",
+                "wait": "none",
+                "context": iframe_id
+            }
+        })
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    recursive_compare({
-        "id": 13,
-        "result": {
-            "navigation": any_string,
-            "url": "data:text/html,<h2>test</h2>"}},
-        resp)
+    recursive_compare(
+        {
+            "id": 13,
+            "result": {
+                "navigation": any_string,
+                "url": "data:text/html,<h2>test</h2>"
+            }
+        }, resp)
 
     navigation_id = resp["result"]["navigation"]
 
@@ -79,7 +91,9 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket,
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": "data:text/html,<h2>test</h2>"
+        }
+    }
 
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
@@ -88,14 +102,17 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket,
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": "data:text/html,<h2>test</h2>"
+        }
+    }
 
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
-      websocket, iframe_id):
-    await subscribe(websocket, ["browsingContext.domContentLoaded",
-                                "browsingContext.load"])
+        websocket, iframe_id):
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
 
     # Send command.
     command = {
@@ -104,7 +121,9 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         "params": {
             "url": "data:text/html,<h2>test</h2>",
             "wait": "interactive",
-            "context": iframe_id}}
+            "context": iframe_id
+        }
+    }
     await send_JSON_command(websocket, command)
 
     # Wait for `browsingContext.load` event.
@@ -115,7 +134,9 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": "data:text/html,<h2>test</h2>"
+        }
+    }
 
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
@@ -124,7 +145,9 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": "data:text/html,<h2>test</h2>"
+        }
+    }
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -132,14 +155,17 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         "id": 14,
         "result": {
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": "data:text/html,<h2>test</h2>"
+        }
+    }
 
 
 @pytest.mark.asyncio
-async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket,
-      iframe_id):
-    await subscribe(websocket, ["browsingContext.domContentLoaded",
-                                "browsingContext.load"])
+async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
+        websocket, iframe_id):
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
 
     # Send command.
     command = {
@@ -148,7 +174,9 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket,
         "params": {
             "url": "data:text/html,<h2>test</h2>",
             "wait": "complete",
-            "context": iframe_id}}
+            "context": iframe_id
+        }
+    }
     await send_JSON_command(websocket, command)
 
     # Wait for `browsingContext.load` event.
@@ -159,7 +187,9 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket,
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": "data:text/html,<h2>test</h2>"
+        }
+    }
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -167,7 +197,9 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket,
         "id": 15,
         "result": {
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": "data:text/html,<h2>test</h2>"
+        }
+    }
 
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
@@ -176,144 +208,171 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket,
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "url": "data:text/html,<h2>test</h2>"
+        }
+    }
 
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_navigateSameDocumentNavigation_navigated(
-      websocket, iframe_id):
+        websocket, iframe_id):
     url = "data:text/html,<h2>test</h2>"
     url_with_hash_1 = url + "#1"
     url_with_hash_2 = url + "#2"
 
     # Initial navigation.
-    await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": url,
-            "wait": "complete",
-            "context": iframe_id}})
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
 
     # Navigate back and forth in the same document with `wait:none`.
-    resp = await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": url_with_hash_1,
-            "wait": "none",
-            "context": iframe_id}})
-    assert resp == {
-        'navigation': None,
-        'url': url_with_hash_1}
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_1,
+                "wait": "none",
+                "context": iframe_id
+            }
+        })
+    assert resp == {'navigation': None, 'url': url_with_hash_1}
 
-    resp = await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": url_with_hash_2,
-            "wait": "none",
-            "context": iframe_id}})
-    assert resp == {
-        'navigation': None,
-        'url': url_with_hash_2}
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_2,
+                "wait": "none",
+                "context": iframe_id
+            }
+        })
+    assert resp == {'navigation': None, 'url': url_with_hash_2}
 
     # Navigate back and forth in the same document with `wait:interactive`.
-    resp = await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": url_with_hash_1,
-            "wait": "interactive",
-            "context": iframe_id}})
-    assert resp == {
-        'navigation': None,
-        'url': url_with_hash_1}
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_1,
+                "wait": "interactive",
+                "context": iframe_id
+            }
+        })
+    assert resp == {'navigation': None, 'url': url_with_hash_1}
 
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
         "params": {
-            "root": iframe_id}})
+            "root": iframe_id
+        }
+    })
 
-    recursive_compare({
-        "contexts": [{
-            "context": iframe_id,
-            "children": [],
-            "parent": any_string,
-            "url": url_with_hash_1}]},
-        result)
+    recursive_compare(
+        {
+            "contexts": [{
+                "context": iframe_id,
+                "children": [],
+                "parent": any_string,
+                "url": url_with_hash_1
+            }]
+        }, result)
 
-    resp = await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": url_with_hash_2,
-            "wait": "interactive",
-            "context": iframe_id}})
-    assert resp == {
-        'navigation': None,
-        'url': url_with_hash_2}
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_2,
+                "wait": "interactive",
+                "context": iframe_id
+            }
+        })
+    assert resp == {'navigation': None, 'url': url_with_hash_2}
 
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
         "params": {
-            "root": iframe_id}})
+            "root": iframe_id
+        }
+    })
 
-    recursive_compare({
-        "contexts": [{
-            "context": iframe_id,
-            "children": [],
-            "parent": any_string,
-            "url": url_with_hash_2}]},
-        result)
+    recursive_compare(
+        {
+            "contexts": [{
+                "context": iframe_id,
+                "children": [],
+                "parent": any_string,
+                "url": url_with_hash_2
+            }]
+        }, result)
 
     # Navigate back and forth in the same document with `wait:complete`.
-    resp = await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": url_with_hash_1,
-            "wait": "complete",
-            "context": iframe_id}})
-    assert resp == {
-        'navigation': None,
-        'url': url_with_hash_1}
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_1,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
+    assert resp == {'navigation': None, 'url': url_with_hash_1}
 
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
         "params": {
-            "root": iframe_id}})
+            "root": iframe_id
+        }
+    })
 
-    recursive_compare({
-        "contexts": [{
-            "context": iframe_id,
-            "children": [],
-            "parent": any_string,
-            "url": url_with_hash_1}]},
-        result)
+    recursive_compare(
+        {
+            "contexts": [{
+                "context": iframe_id,
+                "children": [],
+                "parent": any_string,
+                "url": url_with_hash_1
+            }]
+        }, result)
 
-    resp = await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": url_with_hash_2,
-            "wait": "complete",
-            "context": iframe_id}})
-    assert resp == {
-        'navigation': None,
-        'url': url_with_hash_2}
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_with_hash_2,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
+    assert resp == {'navigation': None, 'url': url_with_hash_2}
 
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
         "params": {
-            "root": iframe_id}})
+            "root": iframe_id
+        }
+    })
 
-    recursive_compare({
-        "contexts": [{
-            "context": iframe_id,
-            "children": [],
-            "parent": any_string,
-            "url": url_with_hash_2}]},
-        result)
+    recursive_compare(
+        {
+            "contexts": [{
+                "context": iframe_id,
+                "children": [],
+                "parent": any_string,
+                "url": url_with_hash_2
+            }]
+        }, result)
 
 
 # TODO(sadym): make offline.
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
-      websocket, iframe_id):
+        websocket, iframe_id):
     nested_iframe = 'https://example.com/'
     another_nested_iframe = 'https://example.org/'
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
@@ -321,40 +380,54 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOrigi
     another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
                                       f'<iframe src="{another_nested_iframe}" />'
 
-    await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": page_with_nested_iframe,
-            "wait": "complete",
-            "context": iframe_id}})
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": page_with_nested_iframe,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
 
-    await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": another_page_with_nested_iframe,
-            "wait": "complete",
-            "context": iframe_id}})
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": another_page_with_nested_iframe,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
 
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
-        "params": {"root": iframe_id}})
+        "params": {
+            "root": iframe_id
+        }
+    })
 
-    recursive_compare({
-        "contexts": [{
-            "context": iframe_id,
-            "children": [{
-                "context": any_string,
-                "url": another_nested_iframe,
-                "children": []
-            }],
-            "parent": any_string,
-            "url": another_page_with_nested_iframe}]},
-        result)
+    recursive_compare(
+        {
+            "contexts": [{
+                "context":
+                iframe_id,
+                "children": [{
+                    "context": any_string,
+                    "url": another_nested_iframe,
+                    "children": []
+                }],
+                "parent":
+                any_string,
+                "url":
+                another_page_with_nested_iframe
+            }]
+        }, result)
 
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedContexts_contextsReturned(
-      websocket, iframe_id):
+        websocket, iframe_id):
     nested_iframe = 'data:text/html,<h2>IFRAME</h2>'
     another_nested_iframe = 'data:text/html,<h2>ANOTHER_IFRAME</h2>'
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
@@ -362,31 +435,46 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedContexts_c
     another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
                                       f'<iframe src="{another_nested_iframe}" />'
 
-    await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": page_with_nested_iframe,
-            "wait": "complete",
-            "context": iframe_id}})
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": page_with_nested_iframe,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
 
-    await execute_command(websocket, {
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": another_page_with_nested_iframe,
-            "wait": "complete",
-            "context": iframe_id}})
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": another_page_with_nested_iframe,
+                "wait": "complete",
+                "context": iframe_id
+            }
+        })
 
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
-        "params": {"root": iframe_id}})
+        "params": {
+            "root": iframe_id
+        }
+    })
 
-    recursive_compare({
-        "contexts": [{
-            "context": iframe_id,
-            "url": another_page_with_nested_iframe,
-            "children": [{
-                "context": any_string,
-                "url": another_nested_iframe,
-                "children": []}],
-            "parent": any_string}]},
-        result)
+    recursive_compare(
+        {
+            "contexts": [{
+                "context":
+                iframe_id,
+                "url":
+                another_page_with_nested_iframe,
+                "children": [{
+                    "context": any_string,
+                    "url": another_nested_iframe,
+                    "children": []
+                }],
+                "parent":
+                any_string
+            }]
+        }, result)

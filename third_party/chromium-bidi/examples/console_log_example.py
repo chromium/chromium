@@ -34,15 +34,18 @@ async def main():
     await run_and_wait_command({
         "id": 0,
         "method": "session.new",
-        "params": {}}, websocket)
+        "params": {}
+    }, websocket)
 
     # Open tab
-    command_result = await run_and_wait_command({
-        "id": 1000,
-        "method": "browsingContext.create",
-        "params": {
-            "type": "tab"
-        }}, websocket)
+    command_result = await run_and_wait_command(
+        {
+            "id": 1000,
+            "method": "browsingContext.create",
+            "params": {
+                "type": "tab"
+            }
+        }, websocket)
     # `command_result` should be like this:
     # {
     #     "id": 1000,
@@ -56,36 +59,44 @@ async def main():
 
     # Navigate to page
     pageUrl = f'about:blank'
-    await run_and_wait_command({
-        "id": 1001,
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": pageUrl,
-            "context": context_id,
-            "wait": "complete"
-        }}, websocket)
+    await run_and_wait_command(
+        {
+            "id": 1001,
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": pageUrl,
+                "context": context_id,
+                "wait": "complete"
+            }
+        }, websocket)
 
     # Part 2. Subscribe to log events.
 
     # Subscribe to log.entryAdded
-    command_result = await run_and_wait_command({
-        "id": 1002,
-        "method": "session.subscribe",
-        "params": {
-            "events": [
-                "log.entryAdded"]}}, websocket)
+    command_result = await run_and_wait_command(
+        {
+            "id": 1002,
+            "method": "session.subscribe",
+            "params": {
+                "events": ["log.entryAdded"]
+            }
+        }, websocket)
 
     # Part 3. Evaluate console.log on the page.
 
     # Run console.log with script.evaluate
-    await send_JSON_command({
-        "id": 1003,
-        "method": "script.evaluate",
-        "params": {
-            "expression": "console.log(`Hello, world!`);",
-            "target": {"context": context_id},
-            "awaitPromise": True}},
-        websocket)
+    await send_JSON_command(
+        {
+            "id": 1003,
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log(`Hello, world!`);",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        }, websocket)
 
     # Part 4. Read the log.entryAdded event.
 
@@ -109,9 +120,9 @@ async def main():
     #     }
     # }
     event_response = await read_JSON_message(websocket)
-    print(
-        f'text: {event_response["params"]["text"]}' + '\n'
-        f'args: {event_response["params"]["args"]}')
+    print(f'text: {event_response["params"]["text"]}' + '\n'
+          f'args: {event_response["params"]["args"]}')
+
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)

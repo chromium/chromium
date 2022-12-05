@@ -36,7 +36,8 @@ async def main():
     await run_and_wait_command({
         "id": 0,
         "method": "session.new",
-        "params": {}}, websocket)
+        "params": {}
+    }, websocket)
 
     # Not implemented:
     # await browser.version();
@@ -48,12 +49,14 @@ async def main():
     # Part 1. Execute BiDi command and wait for result.
     # await browser.newPage();
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
-    command_result = await run_and_wait_command({
-        "id": 1000,
-        "method": "browsingContext.create",
-        "params": {
-            "type": "tab"
-        }}, websocket)
+    command_result = await run_and_wait_command(
+        {
+            "id": 1000,
+            "method": "browsingContext.create",
+            "params": {
+                "type": "tab"
+            }
+        }, websocket)
 
     # Puppeteer:
     # Part 2. Get the command result.
@@ -75,21 +78,21 @@ async def main():
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L34
     # To avoid network dependency in this test, use a local (static) copy.
     pageUrl = f'file://{Path(__file__).parent.resolve()}/app.html'
-    await run_and_wait_command({
-        "id": 1001,
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": pageUrl,
-            "context": context_id,
-            "wait": "complete"
-        }}, websocket)
+    await run_and_wait_command(
+        {
+            "id": 1001,
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": pageUrl,
+                "context": context_id,
+                "wait": "complete"
+            }
+        }, websocket)
 
     # Puppeteer:
     # const resultsSelector = '.titlelink';
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L37
-    results_selector = {
-        "type": "string",
-        "value": ".titleline > a"}
+    results_selector = {"type": "string", "value": ".titleline > a"}
 
     # Puppeteer:
     # const links = await page.evaluate((resultsSelector) => {...}, resultsSelector);
@@ -97,21 +100,25 @@ async def main():
     # Part 1. Execute BiDi command.
     # await page.evaluate((resultsSelector) => {...}, resultsSelector);
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L38
-    command_result = await run_and_wait_command({
-        "id": 1002,
-        "method": "script.callFunction",
-        "params": {
-            "functionDeclaration": """(resultsSelector) => {
+    command_result = await run_and_wait_command(
+        {
+            "id": 1002,
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": """(resultsSelector) => {
                 const anchors = Array.from(document.querySelectorAll(resultsSelector));
                 return anchors.map((anchor) => {
                     const title = anchor.textContent.trim();
                     return `${title} - ${anchor.href}`;
                 });
             }""",
-            "arguments": [results_selector],
-            "target": {"context": context_id},
-            "awaitPromise": True}},
-        websocket)
+                "arguments": [results_selector],
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        }, websocket)
 
     # Part 2. Get the command result.
     # const links = ...;
