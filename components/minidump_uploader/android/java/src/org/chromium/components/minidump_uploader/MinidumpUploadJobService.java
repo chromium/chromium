@@ -63,9 +63,9 @@ public abstract class MinidumpUploadJobService
         // 2) each time a job is scheduled, it has the same params.getExtras().
         mShouldReschedule = mActiveJob != null;
         if (mShouldReschedule) {
-            assert params.getExtras().toString().equals(mActiveJobParams.toString())
+            assert params.getExtras().toString().equals(mActiveJobParams.getExtras().toString())
                 : params.getExtras().toString()
-                    + " vs " + mActiveJobParams.toString();
+                    + " vs " + mActiveJobParams.getExtras().toString();
             return false;
         }
 
