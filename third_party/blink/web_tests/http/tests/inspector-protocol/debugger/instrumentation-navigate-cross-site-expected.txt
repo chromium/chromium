@@ -1,0 +1,5 @@
+Tests cross site navigation during instrumentation pause.
+paused reason: instrumentation
+resumed
+navigated http://devtools.oopif.test:8000/inspector-protocol/
+

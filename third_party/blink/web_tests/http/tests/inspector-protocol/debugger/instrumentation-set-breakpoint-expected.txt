@@ -1,0 +1,15 @@
+Tests setting a breakpoint during instrumentation pause.
+paused (1) reason: instrumentation
+breakpoint locations: 2:15
+
+    function testFunction(x) {
+      return x;
+    }
+    testFunction();
+    //# sourceURL=test.js
+resumed (1)
+paused (2) reason: other
+paused (2) location: 2:15
+paused (2) hitBreakpoints count 1
+paused (2) hitBreakpoint[0] matches: true
+

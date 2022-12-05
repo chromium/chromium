@@ -1,0 +1,6 @@
+Tests reloading during instrumentation pause.
+paused reason: instrumentation
+resumed
+reloaded
+frame navigated http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+

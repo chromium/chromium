@@ -1,0 +1,10 @@
+Tests that disconnecting devtools from the page in an instrumentation pause will resume the render process.
+Opened a second window
+Attached to the second window
+Paused in the second window; reason: instrumentation
+Disconnected from the child session
+Re-attached to the second window
+Paused in a second window; reason: instrumentation
+Closed the second window
+Received window destroyed notification
+

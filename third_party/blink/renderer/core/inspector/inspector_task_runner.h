@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TASK_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_TASK_RUNNER_H_
 
+#include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
@@ -64,6 +65,9 @@ class CORE_EXPORT InspectorTaskRunner final
     return isolate_task_runner_;
   }
 
+  void ProcessInterruptingTasks();
+  void RequestQuitProcessingInterruptingTasks();
+
  private:
   friend ThreadSafeRefCounted<InspectorTaskRunner>;
   explicit InspectorTaskRunner(
@@ -72,12 +76,15 @@ class CORE_EXPORT InspectorTaskRunner final
 
   // All these methods are run on the isolate's thread.
   Task TakeNextInterruptingTask() LOCKS_EXCLUDED(lock_);
+  Task WaitForNextInterruptingTaskOrQuitRequest() LOCKS_EXCLUDED(lock_);
   void PerformSingleInterruptingTaskDontWait() LOCKS_EXCLUDED(lock_);
   static void V8InterruptCallback(v8::Isolate*, void* data);
 
   base::Lock lock_;
   scoped_refptr<base::SingleThreadTaskRunner> isolate_task_runner_;
   v8::Isolate* isolate_ GUARDED_BY(lock_) = nullptr;
+  bool quit_requested_ = false;
+  base::ConditionVariable task_queue_cv_;
   Deque<Task> interrupting_task_queue_;
   bool disposed_ GUARDED_BY(lock_) = false;
 };

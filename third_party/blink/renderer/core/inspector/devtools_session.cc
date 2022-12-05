@@ -73,6 +73,18 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
   void BindInterface(
       mojo::PendingReceiver<mojom::blink::DevToolsSession> receiver) {
     receiver_.Bind(std::move(receiver), io_task_runner_);
+
+    // We set the disconnect handler for the IO session to detach the devtools
+    // channel on the main thread. This is necessary to unpause and detach
+    // the main thread session if the main thread is blocked in
+    // an instrumentation pause.
+    receiver_.set_disconnect_handler(WTF::BindOnce(
+        [](scoped_refptr<InspectorTaskRunner> inspector_task_runner,
+           CrossThreadWeakPersistent<::blink::DevToolsSession> session) {
+          inspector_task_runner->AppendTask(CrossThreadBindOnce(
+              &::blink::DevToolsSession::DetachIfAttached, session));
+        },
+        inspector_task_runner_, session_));
   }
 
   void DeleteSoon() { io_task_runner_->DeleteSoon(FROM_HERE, this); }
@@ -196,6 +208,12 @@ void DevToolsSession::Detach() {
   agents_.clear();
   v8_session_.reset();
   agent_->client_->DebuggerTaskFinished();
+}
+
+void DevToolsSession::DetachIfAttached() {
+  if (IsDetached())
+    return;
+  Detach();
 }
 
 void DevToolsSession::DispatchProtocolCommand(

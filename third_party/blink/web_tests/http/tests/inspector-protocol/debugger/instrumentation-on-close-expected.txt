@@ -1,0 +1,8 @@
+Tests that closing the page will resume the render process.
+Opened a second window
+Attached to the second window
+Paused in the second window; reason: instrumentation
+Scheduled closing the second window
+Resumed the instrumentation pause
+Received the target-destroyed event
+
