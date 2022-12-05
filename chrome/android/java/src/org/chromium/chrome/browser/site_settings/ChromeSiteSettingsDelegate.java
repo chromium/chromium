@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -251,5 +252,12 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public void launchClearBrowsingDataDialog(Activity currentActivity) {
         new SettingsLauncherImpl().launchSettingsActivity(
                 currentActivity, ClearBrowsingDataTabsFragment.class);
+    }
+
+    @Override
+    // TODO(crbug.com/1393116): Look into a more scalable pattern like
+    // notifyPageOpened(String className).
+    public void notifyRequestDesktopSiteSettingsPageOpened() {
+        RequestDesktopUtils.notifyRequestDesktopSiteSettingsPageOpened();
     }
 }

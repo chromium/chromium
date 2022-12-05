@@ -170,6 +170,11 @@ public interface SiteSettingsDelegate {
     void launchClearBrowsingDataDialog(Activity currentActivity);
 
     /**
+     * Called when the desktop site settings page is opened.
+     */
+    void notifyRequestDesktopSiteSettingsPageOpened();
+
+    /**
      * Called when the view this delegate is assigned to gets destroyed.
      */
     void onDestroyView();

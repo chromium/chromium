@@ -985,6 +985,27 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                   Comparator(EQUAL, 0), 180, 180);
     return config;
   }
+
+  if (kIPHRequestDesktopSiteDefaultOnFeature.name == feature->name) {
+    // A config that allows the RDS default-on message to be shown:
+    // * If the message has never been shown before.
+    // * If the user has never accepted the message.
+    // * If the user has never explicitly dismissed the message.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used = EventConfig("desktop_site_settings_page_opened",
+                               Comparator(ANY, 0), 360, 360);
+    config->trigger = EventConfig("request_desktop_site_default_on_iph_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->event_configs.insert(
+        EventConfig("desktop_site_default_on_primary_action",
+                    Comparator(EQUAL, 0), 360, 360));
+    config->event_configs.insert(EventConfig("desktop_site_default_on_gesture",
+                                             Comparator(EQUAL, 0), 360, 360));
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

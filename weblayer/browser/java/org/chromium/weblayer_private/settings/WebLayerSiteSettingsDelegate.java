@@ -175,5 +175,8 @@ public class WebLayerSiteSettingsDelegate
     public void launchClearBrowsingDataDialog(Activity currentActivity) {}
 
     @Override
+    public void notifyRequestDesktopSiteSettingsPageOpened() {}
+
+    @Override
     public void onDestroyView() {}
 }

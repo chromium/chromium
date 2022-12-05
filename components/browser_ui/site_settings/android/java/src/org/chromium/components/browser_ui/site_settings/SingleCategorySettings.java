@@ -395,6 +395,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         configureGlobalToggles();
         if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             RecordUserAction.record("DesktopSiteContentSetting.SettingsPage.Entered");
+            getSiteSettingsDelegate().notifyRequestDesktopSiteSettingsPageOpened();
         }
 
         setHasOptionsMenu(true);

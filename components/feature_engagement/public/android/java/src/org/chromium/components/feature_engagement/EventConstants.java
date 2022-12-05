@@ -299,6 +299,17 @@ public final class EventConstants {
     public static final String APP_MENU_DESKTOP_SITE_FOR_TAB_CLICKED =
             "app_menu_desktop_site_for_tab_clicked";
 
+    /** Desktop site settings page opened. */
+    public static final String DESKTOP_SITE_SETTINGS_PAGE_OPENED =
+            "desktop_site_settings_page_opened";
+
+    /** Desktop site default-on message primary action event. */
+    public static final String DESKTOP_SITE_DEFAULT_ON_PRIMARY_ACTION =
+            "desktop_site_default_on_primary_action";
+
+    /** Desktop site default-on message gesture event. */
+    public static final String DESKTOP_SITE_DEFAULT_ON_GESTURE = "desktop_site_default_on_gesture";
+
     /**
      * Do not instantiate.
      */

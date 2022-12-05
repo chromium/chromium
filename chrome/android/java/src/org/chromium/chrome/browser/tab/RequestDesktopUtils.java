@@ -35,8 +35,10 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
@@ -398,12 +400,6 @@ public class RequestDesktopUtils {
                 profile, ContentSettingsType.REQUEST_DESKTOP_SITE, true);
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, true);
-        // This key will be added only once, since this method will be invoked only once on a
-        // device. Once the corresponding message is shown, the key will be removed since the
-        // message will also be shown at most once.
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE,
-                true);
         return true;
     }
 
@@ -434,8 +430,6 @@ public class RequestDesktopUtils {
         sharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
         sharedPreferencesManager.removeKey(
-                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE);
-        sharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT);
 
         // Do not disable the global setting if it was previously updated by the user.
@@ -463,8 +457,7 @@ public class RequestDesktopUtils {
 
         // Present the message only if the global setting has been default-enabled.
         if (!SharedPreferencesManager.getInstance().contains(
-                    ChromePreferenceKeys
-                            .DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE)) {
+                    ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING)) {
             return false;
         }
 
@@ -473,8 +466,6 @@ public class RequestDesktopUtils {
         // setting. Present the message only if the setting is enabled.
         if (!WebsitePreferenceBridge.isCategoryEnabled(
                     profile, ContentSettingsType.REQUEST_DESKTOP_SITE)) {
-            SharedPreferencesManager.getInstance().removeKey(
-                    ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE);
             return false;
         }
 
@@ -482,6 +473,12 @@ public class RequestDesktopUtils {
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
                     PARAM_SHOW_MESSAGE_ON_GLOBAL_SETTING_DEFAULT_ON, true)) {
+            return false;
+        }
+
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        if (!tracker.shouldTriggerHelpUI(
+                    FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE)) {
             return false;
         }
 
@@ -500,13 +497,23 @@ public class RequestDesktopUtils {
                                 () -> {
                                     SiteSettingsHelper.showCategorySettings(context,
                                             SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
+                                    tracker.notifyEvent(
+                                            EventConstants.DESKTOP_SITE_DEFAULT_ON_PRIMARY_ACTION);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .with(MessageBannerProperties.ON_DISMISSED,
+                                (dismissReason) -> {
+                                    if (dismissReason == DismissReason.GESTURE) {
+                                        tracker.notifyEvent(
+                                                EventConstants.DESKTOP_SITE_DEFAULT_ON_GESTURE);
+                                    }
+                                    tracker.dismissed(
+                                            FeatureConstants
+                                                    .REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE);
                                 })
                         .build();
 
         messageDispatcher.enqueueWindowScopedMessage(message, false);
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE);
         return true;
     }
 
@@ -686,6 +693,14 @@ public class RequestDesktopUtils {
                         .build();
         modalDialogManager.showDialog(dialog, ModalDialogType.APP, true);
         return true;
+    }
+
+    /**
+     * Record event for feature engagement on desktop site settings page open.
+     */
+    public static void notifyRequestDesktopSiteSettingsPageOpened() {
+        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                .notifyEvent(EventConstants.DESKTOP_SITE_SETTINGS_PAGE_OPENED);
     }
 
     /**
