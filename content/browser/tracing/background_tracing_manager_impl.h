@@ -164,7 +164,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   BackgroundTracingManagerImpl();
   ~BackgroundTracingManagerImpl() override;
 
-  bool IsSupportedConfig(BackgroundTracingConfigImpl* config);
   absl::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
@@ -194,7 +193,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
       pending_agents_;
 
   IdleCallback idle_callback_;
-  base::RepeatingClosure tracing_enabled_callback_for_testing_;
 
   // This field contains serialized trace log proto.
   std::string trace_to_upload_;
