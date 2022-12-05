@@ -790,24 +790,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AliveAfter{ErrorCode}Error"
-    enum="AliveAfterErrorStatus" expires_after="2023-02-19">
-  <owner>vasilii@chromium.org</owner>
-  <owner>maxan@google.com</owner>
-  <summary>
-    Recorded after PasswordStore GMS Core backend returned with {ErrorCode}
-    error. The first status is reported right after receiving the error, the
-    second one is reported with a 10 seconds delay indicating if Chrome didn't
-    shutdown/restart soon after receiving this error. Note that the second
-    status could also be not reported if Chrome is sent to background.
-  </summary>
-  <token key="ErrorCode">
-    <variant name="ApiNotConnected" summary="API_NOT_CONNECTED"/>
-    <variant name="ConnectionSuspended"
-        summary="CONNECTION_SUSPENDED_DURING_CALL"/>
-  </token>
-</histogram>
-
 <histogram name="PasswordManager.ApplySyncChanges.AddLoginSyncError"
     enum="PasswordAddLoginSyncError" expires_after="2023-03-05">
   <owner>mamir@chromium.org</owner>
@@ -2585,23 +2567,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".RemoveLoginsCreatedBetweenAsync"
         summary="RemoveLoginsCreatedBetweenAsync"/>
     <variant name=".UpdateLoginAsync" summary="UpdateLoginAsync"/>
-  </token>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.UptimeOnAPIError{ErrorCode}"
-    units="ms" expires_after="M114">
-  <owner>maxan@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Chrome uptime on recieving {ErrorCode} error from the GMS 1P API. Recorded
-    when the asynchronous job has returned with error.
-  </summary>
-  <token key="ErrorCode">
-    <variant name=".ApiNotConnected" summary="API_NOT_CONNECTED"/>
-    <variant name=".ConnectionSuspendedDuringCall"
-        summary="CONNECTTION_SUSPENDED_DURING_CALL"/>
-    <variant name=".ReconnectionTimedOut" summary="RECONNECTION_TIMED_OUT"/>
   </token>
 </histogram>
 

@@ -61,11 +61,6 @@ constexpr char kRetryHistogramBase[] =
     "PasswordManager.PasswordStoreAndroidBackend.Retry";
 constexpr char kUPMActiveHistogram[] =
     "PasswordManager.UnifiedPasswordManager.ActiveStatus2";
-constexpr char kAliveAfterApiNotConnectedHistogram[] =
-    "PasswordManager.AliveAfterApiNotConnectedError";
-constexpr char kAliveAfterConnectionSuspendedHistogram[] =
-    "PasswordManager.AliveAfterConnectionSuspendedError";
-constexpr base::TimeDelta kReportAliveAfterErrorDelay = base::Seconds(10);
 constexpr base::TimeDelta kTaskRetryTimeout = base::Seconds(16);
 constexpr int kMaxReportedRetryAttempts = 10;
 
@@ -77,18 +72,6 @@ using sync_util::GetSyncingAccount;
 
 using JobId = PasswordStoreAndroidBackendBridge::JobId;
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class AliveAfterErrorStatus {
-  // Alive on receiving the error, this code is the basis for the analysis.
-  kAliveOnError = 0,
-  // Alive after a delay, Chrome didn't shutdown/restart since receiving the
-  // error.
-  kAliveAfterDelay = 1,
-
-  kMaxValue = kAliveAfterDelay
-};
 
 std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
     std::vector<PasswordForm> passwords) {
@@ -516,65 +499,6 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
           ? PasswordStoreBackendErrorRecoveryType::kUnrecoverable
           : PasswordStoreBackendErrorRecoveryType::kRecoverable;
   return PasswordStoreBackendError(error_type, recovery_type);
-}
-
-bool ShouldRecordUptimeOnApiError(AndroidBackendAPIErrorCode api_error_code) {
-  // These error codes are included in histogram name, update histograms.xml and
-  // |GetUptimeHistogramSuffixForApiError| when changing this.
-  switch (api_error_code) {
-    case AndroidBackendAPIErrorCode::kApiNotConnected:
-    case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
-    case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
-      return true;
-    case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
-    case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
-    case AndroidBackendAPIErrorCode::kNetworkError:
-    case AndroidBackendAPIErrorCode::kInternalError:
-    case AndroidBackendAPIErrorCode::kDeveloperError:
-    case AndroidBackendAPIErrorCode::kPassphraseRequired:
-    case AndroidBackendAPIErrorCode::kAccessDenied:
-    case AndroidBackendAPIErrorCode::kBadRequest:
-    case AndroidBackendAPIErrorCode::kBackendGeneric:
-    case AndroidBackendAPIErrorCode::kBackendResourceExhausted:
-    case AndroidBackendAPIErrorCode::kInvalidData:
-    case AndroidBackendAPIErrorCode::kUnmappedErrorCode:
-    case AndroidBackendAPIErrorCode::kUnexpectedError:
-    case AndroidBackendAPIErrorCode::kChromeSyncAPICallError:
-    case AndroidBackendAPIErrorCode::kErrorWhileDoingLeakServiceGRPC:
-    case AndroidBackendAPIErrorCode::kRequiredSyncingAccountMissing:
-    case AndroidBackendAPIErrorCode::kLeakCheckServiceAuthError:
-    case AndroidBackendAPIErrorCode::kLeakCheckServiceResourceExhausted:
-      return false;
-  }
-  // The api_error_code is determined by static casting an int. It is thus
-  // possible for the value to not be among the explicit enum values, however
-  // that case should still be handled. Not adding a default statement to the
-  // switch, so that the compiler still warns when a new enum value is added and
-  // not explicitly handled here.
-  return false;
-}
-
-std::string GetUptimeHistogramNameForApiError(
-    AndroidBackendAPIErrorCode api_error_code) {
-  DCHECK(ShouldRecordUptimeOnApiError(api_error_code));
-  std::string histogram_suffix;
-  switch (api_error_code) {
-    case AndroidBackendAPIErrorCode::kApiNotConnected:
-      histogram_suffix = ".ApiNotConnected";
-      break;
-    case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
-      histogram_suffix = ".ConnectionSuspendedDuringCall";
-      break;
-    case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
-      histogram_suffix = ".ReconnectionTimedOut";
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  return base::StrCat(
-      {"PasswordManager.PasswordStoreAndroidBackend.UptimeOnAPIError",
-       histogram_suffix});
 }
 
 }  // namespace
@@ -1110,14 +1034,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
 
     int api_error = error.api_error_code.value();
     auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);
-    // TODO(crbug.com/1349276): Remove this after analyzing metrics
-    ReportAliveStatusOnAPIErrorIfNeeded(api_error_code);
-
-    if (ShouldRecordUptimeOnApiError(api_error_code)) {
-      base::UmaHistogramLongTimes(
-          GetUptimeHistogramNameForApiError(api_error_code),
-          base::Time::Now() - initialized_at_);
-    }
 
     // TODO(crbug.com/1372343): Extract the retry logic into a separate method.
 
@@ -1317,36 +1233,6 @@ PasswordChangesOrErrorReply PasswordStoreAndroidBackend::
       PasswordStoreBackendMetricsRecorder(BackendInfix("AndroidBackend"),
                                           metric_infix),
       std::move(callback));
-}
-
-void PasswordStoreAndroidBackend::ReportAliveStatusOnAPIErrorIfNeeded(
-    AndroidBackendAPIErrorCode error_code) {
-  if (error_code == AndroidBackendAPIErrorCode::kApiNotConnected) {
-    base::UmaHistogramEnumeration(kAliveAfterApiNotConnectedHistogram,
-                                  AliveAfterErrorStatus::kAliveOnError);
-    main_task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            static_cast<void (*)(const char*, AliveAfterErrorStatus)>(
-                &base::UmaHistogramEnumeration),
-            kAliveAfterApiNotConnectedHistogram,
-            AliveAfterErrorStatus::kAliveAfterDelay),
-        kReportAliveAfterErrorDelay);
-  }
-
-  if (error_code ==
-      AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall) {
-    base::UmaHistogramEnumeration(kAliveAfterConnectionSuspendedHistogram,
-                                  AliveAfterErrorStatus::kAliveOnError);
-    main_task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            static_cast<void (*)(const char*, AliveAfterErrorStatus)>(
-                &base::UmaHistogramEnumeration),
-            kAliveAfterConnectionSuspendedHistogram,
-            AliveAfterErrorStatus::kAliveAfterDelay),
-        kReportAliveAfterErrorDelay);
-  }
 }
 
 void PasswordStoreAndroidBackend::GetAllLoginsForAccount(

@@ -17,7 +17,6 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
-#include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
@@ -291,11 +290,6 @@ class PasswordStoreAndroidBackend
   ReportMetricsAndInvokeCallbackForStoreModifications(
       const MetricInfix& metric_infix,
       PasswordChangesOrErrorReply callback);
-
-  // Reports alive metric indicating if Chrome didn't shutdown/restart soon
-  // after receiving the error. Metric is only reported for a subset of errors.
-  void ReportAliveStatusOnAPIErrorIfNeeded(
-      AndroidBackendAPIErrorCode error_code);
 
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status) for |account|.
