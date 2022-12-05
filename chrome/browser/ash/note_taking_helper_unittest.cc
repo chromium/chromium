@@ -291,13 +291,13 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> CreateExtension(
       const extensions::ExtensionId& id,
       const std::string& name) {
-    return CreateExtension(id, name, nullptr, nullptr);
+    return CreateExtension(id, name, absl::nullopt, absl::nullopt);
   }
   scoped_refptr<const extensions::Extension> CreateExtension(
       const extensions::ExtensionId& id,
       const std::string& name,
-      std::unique_ptr<base::Value> permissions,
-      std::unique_ptr<base::Value> action_handlers) {
+      absl::optional<base::Value::List> permissions,
+      absl::optional<base::Value::List> action_handlers) {
     std::unique_ptr<base::DictionaryValue> manifest =
         extensions::DictionaryBuilder()
             .Set("name", name)
@@ -315,12 +315,10 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
             .Build();
 
     if (action_handlers)
-      manifest->SetKey("action_handlers", base::Value::FromUniquePtrValue(
-                                              std::move(action_handlers)));
+      manifest->GetDict().Set("action_handlers", std::move(*action_handlers));
 
     if (permissions)
-      manifest->SetKey("permissions",
-                       base::Value::FromUniquePtrValue(std::move(permissions)));
+      manifest->GetDict().Set("permissions", std::move(*permissions));
 
     return extensions::ExtensionBuilder()
         .SetManifest(std::move(manifest))
@@ -366,24 +364,24 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
       const std::string& app_name,
       Profile* profile) {
     return CreateAndInstallLockScreenAppWithPermissions(
-        id, app_name, extensions::ListBuilder().Append("lockScreen").Build(),
-        profile);
+        id, app_name,
+        extensions::ListBuilder().Append("lockScreen").BuildList(), profile);
   }
 
   scoped_refptr<const extensions::Extension>
   CreateAndInstallLockScreenAppWithPermissions(
       const std::string& id,
       const std::string& app_name,
-      std::unique_ptr<base::ListValue> permissions,
+      absl::optional<base::Value::List> permissions,
       Profile* profile) {
-    std::unique_ptr<base::Value> lock_enabled_action_handler =
+    base::Value::List lock_enabled_action_handler =
         extensions::ListBuilder()
             .Append(extensions::DictionaryBuilder()
                         .Set("action", app_runtime::ToString(
                                            app_runtime::ACTION_TYPE_NEW_NOTE))
                         .Set("enabled_on_lock_screen", true)
                         .Build())
-            .Build();
+            .BuildList();
 
     scoped_refptr<const extensions::Extension> keep_extension =
         CreateExtension(id, app_name, std::move(permissions),
@@ -568,15 +566,15 @@ TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
   ASSERT_FALSE(helper()->IsAppAvailable(profile()));
   ASSERT_TRUE(helper()->GetAvailableApps(profile()).empty());
 
-  std::unique_ptr<base::Value> lock_disabled_action_handler =
+  base::Value::List lock_disabled_action_handler =
       extensions::ListBuilder()
           .Append(app_runtime::ToString(app_runtime::ACTION_TYPE_NEW_NOTE))
-          .Build();
+          .BuildList();
 
   // Install Keep app that does not support lock screen note taking - it should
   // be reported not to support lock screen note taking.
   scoped_refptr<const extensions::Extension> prod_extension = CreateExtension(
-      kProdKeepExtensionId, kProdKeepAppName, nullptr /* permissions */,
+      kProdKeepExtensionId, kProdKeepAppName, /*permissions=*/absl::nullopt,
       std::move(lock_disabled_action_handler));
   InstallExtension(prod_extension.get(), profile());
   EXPECT_TRUE(helper()->IsAppAvailable(profile()));
@@ -645,7 +643,8 @@ TEST_F(NoteTakingHelperTest, PreferredAppWithNoLockScreenPermission) {
   // permission listed.
   scoped_refptr<const extensions::Extension> dev_extension =
       CreateAndInstallLockScreenAppWithPermissions(
-          kDevKeepExtensionId, kDevKeepAppName, nullptr, profile());
+          kDevKeepExtensionId, kDevKeepAppName, /*permissions=*/absl::nullopt,
+          profile());
   helper()->SetPreferredApp(profile(), kDevKeepExtensionId);
 
   EXPECT_TRUE(
@@ -672,8 +671,8 @@ TEST_F(NoteTakingHelperTest,
   const extensions::ExtensionId kNewNoteId = crx_file::id_util::GenerateId("a");
   const std::string kName = "Some App";
   scoped_refptr<const extensions::Extension> has_new_note =
-      CreateAndInstallLockScreenAppWithPermissions(kNewNoteId, kName, nullptr,
-                                                   profile());
+      CreateAndInstallLockScreenAppWithPermissions(
+          kNewNoteId, kName, /*permissions=*/absl::nullopt, profile());
 
   // Verify that only Keep app is reported to support lock screen note taking.
   EXPECT_TRUE(AvailableAppsMatch(
@@ -717,15 +716,15 @@ TEST_F(NoteTakingHelperTest, CustomChromeApps) {
 
   // "action_handlers": ["new_note"]
   scoped_refptr<const extensions::Extension> has_new_note = CreateExtension(
-      kNewNoteId, kName, nullptr /* permissions */,
+      kNewNoteId, kName, /*permissions=*/absl::nullopt,
       extensions::ListBuilder()
           .Append(app_runtime::ToString(app_runtime::ACTION_TYPE_NEW_NOTE))
-          .Build());
+          .BuildList());
   InstallExtension(has_new_note.get(), profile());
   // "action_handlers": []
   scoped_refptr<const extensions::Extension> empty_array =
-      CreateExtension(kEmptyArrayId, kName, nullptr /* permissions*/,
-                      extensions::ListBuilder().Build());
+      CreateExtension(kEmptyArrayId, kName, /*permissions=*/absl::nullopt,
+                      extensions::ListBuilder().BuildList());
   InstallExtension(empty_array.get(), profile());
   // (no action handler entry)
   scoped_refptr<const extensions::Extension> none =
@@ -868,10 +867,10 @@ TEST_F(NoteTakingHelperTest, AllowlistedAndCustomAppsShowOnlyOnce) {
   Init(ENABLE_PALETTE);
 
   scoped_refptr<const extensions::Extension> extension = CreateExtension(
-      kProdKeepExtensionId, "Keep", nullptr /* permissions */,
+      kProdKeepExtensionId, "Keep", /*permissions=*/absl::nullopt,
       extensions::ListBuilder()
           .Append(app_runtime::ToString(app_runtime::ACTION_TYPE_NEW_NOTE))
-          .Build());
+          .BuildList());
   InstallExtension(extension.get(), profile());
 
   EXPECT_TRUE(AvailableAppsMatch(
@@ -1401,7 +1400,8 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
       crx_file::id_util::GenerateId("a");
   scoped_refptr<const extensions::Extension> unsupported_app =
       CreateAndInstallLockScreenAppWithPermissions(
-          kUnsupportedAppId, kUnsupportedAppName, nullptr, profile());
+          kUnsupportedAppId, kUnsupportedAppName, /*permissions=*/absl::nullopt,
+          profile());
 
   // Disabling preferred app on lock screen should fail if there is no preferred
   // app.
@@ -1469,7 +1469,7 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
   // Policy with an empty allowlist - this should disallow all apps from the
   // lock screen.
   profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                 std::make_unique<base::ListValue>());
+                                 base::Value::List());
 
   // Preferred app changed notification is not expected if the preferred app is
   // not supported on lock screen.
@@ -1510,7 +1510,7 @@ TEST_F(NoteTakingHelperTest,
   // Policy with an empty allowlist - this should disallow test app from running
   // on lock screen.
   profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                 std::make_unique<base::ListValue>());
+                                 base::Value::List());
 
   // Preferred app settings changed - observers should be notified.
   EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
@@ -1543,7 +1543,7 @@ TEST_F(NoteTakingHelperTest,
                                     profile());
 
   profile_prefs_->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                 std::make_unique<base::ListValue>());
+                                 base::Value::List());
   // Verify that observers are not notified of preferred app change if preferred
   // app is not set when allowlist policy changes.
   EXPECT_TRUE(observer.preferred_app_updates().empty());
@@ -1580,7 +1580,8 @@ TEST_F(NoteTakingHelperTest, LockScreenSupportInSecondaryProfile) {
       crx_file::id_util::GenerateId("a");
   scoped_refptr<const extensions::Extension> unsupported_app =
       CreateAndInstallLockScreenAppWithPermissions(
-          kUnsupportedAppId, kUnsupportedAppName, nullptr, second_profile);
+          kUnsupportedAppId, kUnsupportedAppName, /*permissions=*/absl::nullopt,
+          second_profile);
 
   // Setting preferred app should fire observers for secondary profile.
   helper()->SetPreferredApp(second_profile, prod_app->id());
@@ -1604,7 +1605,7 @@ TEST_F(NoteTakingHelperTest, LockScreenSupportInSecondaryProfile) {
           second_profile->GetPrefs());
   // Policy with an empty allowlist.
   profile_prefs->SetManagedPref(prefs::kNoteTakingAppsLockScreenAllowlist,
-                                std::make_unique<base::ListValue>());
+                                base::Value::List());
 
   // Changing policy should not notify observers in secondary profile.
   EXPECT_TRUE(observer.preferred_app_updates().empty());
