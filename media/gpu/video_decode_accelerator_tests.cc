@@ -65,7 +65,7 @@ The following arguments are supported:
   --vmodule             enable verbose mode for the specified module,
                         e.g. --vmodule=*media/gpu*=2.
 
- --validator_type       validate decoded frames, possible values are
+  --validator_type      validate decoded frames, possible values are
                         md5 (default, compare against md5hash of expected
                         frames), ssim (compute SSIM against expected
                         frames, currently allowed for AV1 streams only)

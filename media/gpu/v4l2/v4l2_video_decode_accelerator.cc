@@ -1351,7 +1351,7 @@ void V4L2VideoDecodeAccelerator::Enqueue() {
         // (2) If input stream is off, we will never get the output buffer
         // with V4L2_BUF_FLAG_LAST.
         VLOGF(2) << "Nothing to flush. Notify flush done directly.";
-        NofityFlushDone();
+        NotifyFlushDone();
         flush_handled = true;
       } else if (decoder_cmd_supported_) {
         if (!SendDecoderCmdStop())
@@ -1702,12 +1702,12 @@ void V4L2VideoDecodeAccelerator::NotifyFlushDoneIfNeeded() {
   if (!StartDevicePoll())
     return;
 
-  NofityFlushDone();
+  NotifyFlushDone();
   // While we were flushing, we early-outed DecodeBufferTask()s.
   ScheduleDecodeBufferTaskIfNeeded();
 }
 
-void V4L2VideoDecodeAccelerator::NofityFlushDone() {
+void V4L2VideoDecodeAccelerator::NotifyFlushDone() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("media,gpu", "V4L2VDA::FlushTask",
                                   TRACE_ID_LOCAL(this));
   decoder_delay_bitstream_buffer_id_ = -1;

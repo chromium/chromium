@@ -1076,7 +1076,7 @@ void V4L2VideoEncodeAccelerator::Enqueue() {
   DCHECK(input_queue_ && output_queue_);
   TRACE_EVENT0("media,gpu", "V4L2VEA::Enqueue");
   DVLOGF(4) << "free_input_buffers: " << input_queue_->FreeBuffersCount()
-            << "input_queue: " << encoder_input_queue_.size();
+            << ", input_queue: " << encoder_input_queue_.size();
 
   bool do_streamon = false;
   // Enqueue all the inputs we can.
