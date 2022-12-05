@@ -11,6 +11,7 @@
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -58,10 +59,13 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
     buttons |= MultitaskMenuView::kHalfSplit;
     buttons |= MultitaskMenuView::kPartialSplit;
   }
-  if (!caption_button_model ||
-      caption_button_model->IsVisible(views::CAPTION_BUTTON_ICON_FLOAT)) {
+
+  // The frame caption button to float/unfloat is only shown with the ash dev
+  // flag on, or in tablet mode when a window is floated. The multitask menu
+  // float button is shown whenever a window can be floated, so linking with the
+  // model does not work here.
+  if (chromeos::wm::CanFloatWindow(parent_window))
     buttons |= MultitaskMenuView::kFloat;
-  }
 
   // Must be initialized after setting bounds.
   multitask_menu_view_ = AddChildView(std::make_unique<MultitaskMenuView>(
