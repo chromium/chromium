@@ -668,7 +668,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         boolean didTriggerPromo = false;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
             // hasNewNoticeBeenShownInCurrentSession is needed to assure a PrivacySandbox promo
             // already ran in this session, outside the initializeIPH promo logic (e.g. in a NTP
             // page), and thus avoiding other different promos to run in the same session.
