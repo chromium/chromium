@@ -3404,7 +3404,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       return;
     }
 
-    webStateView.frame = strongSelf.contentArea.bounds;
+    // Do not resize the same view.
+    if (webStateView != newPage)
+      webStateView.frame = strongSelf.contentArea.bounds;
 
     if (currentAnimationIdentifier != strongSelf->_NTPAnimationIdentifier) {
       // Prevent the completion block from being executed if a new animation has
