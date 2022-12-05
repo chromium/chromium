@@ -236,20 +236,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Capture.Glitches" units="glitches"
-    expires_after="2022-12-18">
-  <obsolete>
-    Removed 06/2022, replaced by Media.Audio.Capture.Glitches2.
-  </obsolete>
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    The number of glitches that were detected at the OS level while an audio
-    stream was active. A glitch is detected if the OS has to skip providing a
-    set of frames. This value is logged when an audio input stream is closed.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Capture.HighLatencyCallbackError"
     enum="BooleanError" expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
@@ -268,35 +254,6 @@ chromium-metrics-reviews@google.com.
     This histogram measures the duration of every input stream, as seen from the
     renderer. It counts from when it has been successfully started, until it is
     stopped. Streams that fail to start are not logged.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.LargestGlitchMs" units="ms"
-    expires_after="2022-12-18">
-  <obsolete>
-    Removed 06/2022, replaced by Media.Audio.Capture.LargestGlitchMs2.
-  </obsolete>
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    The length in milliseconds of the largest audio glitch that was detected at
-    the OS level. This value is logged when an audio input stream that has
-    suffered glitches is closed.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.LostFramesInMs" units="ms"
-    expires_after="2022-12-25">
-  <obsolete>
-    Removed 06/2022, replaced by Media.Audio.Capture.LostFramesInMs2.
-  </obsolete>
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    The combined length in milliseconds of audio glitches that was detected at
-    the OS level. This is useful to know in particular for audio processing such
-    as echo cancellation. This value is logged when an audio input stream that
-    has suffered glitches is closed.
   </summary>
 </histogram>
 
@@ -429,22 +386,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     A boolean that reflects whether or not an error was reported during audio
     capture for a virtual stream.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Capture.Win.Glitches" units="glitches"
-    expires_after="2022-12-11">
-  <obsolete>
-    Removed 06/2022, replaced by Media.Audio.Render.Win.Glitches2.
-  </obsolete>
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The number of glitches that were detected at the OS level while an audio
-    input stream was active. A glitch in this case corresponds to a certain
-    error code from the IAudioCaptureClient::GetBuffer() API:
-    AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY. This value is logged when an audio
-    input stream is closed on Windows.
   </summary>
 </histogram>
 
@@ -901,49 +842,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Render.Glitches" units="glitches"
-    expires_after="2022-10-16">
-  <obsolete>
-    Removed 06/2022, replaced by Media.Audio.Render.Glitches2.
-  </obsolete>
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    The number of glitches that were detected at the OS level while an audio
-    stream was active. A glitch is detected if the OS has to skip rendering a
-    set of frames. This value is logged when an audio output stream is stopped.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Render.LargestGlitchMs" units="ms"
-    expires_after="2022-10-16">
-  <obsolete>
-    Removed 06/2022, replaced by Media.Audio.Render.LargestGlitchMs2.
-  </obsolete>
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    The length in milliseconds of the largest glitch that was detected at the OS
-    level. This value is logged when an audio output stream that has suffered
-    glitches is stopped.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Render.LostFramesInMs" units="ms"
-    expires_after="2022-10-23">
-  <obsolete>
-    Removed 06/2022, replaced by Media.Audio.Render.LostFramesInMs2.
-  </obsolete>
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    The combined length in milliseconds of audio glitches. This is useful to
-    know in particular for audio processing such as echo cancellation. This
-    value is logged when an audio output stream that has suffered glitches is
-    stopped.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Render.OutputDeviceAuthorizationTime" units="ms"
     expires_after="2023-04-04">
   <owner>olka@chromium.org</owner>
@@ -1010,30 +908,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether a cached sink was used to get audio output device information, or a
     new sink was created for that.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Render.SinkCache.InfoSinkReusedForOutput"
-    enum="BooleanReused" expires_after="2022-04-05">
-  <obsolete>
-    Removed 04/2022.
-  </obsolete>
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    When a new sink is created to get output device information, it is cached.
-    This metric shows if such a sink is later reused for audio output (can
-    happen no more than once) or deleted unused after timeout expires. Logged
-    when one of the abovementioned events takes place.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Render.SinkCache.UsedForSinkCreation"
-    enum="BooleanUsage" expires_after="2021-08-09">
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    Whether a sink was created through the sink cache or directly.
   </summary>
 </histogram>
 
