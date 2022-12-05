@@ -204,6 +204,7 @@ test("v4l2_unittest") {
   deps = [
     ":v4l2",
     "//base/test:test_support",
+    "//build/config/linux/libdrm",
     "//media:test_support",
     "//testing/gtest",
   ]
