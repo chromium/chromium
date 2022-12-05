@@ -449,6 +449,8 @@ component("platform") {
     "bindings/source_location.h",
     "bindings/string_resource.cc",
     "bindings/string_resource.h",
+    "bindings/sync_iterator_base.cc",
+    "bindings/sync_iterator_base.h",
     "bindings/thread_debugger.cc",
     "bindings/thread_debugger.h",
     "bindings/to_v8.h",

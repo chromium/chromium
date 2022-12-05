@@ -1615,6 +1615,31 @@ generated_observable_array_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h",
 ]
 
+generated_sync_iterator_sources_in_core = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_css_font_feature_values_map.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_css_font_feature_values_map.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_css_toggle_map.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_css_toggle_map.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_custom_state_set.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_custom_state_set.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_event_counts.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_event_counts.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_font_face_set.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_font_face_set.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_form_data.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_form_data.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_headers.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_headers.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_highlight.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_highlight.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_highlight_registry.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_highlight_registry.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_style_property_map_read_only.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_style_property_map_read_only.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_url_search_params.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_url_search_params.h",
+]
+
 generated_typedef_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_typedefs.h",
 ]

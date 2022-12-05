@@ -435,23 +435,35 @@ class CxxFuncDefNode(CompositeNode):
 
 
 class CxxClassDefNode(CompositeNode):
-    def __init__(self, name, base_class_names=None, final=False, export=None):
+    def __init__(self,
+                 name,
+                 base_class_names=None,
+                 template_params=None,
+                 final=False,
+                 export=None):
         """
         Args:
             name: The class name to be defined.
             base_class_names: The list of base class names.
+            template_params: List of template parameters or None.
             final: True makes this a final class.
             export: Class export annotation.
         """
         assert isinstance(final, bool)
 
-        template_format = ("class{export} {name}{final}{base_clause} {{\n"
+        template_format = ("{template}"
+                           "class{export} {name}{final}{base_clause} {{\n"
                            "  {top_section}\n"
                            "  {public_section}\n"
                            "  {protected_section}\n"
                            "  {private_section}\n"
                            "  {bottom_section}\n"
                            "}};")
+
+        if template_params is None:
+            template = ""
+        else:
+            template = "template <{}>\n".format(", ".join(template_params))
 
         if export is None:
             export = ""
@@ -478,18 +490,18 @@ class CxxClassDefNode(CompositeNode):
         self._private_section = ListNode(head="private:\n", tail="\n")
         self._bottom_section = ListNode()
 
-        CompositeNode.__init__(
-            self,
-            template_format,
-            name=_to_maybe_text_node(name),
-            base_clause=base_clause,
-            final=final,
-            export=export,
-            top_section=self._top_section,
-            public_section=self._public_section,
-            protected_section=self._protected_section,
-            private_section=self._private_section,
-            bottom_section=self._bottom_section)
+        CompositeNode.__init__(self,
+                               template_format,
+                               name=_to_maybe_text_node(name),
+                               base_clause=base_clause,
+                               template=template,
+                               final=final,
+                               export=export,
+                               top_section=self._top_section,
+                               public_section=self._public_section,
+                               protected_section=self._protected_section,
+                               private_section=self._private_section,
+                               bottom_section=self._bottom_section)
 
     @property
     def top_section(self):

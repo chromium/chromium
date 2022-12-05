@@ -19,6 +19,7 @@ blink_modules_sources("v8") {
       generated_interface_sources_in_modules +
       generated_namespace_sources_in_modules +
       generated_observable_array_sources_in_modules +
+      generated_sync_iterator_sources_in_modules +
       generated_typedef_sources_in_modules + generated_union_sources_in_modules
 
   deps = [

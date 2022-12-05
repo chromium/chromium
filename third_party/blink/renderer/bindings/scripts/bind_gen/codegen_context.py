@@ -85,6 +85,7 @@ class CodeGenContext(object):
             "interface": None,
             "namespace": None,
             "observable_array": None,
+            "sync_iterator": None,
             "typedef": None,
             "union": None,
 
@@ -230,7 +231,7 @@ class CodeGenContext(object):
     @property
     def class_like(self):
         return (self.callback_interface or self.dictionary or self.interface
-                or self.namespace)
+                or self.namespace or self.sync_iterator)
 
     @property
     def does_override_idl_return_type(self):

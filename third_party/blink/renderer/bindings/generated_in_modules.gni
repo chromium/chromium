@@ -2636,6 +2636,33 @@ generated_namespace_sources_in_modules = [
 
 generated_observable_array_sources_in_modules = []
 
+generated_sync_iterator_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_audio_param_map.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_audio_param_map.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_bluetooth_manufacturer_data_map.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_bluetooth_manufacturer_data_map.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_bluetooth_service_data_map.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_bluetooth_service_data_map.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_gpu_supported_features.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_gpu_supported_features.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_keyboard_layout_map.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_keyboard_layout_map.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_media_key_status_map.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_media_key_status_map.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_midi_input_map.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_midi_input_map.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_midi_output_map.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_midi_output_map.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_rtc_stats_report.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_rtc_stats_report.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_xr_anchor_set.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_xr_anchor_set.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_xr_hand.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_xr_hand.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_xr_plane_set.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_xr_plane_set.h",
+]
+
 generated_typedef_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h",
 ]

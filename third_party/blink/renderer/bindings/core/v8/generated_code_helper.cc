@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -152,6 +153,48 @@ void SetupIDLObservableArrayBackingListTemplate(
     v8::Local<v8::FunctionTemplate> interface_template) {
   interface_template->SetClassName(
       V8AtomicString(isolate, wrapper_type_info->interface_name));
+
+  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
+}
+
+void SetupIDLSyncIteratorTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> instance_template,
+    v8::Local<v8::ObjectTemplate> prototype_template,
+    v8::Local<v8::FunctionTemplate> interface_template,
+    v8::Intrinsic parent_intrinsic_prototype,
+    const char* class_string) {
+  DCHECK(parent_intrinsic_prototype == v8::Intrinsic::kIteratorPrototype ||
+         parent_intrinsic_prototype == v8::Intrinsic::kMapIteratorPrototype ||
+         parent_intrinsic_prototype == v8::Intrinsic::kSetIteratorPrototype);
+
+  v8::Local<v8::String> v8_class_string = V8String(isolate, class_string);
+
+  // https://webidl.spec.whatwg.org/#es-iterator-prototype-object
+  // https://webidl.spec.whatwg.org/#es-map-iterator
+  // https://webidl.spec.whatwg.org/#es-set-iterator
+  v8::Local<v8::FunctionTemplate>
+      intrinsic_iterator_prototype_interface_template =
+          v8::FunctionTemplate::New(isolate, nullptr, v8::Local<v8::Value>(),
+                                    v8::Local<v8::Signature>(), 0,
+                                    v8::ConstructorBehavior::kThrow);
+  // It's not clear whether we need to remove the existing prototype object
+  // before we replace it with another object. Despite that the following test
+  // in V8 removes the existing one before setting a new one with a comment,
+  // it's not yet crystal clear if RemovePrototype() is mandatory or not.
+  // https://source.chromium.org/chromium/chromium/src/+/main:v8/test/cctest/test-api.cc;l=25249;drc=00a341994fa5cc0b41ffa0e886eeef67fce0c804
+  intrinsic_iterator_prototype_interface_template->RemovePrototype();
+  intrinsic_iterator_prototype_interface_template->SetIntrinsicDataProperty(
+      V8AtomicString(isolate, "prototype"), parent_intrinsic_prototype);
+  interface_template->Inherit(intrinsic_iterator_prototype_interface_template);
+
+  interface_template->ReadOnlyPrototype();
+  interface_template->SetClassName(v8_class_string);
+
+  prototype_template->Set(
+      v8::Symbol::GetToStringTag(isolate), v8_class_string,
+      static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontEnum));
 
   instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
 }

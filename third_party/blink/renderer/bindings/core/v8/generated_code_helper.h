@@ -87,6 +87,15 @@ CORE_EXPORT void SetupIDLObservableArrayBackingListTemplate(
     v8::Local<v8::ObjectTemplate> instance_template,
     v8::Local<v8::FunctionTemplate> interface_template);
 
+CORE_EXPORT void SetupIDLSyncIteratorTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> instance_template,
+    v8::Local<v8::ObjectTemplate> prototype_template,
+    v8::Local<v8::FunctionTemplate> interface_template,
+    v8::Intrinsic parent_intrinsic_prototype,
+    const char* class_string);
+
 // Returns the length of arguments ignoring the undefined values at the end.
 inline int NonUndefinedArgumentLength(
     const v8::FunctionCallbackInfo<v8::Value>& info) {

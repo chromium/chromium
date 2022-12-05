@@ -216,6 +216,9 @@ generate_bindings("generate_bindings_all") {
   targets += [ "observable_array" ]
   outputs += generated_observable_array_sources_in_core +
              generated_observable_array_sources_in_modules
+  targets += [ "sync_iterator" ]
+  outputs += generated_sync_iterator_sources_in_core +
+             generated_sync_iterator_sources_in_modules
   targets += [ "typedef" ]
   outputs +=
       generated_typedef_sources_in_core + generated_typedef_sources_in_modules
@@ -296,6 +299,12 @@ action_with_pydeps("check_generated_file_list") {
   ]
   file_list += generated_observable_array_sources_in_core +
                generated_observable_array_sources_in_modules
+  file_list += [
+    "--kind",
+    "sync_iterator",
+  ]
+  file_list += generated_sync_iterator_sources_in_core +
+               generated_sync_iterator_sources_in_modules
   file_list += [
     "--kind",
     "union",

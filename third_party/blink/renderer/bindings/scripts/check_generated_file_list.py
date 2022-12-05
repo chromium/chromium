@@ -86,14 +86,27 @@ def main():
     web_idl_database = bind_gen.package_initializer.package_initializer(
     ).web_idl_database()
     idl_definitions = {
-        "callback_function": web_idl_database.callback_functions,
-        "callback_interface": web_idl_database.callback_interfaces,
-        "dictionary": web_idl_database.dictionaries,
-        "enumeration": web_idl_database.enumerations,
-        "interface": web_idl_database.interfaces,
-        "namespace": web_idl_database.namespaces,
-        "observable_array": web_idl_database.observable_arrays,
-        "union": web_idl_database.union_types,
+        "callback_function":
+        web_idl_database.callback_functions,
+        "callback_interface":
+        web_idl_database.callback_interfaces,
+        "dictionary":
+        web_idl_database.dictionaries,
+        "enumeration":
+        web_idl_database.enumerations,
+        "interface":
+        web_idl_database.interfaces,
+        "namespace":
+        web_idl_database.namespaces,
+        "observable_array":
+        web_idl_database.observable_arrays,
+        "sync_iterator": [
+            interface.sync_iterator
+            for interface in web_idl_database.interfaces
+            if interface.sync_iterator
+        ],
+        "union":
+        web_idl_database.union_types,
     }
 
     error_log = []

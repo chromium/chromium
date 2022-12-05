@@ -19,6 +19,7 @@ blink_core_sources("v8") {
             generated_interface_sources_in_core +
             generated_namespace_sources_in_core +
             generated_observable_array_sources_in_core +
+            generated_sync_iterator_sources_in_core +
             generated_typedef_sources_in_core + generated_union_sources_in_core
 
   deps = [

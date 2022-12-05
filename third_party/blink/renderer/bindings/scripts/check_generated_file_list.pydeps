@@ -46,6 +46,7 @@ bind_gen/observable_array.py
 bind_gen/package_initializer.py
 bind_gen/path_manager.py
 bind_gen/style_format.py
+bind_gen/sync_iterator.py
 bind_gen/task_queue.py
 bind_gen/typedef.py
 bind_gen/union.py
