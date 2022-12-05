@@ -1312,7 +1312,6 @@
       'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient',
       'ios-clang-tidy-rel': 'ios_device_release_compile_only',
       'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient',
-      'linux-clang-tidy-dbg': 'debug_bot_reclient',
       'linux-clang-tidy-rel': 'release_trybot_reclient',
       'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient',
       'mac-clang-tidy-rel': 'release_trybot',
