@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/extensions/dictionary_event_router.h"
 #include "chrome/browser/ash/extensions/ime_menu_event_router.h"
 #include "chrome/browser/ash/extensions/input_method_event_router.h"
@@ -24,9 +25,11 @@
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/common/extensions/api/input_method_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -39,6 +42,7 @@
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
+#include "ui/display/screen.h"
 
 namespace {
 
@@ -281,10 +285,25 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
                            params->input_method_id.c_str()),
         static_function_name())));
 
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (web_contents) {
-    const GURL& options_page_url = ime->options_page_url();
-    if (!options_page_url.is_empty()) {
+  const GURL& options_page_url = ime->options_page_url();
+  if (!options_page_url.is_empty()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // If Lacros is the only browser, open the options page in an Ash app window
+    // instead of a regular Ash browser window.
+    if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
+      auto* profile = ProfileManager::GetPrimaryUserProfile();
+      ash::SystemAppLaunchParams launch_params;
+      launch_params.url = options_page_url;
+      int64_t display_id =
+          display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+      ash::LaunchSystemWebAppAsync(
+          profile, ash::SystemWebAppType::OS_URL_HANDLER, launch_params,
+          std::make_unique<apps::WindowInfo>(display_id));
+      return RespondNow(NoArguments());
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    content::WebContents* web_contents = GetSenderWebContents();
+    if (web_contents) {
       Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
       content::OpenURLParams url_params(options_page_url, content::Referrer(),
                                         WindowOpenDisposition::SINGLETON_TAB,

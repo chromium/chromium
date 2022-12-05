@@ -625,6 +625,7 @@ source_set("chromeos") {
     "../ash/extensions/signin_screen_extensions_external_loader.h",
     "../ash/extensions/signin_screen_policy_provider.cc",
     "../ash/extensions/signin_screen_policy_provider.h",
+    "../ash/extensions/url_constants.h",
     "app_mode/app_session.cc",
     "app_mode/app_session.h",
     "app_mode/app_session_browser_window_handler.cc",
