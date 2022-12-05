@@ -148,6 +148,8 @@ TEST_F(AppPreloadServiceTest, FirstLoginStartedPrefSet) {
 }
 
 TEST_F(AppPreloadServiceTest, FirstLoginCompletedPrefSetAfterSuccess) {
+  // An empty response indicates that the request completed successfully, but
+  // there are no apps to install.
   proto::AppProvisioningResponse response;
 
   url_loader_factory_.AddResponse(
@@ -213,6 +215,26 @@ TEST_F(AppPreloadServiceTest, WebAppInstall) {
             EXPECT_EQ(update.PublisherId(), "https://peanuttypes.com/app");
           });
   ASSERT_TRUE(found);
+}
+
+TEST_F(AppPreloadServiceTest, FirstLoginStartedNotCompletedAfterServerError) {
+  url_loader_factory_.AddResponse(
+      AppPreloadServerConnector::GetServerUrl().spec(), /*content=*/"",
+      net::HTTP_INTERNAL_SERVER_ERROR);
+
+  base::test::TestFuture<bool> result;
+  auto* service = AppPreloadService::Get(GetProfile());
+  service->SetInstallationCompleteCallbackForTesting(result.GetCallback());
+  ASSERT_FALSE(result.Get());
+
+  auto flow_started =
+      GetStateManager(GetProfile()).FindBool(kFirstLoginFlowStartedKey);
+  auto flow_completed =
+      GetStateManager(GetProfile()).FindBool(kFirstLoginFlowCompletedKey);
+  // Since there was an error fetching apps, the flow should be "started" but
+  // not "completed".
+  EXPECT_EQ(flow_started, true);
+  EXPECT_EQ(flow_completed, absl::nullopt);
 }
 
 }  // namespace apps

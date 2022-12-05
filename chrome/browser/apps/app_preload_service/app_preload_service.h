@@ -58,7 +58,8 @@ class AppPreloadService : public KeyedService {
   // installs a set of default and OEM apps.
   void StartAppInstallationForFirstLogin(DeviceInfo device_info);
   // Processes the list of apps retrieved by the server connector.
-  void OnGetAppsForFirstLoginCompleted(std::vector<PreloadAppDefinition> apps);
+  void OnGetAppsForFirstLoginCompleted(
+      absl::optional<std::vector<PreloadAppDefinition>> apps);
   void OnAllAppInstallationFinished(const std::vector<bool>& results);
   // Called when the installation flow started by
   // `StartAppInstallationForFirstLogin` is complete, with `success` indicating

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -67,8 +68,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
       }));
 
   server_connector_.GetAppsForFirstLogin(
-      device_info, test_shared_loader_factory_,
-      base::OnceCallback<void(std::vector<PreloadAppDefinition>)>());
+      device_info, test_shared_loader_factory_, base::DoNothing());
 
   EXPECT_EQ(method, "POST");
   EXPECT_EQ(method_override_header, "GET");
@@ -95,12 +95,39 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
       AppPreloadServerConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<std::vector<PreloadAppDefinition>> test_callback;
+  base::test::TestFuture<absl::optional<std::vector<PreloadAppDefinition>>>
+      test_callback;
   server_connector_.GetAppsForFirstLogin(
       DeviceInfo(), test_shared_loader_factory_, test_callback.GetCallback());
   auto apps = test_callback.Get();
-  EXPECT_EQ(apps.size(), 1u);
-  EXPECT_EQ(apps[0].GetName(), "Peanut Types");
+  EXPECT_TRUE(apps.has_value());
+  EXPECT_EQ(apps->size(), 1u);
+  EXPECT_EQ(apps.value()[0].GetName(), "Peanut Types");
+}
+
+TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginServerError) {
+  url_loader_factory_.AddResponse(
+      AppPreloadServerConnector::GetServerUrl().spec(), /*content=*/"",
+      net::HTTP_INTERNAL_SERVER_ERROR);
+
+  base::test::TestFuture<absl::optional<std::vector<PreloadAppDefinition>>>
+      result;
+  server_connector_.GetAppsForFirstLogin(
+      DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
+  EXPECT_FALSE(result.Get().has_value());
+}
+
+TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginNetworkError) {
+  url_loader_factory_.AddResponse(
+      AppPreloadServerConnector::GetServerUrl(),
+      network::mojom::URLResponseHead::New(), /*content=*/"",
+      network::URLLoaderCompletionStatus(net::ERR_TIMED_OUT));
+
+  base::test::TestFuture<absl::optional<std::vector<PreloadAppDefinition>>>
+      result;
+  server_connector_.GetAppsForFirstLogin(
+      DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
+  EXPECT_FALSE(result.Get().has_value());
 }
 
 }  // namespace apps

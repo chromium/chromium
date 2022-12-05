@@ -101,20 +101,25 @@ void AppPreloadService::StartAppInstallationForFirstLogin(
 }
 
 void AppPreloadService::OnGetAppsForFirstLoginCompleted(
-    std::vector<PreloadAppDefinition> apps) {
+    absl::optional<std::vector<PreloadAppDefinition>> apps) {
+  if (!apps.has_value()) {
+    OnFirstLoginFlowComplete(/*success=*/false);
+    return;
+  }
+
   // Filter out any apps that should not be installed.
-  base::EraseIf(apps, [](const PreloadAppDefinition& app) {
+  base::EraseIf(apps.value(), [](const PreloadAppDefinition& app) {
     return app.GetPlatform() != AppType::kWeb;
   });
 
   // Request installation of any remaining apps. If there are no apps to
   // install, OnAllAppInstallationFinished will be called immediately.
   const auto install_barrier_callback_ = base::BarrierCallback<bool>(
-      apps.size(),
+      apps.value().size(),
       base::BindOnce(&AppPreloadService::OnAllAppInstallationFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  for (const PreloadAppDefinition& app : apps) {
+  for (const PreloadAppDefinition& app : apps.value()) {
     web_app_installer_->InstallApp(app, install_barrier_callback_);
   }
 }

@@ -131,19 +131,18 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
   const int net_error = loader_->NetError();
   loader_.reset();
 
-  // TODO(b/249646015): Pass error states to the caller to handle.
   if (net_error == net::Error::ERR_INSUFFICIENT_RESOURCES) {
     LOG(ERROR) << "Network request failed due to insufficent resources.";
-    std::move(callback).Run({});
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   // HTTP error codes in the 500-599 range represent server errors.
   const bool server_error =
       net_error != net::OK || (response_code >= 500 && response_code < 600);
-  if (server_error || response_body->empty()) {
+  if (server_error) {
     LOG(ERROR) << "Server error.";
-    std::move(callback).Run({});
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -151,7 +150,7 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
 
   if (!response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Parsing failed";
-    std::move(callback).Run(std::vector<PreloadAppDefinition>());
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
