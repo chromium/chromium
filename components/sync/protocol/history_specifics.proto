@@ -56,6 +56,12 @@ message HistorySpecifics {
   optional bool redirect_chain_start_incomplete = 19;
   optional bool redirect_chain_end_incomplete = 20;
 
+  // If this is set to true, then the redirect chain was too long and some
+  // entries were trimmed from the middle, so `redirect_entries` only
+  // corresponds to some of the first plus some of the last entries of the
+  // actual redirect chain.
+  optional bool redirect_chain_middle_trimmed = 21;
+
   message PageTransition {
     // The core transition type.
     optional SyncEnums.PageTransition core_transition = 1 [default = LINK];

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
@@ -35,6 +36,10 @@ namespace {
 
 using testing::_;
 using testing::Return;
+
+GURL GetURL(int i) {
+  return GURL(base::StringPrintf("https://url%i.com/", i));
+}
 
 sync_pb::HistorySpecifics CreateSpecifics(
     base::Time visit_time,
@@ -1074,6 +1079,60 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   EXPECT_EQ(history2.originator_referring_visit_id(), visit_row2.visit_id);
   EXPECT_TRUE(history2.redirect_chain_start_incomplete());
   EXPECT_FALSE(history2.redirect_chain_end_incomplete());
+}
+
+TEST_F(HistorySyncBridgeTest, TrimsExcessivelyLongRedirectChain) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Create a redirect chain with many entries.
+  constexpr int kNumRedirects = 100;
+  const base::Time visit_time = base::Time::Now();
+  VisitID previous_visit = kInvalidVisitID;
+  for (int i = 1; i <= kNumRedirects; i++) {
+    URLRow url_row(GetURL(i));
+    url_row.set_id(backend()->AddURL(url_row));
+
+    VisitRow visit_row;
+    visit_row.url_id = url_row.id();
+    visit_row.visit_time = visit_time;
+    visit_row.referring_visit = previous_visit;
+    int transition = ui::PAGE_TRANSITION_LINK;
+    if (i == 1) {
+      transition |= ui::PAGE_TRANSITION_CHAIN_START;
+    }
+    if (i < kNumRedirects) {
+      transition |= ui::PAGE_TRANSITION_SERVER_REDIRECT;
+    }
+    if (i == kNumRedirects) {
+      transition |= ui::PAGE_TRANSITION_CHAIN_END;
+    }
+    visit_row.transition = ui::PageTransitionFromInt(transition);
+    previous_visit = visit_row.visit_id = backend()->AddVisit(visit_row);
+
+    bridge()->OnURLVisited(
+        /*history_backend=*/nullptr, url_row, visit_row);
+  }
+
+  // The chain should have been Put() to the processor.
+  ASSERT_EQ(processor()->GetEntities().size(), 1u);
+  const std::string storage_key =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(visit_time);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key), 1u);
+  // ...but since it is excessively long, it should have been trimmed.
+  sync_pb::HistorySpecifics history =
+      processor()->GetEntities().at(storage_key).specifics.history();
+  EXPECT_LT(history.redirect_entries_size(), kNumRedirects);
+  // The entity should also be flagged as "trimmed".
+  EXPECT_TRUE(history.redirect_chain_middle_trimmed());
+  EXPECT_FALSE(history.redirect_chain_start_incomplete());
+  EXPECT_FALSE(history.redirect_chain_end_incomplete());
+  // At least the first and the last entry should have survived.
+  ASSERT_GE(history.redirect_entries_size(), 2);
+  EXPECT_EQ(GURL(history.redirect_entries(0).url()), GetURL(1));
+  EXPECT_EQ(
+      GURL(history.redirect_entries(history.redirect_entries_size() - 1).url()),
+      GetURL(kNumRedirects));
 }
 
 TEST_F(HistorySyncBridgeTest, DownloadsUpdatedEntity) {

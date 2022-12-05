@@ -33,6 +33,11 @@ namespace {
 
 constexpr base::TimeDelta kMaxWriteToTheFuture = base::Days(2);
 
+// Redirect chains have theoretically unbounded size, and in excessive cases
+// they can become so large that the whole entity may fail to sync due to its
+// size. Avoid even trying to commit such entities.
+constexpr int kMaxRedirectsPerEntity = 10;
+
 // Some pages embed the favicon image itself in the URL, using the data: scheme.
 // These cases, or more generally any favicon URL that is unreasonably large,
 // should simply be ignored, because it otherwise runs into the risk that the
@@ -252,6 +257,7 @@ absl::optional<VisitContentAnnotations> MakeContentAnnotations(
 std::unique_ptr<syncer::EntityData> MakeEntityData(
     const std::string& local_cache_guid,
     const std::vector<AnnotatedVisit>& redirect_visits,
+    bool redirect_chain_middle_trimmed,
     const GURL& referrer_url,
     const std::vector<GURL>& favicon_urls) {
   DCHECK(!local_cache_guid.empty());
@@ -322,6 +328,8 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   // end up being false here. However, in some cases (notably, client
   // redirects), a single redirect chain may be split up over multiple entities,
   // in which case one (or even both) might be true.
+
+  history->set_redirect_chain_middle_trimmed(redirect_chain_middle_trimmed);
 
   // Referring visit and opener visit are taken from the *first* visit in the
   // chain, since they only make sense for that one.
@@ -888,6 +896,15 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
         std::make_move_iterator(subchain_begin),
         std::make_move_iterator(subchain_end));
 
+    // If the redirect chain is excessively long, trim it at the middle.
+    bool chain_middle_trimmed = false;
+    if (subchain_visits.size() > kMaxRedirectsPerEntity) {
+      int keep = kMaxRedirectsPerEntity / 2;
+      subchain_visits.erase(subchain_visits.begin() + keep,
+                            subchain_visits.end() - keep);
+      chain_middle_trimmed = true;
+    }
+
     // Make `subchain_begin` point to the beginning of the *next* subchain, for
     // the next iteration.
     subchain_begin = subchain_end;
@@ -906,7 +923,8 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
         annotated_visits.back().url_row.url());
     // Note: `favicon_urls` may legitimately be empty, that's fine.
     entities.push_back(MakeEntityData(GetLocalCacheGuid(), annotated_visits,
-                                      referrer_url, favicon_urls));
+                                      chain_middle_trimmed, referrer_url,
+                                      favicon_urls));
   }
   return entities;
 }
