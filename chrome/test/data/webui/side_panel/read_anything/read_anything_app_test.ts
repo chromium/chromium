@@ -14,7 +14,7 @@ suite('ReadAnythingAppTest', () => {
   // Do not call the real `onConnected()`. As defined in
   // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
   // rest of the Read Anything feature, which we are not testing here.
-  chrome.readAnything.onConnected = function() {};
+  chrome.readAnything.onConnected = () => {};
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -23,26 +23,26 @@ suite('ReadAnythingAppTest', () => {
     chrome.readAnything.setThemeForTesting('default', 18.0, 0, 0, 1, 0);
   });
 
-  function assertFontName(fontFamily: string) {
+  const assertFontName = (fontFamily: string) => {
     const container = readAnythingApp.shadowRoot!.getElementById('container');
     assertEquals(fontFamily, getComputedStyle(container!).fontFamily);
-  }
+  };
 
-  function assertFontSize(fontSize: string) {
+  const assertFontSize = (fontSize: string) => {
     const container = readAnythingApp.shadowRoot!.getElementById('container');
     assertEquals(fontSize, getComputedStyle(container!).fontSize);
-  }
+  };
 
-  function assertLineSpacing(lineSpacing: string) {
+  const assertLineSpacing = (lineSpacing: string) => {
     const container = readAnythingApp.shadowRoot!.getElementById('container');
     assertEquals(lineSpacing, getComputedStyle(container!).lineHeight);
-  }
+  };
 
-  function assertContainerInnerHTML(expected: string) {
+  const assertContainerInnerHTML = (expected: string) => {
     const actual =
         readAnythingApp.shadowRoot!.getElementById('container')!.innerHTML;
     assertEquals(actual, expected);
-  }
+  };
 
   test('updateTheme fontName', () => {
     chrome.readAnything.setThemeForTesting('Standard font', 18.0, 0, 0, 1, 0);

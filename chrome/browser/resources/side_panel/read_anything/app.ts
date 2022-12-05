@@ -23,13 +23,13 @@ const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 // check if chrome.readAnything exists prevents runtime errors when the feature
 // is disabled.
 if (chrome.readAnything) {
-  chrome.readAnything.updateContent = function() {
+  chrome.readAnything.updateContent = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp);
     readAnythingApp.updateContent();
   };
 
-  chrome.readAnything.updateTheme = function() {
+  chrome.readAnything.updateTheme = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp);
     readAnythingApp.updateTheme();
@@ -89,7 +89,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const url = chrome.readAnything.getUrl(nodeId);
     if (url && element.nodeName === 'A') {
       element.setAttribute('href', url);
-      element.onclick = function() {
+      element.onclick = () => {
         chrome.readAnything.onLinkClicked(nodeId);
       };
     }
