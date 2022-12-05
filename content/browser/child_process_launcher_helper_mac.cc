@@ -99,7 +99,15 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
                            plugins_,
 #endif
                            &compiler);
-    policy_ = compiler.CompilePolicyToProto();
+
+    std::string error;
+    absl::optional<sandbox::mac::SandboxPolicy> policy =
+        compiler.CompilePolicyToProto(&error);
+    if (!policy.has_value()) {
+      LOG(ERROR) << "Failed to compile sandbox policy: " << error;
+      return false;
+    }
+    policy_ = std::move(*policy);
 
     seatbelt_exec_client_ = std::make_unique<sandbox::SeatbeltExecClient>();
     int pipe = seatbelt_exec_client_->GetReadFD();

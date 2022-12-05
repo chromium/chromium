@@ -11,9 +11,16 @@
 
 namespace sandbox {
 
-SandboxCompiler::SandboxCompiler() = default;
+SandboxCompiler::SandboxCompiler() : SandboxCompiler(Target::kSource) {}
 
-SandboxCompiler::SandboxCompiler(const std::string& profile_str) {
+SandboxCompiler::SandboxCompiler(Target mode) : mode_(mode) {
+  if (mode_ == Target::kCompiled) {
+    params_ = Seatbelt::Parameters::Create();
+  }
+}
+
+SandboxCompiler::SandboxCompiler(const std::string& profile_str)
+    : SandboxCompiler(Target::kImmediate) {
   SetProfile(profile_str);
 }
 
@@ -29,26 +36,60 @@ bool SandboxCompiler::SetBooleanParameter(const std::string& key, bool value) {
 
 bool SandboxCompiler::SetParameter(const std::string& key,
                                    const std::string& value) {
-  google::protobuf::MapPair<std::string, std::string> pair(key, value);
-  return policy_.mutable_params()->insert(pair).second;
+  // Regardless of the mode, add the strings to the proto map because
+  // Seatbelt::Parameters::Set does not copy the strings, which means temporary
+  // std::string references need to be owned somewhere.
+  auto it = policy_.mutable_params()->insert({key, value});
+
+  if (mode_ == Target::kCompiled && it.second) {
+    if (!params_.Set(it.first->first.c_str(), it.first->second.c_str())) {
+      policy_.mutable_params()->erase(it.first);
+      return false;
+    }
+  }
+
+  return it.second;
 }
 
 bool SandboxCompiler::CompileAndApplyProfile(std::string* error) {
-  std::vector<const char*> params;
+  if (mode_ == Target::kSource) {
+    std::vector<const char*> params;
 
-  for (const auto& kv : policy_.params()) {
-    params.push_back(kv.first.c_str());
-    params.push_back(kv.second.c_str());
+    for (const auto& kv : policy_.params()) {
+      params.push_back(kv.first.c_str());
+      params.push_back(kv.second.c_str());
+    }
+    // The parameters array must be null terminated.
+    params.push_back(nullptr);
+
+    return Seatbelt::InitWithParams(policy_.profile().c_str(), 0, params.data(),
+                                    error);
+  } else if (mode_ == Target::kCompiled) {
+    absl::optional<Seatbelt::CompiledProfile> profile =
+        Seatbelt::Compile(policy_.profile().c_str(), params_, error);
+    if (profile) {
+      return Seatbelt::ApplyCompiledProfile(*profile, error);
+    }
   }
-  // The parameters array must be null terminated.
-  params.push_back(static_cast<const char*>(0));
-
-  return sandbox::Seatbelt::InitWithParams(policy_.profile().c_str(), 0,
-                                           params.data(), error);
+  return false;
 }
 
-const mac::SandboxPolicy& SandboxCompiler::CompilePolicyToProto() {
-  return policy_;
+absl::optional<mac::SandboxPolicy> SandboxCompiler::CompilePolicyToProto(
+    std::string* error) {
+  if (mode_ == Target::kSource) {
+    mac::SandboxPolicy policy;
+    policy.mutable_source()->CopyFrom(policy_);
+    return policy;
+  } else if (mode_ == Target::kCompiled) {
+    absl::optional<Seatbelt::CompiledProfile> profile =
+        Seatbelt::Compile(policy_.profile().c_str(), params_, error);
+    if (profile) {
+      mac::SandboxPolicy policy;
+      profile->CopyData(*policy.mutable_compiled()->mutable_data());
+      return policy;
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace sandbox

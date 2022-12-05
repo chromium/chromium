@@ -190,16 +190,24 @@ bool SeatbeltExecServer::InitializeSandbox() {
 }
 
 bool SeatbeltExecServer::ApplySandboxProfile(const mac::SandboxPolicy& policy) {
-  std::vector<const char*> weak_params;
-  for (const auto& pair : policy.params()) {
-    weak_params.push_back(pair.first.c_str());
-    weak_params.push_back(pair.second.c_str());
-  }
-  weak_params.push_back(nullptr);
-
   std::string error;
-  bool ok = Seatbelt::InitWithParams(policy.profile().c_str(), 0,
-                                     weak_params.data(), &error);
+  bool ok = false;
+
+  if (policy.has_compiled()) {
+    ok = Seatbelt::ApplyCompiledProfile(policy.compiled().data(), &error);
+  } else {
+    const mac::SourcePolicy& source_policy = policy.source();
+
+    std::vector<const char*> weak_params;
+    for (const auto& pair : source_policy.params()) {
+      weak_params.push_back(pair.first.c_str());
+      weak_params.push_back(pair.second.c_str());
+    }
+    weak_params.push_back(nullptr);
+
+    ok = Seatbelt::InitWithParams(source_policy.profile().c_str(), 0,
+                                  weak_params.data(), &error);
+  }
   if (!ok) {
     logging::Error("SeatbeltExecServer: Failed to initialize sandbox: %s",
                    error.c_str());

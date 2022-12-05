@@ -75,6 +75,10 @@ class SandboxMacTest : public base::MultiProcessTest {
                            /*plugins=*/{},
 #endif
                            &compiler);
+    std::string error;
+    absl::optional<sandbox::mac::SandboxPolicy> policy =
+        compiler.CompilePolicyToProto(&error);
+    ASSERT_TRUE(policy.has_value()) << error;
 
     sandbox::SeatbeltExecClient client;
     pipe_ = client.GetReadFD();
@@ -85,7 +89,7 @@ class SandboxMacTest : public base::MultiProcessTest {
 
     base::Process process = SpawnChildWithOptions(procname, options);
     ASSERT_TRUE(process.IsValid());
-    ASSERT_TRUE(client.SendPolicy(compiler.CompilePolicyToProto()));
+    ASSERT_TRUE(client.SendPolicy(*policy));
 
     int rv = -1;
     ASSERT_TRUE(base::WaitForMultiprocessTestChildExit(

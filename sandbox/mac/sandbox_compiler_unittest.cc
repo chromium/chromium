@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "base/process/kill.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "sandbox/mac/sandbox_compiler.h"
@@ -14,7 +15,34 @@
 
 namespace sandbox {
 
-class SandboxCompilerTest : public base::MultiProcessTest {};
+namespace {
+
+constexpr char kTestParamSwitch[] = "sandbox-compiler-target";
+
+SandboxCompiler::Target GetParamInChild() {
+  std::string target_str =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kTestParamSwitch);
+  CHECK(!target_str.empty());
+  int target_int;
+  CHECK(base::StringToInt(target_str, &target_int));
+  return static_cast<SandboxCompiler::Target>(target_int);
+}
+
+}  // namespace
+
+class SandboxCompilerTest
+    : public base::MultiProcessTest,
+      public testing::WithParamInterface<SandboxCompiler::Target> {
+ protected:
+  base::CommandLine MakeCmdLine(const std::string& procname) override {
+    base::CommandLine command_line =
+        base::MultiProcessTest::MakeCmdLine(procname);
+    command_line.AppendSwitchASCII(
+        kTestParamSwitch, base::NumberToString(static_cast<int>(GetParam())));
+    return command_line;
+  }
+};
 
 MULTIPROCESS_TEST_MAIN(BasicProfileProcess) {
   std::string profile =
@@ -22,7 +50,8 @@ MULTIPROCESS_TEST_MAIN(BasicProfileProcess) {
       "(deny default (with no-log))"
       "(allow file-read* file-write* (literal \"/\"))";
 
-  SandboxCompiler compiler(profile);
+  SandboxCompiler compiler(GetParamInChild());
+  compiler.SetProfile(profile);
 
   std::string error;
   CHECK(compiler.CompileAndApplyProfile(&error));
@@ -30,7 +59,7 @@ MULTIPROCESS_TEST_MAIN(BasicProfileProcess) {
   return 0;
 }
 
-TEST_F(SandboxCompilerTest, BasicProfileTest) {
+TEST_P(SandboxCompilerTest, BasicProfileTest) {
   base::Process process = SpawnChild("BasicProfileProcess");
   ASSERT_TRUE(process.IsValid());
   int exit_code = 42;
@@ -45,7 +74,8 @@ MULTIPROCESS_TEST_MAIN(BasicProfileWithParamProcess) {
       "(deny default (with no-log))"
       "(allow file-read* file-write* (literal (param \"DIR\")))";
 
-  SandboxCompiler compiler(profile);
+  SandboxCompiler compiler(GetParamInChild());
+  compiler.SetProfile(profile);
   CHECK(compiler.SetParameter("DIR", "/"));
 
   std::string error;
@@ -54,7 +84,7 @@ MULTIPROCESS_TEST_MAIN(BasicProfileWithParamProcess) {
   return 0;
 }
 
-TEST_F(SandboxCompilerTest, BasicProfileTestWithParam) {
+TEST_P(SandboxCompilerTest, BasicProfileTestWithParam) {
   base::Process process = SpawnChild("BasicProfileWithParamProcess");
   ASSERT_TRUE(process.IsValid());
   int exit_code = 42;
@@ -69,7 +99,8 @@ MULTIPROCESS_TEST_MAIN(ProfileFunctionalProcess) {
       "(deny default (with no-log))"
       "(allow file-read-data file-read-metadata (literal \"/dev/urandom\"))";
 
-  SandboxCompiler compiler(profile);
+  SandboxCompiler compiler(GetParamInChild());
+  compiler.SetProfile(profile);
 
   std::string error;
   CHECK(compiler.CompileAndApplyProfile(&error));
@@ -85,7 +116,7 @@ MULTIPROCESS_TEST_MAIN(ProfileFunctionalProcess) {
   return 0;
 }
 
-TEST_F(SandboxCompilerTest, ProfileFunctionalityTest) {
+TEST_P(SandboxCompilerTest, ProfileFunctionalityTest) {
   base::Process process = SpawnChild("ProfileFunctionalProcess");
   ASSERT_TRUE(process.IsValid());
   int exit_code = 42;
@@ -102,9 +133,11 @@ MULTIPROCESS_TEST_MAIN(ProfileFunctionalTestWithParamsProcess) {
       "    (allow file-read-data file-read-metadata (literal (param "
       "\"URANDOM\"))))";
 
-  SandboxCompiler compiler(profile);
+  SandboxCompiler compiler(GetParamInChild());
+  compiler.SetProfile(profile);
 
   CHECK(compiler.SetBooleanParameter("ALLOW_FILE", true));
+  CHECK(!compiler.SetParameter("ALLOW_FILE", "duplicate key is not allowed"));
   CHECK(compiler.SetParameter("URANDOM", "/dev/urandom"));
 
   std::string error;
@@ -125,7 +158,7 @@ MULTIPROCESS_TEST_MAIN(ProfileFunctionalTestWithParamsProcess) {
   return 0;
 }
 
-TEST_F(SandboxCompilerTest, ProfileFunctionalityTestWithParams) {
+TEST_P(SandboxCompilerTest, ProfileFunctionalityTestWithParams) {
   base::Process process = SpawnChild("ProfileFunctionalTestWithParamsProcess");
   ASSERT_TRUE(process.IsValid());
   int exit_code = 42;
@@ -137,7 +170,8 @@ TEST_F(SandboxCompilerTest, ProfileFunctionalityTestWithParams) {
 MULTIPROCESS_TEST_MAIN(ProfileFunctionalityTestErrorProcess) {
   std::string profile = "(+ 5 a)";
 
-  SandboxCompiler compiler(profile);
+  SandboxCompiler compiler(GetParamInChild());
+  compiler.SetProfile(profile);
 
   // Make sure that this invalid profile results in an error returned.
   std::string error;
@@ -148,7 +182,7 @@ MULTIPROCESS_TEST_MAIN(ProfileFunctionalityTestErrorProcess) {
   return 0;
 }
 
-TEST_F(SandboxCompilerTest, ProfileFunctionalityTestError) {
+TEST_P(SandboxCompilerTest, ProfileFunctionalityTestError) {
   base::Process process = SpawnChild("ProfileFunctionalityTestErrorProcess");
   ASSERT_TRUE(process.IsValid());
   int exit_code = 42;
@@ -157,8 +191,9 @@ TEST_F(SandboxCompilerTest, ProfileFunctionalityTestError) {
   EXPECT_EQ(exit_code, 0);
 }
 
-TEST_F(SandboxCompilerTest, DuplicateKeys) {
-  SandboxCompiler compiler("(version 1)(deny default)");
+TEST_P(SandboxCompilerTest, DuplicateKeys) {
+  SandboxCompiler compiler(GetParam());
+  compiler.SetProfile("(version 1)(deny default)");
 
   EXPECT_TRUE(compiler.SetBooleanParameter("key1", true));
   EXPECT_FALSE(compiler.SetBooleanParameter("key1", false));
@@ -166,9 +201,34 @@ TEST_F(SandboxCompilerTest, DuplicateKeys) {
   EXPECT_TRUE(compiler.SetParameter("key3", "value"));
   EXPECT_FALSE(compiler.SetParameter("key3", "value"));
 
-  mac::SandboxPolicy policy = compiler.CompilePolicyToProto();
-  EXPECT_EQ(3, policy.params_size());
-  EXPECT_FALSE(policy.profile().empty());
+  absl::optional<mac::SandboxPolicy> policy =
+      compiler.CompilePolicyToProto(nullptr);
+  ASSERT_TRUE(policy.has_value());
+  if (GetParam() == SandboxCompiler::Target::kSource) {
+    EXPECT_EQ(3, policy->source().params_size());
+    EXPECT_FALSE(policy->source().profile().empty());
+    EXPECT_TRUE(policy->compiled().data().empty());
+  } else {
+    EXPECT_EQ(0, policy->source().params_size());
+    EXPECT_TRUE(policy->source().profile().empty());
+    EXPECT_FALSE(policy->compiled().data().empty());
+  }
 }
+
+TEST_F(SandboxCompilerTest, DefaultConstructor) {
+  std::string profile =
+      R"((version 1) (deny default) (allow file-read* (path "/")))";
+  SandboxCompiler compiler(profile);
+  absl::optional<mac::SandboxPolicy> policy =
+      compiler.CompilePolicyToProto(nullptr);
+  ASSERT_TRUE(policy.has_value());
+  EXPECT_FALSE(policy->compiled().data().empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(Target,
+                         SandboxCompilerTest,
+                         testing::Values(SandboxCompiler::Target::kSource,
+                                         SandboxCompiler::Target::kCompiled,
+                                         SandboxCompiler::Target::kImmediate));
 
 }  // namespace sandbox

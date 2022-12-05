@@ -29,11 +29,15 @@ MULTIPROCESS_TEST_MAIN(ServerTest) {
   std::string allowed_path = "/Applications";
 
   mac::SandboxPolicy policy;
-  CHECK(policy.mutable_params()
+  CHECK(policy.mutable_source()
+            ->mutable_params()
             ->insert({"ALLOWED_READ_DIR", allowed_path})
             .second);
-  CHECK(policy.mutable_params()->insert({"EXECUTABLE_PATH", exec_path}).second);
-  policy.set_profile(profile);
+  CHECK(policy.mutable_source()
+            ->mutable_params()
+            ->insert({"EXECUTABLE_PATH", exec_path})
+            .second);
+  policy.mutable_source()->set_profile(profile);
 
   CHECK(exec_server.ApplySandboxProfile(policy));
 

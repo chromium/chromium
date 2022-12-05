@@ -11,7 +11,18 @@ package sandbox.mac;
 // come from the same code base, this uses required fields to save on
 // validation.
 
-message SandboxPolicy {
+message SourcePolicy {
   required string profile = 1;
   map<string, string> params = 2;
+}
+
+message CompiledPolicy {
+  required bytes data = 1;
+}
+
+message SandboxPolicy {
+  oneof policy {
+    SourcePolicy source = 1;
+    CompiledPolicy compiled = 2;
+  }
 }
