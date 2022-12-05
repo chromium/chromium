@@ -112,7 +112,8 @@ def main():
     log_level = logging.DEBUG
   else:
     log_level = logging.INFO
-  logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
+  logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
+                      level=log_level)
 
   output_dir = args.output_dir
   if not output_dir:

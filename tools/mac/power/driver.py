@@ -193,9 +193,7 @@ class DriverContext:
           powermetrics_output
       ]
 
-      powermetrics_process = subprocess.Popen(powermetrics_args,
-                                              stdout=subprocess.PIPE,
-                                              stdin=subprocess.PIPE)
+      powermetrics_process = subprocess.Popen(powermetrics_args)
 
       power_sampler_args = [
           self._power_sample_path, f"--sample-on-notification",
@@ -209,11 +207,14 @@ class DriverContext:
         power_sampler_args += [
             f"--resource-coalition-pid={browser_process.pid}"
         ]
-      power_sampler_process = subprocess.Popen(power_sampler_args,
-                                               stdout=subprocess.PIPE,
-                                               stdin=subprocess.PIPE)
+      power_sampler_process = subprocess.Popen(power_sampler_args)
+
       scenario_driver.Wait()
+
+      logging.debug("Waiting for power_sampler to exit")
       power_sampler_process.wait()
+      logging.debug(
+          f"power_sampler returned {power_sampler_process.returncode}")
 
     finally:
       scenario_driver.TearDown()
