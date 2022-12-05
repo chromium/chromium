@@ -1280,7 +1280,6 @@ component("platform") {
     "p2p/mdns_responder_adapter.h",
     "p2p/network_list_manager.h",
     "p2p/network_list_observer.h",
-    "p2p/network_manager_uma.cc",
     "p2p/network_manager_uma.h",
     "p2p/port_allocator.cc",
     "p2p/port_allocator.h",

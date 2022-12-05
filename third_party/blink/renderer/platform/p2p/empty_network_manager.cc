@@ -9,7 +9,6 @@
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/blink/renderer/platform/p2p/ipc_network_manager.h"
-#include "third_party/blink/renderer/platform/p2p/network_manager_uma.h"
 
 namespace blink {
 
@@ -73,10 +72,6 @@ void EmptyNetworkManager::OnNetworksChanged() {
   if (!start_count_)
     return;
 
-  if (!sent_first_update_)
-    blink::ReportIPPermissionStatus(blink::PERMISSION_NOT_REQUESTED);
-
-  sent_first_update_ = true;
   SignalNetworksChanged();
 }
 

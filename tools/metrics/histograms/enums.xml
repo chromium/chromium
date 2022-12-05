@@ -53341,15 +53341,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="9" label="print-quality"/>
 </enum>
 
-<enum name="IPPermissionStatus">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Not requested"/>
-  <int value="2" label="Requested but denied"/>
-  <int value="3"
-      label="Requested and granted after checking mic/camera permission"/>
-  <int value="4" label="Requested and granted automatically"/>
-</enum>
-
 <enum name="IppVersion">
   <int value="0" label="Error">Failed to parse version</int>
   <int value="1" label="Unknown">Version value not recognized</int>

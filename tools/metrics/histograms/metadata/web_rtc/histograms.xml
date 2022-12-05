@@ -1358,18 +1358,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.IPPermissionStatus"
-    enum="IPPermissionStatus" expires_after="M81">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    Whether the permission to collect the local IP addresses in WebRTC has been
-    requested and/or granted. This is collected the first time when networks
-    updated event is reported or if never reported, during the destruction phase
-    of a call.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.IPv4Interfaces" units="units"
     expires_after="2023-11-01">
   <owner>hta@chromium.org</owner>
@@ -1763,16 +1751,6 @@ chromium-metrics-reviews@google.com.
     The number of thermal throttling episodes the peer connection encountered.
     Reported when the peer connection is torn down if the peer connection had at
     least one track.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.TimeToNetworkUpdated" units="ms"
-    expires_after="M77">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    Time to receive the first SignalNetworksChanged from the request to start
-    updating network in PeerConnection.
   </summary>
 </histogram>
 

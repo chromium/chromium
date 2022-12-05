@@ -48,9 +48,6 @@ FilteringNetworkManager::FilteringNetworkManager(
 
 FilteringNetworkManager::~FilteringNetworkManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // This helps to catch the case if permission never comes back.
-  if (!start_updating_time_.is_null())
-    ReportMetrics(false);
 }
 
 base::WeakPtr<FilteringNetworkManager> FilteringNetworkManager::GetWeakPtr() {
@@ -68,8 +65,8 @@ void FilteringNetworkManager::StartUpdating() {
   DCHECK(started_permission_check_);
   DCHECK(network_manager_for_signaling_thread_);
 
-  if (start_updating_time_.is_null()) {
-    start_updating_time_ = base::TimeTicks::Now();
+  if (!start_updating_called_) {
+    start_updating_called_ = true;
     network_manager_for_signaling_thread_->SignalNetworksChanged.connect(
         this, &FilteringNetworkManager::OnNetworksChanged);
   }
@@ -200,15 +197,6 @@ void FilteringNetworkManager::OnNetworksChanged() {
     FireEventIfStarted();
 }
 
-void FilteringNetworkManager::ReportMetrics(bool report_start_latency) {
-  if (report_start_latency) {
-    blink::ReportTimeToUpdateNetworkList(base::TimeTicks::Now() -
-                                         start_updating_time_);
-  }
-
-  ReportIPPermissionStatus(GetIPPermissionStatus());
-}
-
 blink::IPPermissionStatus FilteringNetworkManager::GetIPPermissionStatus()
     const {
   if (enumeration_permission() == ENUMERATION_ALLOWED) {
@@ -227,9 +215,6 @@ blink::IPPermissionStatus FilteringNetworkManager::GetIPPermissionStatus()
 void FilteringNetworkManager::FireEventIfStarted() {
   if (!start_count_)
     return;
-
-  if (!sent_first_update_)
-    ReportMetrics(true);
 
   // Post a task to avoid reentrancy.
   //

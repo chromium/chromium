@@ -64,10 +64,6 @@ class EmptyNetworkManager : public rtc::NetworkManagerBase,
 
   THREAD_CHECKER(thread_checker_);
 
-  // Whether we have fired the first SignalNetworksChanged.
-  // Used to ensure we only report metrics once.
-  bool sent_first_update_ = false;
-
   // SignalNetworksChanged will only be fired if there is any outstanding
   // StartUpdating.
   int start_count_ = 0;
