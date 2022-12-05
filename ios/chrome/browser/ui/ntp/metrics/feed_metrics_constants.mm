@@ -34,10 +34,6 @@ const char kDiscoverFeedCardShownAtIndex[] =
     "NewTabPage.ContentSuggestions.Shown";
 const char kFollowingFeedCardShownAtIndex[] =
     "ContentSuggestions.Feed.WebFeed.Shown";
-const char kDiscoverFeedCardOpenedAtIndex[] =
-    "NewTabPage.ContentSuggestions.Opened";
-const char kFollowingFeedCardOpenedAtIndex[] =
-    "ContentSuggestions.Feed.WebFeed.Opened";
 const char kDiscoverFeedNoticeCardFulfilled[] =
     "ContentSuggestions.Feed.NoticeCardFulfilled2";
 const char kDiscoverFeedArticlesFetchNetworkDurationSuccess[] =
@@ -55,6 +51,7 @@ const char kDiscoverFeedUploadActionsNetworkDurationFailure[] =
 const char kDiscoverFeedNetworkDuration[] =
     "ContentSuggestions.Feed.Network.Duration";
 const char kDiscoverFeedURLOpened[] = "NewTabPage.ContentSuggestions.Opened";
+const char kFollowingFeedURLOpened[] = "ContentSuggestions.Feed.WebFeed.Opened";
 const char kDiscoverFeedActivityLoggingEnabled[] =
     "ContentSuggestions.Feed.ActivityLoggingEnabled";
 const char kDiscoverFeedBrokenNTPHierarchy[] =
