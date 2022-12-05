@@ -1326,7 +1326,9 @@ void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
       base::BindOnce(
           [](base::WeakPtr<UserSessionManager> self,
              const UserContext& user_context, Profile* profile) {
-            CHECK(profile);
+            // `profile` might be null, meaning that the creation failed.
+            if (!profile)
+              return;
             // Profile is created, extensions and promo resources
             // are initialized. At this point all other Chrome OS
             // services will be notified that it is safe to use
@@ -1338,7 +1340,9 @@ void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
       base::BindOnce(
           [](base::WeakPtr<UserSessionManager> self,
              const UserContext& user_context, Profile* profile) {
-            CHECK(profile);
+            // `profile` might be null, meaning that the creation failed.
+            if (!profile)
+              return;
             // Profile created but before initializing extensions and
             // promo resources.
             self->InitProfilePreferences(profile, user_context);
