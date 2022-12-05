@@ -104,7 +104,8 @@ class BackForwardCacheActiveSizeTest : public ::testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(BackForwardCacheActiveSizeTest, ActiveCacheSize) {
+// TODO(crbug.com/1395431): re-enable when bug is fixed.
+TEST_F(BackForwardCacheActiveSizeTest, DISABLED_ActiveCacheSize) {
   EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 6u);
   EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 2u);
   EXPECT_TRUE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
@@ -129,7 +130,8 @@ class BackForwardCacheOverwriteSizeTest : public ::testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(BackForwardCacheOverwriteSizeTest, OverwrittenCacheSize) {
+// TODO(crbug.com/1395431): re-enable when bug is fixed.
+TEST_F(BackForwardCacheOverwriteSizeTest, DISABLED_OverwrittenCacheSize) {
   EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 8u);
   EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 4u);
   EXPECT_TRUE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
