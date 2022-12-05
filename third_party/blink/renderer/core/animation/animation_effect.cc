@@ -39,8 +39,20 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/timing_input.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 
 namespace blink {
+
+namespace {
+
+void UseCountEffectTimingDelayZero(Document& document, const Timing& timing) {
+  if (timing.iteration_duration == AnimationTimeDelta()) {
+    UseCounter::Count(document, WebFeature::kGetEffectTimingDelayZero);
+  }
+}
+
+}  // namespace
 
 AnimationEffect::AnimationEffect(const Timing& timing,
                                  EventDelegate* event_delegate)
@@ -193,8 +205,10 @@ void AnimationEffect::SetIgnoreCssTimingProperties() {
 }
 
 EffectTiming* AnimationEffect::getTiming() const {
-  if (const Animation* animation = GetAnimation())
+  if (const Animation* animation = GetAnimation()) {
     animation->FlushPendingUpdates();
+    UseCountEffectTimingDelayZero(*animation->GetDocument(), SpecifiedTiming());
+  }
   return SpecifiedTiming().ConvertToEffectTiming();
 }
 

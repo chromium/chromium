@@ -41783,6 +41783,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4414" label="WindowCloseHistoryLengthOne"/>
   <int value="4415" label="CreateNSResolverWithNonElements"/>
   <int value="4416" label="CSSValueAppearanceNonStandard"/>
+  <int value="4417" label="CSSGetComputedAnimationDelayZero"/>
+  <int value="4418" label="GetEffectTimingDelayZero"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

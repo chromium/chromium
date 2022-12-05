@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -73,6 +74,17 @@ void LogUnimplementedPropertyID(const CSSProperty& property) {
 
   DLOG(ERROR) << "Blink does not yet implement getComputedStyle for '"
               << property.GetPropertyName() << "'.";
+}
+
+void UseCountAnimationDelayZero(Document& document,
+                                const ComputedStyle& style) {
+  if (const CSSAnimationData* animation_data = style.Animations()) {
+    const Vector<double>& duration = animation_data->DurationList();
+    if (duration.size() == 1u && duration[0] == 0.0) {
+      UseCounter::Count(document,
+                        WebFeature::kCSSGetComputedAnimationDelayZero);
+    }
+  }
 }
 
 }  // namespace
@@ -314,6 +326,11 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
 
   if (!style)
     return nullptr;
+
+  if (property_class.PropertyID() == CSSPropertyID::kAnimation ||
+      property_class.PropertyID() == CSSPropertyID::kAnimationDelay) {
+    UseCountAnimationDelayZero(styled_node->GetDocument(), *style);
+  }
 
   const CSSValue* value = property_class.CSSValueFromComputedStyle(
       *style, StyledLayoutObject(), allow_visited_style_);

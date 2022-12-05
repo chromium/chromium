@@ -2477,4 +2477,22 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
                    animation->TimeToEffectChange().value());
 }
 
+TEST_P(AnimationAnimationTestNoCompositing,
+       GetEffectTimingDelayZeroUseCounter) {
+  animation->setEffect(MakeAnimation(/* duration */ 1.0));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kGetEffectTimingDelayZero));
+  EXPECT_TRUE(animation->effect()->getTiming());
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kGetEffectTimingDelayZero));
+
+  animation->setEffect(MakeAnimation(/* duration */ 0.0));
+  // Should remain uncounted until getTiming is called.
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kGetEffectTimingDelayZero));
+  EXPECT_TRUE(animation->effect()->getTiming());
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kGetEffectTimingDelayZero));
+}
+
 }  // namespace blink
