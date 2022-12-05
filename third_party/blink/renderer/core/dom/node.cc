@@ -2012,7 +2012,7 @@ void Node::setTextContent(const StringOrTrustedScript& string_or_trusted_script,
 
   // Force the text length to match when replaying, as a workaround for
   // differences in the assigned text which cause the replay to fail as
-  // layout behavior diverges afterwards.
+  // layout behavior diverges afterwards. See also Text::Create.
   if (recordreplay::IsRecordingOrReplaying("values")) {
     std::string contents = value.Utf8();
     size_t recordedLength = recordreplay::RecordReplayValue("Node::setTextContent length", contents.length());

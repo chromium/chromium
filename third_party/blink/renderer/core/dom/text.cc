@@ -47,6 +47,17 @@
 namespace blink {
 
 Text* Text::Create(Document& document, const String& data) {
+  // Force the text to match when replaying, as a workaround for differences
+  // in the assigned text which cause the replay to fail as layout behavior
+  // diverges afterwards. See also Node::setTextContent.
+  if (recordreplay::IsRecordingOrReplaying("values")) {
+    std::string contents = data.Utf8();
+    size_t recordedLength = recordreplay::RecordReplayValue("Text::Create length", contents.length());
+    contents.resize(recordedLength, ' ');
+    recordreplay::RecordReplayBytes("Text::Create string", &contents[0], recordedLength);
+    data = String::FromUTF8(&contents[0], recordedLength);
+  }
+
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("Text::Create %zu", data.length());
 
