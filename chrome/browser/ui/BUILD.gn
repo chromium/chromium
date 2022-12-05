@@ -14,6 +14,7 @@ import("//chrome/common/features.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 import("//components/feed/features.gni")
+import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/signin/features.gni")
@@ -507,6 +508,7 @@ static_library("ui") {
     "//components/language/core/browser",
     "//components/language/core/common",
     "//components/lens",
+    "//components/lens:buildflags",
     "//components/live_caption:constants",
     "//components/live_caption:utils",
     "//components/local_state",
@@ -5443,7 +5445,6 @@ static_library("ui") {
 
     if (is_chrome_branded) {
       sources += [
-        "lens/lens_side_panel_helper.h",
         "lens/lens_side_panel_navigation_helper.h",
         "views/lens/lens_region_search_instructions_view.cc",
         "views/lens/lens_region_search_instructions_view.h",
@@ -5462,6 +5463,10 @@ static_library("ui") {
       ]
       deps += [ "//chrome/browser/ui/media_router/internal/vector_icons" ]
     }
+  }
+
+  if (enable_lens_desktop_side_panel) {
+    sources += [ "lens/lens_side_panel_helper.h" ]
   }
 
   if (use_aura) {
