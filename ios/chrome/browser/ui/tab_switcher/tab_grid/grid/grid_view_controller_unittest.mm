@@ -213,10 +213,7 @@ TEST_F(GridViewControllerTest, MoveUnselectedItem) {
 
 // Tests that `-replaceItemID:withItem:` does not crash when updating an item
 // that is scrolled offscreen.
-// TODO(crbug.com/1104872): On iOS 14 iPhone X, visibleCellsCount is always
-// equal to the total number of cells, so the while loop below never
-// terminates.
-TEST_F(GridViewControllerTest, DISABLED_ReplaceScrolledOffScreenCell) {
+TEST_F(GridViewControllerTest, ReplaceScrolledOffScreenCell) {
   // This test requires that the collection view be placed on the screen.
   SetRootViewController(view_controller_);
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -235,6 +232,8 @@ TEST_F(GridViewControllerTest, DISABLED_ReplaceScrolledOffScreenCell) {
     TabSwitcherItem* item =
         [[TabSwitcherItem alloc] initWithIdentifier:uniqueID];
     [view_controller_ insertItem:item atIndex:0 selectedItemID:@"A"];
+    // Spin the runloop to make sure that the visible cells are updated.
+    base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
     visibleCellsCount = view_controller_.collectionView.visibleCells.count;
   }
   // The last item ("B") is scrolled off screen.
