@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -67,6 +68,23 @@ bool DOMArrayBuffer::IsDetachable(v8::Isolate* isolate) {
   return is_detachable;
 }
 
+void DOMArrayBuffer::SetDetachKey(v8::Isolate* isolate,
+                                  const StringView& detach_key) {
+  // It's easy to support setting a detach key multiple times, but it's very
+  // likely to be a program error to set a detach key multiple times.
+  DCHECK(detach_key_.IsEmpty());
+
+  Vector<v8::Local<v8::ArrayBuffer>, 4> buffer_handles;
+  v8::HandleScope handle_scope(isolate);
+  AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
+
+  v8::Local<v8::String> v8_detach_key = V8AtomicString(isolate, detach_key);
+  detach_key_.Reset(isolate, v8_detach_key);
+
+  for (const auto& buffer_handle : buffer_handles)
+    buffer_handle->SetDetachKey(v8_detach_key);
+}
+
 bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
                               ArrayBufferContents& result) {
   DOMArrayBuffer* to_transfer = this;
@@ -103,6 +121,43 @@ bool DOMArrayBuffer::TransferDetachable(v8::Isolate* isolate,
     buffer_handle->Detach();
 
   return true;
+}
+
+DOMArrayBuffer* DOMArrayBuffer::Create(
+    scoped_refptr<SharedBuffer> shared_buffer) {
+  ArrayBufferContents contents(shared_buffer->size(), 1,
+                               ArrayBufferContents::kNotShared,
+                               ArrayBufferContents::kDontInitialize);
+  uint8_t* data = static_cast<uint8_t*>(contents.Data());
+  if (UNLIKELY(!data))
+    OOM_CRASH(shared_buffer->size());
+
+  for (const auto& span : *shared_buffer) {
+    memcpy(data, span.data(), span.size());
+    data += span.size();
+  }
+
+  return Create(std::move(contents));
+}
+
+DOMArrayBuffer* DOMArrayBuffer::Create(
+    const Vector<base::span<const char>>& data) {
+  size_t size = 0;
+  for (const auto& span : data) {
+    size += span.size();
+  }
+  ArrayBufferContents contents(size, 1, ArrayBufferContents::kNotShared,
+                               ArrayBufferContents::kDontInitialize);
+  uint8_t* ptr = static_cast<uint8_t*>(contents.Data());
+  if (UNLIKELY(!ptr))
+    OOM_CRASH(size);
+
+  for (const auto& span : data) {
+    memcpy(ptr, span.data(), span.size());
+    ptr += span.size();
+  }
+
+  return Create(std::move(contents));
 }
 
 DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(size_t num_elements,
@@ -149,47 +204,14 @@ v8::MaybeLocal<v8::Value> DOMArrayBuffer::Wrap(ScriptState* script_state) {
     v8::Context::Scope context_scope(script_state->GetContext());
     wrapper = v8::ArrayBuffer::New(script_state->GetIsolate(),
                                    Content()->BackingStore());
+
+    if (!detach_key_.IsEmpty()) {
+      wrapper->SetDetachKey(detach_key_.Get(script_state->GetIsolate()));
+    }
   }
 
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
                               wrapper);
-}
-
-DOMArrayBuffer* DOMArrayBuffer::Create(
-    scoped_refptr<SharedBuffer> shared_buffer) {
-  ArrayBufferContents contents(shared_buffer->size(), 1,
-                               ArrayBufferContents::kNotShared,
-                               ArrayBufferContents::kDontInitialize);
-  uint8_t* data = static_cast<uint8_t*>(contents.Data());
-  if (UNLIKELY(!data))
-    OOM_CRASH(shared_buffer->size());
-
-  for (const auto& span : *shared_buffer) {
-    memcpy(data, span.data(), span.size());
-    data += span.size();
-  }
-
-  return Create(std::move(contents));
-}
-
-DOMArrayBuffer* DOMArrayBuffer::Create(
-    const Vector<base::span<const char>>& data) {
-  size_t size = 0;
-  for (const auto& span : data) {
-    size += span.size();
-  }
-  ArrayBufferContents contents(size, 1, ArrayBufferContents::kNotShared,
-                               ArrayBufferContents::kDontInitialize);
-  uint8_t* ptr = static_cast<uint8_t*>(contents.Data());
-  if (UNLIKELY(!ptr))
-    OOM_CRASH(size);
-
-  for (const auto& span : data) {
-    memcpy(ptr, span.data(), span.size());
-    ptr += span.size();
-  }
-
-  return Create(std::move(contents));
 }
 
 DOMArrayBuffer* DOMArrayBuffer::Slice(size_t begin, size_t end) const {
@@ -197,6 +219,11 @@ DOMArrayBuffer* DOMArrayBuffer::Slice(size_t begin, size_t end) const {
   end = std::min(end, ByteLength());
   size_t size = begin <= end ? end - begin : 0;
   return Create(static_cast<const char*>(Data()) + begin, size);
+}
+
+void DOMArrayBuffer::Trace(Visitor* visitor) const {
+  visitor->Trace(detach_key_);
+  DOMArrayBufferBase::Trace(visitor);
 }
 
 }  // namespace blink

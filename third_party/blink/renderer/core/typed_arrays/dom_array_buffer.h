@@ -62,6 +62,8 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
 
   bool IsDetachable(v8::Isolate*);
 
+  void SetDetachKey(v8::Isolate*, const StringView& detach_key);
+
   // Transfer the ArrayBuffer if it is detachable, otherwise make a copy and
   // transfer that.
   virtual bool Transfer(v8::Isolate*, ArrayBufferContents& result);
@@ -80,8 +82,16 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
 
   v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override;
 
+  void Trace(Visitor*) const override;
+
  private:
   bool TransferDetachable(v8::Isolate*, ArrayBufferContents& result);
+
+  // Detach key can be any ECMAScript value (i.e. v8::Value), however, we don't
+  // want to use a v8::Context-sensitive detach key like v8::Object. So, we
+  // support only v8::String as the detach key type. It's also convenient that
+  // we can write `array_buffer->SetDetachKey(isolate, "my key")`.
+  TraceWrapperV8Reference<v8::String> detach_key_;
 };
 
 }  // namespace blink
