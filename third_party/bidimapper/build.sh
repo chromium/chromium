@@ -24,9 +24,9 @@ fi
 
 
 npm --prefix src install
-npm --prefix src run build-mapper
+npm --prefix src run build
 
-cp src/src/.build/bidiMapper/mapper.js .
+cp src/lib/iife/mapperTab.js ./mapper.js
 
 cp README.chromium.in README.chromium
 sed --in-place --regexp-extended "s/\\$\\{DATE\\}/$dt/gi" README.chromium
