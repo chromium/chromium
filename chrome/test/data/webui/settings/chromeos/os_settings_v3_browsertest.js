@@ -398,7 +398,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'app_management/supported_links_item_test.js',
  ],
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
- ['AppManagementUninstallButton', 'app_management/uninstall_button_test.js'],
  [
    'AudioAndCaptionsPage',
    'audio_and_captions_page_tests.js',

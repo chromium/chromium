@@ -49,6 +49,7 @@ export class AppManamentUninstallButtonElement extends PolymerElement {
       case InstallReason.kSync:
       case InstallReason.kUser:
       case InstallReason.kUnknown:
+      case InstallReason.kCommandLine:
         return false;
       default:
         assertNotReached();
@@ -73,6 +74,12 @@ export class AppManamentUninstallButtonElement extends PolymerElement {
     BrowserProxy.getInstance().handler.uninstall(this.app.id);
     recordAppManagementUserAction(
         this.app.type, AppManagementUserAction.UNINSTALL_DIALOG_LAUNCHED);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-uninstall-button': AppManamentUninstallButtonElement;
   }
 }
 

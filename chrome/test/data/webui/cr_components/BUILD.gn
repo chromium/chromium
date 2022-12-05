@@ -26,6 +26,7 @@ non_preprocessed_files = [
   "app_management/file_handling_item_test.ts",
   "app_management/permission_item_test.ts",
   "app_management/window_mode_item_test.ts",
+  "app_management/uninstall_button_test.ts",
   "color_change_listener_test.ts",
   "customize_themes_test.ts",
   "help_bubble_mixin_test.ts",

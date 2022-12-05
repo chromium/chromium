@@ -147,3 +147,15 @@ var CrComponentsAppManagementWindowModeTest =
 TEST_F('CrComponentsAppManagementWindowModeTest', 'All', function() {
   mocha.run();
 });
+
+var CrComponentsAppManagementUninstallButtonTest =
+    class extends CrComponentsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=cr_components/app_management/uninstall_button_test.js';  //  presubmit: ignore-long-line
+  }
+};
+
+TEST_F('CrComponentsAppManagementUninstallButtonTest', 'All', function() {
+  mocha.run();
+});

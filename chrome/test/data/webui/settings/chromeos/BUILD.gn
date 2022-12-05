@@ -219,7 +219,6 @@ app_management_tests = [
   "app_management/test_store.js",
   "app_management/test_util.js",
   "app_management/toggle_row_test.js",
-  "app_management/uninstall_button_test.js",
 ]
 
 copy("copy_app_management") {
