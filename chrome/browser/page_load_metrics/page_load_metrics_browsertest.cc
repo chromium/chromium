@@ -82,6 +82,7 @@
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/referrer.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -99,6 +100,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
@@ -3317,7 +3319,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   ASSERT_EQ(all_frames_value, main_frame_value);
 }
 
-class PageLoadMetricsBrowserTestDiscardedPage
+class PageLoadMetricsBrowserTestTerminatedPage
     : public PageLoadMetricsBrowserTest {
  protected:
   void SetUpOnMainThread() override {
@@ -3400,7 +3402,7 @@ class PageLoadMetricsBrowserTestDiscardedPage
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestDiscardedPage,
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestTerminatedPage,
                        UkmIsRecordedForDiscardedForegroundTabPage) {
   // Open a new foreground tab and navigate. The new tab would be of index 1
   // which would be used below in verifying the tab is discarded.
@@ -3424,7 +3426,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestDiscardedPage,
       lcp_time, 10);
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestDiscardedPage,
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestTerminatedPage,
                        UkmIsRecordedForDiscardedBackgroundTabPage) {
   // Open a new foreground tab and navigate.
   content::WebContents* contents = OpenTabAndNavigate();
@@ -3451,6 +3453,79 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestDiscardedPage,
           PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name),
       lcp_time, 10);
 }
+
+// This test is to verify page load metrics are recorded in case when the
+// render process is shut down.
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestTerminatedPage,
+                       UkmIsRecordedWhenRenderProcessShutsDown) {
+  content::WebContents* contents = OpenTabAndNavigate();
+
+  // Wait for LCP emission and observation.
+  double lcp_time = GetLCPTimeFromEmittedLCPEntry(contents);
+  content::RenderProcessHost* process = RenderFrameHost()->GetProcess();
+
+  // Shut down render process.
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(process->Shutdown(content::RESULT_CODE_KILLED));
+  crash_observer.Wait();
+  EXPECT_FALSE(RenderFrameHost()->IsRenderFrameLive());
+
+  // Verify page load metric is recorded.
+  EXPECT_NEAR(
+      GetUKMPageLoadMetric(
+          PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name),
+      lcp_time, 10);
+}
+
+// This class is used to verify page load metrics are recorded in case of
+// crashes of different kinds. These crashes are simulated by navigating to the
+// chrome debug urls.
+class PageLoadMetricsBrowserTestCrashedPage
+    : public PageLoadMetricsBrowserTestTerminatedPage,
+      public ::testing::WithParamInterface<const char*> {};
+
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
+                       UkmIsRecordedForCrashedTabPage) {
+  // Open a new foreground tab and navigate.
+  content::WebContents* contents = OpenTabAndNavigate();
+
+  // The back/forward cache is disabled because page load metrics can also be
+  // recorded when entering into the bfcache. We want to test that page load
+  // metrics are recorded via the PageLoadTracker destructor which is called in
+  // all crash cases.
+  content::DisableBackForwardCacheForTesting(
+      contents, content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  // Wait for LCP emission and observation. This is to ensure there is an LCP
+  // entry to report at the time of killing the page.
+  double lcp_time = GetLCPTimeFromEmittedLCPEntry(contents);
+
+  // Kill the page.
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(GetParam())));
+
+  // Page being crashed is only verifiable in these crashes.
+  if (GetParam() == blink::kChromeUIKillURL ||
+      GetParam() == blink::kChromeUICrashURL)
+    EXPECT_TRUE(
+        browser()->tab_strip_model()->GetActiveWebContents()->IsCrashed());
+
+  // Verify page load metric is recorded.
+  EXPECT_NEAR(
+      GetUKMPageLoadMetric(
+          PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name),
+      lcp_time, 10);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CrashCases,
+    PageLoadMetricsBrowserTestCrashedPage,
+    testing::ValuesIn({blink::kChromeUIKillURL, blink::kChromeUICrashURL,
+                       blink::kChromeUIGpuCrashURL,
+                       blink::kChromeUIBrowserCrashURL,
+                       blink::kChromeUINetworkErrorURL,
+                       blink::kChromeUIProcessInternalsURL}));
 
 // Test is flaky. https://crbug.com/1260953
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
