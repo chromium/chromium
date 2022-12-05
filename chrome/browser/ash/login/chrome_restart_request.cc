@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_constants.h"
@@ -225,6 +226,7 @@ void DeriveCommandLine(const GURL& start_url,
     switches::kLacrosChromeAdditionalArgs,
     switches::kLacrosChromeAdditionalEnv,
     switches::kLacrosChromePath,
+    crosapi::browser_util::kLacrosStabilitySwitch,
     switches::kLoginProfile,
     switches::kNaturalScrollDefault,
     switches::kRlzPingDelay,
