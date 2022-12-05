@@ -12,6 +12,7 @@ def _dimensions(**kwargs):
             struct, it must have a dimension field which will provide the actual
             dimension value.
     """
+
     def to_dimension(val):
         if type(val) == type(struct()):
             val = val.dimension
@@ -20,7 +21,8 @@ def _dimensions(**kwargs):
         elif val == True:
             val = 1
         return str(val)
-    return {k: to_dimension(v) for k,v in kwargs.items() if v != None}
+
+    return {k: to_dimension(v) for k, v in kwargs.items() if v != None}
 
 dimensions = struct(
     dimensions = _dimensions,
