@@ -5432,16 +5432,6 @@ others/histograms.xml -->
   <int value="9" label="STATUS_DBUS_ERROR"/>
 </enum>
 
-<enum name="AttributionEvent">
-  <int value="0" label="Received With Native"/>
-  <int value="1" label="Cached Pre-Native"/>
-  <int value="2" label="Reported Post-Native"/>
-  <int value="3" label="Dropped - Storage Full"/>
-  <int value="4" label="Dropped - Write Failed"/>
-  <int value="5" label="Dropped - Read Failed"/>
-  <int value="6" label="Write File Close Failed"/>
-</enum>
-
 <enum name="AttributionNavigationType">
   <int value="0" label="Anchor"/>
   <int value="1" label="window.open"/>
@@ -19601,15 +19591,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Not found"/>
   <int value="2" label="Navigation failed"/>
   <int value="3" label="Processed"/>
-</enum>
-
-<enum name="ConversionPostSendReportDeleteEvent">
-  <obsolete>
-    The error rate is not high enough to merit monitoring.
-  </obsolete>
-  <int value="0" label="Started"/>
-  <int value="1" label="Succeeded"/>
-  <int value="2" label="Failed"/>
 </enum>
 
 <enum name="ConversionReportSendOutcome">

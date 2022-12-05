@@ -3384,21 +3384,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversion.ReportSendOutcome"
-    enum="ConversionReportSendOutcome" expires_after="M105">
-  <obsolete>
-    Replaced with Conversions.ReportSendOutcome, 01/2022.
-  </obsolete>
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the high level request status of a conversion report. Recorded once
-    per conversion report. For conversion report that has been retried, only the
-    last retry will be counted.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.AggregatableKeysPerSource" units="keys"
     expires_after="M117">
   <owner>linnan@chromium.org</owner>
@@ -3420,23 +3405,6 @@ chromium-metrics-reviews@google.com.
     Measures how often aggregatable reports are assembled successfully or failed
     and why. Recorded once for each aggregatable report processed by the
     aggregation service on each send attempt.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.AggregatableReport.CreateReportStatus"
-    enum="ConversionCreateAggregatableReportStatus" expires_after="2023-01-28">
-  <obsolete>
-    Replaced with Conversions.AggregatableReport.CreateReportStatus2 due to enum
-    value change, 04/2022.
-  </obsolete>
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often aggregatable reports are stored successfully or rejected
-    and why. Recorded once for each trigger event processed by the attribution
-    storage layer. `kNoHistograms` will be logged if the trigger doesn't declare
-    aggregatable trigger data.
   </summary>
 </histogram>
 
@@ -3504,22 +3472,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AggregatableReport.ReportSendOutcome"
-    enum="ConversionReportSendOutcome" expires_after="2022-11-13">
-  <obsolete>
-    Replaced with Conversions.AggregatableReport.ReportSendOutcome2 due to HTTP
-    status check change, May 2022.
-  </obsolete>
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the high level request status of an aggregatable report. Recorded
-    once per aggregatable report. For aggregatable report that has been retried,
-    only the last retry will be counted.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.AggregatableReport.ReportSendOutcome2"
     enum="ConversionReportSendOutcome" expires_after="M117">
   <owner>linnan@chromium.org</owner>
@@ -3544,24 +3496,6 @@ chromium-metrics-reviews@google.com.
     attempt report time, rather than initial report time assigned by the API.
     Accounts for any delays in Chrome scheduling the report. Recorded when an
     aggregatabl report is to be assembled.
-  </summary>
-</histogram>
-
-<histogram
-    name="Conversions.AggregatableReport.TimeFromTriggerToReportAssembly"
-    units="minutes" expires_after="M117">
-  <obsolete>
-    Replaced with
-    Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2 due to
-    histogram interpretation change, October 2022.
-  </obsolete>
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the time between a trigger and its assembly. This is emitted
-    whenever an aggregatable report is to be assembled by the aggregation
-    service.
   </summary>
 </histogram>
 
@@ -3604,24 +3538,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AppToWeb.AttributionEvents"
-    enum="AttributionEvent" expires_after="2022-12-08">
-  <obsolete>
-    App To Web Impressions no longer supported through this mechanism.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>mthiesse@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records events for the App To Web Impressions ContentProvider in order to
-    track how many attributions are received/lost/reported to the native
-    conversions code. Note that reported post-native only counts impressions
-    that were cached pre-native, not all reported impressions.
-
-    A single impression may emit multiple different attribution events.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.AttributionSrcRequestStatus"
     enum="ConversionAttributionSrcRequestStatus" expires_after="M117">
   <owner>linnan@chromium.org</owner>
@@ -3642,70 +3558,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.ConversionIgnoredByFeaturePolicy"
-    enum="BooleanIgnored" expires_after="2022-10-04">
-  <obsolete>
-    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often conversions are ignored due to the feature policy being
-    disabled. Recorded when an attribution trigger redirect is received. Not
-    recorded if the frame is deatched, the runtime feature is disabled, or the
-    redirect is not same-origin with previous URL.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.CreateReportStatus"
-    enum="ConversionStorageCreateReportStatus" expires_after="2022-10-04">
-  <obsolete>
-    Replaced with Conversions.CreateReportStatus2 due to enum value change,
-    04/2022.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often conversions are stored successfully or rejected and why.
-    Recorded once for each conversion event processed by the attribution storage
-    layer.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.CreateReportStatus2"
-    enum="ConversionStorageCreateReportStatus" expires_after="2022-10-04">
-  <obsolete>
-    Replaced with Conversions.CreateReportStatus3 due to enum value change,
-    05/2022.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often conversions are stored successfully or rejected and why.
-    Recorded once for each conversion event processed by the attribution storage
-    layer.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.CreateReportStatus3"
-    enum="ConversionStorageCreateReportStatus" expires_after="M117">
-  <obsolete>
-    Replaced with Conversions.CreateReportStatus4 due to enum value change,
-    10/2022.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often event-level triggers are stored successfully or rejected
-    and why. Recorded once for each conversion event processed by the
-    attribution storage layer.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.CreateReportStatus6"
     enum="ConversionStorageCreateReportStatus" expires_after="M117">
   <owner>apaseltiner@chromium.org</owner>
@@ -3715,25 +3567,6 @@ chromium-metrics-reviews@google.com.
     Measures how often event-level triggers are stored successfully or rejected
     and why. Recorded once for each conversion event processed by the
     attribution storage layer.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.DebugReport.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M117">
-  <obsolete>
-    Split between with
-    Conversions.DebugReport.HttpResponseOrNetErrorCodeEventLevel and
-    Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable to help debug
-    report loss issues, Oct 2022.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Error info for sending a debug attribution report, recorded for each sent
-    report. The HTTP response code is recorded if there is no net error code for
-    the request, or the net error code indicates there was a response code
-    failure.
   </summary>
 </histogram>
 
@@ -3764,22 +3597,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.DebugReport.ReportRetrySucceed"
-    enum="BooleanSuccess" expires_after="M117">
-  <obsolete>
-    Split between with Conversions.DebugReport.ReportRetrySucceedEventLevel and
-    Conversions.DebugReport.ReportRetrySucceedAggregatable to help debug report
-    loss issues, Oct 2022.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether a particular debug attribution report was successful.
-    Emitted for all debug attribution reports that retry.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.DebugReport.ReportRetrySucceedAggregatable"
     enum="BooleanSuccess" expires_after="M117">
   <owner>anthonygarant@chromium.org</owner>
@@ -3801,22 +3618,6 @@ chromium-metrics-reviews@google.com.
     Records whether a particular event-level debug attribution report was
     successful. Emitted for all event-level debug attribution reports that
     retry.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.DebugReport.ReportStatus"
-    enum="ConversionReportStatus" expires_after="M117">
-  <obsolete>
-    Split between with Conversions.DebugReport.ReportStatusEventLevel and
-    Conversions.DebugReport.ReportStatusAggregatable to help debug report loss
-    issues, Oct 2022.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the high-level request status of a debug attribution report.
-    Recorded for every debug attribution report sent.
   </summary>
 </histogram>
 
@@ -3842,23 +3643,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.DeleteSentReportOperation"
-    enum="ConversionPostSendReportDeleteEvent" expires_after="M105">
-  <obsolete>
-    The error rate is not high enough to merit monitoring. Removed on
-    2022-02-02.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often conversions are deleted after being sent. Recorded once
-    for each deletion started and each deletion completed. Deletion may fail if
-    the browser was shut down before the deletion completed, or if there was an
-    error during storage.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.EnqueueEventAllowed" enum="BooleanAllowed"
     expires_after="M117">
   <owner>apaseltiner@chromium.org</owner>
@@ -3869,21 +3653,6 @@ chromium-metrics-reviews@google.com.
     processing in the attribution manager. If the queue reaches a maximum size,
     additional sources and triggers are dropped. Events are enqueued while
     waiting for a previous debug-cookie check to complete.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ExtraReportDelay" units="ms"
-    expires_after="2021-12-19">
-  <obsolete>
-    Replaced with Conversions.ExtraReportDelay2, which has a greater range.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Records the &quot;extra&quot; non-scheduled time it took to send a
-    particular conversion report. This is primarily due to a report's scheduled
-    report time taking place while the browser is closed. Recorded when a
-    conversion report is sent.
   </summary>
 </histogram>
 
@@ -3938,21 +3707,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.ImpressionIgnoredByFeaturePolicy"
-    enum="BooleanIgnored" expires_after="M105">
-  <obsolete>
-    Removed May 2022.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often impressions are ignored due to the feature policy being
-    disabled. Recorded when an attribution source is parsed. Not recorded if the
-    runtime feature is disabled or no frame is present.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ImpressionNavigationHasDeadInitiator"
     enum="Boolean" expires_after="M117">
   <owner>johnidel@chromium.org</owner>
@@ -3985,21 +3739,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.RedirectInterceptedFrameDetached" enum="Boolean"
-    expires_after="M105">
-  <obsolete>
-    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
-  </obsolete>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often conversions are not handled due to the frame being
-    detached. Recorded when an attribution trigger redirect is received. This is
-    recorded regardless of the Attribution Reporting API being enabled.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.RegisterConversionAllowed" enum="BooleanAllowed"
     expires_after="M117">
   <owner>apaseltiner@chromium.org</owner>
@@ -4010,37 +3749,6 @@ chromium-metrics-reviews@google.com.
     being disabled. Recorded when a conversion is processed by the browser
     process. Records not allowed if within an OTR profile, or if the privacy
     sandbox is not allowed for the conversion and reporting origin.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.RegisteredConversionsPerPage" units="conversions"
-    expires_after="2022-09-11">
-  <obsolete>
-    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Records the number of registered conversions
-    (https://github.com/WICG/attribution-reporting-api) on a given top level
-    page load. Recorded when the page navigates away or is otherwise closed.
-    Only recorded for non-off-the-record profiles (OTR profiles have the feature
-    disabled).
-  </summary>
-</histogram>
-
-<histogram name="Conversions.RegisteredImpressionsPerPage" units="impressions"
-    expires_after="2022-10-04">
-  <obsolete>
-    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <summary>
-    Records the number of impressions attempted on a given top level page load.
-    Recorded when the page navigates away or is otherwise closed. Only recorded
-    for non-off-the-record profiles (OTR profiles have the feature disabled).
   </summary>
 </histogram>
 
@@ -4079,53 +3787,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.Report.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M117">
-  <obsolete>
-    Split between with Conversions.HttpResponseOrNetErrorCodeEventLevel and
-    Conversions.HttpResponseOrNetErrorCodeAggregatable to help debug report loss
-    issues, Oct 2022.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Error info for sending a conversion report, recorded for each sent report.
-    The HTTP response code is recorded if there is no net error code for the
-    request, or the net error code indicates there was a response code failure.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ReportRetrySucceed" enum="BooleanSuccess"
-    expires_after="2022-10-23">
-  <obsolete>
-    Replaced with Conversions.ReportRetrySucceed2 due to HTTP status check
-    change, May 2022.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <summary>
-    Records whether a particular conversion report was successful. Emitted for
-    all conversion reports which retry.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ReportRetrySucceed2" enum="BooleanSuccess"
-    expires_after="M117">
-  <obsolete>
-    Split between with Conversions.ReportRetrySucceedEventLevel and
-    Conversions.ReportRetrySucceedAggregatable to help debug report loss issues,
-    Oct 2022.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <summary>
-    Records whether a particular conversion report was successful. Emitted for
-    all conversion reports which retry.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ReportRetrySucceedAggregatable"
     enum="BooleanSuccess" expires_after="M117">
   <owner>anthonygarant@chromium.org</owner>
@@ -4145,21 +3806,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether a particular event-level attribution report was successful.
     Emitted for all attribution event-level reports which retry.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ReportsDeletedInDataClearOperation"
-    units="conversions" expires_after="2023-02-12">
-  <obsolete>
-    Replaced with Conversions.EventReportsDeletedInDataClearOperation due to
-    introduction of Conversions.AggregatableReportsDeletedInDataClearOperation,
-    09/2022.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <summary>
-    Records the number of conversion reports deleted per clearing operation.
   </summary>
 </histogram>
 
@@ -4185,38 +3831,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.ReportSendOutcome"
-    enum="ConversionReportSendOutcome" expires_after="M105">
-  <obsolete>
-    Replaced with Conversions.ReportSendOutcome2 due to enum value change,
-    03/2022.
-  </obsolete>
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the high level request status of a conversion report. Recorded once
-    per conversion report. For conversion report that has been retried, only the
-    last retry will be counted.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ReportSendOutcome2"
-    enum="ConversionReportSendOutcome" expires_after="2022-11-13">
-  <obsolete>
-    Replaced with Conversions.ReportSendOutcome3 due to HTTP status check
-    change, May 2022.
-  </obsolete>
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the high level request status of a conversion report. Recorded once
-    per conversion report. For conversion report that has been retried, only the
-    last retry will be counted.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ReportSendOutcome3"
     enum="ConversionReportSendOutcome" expires_after="M117">
   <owner>linnan@chromium.org</owner>
@@ -4226,37 +3840,6 @@ chromium-metrics-reviews@google.com.
     Records the high level request status of a conversion report. Recorded once
     per conversion report. For conversion report that has been retried, only the
     last retry will be counted.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ReportStatus" enum="ConversionReportStatus"
-    expires_after="2022-10-09">
-  <obsolete>
-    Replaced with Conversions.ReportStatus2 due to HTTP status check change, May
-    2022.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Records the high level request status of a conversion report. Recorded for
-    every conversion report sent. For conversion report that has been retried,
-    every retry will be counted.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ReportStatus2" enum="ConversionReportStatus"
-    expires_after="M117">
-  <obsolete>
-    Split between with Conversions.ReportStatusEventLevel and
-    Conversions.ReportStatusAggregatable to help debug report loss issues, Oct
-    2022.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Records the high level request status of a conversion report. Recorded for
-    every conversion report sent. For conversion report that has been retried,
-    every retry will be counted.
   </summary>
 </histogram>
 
@@ -4341,22 +3924,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.SourceStoredStatus"
-    enum="ConversionStorageSourceStatus" expires_after="M117">
-  <obsolete>
-    Replaced with Conversions.SourceStoredStatus2 due to enum value change,
-    November 2022.
-  </obsolete>
-  <owner>anthonygarant@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often sources are stored successfully or rejected and why.
-    Recorded once for each source event processed by the attribution storage
-    layer.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.SourceStoredStatus2"
     enum="ConversionStorageSourceStatus" expires_after="M117">
   <owner>anthonygarant@chromium.org</owner>
@@ -4411,20 +3978,6 @@ chromium-metrics-reviews@google.com.
     Records the time it took to migrate a preexisting conversions database to
     the latest schema. Recorded when the conversion database finishes
     initialization. Only recorded on platforms with base::ThreadTicks support.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.Storage.Sql.InitStatus"
-    enum="ConversionStorageSqlInitStatus" expires_after="2021-12-12">
-  <obsolete>
-    Replaced in 2021-08 with Conversions.Storage.Sql.InitStatus2. Due to a bug,
-    this metric would not properly record kFailedToInitializeSchema.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Records initialisation statuses of ConversionStorageSql. Note: currently
-    ConversionStorageSql is initialised lazily.
   </summary>
 </histogram>
 
@@ -4506,39 +4059,6 @@ chromium-metrics-reviews@google.com.
     the unique destination limit covered by unexpired sources, compared with the
     result covered by pending sources. Recorded once for each source
     registration if there is capacity to store sources.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.UniqueReportingOriginsPerPage.Conversions"
-    units="origins" expires_after="2022-10-04">
-  <obsolete>
-    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
-  </obsolete>
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the number of unique reporting origins for registered conversions on
-    a given top-level page load. Recorded when the page navigates away or is
-    otherwise closed. Only recorded for non-off-the-record profiles (OTR
-    profiles have the feature disabled).
-  </summary>
-</histogram>
-
-<histogram name="Conversions.UniqueReportingOriginsPerPage.Impressions"
-    units="origins" expires_after="2022-10-09">
-  <obsolete>
-    Only tracked in obsolete Attribution Reporting API surface. Removed 04/22.
-  </obsolete>
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the number of unique reporting origins for registered event
-    impressions and navigation impressions attempted on a given top-level page
-    load. Recorded when the page navigates away or is otherwise closed. Only
-    recorded for non-off-the-record profiles (OTR profiles have the feature
-    disabled).
   </summary>
 </histogram>
 
