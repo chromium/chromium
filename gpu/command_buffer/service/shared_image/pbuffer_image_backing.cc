@@ -21,29 +21,6 @@
 
 namespace gpu {
 
-// static
-std::unique_ptr<PbufferImageBacking> PbufferImageBacking::CreateFromGLTexture(
-    base::OnceClosure on_destruction_closure,
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture) {
-  DCHECK(!!wrapped_gl_texture);
-
-  auto si_format = viz::SharedImageFormat::SinglePlane(format);
-  auto shared_image =
-      base::WrapUnique<PbufferImageBacking>(new PbufferImageBacking(
-          std::move(on_destruction_closure), mailbox, si_format, size,
-          color_space, surface_origin, alpha_type, usage,
-          std::move(wrapped_gl_texture)));
-
-  return shared_image;
-}
-
 PbufferImageBacking::PbufferImageBacking(
     base::OnceClosure on_destruction_closure,
     const Mailbox& mailbox,
@@ -65,7 +42,9 @@ PbufferImageBacking::PbufferImageBacking(
           viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
           false /* is_thread_safe */),
       on_destruction_closure_runner_(std::move(on_destruction_closure)),
-      passthrough_texture_(std::move(passthrough_texture)) {}
+      passthrough_texture_(std::move(passthrough_texture)) {
+  DCHECK(!!passthrough_texture_);
+}
 
 PbufferImageBacking::~PbufferImageBacking() {
   // If the cached promise texture is referencing the GL texture, then it needs
@@ -82,14 +61,6 @@ PbufferImageBacking::~PbufferImageBacking() {
   passthrough_texture_.reset();
 }
 
-GLenum PbufferImageBacking::GetGLTarget() const {
-  return GL_TEXTURE_2D;
-}
-
-GLuint PbufferImageBacking::GetGLServiceId() const {
-  return passthrough_texture_->service_id();
-}
-
 scoped_refptr<gfx::NativePixmap> PbufferImageBacking::GetNativePixmap() {
   return nullptr;
 }
@@ -104,8 +75,9 @@ void PbufferImageBacking::OnMemoryDump(
 
   // Add a |service_guid| which expresses shared ownership between the
   // various GPU dumps.
-  if (auto service_id = GetGLServiceId()) {
-    auto service_guid = gl::GetGLTextureServiceGUIDForTracing(GetGLServiceId());
+  auto service_id = passthrough_texture_->service_id();
+  if (service_id) {
+    auto service_guid = gl::GetGLTextureServiceGUIDForTracing(service_id);
     pmd->CreateSharedGlobalAllocatorDump(service_guid);
     pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
   }
@@ -164,10 +136,10 @@ std::unique_ptr<SkiaImageRepresentation> PbufferImageBacking::ProduceSkia(
 
   if (!cached_promise_texture_) {
     GrBackendTexture backend_texture;
-    GetGrBackendTexture(context_state->feature_info(), GetGLTarget(), size(),
-                        GetGLServiceId(), format().resource_format(),
-                        context_state->gr_context()->threadSafeProxy(),
-                        &backend_texture);
+    GetGrBackendTexture(
+        context_state->feature_info(), GL_TEXTURE_2D, size(),
+        passthrough_texture_->service_id(), format().resource_format(),
+        context_state->gr_context()->threadSafeProxy(), &backend_texture);
     cached_promise_texture_ = SkPromiseImageTexture::Make(backend_texture);
   }
   return std::make_unique<SkiaGLCommonRepresentation>(

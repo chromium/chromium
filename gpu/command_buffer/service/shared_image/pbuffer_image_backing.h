@@ -21,29 +21,9 @@ class GPU_GLES2_EXPORT PbufferImageBacking
     : public ClearTrackingSharedImageBacking,
       public GLTextureImageRepresentationClient {
  public:
-  // Used when PbufferImageBacking is serving as a temporary SharedImage
-  // wrapper to an already-allocated texture. The returned backing will not
-  // create any new textures.
+  // PbufferImageBacking serves as a SharedImage wrapper to an already-allocated
+  // texture. The returned backing will not create any new textures.
   // |on_destruction_closure| is invoked on destruction of this object.
-  static std::unique_ptr<PbufferImageBacking> CreateFromGLTexture(
-      base::OnceClosure on_destruction_closure,
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture);
-
-  PbufferImageBacking(const PbufferImageBacking& other) = delete;
-  PbufferImageBacking& operator=(const PbufferImageBacking& other) = delete;
-  ~PbufferImageBacking() override;
-
-  GLenum GetGLTarget() const;
-  GLuint GetGLServiceId() const;
-
- private:
   PbufferImageBacking(
       base::OnceClosure on_destruction_closure,
       const Mailbox& mailbox,
@@ -55,6 +35,11 @@ class GPU_GLES2_EXPORT PbufferImageBacking
       uint32_t usage,
       scoped_refptr<gles2::TexturePassthrough> passthrough_texture);
 
+  PbufferImageBacking(const PbufferImageBacking& other) = delete;
+  PbufferImageBacking& operator=(const PbufferImageBacking& other) = delete;
+  ~PbufferImageBacking() override;
+
+ private:
   // SharedImageBacking:
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
   void OnMemoryDump(const std::string& dump_name,

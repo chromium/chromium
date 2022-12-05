@@ -3282,11 +3282,13 @@ DXVAVideoDecodeAccelerator::GetSharedImagesFromPictureBuffer(
       // it when run on destruction of the PbufferImageBacking instance.
       // TODO(crbug.com/1378004): Eliminate the need for GLImage in this code
       // altogether.
-      shared_image = gpu::PbufferImageBacking::CreateFromGLTexture(
+      shared_image = std::make_unique<gpu::PbufferImageBacking>(
           base::DoNothingWithBoundArgs(std::move(gl_image_pbuffer_ref)),
-          mailbox, viz_formats[texture_idx], picture_buffer->size(),
-          picture_buffer->color_space(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, shared_image_usage, std::move(gl_texture));
+          mailbox,
+          viz::SharedImageFormat::SinglePlane(viz_formats[texture_idx]),
+          picture_buffer->size(), picture_buffer->color_space(),
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
+          std::move(gl_texture));
     }
 
     DCHECK(shared_image);
