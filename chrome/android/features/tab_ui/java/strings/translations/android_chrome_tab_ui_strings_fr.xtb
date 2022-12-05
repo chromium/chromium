@@ -56,8 +56,8 @@
 <translation id="5533021382642990449">Afficher plus tard</translation>
 <translation id="5556417849629758491">Afficher les infos sur le magasin, option disponible en haut de l'écran</translation>
 <translation id="5558362125926932819">Fermez le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
-<translation id="5580090775658607195"><ph name="TAB_COUNT" /> onglets ont été regroupés</translation>
-<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lien depuis Chrome}one{<ph name="TABS_COUNT_MANY" /> lien depuis Chrome}other{<ph name="TABS_COUNT_MANY" /> liens depuis Chrome}}</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" /> onglets regroupés</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lien de Chrome}one{<ph name="TABS_COUNT_MANY" /> lien de Chrome}other{<ph name="TABS_COUNT_MANY" /> liens de Chrome}}</translation>
 <translation id="575494663145460764">Être averti des baisses de prix ?</translation>
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
 <translation id="5846292395804797011">Fermez le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
