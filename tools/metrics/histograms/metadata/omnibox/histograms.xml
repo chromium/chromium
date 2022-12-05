@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.AsyncAutocompletionTime2.Provider.{Provider}{Completed}"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.AsyncAutocompletionTime2.{Change}{Completed}"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -518,7 +518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.Requests"
-    enum="OmniboxDocumentSuggestRequests" expires_after="2023-04-23">
+    enum="OmniboxDocumentSuggestRequests" expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.RequestTime" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -546,7 +546,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.RequestTime.Interrupted" units="ms"
-    expires_after="2023-05-27">
+    expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -565,7 +565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.RequestTime.NotInterrupted" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -584,7 +584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.ResultCount" units="count"
-    expires_after="2023-04-23">
+    expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -596,7 +596,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.TotalTime" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -611,7 +611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.TotalTime.Interrupted" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -628,7 +628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.TotalTime.NotInterrupted" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -659,7 +659,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.Escape" enum="OmniboxEscapeAction"
-    expires_after="2023-04-16">
+    expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1007,7 +1007,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.MatchStability2.MatchChangeInAnyPosition{OmniboxAutocompleteUpdateSlice}"
-    enum="BooleanChanged" expires_after="2022-12-04">
+    enum="BooleanChanged" expires_after="2023-12-01">
   <owner>tommycli@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1055,7 +1055,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.MatchStability2.MatchChangeIndex{OmniboxAutocompleteUpdateSlice}"
-    units="position" expires_after="2022-12-04">
+    units="position" expires_after="2023-12-01">
   <owner>tommycli@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1289,7 +1289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.RichAutocompletion.Triggered"
-    enum="OmniboxRichAutocompletionType" expires_after="2023-04-16">
+    enum="OmniboxRichAutocompletionType" expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
