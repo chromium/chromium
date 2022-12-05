@@ -904,9 +904,13 @@ void CorsURLLoader::StartNetworkRequest() {
   // Check whether a fresh entry exists in the in-memory cache.
   absl::optional<std::string> cache_key;
   if (context_->GetMemoryCache() && !has_factory_override_) {
+    // Pass `factory_client_security_state_` directly instead of using
+    // GetClientSecurityState() so that private network access checks in
+    // the memory cache don't think that both factory and request supply
+    // client security states.
     cache_key = context_->GetMemoryCache()->CanServe(
         options_, request_, isolation_info_.network_isolation_key(),
-        cross_origin_embedder_policy_, GetClientSecurityState());
+        cross_origin_embedder_policy_, factory_client_security_state_);
   }
 
   if (cache_key.has_value()) {

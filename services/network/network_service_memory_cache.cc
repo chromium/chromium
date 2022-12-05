@@ -170,13 +170,10 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
 bool CheckPrivateNetworkAccess(
     uint32_t load_options,
     const ResourceRequest& resource_request,
-    const mojom::ClientSecurityState* client_security_state,
+    const mojom::ClientSecurityState* factory_client_security_state,
     const net::TransportInfo& transport_info) {
-  mojom::URLLoaderFactoryParams factory_params;
-  if (client_security_state)
-    factory_params.client_security_state = client_security_state->Clone();
-  PrivateNetworkAccessChecker checker(resource_request, &factory_params,
-                                      load_options);
+  PrivateNetworkAccessChecker checker(
+      resource_request, factory_client_security_state, load_options);
   PrivateNetworkAccessCheckResult result = checker.Check(transport_info);
   return !PrivateNetworkAccessCheckResultToCorsError(result).has_value();
 }
@@ -443,7 +440,7 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
     const ResourceRequest& resource_request,
     const net::NetworkIsolationKey& network_isolation_key,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-    const mojom::ClientSecurityState* client_security_state) {
+    const mojom::ClientSecurityState* factory_client_security_state) {
   // TODO(https://crbug.com/1339708): Support automatically assigned network
   // isolation key for request from browsers. See comments in
   // CorsURLLoaderFactory::CorsURLLoaderFactory.
@@ -491,7 +488,7 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   }
 
   if (!CheckPrivateNetworkAccess(load_options, resource_request,
-                                 client_security_state,
+                                 factory_client_security_state,
                                  it->second->transport_info)) {
     return absl::nullopt;
   }

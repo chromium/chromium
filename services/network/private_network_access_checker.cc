@@ -8,6 +8,7 @@
 #include "net/base/transport_info.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -30,10 +31,9 @@ mojom::ClientSecurityStatePtr GetRequestClientSecurityState(
 // WARNING: This should be kept in sync with similar logic in
 // `network::cors::CorsURLLoader::GetClientSecurityState()`.
 const mojom::ClientSecurityState* ChooseClientSecurityState(
-    const mojom::URLLoaderFactoryParams* factory_params,
+    const mojom::ClientSecurityState* factory_client_security_state,
     const mojom::ClientSecurityState* request_client_security_state) {
-  DCHECK(factory_params);
-  if (factory_params->client_security_state) {
+  if (factory_client_security_state) {
     // Enforce that only one ClientSecurityState is ever given to us, as this
     // is an invariant in the current codebase. In case of a compromised
     // renderer process, we might be passed both, in which case we prefer to
@@ -43,7 +43,7 @@ const mojom::ClientSecurityState* ChooseClientSecurityState(
         << "Must not provide a ClientSecurityState in both "
            "URLLoaderFactoryParams and ResourceRequest::TrustedParams.";
 
-    return factory_params->client_security_state.get();
+    return factory_client_security_state;
   }
 
   return request_client_security_state;
@@ -53,11 +53,11 @@ const mojom::ClientSecurityState* ChooseClientSecurityState(
 
 PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
     const ResourceRequest& request,
-    const mojom::URLLoaderFactoryParams* factory_params,
+    const mojom::ClientSecurityState* factory_client_security_state,
     int32_t url_load_options)
     : request_client_security_state_(GetRequestClientSecurityState(request)),
       client_security_state_(
-          ChooseClientSecurityState(factory_params,
+          ChooseClientSecurityState(factory_client_security_state,
                                     request_client_security_state_.get())),
       should_block_local_request_(url_load_options &
                                   mojom::kURLLoadOptionBlockLocalRequest),

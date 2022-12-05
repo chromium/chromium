@@ -77,14 +77,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
                      std::vector<unsigned char> data);
 
   // Returns a cache key if `this` has a fresh response for `resource_request`.
-  // The returned cache key is valid only for the current call stack. It must be
-  // used synchronously.
+  // `factory_client_security_state` should come from
+  // mojom::URLLoaderFactoryParams. The returned cache key is valid only for the
+  // current call stack. It must be used synchronously.
   absl::optional<std::string> CanServe(
       uint32_t load_options,
       const ResourceRequest& resource_request,
       const net::NetworkIsolationKey& network_isolation_key,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-      const mojom::ClientSecurityState* client_security_state);
+      const mojom::ClientSecurityState* factory_client_security_state);
 
   // Creates and starts a custom URLLoader that serves a response from the
   // in-memory cache, instead of creating a network::URLLoader. Must be called

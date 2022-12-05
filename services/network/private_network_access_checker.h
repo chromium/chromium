@@ -39,12 +39,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
  public:
   // `resource_request` and `url_load_options` correspond to `URLLoader`
   // constructor arguments.
-  // `factory_params` should point to the parameters used by the factory that
-  // built the owner `URLLoader`. Must not be nullptr and must outlive this
-  // instance.
+  // `factory_client_security_state` should point to the client security
+  // state object coming from the factory that built the owner `URLLoader`. It
+  // can be nullptr when the factory doesn't use a client security state.
   PrivateNetworkAccessChecker(
       const ResourceRequest& resource_request,
-      const mojom::URLLoaderFactoryParams* factory_params,
+      const mojom::ClientSecurityState* factory_client_security_state,
       int32_t url_load_options);
 
   // Instances of this class are neither copyable nor movable.

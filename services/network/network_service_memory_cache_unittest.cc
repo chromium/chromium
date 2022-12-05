@@ -30,6 +30,7 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -849,6 +850,23 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_DevToolsAttached) {
     }
   }
   ASSERT_TRUE(has_expected_header);
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_ClientSecurityStateProvided) {
+  ResourceRequest request = CreateRequest("/cacheable");
+  StoreResponseToMemoryCache(request);
+
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->client_security_state =
+      mojom::ClientSecurityState::New();
+
+  // This should not hit any (D)CHECKs.
+  LoaderPair loader_pair = CreateLoaderAndStart(request);
+  loader_pair.client->RunUntilComplete();
+  const URLLoaderCompletionStatus& status =
+      loader_pair.client->completion_status();
+  ASSERT_EQ(status.error_code, net::OK);
+  ASSERT_TRUE(status.exists_in_memory_cache);
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
