@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/app_service/app_service_app_model_builder.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_app_model_builder.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"

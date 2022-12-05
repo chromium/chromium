@@ -126,7 +126,7 @@
     },
     'app_service': {
       'filepath': 'chrome/browser/apps/app_service/'\
-                  '|chrome/browser/ui/app_list/app_service/'\
+                  '|chrome/browser/ash/app_list/app_service/'\
                   '|chrome/browser/ui/ash/shelf/app_service/'\
                   '|chrome/browser/ui/views/apps/app_dialog/' \
                   '|components/services/app_service/',

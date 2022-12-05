@@ -1,11 +1,1 @@
-dominickn@chromium.org
-jennyz@chromium.org
-khmel@chromium.org
-nancylingwang@chromium.org
-tbarzic@chromium.org
-xiyuan@chromium.org
-
-# Mainly for launcher search and ranking purposes.
-file://chrome/browser/ui/app_list/search/OWNERS
-
-per-file app_launch_event_logger*=charleszhao@chromium.org
+file://chrome/browser/ash/app_list/OWNERS

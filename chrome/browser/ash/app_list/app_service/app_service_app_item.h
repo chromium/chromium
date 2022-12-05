@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_APP_SERVICE_APP_SERVICE_APP_ITEM_H_
-#define CHROME_BROWSER_UI_APP_LIST_APP_SERVICE_APP_SERVICE_APP_ITEM_H_
+#ifndef CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_APP_ITEM_H_
+#define CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_APP_ITEM_H_
 
 #include <memory>
 
@@ -63,4 +63,4 @@ class AppServiceAppItem : public ChromeAppListItem,
   base::WeakPtrFactory<AppServiceAppItem> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_APP_SERVICE_APP_SERVICE_APP_ITEM_H_
+#endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_APP_ITEM_H_
