@@ -68,7 +68,9 @@ enum class PairFailure {
   kBleDeviceLostMidPair = 23,
   // Timed out attempting to bond to device.
   kCreateBondTimeout = 24,
-  kMaxValue = kCreateBondTimeout,
+  // Potential pairing device lost between GATT connection attempts.
+  kPairingDeviceLostBetweenGattConnectionAttempts = 25,
+  kMaxValue = kPairingDeviceLostBetweenGattConnectionAttempts,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

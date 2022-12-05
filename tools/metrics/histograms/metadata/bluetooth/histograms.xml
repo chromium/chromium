@@ -159,8 +159,8 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Breaks down why a written attempt to the account-key Gatt characteristic of
-    a device failed if it was a result of a Gatt error. Emitted following a
+    Breaks down why a written attempt to the account-key GATT characteristic of
+    a device failed if it was a result of a GATT error. Emitted following a
     OnWriteRequest error in the FastPairGattServiceClient.
   </summary>
 </histogram>
@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Records the total time it takes to write the account key gatt characteristic
+    Records the total time it takes to write the account key GATT characteristic
     of a device. Time is calculated as the difference between when the write to
     characteristic occurs and when the OnAccountKeyWrite event is fired in the
     GattServiceClient during the pairing protocol. Emitted when the
@@ -611,15 +611,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.GattConnection.AttemptCount"
+    units="count" expires_after="2023-04-30">
+  <owner>akingsb@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the number of attempts needed for a successful GATT connection.
+    Currently the highest allowed attempt number is 3. Emitted following a
+    successful GATT connection. No metric is emitted on failure.
+  </summary>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.GattConnection.EffectiveSuccessRate"
+    enum="BooleanSuccess" expires_after="2023-04-30">
+  <owner>akingsb@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the effective success rate of creating a GATT connection during the
+    Fast Pair pairing protocol. Emitted following the attempted creation of the
+    GATT connection and all retries during the key based pairing exchange.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.GattConnection.ErrorReason"
     enum="BluetoothDeviceConnectErrorCode" expires_after="2023-05-14">
   <owner>shanefitz@google.com</owner>
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Records the Connect error code from a failure to create a Gatt connection
+    Records the Connect error code from a failure to create a GATT connection
     during the Fast Pair pairing protocol. Emitted following the attempted
-    creation of the Gatt service client during the key based pairing exchange.
+    creation of the GATT service client during the key based pairing exchange.
   </summary>
 </histogram>
 
@@ -629,8 +654,8 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Records success or failure of creating a Gatt connection during the Fast
-    Pair pairing protocol. Emitted following the attempted creation of the Gatt
+    Records success or failure of creating a GATT connection during the Fast
+    Pair pairing protocol. Emitted following the attempted creation of the GATT
     service client during the key based pairing exchange.
   </summary>
 </histogram>
@@ -654,7 +679,7 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the success or failure of the big picture Fast Pair Handshake with a
-    device. Possible failures include : creating a Gatt connection, creating the
+    device. Possible failures include: creating a GATT connection, creating the
     data encryptor, writing to the device, parsing the response bytes from the
     device. Success is considered when we receive a valid response from the
     device. Emitted when the Handshake reaches a terminal point.
@@ -716,7 +741,7 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Records the total time it takes to be notified of the Key-based pairing Gatt
+    Records the total time it takes to be notified of the Key-based pairing GATT
     characteristic of the device changing during the handshake. The time is
     calculated as the difference between when the WriteRequest is sent to the
     device, and when we are notified of a response. If the write request attempt
@@ -731,8 +756,8 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Breaks down why a written attempt to the Key-based pairing Gatt
-    characteristic of a device failed if it was a result of a Gatt error.
+    Breaks down why a written attempt to the Key-based pairing GATT
+    characteristic of a device failed if it was a result of a GATT error.
     Emitted following a OnWriteRequest error in the FastPairGattServiceClient.
   </summary>
 </histogram>
@@ -743,7 +768,7 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Breaks down why a written attempt to the Key-based pairing Gatt
+    Breaks down why a written attempt to the Key-based pairing GATT
     characteristic of a device failed (see
     'Bluetooth.ChromeOS.FastPair.WriteKeyBasedPairing.Result'). Emitted on the
     OnWriteResponse event in the Fast Pair handshake.
@@ -756,7 +781,7 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Records success or failure of writing to the key-based pairing Gatt
+    Records success or failure of writing to the key-based pairing GATT
     characteristic of the device during the handshake. Emitted following the
     writing request in FastPairHandshake.
   </summary>
@@ -978,7 +1003,7 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Records the total time it takes to be notified of the Passkey Gatt
+    Records the total time it takes to be notified of the Passkey GATT
     characteristic of the device changing during the pairing protocol. The time
     is calculated as the difference between when the WritePasskey is sent to the
     device, and when we are notified of a response. If the write passkey attempt
@@ -992,8 +1017,8 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Breaks down why a written attempt to the Passkey Gatt characteristic of a
-    device failed if it was a result of a Gatt error. Emitted following a
+    Breaks down why a written attempt to the Passkey GATT characteristic of a
+    device failed if it was a result of a GATT error. Emitted following a
     OnPasskeyRequest error in the FastPairGattServiceClient.
   </summary>
 </histogram>
@@ -1004,7 +1029,7 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Breaks down why a written attempt to the Passkey Gatt characteristic of a
+    Breaks down why a written attempt to the Passkey GATT characteristic of a
     device failed (see 'Bluetooth.ChromeOS.FastPair.Passkey.Result'). Emitted on
     the OnWritePasskey event in the FastPairPairer.
   </summary>
@@ -1016,7 +1041,7 @@ chromium-metrics-reviews@google.com.
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Records success or failure of writing to the Passkey Gatt characteristic of
+    Records success or failure of writing to the Passkey GATT characteristic of
     the device during the pairing protocol. Emitted following the passkey
     request in the FastPairPairer.
   </summary>

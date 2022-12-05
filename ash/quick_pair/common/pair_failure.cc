@@ -90,6 +90,10 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
     case PairFailure::kCreateBondTimeout:
       stream << "[Timed out while attempting to create bond with device]";
       break;
+    case PairFailure::kPairingDeviceLostBetweenGattConnectionAttempts:
+      stream
+          << "[Potential pairing device lost between GATT connection attempts]";
+      break;
   }
 
   return stream;

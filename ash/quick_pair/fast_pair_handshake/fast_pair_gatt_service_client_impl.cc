@@ -40,6 +40,7 @@ constexpr uint8_t kSeekerPasskey = 0x02;
 constexpr uint8_t kAccountKeyStartByte = 0x04;
 
 constexpr base::TimeDelta kGattOperationTimeout = base::Seconds(15);
+constexpr int kMaxNumGattConnectionAttempts = 3;
 
 constexpr const char* ToString(
     device::BluetoothGattService::GattErrorCode error_code) {
@@ -135,11 +136,37 @@ FastPairGattServiceClientImpl::FastPairGattServiceClientImpl(
 
   QP_LOG(INFO) << __func__ << ": Starting the GATT connection to device";
   RecordGattInitializationStep(FastPairGattConnectionSteps::kConnectionStarted);
+  AttemptGattConnection();
+}
+
+FastPairGattServiceClientImpl::~FastPairGattServiceClientImpl() = default;
+
+void FastPairGattServiceClientImpl::AttemptGattConnection() {
+  if (num_gatt_connection_attempts_ == kMaxNumGattConnectionAttempts) {
+    NotifyInitializedError(PairFailure::kCreateGattConnection);
+    RecordEffectiveGattConnectionSuccess(/*success=*/false);
+    return;
+  }
+
+  num_gatt_connection_attempts_++;
+
+  QP_LOG(INFO) << __func__ << ": Starting GATT connection attempt #"
+               << num_gatt_connection_attempts_ << " to device";
+
+  // Attempt creating a GATT connection with the device.
+  auto* device = adapter_->GetDevice(device_address_);
+  if (!device) {
+    // The device must have been lost between connection attempts.
+    NotifyInitializedError(
+        PairFailure::kPairingDeviceLostBetweenGattConnectionAttempts);
+    return;
+  }
 
   device->CreateGattConnection(
       base::BindOnce(&FastPairGattServiceClientImpl::OnGattConnection,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       kFastPairBluetoothUuid);
+
   gatt_service_discovery_timer_.Start(
       FROM_HERE, kGattOperationTimeout,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyInitializedError,
@@ -147,22 +174,22 @@ FastPairGattServiceClientImpl::FastPairGattServiceClientImpl(
                      PairFailure::kGattServiceDiscoveryTimeout));
 }
 
-FastPairGattServiceClientImpl::~FastPairGattServiceClientImpl() = default;
-
 void FastPairGattServiceClientImpl::OnGattConnection(
     base::TimeTicks gatt_connection_start_time,
     std::unique_ptr<device::BluetoothGattConnection> gatt_connection,
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
-  RecordGattConnectionResult(/*success=*/!error_code.has_value());
-
   if (error_code) {
     QP_LOG(WARNING) << "Error creating GATT connection to device: "
                     << ToString(error_code.value());
     RecordGattConnectionErrorCode(error_code.value());
-    NotifyInitializedError(PairFailure::kCreateGattConnection);
+    RecordGattConnectionResult(/*success=*/false);
+    AttemptGattConnection();
   } else {
     QP_LOG(INFO) << __func__
                  << ": Successful creation of GATT connection to device";
+    RecordGattConnectionResult(/*success=*/true);
+    RecordEffectiveGattConnectionSuccess(/*success=*/true);
+    RecordGattConnectionAttemptCount(num_gatt_connection_attempts_);
     RecordTotalGattConnectionTime(base::TimeTicks::Now() -
                                   gatt_connection_start_time);
     gatt_connection_ = std::move(gatt_connection);

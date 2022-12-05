@@ -111,6 +111,10 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
       uint8_t message_type,
       uint32_t passkey);
 
+  // Attempt to create a GATT connection with the device. This method may be
+  // called multiple times.
+  void AttemptGattConnection();
+
   // Callback from the adapter's call to create GATT connection.
   void OnGattConnection(
       base::TimeTicks gatt_connection_start_time,
@@ -188,6 +192,9 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   device::BluetoothRemoteGattCharacteristic* passkey_characteristic_ = nullptr;
   device::BluetoothRemoteGattCharacteristic* account_key_characteristic_ =
       nullptr;
+
+  // Initialize with zero failures.
+  int num_gatt_connection_attempts_ = 0;
 
   std::vector<std::unique_ptr<device::BluetoothGattNotifySession>>
       bluetooth_gatt_notify_sessions_;

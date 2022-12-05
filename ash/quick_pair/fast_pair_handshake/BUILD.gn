@@ -74,7 +74,7 @@ source_set("unit_tests") {
   sources = [
     "fast_pair_data_encryptor_impl_unittest.cc",
     "fast_pair_encryption_unittest.cc",
-    "fast_pair_gatt_service_client_unittest.cc",
+    "fast_pair_gatt_service_client_impl_unittest.cc",
     "fast_pair_handshake_impl_unittest.cc",
   ]
 

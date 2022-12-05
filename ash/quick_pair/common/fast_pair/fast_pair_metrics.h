@@ -166,6 +166,12 @@ void RecordGattConnectionErrorCode(
     device::BluetoothDevice::ConnectErrorCode error_code);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordEffectiveGattConnectionSuccess(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordGattConnectionAttemptCount(int num_attempts);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordPairingFailureReason(const Device& device, PairFailure failure);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
