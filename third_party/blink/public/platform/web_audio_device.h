@@ -45,10 +45,9 @@ class WebAudioDevice {
     // rendered sample will be played out.
     virtual void Render(const WebVector<float*>& destination_data,
                         uint32_t number_of_frames,
-                        double delay,            // Output delay in seconds.
-                        double delay_timestamp,  // System timestamp in seconds
-                                                 // when |delay| was obtained.
-                        size_t prior_frames_skipped);
+                        double delay,             // Output delay in seconds.
+                        double delay_timestamp);  // System timestamp in seconds
+                                                  // when |delay| was obtained.
 
    protected:
     virtual ~RenderCallback();

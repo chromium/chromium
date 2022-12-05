@@ -88,7 +88,7 @@ void CountWASamplesProcessedForRate(absl::optional<float> sample_rate) {
     channels[i].resize(request_frames);
     dest_data[i] = channels[i].data();
   }
-  destination->Render(dest_data, request_frames, 0, 0, 0);
+  destination->Render(dest_data, request_frames, 0, 0);
 
   int exact_frames_required =
       std::ceil(request_frames * destination->SampleRate() /

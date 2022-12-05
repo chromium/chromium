@@ -100,8 +100,7 @@ class RendererWebAudioDeviceImplTest
               (const blink::WebVector<float*>& destination_data,
                uint32_t number_of_frames,
                double delay,
-               double delay_timestamp,
-               size_t prior_frames_skipped),
+               double delay_timestamp),
               (override));
 
  protected:

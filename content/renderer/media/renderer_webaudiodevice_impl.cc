@@ -272,9 +272,9 @@ int RendererWebAudioDeviceImpl::Render(base::TimeDelta delay,
   for (int i = 0; i < dest->channels(); ++i)
     web_audio_dest_data_[i] = dest->channel(i);
 
-  client_callback_->Render(
-      web_audio_dest_data_, dest->frames(), delay.InSecondsF(),
-      (delay_timestamp - base::TimeTicks()).InSecondsF(), prior_frames_skipped);
+  client_callback_->Render(web_audio_dest_data_, dest->frames(),
+                           delay.InSecondsF(),
+                           (delay_timestamp - base::TimeTicks()).InSecondsF());
 
   if (!is_rendering_) {
     SendLogMessage(base::StringPrintf("%s => (rendering is alive [frames=%d])",
