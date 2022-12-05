@@ -172,18 +172,6 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
 
   GlobalRoutingID routing_pair = GetRoutingPair(new_host);
   current_hosts_.insert(routing_pair);
-
-  // If |new_host| is restored from the BackForwardCache, it can contain
-  // iframes, otherwise it has just been created and can't contain iframes for
-  // the moment.
-  //
-  // TODO(https://crbug.com/1179683): Figure out a better way to deal with
-  // handling the new RenderFrameHost coming from a prerendered activation
-  // rather than an ordinary activation.
-  if (!IsBackForwardCacheEnabled() && !blink::features::IsPrerender2Enabled()) {
-    CHECK(!HasAnyChildren(new_host))
-        << "A frame should not have children before it is committed.";
-  }
 }
 
 void WebContentsObserverConsistencyChecker::FrameDeleted(
