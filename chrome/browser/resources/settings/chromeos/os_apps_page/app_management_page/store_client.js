@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Store} from 'chrome://resources/ash/common/store/store.js';
+import {Action, Store} from 'chrome://resources/ash/common/store/store.js';
 import {StoreClient, StoreClientInterface} from 'chrome://resources/ash/common/store/store_client.js';
 
 import {AppManagementStore} from './store.js';
@@ -47,6 +47,12 @@ export const AppManagementStoreClientImpl = {
  * @extends {StoreClientInterface<AppManagementPageState>}
  */
 export class AppManagementStoreClientInterface {
+  /**
+   * @override
+   * @param {?Action} action
+   */
+  dispatch(action) {}
+
   /**
    * @param {string} localProperty
    * @param {function(!AppManagementPageState)} valueGetter

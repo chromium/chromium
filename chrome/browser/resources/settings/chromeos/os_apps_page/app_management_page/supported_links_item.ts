@@ -2,38 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './supported_links_overlapping_apps_dialog.js';
-import './supported_links_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import './supported_links_dialog.js';
+import './supported_links_overlapping_apps_dialog.js';
 
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction, AppType, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_link/localized_link.js';
+import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../../assert_extras.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {getTemplate} from './supported_links_item.html.js';
+import {AppManagementSupportedLinksOverlappingAppsDialogElement} from './supported_links_overlapping_apps_dialog.js';
 import {AppMap} from './types.js';
 
-const PREFERRED_APP_PREF = 'preferred';
+type PreferenceType = 'preferred'|'browser';
+const PREFERRED_APP_PREF = 'preferred' as const;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- * @implements {I18nBehaviorInterface}
- */
+interface AppManagementSupportedLinksItemElement {
+  $: {
+    heading: LocalizedLinkElement,
+    preferredRadioButton: CrRadioButtonElement,
+    browserRadioButton: CrRadioButtonElement,
+  };
+}
+
 const AppManagementSupportedLinksItemElementBase =
-    mixinBehaviors([AppManagementStoreClient, I18nBehavior], PolymerElement);
+    mixinBehaviors([AppManagementStoreClient], I18nMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nMixinInterface &
+          AppManagementStoreClientInterface,
+    };
 
-/** @polymer */
 class AppManagementSupportedLinksItemElement extends
     AppManagementSupportedLinksItemElementBase {
   static get is() {
@@ -41,74 +51,47 @@ class AppManagementSupportedLinksItemElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {!App} */
       app: Object,
 
-      /**
-       * @type {boolean}
-       */
       hidden: {
         type: Boolean,
         computed: 'isHidden_(app)',
         reflectToAttribute: true,
       },
 
-      /**
-       * @type {boolean}
-       * @private
-       */
       disabled_: {
         type: Boolean,
         computed: 'isDisabled_(app)',
       },
 
-      /**
-       * @private {boolean}
-       */
       showSupportedLinksDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @private {boolean}
-       */
       showOverlappingAppsDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @private {string}
-       */
       overlappingAppsWarning_: {
         type: String,
       },
 
-      /**
-       * @private {boolean}
-       */
       showOverlappingAppsWarning_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @type {AppMap}
-       * @private
-       */
       apps_: {
         type: Object,
       },
 
-      /**
-       * @private {Array<string>}
-       */
       overlappingAppIds_: {
         type: Array,
       },
@@ -121,7 +104,17 @@ class AppManagementSupportedLinksItemElement extends
     ];
   }
 
-  connectedCallback() {
+  app: App;
+  override hidden: boolean;
+  private apps_: AppMap;
+  private disabled_: boolean;
+  private overlappingAppsWarning_: string;
+  private overlappingAppIds_: string[];
+  private showOverlappingAppsDialog_: boolean;
+  private showOverlappingAppsWarning_: boolean;
+  private showSupportedLinksDialog_: boolean;
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('apps_', state => state.apps);
@@ -131,69 +124,42 @@ class AppManagementSupportedLinksItemElement extends
   /**
    * The supported links item is not available when an app has no supported
    * links.
-   *
-   * @param {!App} app
-   * @returns {boolean}
-   * @private
    */
-  isHidden_(app) {
+  private isHidden_(app: App): boolean {
     return !app.supportedLinks.length;
   }
 
   /**
    * Disable the radio button options if the app is a PWA and is set to open
    * in the browser.
-   *
-   * @param {!App} app
-   * @returns {boolean} If the preference settings should be disabled
-   * @private
    */
-  isDisabled_(app) {
+  private isDisabled_(app: App): boolean {
     return app.type === AppType.kWeb && app.windowMode === WindowMode.kBrowser;
   }
 
-  /**
-   * @param {!App} app
-   * @return {!string} which indicates if the app is currently preferred or not.
-   * @private
-   */
-  getCurrentPref_(app) {
+  private getCurrentPreferredApp_(app: App): string {
     return app.isPreferredApp ? 'preferred' : 'browser';
   }
 
-  /**
-   * @param {!App} app
-   * @return {!string} label for 'preferred' radio button
-   * @private
-   */
-  getPreferredLabel_(app) {
+  private getPreferredLabel_(app: App): string {
     return this.i18n(
         'appManagementIntentSharingOpenAppLabel', String(app.title));
   }
 
-  /**
-   * @param {!App} app
-   * @return {!string} which explains why the setting is disabled.
-   * @private
-   */
-  getDisabledExplanation_(app) {
+  private getDisabledExplanation_(app: App): TrustedHTML {
     return this.i18nAdvanced(
         'appManagementIntentSharingTabExplanation',
         {substitutions: [String(app.title)]});
   }
 
-  /**
-   * @param {!AppMap} apps
-   * @param {!App} app
-   * @private
-   */
-  async getOverlappingAppsWarning_(apps, app) {
-    if (app === undefined || app.isPreferredApp || apps === undefined) {
+  private async getOverlappingAppsWarning_(
+      apps: AppMap|undefined, app: App|undefined): Promise<void> {
+    if (!apps || !app || app.isPreferredApp) {
       this.showOverlappingAppsWarning_ = false;
       return;
     }
 
-    let overlappingAppIds = [];
+    let overlappingAppIds: string[] = [];
     try {
       const {appIds: appIds} =
           await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
@@ -208,11 +174,7 @@ class AppManagementSupportedLinksItemElement extends
     }
     this.overlappingAppIds_ = overlappingAppIds;
 
-    const appNames = overlappingAppIds.map(app_id => {
-      assert(apps[app_id]);
-      return apps[app_id].title;
-    });
-
+    const appNames = overlappingAppIds.map(appId => apps[appId]!.title!);
     if (appNames.length === 0) {
       this.showOverlappingAppsWarning_ = false;
       return;
@@ -247,12 +209,8 @@ class AppManagementSupportedLinksItemElement extends
   }
 
   /* Supported links list dialog functions ************************************/
-  /**
-   * Stamps and opens the Supported Links dialog.
-   * @param {!Event} e
-   * @private
-   */
-  launchDialog_(e) {
+
+  private launchDialog_(e: CustomEvent<{event: Event}>): void {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     e.detail.event.preventDefault();
@@ -264,25 +222,18 @@ class AppManagementSupportedLinksItemElement extends
         this.app.type, AppManagementUserAction.SUPPORTED_LINKS_LIST_SHOWN);
   }
 
-  /**
-   * @private
-   */
-  onDialogClose_() {
+  private onDialogClose_(): void {
     this.showSupportedLinksDialog_ = false;
-    focusWithoutInk(assert(this.$.heading));
+    focusWithoutInk(this.$.heading);
   }
 
   /* Preferred app state change dialog and related functions ******************/
 
-  /**
-   * @param {!CustomEvent<{value: string}>} event
-   * @private
-   */
-  async onSupportedLinkPrefChanged_(event) {
-    const preference = event.detail.value;
+  private async onSupportedLinkPrefChanged_(
+      event: CustomEvent<{value: string}>): Promise<void> {
+    const preference = event.detail.value as PreferenceType;
 
-    let overlappingAppIds = [];
-
+    let overlappingAppIds: string[] = [];
     try {
       const {appIds: appIds} =
           await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
@@ -306,30 +257,32 @@ class AppManagementSupportedLinksItemElement extends
     this.setAppAsPreferredApp_(preference);
   }
 
-  /** @private */
-  onOverlappingDialogClosed_() {
+  private onOverlappingDialogClosed_(): void {
     this.showOverlappingAppsDialog_ = false;
 
-    if (this.shadowRoot.querySelector('#overlap-dialog').wasConfirmed()) {
+    const overlapDialog =
+        castExists(this.shadowRoot!.querySelector<
+                   AppManagementSupportedLinksOverlappingAppsDialogElement>(
+            '#overlapDialog'));
+    if (overlapDialog.wasConfirmed()) {
       this.setAppAsPreferredApp_(PREFERRED_APP_PREF);
       // Return keyboard focus to the preferred radio button.
-      focusWithoutInk(this.$.preferred);
+      focusWithoutInk(this.$.preferredRadioButton);
     } else {
       // Reset the radio button.
-      this.shadowRoot.querySelector('#radio-group').selected =
-          this.getCurrentPref_(this.app);
+      this.shadowRoot!.querySelector<CrRadioGroupElement>(
+                          '#radioGroup')!.selected =
+          this.getCurrentPreferredApp_(this.app);
       // Return keyboard focus to the browser radio button.
-      focusWithoutInk(this.$.browser);
+      focusWithoutInk(this.$.browserRadioButton);
     }
   }
 
   /**
    * Sets this.app as a preferred app or not depending on the value of
    * |preference|.
-   *
-   * @param {string} preference either "preferred" or "browser"
    */
-  setAppAsPreferredApp_(preference) {
+  private setAppAsPreferredApp_(preference: PreferenceType): void {
     const newState = preference === PREFERRED_APP_PREF;
 
     BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newState);
@@ -339,6 +292,13 @@ class AppManagementSupportedLinksItemElement extends
         AppManagementUserAction.PREFERRED_APP_TURNED_ON :
         AppManagementUserAction.PREFERRED_APP_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, userAction);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-supported-links-item':
+        AppManagementSupportedLinksItemElement;
   }
 }
 

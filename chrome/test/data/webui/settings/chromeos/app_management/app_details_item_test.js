@@ -43,9 +43,9 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#typeAndSource'));
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#type-and-source')
+        appDetailsItem.shadowRoot.querySelector('#typeAndSource')
             .textContent.trim(),
         'Web App');
   });
@@ -71,9 +71,9 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#typeAndSource'));
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#type-and-source')
+        appDetailsItem.shadowRoot.querySelector('#typeAndSource')
             .textContent.trim(),
         'Android App');
   });
@@ -99,9 +99,9 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#typeAndSource'));
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#type-and-source')
+        appDetailsItem.shadowRoot.querySelector('#typeAndSource')
             .textContent.trim(),
         'Chrome App');
   });
@@ -127,9 +127,9 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#typeAndSource'));
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#type-and-source')
+        appDetailsItem.shadowRoot.querySelector('#typeAndSource')
             .textContent.trim(),
         'Chrome App installed from <a href="#">Chrome Web Store</a>');
   });
@@ -155,9 +155,9 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#typeAndSource'));
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#type-and-source')
+        appDetailsItem.shadowRoot.querySelector('#typeAndSource')
             .textContent.trim(),
         'Android App installed from <a href="#">Google Play Store</a>');
   });
@@ -182,9 +182,9 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#typeAndSource'));
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#type-and-source')
+        appDetailsItem.shadowRoot.querySelector('#typeAndSource')
             .textContent.trim(),
         'System App');
   });
@@ -209,9 +209,9 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#type-and-source'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#typeAndSource'));
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#type-and-source')
+        appDetailsItem.shadowRoot.querySelector('#typeAndSource')
             .textContent.trim(),
         'ChromeOS System App');
   });
@@ -298,12 +298,12 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#storage-title'));
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#app-size'));
-    assertFalse(!!appDetailsItem.shadowRoot.querySelector('#data-size'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#storageTitle'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#appSize'));
+    assertFalse(!!appDetailsItem.shadowRoot.querySelector('#dataSize'));
 
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#app-size').textContent.trim(),
+        appDetailsItem.shadowRoot.querySelector('#appSize').textContent.trim(),
         'App size: 17 MB');
 
     AppManagementStore.getInstance().dispatch(updateSelectedAppId(app2.id));
@@ -318,16 +318,15 @@ suite('<app-management-app-details-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#storage-title'));
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#app-size'));
-    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#data-size'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#storageTitle'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#appSize'));
+    assertTrue(!!appDetailsItem.shadowRoot.querySelector('#dataSize'));
 
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#app-size').textContent.trim(),
+        appDetailsItem.shadowRoot.querySelector('#appSize').textContent.trim(),
         'App size: 17 MB');
     assertEquals(
-        appDetailsItem.shadowRoot.querySelector('#data-size')
-            .textContent.trim(),
+        appDetailsItem.shadowRoot.querySelector('#dataSize').textContent.trim(),
         'Data stored in app: 124.6 GB');
   });
 });

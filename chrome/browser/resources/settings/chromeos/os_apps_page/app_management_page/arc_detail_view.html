@@ -1,27 +1,27 @@
 <style include="app-management-cros-shared-style">
-  #no-permissions {
+  #noPermissions {
     border-top: none;
   }
 </style>
 <div class="permission-list">
   <app-management-pin-to-shelf-item
-      id="pin-to-shelf-setting"
+      id="pinToShelfSetting"
       class="permission-card-row separated-row"
       app="[[app_]]">
   </app-management-pin-to-shelf-item>
-  <app-management-permission-item id="notifications-card"
+  <app-management-permission-item id="notificationsCard"
       class="permission-card-row separated-row"
       app="[[app_]]"
       permission-label="$i18n{appManagementNotificationsLabel}"
       permission-type="kNotifications">
   </app-management-permission-item>
-  <div id="permissions-card"
+  <div id="permissionsCard"
       class="permission-card-row">
-    <div id="subpermission-expand-row"
+    <div id="subpermissionExpandRow"
         class="permission-section-header">
       <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
     </div>
-    <div id="subpermission-list"
+    <div id="subpermissionList"
         class="permission-list indented-permission-block">
       <app-management-permission-item class="subpermission-row"
           app="[[app_]]"
@@ -54,18 +54,18 @@
           permission-type="kStorage">
       </app-management-permission-item>
       <template is="dom-if" if="[[noPermissionsRequested_(app_)]]">
-        <div id="no-permissions" class="permission-text-row">
+        <div id="noPermissions" class="permission-text-row">
           $i18n{appManagementNoPermissions}
         </div>
       </template>
     </div>
   </div>
   <app-management-resize-lock-item
-      id="resize-lock-setting"
+      id="resizeLockSetting"
       class="permission-card-row separated-row row-with-description"
       app="[[app_]]">
   </app-management-resize-lock-item>
-  <app-management-more-permissions-item id="more-settings"
+  <app-management-more-permissions-item id="moreSettings"
       class="permission-card-row separated-row" app="[[app_]]"
       more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
   </app-management-more-permissions-item>

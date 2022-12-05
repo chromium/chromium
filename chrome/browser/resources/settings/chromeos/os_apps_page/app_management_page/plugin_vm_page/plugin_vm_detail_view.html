@@ -1,7 +1,7 @@
 <style include="app-management-cros-shared-style"></style>
 
 <div class="permission-list">
-  <app-management-pin-to-shelf-item id="pin-to-shelf-setting"
+  <app-management-pin-to-shelf-item id="pinToShelfSetting"
     class="permission-card-row separated-row" app="[[app_]]">
   </app-management-pin-to-shelf-item>
   <div class="permission-card-row">
@@ -9,14 +9,14 @@
       <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
     </div>
     <div class="permission-list indented-permission-block">
-      <app-management-permission-item id="camera-permission"
+      <app-management-permission-item id="cameraPermission"
         app="[[app_]]"
         class="subpermission-row" icon="app-management:camera"
         sync-permission-manually
         permission-label="$i18n{appManagementCameraPermissionLabel}"
         permission-type="kCamera" on-change="onPermissionChanged_">
       </app-management-permission-item>
-      <app-management-permission-item id="microphone-permission"
+      <app-management-permission-item id="microphonePermission"
         app="[[app_]]"
         class="subpermission-row" icon="app-management:microphone"
         sync-permission-manually

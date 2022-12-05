@@ -6,34 +6,30 @@ import 'chrome://resources/cr_components/app_management/toggle_row.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../../assert_extras.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import {getTemplate} from './resize_lock_item.html.js';
 
-/** @polymer */
 class AppManagementResizeLockItemElement extends PolymerElement {
   static get is() {
     return 'app-management-resize-lock-item';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @type {App}
-       */
       app: Object,
 
-      /**
-       * @type {boolean}
-       */
       hidden: {
         type: Boolean,
         computed: 'isHidden_(app)',
@@ -42,42 +38,27 @@ class AppManagementResizeLockItemElement extends PolymerElement {
     };
   }
 
-  ready() {
+  app: App;
+  override hidden: boolean;
+
+  override ready(): void {
     super.ready();
 
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.toggleSetting_);
   }
 
-  /**
-   * @param {App} app
-   * @returns {boolean} true if the app is resize locked.
-   * @private
-   */
-  getValue_(app) {
-    if (app === undefined) {
-      return false;
-    }
-    assert(app);
+  private getValue_(app: App): boolean {
     return app.resizeLocked;
   }
 
-  /**
-   * @param {App} app
-   * @returns {boolean} true if resize lock setting is hidden.
-   */
-  isHidden_(app) {
-    if (app === undefined) {
-      return true;
-    }
-    assert(app);
+  private isHidden_(app: App): boolean {
     return app.hideResizeLocked;
   }
 
-  /** @private */
-  toggleSetting_() {
+  private toggleSetting_(): void {
     const newState = !this.app.resizeLocked;
-    assert(newState === this.$['toggle-row'].isChecked());
+    assert(newState === this.getToggleRow_().isChecked());
     BrowserProxy.getInstance().handler.setResizeLocked(
         this.app.id,
         newState,
@@ -89,9 +70,20 @@ class AppManagementResizeLockItemElement extends PolymerElement {
     recordAppManagementUserAction(this.app.type, userAction);
   }
 
-  /** @private */
-  onClick_() {
-    this.$['toggle-row'].click();
+  private onClick_(): void {
+    this.getToggleRow_().click();
+  }
+
+  private getToggleRow_(): AppManagementToggleRowElement {
+    return castExists(
+        this.shadowRoot!.querySelector<AppManagementToggleRowElement>(
+            '#toggleRow'));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-resize-lock-item': AppManagementResizeLockItemElement;
   }
 }
 

@@ -10,56 +10,43 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {alphabeticalSort} from 'chrome://resources/cr_components/app_management/util.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route} from '../../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../../router.js';
 import {routes} from '../../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../../route_observer_behavior.js';
 
+import {getTemplate} from './main_view.html.js';
 import {AppManagementStore} from './store.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 import {AppMap} from './types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const AppManagementMainViewElementBase = mixinBehaviors(
-    [AppManagementStoreClient, RouteObserverBehavior], PolymerElement);
+const AppManagementMainViewElementBase =
+    mixinBehaviors(
+        [AppManagementStoreClient], RouteObserverMixin(PolymerElement)) as {
+      new (): PolymerElement & RouteObserverMixinInterface &
+          AppManagementStoreClientInterface,
+    };
 
-/** @polymer */
 class AppManagementMainViewElement extends AppManagementMainViewElementBase {
   static get is() {
     return 'app-management-main-view';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @type {string}
-       */
       searchTerm: {
         type: String,
       },
 
-      /**
-       * @private {AppMap}
-       */
       apps_: {
         type: Object,
       },
 
-      /**
-       * List of apps displayed.
-       * @private {Array<App>}
-       */
       appList_: {
         type: Array,
         value: () => [],
@@ -68,18 +55,18 @@ class AppManagementMainViewElement extends AppManagementMainViewElementBase {
     };
   }
 
-  connectedCallback() {
+  searchTerm: string;
+  private appList_: App[];
+  private apps_: AppMap|undefined;
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('apps_', state => state.apps);
     this.updateFromStore();
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route): void {
     if (route === routes.APP_MANAGEMENT) {
       const appId = AppManagementStore.getInstance().data.selectedAppId;
 
@@ -87,7 +74,7 @@ class AppManagementMainViewElement extends AppManagementMainViewElementBase {
       // is requested as no app has been selected yet.
       if (appId) {
         const button =
-            this.shadowRoot.querySelector(`#app-subpage-button-${appId}`);
+            this.shadowRoot!.querySelector(`#app-subpage-button-${appId}`);
         if (button) {
           focusWithoutInk(button);
         }
@@ -95,22 +82,11 @@ class AppManagementMainViewElement extends AppManagementMainViewElementBase {
     }
   }
 
-  /**
-   * @private
-   * @param {Array<App>} appList
-   * @return {boolean}
-   */
-  isAppListEmpty_(appList) {
+  private isAppListEmpty_(appList: App[]): boolean {
     return appList.length === 0;
   }
 
-  /**
-   * @private
-   * @param {AppMap} apps
-   * @param {String} searchTerm
-   * @return {Array<App>}
-   */
-  computeAppList_(apps, searchTerm) {
+  private computeAppList_(apps: AppMap|undefined, searchTerm: string): App[] {
     if (!apps) {
       return [];
     }
@@ -119,7 +95,7 @@ class AppManagementMainViewElement extends AppManagementMainViewElementBase {
     // should reset.
     const appArray = Object.values(apps);
 
-    let filteredApps;
+    let filteredApps: App[];
     if (searchTerm) {
       const lowerCaseSearchTerm = searchTerm.toLowerCase();
       filteredApps = appArray.filter(app => {
@@ -130,11 +106,19 @@ class AppManagementMainViewElement extends AppManagementMainViewElementBase {
       filteredApps = appArray;
     }
 
-    filteredApps.sort(
-        (a, b) => alphabeticalSort(
-            /** @type {string} */ (a.title), /** @type {string} */ (b.title)));
+    filteredApps.sort((a, b) => {
+      assert(a.title);
+      assert(b.title);
+      return alphabeticalSort(a.title, b.title);
+    });
 
     return filteredApps;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-main-view': AppManagementMainViewElement;
   }
 }
 

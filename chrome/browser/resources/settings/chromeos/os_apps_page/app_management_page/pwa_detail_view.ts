@@ -13,19 +13,16 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getAppIcon, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './pwa_detail_view.html.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- */
 const AppManagementPwaDetailViewElementBase =
-    mixinBehaviors([AppManagementStoreClient], PolymerElement);
+    mixinBehaviors([AppManagementStoreClient], PolymerElement) as {
+      new (): PolymerElement & AppManagementStoreClientInterface,
+    };
 
-/** @polymer */
 class AppManagementPwaDetailViewElement extends
     AppManagementPwaDetailViewElementBase {
   static get is() {
@@ -33,19 +30,13 @@ class AppManagementPwaDetailViewElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @private {App}
-       */
       app_: Object,
 
-      /**
-       * @private {boolean}
-       */
       listExpanded_: {
         type: Boolean,
         value: false,
@@ -53,7 +44,10 @@ class AppManagementPwaDetailViewElement extends
     };
   }
 
-  connectedCallback() {
+  private app_: App;
+  private listExpanded_: boolean;
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('app_', state => getSelectedApp(state));
@@ -62,27 +56,22 @@ class AppManagementPwaDetailViewElement extends
     this.listExpanded_ = false;
   }
 
-  /** @private */
-  toggleListExpanded_() {
+  private toggleListExpanded_(): void {
     this.listExpanded_ = !this.listExpanded_;
   }
 
-  /**
-   * @param {App} app
-   * @return {string}
-   * @private
-   */
-  iconUrlFromId_(app) {
+  private iconUrlFromId_(app: App): string {
     return getAppIcon(app);
   }
 
-  /**
-   * @param {boolean} listExpanded
-   * @return {string}
-   * @private
-   */
-  getCollapsedIcon_(listExpanded) {
+  private getCollapsedIcon_(listExpanded: boolean): string {
     return listExpanded ? 'cr:expand-less' : 'cr:expand-more';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-pwa-detail-view': AppManagementPwaDetailViewElement;
   }
 }
 

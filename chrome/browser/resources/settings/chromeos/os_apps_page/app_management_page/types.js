@@ -75,28 +75,3 @@ export const AppManagementUserAction = {
   SUPPORTED_LINKS_LIST_SHOWN: 23,
   OVERLAPPING_APPS_DIALOG_SHOWN: 24,
 };
-
-/**
- * TODO(crbug/1315757)
- * When dependent code is converted to TS, this type can be imported from
- * chrome://resources/cr_components/app_management/permission_item.js
- *
- * @constructor
- * @extends {HTMLElement}
- */
-export function AppManagementPermissionItemElement() {}
-
-/** @type {boolean} */
-AppManagementPermissionItemElement.prototype.permissionType;
-
-AppManagementPermissionItemElement.prototype.syncPermission = function() {};
-AppManagementPermissionItemElement.prototype.resetToggle = function() {};
-
-/**
- * @constructor
- * @extends {HTMLElement}
- */
-export function AppManagementToggleRowElement() {}
-
-/** @return {boolean} */
-AppManagementToggleRowElement.prototype.isChecked = function() {};

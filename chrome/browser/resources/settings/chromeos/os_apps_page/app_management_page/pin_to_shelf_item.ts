@@ -5,44 +5,36 @@ import 'chrome://resources/cr_components/app_management/toggle_row.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction, OptionalBool} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
 import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from 'chrome://resources/cr_components/app_management/util.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../../assert_extras.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementToggleRowElement} from './types.js';
+import {getTemplate} from './pin_to_shelf_item.html.js';
 
-/** @polymer */
 class AppManagementPinToShelfItemElement extends PolymerElement {
   static get is() {
     return 'app-management-pin-to-shelf-item';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @type {App}
-       */
       app: Object,
 
-      /**
-       * @type {boolean}
-       */
       hidden: {
         type: Boolean,
         computed: 'isAvailable_(app)',
         reflectToAttribute: true,
       },
 
-      /**
-       * @type {boolean}
-       */
       disabled: {
         type: Boolean,
         computed: 'isManaged_(app)',
@@ -51,59 +43,33 @@ class AppManagementPinToShelfItemElement extends PolymerElement {
     };
   }
 
-  ready() {
+  app: App;
+  disabled: boolean;
+  override hidden: boolean;
+
+  override ready(): void {
     super.ready();
 
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.toggleSetting_);
   }
 
-  /**
-   * @param {App} app
-   * @returns {boolean} true if the app is pinned
-   * @private
-   */
-  getValue_(app) {
-    if (app === undefined) {
-      return false;
-    }
-    assert(app);
+  private getValue_(app: App): boolean {
     return app.isPinned === OptionalBool.kTrue;
   }
 
-  /**
-   * @param {App} app
-   * @returns {boolean} true if pinning is available.
-   */
-  isAvailable_(app) {
-    if (app === undefined) {
-      return false;
-    }
-    assert(app);
+  private isAvailable_(app: App): boolean {
     return app.hidePinToShelf;
   }
 
-  /**
-   * @param {App} app
-   * @returns {boolean} true if the pinning is managed by policy.
-   * @private
-   */
-  isManaged_(app) {
-    if (app === undefined) {
-      return false;
-    }
-    assert(app);
+  private isManaged_(app: App): boolean {
     return app.isPolicyPinned === OptionalBool.kTrue;
   }
 
-  /** @private */
-  toggleSetting_() {
-    const newState = assert(toggleOptionalBool(this.app.isPinned));
+  private toggleSetting_(): void {
+    const newState = castExists(toggleOptionalBool(this.app.isPinned));
     const newStateBool = convertOptionalBoolToBool(newState);
-    assert(
-        newStateBool ===
-        (/** @type {AppManagementToggleRowElement} */ (this.$['toggle-row']))
-            .isChecked());
+    assert(newStateBool === this.getToggleRow_().isChecked());
     BrowserProxy.getInstance().handler.setPinned(
         this.app.id,
         newState,
@@ -115,11 +81,20 @@ class AppManagementPinToShelfItemElement extends PolymerElement {
     recordAppManagementUserAction(this.app.type, userAction);
   }
 
-  /**
-   * @private
-   */
-  onClick_() {
-    this.$['toggle-row'].click();
+  private onClick_(): void {
+    this.getToggleRow_().click();
+  }
+
+  private getToggleRow_(): AppManagementToggleRowElement {
+    return castExists(
+        this.shadowRoot!.querySelector<AppManagementToggleRowElement>(
+            '#toggleRow'));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-pin-to-shelf-item': AppManagementPinToShelfItemElement;
   }
 }
 

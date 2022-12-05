@@ -14,7 +14,7 @@
 
 <div class="permission-list">
   <app-management-pin-to-shelf-item
-      id="pin-to-shelf-setting"
+      id="pinToShelfSetting"
       class="permission-card-row separated-row"
       app="[[app_]]">
   </app-management-pin-to-shelf-item>
@@ -29,14 +29,14 @@
           <template is="dom-if" if="[[isMainApp_(app_.*)]]" restamp>
             <!-- TODO(b/194640944): Add link to borealis learn more page -->
             <localized-link
-                id="main-link"
+                id="mainLink"
                 localized-string="$i18n{borealisMainPermissionText}"
                 link-url=https://www.youtube.com/watch?v=dQw4w9WgXcQ>
             </localized-link>
           </template>
           <template is="dom-if" if="[[!isMainApp_(app_.*)]]" restamp>
             <localized-link
-                id="borealis-link"
+                id="borealisLink"
                 localized-string="$i18n{borealisAppPermissionText}"
                 on-link-clicked="onBorealisLinkClicked_">
             </localized-link>
@@ -44,7 +44,7 @@
         </div>
       </div>
       <app-management-permission-item
-          id="microphone-permission"
+          id="microphonePermission"
           app="[[app_]]"
           class="subpermission-row" icon="app-management:microphone"
           permission-label="$i18n{appManagementMicrophonePermissionLabel}"

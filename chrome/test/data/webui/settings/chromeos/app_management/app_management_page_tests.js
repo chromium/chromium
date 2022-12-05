@@ -4,7 +4,7 @@
 
 'use strict';
 
-import {BrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf} from './test_util.js';
 
@@ -17,7 +17,7 @@ suite('AppManagementPageTests', () => {
   function getAppList() {
     return appManagementPage.shadowRoot
         .querySelector('app-management-main-view')
-        .$['app-list'];
+        .$.appList;
   }
 
   /** @return {number} */
@@ -30,7 +30,7 @@ suite('AppManagementPageTests', () => {
   function getNoAppsFoundLabel() {
     return appManagementPage.shadowRoot
         .querySelector('app-management-main-view')
-        .shadowRoot.querySelector('#no-apps-label');
+        .shadowRoot.querySelector('#noAppsLabel');
   }
 
   setup(async () => {
@@ -44,7 +44,7 @@ suite('AppManagementPageTests', () => {
   test('loads', async () => {
     // Check that the browser responds to the getApps() message.
     const {apps: initialApps} =
-        await BrowserProxy.getInstance().handler.getApps();
+        await AppManagementBrowserProxy.getInstance().handler.getApps();
   });
 
   test('App list renders on page change', async () => {

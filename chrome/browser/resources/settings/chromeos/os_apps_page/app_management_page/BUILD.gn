@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -12,26 +11,11 @@ js_type_check("closure_compile_module") {
   deps = [
     ":actions",
     ":api_listener",
-    ":app_detail_view",
-    ":app_details_item",
-    ":app_item",
-    ":app_management_page",
-    ":arc_detail_view",
     ":browser_proxy",
-    ":chrome_app_detail_view",
-    ":dom_switch",
     ":fake_page_handler",
-    ":main_view",
-    ":pin_to_shelf_item",
-    ":pwa_detail_view",
     ":reducers",
-    ":resize_lock_item",
     ":store",
     ":store_client",
-    ":supported_links_dialog",
-    ":supported_links_item",
-    ":supported_links_overlapping_apps_dialog",
-    ":util",
   ]
 }
 
@@ -53,65 +37,8 @@ js_library("api_listener") {
   deps = [
     ":actions",
     ":store",
-    ":util",
     "//ash/webui/common/resources/store:store",
     "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("app_detail_view") {
-  deps = [
-    ":actions",
-    ":dom_switch",
-    ":store_client",
-    ":types",
-    "../..:os_route",
-    "../..:route_observer_behavior",
-    "../../..:router",
-    "//ui/webui/resources/js:assert",
-  ]
-}
-
-js_library("app_details_item") {
-  deps = [
-    ":actions",
-    ":store_client",
-    ":util",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("app_item") {
-  deps = [
-    ":actions",
-    ":store_client",
-    ":types",
-    ":util",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("app_management_page") {
-  deps = [
-    ":actions",
-    ":browser_proxy",
-    ":main_view",
-    ":store",
-    ":store_client",
-    "../../..:router",
-    "//ash/webui/common/resources:focus_without_ink_js",
-  ]
-}
-
-js_library("arc_detail_view") {
-  deps = [
-    ":app_details_item",
-    ":fake_page_handler",
-    ":pin_to_shelf_item",
-    ":store_client",
-    ":supported_links_item",
-    ":util",
   ]
 }
 
@@ -122,25 +49,6 @@ js_library("browser_proxy") {
   ]
 }
 
-js_library("chrome_app_detail_view") {
-  deps = [
-    ":app_details_item",
-    ":browser_proxy",
-    ":fake_page_handler",
-    ":pin_to_shelf_item",
-    ":store_client",
-    ":util",
-  ]
-}
-
-js_library("dom_switch") {
-  deps = [
-    "//ash/webui/common/resources:promise_resolver",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
-  ]
-}
-
 js_library("fake_page_handler") {
   deps = [
     "//ash/webui/common/resources:promise_resolver",
@@ -148,56 +56,10 @@ js_library("fake_page_handler") {
   ]
 }
 
-js_library("main_view") {
-  deps = [
-    ":app_item",
-    ":browser_proxy",
-    ":store_client",
-    ":types",
-    ":util",
-    "../..:os_route",
-    "../..:route_observer_behavior",
-    "../../..:router",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("pin_to_shelf_item") {
-  deps = [
-    ":browser_proxy",
-    ":types",
-    ":util",
-    "../..:metrics_recorder",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
-  ]
-}
-
-js_library("pwa_detail_view") {
-  deps = [
-    ":app_details_item",
-    ":fake_page_handler",
-    ":pin_to_shelf_item",
-    ":store_client",
-    ":supported_links_item",
-    ":util",
-  ]
-}
-
 js_library("reducers") {
   deps = [
     ":types",
-    ":util",
     "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("resize_lock_item") {
-  deps = [
-    ":browser_proxy",
-    ":util",
-    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -216,66 +78,5 @@ js_library("store_client") {
     "//ash/webui/common/resources/store:store_client",
     "//ui/webui/resources/cr_components/app_management:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("supported_links_overlapping_apps_dialog") {
-  deps = [
-    ":store_client",
-    ":types",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ui/webui/resources/js:assert",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
-}
-
-js_library("supported_links_dialog") {
-  deps = [
-    ":browser_proxy",
-    ":store_client",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
-}
-
-js_library("supported_links_item") {
-  deps = [
-    ":browser_proxy",
-    ":store_client",
-    ":supported_links_dialog",
-    ":supported_links_overlapping_apps_dialog",
-    ":types",
-    ":util",
-    "../..:metrics_recorder",
-    "//ash/webui/common/resources:focus_without_ink_js",
-  ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js" ]
-}
-
-js_library("util") {
-  deps = [
-    "../..:os_route",
-    "../../..:router",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "app_detail_view.js",
-    "app_details_item.js",
-    "app_item.js",
-    "app_management_page.js",
-    "arc_detail_view.js",
-    "chrome_app_detail_view.js",
-    "dom_switch.js",
-    "main_view.js",
-    "pin_to_shelf_item.js",
-    "pwa_detail_view.js",
-    "resize_lock_item.js",
-    "supported_links_overlapping_apps_dialog.js",
-    "supported_links_dialog.js",
-    "supported_links_item.js",
   ]
 }

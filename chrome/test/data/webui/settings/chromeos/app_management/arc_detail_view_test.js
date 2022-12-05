@@ -14,7 +14,8 @@ suite('<app-management-arc-detail-view>', () => {
   let fakeHandler;
 
   function expandPermissions() {
-    arcPermissionView.root.querySelector('#subpermission-expand-row').click();
+    arcPermissionView.shadowRoot.querySelector('#subpermissionExpandRow')
+        .click();
   }
 
   function getPermissionBoolByType(permissionType) {
@@ -131,7 +132,7 @@ suite('<app-management-arc-detail-view>', () => {
 
   test('No permissions requested label', async () => {
     assertTrue(isHiddenByDomIf(
-        arcPermissionView.root.querySelector('#no-permissions')));
+        arcPermissionView.shadowRoot.querySelector('#noPermissions')));
 
     // Create an ARC app without any permissions.
     const arcOptions = {
@@ -145,6 +146,6 @@ suite('<app-management-arc-detail-view>', () => {
     await flushTasks();
 
     assertFalse(isHiddenByDomIf(
-        arcPermissionView.root.querySelector('#no-permissions')));
+        arcPermissionView.shadowRoot.querySelector('#noPermissions')));
   });
 });

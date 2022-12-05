@@ -3,12 +3,12 @@
     margin-inline-end: 8px;
   }
 
-  #no-apps-label {
+  #noAppsLabel {
     text-align: center;
   }
 </style>
 
-<div id="app-list">
+<div id="appList">
   <template is="dom-repeat" items="[[appList_]]" as="app">
     <app-management-app-item app="[[app]]">
       <cr-icon-button slot="right-content"
@@ -23,7 +23,7 @@
 </div>
 
 <template is="dom-if" if="[[isAppListEmpty_(appList_)]]">
-  <div id="no-apps-label" class="cr-secondary-text">
+  <div id="noAppsLabel" class="cr-secondary-text">
     $i18n{appManagementNoAppsFound}
   </div>
 </template>

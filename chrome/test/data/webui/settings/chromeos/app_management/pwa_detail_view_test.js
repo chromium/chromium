@@ -70,8 +70,8 @@ suite('<app-management-pwa-detail-view>', function() {
   });
 
   test('Pin to shelf toggle', async function() {
-    const pinToShelfItem = pwaPermissionView.$['pin-to-shelf-setting'];
-    const toggle = pinToShelfItem.$['toggle-row'].$.toggle;
+    const pinToShelfItem = pwaPermissionView.$.pinToShelfSetting;
+    const toggle = pinToShelfItem.$.toggleRow.$.toggle;
 
     assertFalse(toggle.checked);
     assertEquals(

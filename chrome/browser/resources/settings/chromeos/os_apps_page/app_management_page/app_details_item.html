@@ -1,22 +1,22 @@
 <style include="app-management-cros-shared-style settings-shared">
-  #info-icon-tooltip {
+  #infoIconTooltip {
     --paper-tooltip-min-width: max-content;
   }
 
-  #info-icon {
+  #infoIcon {
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
     height: var(--help-icon-size);
     margin-inline-start: 6px;
     width: var(--help-icon-size);
   }
 
-  #tooltip-text {
+  #tooltipText {
     font-size: 10px;
     line-height: 12px;
     white-space: nowrap;
   }
 
-  #type-and-source {
+  #typeAndSource {
     display: flex;
   }
 </style>
@@ -26,27 +26,27 @@
   </localized-link>
   </div>
 </div>
-<div class="indented-app-details" id="type-and-source">
+<div class="indented-app-details" id="typeAndSource">
   <localized-link
-    id="type-and-source-text"
+    id="typeAndSourceText"
     on-link-clicked="onStoreLinkClicked_"
     localized-string="[[getTypeAndSourceString_(app)]]">
     [[getTypeAndSourceString_(app)]]
     <template is="dom-if" if="[[shouldShowLaunchIcon_(app)]]" restamp>
-      <iron-icon id="launch-icon" icon="app-management:launch"
+      <iron-icon id="launchIcon" icon="app-management:launch"
         onclick="onStoreLinkCLicked">
       </iron-icon>
     </template>
   </localized-link>
   <template is="dom-if" if="[[shouldShowInfoIcon_(app)]]" restamp>
-    <div id="browser-link-info">
-      <iron-icon id="info-icon"
+    <div id="browserLinkInfo">
+      <iron-icon id="infoIcon"
         icon="app-management:info"
         aria-label="info icon">
       </iron-icon>
-      <paper-tooltip id="info-icon-tooltip"
-        for="info-icon">
-        <div id="tooltip-text">
+      <paper-tooltip id="infoIconTooltip"
+        for="infoIcon">
+        <div id="tooltipText">
           [[getSanitizedURL_(app)]]
         </div>
       </paper-tooltip>
@@ -54,15 +54,15 @@
   </template>
 </div>
 <template is="dom-if" if="[[shouldShowStorage_(app)]]" restamp>
-  <div class="indented-app-details" id="storage-title">
+  <div class="indented-app-details" id="storageTitle">
     $i18n{appManagementAppDetailsStorageTitle}
     <template is="dom-if" if="[[shouldShowAppSize_(app)]]" restamp>
-      <div class="indented-app-details" id="app-size">
+      <div class="indented-app-details" id="appSize">
         [[getAppSizeString_(app)]]
       </div>
     </template>
     <template is="dom-if" if="[[shouldShowDataSize_(app)]]" restamp>
-      <div class="indented-app-details" id="data-size">
+      <div class="indented-app-details" id="dataSize">
         [[getDataSizeString_(app)]]
       </div>
     </template>

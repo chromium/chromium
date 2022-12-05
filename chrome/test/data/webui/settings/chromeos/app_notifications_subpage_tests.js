@@ -194,7 +194,7 @@ suite('AppNotificationsSubpageTests', function() {
   });
 
   setup(function() {
-    PolymerTest.clearBody;
+    PolymerTest.clearBody();
     loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
   });
 

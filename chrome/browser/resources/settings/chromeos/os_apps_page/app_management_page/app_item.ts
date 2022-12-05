@@ -8,50 +8,45 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app_item.html.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 import {AppManagementEntryPointType} from './types.js';
 import {openAppDetailPage} from './util.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- */
 const AppManagementAppItemElementBase =
-    mixinBehaviors([AppManagementStoreClient], PolymerElement);
+    mixinBehaviors([AppManagementStoreClient], PolymerElement) as {
+      new (): PolymerElement & AppManagementStoreClientInterface,
+    };
 
-/** @polymer */
 class AppManagementAppItemElement extends AppManagementAppItemElementBase {
   static get is() {
     return 'app-management-app-item';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {App} */
       app: {
         type: Object,
       },
     };
   }
 
-  ready() {
+  app: App;
+
+  override ready(): void {
     super.ready();
 
     this.addEventListener('click', this.onClick_);
   }
 
-  /**
-   * @private
-   */
-  onClick_() {
+  private onClick_(): void {
     openAppDetailPage(this.app.id);
     chrome.metricsPrivate.recordEnumerationValue(
         AppManagementEntryPointsHistogramName,
@@ -59,20 +54,12 @@ class AppManagementAppItemElement extends AppManagementAppItemElementBase {
         Object.keys(AppManagementEntryPoint).length);
   }
 
-  /**
-   * @param {App} app
-   * @return {string}
-   * @private
-   */
-  iconUrlFromId_(app) {
+  private iconUrlFromId_(app: App): string {
     return getAppIcon(app);
   }
 
-  /**
-   * @param {AppType} appType
-   * @return {AppManagementEntryPointType}
-   */
-  getAppManagementEntryPoint_(appType) {
+  private getAppManagementEntryPoint_(appType: AppType):
+      AppManagementEntryPointType {
     switch (appType) {
       case AppType.kArc:
         return AppManagementEntryPoint.MAIN_VIEW_ARC;
@@ -91,6 +78,12 @@ class AppManagementAppItemElement extends AppManagementAppItemElementBase {
       default:
         assertNotReached();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-app-item': AppManagementAppItemElement;
   }
 }
 

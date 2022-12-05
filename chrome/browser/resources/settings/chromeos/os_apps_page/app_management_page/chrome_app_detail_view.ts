@@ -9,20 +9,17 @@ import './app_management_cros_shared_style.css.js';
 
 import {App, ExtensionAppPermissionMessage} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import {getTemplate} from './chrome_app_detail_view.html.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- */
 const AppManagementChromeAppDetailViewElementBase =
-    mixinBehaviors([AppManagementStoreClient], PolymerElement);
+    mixinBehaviors([AppManagementStoreClient], PolymerElement) as {
+      new (): PolymerElement & AppManagementStoreClientInterface,
+    };
 
-/** @polymer */
 class AppManagementChromeAppDetailViewElement extends
     AppManagementChromeAppDetailViewElementBase {
   static get is() {
@@ -30,37 +27,31 @@ class AppManagementChromeAppDetailViewElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @private {App}
-       */
       app_: {
         type: Object,
         observer: 'onAppChanged_',
       },
 
-      /**
-       * @private {Array<ExtensionAppPermissionMessage>}
-       */
       messages_: Object,
     };
   }
 
-  connectedCallback() {
+  private app_: App;
+  private messages_: ExtensionAppPermissionMessage[];
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
   }
 
-  /**
-   * @private
-   */
-  async onAppChanged_() {
+  private async onAppChanged_() {
     try {
       const {messages: messages} =
           await BrowserProxy.getInstance()
@@ -71,22 +62,13 @@ class AppManagementChromeAppDetailViewElement extends
     }
   }
 
-  /**
-   * @param {!Array<ExtensionAppPermissionMessage>} messages
-   * @return {Array<string>}
-   * @private
-   */
-  getPermissionMessages_(messages) {
+  private getPermissionMessages_(messages: ExtensionAppPermissionMessage[]):
+      string[] {
     return messages.map(m => m.message);
   }
 
-  /**
-   * @param {number} index
-   * @param {!Array<ExtensionAppPermissionMessage>} messages
-   * @return {?Array<string>}
-   * @private
-   */
-  getPermissionSubmessagesByMessage_(index, messages) {
+  private getPermissionSubmessagesByMessage_(
+      index: number, messages: ExtensionAppPermissionMessage[]): string[]|null {
     // Dom-repeat still tries to access messages[0] when app has no
     // permission therefore we add an extra check.
     if (!messages[index]) {
@@ -95,13 +77,15 @@ class AppManagementChromeAppDetailViewElement extends
     return messages[index].submessages;
   }
 
-  /**
-   * @param {!Array<ExtensionAppPermissionMessage>} messages
-   * @return {boolean}
-   * @private
-   */
-  hasPermissions_(messages) {
+  private hasPermissions_(messages: ExtensionAppPermissionMessage[]): boolean {
     return messages.length > 0;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-chrome-app-detail-view':
+        AppManagementChromeAppDetailViewElement;
   }
 }
 

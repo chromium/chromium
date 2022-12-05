@@ -4,70 +4,70 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {castExists} from '../../assert_extras.js';
 
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {getTemplate} from './supported_links_overlapping_apps_dialog.html.js';
 import {AppMap} from './types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- * @implements {I18nBehaviorInterface}
- */
-const AppManagementSupportedLinksOverlappingAppsDialogElementBase =
-    mixinBehaviors([AppManagementStoreClient, I18nBehavior], PolymerElement);
+export interface AppManagementSupportedLinksOverlappingAppsDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
-class AppManagementSupportedLinksOverlappingAppsDialogElement extends
+const AppManagementSupportedLinksOverlappingAppsDialogElementBase =
+    mixinBehaviors([AppManagementStoreClient], I18nMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nMixinInterface &
+          AppManagementStoreClientInterface,
+    };
+
+export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
     AppManagementSupportedLinksOverlappingAppsDialogElementBase {
   static get is() {
     return 'app-management-supported-links-overlapping-apps-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {!App} */
       app: Object,
 
-      /**
-       * @private {AppMap}
-       */
       apps_: {
         type: Object,
       },
 
-      /**
-       * @private {Array<string>}
-       */
       overlappingAppIds: {
         type: Array,
       },
     };
   }
 
-  connectedCallback() {
+  app: App;
+  overlappingAppIds: string[];
+  private apps_: AppMap;
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('apps_', state => state.apps);
     this.updateFromStore();
   }
 
-  getBodyText_(apps) {
-    const appNames = this.overlappingAppIds.map(app_id => {
-      assert(apps[app_id]);
-      return apps[app_id].title;
+  private getBodyText_(apps: AppMap): string {
+    const appNames: string[] = this.overlappingAppIds.map(appId => {
+      return apps[appId]!.title!;
     });
 
-    const appTitle = this.app.title;
-    assert(appTitle);
+    const appTitle = castExists(this.app.title);
 
     switch (appNames.length) {
       case 1:
@@ -90,18 +90,23 @@ class AppManagementSupportedLinksOverlappingAppsDialogElement extends
     }
   }
 
-  wasConfirmed() {
+  wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';
   }
 
-  /** @private */
-  onChangeClick_() {
+  private onChangeClick_(): void {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.cancel();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-supported-links-overlapping-apps-dialog':
+        AppManagementSupportedLinksOverlappingAppsDialogElement;
   }
 }
 

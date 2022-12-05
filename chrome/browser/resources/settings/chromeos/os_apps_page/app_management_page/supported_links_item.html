@@ -1,12 +1,12 @@
 <style include="app-management-cros-shared-style settings-shared">
-  #disabled-explanation-text {
+  #disabledExplanationText {
     align-items: center;
     display: flex;
     flex-direction: row;
     height: var(--info-text-row-height);
   }
 
-  #supported-links-option {
+  #supportedLinksOption {
     height: 48px;
   }
 
@@ -15,7 +15,7 @@
     width: var(--help-icon-size);
   }
 
-  #overlap-warning {
+  #overlapWarning {
     color: var(--secondary-text-color);
     margin-block-start: -12px;
     margin-inline-start: 36px;
@@ -28,30 +28,30 @@
   </localized-link>
 </div>
 <template is="dom-if" if="[[disabled_]]">
-  <span class="info-text-row" id="disabled-explanation-text">
-    <iron-icon id="info-icon" icon="app-management:info"></iron-icon>
-    <localized-link id="info-string"
+  <span class="info-text-row" id="disabledExplanationText">
+    <iron-icon id="infoIcon" icon="app-management:info"></iron-icon>
+    <localized-link id="infoString"
       localized-string="[[getDisabledExplanation_(app)]]">
     </localized-link>
   </span>
 </template>
 <div class="list-frame">
-  <cr-radio-group id="radio-group"
-      selected="[[getCurrentPref_(app)]]"
+  <cr-radio-group id="radioGroup"
+      selected="[[getCurrentPreferredApp_(app)]]"
       on-selected-changed="onSupportedLinkPrefChanged_"
       disabled="[[disabled_]]">
     <cr-radio-button
-        id="preferred"
+        id="preferredRadioButton"
         name="preferred"
         label="[[getPreferredLabel_(app)]]">
     </cr-radio-button>
     <cr-radio-button
-        id="browser"
+        id="browserRadioButton"
         name="browser"
         label="$i18n{appManagementIntentSharingOpenBrowserLabel}">
     </cr-radio-button>
     <template is="dom-if" if="[[showOverlappingAppsWarning_]]">
-      <div id="overlap-warning">
+      <div id="overlapWarning">
         [[overlappingAppsWarning_]]
       </div>
     </template>
@@ -64,7 +64,7 @@
 </template>
 <template is="dom-if" if="[[showOverlappingAppsDialog_]]" restamp>
   <app-management-supported-links-overlapping-apps-dialog
-      id="overlap-dialog"
+      id="overlapDialog"
       app="[[app]]"
       on-close="onOverlappingDialogClosed_"
       overlapping-app-ids="[[overlappingAppIds_]]">

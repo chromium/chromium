@@ -300,7 +300,6 @@ group("generate_web_components") {
     "nearby_share_page:web_components",
     "os_a11y_page:web_components",
     "os_apps_page:web_components",
-    "os_apps_page/app_management_page:web_components",
     "os_bluetooth_page:web_components",
     "os_people_page:web_components",
     "os_privacy_page:web_components",

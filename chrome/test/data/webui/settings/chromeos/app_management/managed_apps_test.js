@@ -67,7 +67,7 @@ suite('<app-management-managed-apps>', () => {
 
   test('Pin to shelf toggle effected by policy', () => {
     const pinToShelfSetting =
-        appDetailView.shadowRoot.querySelector('#pin-to-shelf-setting')
+        appDetailView.shadowRoot.querySelector('#pinToShelfSetting')
             .shadowRoot.querySelector('app-management-toggle-row');
     assertTrue(!!pinToShelfSetting.root.querySelector('#policyIndicator'));
     assertTrue(

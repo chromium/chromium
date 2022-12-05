@@ -18,7 +18,7 @@
  *
  * Usage:
  *   <parent-element>
- *     <app-management-dom-switch id="view-selector">
+ *     <app-management-dom-switch id="viewSelector">
  *       <template>
  *         <view-one route-id="view-one" title="[[parentProperty]]"></view-one>
  *         <view-two route-id="view-two"></view-two>
@@ -27,22 +27,23 @@
  *     </app-management-dom-switch>
  *   </parent-element>
  *
- *   this.$['view-selector'].route = 'view-two';
+ *   this.$.viewSelector.route = 'view-two';
  */
 
 // TODO(crbug.com/992795) Merge with cr-view-manager.
-import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {html, PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+import {getTemplate} from './dom_switch.html.js';
+
 class AppManagementDomSwitchElement extends PolymerElement {
   static get is() {
     return 'app-management-dom-switch';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -50,7 +51,6 @@ class AppManagementDomSwitchElement extends PolymerElement {
       /**
        * Should contain the route-id of one of the elements within the
        * dom-switch.
-       * @private {?string}
        */
       route: {
         type: String,
@@ -59,7 +59,6 @@ class AppManagementDomSwitchElement extends PolymerElement {
 
       /**
        * The template instance.
-       * @private {?Element|?TemplateInstanceBase}
        */
       instance_: {
         type: Object,
@@ -69,7 +68,6 @@ class AppManagementDomSwitchElement extends PolymerElement {
       /**
        * Maps the route-id of each element within the dom-switch to the element
        * itself.
-       * @private {Object<string, Element>}
        */
       children_: {
         type: Object,
@@ -79,7 +77,6 @@ class AppManagementDomSwitchElement extends PolymerElement {
       /**
        * The element whose route-id corresponds to the current route. This is
        * the only element within the dom-switch which is attached to the DOM.
-       * @private {?Element}
        */
       selectedChild_: {
         type: Object,
@@ -88,20 +85,25 @@ class AppManagementDomSwitchElement extends PolymerElement {
     };
   }
 
+  route: string|null;
+  private instance_: TemplateInstanceBase|null;
+  private children_: Record<string, Element>;
+  private firstRenderForTesting_: PromiseResolver<void>;
+  private selectedChild_: Element|null;
+
   constructor() {
     super();
 
-    /** @private {!PromiseResolver} */
     this.firstRenderForTesting_ = new PromiseResolver();
   }
 
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    const template = /** @type {!HTMLTemplateElement} */ (
-        this.shadowRoot.querySelector('slot')
-            .assignedNodes({flatten: true})
-            .filter(n => n.nodeType === Node.ELEMENT_NODE)[0]);
+    const template =
+        this.shadowRoot!.querySelector('slot')!.assignedNodes({flatten: true})
+            .filter(n => n.nodeType === Node.ELEMENT_NODE)[0] as
+        HTMLTemplateElement;
 
     const TemplateClass = templatize(template, this, {
       mutableData: false,
@@ -116,7 +118,7 @@ class AppManagementDomSwitchElement extends PolymerElement {
 
     const children = this.instance_.root.children;
     for (const child of children) {
-      this.children_[child.getAttribute('route-id')] = child;
+      this.children_[child.getAttribute('route-id')!] = child;
     }
 
     if (this.route) {
@@ -126,10 +128,7 @@ class AppManagementDomSwitchElement extends PolymerElement {
     }
   }
 
-  /**
-   * @param {?string} newRouteId
-   */
-  onRouteChanged_(newRouteId) {
+  private onRouteChanged_(newRouteId: string|null): void {
     if (!this.instance_) {
       return;
     }
@@ -139,7 +138,7 @@ class AppManagementDomSwitchElement extends PolymerElement {
         return;
       }
 
-      this.parentNode.removeChild(this.selectedChild_);
+      this.parentNode!.removeChild(this.selectedChild_);
       this.selectedChild_ = null;
       return;
     }
@@ -150,23 +149,26 @@ class AppManagementDomSwitchElement extends PolymerElement {
         'The route must be equal to the route-id of a child element.');
 
     if (this.selectedChild_) {
-      this.parentNode.replaceChild(newSelectedChild, this.selectedChild_);
+      this.parentNode!.replaceChild(newSelectedChild, this.selectedChild_);
     } else {
-      this.parentNode.insertBefore(newSelectedChild, this);
+      this.parentNode!.insertBefore(newSelectedChild, this);
     }
 
     this.selectedChild_ = newSelectedChild;
     this.firstRenderForTesting_.resolve();
   }
 
-  /**
-   * @param {string} prop
-   * @param {Object} value
-   */
-  _forwardHostPropV2(prop, value) {
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
+  private _forwardHostPropV2(prop: string, value: Object): void {
     if (this.instance_) {
       this.instance_.forwardHostProp(prop, value);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-dom-switch': AppManagementDomSwitchElement;
   }
 }
 

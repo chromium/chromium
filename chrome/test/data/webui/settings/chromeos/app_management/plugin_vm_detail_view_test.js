@@ -237,8 +237,8 @@ suite('<app-management-plugin-vm-detail-view>', function() {
                   })));
 
   test('Pin to shelf toggle', async function() {
-    const pinToShelfItem = pluginVmDetailView.$['pin-to-shelf-setting'];
-    const toggle = pinToShelfItem.$['toggle-row'].$.toggle;
+    const pinToShelfItem = pluginVmDetailView.$.pinToShelfSetting;
+    const toggle = pinToShelfItem.$.toggleRow.$.toggle;
 
     assertFalse(toggle.checked);
     assertEquals(

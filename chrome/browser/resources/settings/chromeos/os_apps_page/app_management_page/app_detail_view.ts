@@ -13,28 +13,26 @@ import '../../../settings_shared.css.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getSelectedApp, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../../router.js';
+import {castExists} from '../../assert_extras.js';
 import {routes} from '../../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../../route_observer_behavior.js';
 
 import {updateSelectedAppId} from './actions.js';
+import {getTemplate} from './app_detail_view.html.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 import {AppMap} from './types.js';
 import {openMainPage} from './util.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const AppManagementAppDetailViewElementBase = mixinBehaviors(
-    [AppManagementStoreClient, RouteObserverBehavior], PolymerElement);
+const AppManagementAppDetailViewElementBase =
+    mixinBehaviors(
+        [AppManagementStoreClient], RouteObserverMixin(PolymerElement)) as {
+      new (): PolymerElement & RouteObserverMixinInterface &
+          AppManagementStoreClientInterface,
+    };
 
-/** @polymer */
 class AppManagementAppDetailViewElement extends
     AppManagementAppDetailViewElementBase {
   static get is() {
@@ -42,32 +40,20 @@ class AppManagementAppDetailViewElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @type {App}
-       * @private
-       */
       app_: {
         type: Object,
       },
 
-      /**
-       * @type {AppMap}
-       * @private
-       */
       apps_: {
         type: Object,
         observer: 'appsChanged_',
       },
 
-      /**
-       * @type {string}
-       * @private
-       */
       selectedAppId_: {
         type: String,
         observer: 'selectedAppIdChanged_',
@@ -75,7 +61,11 @@ class AppManagementAppDetailViewElement extends
     };
   }
 
-  connectedCallback() {
+  private app_: App;
+  private apps_: AppMap;
+  private selectedAppId_: string;
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('app_', state => getSelectedApp(state));
@@ -84,7 +74,7 @@ class AppManagementAppDetailViewElement extends
     this.updateFromStore();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     this.dispatch(updateSelectedAppId(null));
@@ -92,13 +82,8 @@ class AppManagementAppDetailViewElement extends
 
   /**
    * Updates selected app ID based on the URL query params.
-   *
-   * RouteObserverBehavior
-   * @param {!Route} currentRoute
-   * @param {!Route=} prevRoute
-   * @protected
    */
-  currentRouteChanged(currentRoute, prevRoute) {
+  override currentRouteChanged(currentRoute: Route): void {
     if (currentRoute !== routes.APP_MANAGEMENT_DETAIL) {
       return;
     }
@@ -111,16 +96,10 @@ class AppManagementAppDetailViewElement extends
     }
 
     const appId = Router.getInstance().getQueryParameters().get('id');
-
     this.dispatch(updateSelectedAppId(appId));
   }
 
-  /**
-   * @param {?App} app
-   * @return {?string}
-   * @private
-   */
-  getSelectedRouteId_(app) {
+  private getSelectedRouteId_(app: App|null): string|null {
     if (!app) {
       return null;
     }
@@ -146,16 +125,14 @@ class AppManagementAppDetailViewElement extends
     }
   }
 
-  /** @private */
-  selectedAppIdChanged_(appId) {
+  private selectedAppIdChanged_(appId: string): void {
     if (appId && this.app_) {
       recordAppManagementUserAction(
           this.app_.type, AppManagementUserAction.VIEW_OPENED);
     }
   }
 
-  /** @private */
-  appsChanged_() {
+  private appsChanged_(): void {
     if (Router.getInstance().getCurrentRoute() ===
             routes.APP_MANAGEMENT_DETAIL &&
         this.selectedAppNotFound_()) {
@@ -165,14 +142,16 @@ class AppManagementAppDetailViewElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  selectedAppNotFound_() {
-    const appId = /** @type {string} */ (
-        Router.getInstance().getQueryParameters().get('id'));
+  private selectedAppNotFound_(): boolean {
+    const appId =
+        castExists(Router.getInstance().getQueryParameters().get('id'));
     return Boolean(this.apps_) && !this.apps_[appId];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-app-detail-view': AppManagementAppDetailViewElement;
   }
 }
 

@@ -7,10 +7,8 @@ import {routes} from '../../os_route.js';
 
 /**
  * Navigates to the App Detail page.
- *
- * @param {string} appId
  */
-export function openAppDetailPage(appId) {
+export function openAppDetailPage(appId: string): void {
   const params = new URLSearchParams();
   params.append('id', appId);
   Router.getInstance().navigateTo(routes.APP_MANAGEMENT_DETAIL, params);
@@ -19,6 +17,6 @@ export function openAppDetailPage(appId) {
 /**
  * Navigates to the main App Management list page.
  */
-export function openMainPage() {
+export function openMainPage(): void {
   Router.getInstance().navigateTo(routes.APP_MANAGEMENT);
 }

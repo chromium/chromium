@@ -8,25 +8,31 @@ import './api_listener.js';
 import './main_view.js';
 import '../../../settings_shared.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+import {getTemplate} from './app_management_page.html.js';
+
 class SettingsAppManagementPageElement extends PolymerElement {
   static get is() {
     return 'settings-app-management-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @type {string}
-       */
       searchTerm: String,
     };
+  }
+
+  searchTerm: string;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-app-management-page': SettingsAppManagementPageElement;
   }
 }
 

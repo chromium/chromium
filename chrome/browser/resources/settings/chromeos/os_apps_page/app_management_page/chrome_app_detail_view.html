@@ -3,19 +3,19 @@
     border-top: none;
   }
 
-  #no-permissions {
+  #noPermissions {
     border-top: none;
   }
 </style>
 <div>
   <div class="permission-list">
     <app-management-pin-to-shelf-item
-        id="pin-to-shelf-setting"
+        id="pinToShelfSetting"
         class="permission-card-row separated-row header-text"
         app="[[app_]]">
     </app-management-pin-to-shelf-item>
 
-    <div id="permissions-card" class="permission-card-row"
+    <div id="permissionsCard" class="permission-card-row"
         hide-bottom-border$="[[app_.hideMoreSettings]]">
       <div class="permission-section-header">
         <div class="header-text">$i18n{appManagementPermissionsLabel}</div>
@@ -26,7 +26,7 @@
           <div class="permission-text-row">
             [[message]]
           </div>
-          <div id="second-level-permissions" class="indented-permission-block">
+          <div id="secondLevelPermissions" class="indented-permission-block">
             <template is="dom-repeat"
                 items="[[getPermissionSubmessagesByMessage_(index, messages_)]]"
                 as="submessage">
@@ -37,14 +37,14 @@
           </div>
         </template>
         <template is="dom-if" if="[[!hasPermissions_(messages_)]]">
-          <div id="no-permissions" class="permission-text-row">
+          <div id="noPermissions" class="permission-text-row">
             $i18n{appManagementNoPermissions}
           </div>
         </template>
       </div>
     </div>
 
-    <app-management-more-permissions-item id="more-settings"
+    <app-management-more-permissions-item id="moreSettings"
         class="permission-card-row separated-row" app="[[app_]]"
         hidden$="[[app_.hideMoreSettings]]"
         more-permissions-label="$i18n{appManagementMorePermissionsLabel}">

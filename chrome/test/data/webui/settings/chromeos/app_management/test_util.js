@@ -4,7 +4,7 @@
 
 'use strict';
 
-import {BrowserProxy, FakePageHandler, AppManagementComponentBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementBrowserProxy, AppManagementComponentBrowserProxy, FakePageHandler} from 'chrome://os-settings/chromeos/os_settings.js';
 import {TestAppManagementStore} from './test_store.js';
 
 /**
@@ -21,7 +21,7 @@ export function createApp(id, config) {
  * @return {FakePageHandler}
  */
 export function setupFakeHandler() {
-  const browserProxy = BrowserProxy.getInstance();
+  const browserProxy = AppManagementBrowserProxy.getInstance();
   const fakeHandler = new FakePageHandler(
       browserProxy.callbackRouter.$.bindNewPipeAndPassRemote());
   browserProxy.handler = fakeHandler.getRemote();

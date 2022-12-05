@@ -42,7 +42,6 @@ suite('<app-management-chrome-app-detail-view>', () => {
         chromeAppDetailView.app_.id);
     assertTrue(!!chromeAppDetailView.shadowRoot.querySelector(
         'app-management-pin-to-shelf-item'));
-    assertTrue(
-        !!chromeAppDetailView.shadowRoot.querySelector('#more-settings'));
+    assertTrue(!!chromeAppDetailView.shadowRoot.querySelector('#moreSettings'));
   });
 });

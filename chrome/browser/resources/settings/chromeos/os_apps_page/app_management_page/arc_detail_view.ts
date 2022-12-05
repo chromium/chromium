@@ -14,22 +14,16 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getAppIcon, getPermission, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './arc_detail_view.html.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- */
-const AppManagementArcDetailViewElementBase = mixinBehaviors(
-    [
-      AppManagementStoreClient,
-    ],
-    PolymerElement);
+const AppManagementArcDetailViewElementBase =
+    mixinBehaviors([AppManagementStoreClient], PolymerElement) as {
+      new (): PolymerElement & AppManagementStoreClientInterface,
+    };
 
-/** @polymer */
 class AppManagementArcDetailViewElement extends
     AppManagementArcDetailViewElementBase {
   static get is() {
@@ -37,19 +31,13 @@ class AppManagementArcDetailViewElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @private {App}
-       */
       app_: Object,
 
-      /**
-       * @private {boolean}
-       */
       listExpanded_: {
         type: Boolean,
         value: false,
@@ -57,7 +45,10 @@ class AppManagementArcDetailViewElement extends
     };
   }
 
-  connectedCallback() {
+  private app_: App;
+  private listExpanded_: boolean;
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('app_', state => getSelectedApp(state));
@@ -66,42 +57,25 @@ class AppManagementArcDetailViewElement extends
     this.listExpanded_ = false;
   }
 
-  /**
-   * @private
-   */
-  toggleListExpanded_() {
+  private toggleListExpanded_(): void {
     this.listExpanded_ = !this.listExpanded_;
   }
 
-  /**
-   * @param {App} app
-   * @return {string}
-   * @private
-   */
-  iconUrlFromId_(app) {
+  private iconUrlFromId_(app: App): string {
     return getAppIcon(app);
   }
 
-  /**
-   * @param {boolean} listExpanded
-   * @return {string}
-   * @private
-   */
-  getCollapsedIcon_(listExpanded) {
+  private getCollapsedIcon_(listExpanded: boolean): string {
     return listExpanded ? 'cr:expand-less' : 'cr:expand-more';
   }
 
   /**
    * Returns true if the app has not requested any permissions.
-   *
-   * @param {App} app
-   * @return {boolean}
-   * @private
    */
-  noPermissionsRequested_(app) {
+  private noPermissionsRequested_(app: App): boolean {
     const permissionItems =
-        this.shadowRoot.querySelector('#subpermission-list')
-            .querySelectorAll('app-management-permission-item');
+        this.shadowRoot!.querySelector('#subpermissionList')!.querySelectorAll(
+            'app-management-permission-item');
     for (let i = 0; i < permissionItems.length; i++) {
       const permissionItem = permissionItems[i];
       const permission = getPermission(app, permissionItem.permissionType);
@@ -110,6 +84,12 @@ class AppManagementArcDetailViewElement extends
       }
     }
     return true;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-management-arc-detail-view': AppManagementArcDetailViewElement;
   }
 }
 
