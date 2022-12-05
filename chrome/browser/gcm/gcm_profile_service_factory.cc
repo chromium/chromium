@@ -47,11 +47,11 @@ namespace {
 // of GCMProfileService is needed to detect when the KeyedService shuts down,
 // and avoid calling into |profile| which might have also been destroyed.
 void RequestProxyResolvingSocketFactoryOnUIThread(
-    Profile* profile,
+    base::WeakPtr<Profile> profile,
     base::WeakPtr<GCMProfileService> service,
     mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
         receiver) {
-  if (!service)
+  if (!service || !profile)
     return;
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
@@ -60,14 +60,14 @@ void RequestProxyResolvingSocketFactoryOnUIThread(
 
 // A thread-safe wrapper to request a ProxyResolvingSocketFactory.
 void RequestProxyResolvingSocketFactory(
-    Profile* profile,
+    base::WeakPtr<Profile> profile,
     base::WeakPtr<GCMProfileService> service,
     mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
         receiver) {
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread, profile,
-                     std::move(service), std::move(receiver)));
+      FROM_HERE, base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread,
+                                std::move(profile), std::move(service),
+                                std::move(receiver)));
 }
 #endif
 
@@ -141,7 +141,7 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
   service = std::make_unique<GCMProfileService>(
       profile->GetPrefs(), profile->GetPath(),
       base::BindRepeating(&RequestProxyResolvingSocketFactory,
-                          base::UnsafeDanglingUntriaged(profile)),
+                          profile->GetWeakPtr()),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       content::GetNetworkConnectionTracker(), chrome::GetChannel(),
