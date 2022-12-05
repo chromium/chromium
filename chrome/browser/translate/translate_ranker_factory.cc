@@ -27,7 +27,13 @@ translate::TranslateRanker* TranslateRankerFactory::GetForBrowserContext(
 TranslateRankerFactory::TranslateRankerFactory()
     : ProfileKeyedServiceFactory(
           "TranslateRanker",
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // Translate is enabled in guest profiles.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .WithSystem(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {}
 
 TranslateRankerFactory::~TranslateRankerFactory() {}
 

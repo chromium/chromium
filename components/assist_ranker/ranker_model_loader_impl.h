@@ -157,10 +157,6 @@ class RankerModelLoaderImpl : public RankerModelLoader {
   // attempted.
   base::TimeTicks next_earliest_download_time_;
 
-  // Tracks the last time of the last attempt to load a model, either from file
-  // of from URL. Used for UMA reporting of load durations.
-  base::TimeTicks load_start_time_;
-
   // The current state of the loader.
   LoaderState state_ = LoaderState::NOT_STARTED;
 

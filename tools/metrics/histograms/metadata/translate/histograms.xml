@@ -721,7 +721,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Ranker.Model.Status" enum="RankerModelStatus"
-    expires_after="2023-03-26">
+    expires_after="M109">
+  <obsolete>
+    Logged on profile open, including for system and ash-internal profiles that
+    don't use the Translate feature. Replaced in M-110 by the histogram
+    Translate.Ranker.Model.Status2, which is similar but only emitted on regular
+    and guest profiles.
+  </obsolete>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -729,13 +735,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.Ranker.Model.Version" units="date stamp"
-    expires_after="M85">
+<histogram name="Translate.Ranker.Model.Status2" enum="RankerModelStatus"
+    expires_after="2023-03-26">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    The date tamp (e.g., 20160916 -&gt; 15 Sept 2016) which denotes the
-    TranslateRankerModel's version.
+    Tracks the outcome of attempts to download a Translate Ranker Model. Only
+    recorded for profiles where Translate is available (not recorded in System
+    profiles nor Ash non-user profiles).
   </summary>
 </histogram>
 
@@ -746,45 +753,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether the TranslateRanker accepts or denies to show the translation
     prompt.
-  </summary>
-</histogram>
-
-<histogram name="Translate.Ranker.Timer.DownloadModel" units="ms"
-    expires_after="M77">
-  <owner>rogerm@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Time taken for the Translate Ranker Model Loader to download its model from
-    the configured URL, in ms.
-  </summary>
-</histogram>
-
-<histogram name="Translate.Ranker.Timer.ParseModel" units="ms"
-    expires_after="M77">
-  <owner>rogerm@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Time taken for the Translate Ranker Model Loader to parse its model, in ms.
-  </summary>
-</histogram>
-
-<histogram name="Translate.Ranker.Timer.ReadModel" units="ms"
-    expires_after="M77">
-  <owner>rogerm@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Time taken for the Translate Ranker Model Loader to read its model from
-    local storage (cache), in ms.
-  </summary>
-</histogram>
-
-<histogram name="Translate.Ranker.Timer.WriteModel" units="ms"
-    expires_after="M77">
-  <owner>rogerm@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Time taken for the Translate Ranker Model Loader to write its model to local
-    storage, in ms.
   </summary>
 </histogram>
 
