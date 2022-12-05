@@ -146,3 +146,21 @@ cast_source_set("redirected_audio_connection") {
     "//net",
   ]
 }
+
+cast_source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_mixer_socket.cc",
+    "mock_mixer_socket.h",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//chromecast/net:io_buffer_pool",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

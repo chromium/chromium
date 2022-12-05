@@ -143,13 +143,13 @@ Receiver::~Receiver() {
 }
 
 std::unique_ptr<MixerSocket> Receiver::LocalConnect() {
-  auto receiver_socket = std::make_unique<MixerSocket>();
-  auto caller_socket = std::make_unique<MixerSocket>();
+  auto receiver_socket = std::make_unique<MixerSocketImpl>();
+  auto caller_socket = std::make_unique<MixerSocketImpl>();
 
   receiver_socket->SetLocalCounterpart(
-      caller_socket->GetWeakPtr(),
+      caller_socket->GetAudioSocketWeakPtr(),
       base::SequencedTaskRunner::GetCurrentDefault());
-  caller_socket->SetLocalCounterpart(receiver_socket->GetWeakPtr(),
+  caller_socket->SetLocalCounterpart(receiver_socket->GetAudioSocketWeakPtr(),
                                      task_runner_);
 
   task_runner_->PostTask(
@@ -162,7 +162,7 @@ std::unique_ptr<MixerSocket> Receiver::LocalConnect() {
 
 void Receiver::HandleAcceptedSocket(std::unique_ptr<net::StreamSocket> socket) {
   AddInitialSocket(std::make_unique<InitialSocket>(
-      this, std::make_unique<MixerSocket>(std::move(socket))));
+      this, std::make_unique<MixerSocketImpl>(std::move(socket))));
 }
 
 void Receiver::HandleLocalConnection(std::unique_ptr<MixerSocket> socket) {

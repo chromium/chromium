@@ -25,14 +25,14 @@ class FakeMixerDelegate : public mixer_service::MixerSocket::Delegate {
 
 std::unique_ptr<mixer_service::MixerSocket> CreateLoopbackConnectionForTest(
     LoopbackHandler* loopback_handler) {
-  auto receiver_socket = std::make_unique<mixer_service::MixerSocket>();
-  auto caller_socket = std::make_unique<mixer_service::MixerSocket>();
+  auto receiver_socket = std::make_unique<mixer_service::MixerSocketImpl>();
+  auto caller_socket = std::make_unique<mixer_service::MixerSocketImpl>();
 
   receiver_socket->SetLocalCounterpart(
-      caller_socket->GetWeakPtr(),
+      caller_socket->GetAudioSocketWeakPtr(),
       base::SequencedTaskRunner::GetCurrentDefault());
   caller_socket->SetLocalCounterpart(
-      receiver_socket->GetWeakPtr(),
+      receiver_socket->GetAudioSocketWeakPtr(),
       base::SequencedTaskRunner::GetCurrentDefault());
 
   auto mixer_side =

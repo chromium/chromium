@@ -80,7 +80,8 @@ void MixerConnection::ConnectCallback(int result) {
     LOG_IF(INFO, !log_timeout_) << "Now connected to mixer service";
     log_connection_failure_ = true;
     log_timeout_ = true;
-    auto socket = std::make_unique<MixerSocket>(std::move(connecting_socket_));
+    auto socket =
+        std::make_unique<MixerSocketImpl>(std::move(connecting_socket_));
     OnConnected(std::move(socket));
     return;
   }
