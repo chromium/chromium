@@ -191,16 +191,16 @@ const char* ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
   // Don't change these returned strings. They are used for recording UMAs.
   switch (source) {
     case network::mojom::FetchResponseSource::kUnspecified:
-      return ".Unspecified";
+      return "Unspecified";
     case network::mojom::FetchResponseSource::kNetwork:
-      return ".Network";
+      return "Network";
     case network::mojom::FetchResponseSource::kHttpCache:
-      return ".HttpCache";
+      return "HttpCache";
     case network::mojom::FetchResponseSource::kCacheStorage:
-      return ".CacheStorage";
+      return "CacheStorage";
   }
   NOTREACHED();
-  return ".Unknown";
+  return "Unknown";
 }
 
 }  // namespace blink

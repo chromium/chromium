@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -516,12 +517,25 @@ void ServiceWorkerMainResourceLoader::RecordTimingMetrics(bool handled) {
   if (devtools_attached_)
     return;
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "ServiceWorker", "ServiceWorker.LoadTiming.MainFrame.MainResource", this,
+      response_head_->load_timing.request_start, "url", resource_request_.url);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "ServiceWorker", "ServiceWorker.LoadTiming.MainFrame.MainResource", this,
+      completion_time_);
+
   // Time between the request is made and the request is routed to this loader.
   UMA_HISTOGRAM_TIMES(
       "ServiceWorker.LoadTiming.MainFrame.MainResource."
       "StartToForwardServiceWorker",
       response_head_->load_timing.service_worker_start_time -
           response_head_->load_timing.request_start);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "ServiceWorker", "StartToForwardServiceWorker", this,
+      response_head_->load_timing.request_start);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "ServiceWorker", "StartToForwardServiceWorker", this,
+      response_head_->load_timing.service_worker_start_time);
 
   // Time spent for service worker startup.
   UMA_HISTOGRAM_MEDIUM_TIMES(
@@ -529,6 +543,12 @@ void ServiceWorkerMainResourceLoader::RecordTimingMetrics(bool handled) {
       "ForwardServiceWorkerToWorkerReady2",
       response_head_->load_timing.service_worker_ready_time -
           response_head_->load_timing.service_worker_start_time);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "ServiceWorker", "ForwardServiceWorkerToWorkerReady", this,
+      response_head_->load_timing.service_worker_start_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "ServiceWorker", "ForwardServiceWorkerToWorkerReady", this,
+      response_head_->load_timing.service_worker_ready_time);
 
   // Browser -> Renderer IPC delay.
   UMA_HISTOGRAM_TIMES(
@@ -536,6 +556,12 @@ void ServiceWorkerMainResourceLoader::RecordTimingMetrics(bool handled) {
       "WorkerReadyToFetchHandlerStart",
       fetch_event_timing_->dispatch_event_time -
           response_head_->load_timing.service_worker_ready_time);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "ServiceWorker", "WorkerReadyToFetchHandlerStart", this,
+      response_head_->load_timing.service_worker_ready_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "ServiceWorker", "WorkerReadyToFetchHandlerStart", this,
+      fetch_event_timing_->dispatch_event_time);
 
   // Time spent by fetch handlers.
   UMA_HISTOGRAM_TIMES(
@@ -543,6 +569,12 @@ void ServiceWorkerMainResourceLoader::RecordTimingMetrics(bool handled) {
       "FetchHandlerStartToFetchHandlerEnd",
       fetch_event_timing_->respond_with_settled_time -
           fetch_event_timing_->dispatch_event_time);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "ServiceWorker", "FetchHandlerStartToFetchHandlerEnd", this,
+      fetch_event_timing_->dispatch_event_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "ServiceWorker", "FetchHandlerStartToFetchHandlerEnd", this,
+      fetch_event_timing_->respond_with_settled_time);
 
   if (handled) {
     // Renderer -> Browser IPC delay.
@@ -551,17 +583,31 @@ void ServiceWorkerMainResourceLoader::RecordTimingMetrics(bool handled) {
         "FetchHandlerEndToResponseReceived",
         response_head_->load_timing.receive_headers_end -
             fetch_event_timing_->respond_with_settled_time);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "ServiceWorker", "FetchHandlerEndToResponseReceived", this,
+        fetch_event_timing_->respond_with_settled_time);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "ServiceWorker", "FetchHandlerEndToResponseReceived", this,
+        response_head_->load_timing.receive_headers_end);
 
     // Time spent reading response body.
     UMA_HISTOGRAM_MEDIUM_TIMES(
         "ServiceWorker.LoadTiming.MainFrame.MainResource."
         "ResponseReceivedToCompleted2",
         completion_time_ - response_head_->load_timing.receive_headers_end);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+        "ServiceWorker", "ResponseReceivedToCompleted", this,
+        response_head_->load_timing.receive_headers_end,
+        "fetch_response_source",
+        blink::ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
+            response_source_));
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "ServiceWorker", "ResponseReceivedToCompleted", this, completion_time_);
     // Same as above, breakdown by response source.
     base::UmaHistogramMediumTimes(
         base::StrCat(
             {"ServiceWorker.LoadTiming.MainFrame.MainResource."
-             "ResponseReceivedToCompleted2",
+             "ResponseReceivedToCompleted2.",
              blink::ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
                  response_source_)}),
         completion_time_ - response_head_->load_timing.receive_headers_end);
@@ -571,6 +617,12 @@ void ServiceWorkerMainResourceLoader::RecordTimingMetrics(bool handled) {
         "ServiceWorker.LoadTiming.MainFrame.MainResource."
         "FetchHandlerEndToFallbackNetwork",
         completion_time_ - fetch_event_timing_->respond_with_settled_time);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+        "ServiceWorker", "FetchHandlerEndToFallbackNetwork", this,
+        fetch_event_timing_->respond_with_settled_time);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "ServiceWorker", "FetchHandlerEndToFallbackNetwork", this,
+        completion_time_);
   }
 }
 
