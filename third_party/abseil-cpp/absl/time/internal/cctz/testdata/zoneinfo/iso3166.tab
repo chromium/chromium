@@ -3,13 +3,13 @@
 # This file is in the public domain, so clarified as of
 # 2009-05-17 by Arthur David Olson.
 #
-# From Paul Eggert (2015-05-02):
+# From Paul Eggert (2022-11-18):
 # This file contains a table of two-letter country codes.  Columns are
 # separated by a single tab.  Lines beginning with '#' are comments.
 # All text uses UTF-8 encoding.  The columns of the table are as follows:
 #
 # 1.  ISO 3166-1 alpha-2 country code, current as of
-#     ISO 3166-1 N976 (2018-11-06).  See: Updates on ISO 3166-1
+#     ISO 3166-1 N1087 (2022-09-02).  See: Updates on ISO 3166-1
 #     https://isotc.iso.org/livelink/livelink/Open/16944257
 # 2.  The usual English name for the coded region,
 #     chosen so that alphabetic sorting of subsets produces helpful lists.
@@ -238,7 +238,7 @@ SY	Syria
 SZ	Eswatini (Swaziland)
 TC	Turks & Caicos Is
 TD	Chad
-TF	French Southern & Antarctic Lands
+TF	French Southern Territories
 TG	Togo
 TH	Thailand
 TJ	Tajikistan

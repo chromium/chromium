@@ -80,6 +80,8 @@ Abseil contains the following C++ library components:
 * [`container`](absl/container/)
   <br /> The `container` library contains additional STL-style containers,
   including Abseil's unordered "Swiss table" containers.
+* [`crc`](absl/crc/) The `crc` library contains code for
+  computing error-detecting cyclic redundancy checks on data.
 * [`debugging`](absl/debugging/)
   <br /> The `debugging` library contains code useful for enabling leak
   checks, and stacktrace and symbolization utilities.

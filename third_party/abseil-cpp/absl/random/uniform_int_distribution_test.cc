@@ -19,6 +19,7 @@
 #include <iterator>
 #include <random>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "gmock/gmock.h"
@@ -136,7 +137,7 @@ TYPED_TEST(UniformIntDistributionTest, TestMoments) {
       typename absl::uniform_int_distribution<TypeParam>::param_type;
 
   // We use a fixed bit generator for distribution accuracy tests.  This allows
-  // these tests to be deterministic, while still testing the qualify of the
+  // these tests to be deterministic, while still testing the quality of the
   // implementation.
   absl::random_internal::pcg64_2018_engine rng{0x2B7E151628AED2A6};
 
@@ -172,7 +173,7 @@ TYPED_TEST(UniformIntDistributionTest, ChiSquaredTest50) {
   using absl::random_internal::kChiSquared;
 
   constexpr size_t kTrials = 1000;
-  constexpr int kBuckets = 50;  // inclusive, so actally +1
+  constexpr int kBuckets = 50;  // inclusive, so actually +1
   constexpr double kExpected =
       static_cast<double>(kTrials) / static_cast<double>(kBuckets);
 
@@ -184,7 +185,7 @@ TYPED_TEST(UniformIntDistributionTest, ChiSquaredTest50) {
   const TypeParam max = min + kBuckets;
 
   // We use a fixed bit generator for distribution accuracy tests.  This allows
-  // these tests to be deterministic, while still testing the qualify of the
+  // these tests to be deterministic, while still testing the quality of the
   // implementation.
   absl::random_internal::pcg64_2018_engine rng{0x2B7E151628AED2A6};
 

@@ -38,12 +38,17 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace log_internal {
 
+enum class PrefixFormat {
+  kNotRaw,
+  kRaw,
+};
+
 // Formats log message based on provided data.
 std::string FormatLogMessage(absl::LogSeverity severity,
                              absl::CivilSecond civil_second,
                              absl::Duration subsecond, log_internal::Tid tid,
                              absl::string_view basename, int line,
-                             absl::string_view message);
+                             PrefixFormat format, absl::string_view message);
 
 // Formats various entry metadata into a text string meant for use as a
 // prefix on a log message string.  Writes into `buf`, advances `buf` to point
@@ -64,7 +69,7 @@ std::string FormatLogMessage(absl::LogSeverity severity,
 // see a thread ID.
 size_t FormatLogPrefix(absl::LogSeverity severity, absl::Time timestamp,
                        log_internal::Tid tid, absl::string_view basename,
-                       int line, absl::Span<char>& buf);
+                       int line, PrefixFormat format, absl::Span<char>& buf);
 
 }  // namespace log_internal
 ABSL_NAMESPACE_END

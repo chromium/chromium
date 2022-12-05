@@ -1017,8 +1017,61 @@ class btree_node {
   friend struct btree_access;
 };
 
+template <typename Node>
+bool AreNodesFromSameContainer(const Node *node_a, const Node *node_b) {
+  // If either node is null, then give up on checking whether they're from the
+  // same container. (If exactly one is null, then we'll trigger the
+  // default-constructed assert in Equals.)
+  if (node_a == nullptr || node_b == nullptr) return true;
+  while (!node_a->is_root()) node_a = node_a->parent();
+  while (!node_b->is_root()) node_b = node_b->parent();
+  return node_a == node_b;
+}
+
+class btree_iterator_generation_info_enabled {
+ public:
+  explicit btree_iterator_generation_info_enabled(uint32_t g)
+      : generation_(g) {}
+
+  // Updates the generation. For use internally right before we return an
+  // iterator to the user.
+  template <typename Node>
+  void update_generation(const Node *node) {
+    if (node != nullptr) generation_ = node->generation();
+  }
+  uint32_t generation() const { return generation_; }
+
+  template <typename Node>
+  void assert_valid_generation(const Node *node) const {
+    if (node != nullptr && node->generation() != generation_) {
+      ABSL_INTERNAL_LOG(
+          FATAL,
+          "Attempting to use an invalidated iterator. The corresponding b-tree "
+          "container has been mutated since this iterator was constructed.");
+    }
+  }
+
+ private:
+  // Used to check that the iterator hasn't been invalidated.
+  uint32_t generation_;
+};
+
+class btree_iterator_generation_info_disabled {
+ public:
+  explicit btree_iterator_generation_info_disabled(uint32_t) {}
+  void update_generation(const void *) {}
+  uint32_t generation() const { return 0; }
+  void assert_valid_generation(const void *) const {}
+};
+
+#ifdef ABSL_BTREE_ENABLE_GENERATIONS
+using btree_iterator_generation_info = btree_iterator_generation_info_enabled;
+#else
+using btree_iterator_generation_info = btree_iterator_generation_info_disabled;
+#endif
+
 template <typename Node, typename Reference, typename Pointer>
-class btree_iterator {
+class btree_iterator : private btree_iterator_generation_info {
   using field_type = typename Node::field_type;
   using key_type = typename Node::key_type;
   using size_type = typename Node::size_type;
@@ -1049,13 +1102,11 @@ class btree_iterator {
 
   btree_iterator() : btree_iterator(nullptr, -1) {}
   explicit btree_iterator(Node *n) : btree_iterator(n, n->start()) {}
-  btree_iterator(Node *n, int p) : node_(n), position_(p) {
-#ifdef ABSL_BTREE_ENABLE_GENERATIONS
-    // Use `~uint32_t{}` as a sentinel value for iterator generations so it
-    // doesn't match the initial value for the actual generation.
-    generation_ = n != nullptr ? n->generation() : ~uint32_t{};
-#endif
-  }
+  btree_iterator(Node *n, int p)
+      : btree_iterator_generation_info(n != nullptr ? n->generation()
+                                                    : ~uint32_t{}),
+        node_(n),
+        position_(p) {}
 
   // NOTE: this SFINAE allows for implicit conversions from iterator to
   // const_iterator, but it specifically avoids hiding the copy constructor so
@@ -1066,23 +1117,21 @@ class btree_iterator {
                     std::is_same<btree_iterator, const_iterator>::value,
                 int> = 0>
   btree_iterator(const btree_iterator<N, R, P> other)  // NOLINT
-      : node_(other.node_), position_(other.position_) {
-#ifdef ABSL_BTREE_ENABLE_GENERATIONS
-    generation_ = other.generation_;
-#endif
-  }
+      : btree_iterator_generation_info(other),
+        node_(other.node_),
+        position_(other.position_) {}
 
   bool operator==(const iterator &other) const {
-    return node_ == other.node_ && position_ == other.position_;
+    return Equals(other);
   }
   bool operator==(const const_iterator &other) const {
-    return node_ == other.node_ && position_ == other.position_;
+    return Equals(other);
   }
   bool operator!=(const iterator &other) const {
-    return node_ != other.node_ || position_ != other.position_;
+    return !Equals(other);
   }
   bool operator!=(const const_iterator &other) const {
-    return node_ != other.node_ || position_ != other.position_;
+    return !Equals(other);
   }
 
   // Returns n such that n calls to ++other yields *this.
@@ -1098,7 +1147,7 @@ class btree_iterator {
   // Accessors for the key/value the iterator is pointing at.
   reference operator*() const {
     ABSL_HARDENING_ASSERT(node_ != nullptr);
-    assert_valid_generation();
+    assert_valid_generation(node_);
     ABSL_HARDENING_ASSERT(position_ >= node_->start());
     if (position_ >= node_->finish()) {
       ABSL_HARDENING_ASSERT(!IsEndIterator() && "Dereferencing end() iterator");
@@ -1154,20 +1203,33 @@ class btree_iterator {
                     std::is_same<btree_iterator, iterator>::value,
                 int> = 0>
   explicit btree_iterator(const btree_iterator<N, R, P> other)
-      : node_(const_cast<node_type *>(other.node_)),
-        position_(other.position_) {
-#ifdef ABSL_BTREE_ENABLE_GENERATIONS
-    generation_ = other.generation_;
-#endif
+      : btree_iterator_generation_info(other.generation()),
+        node_(const_cast<node_type *>(other.node_)),
+        position_(other.position_) {}
+
+  bool Equals(const const_iterator other) const {
+    ABSL_HARDENING_ASSERT(((node_ == nullptr && other.node_ == nullptr) ||
+                           (node_ != nullptr && other.node_ != nullptr)) &&
+                          "Comparing default-constructed iterator with "
+                          "non-default-constructed iterator.");
+    // Note: we use assert instead of ABSL_HARDENING_ASSERT here because this
+    // changes the complexity of Equals from O(1) to O(log(N) + log(M)) where
+    // N/M are sizes of the containers containing node_/other.node_.
+    assert(AreNodesFromSameContainer(node_, other.node_) &&
+           "Comparing iterators from different containers.");
+    assert_valid_generation(node_);
+    other.assert_valid_generation(other.node_);
+    return node_ == other.node_ && position_ == other.position_;
   }
 
   bool IsEndIterator() const {
     if (position_ != node_->finish()) return false;
-    // Navigate to the rightmost node.
     node_type *node = node_;
-    while (!node->is_root()) node = node->parent();
-    while (node->is_internal()) node = node->child(node->finish());
-    return node == node_;
+    while (!node->is_root()) {
+      if (node->position() != node->parent()->finish()) return false;
+      node = node->parent();
+    }
+    return true;
   }
 
   // Returns n such that n calls to ++other yields *this.
@@ -1177,7 +1239,7 @@ class btree_iterator {
 
   // Increment/decrement the iterator.
   void increment() {
-    assert_valid_generation();
+    assert_valid_generation(node_);
     if (node_->is_leaf() && ++position_ < node_->finish()) {
       return;
     }
@@ -1186,21 +1248,13 @@ class btree_iterator {
   void increment_slow();
 
   void decrement() {
-    assert_valid_generation();
+    assert_valid_generation(node_);
     if (node_->is_leaf() && --position_ >= node_->start()) {
       return;
     }
     decrement_slow();
   }
   void decrement_slow();
-
-  // Updates the generation. For use internally right before we return an
-  // iterator to the user.
-  void update_generation() {
-#ifdef ABSL_BTREE_ENABLE_GENERATIONS
-    if (node_ != nullptr) generation_ = node_->generation();
-#endif
-  }
 
   const key_type &key() const {
     return node_->key(static_cast<size_type>(position_));
@@ -1209,15 +1263,8 @@ class btree_iterator {
     return node_->slot(static_cast<size_type>(position_));
   }
 
-  void assert_valid_generation() const {
-#ifdef ABSL_BTREE_ENABLE_GENERATIONS
-    if (node_ != nullptr && node_->generation() != generation_) {
-      ABSL_INTERNAL_LOG(
-          FATAL,
-          "Attempting to use an invalidated iterator. The corresponding b-tree "
-          "container has been mutated since this iterator was constructed.");
-    }
-#endif
+  void update_generation() {
+    btree_iterator_generation_info::update_generation(node_);
   }
 
   // The node in the tree the iterator is pointing at.
@@ -1226,10 +1273,6 @@ class btree_iterator {
   // NOTE: this is an int rather than a field_type because iterators can point
   // to invalid positions (such as -1) in certain circumstances.
   int position_;
-#ifdef ABSL_BTREE_ENABLE_GENERATIONS
-  // Used to check that the iterator hasn't been invalidated.
-  uint32_t generation_;
-#endif
 };
 
 template <typename Params>

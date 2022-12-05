@@ -95,7 +95,6 @@ absl_cc_library(
     "internal/test_util.h"
   SRCS
     "internal/test_util.cc"
-    "internal/zoneinfo.inc"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
@@ -103,7 +102,6 @@ absl_cc_library(
     absl::config
     absl::raw_logging_internal
     absl::time_zone
-    GTest::gmock
   TESTONLY
 )
 

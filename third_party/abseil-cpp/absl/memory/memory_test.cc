@@ -63,12 +63,6 @@ TEST(WrapUniqueTest, WrapUnique) {
   }
   EXPECT_EQ(0, DestructorVerifier::instance_count());
 }
-TEST(MakeUniqueTest, Basic) {
-  std::unique_ptr<std::string> p = absl::make_unique<std::string>();
-  EXPECT_EQ("", *p);
-  p = absl::make_unique<std::string>("hi");
-  EXPECT_EQ("hi", *p);
-}
 
 // InitializationVerifier fills in a pattern when allocated so we can
 // distinguish between its default and value initialized states (without
@@ -93,65 +87,6 @@ struct InitializationVerifier {
   int b;
 };
 
-TEST(Initialization, MakeUnique) {
-  auto p = absl::make_unique<InitializationVerifier>();
-
-  EXPECT_EQ(0, p->a);
-  EXPECT_EQ(0, p->b);
-}
-
-TEST(Initialization, MakeUniqueArray) {
-  auto p = absl::make_unique<InitializationVerifier[]>(2);
-
-  EXPECT_EQ(0, p[0].a);
-  EXPECT_EQ(0, p[0].b);
-  EXPECT_EQ(0, p[1].a);
-  EXPECT_EQ(0, p[1].b);
-}
-
-struct MoveOnly {
-  MoveOnly() = default;
-  explicit MoveOnly(int i1) : ip1{new int{i1}} {}
-  MoveOnly(int i1, int i2) : ip1{new int{i1}}, ip2{new int{i2}} {}
-  std::unique_ptr<int> ip1;
-  std::unique_ptr<int> ip2;
-};
-
-struct AcceptMoveOnly {
-  explicit AcceptMoveOnly(MoveOnly m) : m_(std::move(m)) {}
-  MoveOnly m_;
-};
-
-TEST(MakeUniqueTest, MoveOnlyTypeAndValue) {
-  using ExpectedType = std::unique_ptr<MoveOnly>;
-  {
-    auto p = absl::make_unique<MoveOnly>();
-    static_assert(std::is_same<decltype(p), ExpectedType>::value,
-                  "unexpected return type");
-    EXPECT_TRUE(!p->ip1);
-    EXPECT_TRUE(!p->ip2);
-  }
-  {
-    auto p = absl::make_unique<MoveOnly>(1);
-    static_assert(std::is_same<decltype(p), ExpectedType>::value,
-                  "unexpected return type");
-    EXPECT_TRUE(p->ip1 && *p->ip1 == 1);
-    EXPECT_TRUE(!p->ip2);
-  }
-  {
-    auto p = absl::make_unique<MoveOnly>(1, 2);
-    static_assert(std::is_same<decltype(p), ExpectedType>::value,
-                  "unexpected return type");
-    EXPECT_TRUE(p->ip1 && *p->ip1 == 1);
-    EXPECT_TRUE(p->ip2 && *p->ip2 == 2);
-  }
-}
-
-TEST(MakeUniqueTest, AcceptMoveOnly) {
-  auto p = absl::make_unique<AcceptMoveOnly>(MoveOnly());
-  p = std::unique_ptr<AcceptMoveOnly>(new AcceptMoveOnly(MoveOnly()));
-}
-
 struct ArrayWatch {
   void* operator new[](size_t n) {
     allocs().push_back(n);
@@ -163,38 +98,6 @@ struct ArrayWatch {
     return v;
   }
 };
-
-TEST(Make_UniqueTest, Array) {
-  // Ensure state is clean before we start so that these tests
-  // are order-agnostic.
-  ArrayWatch::allocs().clear();
-
-  auto p = absl::make_unique<ArrayWatch[]>(5);
-  static_assert(std::is_same<decltype(p), std::unique_ptr<ArrayWatch[]>>::value,
-                "unexpected return type");
-  EXPECT_THAT(ArrayWatch::allocs(), ElementsAre(5 * sizeof(ArrayWatch)));
-}
-
-TEST(Make_UniqueTest, NotAmbiguousWithStdMakeUnique) {
-  // Ensure that absl::make_unique is not ambiguous with std::make_unique.
-  // In C++14 mode, the below call to make_unique has both types as candidates.
-  struct TakesStdType {
-    explicit TakesStdType(const std::vector<int>& vec) {}
-  };
-  using absl::make_unique;
-  (void)make_unique<TakesStdType>(std::vector<int>());
-}
-
-#if 0
-// These tests shouldn't compile.
-TEST(MakeUniqueTestNC, AcceptMoveOnlyLvalue) {
-  auto m = MoveOnly();
-  auto p = absl::make_unique<AcceptMoveOnly>(m);
-}
-TEST(MakeUniqueTestNC, KnownBoundArray) {
-  auto p = absl::make_unique<ArrayWatch[5]>();
-}
-#endif
 
 TEST(RawPtrTest, RawPointer) {
   int i = 5;

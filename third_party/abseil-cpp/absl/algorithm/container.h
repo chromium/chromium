@@ -1655,7 +1655,7 @@ bool c_prev_permutation(C& c, LessThan&& comp) {
 
 // c_iota()
 //
-// Container-based version of the <algorithm> `std::iota()` function
+// Container-based version of the <numeric> `std::iota()` function
 // to compute successive values of `value`, as if incremented with `++value`
 // after each element is written. and write them to the container.
 template <typename Sequence, typename T>
@@ -1666,7 +1666,7 @@ void c_iota(Sequence& sequence, T&& value) {
 }
 // c_accumulate()
 //
-// Container-based version of the <algorithm> `std::accumulate()` function
+// Container-based version of the <numeric> `std::accumulate()` function
 // to accumulate the element values of a container to `init` and return that
 // accumulation by value.
 //
@@ -1693,7 +1693,7 @@ decay_t<T> c_accumulate(const Sequence& sequence, T&& init,
 
 // c_inner_product()
 //
-// Container-based version of the <algorithm> `std::inner_product()` function
+// Container-based version of the <numeric> `std::inner_product()` function
 // to compute the cumulative inner product of container element pairs.
 //
 // Note: Due to a language technicality this function has return type
@@ -1724,7 +1724,7 @@ decay_t<T> c_inner_product(const Sequence1& factors1, const Sequence2& factors2,
 
 // c_adjacent_difference()
 //
-// Container-based version of the <algorithm> `std::adjacent_difference()`
+// Container-based version of the <numeric> `std::adjacent_difference()`
 // function to compute the difference between each element and the one preceding
 // it and write it to an iterator.
 template <typename InputSequence, typename OutputIt>
@@ -1747,7 +1747,7 @@ OutputIt c_adjacent_difference(const InputSequence& input,
 
 // c_partial_sum()
 //
-// Container-based version of the <algorithm> `std::partial_sum()` function
+// Container-based version of the <numeric> `std::partial_sum()` function
 // to compute the partial sum of the elements in a sequence and write them
 // to an iterator. The partial sum is the sum of all element values so far in
 // the sequence.

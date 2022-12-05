@@ -132,9 +132,44 @@
 // as they would be if streamed into a `std::ostream`, however it should be
 // noted that their actual type is unspecified.
 //
-// To implement a custom formatting operator for a type you own, define
+// To implement a custom formatting operator for a type you own, there are two
+// options: `AbslStringify()` or `std::ostream& operator<<(std::ostream&, ...)`.
+// It is recommended that users make their types loggable through
+// `AbslStringify()` as it is a universal stringification extension that also
+// enables `absl::StrFormat` and `absl::StrCat` support. If both
+// `AbslStringify()` and `std::ostream& operator<<(std::ostream&, ...)` are
+// defined, `AbslStringify()` will be used.
+//
+// To use the `AbslStringify()` API, define a friend function template in your
+// type's namespace with the following signature:
+//
+//   template <typename Sink>
+//   void AbslStringify(Sink& sink, const UserDefinedType& value);
+//
+// `Sink` has the same interface as `absl::FormatSink`, but without
+// `PutPaddedString()`.
+//
+// Example:
+//
+//   struct Point {
+//     template <typename Sink>
+//     friend void AbslStringify(Sink& sink, const Point& p) {
+//       absl::Format(&sink, "(%v, %v)", p.x, p.y);
+//     }
+//
+//     int x;
+//     int y;
+//   };
+//
+// To use `std::ostream& operator<<(std::ostream&, ...)`, define
 // `std::ostream& operator<<(std::ostream&, ...)` in your type's namespace (for
 // ADL) just as you would to stream it to `std::cout`.
+//
+// Currently `AbslStringify()` ignores output manipulators but this is not
+// guaranteed behavior and may be subject to change in the future. If you would
+// like guaranteed behavior regarding output manipulators, please use
+// `std::ostream& operator<<(std::ostream&, ...)` to make custom types loggable
+// instead.
 //
 // Those macros that support streaming honor output manipulators and `fmtflag`
 // changes that output data (e.g. `std::ends`) or control formatting of data

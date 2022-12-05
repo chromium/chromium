@@ -65,6 +65,11 @@ class btree_container {
   using const_reverse_iterator = typename Tree::const_reverse_iterator;
   using node_type = typename Tree::node_handle_type;
 
+  struct extract_and_get_next_return_type {
+    node_type node;
+    iterator next;
+  };
+
   // Constructors/assignments.
   btree_container() : tree_(key_compare(), allocator_type()) {}
   explicit btree_container(const key_compare &comp,
@@ -165,6 +170,15 @@ class btree_container {
   }
 
   // Extract routines.
+  extract_and_get_next_return_type extract_and_get_next(
+      const_iterator position) {
+    // Use Construct instead of Transfer because the rebalancing code will
+    // destroy the slot later.
+    // Note: we rely on erase() taking place after Construct().
+    return {CommonAccess::Construct<node_type>(get_allocator(),
+                                               iterator(position).slot()),
+            erase(position)};
+  }
   node_type extract(iterator position) {
     // Use Construct instead of Transfer because the rebalancing code will
     // destroy the slot later.

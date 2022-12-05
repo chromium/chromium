@@ -45,6 +45,7 @@ absl_source_set("format") {
   sources = [ "log_format.cc" ]
   public = [ "log_format.h" ]
   deps = [
+    ":append_truncated",
     ":config",
     ":globals",
     "//third_party/abseil-cpp/absl/base:config",
@@ -74,11 +75,12 @@ absl_source_set("log_message") {
   sources = [ "log_message.cc" ]
   public = [ "log_message.h" ]
   deps = [
-    ":config",
+    ":append_truncated",
     ":format",
     ":globals",
     ":log_sink_set",
     ":nullguard",
+    ":proto",
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
@@ -94,7 +96,6 @@ absl_source_set("log_message") {
     "//third_party/abseil-cpp/absl/log:log_sink_registry",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/strings",
-    "//third_party/abseil-cpp/absl/strings:str_format",
     "//third_party/abseil-cpp/absl/time",
     "//third_party/abseil-cpp/absl/types:span",
   ]
@@ -104,6 +105,15 @@ absl_source_set("log_message") {
   if (is_clang) {
     cflags_cc = [ "-Wno-deprecated" ]
   }
+}
+
+absl_source_set("append_truncated") {
+  public = [ "append_truncated.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/types:span",
+  ]
 }
 
 absl_source_set("log_sink_set") {
@@ -154,13 +164,22 @@ absl_source_set("strip") {
   ]
 }
 
+absl_source_set("structured") {
+  public = [ "structured.h" ]
+  deps = [
+    ":log_message",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/strings",
+  ]
+}
+
 absl_source_set("test_actions") {
   testonly = true
   sources = [ "test_actions.cc" ]
   public = [ "test_actions.h" ]
   deps = [
-    ":config",
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:log_severity",
     "//third_party/abseil-cpp/absl/log:log_entry",
     "//third_party/abseil-cpp/absl/strings",
@@ -187,9 +206,9 @@ absl_source_set("test_matchers") {
   sources = [ "test_matchers.cc" ]
   public = [ "test_matchers.h" ]
   deps = [
-    ":config",
     ":test_helpers",
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:log_severity",
     "//third_party/abseil-cpp/absl/log:log_entry",
     "//third_party/abseil-cpp/absl/strings",
@@ -202,6 +221,22 @@ absl_source_set("test_matchers") {
 absl_source_set("voidify") {
   public = [ "voidify.h" ]
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+}
+
+absl_source_set("proto") {
+  sources = [ "proto.cc" ]
+  public = [ "proto.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/types:span",
+  ]
+  cflags_cc = [
+    "-Wno-shorten-64-to-32",
+    "-Wno-sign-conversion",
+  ]
 }
 
 absl_test("stderr_log_sink_test") {

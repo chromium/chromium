@@ -49,7 +49,7 @@ class LogMessage;
 // Represents a single entry in a log, i.e., one `LOG` statement or failed
 // `CHECK`.
 //
-// `LogEntry` is copyable and thread-compatible.
+// `LogEntry` is thread-compatible.
 class LogEntry final {
  public:
   using tid_t = log_internal::Tid;
@@ -169,6 +169,15 @@ class LogEntry final {
     return text_message_with_prefix_and_newline_and_nul_.data();
   }
 
+  // Returns a serialized protobuf holding the operands streamed into this
+  // log message.  The message definition is not yet published.
+  //
+  // The buffer does not outlive the entry; if you need the data later, you must
+  // copy them.
+  absl::string_view encoded_message() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return encoding_;
+  }
+
   // LogEntry::stacktrace()
   //
   // Optional stacktrace, e.g. for `FATAL` logs and failed `CHECK`s.
@@ -198,6 +207,7 @@ class LogEntry final {
   tid_t tid_;
   absl::Span<const char> text_message_with_prefix_and_newline_and_nul_;
   size_t prefix_len_;
+  absl::string_view encoding_;
   std::string stacktrace_;
 
   friend class log_internal::LogEntryTestPeer;

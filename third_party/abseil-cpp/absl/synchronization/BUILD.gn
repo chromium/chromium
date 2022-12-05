@@ -71,6 +71,7 @@ absl_source_set("thread_pool") {
   deps = [
     ":synchronization",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/functional:any_invocable",
   ]
   visibility = [ "//third_party/abseil-cpp/absl/*" ]
 }
@@ -87,3 +88,11 @@ absl_source_set("per_thread_sem_test_common") {
     "//third_party/googletest:gtest",
   ]
 }
+
+# absl_test("mutex_method_pointer_test") {
+#   sources = [ "mutex_method_pointer_test.cc" ]
+#   deps = [
+#     ":synchronization",
+#     "//third_party/abseil-cpp/absl/base:config",
+#   ]
+# }

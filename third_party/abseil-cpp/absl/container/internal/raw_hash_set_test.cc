@@ -56,8 +56,8 @@ namespace container_internal {
 
 struct RawHashSetTestOnlyAccess {
   template <typename C>
-  static auto GetSlots(const C& c) -> decltype(c.slots_) {
-    return c.slots_;
+  static auto GetSlots(const C& c) -> decltype(c.slot_array()) {
+    return c.slot_array();
   }
 };
 
@@ -455,12 +455,12 @@ TEST(Table, EmptyFunctorOptimization) {
   static_assert(std::is_empty<std::allocator<int>>::value, "");
 
   struct MockTable {
+    void* infoz;
     void* ctrl;
     void* slots;
     size_t size;
     size_t capacity;
     size_t growth_left;
-    void* infoz;
   };
   struct MockTableInfozDisabled {
     void* ctrl;
@@ -2082,13 +2082,29 @@ TEST(TableDeathTest, IteratorInvalidAssertsEqualityOperator) {
   ASSERT_NE(iter2, t.end());
   t.erase(iter1);
   // Extra simple "regexp" as regexp support is highly varied across platforms.
-  const char* const kDeathMessage =
-      "Invalid operation on iterator. The element might have .*been erased or "
+  const char* const kErasedDeathMessage =
+      "Invalid iterator comparison. The element might have .*been erased or "
       "the table might have rehashed.";
-  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kDeathMessage);
-  EXPECT_DEATH_IF_SUPPORTED(void(iter2 != iter1), kDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kErasedDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(void(iter2 != iter1), kErasedDeathMessage);
   t.erase(iter2);
-  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kErasedDeathMessage);
+
+  IntTable t1, t2;
+  t1.insert(0);
+  t2.insert(0);
+  iter1 = t1.begin();
+  iter2 = t2.begin();
+  const char* const kContainerDiffDeathMessage =
+      "Invalid iterator comparison. The iterators may be from different "
+      ".*containers or the container might have rehashed.";
+  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kContainerDiffDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(void(iter2 == iter1), kContainerDiffDeathMessage);
+
+  for (int i = 0; i < 10; ++i) t1.insert(i);
+  // There should have been a rehash in t1.
+  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == t1.begin()),
+                            kContainerDiffDeathMessage);
 }
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)

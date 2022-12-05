@@ -77,6 +77,7 @@ for std in ${STD}; do
           --copt="--gcc-toolchain=/usr/local" \
           --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
           --copt="${exceptions_mode}" \
+          --copt="-march=haswell" \
           --copt=-Werror \
           --define="absl=1" \
           --distdir="/bazel-distdir" \

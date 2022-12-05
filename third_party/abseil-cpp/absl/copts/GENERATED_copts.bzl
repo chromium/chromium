@@ -14,15 +14,11 @@ ABSL_CLANG_CL_FLAGS = [
 ]
 
 ABSL_CLANG_CL_TEST_FLAGS = [
-    "-Wno-c99-extensions",
     "-Wno-deprecated-declarations",
     "-Wno-implicit-int-conversion",
-    "-Wno-missing-noreturn",
     "-Wno-missing-prototypes",
     "-Wno-missing-variable-declarations",
-    "-Wno-null-conversion",
     "-Wno-shadow",
-    "-Wno-shift-sign-overflow",
     "-Wno-shorten-64-to-32",
     "-Wno-sign-compare",
     "-Wno-sign-conversion",
@@ -33,7 +29,6 @@ ABSL_CLANG_CL_TEST_FLAGS = [
     "-Wno-unused-private-field",
     "-Wno-unused-template",
     "-Wno-used-but-marked-unused",
-    "-Wno-zero-as-null-pointer-constant",
     "-Wno-gnu-zero-variadic-macro-arguments",
 ]
 
@@ -56,7 +51,6 @@ ABSL_GCC_FLAGS = [
 ]
 
 ABSL_GCC_TEST_FLAGS = [
-    "-Wno-conversion-null",
     "-Wno-deprecated-declarations",
     "-Wno-missing-declarations",
     "-Wno-sign-compare",
@@ -102,15 +96,11 @@ ABSL_LLVM_FLAGS = [
 ]
 
 ABSL_LLVM_TEST_FLAGS = [
-    "-Wno-c99-extensions",
     "-Wno-deprecated-declarations",
     "-Wno-implicit-int-conversion",
-    "-Wno-missing-noreturn",
     "-Wno-missing-prototypes",
     "-Wno-missing-variable-declarations",
-    "-Wno-null-conversion",
     "-Wno-shadow",
-    "-Wno-shift-sign-overflow",
     "-Wno-shorten-64-to-32",
     "-Wno-sign-compare",
     "-Wno-sign-conversion",
@@ -121,7 +111,6 @@ ABSL_LLVM_TEST_FLAGS = [
     "-Wno-unused-private-field",
     "-Wno-unused-template",
     "-Wno-used-but-marked-unused",
-    "-Wno-zero-as-null-pointer-constant",
     "-Wno-gnu-zero-variadic-macro-arguments",
 ]
 

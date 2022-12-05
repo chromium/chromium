@@ -74,6 +74,16 @@ void CheckPairEquals(const std::pair<T, U> &x, const std::pair<V, W> &y) {
   CheckPairEquals(x.first, y.first);
   CheckPairEquals(x.second, y.second);
 }
+
+bool IsAssertEnabled() {
+  // Use an assert with side-effects to figure out if they are actually enabled.
+  bool assert_enabled = false;
+  assert([&]() {  // NOLINT
+    assert_enabled = true;
+    return true;
+  }());
+  return assert_enabled;
+}
 }  // namespace
 
 // The base class for a sorted associative container checker. TreeType is the
@@ -1651,10 +1661,9 @@ TEST(Btree, BtreeMultisetEmplace) {
   auto iter = s.emplace(value_to_insert);
   ASSERT_NE(iter, s.end());
   EXPECT_EQ(*iter, value_to_insert);
-  auto iter2 = s.emplace(value_to_insert);
-  EXPECT_NE(iter2, iter);
-  ASSERT_NE(iter2, s.end());
-  EXPECT_EQ(*iter2, value_to_insert);
+  iter = s.emplace(value_to_insert);
+  ASSERT_NE(iter, s.end());
+  EXPECT_EQ(*iter, value_to_insert);
   auto result = s.equal_range(value_to_insert);
   EXPECT_EQ(std::distance(result.first, result.second), 2);
 }
@@ -1665,44 +1674,45 @@ TEST(Btree, BtreeMultisetEmplaceHint) {
   auto iter = s.emplace(value_to_insert);
   ASSERT_NE(iter, s.end());
   EXPECT_EQ(*iter, value_to_insert);
-  auto emplace_iter = s.emplace_hint(iter, value_to_insert);
-  EXPECT_NE(emplace_iter, iter);
-  ASSERT_NE(emplace_iter, s.end());
-  EXPECT_EQ(*emplace_iter, value_to_insert);
+  iter = s.emplace_hint(iter, value_to_insert);
+  // The new element should be before the previously inserted one.
+  EXPECT_EQ(iter, s.lower_bound(value_to_insert));
+  ASSERT_NE(iter, s.end());
+  EXPECT_EQ(*iter, value_to_insert);
 }
 
 TEST(Btree, BtreeMultimapEmplace) {
   const int key_to_insert = 123456;
   const char value0[] = "a";
-  absl::btree_multimap<int, std::string> s;
-  auto iter = s.emplace(key_to_insert, value0);
-  ASSERT_NE(iter, s.end());
+  absl::btree_multimap<int, std::string> m;
+  auto iter = m.emplace(key_to_insert, value0);
+  ASSERT_NE(iter, m.end());
   EXPECT_EQ(iter->first, key_to_insert);
   EXPECT_EQ(iter->second, value0);
   const char value1[] = "b";
-  auto iter2 = s.emplace(key_to_insert, value1);
-  EXPECT_NE(iter2, iter);
-  ASSERT_NE(iter2, s.end());
-  EXPECT_EQ(iter2->first, key_to_insert);
-  EXPECT_EQ(iter2->second, value1);
-  auto result = s.equal_range(key_to_insert);
+  iter = m.emplace(key_to_insert, value1);
+  ASSERT_NE(iter, m.end());
+  EXPECT_EQ(iter->first, key_to_insert);
+  EXPECT_EQ(iter->second, value1);
+  auto result = m.equal_range(key_to_insert);
   EXPECT_EQ(std::distance(result.first, result.second), 2);
 }
 
 TEST(Btree, BtreeMultimapEmplaceHint) {
   const int key_to_insert = 123456;
   const char value0[] = "a";
-  absl::btree_multimap<int, std::string> s;
-  auto iter = s.emplace(key_to_insert, value0);
-  ASSERT_NE(iter, s.end());
+  absl::btree_multimap<int, std::string> m;
+  auto iter = m.emplace(key_to_insert, value0);
+  ASSERT_NE(iter, m.end());
   EXPECT_EQ(iter->first, key_to_insert);
   EXPECT_EQ(iter->second, value0);
   const char value1[] = "b";
-  auto emplace_iter = s.emplace_hint(iter, key_to_insert, value1);
-  EXPECT_NE(emplace_iter, iter);
-  ASSERT_NE(emplace_iter, s.end());
-  EXPECT_EQ(emplace_iter->first, key_to_insert);
-  EXPECT_EQ(emplace_iter->second, value1);
+  iter = m.emplace_hint(iter, key_to_insert, value1);
+  // The new element should be before the previously inserted one.
+  EXPECT_EQ(iter, m.lower_bound(key_to_insert));
+  ASSERT_NE(iter, m.end());
+  EXPECT_EQ(iter->first, key_to_insert);
+  EXPECT_EQ(iter->second, value1);
 }
 
 TEST(Btree, ConstIteratorAccessors) {
@@ -2110,6 +2120,79 @@ TEST(Btree, ExtractMultiMapEquivalentKeys) {
     auto node_handle = map.extract(key);
     EXPECT_EQ(node_handle.key(), key);
     EXPECT_EQ(node_handle.mapped(), 1) << i;
+  }
+}
+
+TEST(Btree, ExtractAndGetNextSet) {
+  absl::btree_set<int> src = {1, 2, 3, 4, 5};
+  auto it = src.find(3);
+  auto extracted_and_next = src.extract_and_get_next(it);
+  EXPECT_THAT(src, ElementsAre(1, 2, 4, 5));
+  EXPECT_EQ(extracted_and_next.node.value(), 3);
+  EXPECT_EQ(*extracted_and_next.next, 4);
+}
+
+TEST(Btree, ExtractAndGetNextMultiSet) {
+  absl::btree_multiset<int> src = {1, 2, 3, 4, 5};
+  auto it = src.find(3);
+  auto extracted_and_next = src.extract_and_get_next(it);
+  EXPECT_THAT(src, ElementsAre(1, 2, 4, 5));
+  EXPECT_EQ(extracted_and_next.node.value(), 3);
+  EXPECT_EQ(*extracted_and_next.next, 4);
+}
+
+TEST(Btree, ExtractAndGetNextMap) {
+  absl::btree_map<int, int> src = {{1, 2}, {3, 4}, {5, 6}};
+  auto it = src.find(3);
+  auto extracted_and_next = src.extract_and_get_next(it);
+  EXPECT_THAT(src, ElementsAre(Pair(1, 2), Pair(5, 6)));
+  EXPECT_EQ(extracted_and_next.node.key(), 3);
+  EXPECT_EQ(extracted_and_next.node.mapped(), 4);
+  EXPECT_THAT(*extracted_and_next.next, Pair(5, 6));
+}
+
+TEST(Btree, ExtractAndGetNextMultiMap) {
+  absl::btree_multimap<int, int> src = {{1, 2}, {3, 4}, {5, 6}};
+  auto it = src.find(3);
+  auto extracted_and_next = src.extract_and_get_next(it);
+  EXPECT_THAT(src, ElementsAre(Pair(1, 2), Pair(5, 6)));
+  EXPECT_EQ(extracted_and_next.node.key(), 3);
+  EXPECT_EQ(extracted_and_next.node.mapped(), 4);
+  EXPECT_THAT(*extracted_and_next.next, Pair(5, 6));
+}
+
+TEST(Btree, ExtractAndGetNextEndIter) {
+  absl::btree_set<int> src = {1, 2, 3, 4, 5};
+  auto it = src.find(5);
+  auto extracted_and_next = src.extract_and_get_next(it);
+  EXPECT_THAT(src, ElementsAre(1, 2, 3, 4));
+  EXPECT_EQ(extracted_and_next.node.value(), 5);
+  EXPECT_EQ(extracted_and_next.next, src.end());
+}
+
+TEST(Btree, ExtractDoesntCauseExtraMoves) {
+#ifdef _MSC_VER
+  GTEST_SKIP() << "This test fails on MSVC.";
+#endif
+
+  using Set = absl::btree_set<MovableOnlyInstance>;
+  std::array<std::function<void(Set &)>, 3> extracters = {
+      [](Set &s) { auto node = s.extract(s.begin()); },
+      [](Set &s) { auto ret = s.extract_and_get_next(s.begin()); },
+      [](Set &s) { auto node = s.extract(MovableOnlyInstance(0)); }};
+
+  InstanceTracker tracker;
+  for (int i = 0; i < 3; ++i) {
+    Set s;
+    s.insert(MovableOnlyInstance(0));
+    tracker.ResetCopiesMovesSwaps();
+
+    extracters[i](s);
+    // We expect to see exactly 1 move: from the original slot into the
+    // extracted node.
+    EXPECT_EQ(tracker.copies(), 0) << i;
+    EXPECT_EQ(tracker.moves(), 1) << i;
+    EXPECT_EQ(tracker.swaps(), 0) << i;
   }
 }
 
@@ -3005,8 +3088,9 @@ TEST(Btree, ConstructImplicitlyWithUnadaptedComparator) {
   absl::btree_set<MultiKey, MultiKeyComp> set = {{}, MultiKeyComp{}};
 }
 
-#ifndef NDEBUG
 TEST(Btree, InvalidComparatorsCaught) {
+  if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
+
   {
     struct ZeroAlwaysLessCmp {
       bool operator()(int lhs, int rhs) const {
@@ -3054,7 +3138,6 @@ TEST(Btree, InvalidComparatorsCaught) {
     EXPECT_DEATH(set.insert({0, 1, 2}), "lhs_comp_rhs < 0 -> rhs_comp_lhs > 0");
   }
 }
-#endif
 
 #ifndef _MSC_VER
 // This test crashes on MSVC.
@@ -3083,6 +3166,14 @@ TEST(Btree, InvalidIteratorUse) {
     ASSERT_NE(it, set.end());
     set.erase(1);
     EXPECT_DEATH(*it, "invalidated iterator");
+  }
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10; ++i) set.insert(i);
+    auto it = set.insert(20).first;
+    set.insert(30);
+    EXPECT_DEATH(void(it == set.begin()), "invalidated iterator");
+    EXPECT_DEATH(void(set.begin() == it), "invalidated iterator");
   }
 }
 #endif
@@ -3340,13 +3431,38 @@ TEST(Btree, IteratorSubtraction) {
   }
 }
 
-#ifndef NDEBUG
 TEST(Btree, DereferencingEndIterator) {
+  if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
+
   absl::btree_set<int> set;
   for (int i = 0; i < 1000; ++i) set.insert(i);
   EXPECT_DEATH(*set.end(), R"regex(Dereferencing end\(\) iterator)regex");
 }
-#endif
+
+TEST(Btree, InvalidIteratorComparison) {
+  if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
+
+  absl::btree_set<int> set1, set2;
+  for (int i = 0; i < 1000; ++i) {
+    set1.insert(i);
+    set2.insert(i);
+  }
+
+  constexpr const char *kValueInitDeathMessage =
+      "Comparing default-constructed iterator with .*non-default-constructed "
+      "iterator";
+  typename absl::btree_set<int>::iterator iter1, iter2;
+  EXPECT_EQ(iter1, iter2);
+  EXPECT_DEATH(void(set1.begin() == iter1), kValueInitDeathMessage);
+  EXPECT_DEATH(void(iter1 == set1.begin()), kValueInitDeathMessage);
+
+  constexpr const char *kDifferentContainerDeathMessage =
+      "Comparing iterators from different containers";
+  iter1 = set1.begin();
+  iter2 = set2.begin();
+  EXPECT_DEATH(void(iter1 == iter2), kDifferentContainerDeathMessage);
+  EXPECT_DEATH(void(iter2 == iter1), kDifferentContainerDeathMessage);
+}
 
 }  // namespace
 }  // namespace container_internal

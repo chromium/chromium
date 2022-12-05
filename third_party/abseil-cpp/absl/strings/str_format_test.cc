@@ -143,13 +143,20 @@ TEST_F(FormatEntryPointTest, AppendFormatFailWithV) {
 }
 
 TEST_F(FormatEntryPointTest, ManyArgs) {
-  EXPECT_EQ("24", StrFormat("%24$d", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                            14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24));
-  EXPECT_EQ("60", StrFormat("%60$d", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                            14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-                            27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-                            40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
-                            53, 54, 55, 56, 57, 58, 59, 60));
+  EXPECT_EQ(
+      "60 59 58 57 56 55 54 53 52 51 50 49 48 47 46 45 44 43 42 41 40 39 38 37 "
+      "36 35 34 33 32 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 "
+      "12 11 10 9 8 7 6 5 4 3 2 1",
+      StrFormat("%60$d %59$d %58$d %57$d %56$d %55$d %54$d %53$d %52$d %51$d "
+                "%50$d %49$d %48$d %47$d %46$d %45$d %44$d %43$d %42$d %41$d "
+                "%40$d %39$d %38$d %37$d %36$d %35$d %34$d %33$d %32$d %31$d "
+                "%30$d %29$d %28$d %27$d %26$d %25$d %24$d %23$d %22$d %21$d "
+                "%20$d %19$d %18$d %17$d %16$d %15$d %14$d %13$d %12$d %11$d "
+                "%10$d %9$d %8$d %7$d %6$d %5$d %4$d %3$d %2$d %1$d",
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
+                35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+                51, 52, 53, 54, 55, 56, 57, 58, 59, 60));
 }
 
 TEST_F(FormatEntryPointTest, Preparsed) {
@@ -1133,6 +1140,18 @@ struct PointStringifyUsingFormat {
 TEST_F(FormatExtensionTest, AbslStringifyExampleUsingFormat) {
   PointStringifyUsingFormat p;
   EXPECT_EQ(absl::StrFormat("a %v z", p), "a (10, 20) z");
+}
+
+enum class EnumWithStringify { Many = 0, Choices = 1 };
+
+template <typename Sink>
+void AbslStringify(Sink& sink, EnumWithStringify e) {
+  absl::Format(&sink, "%s", e == EnumWithStringify::Many ? "Many" : "Choices");
+}
+
+TEST_F(FormatExtensionTest, AbslStringifyWithEnum) {
+  const auto e = EnumWithStringify::Choices;
+  EXPECT_EQ(absl::StrFormat("My choice is %v", e), "My choice is Choices");
 }
 
 }  // namespace

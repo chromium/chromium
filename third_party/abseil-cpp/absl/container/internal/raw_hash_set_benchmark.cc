@@ -477,6 +477,24 @@ void BM_DropDeletes(benchmark::State& state) {
 }
 BENCHMARK(BM_DropDeletes);
 
+void BM_Resize(benchmark::State& state) {
+  // For now just measure a small cheap hash table since we
+  // are mostly interested in the overhead of type-erasure
+  // in resize().
+  constexpr int kElements = 64;
+  const int kCapacity = kElements * 2;
+
+  IntTable table;
+  for (int i = 0; i < kElements; i++) {
+    table.insert(i);
+  }
+  for (auto unused : state) {
+    table.rehash(0);
+    table.rehash(kCapacity);
+  }
+}
+BENCHMARK(BM_Resize);
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

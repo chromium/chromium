@@ -30,6 +30,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/log_severity.h"
+#include "absl/log/internal/append_truncated.h"
 #include "absl/log/internal/log_format.h"
 #include "absl/log/internal/test_helpers.h"
 #include "absl/strings/numbers.h"
@@ -40,7 +41,6 @@
 #include "absl/types/span.h"
 
 namespace {
-
 using ::absl::log_internal::LogEntryTestPeer;
 using ::testing::Eq;
 using ::testing::IsTrue;
@@ -49,16 +49,6 @@ using ::testing::StrEq;
 
 auto* test_env ABSL_ATTRIBUTE_UNUSED = ::testing::AddGlobalTestEnvironment(
     new absl::log_internal::LogTestEnvironment);
-
-// Copies into `dst` as many bytes of `src` as will fit, then truncates the
-// copied bytes from the front of `dst` and returns the number of bytes written.
-size_t AppendTruncated(absl::string_view src, absl::Span<char>& dst) {
-  if (src.size() > dst.size()) src = src.substr(0, dst.size());
-  memcpy(dst.data(), src.data(), src.size());
-  dst.remove_prefix(src.size());
-  return src.size();
-}
-
 }  // namespace
 
 namespace absl {
@@ -69,8 +59,9 @@ class LogEntryTestPeer {
  public:
   LogEntryTestPeer(absl::string_view base_filename, int line, bool prefix,
                    absl::LogSeverity severity, absl::string_view timestamp,
-                   absl::LogEntry::tid_t tid, absl::string_view text_message)
-      : buf_(15000, '\0') {
+                   absl::LogEntry::tid_t tid, PrefixFormat format,
+                   absl::string_view text_message)
+      : format_{format}, buf_(15000, '\0') {
     entry_.base_filename_ = base_filename;
     entry_.line_ = line;
     entry_.prefix_ = prefix;
@@ -98,12 +89,12 @@ class LogEntryTestPeer {
         entry_.prefix_
             ? log_internal::FormatLogPrefix(
                   entry_.log_severity(), entry_.timestamp(), entry_.tid(),
-                  entry_.source_basename(), entry_.source_line(), view)
+                  entry_.source_basename(), entry_.source_line(), format_, view)
             : 0;
 
     EXPECT_THAT(entry_.prefix_len_,
                 Eq(static_cast<size_t>(view.data() - buf_.data())));
-    AppendTruncated(text_message, view);
+    log_internal::AppendTruncated(text_message, view);
     view = absl::Span<char>(view.data(), view.size() + 2);
     view[0] = '\n';
     view[1] = '\0';
@@ -117,14 +108,15 @@ class LogEntryTestPeer {
   std::string FormatLogMessage() const {
     return log_internal::FormatLogMessage(
         entry_.log_severity(), ci_.cs, ci_.subsecond, entry_.tid(),
-        entry_.source_basename(), entry_.source_line(), entry_.text_message());
+        entry_.source_basename(), entry_.source_line(), format_,
+        entry_.text_message());
   }
   std::string FormatPrefixIntoSizedBuffer(size_t sz) {
     std::string str(sz, '\0');
     absl::Span<char> buf(&str[0], str.size());
     const size_t prefix_size = log_internal::FormatLogPrefix(
         entry_.log_severity(), entry_.timestamp(), entry_.tid(),
-        entry_.source_basename(), entry_.source_line(), buf);
+        entry_.source_basename(), entry_.source_line(), format_, buf);
     EXPECT_THAT(prefix_size, Eq(static_cast<size_t>(buf.data() - str.data())));
     str.resize(prefix_size);
     return str;
@@ -133,6 +125,7 @@ class LogEntryTestPeer {
 
  private:
   absl::LogEntry entry_;
+  PrefixFormat format_;
   absl::TimeZone::CivilInfo ci_;
   std::vector<char> buf_;
 };
@@ -146,7 +139,9 @@ constexpr bool kUsePrefix = true, kNoPrefix = false;
 
 TEST(LogEntryTest, Baseline) {
   LogEntryTestPeer entry("foo.cc", 1234, kUsePrefix, absl::LogSeverity::kInfo,
-                         "2020-01-02T03:04:05.6789", 451, "hello world");
+                         "2020-01-02T03:04:05.6789", 451,
+                         absl::log_internal::PrefixFormat::kNotRaw,
+                         "hello world");
   EXPECT_THAT(entry.FormatLogMessage(),
               Eq("I0102 03:04:05.678900     451 foo.cc:1234] hello world"));
   EXPECT_THAT(entry.FormatPrefixIntoSizedBuffer(1000),
@@ -168,7 +163,9 @@ TEST(LogEntryTest, Baseline) {
 
 TEST(LogEntryTest, NoPrefix) {
   LogEntryTestPeer entry("foo.cc", 1234, kNoPrefix, absl::LogSeverity::kInfo,
-                         "2020-01-02T03:04:05.6789", 451, "hello world");
+                         "2020-01-02T03:04:05.6789", 451,
+                         absl::log_internal::PrefixFormat::kNotRaw,
+                         "hello world");
   EXPECT_THAT(entry.FormatLogMessage(),
               Eq("I0102 03:04:05.678900     451 foo.cc:1234] hello world"));
   // These methods are not responsible for honoring `prefix()`.
@@ -189,7 +186,8 @@ TEST(LogEntryTest, NoPrefix) {
 
 TEST(LogEntryTest, EmptyFields) {
   LogEntryTestPeer entry("", 0, kUsePrefix, absl::LogSeverity::kInfo,
-                         "2020-01-02T03:04:05", 0, "");
+                         "2020-01-02T03:04:05", 0,
+                         absl::log_internal::PrefixFormat::kNotRaw, "");
   const std::string format_message = entry.FormatLogMessage();
   EXPECT_THAT(format_message, Eq("I0102 03:04:05.000000       0 :0] "));
   EXPECT_THAT(entry.FormatPrefixIntoSizedBuffer(1000), Eq(format_message));
@@ -211,10 +209,10 @@ TEST(LogEntryTest, NegativeFields) {
   // When Abseil's minimum C++ version is C++17, this conditional can be
   // converted to a constexpr if and the static_cast below removed.
   if (std::is_signed<absl::LogEntry::tid_t>::value) {
-    LogEntryTestPeer entry("foo.cc", -1234, kUsePrefix,
-                           absl::LogSeverity::kInfo, "2020-01-02T03:04:05.6789",
-                           static_cast<absl::LogEntry::tid_t>(-451),
-                           "hello world");
+    LogEntryTestPeer entry(
+        "foo.cc", -1234, kUsePrefix, absl::LogSeverity::kInfo,
+        "2020-01-02T03:04:05.6789", static_cast<absl::LogEntry::tid_t>(-451),
+        absl::log_internal::PrefixFormat::kNotRaw, "hello world");
     EXPECT_THAT(entry.FormatLogMessage(),
                 Eq("I0102 03:04:05.678900    -451 foo.cc:-1234] hello world"));
     EXPECT_THAT(entry.FormatPrefixIntoSizedBuffer(1000),
@@ -237,7 +235,8 @@ TEST(LogEntryTest, NegativeFields) {
   } else {
     LogEntryTestPeer entry("foo.cc", -1234, kUsePrefix,
                            absl::LogSeverity::kInfo, "2020-01-02T03:04:05.6789",
-                           451, "hello world");
+                           451, absl::log_internal::PrefixFormat::kNotRaw,
+                           "hello world");
     EXPECT_THAT(entry.FormatLogMessage(),
                 Eq("I0102 03:04:05.678900     451 foo.cc:-1234] hello world"));
     EXPECT_THAT(entry.FormatPrefixIntoSizedBuffer(1000),
@@ -266,6 +265,7 @@ TEST(LogEntryTest, LongFields) {
       "I've information vegetable, animal, and mineral.",
       2147483647, kUsePrefix, absl::LogSeverity::kInfo,
       "2020-01-02T03:04:05.678967896789", 2147483647,
+      absl::log_internal::PrefixFormat::kNotRaw,
       "I know the kings of England, and I quote the fights historical / "
       "From Marathon to Waterloo, in order categorical.");
   EXPECT_THAT(entry.FormatLogMessage(),
@@ -325,6 +325,7 @@ TEST(LogEntryTest, LongNegativeFields) {
         -2147483647, kUsePrefix, absl::LogSeverity::kInfo,
         "2020-01-02T03:04:05.678967896789",
         static_cast<absl::LogEntry::tid_t>(-2147483647),
+        absl::log_internal::PrefixFormat::kNotRaw,
         "I know the kings of England, and I quote the fights historical / "
         "From Marathon to Waterloo, in order categorical.");
     EXPECT_THAT(
@@ -382,6 +383,7 @@ TEST(LogEntryTest, LongNegativeFields) {
         "I've information vegetable, animal, and mineral.",
         -2147483647, kUsePrefix, absl::LogSeverity::kInfo,
         "2020-01-02T03:04:05.678967896789", 2147483647,
+        absl::log_internal::PrefixFormat::kNotRaw,
         "I know the kings of England, and I quote the fights historical / "
         "From Marathon to Waterloo, in order categorical.");
     EXPECT_THAT(
@@ -434,6 +436,33 @@ TEST(LogEntryTest, LongNegativeFields) {
         Eq("I know the kings of England, and I quote the fights historical / "
            "From Marathon to Waterloo, in order categorical."));
   }
+}
+
+TEST(LogEntryTest, Raw) {
+  LogEntryTestPeer entry("foo.cc", 1234, kUsePrefix, absl::LogSeverity::kInfo,
+                         "2020-01-02T03:04:05.6789", 451,
+                         absl::log_internal::PrefixFormat::kRaw, "hello world");
+  EXPECT_THAT(
+      entry.FormatLogMessage(),
+      Eq("I0102 03:04:05.678900     451 foo.cc:1234] RAW: hello world"));
+  EXPECT_THAT(entry.FormatPrefixIntoSizedBuffer(1000),
+              Eq("I0102 03:04:05.678900     451 foo.cc:1234] RAW: "));
+  for (size_t sz =
+           strlen("I0102 03:04:05.678900     451 foo.cc:1234] RAW: ") + 20;
+       sz != std::numeric_limits<size_t>::max(); sz--)
+    EXPECT_THAT("I0102 03:04:05.678900     451 foo.cc:1234] RAW: ",
+                StartsWith(entry.FormatPrefixIntoSizedBuffer(sz)));
+
+  EXPECT_THAT(
+      entry.entry().text_message_with_prefix_and_newline(),
+      Eq("I0102 03:04:05.678900     451 foo.cc:1234] RAW: hello world\n"));
+  EXPECT_THAT(
+      entry.entry().text_message_with_prefix_and_newline_c_str(),
+      StrEq("I0102 03:04:05.678900     451 foo.cc:1234] RAW: hello world\n"));
+  EXPECT_THAT(
+      entry.entry().text_message_with_prefix(),
+      Eq("I0102 03:04:05.678900     451 foo.cc:1234] RAW: hello world"));
+  EXPECT_THAT(entry.entry().text_message(), Eq("hello world"));
 }
 
 }  // namespace

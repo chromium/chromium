@@ -49,15 +49,6 @@ string_view ExtractStringification(StringifySink& sink, const T& v) {
   return sink.buffer_;
 }
 
-template <typename T, typename = void>
-struct HasAbslStringify : std::false_type {};
-
-template <typename T>
-struct HasAbslStringify<T, std::enable_if_t<std::is_void<decltype(AbslStringify(
-                               std::declval<strings_internal::StringifySink&>(),
-                               std::declval<const T&>()))>::value>>
-    : std::true_type {};
-
 }  // namespace strings_internal
 
 ABSL_NAMESPACE_END

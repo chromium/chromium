@@ -196,6 +196,18 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "structured",
+    hdrs = ["structured.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/base:config",
+        "//absl/log/internal:structured",
+        "//absl/strings",
+    ],
+)
+
 # Test targets
 cc_test(
     name = "basic_log_test",
@@ -303,6 +315,7 @@ cc_test(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:log_severity",
+        "//absl/log/internal:append_truncated",
         "//absl/log/internal:format",
         "//absl/log/internal:test_helpers",
         "//absl/strings",
@@ -319,11 +332,12 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
+        ":check",
         ":log",
         ":scoped_mock_log",
-        "//absl/log/internal:config",
         "//absl/log/internal:test_matchers",
         "//absl/strings",
+        "//absl/strings:str_format",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -453,6 +467,23 @@ cc_test(
         "//absl/log/internal:test_helpers",
         "//absl/strings",
         "//absl/strings:str_format",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "structured_test",
+    size = "small",
+    srcs = ["structured_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":log",
+        ":scoped_mock_log",
+        ":structured",
+        "//absl/base:core_headers",
+        "//absl/log/internal:test_helpers",
+        "//absl/log/internal:test_matchers",
         "@com_google_googletest//:gtest_main",
     ],
 )

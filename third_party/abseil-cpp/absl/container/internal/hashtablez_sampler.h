@@ -95,55 +95,19 @@ struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
   size_t inline_element_size;  // How big is the slot?
 };
 
-inline void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length) {
-#ifdef ABSL_INTERNAL_HAVE_SSE2
-  total_probe_length /= 16;
-#else
-  total_probe_length /= 8;
-#endif
-  info->total_probe_length.store(total_probe_length, std::memory_order_relaxed);
-  info->num_erases.store(0, std::memory_order_relaxed);
-  // There is only one concurrent writer, so `load` then `store` is sufficient
-  // instead of using `fetch_add`.
-  info->num_rehashes.store(
-      1 + info->num_rehashes.load(std::memory_order_relaxed),
-      std::memory_order_relaxed);
-}
+void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length);
 
-inline void RecordReservationSlow(HashtablezInfo* info,
-                                  size_t target_capacity) {
-  info->max_reserve.store(
-      (std::max)(info->max_reserve.load(std::memory_order_relaxed),
-                 target_capacity),
-      std::memory_order_relaxed);
-}
+void RecordReservationSlow(HashtablezInfo* info, size_t target_capacity);
 
-inline void RecordClearedReservationSlow(HashtablezInfo* info) {
-  info->max_reserve.store(0, std::memory_order_relaxed);
-}
+void RecordClearedReservationSlow(HashtablezInfo* info);
 
-inline void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
-                                     size_t capacity) {
-  info->size.store(size, std::memory_order_relaxed);
-  info->capacity.store(capacity, std::memory_order_relaxed);
-  if (size == 0) {
-    // This is a clear, reset the total/num_erases too.
-    info->total_probe_length.store(0, std::memory_order_relaxed);
-    info->num_erases.store(0, std::memory_order_relaxed);
-  }
-}
+void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
+                              size_t capacity);
 
 void RecordInsertSlow(HashtablezInfo* info, size_t hash,
                       size_t distance_from_desired);
 
-inline void RecordEraseSlow(HashtablezInfo* info) {
-  info->size.fetch_sub(1, std::memory_order_relaxed);
-  // There is only one concurrent writer, so `load` then `store` is sufficient
-  // instead of using `fetch_add`.
-  info->num_erases.store(
-      1 + info->num_erases.load(std::memory_order_relaxed),
-      std::memory_order_relaxed);
-}
+void RecordEraseSlow(HashtablezInfo* info);
 
 struct SamplingState {
   int64_t next_sample;
@@ -165,7 +129,10 @@ class HashtablezInfoHandle {
  public:
   explicit HashtablezInfoHandle() : info_(nullptr) {}
   explicit HashtablezInfoHandle(HashtablezInfo* info) : info_(info) {}
-  ~HashtablezInfoHandle() {
+
+  // We do not have a destructor. Caller is responsible for calling Unregister
+  // before destroying the handle.
+  void Unregister() {
     if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
     UnsampleSlow(info_);
   }
@@ -230,6 +197,7 @@ class HashtablezInfoHandle {
   explicit HashtablezInfoHandle() = default;
   explicit HashtablezInfoHandle(std::nullptr_t) {}
 
+  inline void Unregister() {}
   inline void RecordStorageChanged(size_t /*size*/, size_t /*capacity*/) {}
   inline void RecordRehash(size_t /*total_probe_length*/) {}
   inline void RecordReservation(size_t /*target_capacity*/) {}

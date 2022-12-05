@@ -91,6 +91,7 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
+        ":append_truncated",
         ":config",
         ":globals",
         "//absl/base:config",
@@ -132,11 +133,12 @@ cc_library(
         "//absl/log:__pkg__",
     ],
     deps = [
-        ":config",
+        ":append_truncated",
         ":format",
         ":globals",
         ":log_sink_set",
         ":nullguard",
+        ":proto",
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -152,8 +154,19 @@ cc_library(
         "//absl/log:log_sink_registry",
         "//absl/memory",
         "//absl/strings",
-        "//absl/strings:str_format",
         "//absl/time",
+        "//absl/types:span",
+    ],
+)
+
+cc_library(
+    name = "append_truncated",
+    hdrs = ["append_truncated.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/base:config",
+        "//absl/strings",
         "//absl/types:span",
     ],
 )
@@ -221,6 +234,18 @@ cc_library(
 )
 
 cc_library(
+    name = "structured",
+    hdrs = ["structured.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":log_message",
+        "//absl/base:config",
+        "//absl/strings",
+    ],
+)
+
+cc_library(
     name = "test_actions",
     testonly = True,
     srcs = ["test_actions.cc"],
@@ -228,13 +253,17 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":config",
         "//absl/base:config",
+        "//absl/base:core_headers",
         "//absl/base:log_severity",
         "//absl/log:log_entry",
         "//absl/strings",
         "//absl/time",
-    ],
+    ] + select({
+        "//absl:msvc_compiler": [],
+        "//conditions:default": [
+        ],
+    }),
 )
 
 cc_library(
@@ -262,15 +291,19 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":config",
         ":test_helpers",
+        "@com_google_googletest//:gtest",
         "//absl/base:config",
+        "//absl/base:core_headers",
         "//absl/base:log_severity",
         "//absl/log:log_entry",
         "//absl/strings",
         "//absl/time",
-        "@com_google_googletest//:gtest",
-    ],
+    ] + select({
+        "//absl:msvc_compiler": [],
+        "//conditions:default": [
+        ],
+    }),
 )
 
 cc_library(
@@ -279,6 +312,19 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = ["//absl/base:config"],
+)
+
+cc_library(
+    name = "proto",
+    srcs = ["proto.cc"],
+    hdrs = ["proto.h"],
+    deps = [
+        "//absl/base",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/strings",
+        "//absl/types:span",
+    ],
 )
 
 # Test targets

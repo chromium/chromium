@@ -125,8 +125,8 @@ struct DestroyAdapter<A, /* IsTriviallyDestructible */ true> {
 
 template <typename A>
 struct Allocation {
-  Pointer<A> data;
-  SizeType<A> capacity;
+  Pointer<A> data = nullptr;
+  SizeType<A> capacity = 0;
 };
 
 template <typename A,
@@ -379,7 +379,9 @@ class Storage {
     return data_.allocated.allocated_capacity;
   }
 
-  SizeType<A> GetInlinedCapacity() const { return static_cast<SizeType<A>>(N); }
+  SizeType<A> GetInlinedCapacity() const {
+    return static_cast<SizeType<A>>(kOptimalInlinedSize);
+  }
 
   StorageView<A> MakeStorageView() {
     return GetIsAllocated() ? StorageView<A>{GetAllocatedData(), GetSize(),
@@ -483,8 +485,15 @@ class Storage {
     SizeType<A> allocated_capacity;
   };
 
+  // `kOptimalInlinedSize` is an automatically adjusted inlined capacity of the
+  // `InlinedVector`. Sometimes, it is possible to increase the capacity (from
+  // the user requested `N`) without increasing the size of the `InlinedVector`.
+  static constexpr size_t kOptimalInlinedSize =
+      (std::max)(N, sizeof(Allocated) / sizeof(ValueType<A>));
+
   struct Inlined {
-    alignas(ValueType<A>) char inlined_data[sizeof(ValueType<A>[N])];
+    alignas(ValueType<A>) char inlined_data[sizeof(
+        ValueType<A>[kOptimalInlinedSize])];
   };
 
   union Data {

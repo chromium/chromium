@@ -59,6 +59,7 @@ for std in ${ABSL_CMAKE_CXX_STANDARDS}; do
             -DCMAKE_CXX_STANDARD=${std} \
             -DCMAKE_MODULE_LINKER_FLAGS=\"-Wl,--no-undefined\" && \
           make -j$(nproc) && \
+          TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo \
           ctest -j$(nproc) --output-on-failure"
     done
   done

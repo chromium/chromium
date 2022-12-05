@@ -327,7 +327,7 @@ TEST_F(StrippingTest, Level) {
     // level that shouldn't be stripped.
     EXPECT_THAT(exe.get(), FileHasSubstr(needle));
   } else {
-#if defined(_MSC_VER) || defined(__APPLE__)
+#if (defined(_MSC_VER) && !defined(__clang__)) || defined(__APPLE__)
     // Dead code elimination misses this case.
 #else
     // All levels should be stripped, so it doesn't matter what the severity

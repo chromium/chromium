@@ -16,7 +16,9 @@
 #include <math.h>
 
 #include <iomanip>
+#include <ios>
 #include <limits>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -26,30 +28,31 @@
 #endif
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/log/internal/config.h"
+#include "absl/log/check.h"
 #include "absl/log/internal/test_matchers.h"
 #include "absl/log/log.h"
 #include "absl/log/scoped_mock_log.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 
 namespace {
+using ::absl::log_internal::AsString;
 using ::absl::log_internal::MatchesOstream;
+using ::absl::log_internal::RawEncodedMessage;
 using ::absl::log_internal::TextMessage;
 using ::absl::log_internal::TextPrefix;
-
 using ::testing::AllOf;
 using ::testing::AnyOf;
-using ::testing::Eq;
-using ::testing::IsEmpty;
-using ::testing::Truly;
-using ::testing::Types;
-
 using ::testing::Each;
+using ::testing::EndsWith;
+using ::testing::Eq;
 using ::testing::Ge;
+using ::testing::IsEmpty;
 using ::testing::Le;
 using ::testing::SizeIs;
+using ::testing::Types;
 
 // Some aspects of formatting streamed data (e.g. pointer handling) are
 // implementation-defined.  Others are buggy in supported implementations.
@@ -69,15 +72,12 @@ TEST(LogFormatTest, NoMessage) {
   const int log_line = __LINE__ + 1;
   auto do_log = [] { LOG(INFO); };
 
-  EXPECT_CALL(
-      test_sink,
-      Send(AllOf(
-          TextMessage(MatchesOstream(ComparisonStream())),
-          TextPrefix(Truly([=](absl::string_view msg) {
-            return absl::EndsWith(
-                msg, absl::StrCat(" log_format_test.cc:", log_line, "] "));
-          })),
-          TextMessage(IsEmpty()), ENCODED_MESSAGE(EqualsProto(R"pb()pb")))));
+  EXPECT_CALL(test_sink,
+              Send(AllOf(TextMessage(MatchesOstream(ComparisonStream())),
+                         TextPrefix(AsString(EndsWith(absl::StrCat(
+                             " log_format_test.cc:", log_line, "] ")))),
+                         TextMessage(IsEmpty()),
+                         ENCODED_MESSAGE(EqualsProto(R"pb()pb")))));
 
   test_sink.StartCapturingLogs();
   do_log();
@@ -612,8 +612,10 @@ TYPED_TEST(FloatingPointLogFormatTest, NegativeNaN) {
       Send(AllOf(
           TextMessage(MatchesOstream(comparison_stream)),
           TextMessage(AnyOf(Eq("-nan"), Eq("nan"), Eq("NaN"), Eq("-nan(ind)"))),
-          ENCODED_MESSAGE(EqualsProto(R"pb(value { str: "-nan" })pb")))));
-
+          ENCODED_MESSAGE(
+              AnyOf(EqualsProto(R"pb(value { str: "-nan" })pb"),
+                    EqualsProto(R"pb(value { str: "nan" })pb"),
+                    EqualsProto(R"pb(value { str: "-nan(ind)" })pb"))))));
   test_sink.StartCapturingLogs();
   LOG(INFO) << value;
 }
@@ -647,13 +649,15 @@ TYPED_TEST(VoidPtrLogFormatTest, NonNull) {
   auto comparison_stream = ComparisonStream();
   comparison_stream << value;
 
-  EXPECT_CALL(test_sink,
-              Send(AllOf(TextMessage(MatchesOstream(comparison_stream)),
-                         TextMessage(AnyOf(Eq("0xdeadbeef"), Eq("DEADBEEF"),
-                                           Eq("00000000DEADBEEF"))),
-                         ENCODED_MESSAGE(EqualsProto(R"pb(value {
-                                                            str: "0xdeadbeef"
-                                                          })pb")))));
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(
+          TextMessage(MatchesOstream(comparison_stream)),
+          TextMessage(
+              AnyOf(Eq("0xdeadbeef"), Eq("DEADBEEF"), Eq("00000000DEADBEEF"))),
+          ENCODED_MESSAGE(AnyOf(
+              EqualsProto(R"pb(value { str: "0xdeadbeef" })pb"),
+              EqualsProto(R"pb(value { str: "00000000DEADBEEF" })pb"))))));
 
   test_sink.StartCapturingLogs();
   LOG(INFO) << value;
@@ -863,6 +867,111 @@ TEST(LogFormatTest, CustomNonCopyable) {
 
   test_sink.StartCapturingLogs();
   LOG(INFO) << value;
+}
+
+struct Point {
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const Point& p) {
+    absl::Format(&sink, "(%d, %d)", p.x, p.y);
+  }
+
+  int x = 10;
+  int y = 20;
+};
+
+TEST(LogFormatTest, AbslStringifyExample) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  Point p;
+
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(
+          TextMessage(Eq("(10, 20)")), TextMessage(Eq(absl::StrCat(p))),
+          ENCODED_MESSAGE(EqualsProto(R"pb(value { str: "(10, 20)" })pb")))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << p;
+}
+
+struct PointWithAbslStringifiyAndOstream {
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink,
+                            const PointWithAbslStringifiyAndOstream& p) {
+    absl::Format(&sink, "(%d, %d)", p.x, p.y);
+  }
+
+  int x = 10;
+  int y = 20;
+};
+
+ABSL_ATTRIBUTE_UNUSED std::ostream& operator<<(
+    std::ostream& os, const PointWithAbslStringifiyAndOstream&) {
+  return os << "Default to AbslStringify()";
+}
+
+TEST(LogFormatTest, CustomWithAbslStringifyAndOstream) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  PointWithAbslStringifiyAndOstream p;
+
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(
+          TextMessage(Eq("(10, 20)")), TextMessage(Eq(absl::StrCat(p))),
+          ENCODED_MESSAGE(EqualsProto(R"pb(value { str: "(10, 20)" })pb")))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << p;
+}
+
+struct PointStreamsNothing {
+  template <typename Sink>
+  friend void AbslStringify(Sink&, const PointStreamsNothing&) {}
+
+  int x = 10;
+  int y = 20;
+};
+
+TEST(LogFormatTest, AbslStringifyStreamsNothing) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  PointStreamsNothing p;
+
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(TextMessage(Eq("77")), TextMessage(Eq(absl::StrCat(p, 77))),
+                 ENCODED_MESSAGE(EqualsProto(R"pb(value { str: "77" })pb")))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << p << 77;
+}
+
+struct PointMultipleAppend {
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const PointMultipleAppend& p) {
+    sink.Append("(");
+    sink.Append(absl::StrCat(p.x, ", ", p.y, ")"));
+  }
+
+  int x = 10;
+  int y = 20;
+};
+
+TEST(LogFormatTest, AbslStringifyMultipleAppend) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  PointMultipleAppend p;
+
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(
+          TextMessage(Eq("(10, 20)")), TextMessage(Eq(absl::StrCat(p))),
+          ENCODED_MESSAGE(EqualsProto(R"pb(value { str: "(" }
+                                           value { str: "10, 20)" })pb")))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << p;
 }
 
 TEST(ManipulatorLogFormatTest, BoolAlphaTrue) {
@@ -1180,8 +1289,11 @@ TEST(ManipulatorLogFormatTest, FixedAndScientificFloat) {
       Send(AllOf(TextMessage(MatchesOstream(comparison_stream)),
                  TextMessage(AnyOf(Eq("0x1.25bb50p+26"), Eq("0x1.25bb5p+26"),
                                    Eq("0x1.25bb500000000p+26"))),
-                 ENCODED_MESSAGE(EqualsProto(R"pb(
-                   value { str: "0x1.25bb5p+26" })pb")))));
+                 ENCODED_MESSAGE(
+                     AnyOf(EqualsProto(R"pb(value { str: "0x1.25bb5p+26" })pb"),
+                           EqualsProto(R"pb(value {
+                                              str: "0x1.25bb500000000p+26"
+                                            })pb"))))));
 
   test_sink.StartCapturingLogs();
 
@@ -1210,8 +1322,11 @@ TEST(ManipulatorLogFormatTest, HexfloatFloat) {
       Send(AllOf(TextMessage(MatchesOstream(comparison_stream)),
                  TextMessage(AnyOf(Eq("0x1.25bb50p+26"), Eq("0x1.25bb5p+26"),
                                    Eq("0x1.25bb500000000p+26"))),
-                 ENCODED_MESSAGE(EqualsProto(R"pb(
-                   value { str: "0x1.25bb5p+26" })pb")))));
+                 ENCODED_MESSAGE(
+                     AnyOf(EqualsProto(R"pb(value { str: "0x1.25bb5p+26" })pb"),
+                           EqualsProto(R"pb(value {
+                                              str: "0x1.25bb500000000p+26"
+                                            })pb"))))));
 
   test_sink.StartCapturingLogs();
   LOG(INFO) << std::hexfloat << value;
@@ -1258,9 +1373,12 @@ TEST(ManipulatorLogFormatTest, Endl) {
   auto comparison_stream = ComparisonStream();
   comparison_stream << std::endl;
 
-  EXPECT_CALL(test_sink,
-              Send(AllOf(TextMessage(MatchesOstream(comparison_stream)),
-                         TextMessage(Eq("\n")))));
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(
+          TextMessage(MatchesOstream(comparison_stream)),
+          TextMessage(Eq("\n")),
+          ENCODED_MESSAGE(EqualsProto(R"pb(value { str: "\n" })pb")))));
 
   test_sink.StartCapturingLogs();
   LOG(INFO) << std::endl;
@@ -1501,25 +1619,248 @@ TEST(ManipulatorLogFormatTest, CustomClassStreamsNothing) {
   LOG(INFO) << value << 77;
 }
 
-// Tests that verify the behavior when more data are streamed into a `LOG`
-// statement than fit in the buffer.
-// Structured logging scenario is tested in other unit tests since the output is
-// significantly different.
-TEST(OverflowTest, TruncatesStrings) {
+struct PointPercentV {
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, const PointPercentV& p) {
+    absl::Format(&sink, "(%v, %v)", p.x, p.y);
+  }
+
+  int x = 10;
+  int y = 20;
+};
+
+TEST(ManipulatorLogFormatTest, IOManipsDoNotAffectAbslStringify) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  PointPercentV p;
+
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(
+          TextMessage(Eq("(10, 20)")), TextMessage(Eq(absl::StrCat(p))),
+          ENCODED_MESSAGE(EqualsProto(R"pb(value { str: "(10, 20)" })pb")))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << std::hex << p;
+}
+
+TEST(StructuredLoggingOverflowTest, TruncatesStrings) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   // This message is too long and should be truncated to some unspecified size
-  // no greater than the buffer size but not too much less either. It should be
+  // no greater than the buffer size but not too much less either.  It should be
   // truncated rather than discarded.
-  constexpr size_t buffer_size = 15000;
-
-  EXPECT_CALL(test_sink,
-              Send(TextMessage(
-                  AllOf(SizeIs(AllOf(Ge(buffer_size - 256), Le(buffer_size))),
-                        Each(Eq('x'))))));
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(
+          TextMessage(AllOf(
+              SizeIs(AllOf(Ge(absl::log_internal::kLogMessageBufferSize - 256),
+                           Le(absl::log_internal::kLogMessageBufferSize))),
+              Each(Eq('x')))),
+          ENCODED_MESSAGE(HasOneStrThat(AllOf(
+              SizeIs(AllOf(Ge(absl::log_internal::kLogMessageBufferSize - 256),
+                           Le(absl::log_internal::kLogMessageBufferSize))),
+              Each(Eq('x'))))))));
 
   test_sink.StartCapturingLogs();
-  LOG(INFO) << std::string(2 * buffer_size, 'x');
+  LOG(INFO) << std::string(2 * absl::log_internal::kLogMessageBufferSize, 'x');
+}
+
+struct StringLike {
+  absl::string_view data;
+};
+std::ostream& operator<<(std::ostream& os, StringLike str) {
+  return os << str.data;
+}
+
+TEST(StructuredLoggingOverflowTest, TruncatesInsertionOperators) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  // This message is too long and should be truncated to some unspecified size
+  // no greater than the buffer size but not too much less either.  It should be
+  // truncated rather than discarded.
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(
+          TextMessage(AllOf(
+              SizeIs(AllOf(Ge(absl::log_internal::kLogMessageBufferSize - 256),
+                           Le(absl::log_internal::kLogMessageBufferSize))),
+              Each(Eq('x')))),
+          ENCODED_MESSAGE(HasOneStrThat(AllOf(
+              SizeIs(AllOf(Ge(absl::log_internal::kLogMessageBufferSize - 256),
+                           Le(absl::log_internal::kLogMessageBufferSize))),
+              Each(Eq('x'))))))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << StringLike{
+      std::string(2 * absl::log_internal::kLogMessageBufferSize, 'x')};
+}
+
+// Returns the size of the largest string that will fit in a `LOG` message
+// buffer with no prefix.
+size_t MaxLogFieldLengthNoPrefix() {
+  class StringLengthExtractorSink : public absl::LogSink {
+   public:
+    void Send(const absl::LogEntry& entry) override {
+      CHECK_EQ(size_, -1);
+      CHECK_EQ(entry.text_message().find_first_not_of('x'),
+               absl::string_view::npos);
+      size_ = entry.text_message().size();
+    }
+    size_t size() const {
+      CHECK_GT(size_, 0);
+      return size_;
+    }
+
+   private:
+    size_t size_ = -1;
+  } extractor_sink;
+  LOG(INFO).NoPrefix().ToSinkOnly(&extractor_sink)
+      << std::string(2 * absl::log_internal::kLogMessageBufferSize, 'x');
+  return extractor_sink.size();
+}
+
+TEST(StructuredLoggingOverflowTest, TruncatesStringsCleanly) {
+  const size_t longest_fit = MaxLogFieldLengthNoPrefix();
+  // To log a second value field, we need four bytes: two tag/type bytes and two
+  // sizes.  To put any data in the field we need a fifth byte.
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
+                               AllOf(SizeIs(longest_fit), Each(Eq('x'))))),
+                           RawEncodedMessage(AsString(EndsWith("x"))))));
+    test_sink.StartCapturingLogs();
+    // x fits exactly, no part of y fits.
+    LOG(INFO).NoPrefix() << std::string(longest_fit, 'x') << "y";
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
+                               AllOf(SizeIs(longest_fit - 1), Each(Eq('x'))))),
+                           RawEncodedMessage(AsString(EndsWith("x"))))));
+    test_sink.StartCapturingLogs();
+    // x fits, one byte from y's header fits but shouldn't be visible.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 1, 'x') << "y";
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
+                               AllOf(SizeIs(longest_fit - 2), Each(Eq('x'))))),
+                           RawEncodedMessage(AsString(EndsWith("x"))))));
+    test_sink.StartCapturingLogs();
+    // x fits, two bytes from y's header fit but shouldn't be visible.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 2, 'x') << "y";
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
+                               AllOf(SizeIs(longest_fit - 3), Each(Eq('x'))))),
+                           RawEncodedMessage(AsString(EndsWith("x"))))));
+    test_sink.StartCapturingLogs();
+    // x fits, three bytes from y's header fit but shouldn't be visible.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 3, 'x') << "y";
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrAndOneLiteralThat(
+                               AllOf(SizeIs(longest_fit - 4), Each(Eq('x'))),
+                               IsEmpty())),
+                           RawEncodedMessage(Not(AsString(EndsWith("x")))))));
+    test_sink.StartCapturingLogs();
+    // x fits, all four bytes from y's header fit but no data bytes do, so we
+    // encode an empty string.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 4, 'x') << "y";
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(
+        test_sink,
+        Send(AllOf(ENCODED_MESSAGE(HasOneStrAndOneLiteralThat(
+                       AllOf(SizeIs(longest_fit - 5), Each(Eq('x'))), Eq("y"))),
+                   RawEncodedMessage(AsString(EndsWith("y"))))));
+    test_sink.StartCapturingLogs();
+    // x fits, y fits exactly.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 5, 'x') << "y";
+  }
+}
+
+TEST(StructuredLoggingOverflowTest, TruncatesInsertionOperatorsCleanly) {
+  const size_t longest_fit = MaxLogFieldLengthNoPrefix();
+  // To log a second value field, we need four bytes: two tag/type bytes and two
+  // sizes.  To put any data in the field we need a fifth byte.
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
+                               AllOf(SizeIs(longest_fit), Each(Eq('x'))))),
+                           RawEncodedMessage(AsString(EndsWith("x"))))));
+    test_sink.StartCapturingLogs();
+    // x fits exactly, no part of y fits.
+    LOG(INFO).NoPrefix() << std::string(longest_fit, 'x') << StringLike{"y"};
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
+                               AllOf(SizeIs(longest_fit - 1), Each(Eq('x'))))),
+                           RawEncodedMessage(AsString(EndsWith("x"))))));
+    test_sink.StartCapturingLogs();
+    // x fits, one byte from y's header fits but shouldn't be visible.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 1, 'x')
+                         << StringLike{"y"};
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
+                               AllOf(SizeIs(longest_fit - 2), Each(Eq('x'))))),
+                           RawEncodedMessage(AsString(EndsWith("x"))))));
+    test_sink.StartCapturingLogs();
+    // x fits, two bytes from y's header fit but shouldn't be visible.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 2, 'x')
+                         << StringLike{"y"};
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
+                               AllOf(SizeIs(longest_fit - 3), Each(Eq('x'))))),
+                           RawEncodedMessage(AsString(EndsWith("x"))))));
+    test_sink.StartCapturingLogs();
+    // x fits, three bytes from y's header fit but shouldn't be visible.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 3, 'x')
+                         << StringLike{"y"};
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink,
+                Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
+                               AllOf(SizeIs(longest_fit - 4), Each(Eq('x'))))),
+                           RawEncodedMessage(AsString(EndsWith("x"))))));
+    test_sink.StartCapturingLogs();
+    // x fits, all four bytes from y's header fit but no data bytes do.  We
+    // don't encode an empty string here because every I/O manipulator hits this
+    // codepath and those shouldn't leave empty strings behind.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 4, 'x')
+                         << StringLike{"y"};
+  }
+  {
+    absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(
+        test_sink,
+        Send(AllOf(ENCODED_MESSAGE(HasTwoStrsThat(
+                       AllOf(SizeIs(longest_fit - 5), Each(Eq('x'))), Eq("y"))),
+                   RawEncodedMessage(AsString(EndsWith("y"))))));
+    test_sink.StartCapturingLogs();
+    // x fits, y fits exactly.
+    LOG(INFO).NoPrefix() << std::string(longest_fit - 5, 'x')
+                         << StringLike{"y"};
+  }
 }
 
 }  // namespace

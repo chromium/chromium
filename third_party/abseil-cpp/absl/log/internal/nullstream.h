@@ -117,12 +117,12 @@ class NullStreamFatal final : public NullStream {
   NullStreamFatal() {}
   // ABSL_ATTRIBUTE_NORETURN doesn't seem to work on destructors with msvc, so
   // disable msvc's warning about the d'tor never returning.
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #pragma warning(push)
 #pragma warning(disable : 4722)
 #endif
   ABSL_ATTRIBUTE_NORETURN ~NullStreamFatal() { _exit(1); }
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #pragma warning(pop)
 #endif
 };

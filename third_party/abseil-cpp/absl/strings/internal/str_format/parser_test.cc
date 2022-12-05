@@ -117,6 +117,7 @@ TEST_F(ConsumeUnboundConversionTest, ConsumeSpecification) {
     {__LINE__, "dzz",  "d",    "zz"},  // length mod as suffix
     {__LINE__, "3v",   "",     "3v"},  // 'v' cannot have modifiers
     {__LINE__, "hv",   "",     "hv"},  // 'v' cannot have modifiers
+    {__LINE__, "1$v",   "1$v",     ""},  // 'v' can have use posix syntax
     {__LINE__, "1$*2$d", "1$*2$d", ""  },  // arg indexing and * allowed.
     {__LINE__, "0-14.3hhd", "0-14.3hhd", ""},  // precision, width
     {__LINE__, " 0-+#14.3hhd", " 0-+#14.3hhd", ""},  // flags

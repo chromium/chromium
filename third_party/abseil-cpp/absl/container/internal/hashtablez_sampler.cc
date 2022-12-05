@@ -14,6 +14,7 @@
 
 #include "absl/container/internal/hashtablez_sampler.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cassert>
 #include <cmath>
@@ -158,6 +159,43 @@ void UnsampleSlow(HashtablezInfo* info) {
   GlobalHashtablezSampler().Unregister(info);
 }
 
+void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length) {
+#ifdef ABSL_INTERNAL_HAVE_SSE2
+  total_probe_length /= 16;
+#else
+  total_probe_length /= 8;
+#endif
+  info->total_probe_length.store(total_probe_length, std::memory_order_relaxed);
+  info->num_erases.store(0, std::memory_order_relaxed);
+  // There is only one concurrent writer, so `load` then `store` is sufficient
+  // instead of using `fetch_add`.
+  info->num_rehashes.store(
+      1 + info->num_rehashes.load(std::memory_order_relaxed),
+      std::memory_order_relaxed);
+}
+
+void RecordReservationSlow(HashtablezInfo* info, size_t target_capacity) {
+  info->max_reserve.store(
+      (std::max)(info->max_reserve.load(std::memory_order_relaxed),
+                 target_capacity),
+      std::memory_order_relaxed);
+}
+
+void RecordClearedReservationSlow(HashtablezInfo* info) {
+  info->max_reserve.store(0, std::memory_order_relaxed);
+}
+
+void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
+                              size_t capacity) {
+  info->size.store(size, std::memory_order_relaxed);
+  info->capacity.store(capacity, std::memory_order_relaxed);
+  if (size == 0) {
+    // This is a clear, reset the total/num_erases too.
+    info->total_probe_length.store(0, std::memory_order_relaxed);
+    info->num_erases.store(0, std::memory_order_relaxed);
+  }
+}
+
 void RecordInsertSlow(HashtablezInfo* info, size_t hash,
                       size_t distance_from_desired) {
   // SwissTables probe in groups of 16, so scale this to count items probes and
@@ -178,6 +216,14 @@ void RecordInsertSlow(HashtablezInfo* info, size_t hash,
       std::memory_order_relaxed);
   info->total_probe_length.fetch_add(probe_length, std::memory_order_relaxed);
   info->size.fetch_add(1, std::memory_order_relaxed);
+}
+
+void RecordEraseSlow(HashtablezInfo* info) {
+  info->size.fetch_sub(1, std::memory_order_relaxed);
+  // There is only one concurrent writer, so `load` then `store` is sufficient
+  // instead of using `fetch_add`.
+  info->num_erases.store(1 + info->num_erases.load(std::memory_order_relaxed),
+                         std::memory_order_relaxed);
 }
 
 void SetHashtablezConfigListener(HashtablezConfigListener l) {

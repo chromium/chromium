@@ -17,15 +17,11 @@ MSVC_BIG_WARNING_FLAGS = [
 ]
 
 LLVM_TEST_DISABLE_WARNINGS_FLAGS = [
-    "-Wno-c99-extensions",
     "-Wno-deprecated-declarations",
     "-Wno-implicit-int-conversion",
-    "-Wno-missing-noreturn",
     "-Wno-missing-prototypes",
     "-Wno-missing-variable-declarations",
-    "-Wno-null-conversion",
     "-Wno-shadow",
-    "-Wno-shift-sign-overflow",
     "-Wno-shorten-64-to-32",
     "-Wno-sign-compare",
     "-Wno-sign-conversion",
@@ -36,7 +32,6 @@ LLVM_TEST_DISABLE_WARNINGS_FLAGS = [
     "-Wno-unused-private-field",
     "-Wno-unused-template",
     "-Wno-used-but-marked-unused",
-    "-Wno-zero-as-null-pointer-constant",
     # gtest depends on this GNU extension being offered.
     "-Wno-gnu-zero-variadic-macro-arguments",
 ]
@@ -72,7 +67,6 @@ COPT_VARS = {
         "-DNOMINMAX",
     ],
     "ABSL_GCC_TEST_FLAGS": [
-        "-Wno-conversion-null",
         "-Wno-deprecated-declarations",
         "-Wno-missing-declarations",
         "-Wno-sign-compare",

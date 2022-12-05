@@ -32,9 +32,6 @@ template <typename T>
 class Span;
 
 namespace span_internal {
-// A constexpr min function
-constexpr size_t Min(size_t a, size_t b) noexcept { return a < b ? a : b; }
-
 // Wrappers for access to container data pointers.
 template <typename C>
 constexpr auto GetDataImpl(C& c, char) noexcept  // NOLINT(runtime/references)

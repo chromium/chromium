@@ -650,4 +650,16 @@ TEST(StrCat, AbslStringifyExampleUsingFormat) {
   EXPECT_EQ(absl::StrCat("a ", p, " z"), "a (10, 20) z");
 }
 
+enum class EnumWithStringify { Many = 0, Choices = 1 };
+
+template <typename Sink>
+void AbslStringify(Sink& sink, EnumWithStringify e) {
+  absl::Format(&sink, "%s", e == EnumWithStringify::Many ? "Many" : "Choices");
+}
+
+TEST(StrCat, AbslStringifyWithEnum) {
+  const auto e = EnumWithStringify::Choices;
+  EXPECT_EQ(absl::StrCat(e), "Choices");
+}
+
 }  // namespace

@@ -87,7 +87,6 @@ for std in ${STD}; do
           --keep_going \
           --linkopt="-fsanitize=thread" \
           --show_timestamps \
-          --test_env="TSAN_OPTIONS=report_atomic_races=0" \
           --test_env="TSAN_SYMBOLIZER_PATH=/opt/llvm/clang/bin/llvm-symbolizer" \
           --test_env="TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo" \
           --test_output=errors \

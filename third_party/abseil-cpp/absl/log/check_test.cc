@@ -93,7 +93,7 @@ TEST(CHECKTest, TestBoolConvertible) {
 
 #if GTEST_HAS_DEATH_TEST
 
-TEST(CHECKDeathTest, TestChecksWithSideeffects) {
+TEST(CHECKDeathTest, TestChecksWithSideEffects) {
   int var = 0;
   CHECK([&var]() {
     ++var;
