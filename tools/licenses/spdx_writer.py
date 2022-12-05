@@ -75,12 +75,13 @@ class _Package:
 
 
 def _get_spdx_path(root: str, license_file_path: str) -> str:
-  """Get path from the spdx root."""
+  """Get relative path from the spdx root."""
   # remove rel path things in path
   abs_path = os.path.abspath(license_file_path)
-  if not abs_path.startswith(root):
-    raise ValueError(f'spdx root not valid. {abs_path} is not under root')
-  return abs_path[len(root):]
+  abs_root = os.path.abspath(root)
+  if not abs_path.startswith(abs_root):
+    raise ValueError(f'spdx root not valid. {abs_path} is not under {abs_root}')
+  return abs_path[len(abs_root):]
 
 
 class _SPDXJSONWriter():
@@ -141,6 +142,8 @@ class _SPDXJSONWriter():
 
   def add_license_file(self, pkg: _Package):
     """Writes a license to the file (raw license text)."""
+    spdx_path = _get_spdx_path(self.root, pkg.file)
+    url = f'{self.link_prefix}{spdx_path.replace(os.sep, "/")}'
     self.content['hasExtractedLicensingInfos'].append({
         'name':
         f'{pkg.name} License',
@@ -149,7 +152,6 @@ class _SPDXJSONWriter():
         'extractedText':
         self.read_file(pkg.file),
         'crossRefs': [{
-            'url':
-            f'{self.link_prefix}{_get_spdx_path(self.root, pkg.file)}',
+            'url': url,
         }],
     })

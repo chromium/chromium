@@ -13,31 +13,26 @@ sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'licenses'))
 
 from spdx_writer import _get_spdx_path
 from spdx_writer import _Package
-
-args = {
-    'root': '/src',
-    'pkg_name': 'mypkg',
-    'root_license': '/src/LICENSE',
-    'link_prefix': 'https://google.com',
-    'doc_name': 'mydoc',
-}
+from test_utils import path_from_root
 
 
 class SpdxPathTest(unittest.TestCase):
   def test_get_spdx_path(self):
-    actual = _get_spdx_path('/src', '/src/root/third_party/abc')
-    self.assertEqual(actual, '/root/third_party/abc')
+    actual = _get_spdx_path(path_from_root('src'),
+                            path_from_root('src', 'root', 'third_party', 'abc'))
+    self.assertEqual(actual, os.path.join(os.sep, 'root', 'third_party', 'abc'))
 
   def test_get_spdx_path_error(self):
     with self.assertRaises(ValueError):
-      _get_spdx_path('/src', '/some/other/path')
+      _get_spdx_path(path_from_root('src'),
+                     path_from_root('some', 'other', 'path'))
 
 
 class PackageTest(unittest.TestCase):
   def setUp(self):
     super().setUp()
 
-    self.p = _Package('abc def ghi', '/src/LICENSE')
+    self.p = _Package('abc def ghi', path_from_root('src', 'LICENSE'))
 
   def test_package_spdx_id(self):
     self.assertEqual(self.p.package_spdx_id, 'SPDXRef-Package-abc-def-ghi')

@@ -951,7 +951,7 @@ def GenerateLicenseFileSpdx(
   The output is based on the following specification:
   https://spdx.github.io/spdx-spec/v2-draft/
   """
-  root_license = repo_root + '/LICENSE'
+  root_license = os.path.join(repo_root, 'LICENSE')
   spdx_writer = SpdxWriter(spdx_root,
                            'Chromium',
                            root_license,

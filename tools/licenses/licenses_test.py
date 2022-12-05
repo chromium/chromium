@@ -14,6 +14,7 @@ REPOSITORY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'licenses'))
 
 import licenses
+from test_utils import path_from_root
 
 
 def construct_absolute_path(path):
@@ -21,6 +22,26 @@ def construct_absolute_path(path):
 
 
 class LicensesTest(unittest.TestCase):
+  def _get_metadata(self):
+    return {
+        os.path.join('third_party', 'lib1'): {
+            'Name': 'lib1',
+            'License File': os.path.join('third_party', 'lib1', 'LICENSE'),
+        },
+        os.path.join('third_party', 'lib2'): {
+            'Name': 'lib2',
+            'License File': os.path.join('third_party', 'lib2', 'LICENSE'),
+        },
+        'ignored': {
+            'Name': 'ignored',
+            'License File': licenses.NOT_SHIPPED,
+        },
+        os.path.join('third_party', 'lib3'): {
+            'Name': 'lib3',
+            'License File': os.path.join('third_party', 'lib3', 'LICENSE'),
+        },
+    }
+
   def test_get_third_party_deps_from_gn_deps_output(self):
     prune_path = next(iter(licenses.PRUNE_PATHS))
     gn_deps = [
@@ -73,25 +94,7 @@ class LicensesTest(unittest.TestCase):
     ]
 
     license_txt = licenses.GenerateLicenseFilePlainText(
-        {
-            'third_party/lib1': {
-                'Name': 'lib1',
-                'License File': 'third_party/lib1/LICENSE',
-            },
-            'third_party/lib2': {
-                'Name': 'lib2',
-                'License File': 'third_party/lib2/LICENSE',
-            },
-            'ignored': {
-                'Name': 'ignored',
-                'License File': licenses.NOT_SHIPPED,
-            },
-            'third_party/lib3': {
-                'Name': 'lib3',
-                'License File': 'third_party/lib3/LICENSE',
-            },
-        },
-        read_file=lambda _: read_file_vals.pop(0))
+        self._get_metadata(), read_file=lambda _: read_file_vals.pop(0))
 
     expected = '\n'.join([
         'root license text',
@@ -122,29 +125,12 @@ class LicensesTest(unittest.TestCase):
     ]
 
     license_txt = licenses.GenerateLicenseFileSpdx(
-        {
-            'third_party/lib1': {
-                'Name': 'lib1',
-                'License File': 'third_party/lib1/LICENSE',
-            },
-            'third_party/lib2': {
-                'Name': 'lib2',
-                'License File': 'third_party/lib2/LICENSE',
-            },
-            'ignored': {
-                'Name': 'ignored',
-                'License File': licenses.NOT_SHIPPED,
-            },
-            'third_party/lib3': {
-                'Name': 'lib3',
-                'License File': 'third_party/lib3/LICENSE',
-            },
-        },
+        self._get_metadata(),
         'http://google.com',
-        '/src',
+        path_from_root('src'),
         'mydoc',
         'http://google.com',
-        repo_root='/src',
+        repo_root=path_from_root('src'),
         read_file=lambda _: read_file_vals.pop(0))
 
     expected = '''{
