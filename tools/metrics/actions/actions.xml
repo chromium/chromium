@@ -35528,6 +35528,8 @@ should be able to be added at any place in this file.
       label="For the RequestDesktopSiteAppMenu feature."/>
   <suffix name="RequestDesktopSiteDefaultOn"
       label="For the RequestDesktopSiteDefaultOn feature."/>
+  <suffix name="RequestDesktopSiteOptIn"
+      label="For the RequestDesktopSiteOptIn feature."/>
   <suffix name="SharedHighlightingBuilder"
       label="For SharedHighlightingBuilder feature."/>
   <suffix name="SharedHighlightingReceiver"

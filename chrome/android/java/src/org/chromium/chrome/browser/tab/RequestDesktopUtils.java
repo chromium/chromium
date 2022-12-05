@@ -565,8 +565,6 @@ public class RequestDesktopUtils {
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
 
-        boolean previouslyShowedOptIn = sharedPreferencesManager.contains(
-                ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN);
         boolean previouslyUpdatedByUser = sharedPreferencesManager.contains(
                 SingleCategorySettingsConstants
                         .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
@@ -579,24 +577,24 @@ public class RequestDesktopUtils {
                 DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES);
 
         boolean inCohort = !previouslyUpdatedByUser && displaySizeInInches >= minScreenSizeThreshold
-                && displaySizeInInches < maxScreenSizeThreshold;
-        boolean wouldShowOptIn = !previouslyShowedOptIn && inCohort;
-        if (wouldShowOptIn) {
+                && displaySizeInInches < maxScreenSizeThreshold
+                && TrackerFactory.getTrackerForProfile(profile).wouldTriggerHelpUI(
+                        FeatureConstants.REQUEST_DESKTOP_SITE_OPT_IN_FEATURE);
+        if (inCohort) {
             // Store a SharedPreferences key to tag the device as qualified for the feature
             // experiment for ongoing tracking in both enabled and control groups.
             sharedPreferencesManager.writeBoolean(
                     ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT, true);
         }
 
-        if (inCohort
-                || sharedPreferencesManager.contains(
-                        ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT)) {
+        if (sharedPreferencesManager.contains(
+                    ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT)) {
             maybeRegisterSyntheticFieldTrials(
                     isControlGroup, minScreenSizeThreshold, /*isOptInArm*/ true);
         }
 
         // Should show the opt-in message only in the enabled (not control) experiment group.
-        return !isControlGroup && wouldShowOptIn;
+        return !isControlGroup && inCohort;
     }
 
     /**
@@ -619,6 +617,11 @@ public class RequestDesktopUtils {
             return false;
         }
 
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        if (!tracker.shouldTriggerHelpUI(FeatureConstants.REQUEST_DESKTOP_SITE_OPT_IN_FEATURE)) {
+            return false;
+        }
+
         Resources resources = context.getResources();
         PropertyModel message =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -633,13 +636,22 @@ public class RequestDesktopUtils {
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
                                     onGlobalSettingOptInMessageClicked(profile, currentTabSupplier);
+                                    tracker.notifyEvent(
+                                            EventConstants.DESKTOP_SITE_OPT_IN_PRIMARY_ACTION);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .with(MessageBannerProperties.ON_DISMISSED,
+                                (dismissReason) -> {
+                                    if (dismissReason == DismissReason.GESTURE) {
+                                        tracker.notifyEvent(
+                                                EventConstants.DESKTOP_SITE_OPT_IN_GESTURE);
+                                    }
+                                    tracker.dismissed(
+                                            FeatureConstants.REQUEST_DESKTOP_SITE_OPT_IN_FEATURE);
                                 })
                         .build();
 
         messageDispatcher.enqueueWindowScopedMessage(message, false);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN, true);
         return true;
     }
 

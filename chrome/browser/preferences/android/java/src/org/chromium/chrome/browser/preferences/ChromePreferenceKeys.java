@@ -268,12 +268,6 @@ public final class ChromePreferenceKeys {
     public static final String DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT =
             "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageCohort";
     /**
-     * Indicates whether an opt-in message was shown for the desktop site global setting based on
-     * device conditions.
-     */
-    public static final String DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN =
-            "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown";
-    /**
      * Indicates whether the desktop site global setting was enabled prior to downgrade of desktop
      * site domain level exceptions.
      */
@@ -1077,7 +1071,6 @@ public final class ChromePreferenceKeys {
                 DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED,
                 DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET,
                 DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
-                DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 FEED_ARTICLES_LIST_VISIBLE,
