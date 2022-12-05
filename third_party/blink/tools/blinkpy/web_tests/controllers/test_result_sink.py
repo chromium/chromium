@@ -129,6 +129,10 @@ class TestResultSink(object):
             pair('web_tests_base_timeout',
                  str(int(self._port.timeout_ms() / 1000))),
         ]
+        if result.image_diff_stats:
+            tags.append(
+                pair('web_tests_image_diff_stats',
+                     str(result.image_diff_stats)))
 
         for used_file in self._port.used_expectations_files():
             tags.append(

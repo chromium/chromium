@@ -218,6 +218,60 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         sent_data = self.sink(True, tr)
         self.assertEqual(sent_data['tags'], expected_tags)
 
+    def test_sink_with_image_diff_stats(self):
+        actual_image_diff_stats = {'maxDifference': 20, 'totalPixels': 50}
+        tr = test_results.TestResult(test_name='test-name',
+                                     image_diff_stats=actual_image_diff_stats)
+        tr.type = ResultType.Crash
+        expected_tags = [
+            {
+                'key': 'test_name',
+                'value': 'test-name'
+            },
+            {
+                'key': 'web_tests_device_failed',
+                'value': 'False'
+            },
+            {
+                'key': 'web_tests_result_type',
+                'value': 'CRASH'
+            },
+            {
+                'key': 'web_tests_flag_specific_config_name',
+                'value': '',
+            },
+            {
+                'key': 'web_tests_base_timeout',
+                'value': '6'
+            },
+            {
+                'key': 'web_tests_image_diff_stats',
+                'value': "{'maxDifference': 20, 'totalPixels': 50}"
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'TestExpectations',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'WebDriverExpectations',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'NeverFixTests',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'StaleTestExpectations',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'SlowTests',
+            },
+        ]
+        sent_data = self.sink(True, tr)
+        self.assertEqual(sent_data['tags'], expected_tags)
+
     def test_test_metadata(self):
         tr = test_results.TestResult('')
         base_path = '//' + RELATIVE_WEB_TESTS
