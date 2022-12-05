@@ -7,33 +7,29 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/callback_forward.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -211,6 +207,42 @@ class UpdateScreenTest : public OobeBaseTest,
       update_screen_waiter.set_assert_next_screen();
       update_screen_waiter.Wait();
     }
+  }
+
+  // Preconditions:
+  // - `UpdateScreen` is shown;
+  // - Network is in a portal state.
+  // Postconditions:
+  // - Timer to delay showing the `ErrorScreen` is started.
+  void WaitForDelayedErrorTimerToStart() {
+    // Wait for the delayed timer to start running.
+    auto* delayed_error_timer =
+        update_screen_->GetErrorMessageTimerForTesting();
+    test::TestPredicateWaiter(
+        base::BindRepeating(&base::OneShotTimer::IsRunning,
+                            base::Unretained(delayed_error_timer)))
+        .Wait();
+  }
+
+  // Preconditions:
+  // - `UpdateScreen` is shown;
+  // - Network is in a portal state.
+  // Postconditions:
+  // - Timer to delay showing the `ErrorScreen` is fired;
+  // - `ErrorScreen` is shown.
+  void WaitForDelayedErrorTimerToFire() {
+    auto* delayed_error_timer =
+        update_screen_->GetErrorMessageTimerForTesting();
+    WaitForDelayedErrorTimerToStart();
+    // Fire the timer.
+    delayed_error_timer->FireNow();
+    ASSERT_EQ(UpdateView::kScreenId.AsId(), error_screen_->GetParentScreen());
+    EXPECT_FALSE(delayed_error_timer->IsRunning());
+
+    // Wait for `ErrorScreen` to be shown.
+    OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
+    error_screen_waiter.set_assert_next_screen();
+    error_screen_waiter.Wait();
   }
 
   chromeos::FakePowerManagerClient* power_manager_client() {
@@ -555,7 +587,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
 
   // If the network is a captive portal network, error message is shown with a
   // delay.
-  EXPECT_TRUE(update_screen_->GetErrorMessageTimerForTesting()->IsRunning());
+  WaitForDelayedErrorTimerToStart();
   EXPECT_EQ(OOBE_SCREEN_UNKNOWN.AsId(), error_screen_->GetParentScreen());
 
   // If network goes back online, the error message timer should be canceled.
@@ -612,24 +644,13 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
   histogram_tester_.ExpectTotalCount(kTimeFinalize, 0);
 }
 
-// Flaky. crbug.com/1385850
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_TestTwoOfflineNetworks) {
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTwoOfflineNetworks) {
   // Change ethernet state to portal.
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
   ShowUpdateScreen();
 
-  // Update screen will delay error message about portal state because
-  // ethernet is behind captive portal. Simulate the delay timing out.
-  EXPECT_TRUE(update_screen_->GetErrorMessageTimerForTesting()->IsRunning());
-  update_screen_->GetErrorMessageTimerForTesting()->FireNow();
-  EXPECT_FALSE(update_screen_->GetErrorMessageTimerForTesting()->IsRunning());
-
-  ASSERT_EQ(UpdateView::kScreenId.AsId(), error_screen_->GetParentScreen());
-
-  OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
-  error_screen_waiter.set_assert_next_screen();
-  error_screen_waiter.Wait();
+  WaitForDelayedErrorTimerToFire();
 
   test::OobeJS().ExpectVisiblePath(kErrorMessage);
   test::OobeJS().ExpectVisiblePath(
@@ -678,22 +699,13 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestVoidNetwork) {
   histogram_tester_.ExpectTotalCount(kTimeFinalize, 0);
 }
 
-// TODO(b/260997063): Re-enable this test
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_TestAPReselection) {
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestAPReselection) {
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
 
   ShowUpdateScreen();
 
-  // Force timer expiration.
-  EXPECT_TRUE(update_screen_->GetErrorMessageTimerForTesting()->IsRunning());
-  update_screen_->GetErrorMessageTimerForTesting()->FireNow();
-  ASSERT_EQ(UpdateView::kScreenId.AsId(), error_screen_->GetParentScreen());
-  EXPECT_FALSE(update_screen_->GetShowTimerForTesting()->IsRunning());
-
-  OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
-  error_screen_waiter.set_assert_next_screen();
-  error_screen_waiter.Wait();
+  WaitForDelayedErrorTimerToFire();
 
   NetworkHandler::Get()->network_connection_handler()->ConnectToNetwork(
       "fake_path", base::DoNothing(), base::DoNothing(),
