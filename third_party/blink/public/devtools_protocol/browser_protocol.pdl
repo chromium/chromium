@@ -1100,6 +1100,7 @@ domain Browser
     enum
       granted
       denied
+      prompt
 
   # Definition of PermissionDescriptor defined in the Permissions API:
   # https://w3c.github.io/permissions/#dictdef-permissiondescriptor.

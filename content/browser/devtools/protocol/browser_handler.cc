@@ -296,6 +296,8 @@ Response PermissionSettingToPermissionStatus(
     *out_status = blink::mojom::PermissionStatus::GRANTED;
   } else if (setting == protocol::Browser::PermissionSettingEnum::Denied) {
     *out_status = blink::mojom::PermissionStatus::DENIED;
+  } else if (setting == protocol::Browser::PermissionSettingEnum::Prompt) {
+    *out_status = blink::mojom::PermissionStatus::ASK;
   } else {
     return Response::InvalidParams("Unknown permission setting: " + setting);
   }
