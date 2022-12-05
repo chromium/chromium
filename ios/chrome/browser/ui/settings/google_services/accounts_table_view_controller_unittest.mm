@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 
+#import "base/mac/foundation_util.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -63,6 +64,12 @@ class AccountsTableViewControllerTest : public ChromeTableViewControllerTest {
                                    closeSettingsOnAddAccount:NO];
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     return controller;
+  }
+
+  void TearDown() override {
+    [base::mac::ObjCCast<AccountsTableViewController>(controller())
+        settingsWillBeDismissed];
+    ChromeTableViewControllerTest::TearDown();
   }
 
   // Identity Services

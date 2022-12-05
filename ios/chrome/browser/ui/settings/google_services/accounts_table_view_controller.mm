@@ -190,7 +190,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.removeAccountCoordinator stop];
   self.removeAccountCoordinator = nil;
   [self stopBrowserStateServiceObservers];
+  _accountManagerServiceObserver.reset();
   _browser = nullptr;
+  _accountManagerService = nullptr;
+
+  _isBeingDismissed = YES;
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -418,7 +422,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   // If there is an operation in process that does not allow selecting a cell or
   // if the settings will be dismissed, exit without performing the selection.
-  if (self.uiDisabled || !_browser) {
+  if (self.uiDisabled || _isBeingDismissed) {
     return;
   }
 
