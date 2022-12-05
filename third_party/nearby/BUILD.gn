@@ -269,6 +269,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/bluetooth_radio.cc",
     "src/connections/implementation/mediums/mediums.cc",
     "src/connections/implementation/mediums/webrtc.cc",
+    "src/connections/implementation/mediums/wifi_direct.cc",
     "src/connections/implementation/mediums/wifi_hotspot.cc",
     "src/connections/implementation/mediums/wifi_lan.cc",
   ]
@@ -288,6 +289,7 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/lost_entity_tracker.h",
     "src/connections/implementation/mediums/mediums.h",
     "src/connections/implementation/mediums/webrtc.h",
+    "src/connections/implementation/mediums/wifi_direct.h",
     "src/connections/implementation/mediums/wifi_hotspot.h",
     "src/connections/implementation/mediums/wifi_lan.h",
   ]
