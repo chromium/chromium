@@ -176,7 +176,10 @@ const CGFloat kBubblePresentationDelay = 1;
   }
   CGPoint discoverFeedHeaderAnchor =
       [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
-  discoverFeedHeaderAnchor.x += menuButton.frame.size.width / 2;
+  // Anchor the IPH 1/3 of the way through the button. Anchoring it midway
+  // doesn't work since the button is too close to the edge, which would cause
+  // the bubble to bleed out the screen.
+  discoverFeedHeaderAnchor.x += menuButton.frame.size.width / 3;
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
