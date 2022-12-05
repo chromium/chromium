@@ -129,22 +129,29 @@ export class VideoCaptureCandidate extends Camera3CaptureCandidate {
   }
 
   getStreamConstraintsCandidates(): StreamConstraints[] {
-    const frameRate =
-        this.constFps !== null ? {exact: this.constFps} : {min: 20, ideal: 30};
     // For non-multistream recording, preview stream is used directly
     // to do video recording.
     const {width, height} = this.resolution;
-    return [
-      {
-        deviceId: this.deviceId,
-        audio: this.hasAudio,
-        video: {
-          frameRate,
-          width,
-          height,
-        },
-      },
-    ];
+    const buildConstraint = (frameRate: MediaTrackConstraints['frameRate']) =>
+        ({
+          deviceId: this.deviceId,
+          audio: this.hasAudio,
+          video: {
+            frameRate,
+            width,
+            height,
+          },
+        });
+    const frameRate =
+        this.constFps === null ? {min: 20, ideal: 30} : {exact: this.constFps};
+    const streamConstraints = [buildConstraint(frameRate)];
+    // If another web app is opened and requests a low fps streaming, CCA will
+    // get an OverconstrainedError. In this case, the constraint is relaxed but
+    // the error message is kept in the log.
+    if (this.constFps === null) {
+      streamConstraints.push(buildConstraint({ideal: 30}));
+    }
+    return streamConstraints;
   }
 
   override getConstFps(): number|null {
@@ -163,15 +170,31 @@ export class MultiStreamVideoCaptureCandidate extends VideoCaptureCandidate {
   override getStreamConstraintsCandidates(): StreamConstraints[] {
     const frameRate =
         this.constFps === null ? {min: 20, ideal: 30} : {exact: this.constFps};
-    return this.previewResolutions.map(({width, height}) => ({
-                                         deviceId: this.deviceId,
-                                         audio: this.hasAudio,
-                                         video: {
-                                           frameRate,
-                                           width,
-                                           height,
-                                         },
-                                       }));
+    const buildConstraint =
+        (frameRate: MediaTrackConstraints['frameRate'],
+         {width, height}: Resolution) => ({
+          deviceId: this.deviceId,
+          audio: this.hasAudio,
+          video: {
+            frameRate,
+            width,
+            height,
+          },
+        });
+    const streamConstraints = [];
+    for (const previewResolution of this.previewResolutions) {
+      streamConstraints.push(buildConstraint(frameRate, previewResolution));
+    }
+
+    // If another web app is opened and requests a low fps streaming, CCA will
+    // get an OverconstrainedError. In this case, the constraint is relaxed but
+    // the error message is kept in the log.
+    if (this.constFps === null) {
+      for (const previewResolution of this.previewResolutions) {
+        streamConstraints.push(buildConstraint({ideal: 30}, previewResolution));
+      }
+    }
+    return streamConstraints;
   }
 }
 
