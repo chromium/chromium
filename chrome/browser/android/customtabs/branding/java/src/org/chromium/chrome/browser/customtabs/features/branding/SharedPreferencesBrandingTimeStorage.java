@@ -62,6 +62,15 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
         });
     }
 
+    /**
+     * @return Size of the current shared preference. Should not run on main thread as we are
+     * reading all the keys from disk.
+     */
+    @WorkerThread
+    int getSize() {
+        return getSharedPref().getAll().size();
+    }
+
     @VisibleForTesting
     public void resetSharedPref() {
         getSharedPref().edit().clear().apply();
