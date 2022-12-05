@@ -11,7 +11,9 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -41,6 +43,34 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
+
+namespace {
+// Updates command line flags to make the test believe that we are on a fresh
+// install. Intended to be called from the test body. Note that if a sentinel
+// file exists (e.g. a PRE_Test ran) this method might have no effect.
+void SetIsFirstRun(bool is_first_run) {
+  // We want this to be functional when called from the test body because
+  // enabling the FRE to run in the pre-test setup would prevent opening the
+  // browser that the test fixtures rely on.
+  // So are manipulating flags here instead of during `SetUpX` methods on
+  // purpose.
+  if (first_run::IsChromeFirstRun() == is_first_run)
+    return;
+
+  if (is_first_run) {
+    // This switch is added by InProcessBrowserTest
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  } else {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+  }
+
+  first_run::ResetCachedSentinelDataForTesting();
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(first_run::IsChromeFirstRun());
+  }
+}
+}  // namespace
 
 class FirstRunServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -96,12 +126,8 @@ class FirstRunServiceBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
                        TryMarkFirstRunAlreadyFinished_DoesNothing) {
-  // Setup note: We are removing `switches::kNoFirstRun` only after the browser
-  // is opened to simplify the setup. This allows us to call FRE-related methods
-  // without having to do more elaborate things to avoid it triggering before
-  // the test starts.
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  SetIsFirstRun(true);
   EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
   base::HistogramTester histogram_tester;
 
@@ -118,10 +144,19 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 #endif
 }
 
+IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
+                       TryMarkFirstRunAlreadyFinished_NotFirstRun) {
+  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
+  SetIsFirstRun(false);
+  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
+  EXPECT_FALSE(
+      g_browser_process->local_state()->GetBoolean(prefs::kFirstRunFinished));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
                        TryMarkFirstRunAlreadyFinished_SucceedsAlreadySyncing) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  SetIsFirstRun(true);
 
   signin::IdentityManager* identity_manager =
       identity_test_env()->identity_manager();
@@ -148,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
                        TryMarkFirstRunAlreadyFinished_SyncConsentDisabled) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  SetIsFirstRun(true);
   Profile* profile = browser()->profile();
   signin::IdentityManager* identity_manager =
       identity_test_env()->identity_manager();
@@ -173,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     FirstRunServiceBrowserTest,
     TryMarkFirstRunAlreadyFinished_DeviceEphemeralUsersEnabled) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  SetIsFirstRun(true);
   Profile* profile = browser()->profile();
   signin::IdentityManager* identity_manager =
       identity_test_env()->identity_manager();
@@ -210,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest, ShouldOpenFirstRun) {
   EXPECT_FALSE(ShouldOpenFirstRun(browser()->profile()));
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  SetIsFirstRun(true);
   EXPECT_TRUE(ShouldOpenFirstRun(browser()->profile()));
 
   g_browser_process->local_state()->SetBoolean(prefs::kFirstRunFinished, true);
@@ -233,13 +268,13 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceNotForYouBrowserTest,
   EXPECT_FALSE(ShouldOpenFirstRun(browser()->profile()));
   EXPECT_EQ(nullptr, fre_service());
 
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  SetIsFirstRun(true);
   EXPECT_FALSE(ShouldOpenFirstRun(browser()->profile()));
 }
 #endif
 
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest, OpenFirstRunIfNeeded) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  SetIsFirstRun(true);
 
   fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
                                       base::DoNothing());

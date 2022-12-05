@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -118,6 +119,19 @@ FirstRunService::~FirstRunService() = default;
 bool FirstRunService::ShouldOpenFirstRun() const {
   DCHECK(IsFirstRunEligibleProfile(profile_));
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros we want to run the FRE beyond the strict first run as defined by
+  // `IsChromeFirstRun()` for a few reasons:
+  // - Migrated profiles will have their first run sentinel imported from the
+  //   ash data dir, but we need to run the FRE in silent mode to re-enable sync
+  //   on the Lacros primary profile.
+  // - If the user exits the FRE without advancing beyond the first step, we
+  //   need to show the FRE again next time they open Chrome, this is definitely
+  //   not the "first run" anymore.
+  if (!first_run::IsChromeFirstRun())
+    return false;
+#endif
+
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kNoFirstRun))
@@ -140,8 +154,8 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
   if (ProfilePicker::IsFirstRunOpen())
     return;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
         ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedAlreadySyncing);
@@ -158,6 +172,14 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
     SetFirstRunFinished();
 
     StartSilentSync(scoped_closure_runner.Release());
+    return;
+  }
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // The FRE focuses on identity and offering the user to sign in. If the
+    // profile already has an account (e.g. the sentinel file was deleted or
+    // `--force-first-run` was passed) ensure we still skip it.
+    SetFirstRunFinished();
     return;
   }
 #endif
