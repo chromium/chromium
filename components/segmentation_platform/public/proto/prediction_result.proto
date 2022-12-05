@@ -11,15 +11,6 @@ package segmentation_platform.proto;
 
 import "components/segmentation_platform/public/proto/output_config.proto";
 
-// Corresponds to a single output in the model result.
-message LabeledResult {
-  // The label associated with the output.
-  optional string label = 1;
-
-  // The score represented by the output.
-  optional float result = 2;
-}
-
 // Result from the model evaluation for a given segment.
 message PredictionResult {
   // The result is the confidence rating from the model evaluation.
@@ -30,13 +21,6 @@ message PredictionResult {
   // microseconds since Windows epoch.
   optional int64 timestamp_us = 2;
 
-  // The result is the list of scores from the model evaluation.
-  // `labeled_results` is set once the model execution is completed and results
-  // are ready. The result are merged with appropriate `label` and set to this
-  // field. Each entry tells what the result(score) is. The OutputConfig tells
-  // us how to interpret it.
-  repeated LabeledResult labeled_results = 3;
-
   // The output config from the metadata.
-  optional OutputConfig output_config = 4;
+  optional OutputConfig output_config = 3;
 }
