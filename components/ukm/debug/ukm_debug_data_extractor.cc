@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "url/gurl.h"
 
@@ -111,8 +112,10 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
       source_dict.Set("id",
                       UkmDebugDataExtractor::UInt64AsPairOfInt(src->id()));
       source_dict.Set("url", base::Value(src->url().spec()));
+      source_dict.Set("type", GetSourceIdTypeDebugString(src->id()));
     } else {
       source_dict.Set("id", UkmDebugDataExtractor::UInt64AsPairOfInt(kv.first));
+      source_dict.Set("type", GetSourceIdTypeDebugString(kv.first));
     }
 
     base::Value::List entries_list;

@@ -23,6 +23,7 @@ interface UkmEvent {
 
 interface UkmSource {
   id: [number, number];
+  type: string;
   events: UkmEvent[];
   url?: string;
 }
@@ -148,9 +149,13 @@ function populateSourceHtmlRow(
   const idElement = document.createElement('td');
   idElement.classList.add('sourceid');
   idElement.innerText = as64Bit(sourceData.id);
+  const typeElement = document.createElement('td');
+  typeElement.classList.add('sourcetype');
+  typeElement.innerText = sourceData.type;
 
   sourceHtmlRow.appendChild(urlElement);
   sourceHtmlRow.appendChild(idElement);
+  sourceHtmlRow.appendChild(typeElement);
 
   // Clicking on the URL of this Source toggles the display state of its
   // event-metrics tables.
@@ -362,7 +367,8 @@ function updateUkmCache(data: UkmSession) {
   for (const source of data.sources) {
     const key = as64Bit(source.id);
     if (!cachedSources.has(key)) {
-      const mergedSource: UkmSource = {id: source.id, events: source.events};
+      const mergedSource:
+          UkmSource = {id: source.id, type: source.type, events: source.events};
       if (source.url) {
         mergedSource.url = source.url;
       }
@@ -412,8 +418,13 @@ function updateUkmData() {
     sourceIdTitleElement.classList.add('sourceid');
     sourceIdTitleElement.textContent = 'Source ID';
 
+    const sourceTypeTitleElement = document.createElement('td');
+    sourceTypeTitleElement.classList.add('sourcetype');
+    sourceTypeTitleElement.textContent = 'Source Type';
+
     headerRow.appendChild(urlTitleElement);
     headerRow.appendChild(sourceIdTitleElement);
+    headerRow.appendChild(sourceTypeTitleElement);
     tableHead.appendChild(headerRow);
     sourcesTable.appendChild(tableHead);
 

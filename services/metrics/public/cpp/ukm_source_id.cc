@@ -5,6 +5,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 #include <cmath>
+#include <string>
 
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
@@ -81,6 +82,34 @@ SourceId ConvertToSourceId(int64_t other_id, SourceIdType id_type) {
 
 SourceIdType GetSourceIdType(SourceId source_id) {
   return ukm::SourceIdObj::FromInt64(source_id).GetType();
+}
+
+std::string GetSourceIdTypeDebugString(SourceId source_id) {
+  const auto source_type = GetSourceIdType(source_id);
+  switch (source_type) {
+    case SourceIdObj::Type::DEFAULT:
+      return "DEFAULT";
+    case SourceIdObj::Type::NAVIGATION_ID:
+      return "NAVIGATION_ID";
+    case SourceIdObj::Type::APP_ID:
+      return "APP_ID";
+    case SourceIdObj::Type::HISTORY_ID:
+      return "HISTORY_ID";
+    case SourceIdObj::Type::WEBAPK_ID:
+      return "WEBAPK_ID";
+    case SourceIdObj::Type::PAYMENT_APP_ID:
+      return "PAYMENT_APP_ID";
+    case SourceIdObj::Type::DESKTOP_WEB_APP_ID:
+      return "DESKTOP_WEB_APP_ID";
+    case SourceIdObj::Type::WORKER_ID:
+      return "WORKER_ID";
+    case SourceIdObj::Type::NO_URL_ID:
+      return "NO_URL_ID";
+    case SourceIdObj::Type::REDIRECT_ID:
+      return "REDIRECT_ID";
+    case SourceIdObj::Type::WEB_IDENTITY_ID:
+      return "WEB_IDENTITY_ID";
+  }
 }
 
 SourceId NoURLSourceId() {

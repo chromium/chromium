@@ -38,6 +38,10 @@ span#state, span#clientid, span#sessionid, span#is_sampling_enabled {
   width: 2em;
 }
 
+.sourcetype {
+  width: 2em;
+}
+
 .source-container>td {
   padding: 10px 10px 10px 10px;
 }
