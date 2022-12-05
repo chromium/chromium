@@ -5,8 +5,8 @@
 #include "services/accessibility/assistive_technology_controller_impl.h"
 
 #include "base/test/task_environment.h"
-#include "services/accessibility/accessibility_service_cros.h"
 #include "services/accessibility/fake_service_client.h"
+#include "services/accessibility/os_accessibility_service.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,7 +23,7 @@ class AssistiveTechnologyControllerTest : public testing::Test {
 
   void SetUp() override {
     mojo::PendingReceiver<mojom::AccessibilityService> receiver;
-    service_ = std::make_unique<AccessibilityServiceCros>(std::move(receiver));
+    service_ = std::make_unique<OSAccessibilityService>(std::move(receiver));
     at_controller_ = service_->at_controller_.get();
 
     client_ = std::make_unique<FakeServiceClient>(service_.get());
@@ -36,7 +36,7 @@ class AssistiveTechnologyControllerTest : public testing::Test {
   std::unique_ptr<FakeServiceClient> client_;
 
  private:
-  std::unique_ptr<AccessibilityServiceCros> service_;
+  std::unique_ptr<OSAccessibilityService> service_;
   base::test::TaskEnvironment task_environment_;
 };
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ACCESSIBILITY_ACCESSIBILITY_SERVICE_CROS_H_
-#define SERVICES_ACCESSIBILITY_ACCESSIBILITY_SERVICE_CROS_H_
+#ifndef SERVICES_ACCESSIBILITY_OS_ACCESSIBILITY_SERVICE_H_
+#define SERVICES_ACCESSIBILITY_OS_ACCESSIBILITY_SERVICE_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -13,17 +13,18 @@
 namespace ax {
 class AssistiveTechnologyControllerImpl;
 
-// Implementation of the Accessibility Service for Chrome OS.
-class AccessibilityServiceCros : public mojom::AccessibilityService {
+// Implementation of the Accessibility Service which includes assistive
+// technology features that run in the service. Used by Chrome OS and Fuchsia.
+class OSAccessibilityService : public mojom::AccessibilityService {
  public:
-  explicit AccessibilityServiceCros(
+  explicit OSAccessibilityService(
       mojo::PendingReceiver<mojom::AccessibilityService> receiver);
-  ~AccessibilityServiceCros() override;
-  AccessibilityServiceCros(const AccessibilityServiceCros&) = delete;
-  AccessibilityServiceCros& operator=(const AccessibilityServiceCros&) = delete;
+  ~OSAccessibilityService() override;
+  OSAccessibilityService(const OSAccessibilityService&) = delete;
+  OSAccessibilityService& operator=(const OSAccessibilityService&) = delete;
 
  private:
-  friend class AccessibilityServiceCrosTest;
+  friend class OSAccessibilityServiceTest;
   friend class AssistiveTechnologyControllerTest;
 
   // mojom::AccessibilityService:
@@ -40,9 +41,9 @@ class AccessibilityServiceCros : public mojom::AccessibilityService {
 
   mojo::Receiver<mojom::AccessibilityService> receiver_;
 
-  base::WeakPtrFactory<AccessibilityServiceCros> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OSAccessibilityService> weak_ptr_factory_{this};
 };
 
 }  // namespace ax
 
-#endif  // SERVICES_ACCESSIBILITY_ACCESSIBILITY_SERVICE_CROS_H_
+#endif  // SERVICES_ACCESSIBILITY_OS_ACCESSIBILITY_SERVICE_H_

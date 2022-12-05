@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/accessibility/accessibility_service_chrome.h"
+#include "services/accessibility/browser_accessibility_service.h"
+
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/accessibility/fake_service_client.h"
@@ -11,11 +12,11 @@
 
 namespace ax {
 
-TEST(AccessibilityServiceTest, BindsAccessibilityServiceClient) {
+TEST(BrowserAccessibilityServiceTest, BindsAccessibilityServiceClient) {
   base::test::SingleThreadTaskEnvironment task_environment;
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
-  std::unique_ptr<AccessibilityServiceChrome> service =
-      std::make_unique<AccessibilityServiceChrome>(std::move(receiver));
+  std::unique_ptr<BrowserAccessibilityService> service =
+      std::make_unique<BrowserAccessibilityService>(std::move(receiver));
 
   FakeServiceClient client(service.get());
   client.BindAccessibilityServiceClientForTest();

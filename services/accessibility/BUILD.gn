@@ -7,8 +7,10 @@ import("//services/accessibility/buildflags.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags =
-      [ "ENABLE_ACCESSIBILITY_SERVICE=$enable_accessibility_service_internal" ]
+  flags = [
+    "ENABLE_ACCESSIBILITY_SERVICE=$enable_accessibility_service_internal",
+    "SUPPORTS_OS_ACCESSIBILITY_SERVICE=$supports_os_accessibility_service",
+  ]
 }
 
 source_set("lib") {
@@ -17,10 +19,8 @@ source_set("lib") {
     "//ui/accessibility:ax_base",
   ]
 
-  if (is_chromeos_ash) {
+  if (supports_os_accessibility_service) {
     sources = [
-      "accessibility_service_cros.cc",
-      "accessibility_service_cros.h",
       "assistive_technology_controller_impl.cc",
       "assistive_technology_controller_impl.h",
       "features/automation_internal_bindings.cc",
@@ -29,6 +29,8 @@ source_set("lib") {
       "features/bindings_isolate_holder.h",
       "features/v8_manager.cc",
       "features/v8_manager.h",
+      "os_accessibility_service.cc",
+      "os_accessibility_service.h",
     ]
     public_deps += [
       "//gin",
@@ -37,10 +39,10 @@ source_set("lib") {
     configs += [ "//v8:external_startup_data" ]
   } else {
     sources = [
-      "accessibility_service_chrome.cc",
-      "accessibility_service_chrome.h",
       "automation_impl.cc",
       "automation_impl.h",
+      "browser_accessibility_service.cc",
+      "browser_accessibility_service.h",
     ]
   }
 }
@@ -67,15 +69,15 @@ source_set("tests") {
     "//ui/gfx:test_support",
   ]
 
-  if (is_chromeos_ash) {
+  if (supports_os_accessibility_service) {
     sources = [
-      "accessibility_service_cros_unittest.cc",
       "assistive_technology_controller_impl_unittest.cc",
       "features/automation_internal_bindings_unittest.cc",
       "features/v8_manager_unittest.cc",
+      "os_accessibility_service_unittest.cc",
     ]
     deps += [ "//ui/accessibility:accessibility" ]
   } else {
-    sources = [ "accessibility_service_chrome_unittest.cc" ]
+    sources = [ "browser_accessibility_service_unittest.cc" ]
   }
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/accessibility/accessibility_service_cros.h"
+#include "services/accessibility/os_accessibility_service.h"
 
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
@@ -47,16 +47,15 @@ class FakeAssistiveTechnologyController {
 
 }  // namespace
 
-class AccessibilityServiceCrosTest : public testing::Test {
+class OSAccessibilityServiceTest : public testing::Test {
  public:
-  AccessibilityServiceCrosTest() = default;
-  AccessibilityServiceCrosTest(const AccessibilityServiceCrosTest& other) =
+  OSAccessibilityServiceTest() = default;
+  OSAccessibilityServiceTest(const OSAccessibilityServiceTest& other) = delete;
+  OSAccessibilityServiceTest& operator=(const OSAccessibilityServiceTest&) =
       delete;
-  AccessibilityServiceCrosTest& operator=(const AccessibilityServiceCrosTest&) =
-      delete;
-  ~AccessibilityServiceCrosTest() override = default;
+  ~OSAccessibilityServiceTest() override = default;
 
-  bool IsFeatureEnabled(AccessibilityServiceCros* service,
+  bool IsFeatureEnabled(OSAccessibilityService* service,
                         mojom::AssistiveTechnologyType feature) {
     return service->at_controller_->IsFeatureEnabled(feature);
   }
@@ -65,21 +64,21 @@ class AccessibilityServiceCrosTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(AccessibilityServiceCrosTest, BindsAccessibilityServiceClient) {
+TEST_F(OSAccessibilityServiceTest, BindsAccessibilityServiceClient) {
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
-  std::unique_ptr<AccessibilityServiceCros> service =
-      std::make_unique<AccessibilityServiceCros>(std::move(receiver));
+  std::unique_ptr<OSAccessibilityService> service =
+      std::make_unique<OSAccessibilityService>(std::move(receiver));
 
   FakeServiceClient client(service.get());
   client.BindAccessibilityServiceClientForTest();
   EXPECT_TRUE(client.AccessibilityServiceClientIsBound());
 }
 
-TEST_F(AccessibilityServiceCrosTest,
+TEST_F(OSAccessibilityServiceTest,
        BindsAssistiveTechnologyControllerWithNoFeaturesEnabled) {
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
-  std::unique_ptr<AccessibilityServiceCros> service =
-      std::make_unique<AccessibilityServiceCros>(std::move(receiver));
+  std::unique_ptr<OSAccessibilityService> service =
+      std::make_unique<OSAccessibilityService>(std::move(receiver));
 
   FakeAssistiveTechnologyController at_controller(service.get());
   at_controller.BindAssistiveTechnologyController(
@@ -100,11 +99,11 @@ TEST_F(AccessibilityServiceCrosTest,
       service.get(), mojom::AssistiveTechnologyType::kSelectToSpeak));
 }
 
-TEST_F(AccessibilityServiceCrosTest,
+TEST_F(OSAccessibilityServiceTest,
        BindsAssistiveTechnologyControllerWithSomeFeaturesEnabled) {
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
-  std::unique_ptr<AccessibilityServiceCros> service =
-      std::make_unique<AccessibilityServiceCros>(std::move(receiver));
+  std::unique_ptr<OSAccessibilityService> service =
+      std::make_unique<OSAccessibilityService>(std::move(receiver));
 
   FakeAssistiveTechnologyController at_controller(service.get());
   at_controller.BindAssistiveTechnologyController(

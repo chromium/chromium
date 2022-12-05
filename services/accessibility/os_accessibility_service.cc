@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/accessibility/accessibility_service_cros.h"
+#include "services/accessibility/os_accessibility_service.h"
 
 #include <memory>
 
@@ -10,22 +10,22 @@
 
 namespace ax {
 
-AccessibilityServiceCros::AccessibilityServiceCros(
+OSAccessibilityService::OSAccessibilityService(
     mojo::PendingReceiver<mojom::AccessibilityService> receiver)
     : receiver_(this, std::move(receiver)) {
   at_controller_ = std::make_unique<AssistiveTechnologyControllerImpl>();
 }
 
-AccessibilityServiceCros::~AccessibilityServiceCros() = default;
+OSAccessibilityService::~OSAccessibilityService() = default;
 
-void AccessibilityServiceCros::BindAccessibilityServiceClient(
+void OSAccessibilityService::BindAccessibilityServiceClient(
     mojo::PendingRemote<mojom::AccessibilityServiceClient>
         accessibility_client_remote) {
   at_controller_->BindAccessibilityServiceClient(
       std::move(accessibility_client_remote));
 }
 
-void AccessibilityServiceCros::BindAssistiveTechnologyController(
+void OSAccessibilityService::BindAssistiveTechnologyController(
     mojo::PendingReceiver<mojom::AssistiveTechnologyController>
         at_at_controller_receiver,
     const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {

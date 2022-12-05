@@ -81,7 +81,7 @@ interface AutomationClient {
 };
 
 // All the features which are implemented by the accessibility service.
-[EnableIf=is_chromeos_ash]
+[EnableIf=supports_os_accessibility_service]
 enum AssistiveTechnologyType {
   kChromeVox,
   kSelectToSpeak,
@@ -93,7 +93,7 @@ enum AssistiveTechnologyType {
 
 // Implemented by the accessibility service. Turns on and off features.
 // The caller is the client OS, for example, Chrome OS Ash.
-[EnableIf=is_chromeos_ash]
+[EnableIf=supports_os_accessibility_service]
 interface AssistiveTechnologyController {
   // Updates the service with the current list of enabled features.
   // Any features not in this list are considered disabled.
@@ -118,7 +118,7 @@ interface AccessibilityService {
   // process, allowing the client to control which Assistive Technologies are
   // active. Callers may pass in a list of initially enabled features; features
   // not in this list are assumed disabled.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=supports_os_accessibility_service]
   BindAssistiveTechnologyController(
     pending_receiver<AssistiveTechnologyController> at_controller,
     array<AssistiveTechnologyType> enabled_features);

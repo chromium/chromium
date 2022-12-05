@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ACCESSIBILITY_ACCESSIBILITY_SERVICE_CHROME_H_
-#define SERVICES_ACCESSIBILITY_ACCESSIBILITY_SERVICE_CHROME_H_
+#ifndef SERVICES_ACCESSIBILITY_BROWSER_ACCESSIBILITY_SERVICE_H_
+#define SERVICES_ACCESSIBILITY_BROWSER_ACCESSIBILITY_SERVICE_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -15,13 +15,13 @@ namespace ax {
 class AutomationImpl;
 
 // Implementation of the Accessibility Service for Chrome.
-class AccessibilityServiceChrome : public mojom::AccessibilityService {
+class BrowserAccessibilityService : public mojom::AccessibilityService {
  public:
-  explicit AccessibilityServiceChrome(
+  explicit BrowserAccessibilityService(
       mojo::PendingReceiver<mojom::AccessibilityService> receiver);
-  ~AccessibilityServiceChrome() override;
-  AccessibilityServiceChrome(const AccessibilityServiceChrome&) = delete;
-  AccessibilityServiceChrome& operator=(const AccessibilityServiceChrome&) =
+  ~BrowserAccessibilityService() override;
+  BrowserAccessibilityService(const BrowserAccessibilityService&) = delete;
+  BrowserAccessibilityService& operator=(const BrowserAccessibilityService&) =
       delete;
 
  private:
@@ -36,9 +36,9 @@ class AccessibilityServiceChrome : public mojom::AccessibilityService {
   mojo::Remote<mojom::AccessibilityServiceClient>
       accessibility_service_client_remote_;
 
-  base::WeakPtrFactory<AccessibilityServiceChrome> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BrowserAccessibilityService> weak_ptr_factory_{this};
 };
 
 }  // namespace ax
 
-#endif  // SERVICES_ACCESSIBILITY_ACCESSIBILITY_SERVICE_CHROME_H_
+#endif  // SERVICES_ACCESSIBILITY_BROWSER_ACCESSIBILITY_SERVICE_H_
