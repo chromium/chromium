@@ -155,6 +155,7 @@ public class FeedSurfaceMediatorTest {
         when(mReliabilityLogger.getLaunchLogger()).thenReturn(mLaunchReliabilityLogger);
         when(mFeedSurfaceCoordinator.getHybridListRenderer()).thenReturn(mHybridListRenderer);
         when(mHybridListRenderer.getListLayoutHelper()).thenReturn(mListLayoutHelper);
+        when(mListLayoutHelper.setColumnCount(anyInt())).thenReturn(true);
         when(mFeedSurfaceCoordinator.getSurfaceLifecycleManager())
                 .thenReturn(mFeedSurfaceLifecycleManager);
         ObservableSupplierImpl<Boolean> hasUnreadContent = new ObservableSupplierImpl<>();
