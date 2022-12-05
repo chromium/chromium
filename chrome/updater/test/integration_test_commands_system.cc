@@ -373,7 +373,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     // the code invoked by the test command. This is the most common case.
     // Other exit codes mean that the helper command is not defined or the
     // helper command line syntax is wrong for some reason.
-    EXPECT_EQ(exit_code, 0);
+    ASSERT_EQ(exit_code, 0);
   }
 
   void RunCommand(const std::string& command_switch) const {

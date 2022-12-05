@@ -98,13 +98,13 @@ class IntegrationTest : public ::testing::Test {
                          true,    // enable_thread_id
                          true,    // enable_timestamp
                          false);  // enable_tickcount
-    CleanProcesses();
-    EXPECT_TRUE(WaitForUpdaterExit());
-    Clean();
-    ExpectClean();
+    ASSERT_NO_FATAL_FAILURE(CleanProcesses());
+    ASSERT_TRUE(WaitForUpdaterExit());
+    ASSERT_NO_FATAL_FAILURE(Clean());
+    ASSERT_NO_FATAL_FAILURE(ExpectClean());
     // TODO(crbug.com/1233612) - reenable the code when system tests pass.
     // SetUpTestService();
-    EnterTestMode(GURL("http://localhost:1234"));
+    ASSERT_NO_FATAL_FAILURE(EnterTestMode(GURL("http://localhost:1234")));
   }
 
   void TearDown() override {
