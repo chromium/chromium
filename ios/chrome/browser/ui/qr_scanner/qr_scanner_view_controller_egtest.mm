@@ -329,7 +329,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_notNil()];
 }
 
-#pragma mark helpers for dialogs
+#pragma mark - Helpers for Dialogs
 
 // Checks that the QRScannerViewController is presenting a UIAlertController and
 // that the title of this alert corresponds to `state`.
@@ -351,8 +351,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_nil()];
 }
 
-#pragma mark -
-#pragma mark Helpers for mocks
+#pragma mark - Helpers for mocks
 
 // Swizzles the QRScannerViewController property cameraController: to return
 // `cameraControllerMock` instead of a new instance of CameraController.
@@ -408,8 +407,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GREYAssertTrue(modalViewDismissed, errorString);
 }
 
-#pragma mark -
-#pragma mark Tests
+#pragma mark - Appearance Tests
 
 // Tests that the close button, camera preview, viewport caption, and the torch
 // button are visible if the camera is available. The preview is delayed.
@@ -417,7 +415,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testQRScannerUIIsShown testQRScannerUIIsShown
 #else
-#define MAYBE_testQRScannerUIIsShown DISABLED_testQRScannerUIIsShown
+#define MAYBE_testQRScannerUIIsShown FLAKY_testQRScannerUIIsShown
 #endif
 - (void)MAYBE_testQRScannerUIIsShown {
   id cameraControllerMock =
@@ -520,7 +518,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   testTorchButtonIsDisabledWhenTorchBecomesUnavailable
 #else
 #define MAYBE_testTorchButtonIsDisabledWhenTorchBecomesUnavailable \
-  DISABLED_testTorchButtonIsDisabledWhenTorchBecomesUnavailable
+  FLAKY_testTorchButtonIsDisabledWhenTorchBecomesUnavailable
 #endif
 - (void)MAYBE_testTorchButtonIsDisabledWhenTorchBecomesUnavailable {
   id cameraControllerMock =
@@ -544,7 +542,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [cameraControllerMock verify];
 }
 
-#pragma mark dialogs
+#pragma mark - Dialogs Tests
 
 // Tests that a UIAlertController is presented instead of the
 // QRScannerViewController if the camera is unavailable.
@@ -552,7 +550,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testCameraUnavailableDialog testCameraUnavailableDialog
 #else
-#define MAYBE_testCameraUnavailableDialog DISABLED_testCameraUnavailableDialog
+#define MAYBE_testCameraUnavailableDialog FLAKY_testCameraUnavailableDialog
 #endif
 - (void)MAYBE_testCameraUnavailableDialog {
   UIViewController* bvc = QRScannerAppInterface.currentBrowserViewController;
@@ -587,7 +585,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   testDialogIsDisplayedIfCameraStateChanges
 #else
 #define MAYBE_testDialogIsDisplayedIfCameraStateChanges \
-  DISABLED_testDialogIsDisplayedIfCameraStateChanges
+  FLAKY_testDialogIsDisplayedIfCameraStateChanges
 #endif
 - (void)MAYBE_testDialogIsDisplayedIfCameraStateChanges {
   id cameraControllerMock =
@@ -675,7 +673,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   testDialogDismissedIfCameraBecomesAvailable
 #else
 #define MAYBE_testDialogDismissedIfCameraBecomesAvailable \
-  DISABLED_testDialogDismissedIfCameraBecomesAvailable
+  FLAKY_testDialogDismissedIfCameraBecomesAvailable
 #endif
 - (void)MAYBE_testDialogDismissedIfCameraBecomesAvailable {
   id cameraControllerMock =
@@ -702,7 +700,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [cameraControllerMock verify];
 }
 
-#pragma mark scanned result
+#pragma mark - Scanned Result Tests
 
 // A helper function for testing that the view controller correctly passes the
 // received results to its delegate and that pages can be loaded. The result
@@ -769,7 +767,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   testReceivingQRScannerURLResultWithVoiceOver
 #else
 #define MAYBE_testReceivingQRScannerURLResultWithVoiceOver \
-  DISABLED_testReceivingQRScannerURLResultWithVoiceOver
+  FLAKY_testReceivingQRScannerURLResultWithVoiceOver
 #endif
 - (void)MAYBE_testReceivingQRScannerURLResultWithVoiceOver {
   id cameraControllerMock =
@@ -812,7 +810,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #define MAYBE_testReceivingQRScannerURLResult testReceivingQRScannerURLResult
 #else
 #define MAYBE_testReceivingQRScannerURLResult \
-  DISABLED_testReceivingQRScannerURLResult
+  FLAKY_testReceivingQRScannerURLResult
 #endif
 - (void)MAYBE_testReceivingQRScannerURLResult {
   [self doTestReceivingResult:_testURL.GetContent()
@@ -827,7 +825,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #define MAYBE_testForbiddenCharactersRemoved testForbiddenCharactersRemoved
 #else
 #define MAYBE_testForbiddenCharactersRemoved \
-  DISABLED_testForbiddenCharactersRemoved
+  FLAKY_testForbiddenCharactersRemoved
 #endif
 - (void)MAYBE_testForbiddenCharactersRemoved {
   [self doTestReceivingResult:self.testServer->base_url().GetContent() +
@@ -845,7 +843,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   testReceivingQRScannerURLResultAndEditingTheURL
 #else
 #define MAYBE_testReceivingQRScannerURLResultAndEditingTheURL \
-  DISABLED_testReceivingQRScannerURLResultAndEditingTheURL
+  FLAKY_testReceivingQRScannerURLResultAndEditingTheURL
 #endif
 - (void)MAYBE_testReceivingQRScannerURLResultAndEditingTheURL {
   [self doTestReceivingResult:_testURL.GetContent()
@@ -860,7 +858,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   testReceivingQRScannerSearchQueryResult
 #else
 #define MAYBE_testReceivingQRScannerSearchQueryResult \
-  DISABLED_testReceivingQRScannerSearchQueryResult
+  FLAKY_testReceivingQRScannerSearchQueryResult
 #endif
 - (void)MAYBE_testReceivingQRScannerSearchQueryResult {
   [self doTestReceivingResult:kTestQuery response:kTestQueryResponse edit:nil];
@@ -874,7 +872,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   testReceivingQRScannerSearchQueryResultAndEditingTheQuery
 #else
 #define MAYBE_testReceivingQRScannerSearchQueryResultAndEditingTheQuery \
-  DISABLED_testReceivingQRScannerSearchQueryResultAndEditingTheQuery
+  FLAKY_testReceivingQRScannerSearchQueryResultAndEditingTheQuery
 #endif
 - (void)MAYBE_testReceivingQRScannerSearchQueryResultAndEditingTheQuery {
   [self doTestReceivingResult:kTestQuery
@@ -890,7 +888,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   testReceivingQRScannerLoadDataResult
 #else
 #define MAYBE_testReceivingQRScannerLoadDataResult \
-  DISABLED_testReceivingQRScannerLoadDataResult
+  FLAKY_testReceivingQRScannerLoadDataResult
 #endif
 - (void)MAYBE_testReceivingQRScannerLoadDataResult {
   [self doTestReceivingResult:kTestDataURL
