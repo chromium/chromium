@@ -1937,10 +1937,6 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
                                   GetBrowserInterfaceBroker());
   }
 
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kDomAutomationController))
-    enabled_bindings_ |= BINDINGS_POLICY_DOM_AUTOMATION;
   frame_request_blocker_ = blink::WebFrameRequestBlocker::Create();
 
   // Bind this class to mojom::Frame and to the message router for legacy IPC.
@@ -3841,7 +3837,11 @@ void RenderFrameImpl::DidClearWindowObject() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  if (enabled_bindings_ & BINDINGS_POLICY_DOM_AUTOMATION)
+  // DOM automation bindings that allows the JS content to send JSON-encoded
+  // data back to automation in the browser process. By default this isn't
+  // allowed unless the process has been started up with the --dom-automation
+  // switch.
+  if (command_line.HasSwitch(switches::kDomAutomationController))
     DomAutomationController::Install(this, frame_);
 
   // Bindings that allows the JS content to retrieve a variety of internal

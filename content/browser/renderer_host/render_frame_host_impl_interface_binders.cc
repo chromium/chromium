@@ -275,8 +275,8 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
             base::Unretained(this)));
   }
 
-  // TODO(crbug.com/1047354): How to avoid binding if the
-  // BINDINGS_POLICY_DOM_AUTOMATION policy is not set?
+  // TODO(crbug.com/1395830): Avoid binding the DomAutomationControllerHost
+  // interface outside of tests.
   associated_registry_->AddInterface<mojom::DomAutomationControllerHost>(
       base::BindRepeating(
           [](RenderFrameHostImpl* impl,
