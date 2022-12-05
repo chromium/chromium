@@ -60,6 +60,9 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   void ScheduleEnterprisePasswordURLUpdate() override;
 
  private:
+  // Executed deferred on Android in order avoid high startup latencies.
+  void RequestLoginsFromStores();
+
   // Implements PasswordStoreConsumer interface.
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;

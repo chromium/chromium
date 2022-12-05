@@ -21,6 +21,12 @@ namespace password_manager {
 
 namespace {
 
+#if BUILDFLAG(IS_ANDROID)
+// Time in seconds by which calls to the password store happening on startup
+// should be delayed.
+constexpr base::TimeDelta kPasswordStoreCallDelaySeconds = base::Seconds(5);
+#endif
+
 bool IsPasswordReuseDetectionEnabled() {
   return base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled);
 }
@@ -124,21 +130,24 @@ void PasswordReuseManagerImpl::Init(PrefService* prefs,
 
   reuse_detector_ = new PasswordReuseDetector();
 
+  account_store_ = account_store;
   profile_store_ = profile_store;
-  profile_store_->AddObserver(this);
-  profile_store_->GetAutofillableLogins(
-      /*consumer=*/weak_ptr_factory_.GetWeakPtr());
-  if (account_store) {
-    account_store_ = account_store;
-    account_store_->AddObserver(this);
-    account_store_->GetAutofillableLogins(
-        /*consumer=*/weak_ptr_factory_.GetWeakPtr());
-    // base::Unretained() is safe because `this` outlives the subscription.
-    account_store_cb_list_subscription_ =
-        account_store_->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
-            &PasswordReuseManagerImpl::AccountStoreStateChanged,
-            base::Unretained(this)));
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerAndroid)) {
+    // With UPM enabled, calls to the password store will result in a call to
+    // Google Play Services which can be resource-intesive. In order not to slow
+    // down other startup operations requesting logins is delayed by
+    // `kPasswordStoreCallDelaySeconds`.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PasswordReuseManagerImpl::RequestLoginsFromStores,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kPasswordStoreCallDelaySeconds);
+    return;
   }
+#endif
+  RequestLoginsFromStores();
 }
 
 void PasswordReuseManagerImpl::ReportMetrics(
@@ -347,6 +356,22 @@ void PasswordReuseManagerImpl::ScheduleEnterprisePasswordURLUpdate() {
                               base::Unretained(reuse_detector_),
                               std::move(enterprise_login_urls),
                               std::move(enterprise_change_password_url)));
+}
+
+void PasswordReuseManagerImpl::RequestLoginsFromStores() {
+  profile_store_->AddObserver(this);
+  profile_store_->GetAutofillableLogins(
+      /*consumer=*/weak_ptr_factory_.GetWeakPtr());
+  if (account_store_) {
+    account_store_->AddObserver(this);
+    account_store_->GetAutofillableLogins(
+        /*consumer=*/weak_ptr_factory_.GetWeakPtr());
+    // base::Unretained() is safe because `this` outlives the subscription.
+    account_store_cb_list_subscription_ =
+        account_store_->AddSyncEnabledOrDisabledCallback(base::BindRepeating(
+            &PasswordReuseManagerImpl::AccountStoreStateChanged,
+            base::Unretained(this)));
+  }
 }
 
 void PasswordReuseManagerImpl::OnGetPasswordStoreResults(

@@ -7,16 +7,39 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 namespace login_detection {
+
+#if BUILDFLAG(IS_ANDROID)
+// Time in seconds by which calls to the password store happening on startup
+// should be delayed.
+constexpr base::TimeDelta kPasswordStoreCallDelaySeconds = base::Seconds(5);
+#endif
 
 PasswordStoreSites::PasswordStoreSites(
     password_manager::PasswordStoreInterface* password_store)
     : password_store_(password_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerAndroid)) {
+    // With UPM enabled, calls to the password store will result in a call to
+    // Google Play Services which can be resource-intesive. In order not to slow
+    // down other startup operations the initialization is delayed by
+    // `kPasswordStoreCallDelaySeconds`.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PasswordStoreSites::DoDeferredInitialization,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kPasswordStoreCallDelaySeconds);
+    return;
+  }
+#endif
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PasswordStoreSites::DoDeferredInitialization,
                                 weak_ptr_factory_.GetWeakPtr()));

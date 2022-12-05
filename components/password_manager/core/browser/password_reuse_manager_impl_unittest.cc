@@ -108,7 +108,8 @@ class PasswordReuseManagerImplTest : public testing::Test {
   TestingPrefServiceSimple& prefs() { return prefs_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   scoped_refptr<TestPasswordStore> profile_store_;
