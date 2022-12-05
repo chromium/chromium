@@ -608,7 +608,6 @@ crbug.com/946714 [ Release ] http/tests/devtools/elements/styles-4/styles-live-l
 crbug.com/947383 inspector-protocol/css/reattach-after-editing-styles.js [ Slow ]
 crbug.com/949167 external/wpt/html/semantics/links/links-created-by-a-and-area-elements/target_blank_implicit_noopener.html [ Slow ]
 crbug.com/949207 external/wpt/html/semantics/links/links-created-by-a-and-area-elements/target_blank_implicit_noopener_base.html [ Slow ]
-#crbug.com/959002 crbug.com/959042 http/tests/devtools/elements/styles-1/color-aware-property-value-edit.js [ Slow ]
 crbug.com/959002 crbug.com/959042 http/tests/devtools/elements/styles-3/style-autocomplete.js [ Slow ]
 crbug.com/959002 crbug.com/959042 http/tests/devtools/elements/styles-4/styles-keyframes.js [ Slow ]
 crbug.com/959002 crbug.com/959042 http/tests/devtools/elements/styles-4/undo-add-new-rule.js [ Slow ]
