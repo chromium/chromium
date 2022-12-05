@@ -44,7 +44,7 @@ export class EditableTextNode extends BasicNode {
     actions.unshift(
         SwitchAccessMenuAction.KEYBOARD, SwitchAccessMenuAction.DICTATION);
 
-    if (SwitchAccess.instance.improvedTextInputEnabled()) {
+    if (SwitchAccess.improvedTextInputEnabled()) {
       actions.push(
           SwitchAccessMenuAction.MOVE_CURSOR,
           SwitchAccessMenuAction.JUMP_TO_BEGINNING_OF_TEXT,

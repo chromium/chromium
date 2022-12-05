@@ -52,7 +52,7 @@ export class TextNavigationManager {
      */
     this.clipboardHasData_ = false;
 
-    if (SwitchAccess.instance.improvedTextInputEnabled()) {
+    if (SwitchAccess.improvedTextInputEnabled()) {
       chrome.clipboard.onClipboardDataChanged.addListener(
           () => this.updateClipboardHasData_());
     }

@@ -77,8 +77,8 @@ export class SwitchAccess {
    * for improved text input is enabled.
    * @return {boolean}
    */
-  improvedTextInputEnabled() {
-    return this.enableImprovedTextInput_;
+  static improvedTextInputEnabled() {
+    return SwitchAccess.instance.enableImprovedTextInput_;
   }
 
   /** @return {!SAConstants.Mode} */

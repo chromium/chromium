@@ -63,17 +63,6 @@ export class AutoScanManager {
   }
 
   /**
-   * Update this.primaryScanTime_ to |scanTime|. Then, if auto-scan is currently
-   * running, restart it.
-   *
-   * @param {number} scanTime Auto-scan interval time in milliseconds.
-   */
-  static setPrimaryScanTime(scanTime) {
-    AutoScanManager.instance.primaryScanTime_ = scanTime;
-    AutoScanManager.restartIfRunning();
-  }
-
-  /**
    * Stop auto-scan if it is currently running. Then, if |enabled| is true,
    * turn on auto-scan. Otherwise leave it off.
    *
@@ -90,6 +79,14 @@ export class AutoScanManager {
   }
 
   /**
+   * Sets whether the keyboard scan time is used.
+   * @param {boolean} inKeyboard
+   */
+  static setInKeyboard(inKeyboard) {
+    AutoScanManager.instance.inKeyboard_ = inKeyboard;
+  }
+
+  /**
    * Update this.keyboardScanTime_ to |scanTime|.
    *
    * @param {number} scanTime Auto-scan interval time in milliseconds.
@@ -102,11 +99,13 @@ export class AutoScanManager {
   }
 
   /**
-   * Sets whether the keyboard scan time is used.
-   * @param {boolean} inKeyboard
+   * Update this.primaryScanTime_ to |scanTime|. Then, if auto-scan is currently
+   * running, restart it.
+   * @param {number} scanTime Auto-scan interval time in milliseconds.
    */
-  static setInKeyboard(inKeyboard) {
-    AutoScanManager.instance.inKeyboard_ = inKeyboard;
+  static setPrimaryScanTime(scanTime) {
+    AutoScanManager.instance.primaryScanTime_ = scanTime;
+    AutoScanManager.restartIfRunning();
   }
 
   // ============== Private Methods ================
@@ -117,7 +116,7 @@ export class AutoScanManager {
    * @private
    */
   isRunning_() {
-    return AutoScanManager.instance.isEnabled_;
+    return this.isEnabled_;
   }
 
   /**
@@ -137,7 +136,7 @@ export class AutoScanManager {
 
     let currentScanTime = this.primaryScanTime_;
 
-    if (SwitchAccess.instance.improvedTextInputEnabled() && this.inKeyboard_ &&
+    if (SwitchAccess.improvedTextInputEnabled() && this.inKeyboard_ &&
         this.keyboardScanTime_ !== AutoScanManager.NOT_INITIALIZED) {
       currentScanTime = this.keyboardScanTime_;
     }

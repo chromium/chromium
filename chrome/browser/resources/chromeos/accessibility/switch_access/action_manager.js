@@ -311,7 +311,7 @@ export class ActionManager {
         ActionManager.refreshMenuUnconditionally();
         return;
       case ActionResponse.OPEN_TEXT_NAVIGATION_MENU:
-        if (SwitchAccess.instance.improvedTextInputEnabled()) {
+        if (SwitchAccess.improvedTextInputEnabled()) {
           this.menuStack_.push(MenuType.TEXT_NAVIGATION);
         }
         this.openCurrentMenu_();
