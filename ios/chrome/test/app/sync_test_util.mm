@@ -233,6 +233,8 @@ void AddUserDemographicsToSyncServer(
 
 void AddAutofillProfileToFakeSyncServer(std::string guid,
                                         std::string full_name) {
+  DCHECK(IsFakeSyncServerSetUp());
+
   sync_pb::EntitySpecifics entity_specifics;
   sync_pb::AutofillProfileSpecifics* autofill_profile =
       entity_specifics.mutable_autofill_profile();
@@ -247,6 +249,8 @@ void AddAutofillProfileToFakeSyncServer(std::string guid,
 }
 
 void DeleteAutofillProfileFromFakeSyncServer(std::string guid) {
+  DCHECK(IsFakeSyncServerSetUp());
+
   std::vector<sync_pb::SyncEntity> autofill_profiles =
       gSyncFakeServer->GetSyncEntitiesByModelType(syncer::AUTOFILL_PROFILE);
   std::string entity_id;

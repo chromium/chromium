@@ -54,17 +54,18 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
   [ChromeEarlGrey clearSyncServerData];
   WaitForNumberOfEntities(0, syncer::AUTOFILL_PROFILE);
+
   [super tearDown];
 }
 
 - (void)setUp {
   [super setUp];
-  GREYAssertEqual(
-      [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
-      @"No bookmarks should exist before sync tests start.");
-  GREYAssertEqual(
-      [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::TYPED_URLS], 0,
-      @"No bookmarks should exist before sync tests start.");
+
+  [ChromeEarlGrey clearSyncServerData];
+
+  WaitForNumberOfEntities(0, syncer::AUTOFILL_PROFILE);
+  WaitForNumberOfEntities(0, syncer::BOOKMARKS);
+  WaitForNumberOfEntities(0, syncer::TYPED_URLS);
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -287,7 +288,7 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 // Test that autofill profile deleted from FakeServer gets deleted from client
 // as well.
 // TODO(crbug.com/1340545): This test is flaky.
-- (void)DISABLED_testSyncDeleteAutofillProfile {
+- (void)testSyncDeleteAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   GREYAssertFalse([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
