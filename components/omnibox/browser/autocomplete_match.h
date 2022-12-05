@@ -564,6 +564,10 @@ struct AutocompleteMatch {
   // relevance score, this match's own relevance score will be upgraded.
   void UpgradeMatchWithPropertiesFrom(AutocompleteMatch& duplicate_match);
 
+  // Merges scoring signals from the other match for ML model scoring and
+  // training .
+  void MergeScoringSignals(const AutocompleteMatch& other);
+
   // Tries, in order, to:
   // - Prefix autocomplete |primary_text|
   // - Prefix autocomplete |secondary_text|

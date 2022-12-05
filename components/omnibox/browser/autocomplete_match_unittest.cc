@@ -46,6 +46,65 @@ void TestSetAllowedToBeDefault(int caseI,
       << "case " << caseI;
 }
 
+AutocompleteMatch CreateACMatchWithScoringSignals(
+    int typed_count,
+    int visit_count,
+    int elapsed_time_last_visit_secs,
+    int shortcut_visit_count,
+    int shortest_shortcut_len,
+    bool is_host_only,
+    int num_bookmarks_of_url,
+    int first_bookmark_title_match_position,
+    int total_bookmark_title_match_length,
+    int num_input_terms_matched_by_bookmark_title,
+    int first_url_match_position,
+    int total_url_match_length,
+    bool host_match_at_word_boundary,
+    int total_path_match_length,
+    int total_query_or_ref_match_length,
+    int total_title_match_length,
+    bool has_non_scheme_www_match,
+    int num_input_terms_matched_by_title,
+    int num_input_terms_matched_by_url,
+    int length_of_url,
+    float site_engagement,
+    bool allowed_to_be_default_match) {
+  AutocompleteMatch match;
+  match.scoring_signals.set_typed_count(typed_count);
+  match.scoring_signals.set_visit_count(visit_count);
+  match.scoring_signals.set_elapsed_time_last_visit_secs(
+      elapsed_time_last_visit_secs);
+  match.scoring_signals.set_shortcut_visit_count(shortcut_visit_count);
+  match.scoring_signals.set_shortest_shortcut_len(shortest_shortcut_len);
+  match.scoring_signals.set_is_host_only(is_host_only);
+  match.scoring_signals.set_num_bookmarks_of_url(num_bookmarks_of_url);
+  match.scoring_signals.set_first_bookmark_title_match_position(
+      first_bookmark_title_match_position);
+  match.scoring_signals.set_total_bookmark_title_match_length(
+      total_bookmark_title_match_length);
+  match.scoring_signals.set_num_input_terms_matched_by_bookmark_title(
+      num_input_terms_matched_by_bookmark_title);
+  match.scoring_signals.set_first_url_match_position(first_url_match_position);
+  match.scoring_signals.set_total_url_match_length(total_url_match_length);
+  match.scoring_signals.set_host_match_at_word_boundary(
+      host_match_at_word_boundary);
+  match.scoring_signals.set_total_path_match_length(total_path_match_length);
+  match.scoring_signals.set_total_query_or_ref_match_length(
+      total_query_or_ref_match_length);
+  match.scoring_signals.set_total_title_match_length(total_title_match_length);
+  match.scoring_signals.set_has_non_scheme_www_match(has_non_scheme_www_match);
+  match.scoring_signals.set_num_input_terms_matched_by_title(
+      num_input_terms_matched_by_title);
+  match.scoring_signals.set_num_input_terms_matched_by_url(
+      num_input_terms_matched_by_url);
+  match.scoring_signals.set_length_of_url(length_of_url);
+  match.scoring_signals.set_site_engagement(site_engagement);
+  match.scoring_signals.set_allowed_to_be_default_match(
+      allowed_to_be_default_match);
+
+  return match;
+}
+
 }  // namespace
 
 TEST(AutocompleteMatchTest, MoreRelevant) {
@@ -410,6 +469,64 @@ TEST(AutocompleteMatchTest, UpgradeMatchPropertiesWhileMergingDuplicates) {
   EXPECT_EQ(500, search_what_you_typed.relevance);
   EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, suggest_match.type);
   EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, search_what_you_typed.type);
+}
+
+TEST(AutocompleteMatchTest, MergeScoringSignals) {
+  AutocompleteMatch match = CreateACMatchWithScoringSignals(
+      /*typed_count*/ 3, /*visit_count*/ 10,
+      /*elapsed_time_last_visit_secs*/ 100, /*shortcut_visit_count*/ 5,
+      /*shortest_shortcut_len*/ 3, /*is_host_only*/ true,
+      /*num_bookmarks_of_url*/ 5, /*first_bookmark_title_match_position*/ 1,
+      /*total_bookmark_title_match_length*/ 8,
+      /*num_input_terms_matched_by_bookmark_title*/ 2,
+      /*first_url_match_position*/ 2, /*total_url_match_length*/ 5,
+      /*host_match_at_word_boundary*/ true, /*total_path_match_length*/ 0,
+      /*total_query_or_ref_match_length*/ 0,
+      /*total_title_match_length*/ 5, /*has_non_scheme_www_match*/ true,
+      /*num_input_terms_matched_by_title*/ 2,
+      /*num_input_terms_matched_by_url*/ 2, /*length_of_url*/ 10,
+      /*site_engagement*/ 0.6, /*allowed_to_be_default_match*/ true);
+
+  AutocompleteMatch other_match = CreateACMatchWithScoringSignals(
+      /*typed_count*/ 1, /*visit_count*/ 2, /*elapsed_time_last_visit_secs*/ 50,
+      /*shortcut_visit_count*/ 1,
+      /*shortest_shortcut_len*/ 2, /*is_host_only*/ false,
+      /*num_bookmarks_of_url*/ 1, /*first_bookmark_title_match_position*/ 2,
+      /*total_bookmark_title_match_length*/ 6,
+      /*num_input_terms_matched_by_bookmark_title*/ 3,
+      /*first_url_match_position*/ 5, /*total_url_match_length*/ 3,
+      /*host_match_at_word_boundary*/ false, /*total_path_match_length*/ 1,
+      /*total_query_or_ref_match_length*/ 2,
+      /*total_title_match_length*/ 3, /*has_non_scheme_www_match*/ false,
+      /*num_input_terms_matched_by_title*/ 0,
+      /*num_input_terms_matched_by_url*/ 1, /*length_of_url*/ 12,
+      /*site_engagement*/ 0.5, /*allowed_to_be_default_match*/ false);
+
+  match.MergeScoringSignals(other_match);
+
+  EXPECT_EQ(match.scoring_signals.typed_count(), 3);
+  EXPECT_EQ(match.scoring_signals.visit_count(), 10);
+  EXPECT_EQ(match.scoring_signals.elapsed_time_last_visit_secs(), 50);
+  EXPECT_EQ(match.scoring_signals.shortcut_visit_count(), 5);
+  EXPECT_EQ(match.scoring_signals.shortest_shortcut_len(), 2);
+  EXPECT_TRUE(match.scoring_signals.is_host_only());
+  EXPECT_EQ(match.scoring_signals.num_bookmarks_of_url(), 5);
+  EXPECT_EQ(match.scoring_signals.first_bookmark_title_match_position(), 1);
+  EXPECT_EQ(match.scoring_signals.total_bookmark_title_match_length(), 8);
+  EXPECT_EQ(match.scoring_signals.num_input_terms_matched_by_bookmark_title(),
+            3);
+  EXPECT_EQ(match.scoring_signals.first_url_match_position(), 2);
+  EXPECT_EQ(match.scoring_signals.total_url_match_length(), 5);
+  EXPECT_TRUE(match.scoring_signals.host_match_at_word_boundary());
+  EXPECT_EQ(match.scoring_signals.total_path_match_length(), 1);
+  EXPECT_EQ(match.scoring_signals.total_query_or_ref_match_length(), 2);
+  EXPECT_EQ(match.scoring_signals.total_title_match_length(), 5);
+  EXPECT_TRUE(match.scoring_signals.has_non_scheme_www_match());
+  EXPECT_EQ(match.scoring_signals.num_input_terms_matched_by_title(), 2);
+  EXPECT_EQ(match.scoring_signals.num_input_terms_matched_by_url(), 2);
+  EXPECT_EQ(match.scoring_signals.length_of_url(), 10);
+  EXPECT_EQ(match.scoring_signals.site_engagement(), 0.6f);
+  EXPECT_TRUE(match.scoring_signals.allowed_to_be_default_match());
 }
 
 TEST(AutocompleteMatchTest, SetAllowedToBeDefault) {

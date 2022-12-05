@@ -1320,6 +1320,202 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     rich_autocompletion_triggered =
         duplicate_match.rich_autocompletion_triggered;
   }
+
+  // Merge scoring signals from duplicate match for ML model scoring and
+  // training.
+  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
+    MergeScoringSignals(duplicate_match);
+  }
+}
+
+void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
+  // Take the maximum.
+  if (other.scoring_signals.has_typed_count()) {
+    scoring_signals.set_typed_count(std::max(
+        scoring_signals.typed_count(), other.scoring_signals.typed_count()));
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_visit_count()) {
+    scoring_signals.set_visit_count(std::max(
+        scoring_signals.visit_count(), other.scoring_signals.visit_count()));
+  }
+
+  // Take the minimum.
+  if (scoring_signals.has_elapsed_time_last_visit_secs() &&
+      other.scoring_signals.has_elapsed_time_last_visit_secs()) {
+    scoring_signals.set_elapsed_time_last_visit_secs(
+        std::min(scoring_signals.elapsed_time_last_visit_secs(),
+                 other.scoring_signals.elapsed_time_last_visit_secs()));
+  } else if (other.scoring_signals.has_elapsed_time_last_visit_secs()) {
+    scoring_signals.set_elapsed_time_last_visit_secs(
+        other.scoring_signals.elapsed_time_last_visit_secs());
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_shortcut_visit_count()) {
+    scoring_signals.set_shortcut_visit_count(
+        std::max(scoring_signals.shortcut_visit_count(),
+                 other.scoring_signals.shortcut_visit_count()));
+  }
+
+  // Take the minimum.
+  if (scoring_signals.has_shortest_shortcut_len() &&
+      other.scoring_signals.has_shortest_shortcut_len()) {
+    scoring_signals.set_shortest_shortcut_len(
+        std::min(scoring_signals.shortest_shortcut_len(),
+                 other.scoring_signals.shortest_shortcut_len()));
+  } else if (other.scoring_signals.has_shortest_shortcut_len()) {
+    scoring_signals.set_shortest_shortcut_len(
+        other.scoring_signals.shortest_shortcut_len());
+  }
+
+  // Take the minimum.
+  if (scoring_signals.has_elapsed_time_last_shortcut_visit_sec() &&
+      other.scoring_signals.has_elapsed_time_last_shortcut_visit_sec()) {
+    scoring_signals.set_elapsed_time_last_shortcut_visit_sec(
+        std::min(scoring_signals.elapsed_time_last_shortcut_visit_sec(),
+                 other.scoring_signals.elapsed_time_last_shortcut_visit_sec()));
+  } else if (other.scoring_signals.has_elapsed_time_last_shortcut_visit_sec()) {
+    scoring_signals.set_elapsed_time_last_shortcut_visit_sec(
+        other.scoring_signals.elapsed_time_last_shortcut_visit_sec());
+  }
+
+  // Take the OR result.
+  if (other.scoring_signals.has_is_host_only()) {
+    scoring_signals.set_is_host_only(scoring_signals.is_host_only() ||
+                                     other.scoring_signals.is_host_only());
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_num_bookmarks_of_url()) {
+    scoring_signals.set_num_bookmarks_of_url(
+        std::max(scoring_signals.num_bookmarks_of_url(),
+                 other.scoring_signals.num_bookmarks_of_url()));
+  }
+
+  // Take the minimum.
+  if (scoring_signals.has_first_bookmark_title_match_position() &&
+      other.scoring_signals.has_first_bookmark_title_match_position()) {
+    scoring_signals.set_first_bookmark_title_match_position(
+        std::min(scoring_signals.first_bookmark_title_match_position(),
+                 other.scoring_signals.first_bookmark_title_match_position()));
+  } else if (other.scoring_signals.has_first_bookmark_title_match_position()) {
+    scoring_signals.set_first_bookmark_title_match_position(
+        other.scoring_signals.first_bookmark_title_match_position());
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_total_bookmark_title_match_length()) {
+    scoring_signals.set_total_bookmark_title_match_length(
+        std::max(scoring_signals.total_bookmark_title_match_length(),
+                 other.scoring_signals.total_bookmark_title_match_length()));
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_num_input_terms_matched_by_bookmark_title()) {
+    scoring_signals.set_num_input_terms_matched_by_bookmark_title(std::max(
+        scoring_signals.num_input_terms_matched_by_bookmark_title(),
+        other.scoring_signals.num_input_terms_matched_by_bookmark_title()));
+  }
+
+  // Take the minimum.
+  if (scoring_signals.has_first_url_match_position() &&
+      other.scoring_signals.has_first_url_match_position()) {
+    scoring_signals.set_first_url_match_position(
+        std::min(scoring_signals.first_url_match_position(),
+                 other.scoring_signals.first_url_match_position()));
+  } else if (other.scoring_signals.has_first_url_match_position()) {
+    scoring_signals.set_first_url_match_position(
+        other.scoring_signals.first_url_match_position());
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_total_url_match_length()) {
+    scoring_signals.set_total_url_match_length(
+        std::max(scoring_signals.total_url_match_length(),
+                 other.scoring_signals.total_url_match_length()));
+  }
+
+  // Take the OR result.
+  if (other.scoring_signals.has_host_match_at_word_boundary()) {
+    scoring_signals.set_host_match_at_word_boundary(
+        scoring_signals.host_match_at_word_boundary() ||
+        other.scoring_signals.host_match_at_word_boundary());
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_total_host_match_length()) {
+    scoring_signals.set_total_host_match_length(
+        std::max(scoring_signals.total_host_match_length(),
+                 other.scoring_signals.total_host_match_length()));
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_total_path_match_length()) {
+    scoring_signals.set_total_path_match_length(
+        std::max(scoring_signals.total_path_match_length(),
+                 other.scoring_signals.total_path_match_length()));
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_total_query_or_ref_match_length()) {
+    scoring_signals.set_total_query_or_ref_match_length(
+        std::max(scoring_signals.total_query_or_ref_match_length(),
+                 other.scoring_signals.total_query_or_ref_match_length()));
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_total_title_match_length()) {
+    scoring_signals.set_total_title_match_length(
+        std::max(scoring_signals.total_title_match_length(),
+                 other.scoring_signals.total_title_match_length()));
+  }
+
+  // Take the OR result.
+  if (other.scoring_signals.has_has_non_scheme_www_match()) {
+    scoring_signals.set_has_non_scheme_www_match(
+        scoring_signals.has_non_scheme_www_match() ||
+        other.scoring_signals.has_non_scheme_www_match());
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_num_input_terms_matched_by_title()) {
+    scoring_signals.set_num_input_terms_matched_by_title(
+        std::max(scoring_signals.num_input_terms_matched_by_title(),
+                 other.scoring_signals.num_input_terms_matched_by_title()));
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_num_input_terms_matched_by_url()) {
+    scoring_signals.set_num_input_terms_matched_by_url(
+        std::max(scoring_signals.num_input_terms_matched_by_url(),
+                 other.scoring_signals.num_input_terms_matched_by_url()));
+  }
+
+  // Take the minimum.
+  if (scoring_signals.has_length_of_url() &&
+      other.scoring_signals.has_length_of_url()) {
+    scoring_signals.set_length_of_url(
+        std::min(scoring_signals.length_of_url(),
+                 other.scoring_signals.length_of_url()));
+  } else if (other.scoring_signals.has_length_of_url()) {
+    scoring_signals.set_length_of_url(other.scoring_signals.length_of_url());
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals.has_site_engagement()) {
+    scoring_signals.set_site_engagement(
+        std::max(scoring_signals.site_engagement(),
+                 other.scoring_signals.site_engagement()));
+  }
+
+  // Take the OR result.
+  if (other.scoring_signals.has_allowed_to_be_default_match()) {
+    scoring_signals.set_allowed_to_be_default_match(
+        scoring_signals.allowed_to_be_default_match() ||
+        other.scoring_signals.allowed_to_be_default_match());
+  }
 }
 
 bool AutocompleteMatch::TryRichAutocompletion(
