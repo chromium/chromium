@@ -487,6 +487,7 @@ android_library("cronet_sample_apk_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
+    "//third_party/androidx:androidx_multidex_multidex_java",
   ]
 }
 
@@ -504,7 +505,7 @@ android_apk("cronet_sample_apk") {
   # Cronet jars will include this, so don't duplicate.
   generate_buildconfig_java = false
 
-  enable_multidex = false
+  enable_multidex = true
   if (!is_java_debug) {
     proguard_enabled = true
     proguard_configs = [
@@ -932,6 +933,7 @@ if (!is_component_build) {
       "//build/android:build_java",
       "//net/android:net_java_test_support",
       "//third_party/android_sdk:android_test_base_java",
+      "//third_party/androidx:androidx_multidex_multidex_java",
       "//third_party/junit",
       "//third_party/netty4:netty_all_java",
     ]
@@ -1169,6 +1171,7 @@ if (!is_component_build) {
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_sdk:android_test_mock_java",
       "//third_party/android_support_test_runner:runner_java",
+      "//third_party/androidx:androidx_multidex_multidex_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
       "//third_party/netty4:netty_all_java",
