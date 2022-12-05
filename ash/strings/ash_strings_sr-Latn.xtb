@@ -358,7 +358,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="296762781903199866">Preuzimanje fajlova sa govorom na jeziku <ph name="LANGUAGE" /> nije uspelo</translation>
 <translation id="2970920913501714344">Instalirajte aplikacije, dodatke i teme</translation>
 <translation id="2977598380246111477">Sledeći broj</translation>
-<translation id="2981684127883932071">Prikazuju se predlozi</translation>
 <translation id="2985148236010982088">Prikaži sve aplikacije</translation>
 <translation id="2992327365391326550">Dugme za mikrofon na uređaju je isključeno.</translation>
 <translation id="2996462380875591307">Montirana lupa ekrana je omogućena. Pritisnite Ctrl + taster za pretragu + D ponovo da biste je isključili.</translation>
@@ -1292,6 +1291,7 @@ Novo instaliranje</translation>
 <translation id="8142441511840089262">Dvostruki klik</translation>
 <translation id="8142699993796781067">Privatna mreža</translation>
 <translation id="8144760705599030999">Sačuvajte uređaj <ph name="NAME" /> na <ph name="EMAIL" /> radi bržeg uparivanja sa drugim uređajima</translation>
+<translation id="8144914663975476336">Izaberite format snimka</translation>
 <translation id="8149413265954228307">Pregledajte Bluetooth podešavanja. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Pritisnite Ctrl + W da biste zatvorili.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatsko dovršavanje</translation>

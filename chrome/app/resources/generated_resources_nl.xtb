@@ -5906,6 +5906,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6508248480704296122">Gerelateerd aan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Applicatie: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medialicentie</translation>
+<translation id="6511279028091289182">Bepaalt hoe verbinding wordt gemaakt met websites via een beveiligde verbinding. Hiervoor wordt een beheerde serviceprovider gebruikt op <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="6511827214781912955">Overweeg <ph name="FILENAME" /> te verwijderen, zodat anderen die dit apparaat gebruiken je wachtwoorden niet kunnen zien.</translation>
 <translation id="6512808201725371249">Er is al een wachtwoord voor dit account opgeslagen in je Google Wachtwoordmanager (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome maakt gebruik van mobiele data als je geen verbinding hebt met een ander netwerk.</translation>
@@ -5975,6 +5976,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6568283005472142698">Zoeken op tabbladen</translation>
 <translation id="65711204837946324">Rechten vereist om te downloaden</translation>
 <translation id="6571772921213691236">Inloggegevens beheren</translation>
+<translation id="657229725818377235">Krijg meer bescherming tegen gevaarlijke websites en downloads</translation>
 <translation id="6573096386450695060">Altijd toestaan</translation>
 <translation id="6573497332121198392">Kan snelkoppeling niet verwijderen</translation>
 <translation id="657402800789773160">&amp;Laad pagina opnieuw</translation>
@@ -7490,7 +7492,6 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7978450511781612192">Hiermee word je uitgelogd van je Google-accounts. Onder meer je bookmarks, geschiedenis en wachtwoorden worden niet meer gesynchroniseerd.</translation>
 <translation id="7980084013673500153">Item-ID: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">Pagina's vooraf laden voor sneller browsen en zoeken</translation>
-<translation id="798145602633458219">De suggestie <ph name="SUGGESTION_NAME" /> toevoegen aan het zoekvak</translation>
 <translation id="7981662863948574132">Pop-up met apparaat-EID en QR-code bekijken</translation>
 <translation id="7981670705071137488">Hierna vinden software-updates op de achtergrond plaats. Je kunt de updatevoorkeuren bekijken via Instellingen.</translation>
 <translation id="7982083145464587921">Start je apparaat opnieuw op om deze fout te verhelpen.</translation>

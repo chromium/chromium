@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Google ドライブへようこそ。</translation>
 <translation id="1379911846207762492">インターネットに接続していないときにファイルをオフラインで使用可能にできます。</translation>
 <translation id="1383876407941801731">検索</translation>
+<translation id="1388045380422025115">すべての種類</translation>
 <translation id="1395262318152388157">シーク スライダー</translation>
 <translation id="1399511500114202393">ユーザー証明書なし</translation>
 <translation id="1403008701842173542">すべてのプラットフォーム</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">無効なサブジェクト代替名マッチのエントリ</translation>
 <translation id="1838709767668011582">Google サイト</translation>
 <translation id="1853795129690976061">このフォルダは Linux と共有されています</translation>
+<translation id="1859422890169495746">この Chromebook</translation>
 <translation id="1864756863218646478">ファイルが見つかりませんでした。</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、接続</translation>
 <translation id="1920670151694390848">マラヤーラム語（文字変換）</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">ネットワークを設定</translation>
 <translation id="2325650632570794183">このファイル形式はサポートされていません。Chrome ウェブストアにアクセスして、この形式のファイルを開くことができるアプリをお探しください。</translation>
 <translation id="2326539130272988168">ブルガリア語</translation>
+<translation id="2337715497728194187">Bruschetta と共有</translation>
 <translation id="23721837607121582">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">リスト表示に切り替え</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Linux と共有されています</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">認証証明書がネットワークによって拒否されました</translation>
 <translation id="255937426064304553">US インターナショナル</translation>
 <translation id="2563185590376525700">カエル</translation>
+<translation id="2574327434504608656">1 個のフォルダが Bruschetta と共有されています</translation>
 <translation id="2578394532502990878">タミル語（表音）</translation>
 <translation id="2579959351793446050">オディア語</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> を有効にする</translation>
 <translation id="3408236822532681288">ドイツ語（ドイツ）（Neo 2）キーボード</translation>
 <translation id="3414856743105198592">リムーバブル メディアをフォーマットすると、すべてのデータが消去されます。続行しますか？</translation>
+<translation id="3435143625481187092">Bruschetta に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="3437801641691368414">作成日時</translation>
 <translation id="343907260260897561">インスタント カメラ</translation>
 <translation id="3455931012307786678">エストニア語</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> を移動しました。</translation>
 <translation id="4176286497474237543">ゴミ箱を今すぐ空にする</translation>
 <translation id="4179621117429069925">このアイテムはゴミ箱にあります</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Bruschetta と共有されています</translation>
 <translation id="4186579485882418952">オフラインを有効にする</translation>
 <translation id="4193154014135846272">Google ドキュメント</translation>
 <translation id="4197674956721858839">zip 圧縮</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">チェコ語（QWERTY）キーボード</translation>
 <translation id="4656777537938206294">ファイルへのオフライン アクセスの有効化</translation>
 <translation id="4658782175094886150">雪の中の人</translation>
+<translation id="466782788172479199">Bruschetta に Google ドライブのファイルへのアクセスを許可します。変更が加えられた場合は他のデバイスに同期されます。</translation>
 <translation id="4669606053856530811">「<ph name="SOURCE_NAME" />」のメンバーはこれらのアイテムにアクセスできなくなります（ただし個別に共有されている場合はアクセス可能です）。</translation>
 <translation id="467809019005607715">Google スライド</translation>
 <translation id="4690246192099372265">スウェーデン語</translation>
@@ -523,6 +530,7 @@
 <translation id="5330145655348521461">これらのファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="5330512191124428349">情報を見る</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> を除くすべての URL によるファイル アクセス</translation>
+<translation id="5344246330454251646">Bruschetta の共有を管理</translation>
 <translation id="535792325654997756">猫と一緒にいる人</translation>
 <translation id="5358764674931277">フレームレート</translation>
 <translation id="5363339716524495120">入力言語は中国語です</translation>
@@ -568,6 +576,7 @@
 <translation id="5700087501958648444">オーディオ情報</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> をゴミ箱に移動しました</translation>
 <translation id="5724172041621205163">タイ語（Pattachote）キーボード</translation>
+<translation id="57383366388012121">先月</translation>
 <translation id="5756666464756035725">ハンガリー語 QWERTY</translation>
 <translation id="5763377084591234761">ドイツ語（スイス）</translation>
 <translation id="5769519078756170258">除外するホストまたはドメイン</translation>
@@ -677,6 +686,7 @@
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6732801395666424405">証明書が読み込まれていません</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Bruschetta とのフォルダ共有</translation>
 <translation id="6751256176799620176">1 個のフォルダを選択しました</translation>
 <translation id="6755827872271341378">ChromeOS Flex デバイス</translation>
 <translation id="6790428901817661496">再生</translation>
@@ -705,6 +715,7 @@
 <translation id="6935521024859866267">逆さま</translation>
 <translation id="6943836128787782965">HTTP を取得できませんでした</translation>
 <translation id="6949408524333579394">セルビア語（文字変換）</translation>
+<translation id="69548399407432279">昨年</translation>
 <translation id="6960565108681981554">無効です。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="696203921837389374">モバイルデータとの同期を有効にする</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -848,6 +859,7 @@
 <translation id="8042602468072383151">音声（<ph name="AUDIO_TYPE" />）</translation>
 <translation id="8045462269890919536">ルーマニア語</translation>
 <translation id="8049184478152619004">PIN ブロック解除キー（PUK）を入力してください</translation>
+<translation id="8055538340801153769">このフォルダ</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> を抽出しています...</translation>
 <translation id="8087576439476816834">ダウンロード、<ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">共有アイテム</translation>

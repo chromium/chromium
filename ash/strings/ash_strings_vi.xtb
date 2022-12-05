@@ -358,7 +358,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="296762781903199866">Không thể tải các tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
 <translation id="2977598380246111477">Số tiếp theo</translation>
-<translation id="2981684127883932071">Đang hiển thị mục đề xuất</translation>
 <translation id="2985148236010982088">Xem tất cả ứng dụng</translation>
 <translation id="2992327365391326550">Nút micrô trên thiết bị đang tắt.</translation>
 <translation id="2996462380875591307">Đã bật tính năng Phóng to ở vị trí cố định. Hãy nhấn lại tổ hợp phím Ctrl+Search+D để tắt tính năng này.</translation>
@@ -669,6 +668,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4666082839192943839">Tắt quyền truy cập vào máy ảnh trên thiết bị này để luôn chặn tất cả máy ảnh.</translation>
 <translation id="4666911709726371538">Hiện thêm ứng dụng</translation>
 <translation id="4667099493359681081">Đang tải <ph name="FILENAME" /> xuống</translation>
+<translation id="468293128311738995">Ứng dụng từ điện thoại của bạn</translation>
 <translation id="4690510401873698237">Giá ở dưới cùng</translation>
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
 <translation id="4702647871202761252">Màn hình bảo vệ quyền riêng tư đang tắt</translation>
@@ -1291,6 +1291,7 @@ Mới cài đặt</translation>
 <translation id="8142441511840089262">Nhấp đúp</translation>
 <translation id="8142699993796781067">Mạng riêng</translation>
 <translation id="8144760705599030999">Lưu <ph name="NAME" /> vào <ph name="EMAIL" /> để ghép nối nhanh hơn với các thiết bị khác</translation>
+<translation id="8144914663975476336">Chọn định dạng ghi âm/quay video</translation>
 <translation id="8149413265954228307">Hiện chế độ cài đặt Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Nhấn tổ hợp phím Ctrl + W để đóng.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Tự động hoàn thành</translation>

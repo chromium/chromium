@@ -2141,6 +2141,7 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 <translation id="3144173889708944482"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLOCKLIST" /> が選択されている場合、<ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="3146711617256415776">「選択して読み上げ」の使用時に Enhanced Network のテキスト読み上げ音声を許可しない</translation>
 <translation id="3150351525324499342">デフォルトで <ph name="PRODUCT_NAME" /> アイコンをツールバーに表示しないが、ユーザーが選択できるようにする</translation>
+<translation id="3152135410085709340">PDF ビューアで file:// URL へのローカル ファイル アクセスを許可するサイトを指定する</translation>
 <translation id="3152425128389603870">統合デスクトップを使用可能にし、デフォルトで有効にする</translation>
 <translation id="3157857846231611820"><ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise Connectors サービス設定のリストで、Chrome にファイルが添付されている場合に呼び出されます。
 
@@ -4474,6 +4475,10 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       このポリシーが未設定の場合、デフォルトにより、企業の管理対象ユーザーは使用を許可されず、管理対象外のユーザーは使用を許可されます。</translation>
 <translation id="5584132346604748282">Android の Google 位置情報サービスを制御する</translation>
 <translation id="5584609869321980122">ユーザーがなんらかの操作をしてから電力管理の遅延とセッションの時間制限のカウントを開始する</translation>
+<translation id="5585298198686067735">このポリシーでは、PDF ビューアで file:// URL へのアクセスを許可するドメインを指定できます。
+ポリシーへの追加により、ドメインは PDF ビューアで file:// URL にアクセスできます。
+ポリシーから削除すると、ドメインは PDF ビューアで file:// URL にアクセスできなくなります。
+ポリシーを未設定のままにした場合、どのドメインも PDF ビューアで file:// URL にアクセスできません。</translation>
 <translation id="5586942249556966598">何もしない</translation>
 <translation id="5598417829613725146">キャンバス（バージョン 90 以降でサポート）</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理設定</translation>

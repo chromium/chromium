@@ -358,7 +358,6 @@
 <translation id="296762781903199866">無法下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="2970920913501714344">安裝應用程式、擴充功能和主題</translation>
 <translation id="2977598380246111477">下一個號碼</translation>
-<translation id="2981684127883932071">目前正顯示建議項目</translation>
 <translation id="2985148236010982088">查看所有應用程式</translation>
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
 <translation id="2996462380875591307">停駐放大鏡已啟用。再次按下 Ctrl 鍵 + 搜尋鍵 + D 鍵即可停用。</translation>
@@ -668,6 +667,7 @@
 <translation id="4666082839192943839">關閉這部裝置的相機存取權，一律封鎖所有相機。</translation>
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667099493359681081">正在下載 <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">你手機上的應用程式</translation>
 <translation id="4690510401873698237">在底部顯示檔案櫃</translation>
 <translation id="4696813013609194136">使用家長存取碼將裝置解鎖</translation>
 <translation id="4702647871202761252">已停用隱私保護畫面</translation>

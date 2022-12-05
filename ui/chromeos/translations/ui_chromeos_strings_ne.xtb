@@ -43,8 +43,10 @@
 <translation id="1378727793141957596">Google ड्राइभ मा स्वागत छ!</translation>
 <translation id="1379911846207762492">तपाईं इन्टरनेट नभएका बेला प्रयोग गर्ने प्रयोजनका लागि फाइलहरू अफलाइन उपलब्ध गराउन सक्नुहुन्छ।</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
+<translation id="1388045380422025115">सबै प्रकारका फाइलहरू</translation>
 <translation id="1395262318152388157">सिक स्लाइडर</translation>
 <translation id="1399511500114202393">प्रयोगकर्ताको प्रमाणपत्र छैन</translation>
+<translation id="1403008701842173542">सबैतिर</translation>
 <translation id="1404323374378969387">नर्वेली</translation>
 <translation id="1433628812591023318">फाइल ड्र्याग गरेर Parallels Desktop मा ड्रप गर्न सो फाइल सारेर 'Windows फाइलहरू' फोल्डरमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="1435838927755162558">Parallels Desktop सँग फोल्डर सेयर गर्नुहोस्</translation>
@@ -102,6 +104,7 @@
 <translation id="1834290891154666894">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो प्रविष्टि अवैध छ</translation>
 <translation id="1838709767668011582">Google को साइट</translation>
 <translation id="1853795129690976061">यो फोल्डर Linux सँग सेयर गरिएको छ</translation>
+<translation id="1859422890169495746">यो Chromebook</translation>
 <translation id="1864756863218646478">फाइल फेला पर्न सकेन।</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, जोड्नुहोस्</translation>
 <translation id="1920670151694390848">मलयालम लिपि रूपान्तरण</translation>
@@ -153,6 +156,7 @@
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
 <translation id="2325650632570794183">यो फाइल प्रकार समर्थन गरिएको छैन। यो फाइल खोल्न सक्ने एक अनु्प्रयोग फेला पार्नको लागि कृपया Chrome वेब भण्डार भ्रमण गर्नुहोस्।</translation>
 <translation id="2326539130272988168">बुल्गेरियाली</translation>
+<translation id="2337715497728194187">Bruschetta सँग सेयर गर्नुहोस्</translation>
 <translation id="23721837607121582">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">सूची दृश्यमा बदल्नुहोस्‌</translation>
 <translation id="2377590462528165447">Linux सँग <ph name="NUMBER_OF_ITEMS" /> फोल्डरहरू आदान प्रदान गरिए</translation>
@@ -182,6 +186,7 @@
 <translation id="2544853746127077729">प्रमाणीकरण प्रमाणपत्र नेटवर्क अस्विकार</translation>
 <translation id="255937426064304553">यु.एस. अन्तर्राष्ट्रिय</translation>
 <translation id="2563185590376525700">भ्यागुतो</translation>
+<translation id="2574327434504608656">तपाईंले Bruschetta सँग एउटा फोल्डर सेयर गर्नुभयो</translation>
 <translation id="2578394532502990878">तमिल फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले ब्लक गरेको, विवरणहरू</translation>
@@ -275,6 +280,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> अन गर्नुहोस्</translation>
 <translation id="3408236822532681288">जर्मन (जर्मनी) नियो २ किबोर्ड</translation>
 <translation id="3414856743105198592">हटाउन सकिने मिडिया फर्म्याट गर्नाले सबै लगत हटानउेछ। के तपाइँ जारी राख्न चाहनुहुन्छ?</translation>
+<translation id="3435143625481187092">Bruschetta लाई <ph name="FOLDER_NAME" /> फोल्डरमा भएका फाइलहरू हेर्ने तथा प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="3437801641691368414">सिर्जना गरिएको समय</translation>
 <translation id="343907260260897561">इन्स्ट्यान्ट क्यामेरा</translation>
 <translation id="3455931012307786678">इस्टोनियन</translation>
@@ -354,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> सारियो।</translation>
 <translation id="4176286497474237543">अहिले नै ट्र्यास खाली गर्नुहोस्</translation>
 <translation id="4179621117429069925">यो फाइल ट्र्यासमा छ</translation>
+<translation id="4181839429935094755">तपाईंले Bruschetta सँग <ph name="NUMBER_OF_ITEMS" /> वटा फोल्डर सेयर गर्नुभयो</translation>
 <translation id="4186579485882418952">अफलाइन चलाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4193154014135846272">Google कागजात</translation>
 <translation id="4197674956721858839">जिप चयन</translation>
@@ -415,6 +422,7 @@
 <translation id="4646813851450205600">चेक Qwerty किबोर्ड</translation>
 <translation id="4656777537938206294">फाइलहरू अफलाइन उपलब्ध गराउनुहोस्</translation>
 <translation id="4658782175094886150">हिउँमा उभिरहेका व्यक्ति</translation>
+<translation id="466782788172479199">Bruschetta लाई तपाईंको Google Drive मा भएका फाइलहरू हेर्ने तथा प्रयोग गर्ने अनुमति दिनुहोस्। तपाईंले गरेका परिवर्तनहरू तपाईंका अन्य डिभाइसमा पनि सिंक हुने छन्।</translation>
 <translation id="4669606053856530811">यी वस्तुहरूलाई '<ph name="SOURCE_NAME" />' का सदस्यहरूसँग आदान प्रदान नगरेसम्म तिनीहरू ले यी वस्तुहरूमाथिको पहुँच गुमाउनुहुनेछन्।</translation>
 <translation id="467809019005607715">Google स्लाइड</translation>
 <translation id="4690246192099372265">&amp;#2360;&amp;#2381;&amp;#2357;&amp;#2367;&amp;#2337;&amp;#2367;&amp;#2358;</translation>
@@ -448,6 +456,7 @@
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="485316830061041779">जर्मन</translation>
 <translation id="4867079195717347957">स्तम्भलाई घट्दो क्रममा क्रमबद्ध गर्न क्लिक गर्नुहोस्।</translation>
+<translation id="4867297348137739678">गत हप्ता</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> बाइट</translation>
 <translation id="4874569719830985133">सदाका लागि मेटाउनुहोस्</translation>
 <translation id="4880214202172289027">आवाज मात्रा स्लाइडर</translation>
@@ -520,6 +529,7 @@
 <translation id="5330145655348521461">यी फाइलहरू एउटा फरक डेस्कटपमा खुलेका थिए। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) मा लैजानुहोस्।</translation>
 <translation id="5330512191124428349">जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> बाहेक सबै URL मार्फत फाइल हेर्न तथा प्रयोग गर्न सकिन्छ</translation>
+<translation id="5344246330454251646">Bruschetta सँग कुन कुन फाइल तथा फोल्डरहरू सेयर गर्ने भन्ने कुरा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="535792325654997756">बिरालो बोकिरहेका व्यक्ति</translation>
 <translation id="5358764674931277">फ्रेम रेट</translation>
 <translation id="5363339716524495120">इनपुट भाषा चिनियाँ हो</translation>
@@ -565,6 +575,7 @@
 <translation id="5700087501958648444">अडियोसम्बन्धी जानकारी</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ट्र्यासमा सारियो</translation>
 <translation id="5724172041621205163">थाई पत्ताचोते किबोर्ड</translation>
+<translation id="57383366388012121">गत महिना</translation>
 <translation id="5756666464756035725">हंगेरी QWERTY</translation>
 <translation id="5763377084591234761">जर्मन (स्विजरल्यान्ड)</translation>
 <translation id="5769519078756170258">वर्जित गर्नु पर्ने होस्ट वा डोमेन</translation>
@@ -674,6 +685,7 @@
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="6732801395666424405">प्रमाणपत्रहरू लोड भएन</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Bruschetta सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="6751256176799620176">१ फोल्डरलाई चयन गरियो</translation>
 <translation id="6755827872271341378">ChromeOS Flex चल्ने डिभाइस</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
@@ -702,6 +714,7 @@
 <translation id="6935521024859866267">उल्टो</translation>
 <translation id="6943836128787782965">HTTP प्राप्त असफल भयो</translation>
 <translation id="6949408524333579394">सर्बियाली लिपि रूपान्तरण</translation>
+<translation id="69548399407432279">गत वर्ष</translation>
 <translation id="6960565108681981554">सक्रिय गरिएको छैन। आफ्नो सेवा प्रदायकमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="696203921837389374">मोबाइल डेटामा सिंक सक्षम गर्नुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
@@ -845,6 +858,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> अडियो</translation>
 <translation id="8045462269890919536">रोमेनियन</translation>
 <translation id="8049184478152619004">पर्सनल अनब्लकिङ की (PUK) हाल्नुहोस्</translation>
+<translation id="8055538340801153769">यो फोल्डर</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> सम्बन्धी जानकारी सङ्कलन गरिँदै छ...</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> डाउनलोड गर्नुहोस्</translation>
 <translation id="8106045200081704138">मसँग साझा गरिएको</translation>

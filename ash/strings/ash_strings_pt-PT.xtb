@@ -358,7 +358,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="296762781903199866">Não foi possível transferir os ficheiros de voz em <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instalar aplicações, extensões e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
-<translation id="2981684127883932071">A apresentar sugestões</translation>
 <translation id="2985148236010982088">Ver todas as apps</translation>
 <translation id="2992327365391326550">O botão do microfone do dispositivo está desativado.</translation>
 <translation id="2996462380875591307">Lupa ancorada ativada. Prima Ctrl + Pesquisa + D novamente para a desativar.</translation>
@@ -1292,6 +1291,7 @@ Nova instalação</translation>
 <translation id="8142441511840089262">Clicar duas vezes</translation>
 <translation id="8142699993796781067">Rede privada</translation>
 <translation id="8144760705599030999">Guarde o dispositivo <ph name="NAME" /> em <ph name="EMAIL" /> para permitir uma sincronização mais rápida com os outros dispositivos</translation>
+<translation id="8144914663975476336">Selecione o formato de gravação</translation>
 <translation id="8149413265954228307">Veja as definições de Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Prima Ctrl + W para fechar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, preenchimento automático</translation>

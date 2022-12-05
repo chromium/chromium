@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Google Drive에 오신 것을 환영합니다.</translation>
 <translation id="1379911846207762492">파일을 오프라인에서 사용하도록 설정하면 인터넷에 연결되어 있지 않을 때도 액세스할 수 있습니다.</translation>
 <translation id="1383876407941801731">검색</translation>
+<translation id="1388045380422025115">모든 유형</translation>
 <translation id="1395262318152388157">탐색 슬라이더</translation>
 <translation id="1399511500114202393">사용자 인증서 없음</translation>
 <translation id="1403008701842173542">어디에서나 사용</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">잘못된 제목 보조 이름 일치 항목</translation>
 <translation id="1838709767668011582">Google 사이트</translation>
 <translation id="1853795129690976061">Linux와 공유된 폴더입니다.</translation>
+<translation id="1859422890169495746">이 Chromebook</translation>
 <translation id="1864756863218646478">파일을 찾지 못했습니다.</translation>
 <translation id="1884013283844450420">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, 연결</translation>
 <translation id="1920670151694390848">말라얄람어(음역)</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">네트워크 설정</translation>
 <translation id="2325650632570794183">이 파일 형식은 지원되지 않습니다. Chrome 웹 스토어에서 이 파일 형식을 열 수 있는 앱을 검색하세요.</translation>
 <translation id="2326539130272988168">불가리아어</translation>
+<translation id="2337715497728194187">Bruschetta와 공유</translation>
 <translation id="23721837607121582">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">목록 보기로 전환</translation>
 <translation id="2377590462528165447">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Linux와 공유되었습니다.</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">인증서가 네트워크에 의해 거부됨</translation>
 <translation id="255937426064304553">영어(미국 국제)</translation>
 <translation id="2563185590376525700">개구리</translation>
+<translation id="2574327434504608656">폴더 1개가 Bruschetta와 공유됨</translation>
 <translation id="2578394532502990878">타밀어(표음)</translation>
 <translation id="2579959351793446050">오리야어</translation>
 <translation id="2602810353103180630">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> 활성화</translation>
 <translation id="3408236822532681288">독일어(독일, Neo 2 키보드)</translation>
 <translation id="3414856743105198592">이동식 미디어를 포맷하면 데이터가 모두 삭제됩니다. 계속하시겠습니까?</translation>
+<translation id="3435143625481187092">Bruschetta가 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
 <translation id="3437801641691368414">만든 시간</translation>
 <translation id="343907260260897561">즉석 카메라</translation>
 <translation id="3455931012307786678">에스토니아어</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> 항목을 이동했습니다.</translation>
 <translation id="4176286497474237543">지금 휴지통 비우기</translation>
 <translation id="4179621117429069925">항목이 휴지통에 있습니다</translation>
+<translation id="4181839429935094755">폴더 <ph name="NUMBER_OF_ITEMS" />개가 Bruschetta와 공유됨</translation>
 <translation id="4186579485882418952">오프라인 사용 설정</translation>
 <translation id="4193154014135846272">Google Docs</translation>
 <translation id="4197674956721858839">선택항목 압축하기</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">체코어(쿼티 키보드)</translation>
 <translation id="4656777537938206294">파일을 오프라인에서 사용할 수 있도록 설정</translation>
 <translation id="4658782175094886150">눈 맞는 사람</translation>
+<translation id="466782788172479199">Bruschetta가 Google Drive 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
 <translation id="4669606053856530811">이 항목을 '<ph name="SOURCE_NAME" />'의 멤버와 공유하지 않으면 이 팀의 멤버가 항목에 더 이상 액세스할 수 없게 됩니다.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">스웨덴어</translation>
@@ -523,6 +530,7 @@
 <translation id="5330145655348521461">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
 <translation id="5330512191124428349">정보 보기</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" />을(를) 제외한 모든 URL에서 파일 액세스</translation>
+<translation id="5344246330454251646">Bruschetta 공유 관리</translation>
 <translation id="535792325654997756">고양이들과 함께 있는 사람</translation>
 <translation id="5358764674931277">프레임 속도</translation>
 <translation id="5363339716524495120">중국어를 입력 언어로 설정</translation>
@@ -568,6 +576,7 @@
 <translation id="5700087501958648444">오디오 정보</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> 파일을 휴지통으로 이동함</translation>
 <translation id="5724172041621205163">태국어(파타초테 키보드)</translation>
+<translation id="57383366388012121">지난달</translation>
 <translation id="5756666464756035725">헝가리어 QWERTY</translation>
 <translation id="5763377084591234761">독일어(스위스)</translation>
 <translation id="5769519078756170258">제외할 호스트 또는 도메인</translation>
@@ -677,6 +686,7 @@
 <translation id="6710213216561001401">이전</translation>
 <translation id="6732801395666424405">인증서를 로드하지 못했습니다.</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" />[<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Bruschetta와 폴더 공유</translation>
 <translation id="6751256176799620176">폴더 1개 선택됨</translation>
 <translation id="6755827872271341378">ChromeOS Flex 기기</translation>
 <translation id="6790428901817661496">재생</translation>
@@ -705,6 +715,7 @@
 <translation id="6935521024859866267">180도 회전</translation>
 <translation id="6943836128787782965">HTTP 실패</translation>
 <translation id="6949408524333579394">세르비아어(음역)</translation>
+<translation id="69548399407432279">작년</translation>
 <translation id="6960565108681981554">활성화되지 않았습니다. 이동통신사에 문의하세요.</translation>
 <translation id="696203921837389374">모바일 데이터를 이용한 동기화 사용 설정</translation>
 <translation id="6965382102122355670">확인</translation>
@@ -848,6 +859,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 오디오</translation>
 <translation id="8045462269890919536">루마니아어</translation>
 <translation id="8049184478152619004">PUK(Personal Unblocking Key) 입력</translation>
+<translation id="8055538340801153769">이 폴더</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> 추출 중…</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" />, 다운로드</translation>
 <translation id="8106045200081704138">공유 문서함</translation>

@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">傳送意見回饋報告</translation>
 <translation id="2407209115954268704">SIM 卡鎖定狀態</translation>
+<translation id="241419523391571119">請重新打開機蓋即進行測試</translation>
 <translation id="2414886740292270097">深色</translation>
 <translation id="2418150275289244458">在設定中開啟</translation>
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 張圖片 (共 <ph name="TOTAL_PAGES" /> 張)</translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
 <translation id="2902312830803030883">更多動作</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼或掃描 QR 圖碼</translation>
+<translation id="2940811910881150316">無法測試裝置。請重新打開機蓋即進行測試。</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="3824259034819781947">附加檔案</translation>
 <translation id="3838338534323494292">新密碼</translation>
+<translation id="3845880861638660475">按下 <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> 鍵即可關閉對話方塊。</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3862598938296403232">必須輸入說明</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">說明</translation>
 <translation id="387301095347517405">電池經過的完整充電循環次數</translation>
 <translation id="3885327323343477505">變更螢幕保護程式</translation>
+<translation id="391412459402535266">無法測試裝置。請切換成筆電模式進行測試。</translation>
 <translation id="3923184630988645767">數據用量</translation>
 <translation id="3932043219784172185">未連線到任何裝置</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567">系統會移除 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作</translation>
 <translation id="3993704782688964914">你的「<ph name="DEVICE_NAME" />」目前是最新版本</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
+<translation id="4021031199988160623">請切換成筆電模式進行測試</translation>
 <translation id="4034824040120875894">印表機</translation>
 <translation id="4044093238444069296">無法連線至閘道</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
@@ -769,6 +774,7 @@
 <translation id="8372477600026034341">其他主機</translation>
 <translation id="8395584934117017006">這部 <ph name="DEVICE_TYPE" /> 是由企業管理</translation>
 <translation id="8398927464629426868">裝置目前的充電或放電速率</translation>
+<translation id="8410244574650205435">已自動偵測</translation>
 <translation id="8420955526972171689">針對硬體問題進行測試及疑難排解</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8431300646573772016">Chrome OS 新功能</translation>

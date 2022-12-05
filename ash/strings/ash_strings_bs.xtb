@@ -358,7 +358,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="296762781903199866">Preuzimanje fajlova govora na jeziku <ph name="LANGUAGE" /> nije uspjelo</translation>
 <translation id="2970920913501714344">Instaliranje aplikacija, proširenja i tema</translation>
 <translation id="2977598380246111477">Sljedeći broj</translation>
-<translation id="2981684127883932071">Prikaz prijedloga</translation>
 <translation id="2985148236010982088">Pogledajte sve aplikacije</translation>
 <translation id="2992327365391326550">Dugme za mikrofon uređaja je isključeno.</translation>
 <translation id="2996462380875591307">Omogućeno je priključeno uvećalo. Pritisnite ponovo Ctrl + tipku za pretraživanje + D da ga isključite.</translation>
@@ -669,6 +668,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4666082839192943839">Isključite pristup kameri na ovom uređaju da cijelo vrijeme blokirate sve kamere.</translation>
 <translation id="4666911709726371538">Više aplikacija</translation>
 <translation id="4667099493359681081">Preuzimanje fajla <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Aplikacije s telefona</translation>
 <translation id="4690510401873698237">Polica na dnu</translation>
 <translation id="4696813013609194136">Otključajte uređaj pomoću koda roditelja</translation>
 <translation id="4702647871202761252">Ekran za privatnost je isključen</translation>
@@ -1291,6 +1291,7 @@ Nova instalacija</translation>
 <translation id="8142441511840089262">Dvostruki klik</translation>
 <translation id="8142699993796781067">Privatna mreža</translation>
 <translation id="8144760705599030999">Sačuvajte uređaj <ph name="NAME" /> na račun <ph name="EMAIL" /> za brže uparivanje s drugim uređajima</translation>
+<translation id="8144914663975476336">Odaberite format snimanja</translation>
 <translation id="8149413265954228307">Pogledajte postavke Bluetootha <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Pritisnite Ctrl + W da zatvorite.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatsko dovršavanje</translation>

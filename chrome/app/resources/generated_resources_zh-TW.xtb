@@ -1955,6 +1955,7 @@
 <translation id="275662540872599901">螢幕已關閉</translation>
 <translation id="2757161511365746634">查看印表機</translation>
 <translation id="2757338480560142065">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> 找不到與「<ph name="SEARCH_QUERY" />」相符的搜尋結果</translation>
 <translation id="2762441749940182211">無法使用攝影機</translation>
 <translation id="2764786626780673772">VPN 詳細資料</translation>
 <translation id="2764920001292228569">請輸入設定檔名稱</translation>
@@ -5902,6 +5903,7 @@
 <translation id="6508248480704296122">與「<ph name="NAME_PH" />」相關</translation>
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒體授權</translation>
+<translation id="6511279028091289182">安全 DNS 會判斷如何透過安全連線連上網站。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的代管服務供應商</translation>
 <translation id="6511827214781912955">建議你刪除「<ph name="FILENAME" />」，讓這部裝置的其他使用者無法查看你的密碼</translation>
 <translation id="6512808201725371249">這個帳戶的密碼已儲存到 Google 密碼管理工具 (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">如果你沒有連線至其他網路，Google Chrome 將使用行動數據網路連線。</translation>
@@ -5971,6 +5973,7 @@
 <translation id="6568283005472142698">分頁搜尋</translation>
 <translation id="65711204837946324">需要下載權限</translation>
 <translation id="6571772921213691236">編輯登入資料</translation>
+<translation id="657229725818377235">進一步防範不安全的網站和下載內容</translation>
 <translation id="6573096386450695060">一律允許</translation>
 <translation id="6573497332121198392">無法移除捷徑</translation>
 <translation id="657402800789773160">重新載入這個網頁(&amp;R)</translation>
@@ -6912,6 +6915,7 @@
 <translation id="7465635034594602553">發生錯誤，請過幾分鐘後再重新執行「<ph name="APP_NAME" />」。</translation>
 <translation id="7465778193084373987">Netscape 憑證撤銷網址</translation>
 <translation id="7466431077154602932">密集檢視</translation>
+<translation id="7466556884531675354">未儲存任何記事</translation>
 <translation id="746861123368584540">已載入擴充功能</translation>
 <translation id="7470424110735398630">可以查看剪貼簿</translation>
 <translation id="747114903913869239">錯誤：無法為擴充功能解碼</translation>
@@ -7486,7 +7490,6 @@
 <translation id="7978450511781612192">你將登出自己的 Google 帳戶。你的書籤、歷史記錄、密碼和其他設定將不再保持同步。</translation>
 <translation id="7980084013673500153">資產 ID：<ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">預先載入網頁，以加快瀏覽及搜尋速度</translation>
-<translation id="798145602633458219">將「<ph name="SUGGESTION_NAME" />」這項建議附加到搜尋框內</translation>
 <translation id="7981662863948574132">顯示裝置 EID 和 QR 圖碼彈出式視窗</translation>
 <translation id="7981670705071137488">日後，系統會在背景進行軟體更新作業。你可以前往「設定」查看更新偏好設定。</translation>
 <translation id="7982083145464587921">請重新啟動裝置以修復這個錯誤。</translation>
@@ -7891,6 +7894,7 @@
 <translation id="8351316842353540018">一律顯示無障礙功能選項</translation>
 <translation id="8351419472474436977">你的 Proxy 設定已受到這個擴充功能控制，該擴充功能可變更、中斷、或監視你在網路上的行為。如果你不確定這項變更的發生原因，建議你停用該擴充功能。</translation>
 <translation id="8351630282875799764">電池無法充電</translation>
+<translation id="8352287103893778223">分頁群組標題</translation>
 <translation id="835238322900896202">解除安裝時發生錯誤，請透過終端機解除安裝。</translation>
 <translation id="8353683614194668312">可用權限：</translation>
 <translation id="8354034204605718473">已新增孩子的 PIN 碼</translation>

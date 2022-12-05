@@ -99,6 +99,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1641113438599504367">Navigare sigură</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1650222530560417226">Atinge butonul „Activează înregistrarea în jurnal” pentru a colecta jurnale și erori viitoare ale consolei JavaScript din toate filele. Jurnalele vor fi colectate (și stocate doar în memorie) până când această pagină este închisă sau se atinge „Dezactivează înregistrarea în jurnal”.</translation>
+<translation id="1653432787084483144">{count,plural, =1{{count} parolă salvată disponibilă deasupra tastaturii.}few{{count} parole salvate disponibile deasupra tastaturii.}other{{count} de parole salvate disponibile deasupra tastaturii.}}</translation>
 <translation id="1657011748321897393">Nu s-a trimis, pentru că nu te-ai conectat la rețea.</translation>
 <translation id="1657641691196698092">Cookie-uri blocate</translation>
 <translation id="165877110639533037">Nu există file deschise</translation>
@@ -139,6 +140,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2015722694326466240">Pentru a vedea parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="2021670401941426298">Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="202292859882676807">Se acordă acces la microfon</translation>
+<translation id="2050196510205866090">{count,plural, =1{{count} metodă de plată salvată disponibilă deasupra tastaturii.}few{{count} metode de plată salvate disponibile deasupra tastaturii.}other{{count} de metode de plată salvate disponibile deasupra tastaturii.}}</translation>
 <translation id="2073572773299281212">Activ acum <ph name="DAYS" /> zile</translation>
 <translation id="2074131957428911366">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anulează</translation>
@@ -180,6 +182,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2375243552872247702">Vezi conținut relevant pentru tine</translation>
 <translation id="2381405137052800939">Setări de bază</translation>
 <translation id="2386793615875593361">1 selectată</translation>
+<translation id="2411749908844615428">{count,plural, =1{{count} adresă salvată disponibilă deasupra tastaturii.}few{{count} adrese salvate disponibile deasupra tastaturii.}other{{count} de adrese salvate disponibile deasupra tastaturii.}}</translation>
 <translation id="2421004566762153674">Blocarea cookie-urilor terță parte</translation>
 <translation id="2421044535038393232">Continuă editarea</translation>
 <translation id="2434405374328098816">Ai salvat deja o parolă pentru <ph name="USERNAME" /> la <ph name="WEBSITE" /></translation>
@@ -478,6 +481,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru a începe sincronizarea.</translation>
 <translation id="4682686630151240767">1. Deschide Setările dispozitivului iPhone.</translation>
 <translation id="4689564913179979534">Gestionează metodele de plată…</translation>
+<translation id="469300482518076788">Închide fila</translation>
 <translation id="4697071790493980729">Niciun rezultat</translation>
 <translation id="470966556546083668">Nu activa sincronizarea</translation>
 <translation id="4737560986434232178">Caută în filele recente</translation>
@@ -1026,6 +1030,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8731388423028622182">Te-ai deconectat de la contul <ph name="USER_NAME" /> în cadrul resetării dispozitivului iPhone. Atinge Continuă pentru a te conecta.</translation>
 <translation id="87371078663613140">Explorează opțiunile din bara de meniu</translation>
+<translation id="8737620822084008350">{count,plural, =1{{count} profil salvat disponibil deasupra tastaturii.}few{{count} profiluri salvate disponibile deasupra tastaturii.}other{{count} de profiluri salvate disponibile deasupra tastaturii.}}</translation>
 <translation id="8741995161408053644">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Aici vei vedea filele</translation>
 <translation id="8756969031206844760">Actualizezi parola?</translation>

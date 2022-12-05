@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
 <translation id="2407209115954268704">สถานะการล็อกซิม</translation>
+<translation id="241419523391571119">เปิดฝาหน้าจออีกครั้งเพื่อทดสอบ</translation>
 <translation id="2414886740292270097">มืด</translation>
 <translation id="2418150275289244458">เปิดในการตั้งค่า</translation>
 <translation id="2421798028054665193">ภาพที่ <ph name="CURRENT_PAGE" /> จาก <ph name="TOTAL_PAGES" /></translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="2902312830803030883">การทำงานเพิ่มเติม</translation>
 <translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
+<translation id="2940811910881150316">ทดสอบอุปกรณ์ไม่ได้ เปิดฝาหน้าจออีกครั้งเพื่อทดสอบ</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="3017079585324758401">พื้นหลัง</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">PIN ไม่ถูกต้อง</translation>
 <translation id="3824259034819781947">แนบไฟล์</translation>
 <translation id="3838338534323494292">รหัสผ่านใหม่</translation>
+<translation id="3845880861638660475">กดแป้น <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> เพื่อปิดกล่องโต้ตอบ</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3862598938296403232">ต้องป้อนคำอธิบาย</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
 <translation id="3885327323343477505">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
+<translation id="391412459402535266">ทดสอบอุปกรณ์ไม่ได้ เปลี่ยนเป็นโหมดแล็ปท็อปเพื่อทดสอบ</translation>
 <translation id="3923184630988645767">การใช้อินเทอร์เน็ต</translation>
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
 <translation id="3941014780699102620">แก้ไขโฮสต์ไม่สำเร็จ</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567">ระบบจะนำงานพิมพ์ที่เก่ากว่า <ph name="NUMBER_OF_DAYS" /> วันออก</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> เป็นเวอร์ชันล่าสุดแล้ว</translation>
 <translation id="4003384961948020559">ไม่สำเร็จ - ถาดกระดาษขาออกเต็ม</translation>
+<translation id="4021031199988160623">เปลี่ยนเป็นโหมดแล็ปท็อปเพื่อทดสอบ</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
 <translation id="4044093238444069296">ไม่สามารถติดต่อกับเกตเวย์</translation>
 <translation id="4046123991198612571">แทร็กถัดไป</translation>

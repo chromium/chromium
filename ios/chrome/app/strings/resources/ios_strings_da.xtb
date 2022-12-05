@@ -99,6 +99,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1650222530560417226">Tryk på knappen "Start logføring" for at indsamle fremtidige JavaScript-konsollogfiler og -fejl fra alle faner. Logfiler indsamles (og gemmes kun i hukommelsen), indtil denne side lukkes, eller der trykkes på "Stop logføring".</translation>
+<translation id="1653432787084483144">{count,plural, =1{{count} gemt adgangskode er tilgængelig over dit tastatur.}one{{count} gemt adgangskode er tilgængelig over dit tastatur.}other{{count} gemte adgangskoder er tilgængelige over dit tastatur.}}</translation>
 <translation id="1657011748321897393">Deling mislykkedes. Du har ikke forbindelse til netværket.</translation>
 <translation id="1657641691196698092">Blokerede cookies</translation>
 <translation id="165877110639533037">Ingen åbne faner</translation>
@@ -139,6 +140,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
 <translation id="2021670401941426298">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="202292859882676807">Der er givet adgang til mikrofonen</translation>
+<translation id="2050196510205866090">{count,plural, =1{{count} gemt betalingsmetode er tilgængelig over dit tastatur.}one{{count} gemt betalingsmetode er tilgængelig over dit tastatur.}other{{count} gemte betalingsmetoder er tilgængelige over dit tastatur.}}</translation>
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dage siden</translation>
 <translation id="2074131957428911366">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Fortryd</translation>
@@ -180,6 +182,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2375243552872247702">Få personligt tilpasset indhold</translation>
 <translation id="2381405137052800939">Grundlæggende</translation>
 <translation id="2386793615875593361">1 valgt</translation>
+<translation id="2411749908844615428">{count,plural, =1{{count} gemt adresse er tilgængelig over dit tastatur.}one{{count} gemt adresse er tilgængelig over dit tastatur.}other{{count} gemte adresser er tilgængelige over dit tastatur.}}</translation>
 <translation id="2421004566762153674">Blokering af cookies fra tredjeparter</translation>
 <translation id="2421044535038393232">Rediger videre</translation>
 <translation id="2434405374328098816">Du har allerede gemt en adgangskode for "<ph name="USERNAME" />" på <ph name="WEBSITE" /></translation>
@@ -478,6 +481,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 Dine data er krypteret med din adgangssætning til synkronisering. Angiv den for at starte synkroniseringen.</translation>
 <translation id="4682686630151240767">1. Åbn iPhone-indstillingerne</translation>
 <translation id="4689564913179979534">Administrer betalingsmetoder…</translation>
+<translation id="469300482518076788">Luk fane</translation>
 <translation id="4697071790493980729">Der blev ikke fundet nogen resultater</translation>
 <translation id="470966556546083668">Aktivér ikke synkronisering</translation>
 <translation id="4737560986434232178">Søg på fanen Seneste</translation>
@@ -1026,6 +1030,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8731388423028622182">Du blev logget ud af din konto <ph name="USER_NAME" /> som en del af nulstillingen af din iPhone. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="87371078663613140">Se valgmulighederne i menulinjen</translation>
+<translation id="8737620822084008350">{count,plural, =1{{count} gemt profil er tilgængelig over dit tastatur.}one{{count} gemt profil er tilgængelig over dit tastatur.}other{{count} gemte profiler er tilgængelige over dit tastatur.}}</translation>
 <translation id="8741995161408053644">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Her finder du dine faner</translation>
 <translation id="8756969031206844760">Vil du opdatere adgangskoden?</translation>

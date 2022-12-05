@@ -43,8 +43,10 @@
 <translation id="1378727793141957596">Google Drive'га кош келиңиз!</translation>
 <translation id="1379911846207762492">Файлдарга оффлайн режиминде кирүү үчүн аларды жүктөп алсаңыз болот.</translation>
 <translation id="1383876407941801731">Издөө</translation>
+<translation id="1388045380422025115">Бардык түрлөрү</translation>
 <translation id="1395262318152388157">Слайдерди издөө</translation>
 <translation id="1399511500114202393">Колдонуучунун тастыктамасы колдонулбасын</translation>
+<translation id="1403008701842173542">Бардык жерде</translation>
 <translation id="1404323374378969387">Норвежче</translation>
 <translation id="1433628812591023318">Parallels Desktop'ко файлды көчүрүү үчүн файл Windows файлдарына жылдырылышы керек.</translation>
 <translation id="1435838927755162558">Файлды Parallels Desktop менен бөлүшүү</translation>
@@ -102,6 +104,7 @@
 <translation id="1834290891154666894">Cубъекттин кошумча аталышына окшош жараксыз жазуу</translation>
 <translation id="1838709767668011582">Google сайты</translation>
 <translation id="1853795129690976061">Бул файл Linux менен бөлүшүлүп жатат</translation>
+<translation id="1859422890169495746">Ушул Chromebook түзмөгү</translation>
 <translation id="1864756863218646478">Бир да файл табылган жок.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Туташуу</translation>
 <translation id="1920670151694390848">Малайаламча (транслитерация)</translation>
@@ -153,6 +156,7 @@
 <translation id="2307462900900812319">Тармакты конфигурациялоо</translation>
 <translation id="2325650632570794183">Мындай файл түрү колдоого алынбайт. Бул файлдын түрүн ача алган колдонмону табуу үчүн Chrome Желе дүкөнүнө кириңиз.</translation>
 <translation id="2326539130272988168">Болгарча</translation>
+<translation id="2337715497728194187">Bruschetta аркылуу бөлүшүү</translation>
 <translation id="23721837607121582">Мобилдик профилди жүктөп алуу, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Тизме көрүнүшүнө өтүү</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папка Linux аркылуу бөлүшүлдү</translation>
@@ -182,6 +186,7 @@
 <translation id="2544853746127077729">Аныктыкты текшерүү тастыктамасын тармак четке какты</translation>
 <translation id="255937426064304553">АКШ эл аралык</translation>
 <translation id="2563185590376525700">Бака</translation>
+<translation id="2574327434504608656">1 папка Bruschetta менен бөлүшүлдү</translation>
 <translation id="2578394532502990878">Тамилче (фонетикалык)</translation>
 <translation id="2579959351793446050">Одияча</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
@@ -275,6 +280,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> тармагын жандыруу</translation>
 <translation id="3408236822532681288">Немисче (Германия) жана Neo 2 баскычтобу</translation>
 <translation id="3414856743105198592">Суурулма каражат форматталганда, андагы бардык дайындар өчүп калат. Уланта бересизби?</translation>
+<translation id="3435143625481187092">Bruschetta кызматына <ph name="FOLDER_NAME" /> папкасындагы файлдарга кирүүгө уруксат бериңиз</translation>
 <translation id="3437801641691368414">Түзүлгөн убакыты</translation>
 <translation id="343907260260897561">Ыкчам камера</translation>
 <translation id="3455931012307786678">Эстончо</translation>
@@ -354,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылдырылды.</translation>
 <translation id="4176286497474237543">Таштандыны азыр бошотуу</translation>
 <translation id="4179621117429069925">Элемент таштандыда</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> папка Bruschetta менен бөлүшүлдү</translation>
 <translation id="4186579485882418952">Оффлайн режимин иштетүү</translation>
 <translation id="4193154014135846272">Google документи</translation>
 <translation id="4197674956721858839">Кысуу тандоолору</translation>
@@ -415,6 +422,7 @@
 <translation id="4646813851450205600">Чехче жана Qwerty баскычтобу</translation>
 <translation id="4656777537938206294">Файлдарды оффлайнда колдонуңуз</translation>
 <translation id="4658782175094886150">Кардагы адам</translation>
+<translation id="466782788172479199">Bruschetta кызматына Google Drive'дагы файлдарга кирүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
 <translation id="4669606053856530811">Файлдар бөлүшүлмөйүнчө "<ph name="SOURCE_NAME" />" жалпы дискинин колдонуучулары аларды колдоно албай калышат.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Шведче</translation>
@@ -448,6 +456,7 @@
 <translation id="4850886885716139402">Көрүнүш</translation>
 <translation id="485316830061041779">Немисче</translation>
 <translation id="4867079195717347957">Тилкени кичирейген ыраатта иреттөө үчүн чыкылдатыңыз.</translation>
+<translation id="4867297348137739678">Өткөн апта</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
 <translation id="4874569719830985133">Биротоло өчүрүү</translation>
 <translation id="4880214202172289027">Үн слайдери</translation>
@@ -520,6 +529,7 @@
 <translation id="5330145655348521461">Бул файлдар башка иш тактада ачылды. Аларды карап көрүү үчүн бул жерге жылдырыңыз <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Маалымат алуу</translation>
 <translation id="5337538975554986899">Файлга <ph name="NON_RESTRICTED_DESTINATIONS" /> башка бардык URL даректеринен кирүү мүмкүнчүлүгү</translation>
+<translation id="5344246330454251646">Bruschetta аркылуу бөлүшүүнү тескөө</translation>
 <translation id="535792325654997756">Мышыктар менен адам</translation>
 <translation id="5358764674931277">Кадрлардын жыштыгы</translation>
 <translation id="5363339716524495120">Киргизүү тили — кытайча</translation>
@@ -565,6 +575,7 @@
 <translation id="5700087501958648444">Аудио файл тууралуу маалымат</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> таштандыга ыргытылды</translation>
 <translation id="5724172041621205163">Тайча (Pattachote баскычтобу)</translation>
+<translation id="57383366388012121">Өткөн ай</translation>
 <translation id="5756666464756035725">Венгерче QWERTY</translation>
 <translation id="5763377084591234761">Немисче (Швейцария)</translation>
 <translation id="5769519078756170258">Четтетиле турган башкы түйүн же домен</translation>
@@ -674,6 +685,7 @@
 <translation id="6710213216561001401">Мурунку</translation>
 <translation id="6732801395666424405">Тастыктамалар жүктөлгөн жок</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Bruschetta менен папка бөлүшүү</translation>
 <translation id="6751256176799620176">1 куржун тандалды</translation>
 <translation id="6755827872271341378">ChromeOS Flex түзмөгү</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
@@ -702,6 +714,7 @@
 <translation id="6935521024859866267">Астын-үстү</translation>
 <translation id="6943836128787782965">HTTP кыйрап калды</translation>
 <translation id="6949408524333579394">Сербче (транслитерация)</translation>
+<translation id="69548399407432279">Былтыр</translation>
 <translation id="6960565108681981554">Жандырылган эмес. Байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="696203921837389374">Мобилдик дайындар аркылуу шайкештештирүүнү иштетүү</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -845,6 +858,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> форматындагы аудио файл</translation>
 <translation id="8045462269890919536">Румынча</translation>
 <translation id="8049184478152619004">Жеке бөгөттөн чыгаруу ачкычын (PUK) киргизиңиз</translation>
+<translation id="8055538340801153769">Ушул папка</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> чыгарылууда...</translation>
 <translation id="8087576439476816834">Жүктөп алуу, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Мени менен бөлүшүлгөн</translation>

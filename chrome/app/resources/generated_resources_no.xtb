@@ -1790,7 +1790,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2603115962224169880">Rydd opp i datamaskinen</translation>
 <translation id="2603355571917519942">Voice Match er klar</translation>
 <translation id="2604129989323098489">Nettsteder ber vanligvis om informasjon om skjermene dine for å kunne åpne og plassere vinduer på en intelligent måte, for eksempel for å vise dokumenter eller innhold i fullskjerm side om side</translation>
-<translation id="2604255671529671813">Feil i nettverkstilkobling</translation>
+<translation id="2604255671529671813">Tilkoblingsfeil</translation>
 <translation id="2605668923777146443">Gå til <ph name="LINK_BEGIN" />Innstillinger<ph name="LINK_END" /> for å se alternativene for Better Together.</translation>
 <translation id="2606246518223360146">Knytt sammen dataene</translation>
 <translation id="2606454609872547359">Nei, fortsett uten ChromeVox</translation>
@@ -1966,6 +1966,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="275662540872599901">skjerm av</translation>
 <translation id="2757161511365746634">Vis skriver</translation>
 <translation id="2757338480560142065">Sørg for at passordet du lagrer, samsvarer med passordet ditt for <ph name="WEBSITE" />.</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Fant ingen søkeresultater for <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Kameraet er blokkert</translation>
 <translation id="2764786626780673772">VPN-detaljer</translation>
 <translation id="2764920001292228569">Skriv inn et profilnavn</translation>
@@ -5918,6 +5919,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6508248480704296122">Knyttet til <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medielisens</translation>
+<translation id="6511279028091289182">Avgjør hvordan en sikker forbindelse brukes til å koble til nettsteder. Dette gjøres ved bruk av en administrert tjenesteleverandør på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="6511827214781912955">Du bør vurdere å slette <ph name="FILENAME" />, slik at andre som bruker denne enheten, ikke kan se passordene dine</translation>
 <translation id="6512808201725371249">Et passord for denne kontoen er allerede lagret i Google Passordlagring (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome bruker mobile data hvis du ikke er koblet til et annet nettverk.</translation>
@@ -5987,6 +5989,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6568283005472142698">Fanesøk</translation>
 <translation id="65711204837946324">Trenger tillatelse for å laste ned</translation>
 <translation id="6571772921213691236">Rediger påloggingsinformasjon</translation>
+<translation id="657229725818377235">Få mer beskyttelse mot farlige nettsteder og nedlastinger</translation>
 <translation id="6573096386450695060">Tillat alltid</translation>
 <translation id="6573497332121198392">Kan ikke fjerne snarveien</translation>
 <translation id="657402800789773160">&amp;Last inn denne siden på nytt</translation>
@@ -6931,6 +6934,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7465635034594602553">Noe gikk galt. Vent noen minutter, og kjør <ph name="APP_NAME" /> på nytt.</translation>
 <translation id="7465778193084373987">Nettadresse for tilbakekalling av Netscape-sertifikat</translation>
 <translation id="7466431077154602932">Kompakt visning</translation>
+<translation id="7466556884531675354">Ingen notater er lagret</translation>
 <translation id="746861123368584540">Utvidelsen er lastet inn</translation>
 <translation id="7470424110735398630">Nettsteder som har lov til å se utklippstavlen din</translation>
 <translation id="747114903913869239">Feil: Kan ikke avkode etternavnet</translation>
@@ -7216,7 +7220,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7726391492136714301">Se varslene og appene på telefonen din</translation>
 <translation id="7728465250249629478">Bytt enhetsspråk</translation>
-<translation id="7728570244950051353">Låseskjerm fra hvilemodus</translation>
+<translation id="7728570244950051353">Konfigurer låseskjerm fra hvilemodus</translation>
 <translation id="7728668285692163452">Kanalendringen blir tatt i bruk senere.</translation>
 <translation id="7730449930968088409">ta bilde av innhold på skjermen din</translation>
 <translation id="7730683939467795481">Denne siden ble endret av utvidelsen «<ph name="EXTENSION_NAME" />»</translation>
@@ -7505,7 +7509,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7978450511781612192">Dette logger deg av Google-kontoene dine. Bokmerkene dine, loggen din, passordene dine med mer blir ikke lenger synkronisert.</translation>
 <translation id="7980084013673500153">Ressurs-ID: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">Last inn sider på forhånd for raskere nettlesing og søk</translation>
-<translation id="798145602633458219">Legger til forslaget <ph name="SUGGESTION_NAME" /> i søkefeltet.</translation>
 <translation id="7981662863948574132">Vis forgrunnsvindu med enhetens EID-nummer og QR-kode</translation>
 <translation id="7981670705071137488">Etter dette kommer programvareoppdateringer til å foregå i bakgrunnen. Du kan gå gjennom preferansene dine for oppdateringer i innstillingene.</translation>
 <translation id="7982083145464587921">Start enheten på nytt for å fikse denne feilen.</translation>
@@ -7911,6 +7914,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8351316842353540018">Vis alltid a11y-alternativer</translation>
 <translation id="8351419472474436977">Denne utvidelsen har tatt kontrollen over proxy-tjenerinnstillingene dine, noe som betyr at den kan endre, ødelegge eller spionere på alt du foretar deg på nettet. Hvis du ikke er sikker på hvorfor denne endringen fant sted, vil du mest sannsynlig ikke ha den.</translation>
 <translation id="8351630282875799764">Batteriet lades ikke</translation>
+<translation id="8352287103893778223">Tittel på fanegruppe</translation>
 <translation id="835238322900896202">Det oppsto en feil ved avinstalleringen. Du må avinstallere via terminalen.</translation>
 <translation id="8353683614194668312">Den får følgende tilgang:</translation>
 <translation id="8354034204605718473">Barnets PIN-kode er lagt til</translation>

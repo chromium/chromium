@@ -27,7 +27,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
 <translation id="1147031633655575115">Has iniciado sesión como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver otras pestañas</translation>
-<translation id="1161340988127985692">Solicitar abrir enlaces de otras aplicaciones en incógnito</translation>
+<translation id="1161340988127985692">Solicitar abrir enlaces de otras aplicaciones en Incógnito</translation>
 <translation id="1164064664035028907">Usar contraseña segura:</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Siguiente campo</translation>
@@ -99,6 +99,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1650222530560417226">Toca el botón Iniciar registro para recopilar futuros registros y errores de la consola de JavaScript en todas las pestañas. Los registros se recopilarán (y solo se almacenarán en la memoria) hasta que cierres la página o toques el botón Detener registro.</translation>
+<translation id="1653432787084483144">{count,plural, =1{{count} contraseña guardada disponible encima del teclado.}other{{count} contraseñas guardadas disponibles encima del teclado.}}</translation>
 <translation id="1657011748321897393">Error al compartir contenido porque no estás conectado a la red</translation>
 <translation id="1657641691196698092">Cookies bloqueadas</translation>
 <translation id="165877110639533037">No hay pestañas abiertas</translation>
@@ -139,6 +140,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2015722694326466240">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder ver las contraseñas.</translation>
 <translation id="2021670401941426298">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="202292859882676807">Acceso a micrófono permitido</translation>
+<translation id="2050196510205866090">{count,plural, =1{{count} método de pago guardado disponible encima del teclado.}other{{count} métodos de pago guardados disponibles encima del teclado.}}</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -180,6 +182,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2375243552872247702">Recibe contenido personalizado</translation>
 <translation id="2381405137052800939">Configuración básica</translation>
 <translation id="2386793615875593361">1 foto seleccionada</translation>
+<translation id="2411749908844615428">{count,plural, =1{{count} dirección guardada disponible encima del teclado.}other{{count} direcciones guardadas disponibles encima del teclado.}}</translation>
 <translation id="2421004566762153674">Bloquear cookies de terceros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
 <translation id="2434405374328098816">Ya has guardado una contraseña para <ph name="USERNAME" /> en <ph name="WEBSITE" /></translation>
@@ -477,6 +480,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 Tus datos se han cifrado con tu frase de contraseña de sincronización. Introdúcela para iniciar la sincronización.</translation>
 <translation id="4682686630151240767">1. Abre los ajustes del iPhone</translation>
 <translation id="4689564913179979534">Gestionar métodos de pago...</translation>
+<translation id="469300482518076788">Cerrar pestaña</translation>
 <translation id="4697071790493980729">No se han encontrado resultados</translation>
 <translation id="470966556546083668">No activar la sincronización</translation>
 <translation id="4737560986434232178">Buscar en las pestañas recientes</translation>
@@ -1025,6 +1029,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8730621377337864115">Hecho</translation>
 <translation id="8731388423028622182">Se ha cerrado la sesión de tu cuenta <ph name="USER_NAME" /> al restablecer tu iPhone. Toca Continuar abajo para iniciar sesión.</translation>
 <translation id="87371078663613140">Explora las opciones en la barra de menú</translation>
+<translation id="8737620822084008350">{count,plural, =1{{count} perfil guardado disponible encima del teclado.}other{{count} perfiles guardados disponibles encima del teclado.}}</translation>
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Aquí verás tus pestañas</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>

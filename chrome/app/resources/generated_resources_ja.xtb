@@ -71,6 +71,7 @@
 <translation id="1067048845568873861">作成日</translation>
 <translation id="1067661089446014701">セキュリティ強化のため、Google アカウントに保存する前にデバイス上でパスワードを暗号化できます。</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
+<translation id="106814709658156573">指紋を設定するには、キーボードの左下にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="1069104208554708737">このパスキーはこのデバイスにのみ保存されます</translation>
 <translation id="1069355737714877171"><ph name="PROFILE_NAME" /> という名前の eSIM プロファイルを削除します</translation>
 <translation id="1069814191880976658">別の画面を選択</translation>
@@ -995,6 +996,7 @@
 <translation id="1892341345406963517"><ph name="PARENT_NAME" /> さん</translation>
 <translation id="189358972401248634">その他の言語</translation>
 <translation id="1895658205118569222">シャットダウン</translation>
+<translation id="1896043844785689584">指紋を設定するには、キーボードの右下にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="1897120393475391208">安全なパスワードを使用</translation>
 <translation id="1900305421498694955">Google Play のアプリで外部ストレージ デバイスのファイルの読み取りと書き込みを行うには、ファイル システムへのフルアクセスが必要となる場合があります。デバイス上に作成されたファイルやフォルダは、外部ドライブを使用する全員に表示されます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">すべて選択(&amp;A)</translation>
@@ -2217,6 +2219,7 @@
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を許可しました</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3001144475369593262">子アカウント</translation>
+<translation id="3001835006423291524">キーボードの右下にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="3003144360685731741">優先ネットワーク</translation>
 <translation id="3003623123441819449">CSS キャッシュ</translation>
 <translation id="3003828226041301643">デバイスをドメインに追加できません。アカウントにデバイスを追加する権限があるかどうかご確認ください。</translation>
@@ -2298,6 +2301,7 @@
 <translation id="3071624960923923138">ここをクリックすると新しいタブが開きます</translation>
 <translation id="3072775339180057696">サイトに <ph name="FILE_NAME" /> の読み取りを許可しますか？</translation>
 <translation id="3074499504015191586">ページ全体を翻訳</translation>
+<translation id="3075144191779656260"><ph name="DEVICE_TYPE" /> の左側にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="3075874217500066906">Powerwash を開始するには再起動が必要です。再起動後、続行の確認メッセージが表示されます。</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">このデバイスにのみ保存</translation>
@@ -2619,6 +2623,7 @@
 <translation id="3406290648907941085">バーチャル リアリティ デバイスとデータの使用を許可するサイト</translation>
 <translation id="3406396172897554194">言語または入力方法で検索</translation>
 <translation id="3406605057700382950">ブックマーク バーを表示(&amp;S)</translation>
+<translation id="3407967630066378878">指紋を設定するには、この <ph name="DEVICE_TYPE" /> の左側にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 件のパスワードを <ph name="USER_EMAIL" /> の Google パスワード マネージャーにインポートしました}other{{NUM_PASSWORDS} 件のパスワードを <ph name="USER_EMAIL" /> の Google パスワード マネージャーにインポートしました}}</translation>
 <translation id="3409785640040772790">マップ</translation>
 <translation id="3412265149091626468">選択部分へジャンプ</translation>
@@ -3741,6 +3746,7 @@
 <translation id="4451479197788154834">パスワードはこのデバイスと Google アカウントに保存されています</translation>
 <translation id="4451757071857432900">煩わしい広告や誤解を招く広告が表示されるサイトでブロック（推奨）</translation>
 <translation id="4452898361839215358">または、PPD を選択します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="4453430595102511050">キーボードの右上にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> で検索するか、URL を入力してください</translation>
 <translation id="4458535500699390320">このタブがアクティブでないときに、メモリセーバーがメモリを他のタスクに解放しました。これは [設定] でいつでも変更できます。</translation>
 <translation id="4459169140545916303">最終同期: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> 日前</translation>
@@ -4145,7 +4151,7 @@
 <translation id="4838170306476614339">スマートフォンの写真、メディア、通知を表示します</translation>
 <translation id="4838836835474292213">クリップボードへの読み取りアクセスが許可されています</translation>
 <translation id="4838907349371614303">パスワードの更新完了</translation>
-<translation id="4838958829619609362">選択内容は <ph name="LANGUAGE" /> ではありません</translation>
+<translation id="4838958829619609362">選択内容は<ph name="LANGUAGE" />ではありません</translation>
 <translation id="4839303808932127586">名前を付けて動画を保存(&amp;V)...</translation>
 <translation id="4839910546484524995">デバイスを確認する</translation>
 <translation id="4840096453115567876">シークレット モードを終了してもよろしいですか？</translation>
@@ -6009,6 +6015,7 @@
 <translation id="6607831829715835317">その他のツール(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> はすでに <ph name="DOMAIN" /> によって管理されています。別の Google アカウントで保護者による使用制限を設定するには、セットアップ後にログアウトしてから、ログイン画面で [ユーザーを追加] を選択します。</translation>
 <translation id="6608166463665411119">eSIM をリセット</translation>
+<translation id="6608773371844092260">指紋を設定するには、この <ph name="DEVICE_TYPE" /> の右側にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="6609478180749378879">ログインデータはシークレット モードの終了後にこのデバイスに保存されます。今後、このデバイスからこのウェブサイトにログインできるようになります。</translation>
 <translation id="6610002944194042868">翻訳オプション</translation>
 <translation id="6611907964265870728">デバイスがインターネットに接続されていることを確認してください</translation>
@@ -6653,6 +6660,7 @@
 <translation id="7225082563376899794">Windows Hello を使用してパスワードを入力する</translation>
 <translation id="7225179976675429563">ネットワークの種類が指定されていません</translation>
 <translation id="7227458944009118910">以下のアプリでもプロトコル リンクを処理できます。他のアプリでは許可が必要となります。</translation>
+<translation id="7228056665272655255">指紋を設定するには、キーボードの右上にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="7228523857728654909">画面ロックとログイン</translation>
 <translation id="7230222852462421043">ウィンドウを復元(&amp;R)</translation>
 <translation id="7231260028442989757">スマートフォンの通知を確認する、閉じる、返信するなどの操作を行います</translation>
@@ -6762,7 +6770,7 @@
 <translation id="7343372807593926528">問題の詳細を記入してからフィードバックを送信してください。</translation>
 <translation id="7344585835349671209">デバイスの HTTPS / SSL 証明書を管理します</translation>
 <translation id="7345706641791090287">パスワードを再入力</translation>
-<translation id="7345919885156673810">選択内容は <ph name="LANGUAGE" /> ではありません</translation>
+<translation id="7345919885156673810">選択内容は<ph name="LANGUAGE" />ではありません</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347751611463936647">この拡張機能を使用するには、「<ph name="EXTENSION_KEYWORD" />」と入力して Tab キーを押してからコマンドまたは検索キーワードを入力してください。</translation>
 <translation id="7347943691222276892">クリックすると <ph name="SUBPAGE_TITLE" /> から移動します。</translation>
@@ -6779,6 +6787,7 @@
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> ページを <ph name="PRINTER_NAME" /> に送信しました</translation>
 <translation id="7360257054721917104">保存したデスクとテンプレートを表示しています。Tab キーを押して移動できます。</translation>
 <translation id="7361297102842600584">右クリックして <ph name="PLUGIN_NAME" /> を実行します</translation>
+<translation id="7361914392989692067">電源ボタンを指でタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="7362387053578559123">サイトが Bluetooth デバイスへの接続を要求できるようにする</translation>
 <translation id="7363349185727752629">プライバシー設定のガイド</translation>
 <translation id="7364591875953874521">アクセスを要求しました</translation>
@@ -7476,7 +7485,6 @@
 <translation id="7978450511781612192">この操作を行うと Google アカウントからログアウトし、ブックマーク、履歴、パスワードなどの設定は同期されなくなります。</translation>
 <translation id="7980084013673500153">アセット ID: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">ページをプリロードして、閲覧と検索をすばやく行えるようにする</translation>
-<translation id="798145602633458219">検索ボックスに候補<ph name="SUGGESTION_NAME" />を追加します</translation>
 <translation id="7981662863948574132">デバイスの EID と QR コードのポップアップを表示します</translation>
 <translation id="7981670705071137488">今後、ソフトウェアの更新はバックグラウンドで行われます。更新の設定は [設定] で確認できます。</translation>
 <translation id="7982083145464587921">このエラーを修正するには、デバイスを再起動してください。</translation>
@@ -7830,6 +7838,7 @@
 <translation id="8299319456683969623">現在オフラインです。</translation>
 <translation id="8300011035382349091">このタブのブックマークを編集します</translation>
 <translation id="8300374739238450534">ミッドナイトブルー</translation>
+<translation id="8301242268274839723">キーボードの左下にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{住所}other{# 件の住所}}</translation>
 <translation id="8304383784961451596">このデバイスを使用する権限がありません。ログイン権限についてデバイスの管理者に問い合わせるか、ファミリー リンクで管理されている Google アカウントでログインしてください。</translation>
 <translation id="8306885873692337975">最新の機能を入手しセキュリティを強化しましょう。</translation>
@@ -8556,10 +8565,12 @@
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> のパスワードを忘れた場合でも、ローカルデータを復元できます。Google アカウントにログインするか、アカウント復元を使用する必要があります。</translation>
 <translation id="8993737615451556423">読み上げを早送り、巻き戻し、一時停止できる操作パネルを表示します</translation>
 <translation id="899384117894244799">制限付きユーザーの削除</translation>
+<translation id="8993945059918628059">指紋認証センサーに指を置いてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="899403249577094719">Netscape 証明書基本 URL</translation>
 <translation id="899657321862108550">あなたの Chrome をいつでもどこでも</translation>
 <translation id="8998078711690114234">この種類のファイルは危険な可能性があります。<ph name="ORIGIN" /> を信頼できる場合のみ、このファイルを保存してください</translation>
 <translation id="8999560016882908256">セクションの構文エラーです: <ph name="ERROR_LINE" /></translation>
+<translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> の右側にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="9003185744423389627">デバイス管理サーバーに接続できませんでした（ステータス「<ph name="STATUS_TEXT" />」、<ph name="FAILURE_TIME" />）</translation>
 <translation id="9003647077635673607">すべてのウェブサイトで許可する</translation>
 <translation id="9003677638446136377">もう一度確認</translation>

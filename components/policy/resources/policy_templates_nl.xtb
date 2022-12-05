@@ -684,6 +684,7 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
 <translation id="1634989431648355062">De <ph name="FLASH_PLUGIN_NAME" />-plug-in toestaan op deze sites</translation>
 <translation id="1635748761015837179">Schrijven naar externe opslagapparaten toestaan</translation>
 <translation id="1639468541408865385">HTTP-verificatiecache met wereldwijd bereik aanzetten</translation>
+<translation id="1641117061932613266"><ph name="PRODUCT_NAME" /> V2-service aanzetten</translation>
 <translation id="1641394008743444477">Hiermee kun je een lijst van <ph name="PRODUCT_OS_NAME" />-functies instellen die worden uitgezet.
 
       Als je een van deze functies uitzet, heeft de gebruiker hiertoe geen toegang meer vanuit de UI en wordt de functie getoond als Uitgezet door beheerder. De gebruikerservaring voor uitgezette functies wordt bepaald door <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
@@ -4532,6 +4533,9 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
 <translation id="5448022937220253000">Kies wat er gebeurt met gebruikersgegevens nadat <ph name="LACROS_NAME" /> is uitgezet</translation>
 <translation id="5449690328792750354">Event.path API komt beschikbaar.</translation>
 <translation id="5452024130413254050">Bepaalt of VM's die deze configuratie gebruiken toegang hebben tot een vTPM. Dit beleid wordt standaard ingesteld op False en <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> als het niet is ingesteld.</translation>
+<translation id="5454128917282602937">Als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten, start de <ph name="PRODUCT_NAME" /> V2-service de browser- en app-vensters van het vorige apparaat op het nieuwe apparaat.
+Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser- en app-vensters geopend van het <ph name="PRODUCT_OS_NAME" />-apparaat dat de huidige gebruiker het laatst heeft gebruikt.
+Als je het beleid niet toepast of niet instelt, wordt op basis van de instellingen voor volledig herstel bepaald wat er bij het inloggen wordt gestart.</translation>
 <translation id="5455609857202311243">KDC-beleidsgoedkeuring negeren tijdens HTTP-verificatie</translation>
 <translation id="5455888515928026628">Als je inlogt via het vergrendelscherm, kan <ph name="PRODUCT_OS_NAME" /> de verificatie uitvoeren via een server (online) of door gebruik te maken van een gecachet wachtwoord (offline).
 
@@ -7979,6 +7983,7 @@ Dit beleid biedt een overzicht van configuratie-ID's die zijn toegewezen aan VM-
 <translation id="8882006618241293596">De <ph name="FLASH_PLUGIN_NAME" />-plug-in blokkeren op deze sites</translation>
 <translation id="8882255181490012651">Hierdoor kunnen gebruikers die Telefoonhub toestaan, geen toegang krijgen tot recente foto's en video's die ze hebben gemaakt op hun telefoon</translation>
 <translation id="8882307005437314052">Schermtoetsenbord op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>
+<translation id="8883577480680089760"><ph name="PRODUCT_NAME" /> V2-service uitzetten en geen extern bureau starten bij inloggen</translation>
 <translation id="8887709920496070892">De tijdsduur zonder gebruikersinvoer waarna een waarschuwingsdialoogvenster wordt getoond (in milliseconden)</translation>
 <translation id="8890438048579188548">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> verbergen</translation>
 <translation id="8891334958985336685">Rapportage van systeeminformatie van apparaat uitzetten</translation>
@@ -8118,6 +8123,7 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 <translation id="9015952763003753868">Overeenkomende <ph name="ACAM_HEADER_NAME" /> in pre-flightverzoek voor <ph name="CORS" /> laten overeenkomen met de specificaties</translation>
 <translation id="9020630127193895800">Indigo achtergrondverlichting van toetsenbord</translation>
 <translation id="9031831501689819108">Ondersteuning voor oudere browsers aanzetten</translation>
+<translation id="9032595854515551464"><ph name="PRODUCT_NAME" /> V2-service aanzetten en extern bureau starten bij inloggen</translation>
 <translation id="9035086760683255833">Zet de toegankelijkheidsfunctie voor markeren via toetsenbordfocus aan.
 
           Met deze functie wordt het object gemarkeerd waarop het toetsenbord is gefocust.

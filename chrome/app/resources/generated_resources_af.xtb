@@ -1972,6 +1972,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="275662540872599901">skerm af</translation>
 <translation id="2757161511365746634">Bekyk drukker</translation>
 <translation id="2757338480560142065">Maak seker dat die wagwoord wat jy stoor, ooreenstem met jou wagwoord vir <ph name="WEBSITE" /></translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Geen soekresultate gewys vir <ph name="SEARCH_QUERY" /> nie</translation>
 <translation id="2762441749940182211">Kamera word geblokkeer</translation>
 <translation id="2764786626780673772">VPN-besonderhede</translation>
 <translation id="2764920001292228569">Voer ’n profielnaam in</translation>
@@ -5929,6 +5930,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6508248480704296122">Soortgelyk aan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medialisensie</translation>
+<translation id="6511279028091289182">Bepaal hoe om met ’n veilige verbinding aan webwerwe te koppel. Dit gebruik ’n bestuurde diensverskaffer by <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="6511827214781912955">Oorweeg dit om <ph name="FILENAME" /> uit te vee sodat ander wat hierdie toestel gebruik, nie jou wagwoorde kan sien nie</translation>
 <translation id="6512808201725371249">Daar is reeds ’n wagwoord vir hierdie rekening in jou Google Wagwoordbestuurder (<ph name="USER_EMAIL" />) gestoor</translation>
 <translation id="6513247462497316522">Google Chrome sal mobiele data gebruik as jy nie aan 'n ander netwerk gekoppel is nie.</translation>
@@ -5998,6 +6000,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6568283005472142698">Oortjiesoektog</translation>
 <translation id="65711204837946324">Benodig toestemming om af te laai</translation>
 <translation id="6571772921213691236">Wysig aanmelddata</translation>
+<translation id="657229725818377235">Kry meer beskerming teen gevaarlike webwerwe en aflaaie</translation>
 <translation id="6573096386450695060">Laat altyd toe</translation>
 <translation id="6573497332121198392">Kan nie kortpad verwyder nie</translation>
 <translation id="657402800789773160">Herlaai hierdie bladsy</translation>
@@ -6942,6 +6945,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7465635034594602553">Iets is fout. Wag asseblief 'n paar minute en laat loop <ph name="APP_NAME" /> dan weer.</translation>
 <translation id="7465778193084373987">Netscape-sertifikaatherroeping se URL</translation>
 <translation id="7466431077154602932">Kompakte aansig</translation>
+<translation id="7466556884531675354">Geen notas gestoor nie</translation>
 <translation id="746861123368584540">Uitbreiding is gelaai</translation>
 <translation id="7470424110735398630">Mag jou knipbord sien</translation>
 <translation id="747114903913869239">Fout: Kon nie uitbreiding ontsyfer nie</translation>
@@ -7516,7 +7520,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7978450511781612192">Dit sal jou by al jou Google-rekeninge afmeld. Jou boekmerke, geskiedenis, wagwoorde en meer sal nie meer gesinkroniseer word nie.</translation>
 <translation id="7980084013673500153">Bate-ID: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">Laai bladsye vooraf om vinniger te blaai en te soek</translation>
-<translation id="798145602633458219">Heg hierdie voorstel <ph name="SUGGESTION_NAME" /> aan soekkassie</translation>
 <translation id="7981662863948574132">Wys toestel-EID en QR-kodeopspringer</translation>
 <translation id="7981670705071137488">Sagteware-opdaterings sal daarna op die agtergrond gebeur. Jy kan opdateringvoorkeure in Instellings kontroleer.</translation>
 <translation id="7982083145464587921">Herbegin asseblief jou toestel om hierdie fout reg te stel.</translation>
@@ -7921,6 +7924,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8351316842353540018">Wys altyd a11y-opsies</translation>
 <translation id="8351419472474436977">Hierdie uitbreiding het beheer oor jou instaanbediener-instellings oorgeneem, wat beteken dit kan alles wat jy aanlyn doen, verander, breek of afluister. As jy nie seker is hoekom hierdie verandering plaasgevind het nie, wil jy dit waarskynlik nie hê nie.</translation>
 <translation id="8351630282875799764">Battery laai nie</translation>
+<translation id="8352287103893778223">Oortjiegroeptitel</translation>
 <translation id="835238322900896202">'n Fout het tydens deïnstallering voorgekom. Deïnstalleer asseblief deur die Terminaal.</translation>
 <translation id="8353683614194668312">Dit kan:</translation>
 <translation id="8354034204605718473">Jou kind se PIN is bygevoeg</translation>

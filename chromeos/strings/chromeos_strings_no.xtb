@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Send tilbakemeldingsrapport</translation>
 <translation id="2407209115954268704">Status for SIM-låsing</translation>
+<translation id="241419523391571119">Åpne lokket igjen for å teste</translation>
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2418150275289244458">Åpne i innstillingene</translation>
 <translation id="2421798028054665193">Bilde <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2926057806159140518">Oppgi brukernavn og passord, eller skann QR-koden din</translation>
+<translation id="2940811910881150316">Kan ikke teste enheten. Åpne lokket igjen for å teste.</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3017079585324758401">Bakgrunn</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
 <translation id="3824259034819781947">Legg ved filer</translation>
 <translation id="3838338534323494292">Nytt passord</translation>
+<translation id="3845880861638660475">Trykk på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> for å lukke dialogboksen.</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3862598938296403232">En beskrivelse er nødvendig</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">Beskrivelse</translation>
 <translation id="387301095347517405">Antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
 <translation id="3885327323343477505">Bytt skjermsparer</translation>
+<translation id="391412459402535266">Kan ikke teste enheten. Bytt til laptopmodus for å teste.</translation>
 <translation id="3923184630988645767">Databruk</translation>
 <translation id="3932043219784172185">Ingen enheter er koblet til</translation>
 <translation id="3941014780699102620">Kunne ikke finne tilknytning til verten</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567">Utskriftsjobber som er eldre enn <ph name="NUMBER_OF_DAYS" /> dager, blir fjernet</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> er nå oppdatert</translation>
 <translation id="4003384961948020559">Mislykket – utskriftsmottaket er fullt</translation>
+<translation id="4021031199988160623">Bytt til laptopmodus for å teste</translation>
 <translation id="4034824040120875894">Skriver</translation>
 <translation id="4044093238444069296">Kan ikke kontakte gatewayen</translation>
 <translation id="4046123991198612571">Neste spor</translation>

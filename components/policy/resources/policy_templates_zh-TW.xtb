@@ -677,6 +677,7 @@
 <translation id="1634989431648355062">允許在這些網站上執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
 <translation id="1635748761015837179">允許寫入外部儲存空間</translation>
 <translation id="1639468541408865385">啟用全域範圍的 HTTP 驗證快取</translation>
+<translation id="1641117061932613266">啟用<ph name="PRODUCT_NAME" /> V2 服務</translation>
 <translation id="1641394008743444477">這項政策可讓你設定要停用的 <ph name="PRODUCT_OS_NAME" />功能清單。
 
       任何功能一經停用，使用者就無法在使用者介面上存取該功能，且畫面上會顯示為「已由管理員停用」。已停用功能的使用者體驗由 <ph name="SYSTEM_FEATURES_DISABLE_MODE" /> 決定
@@ -4335,6 +4336,7 @@
 
       如果未設定這項政策，使用者無法在已註冊的 <ph name="PRODUCT_OS_NAME" />上玩恐龍復活節彩蛋遊戲，但可以在其他環境下玩這個遊戲。</translation>
 <translation id="5293285950307241933">清除所有本機使用者資料</translation>
+<translation id="5293875928467750789">如果將這項政策設為指定的值，系統會在使用者登入時，使用該值做為預設的裝置鍵盤背光亮度百分比。</translation>
 <translation id="529457411593078576">在第一次執行 CCT 時啟用《服務條款》</translation>
 <translation id="5297948043665200363">允許使用者在帳戶驗證狀態失效後保持登入狀態</translation>
 <translation id="5298949392804966105">不對受管理帳戶設定限制</translation>
@@ -4505,6 +4507,9 @@
 <translation id="5448022937220253000">選擇系統在 <ph name="LACROS_NAME" /> 停用後要如何處理使用者資料</translation>
 <translation id="5449690328792750354">Event.path API 將可供使用。</translation>
 <translation id="5452024130413254050">控制使用這項設定的 VM 是否可存取 vTPM。如未設定，預設為 False，如果不設定，則預設為 <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />。</translation>
+<translation id="5454128917282602937">當使用者在 <ph name="PRODUCT_OS_NAME" /> 裝置之間切換時，<ph name="PRODUCT_NAME" /> V2 服務會在新裝置啟動前一部裝置上的瀏覽器和應用程式視窗。
+如果將這項政策設為啟用，當使用者登入時，系統就會為目前使用者自動啟動上次使用的 <ph name="PRODUCT_OS_NAME" /> 裝置上的瀏覽器和應用程式視窗。
+如果將這項政策設為停用或不設定，登入時啟動的項目便取決於完整還原設定。</translation>
 <translation id="5455609857202311243">在 HTTP 驗證期間忽略 KDC 政策的核准結果</translation>
 <translation id="5455888515928026628">透過螢幕鎖定畫面登入時，<ph name="PRODUCT_OS_NAME" />可以透過伺服器進行線上驗證，或使用快取密碼進行離線驗證。
 
@@ -6430,6 +6435,7 @@
       通常會停用這項政策以防範網路詐騙。</translation>
 <translation id="7403217961820363141">在 Chrome 歷史記錄頁面上顯示瀏覽歷程</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />會造成 Android 備份與還原功能無法正常運作。</translation>
+<translation id="7406276857470642718">控制透過外部 IdP (使用 SAML) 進行驗證的使用者設定</translation>
 <translation id="7407441173422042771">這項政策可控管 <ph name="PRODUCT_NAME" /> 中的網路預測功能。這項設定會控管 DNS 預先擷取功能、TCP、SSL 預先連線和網頁預先轉譯機制。
 
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，系統會關閉網路預測功能，但使用者可以變更這項設定。</translation>
@@ -6841,6 +6847,7 @@
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期執行系統掃描，並停用手動掃描</translation>
 <translation id="7833148823006528332">Android 應用程式的 ID，例如 Gmail 的 ID 為「com.google.android.gm」</translation>
 <translation id="7835218570504220753">停用自動點擊功能</translation>
+<translation id="7837834961221899821">預設鍵盤亮度</translation>
 <translation id="7839180815400079700">如果已啟用 <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" />，你可以透過 <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> 設定電源尖峰轉移每日配置。
 
       如果不設定這項政策，系統會停用電源尖峰轉移。
@@ -7908,6 +7915,7 @@
 <translation id="8882006618241293596">禁止在這些網站上執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
 <translation id="8882255181490012651">禁止 Phone Hub 的使用者存取手機上最近拍攝的相片和影片</translation>
 <translation id="8882307005437314052">在登入畫面上啟用螢幕小鍵盤，並允許使用者暫時停用</translation>
+<translation id="8883577480680089760">停用<ph name="PRODUCT_NAME" /> V2 服務，不要在登入時啟動遠端桌面</translation>
 <translation id="8887709920496070892">顯示警告對話方塊前的閒置時間長度 (以毫秒為單位)。如果使用者在這段時間內沒有任何動作，系統就會顯示警告對話方塊</translation>
 <translation id="8890438048579188548">隱藏 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="8891334958985336685">停用裝置系統資訊回報功能</translation>
@@ -8049,6 +8057,7 @@
 <translation id="9015952763003753868">讓符合 <ph name="CORS" /> 預檢規格的 <ph name="ACAM_HEADER_NAME" /> 相容</translation>
 <translation id="9020630127193895800">靛藍色鍵盤背光顏色</translation>
 <translation id="9031831501689819108">啟用舊版瀏覽器支援</translation>
+<translation id="9032595854515551464">啟用<ph name="PRODUCT_NAME" /> V2 服務，並在登入時啟動遠端桌面</translation>
 <translation id="9035086760683255833">啟用鍵盤焦點醒目顯示無障礙功能。
 
           這項功能可以醒目顯示鍵盤聚焦的物件。

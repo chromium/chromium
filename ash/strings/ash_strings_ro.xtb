@@ -358,7 +358,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="296762781903199866">Nu s-au putut descărca fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">să instaleze aplicații, extensii și teme;</translation>
 <translation id="2977598380246111477">Următorul număr</translation>
-<translation id="2981684127883932071">Se afișează sugestiile</translation>
 <translation id="2985148236010982088">Vezi toate aplicațiile</translation>
 <translation id="2992327365391326550">Butonul pentru microfonul dispozitivului este dezactivat.</translation>
 <translation id="2996462380875591307">Lupa andocată este activată. Apasă din nou pe Ctrl + tasta de căutare + D pentru a o dezactiva.</translation>
@@ -669,6 +668,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4666082839192943839">Dezactivează accesul la camera foto al acestui dispozitiv pentru a bloca întotdeauna toate camerele.</translation>
 <translation id="4666911709726371538">Mai multe aplicații</translation>
 <translation id="4667099493359681081">Se descarcă <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Aplicații de pe telefon</translation>
 <translation id="4690510401873698237">Raft în partea de jos</translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
 <translation id="4702647871202761252">Ecranul de confidențialitate este dezactivat</translation>

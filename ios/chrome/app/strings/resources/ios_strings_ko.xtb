@@ -99,6 +99,7 @@
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1650222530560417226">모든 탭에서 앞으로 자바스크립트 콘솔 로그 및 오류를 수집하려면 '로그 기록 시작' 버튼을 탭하세요. 이 페이지가 닫히거나 '로그 기록 중지'를 탭할 때까지 로그가 수집됩니다(메모리에만 저장됨).</translation>
+<translation id="1653432787084483144">{count,plural, =1{키보드 위에 저장된 비밀번호 {count}개가 있습니다.}other{키보드 위에 저장된 비밀번호 {count}개가 있습니다.}}</translation>
 <translation id="1657011748321897393">네트워크에 연결되어 있지 않아 공유하지 못했습니다.</translation>
 <translation id="1657641691196698092">차단된 쿠키 수</translation>
 <translation id="165877110639533037">열린 탭 없음</translation>
@@ -139,6 +140,7 @@
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="2021670401941426298">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="202292859882676807">마이크 액세스 허용됨</translation>
+<translation id="2050196510205866090">{count,plural, =1{키보드 위에 저장된 결제 수단 {count}개가 있습니다.}other{키보드 위에 저장된 결제 수단 {count}개가 있습니다.}}</translation>
 <translation id="2073572773299281212"><ph name="DAYS" />일 전 사용됨</translation>
 <translation id="2074131957428911366">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
@@ -180,6 +182,7 @@
 <translation id="2375243552872247702">맞춤 콘텐츠 보기</translation>
 <translation id="2381405137052800939">기본설정</translation>
 <translation id="2386793615875593361">1장 선택됨</translation>
+<translation id="2411749908844615428">{count,plural, =1{키보드 위에 저장된 주소 {count}개가 있습니다.}other{키보드 위에 저장된 주소 {count}개가 있습니다.}}</translation>
 <translation id="2421004566762153674">타사 쿠키 차단</translation>
 <translation id="2421044535038393232">수정 계속</translation>
 <translation id="2434405374328098816"><ph name="USERNAME" />님의 <ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
@@ -439,6 +442,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4375040482473363939">QR 코드 검색</translation>
 <translation id="4378154925671717803">전화기</translation>
 <translation id="4389019817280890563">언어를 변경하려면 탭하세요.</translation>
+<translation id="4420409367264901497">북마크 수정</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Settings(설정)<ph name="END_BOLD" />를 엽니다.</translation>
 <translation id="4454246407045105932">언어 추가</translation>
 <translation id="4462491365653392320">탭에서 가격 추적</translation>
@@ -477,6 +481,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="4682686630151240767">1. iPhone 설정을 엽니다.</translation>
 <translation id="4689564913179979534">결제 수단 관리...</translation>
+<translation id="469300482518076788">탭 닫기</translation>
 <translation id="4697071790493980729">검색결과 없음</translation>
 <translation id="470966556546083668">동기화를 켜지 않음</translation>
 <translation id="4737560986434232178">최근 탭 검색</translation>
@@ -1025,6 +1030,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8730621377337864115">완료</translation>
 <translation id="8731388423028622182">iPhone 재설정 중 <ph name="USER_NAME" /> 계정에서 로그아웃되었습니다. 아래에서 '계속'을 탭하여 로그인하세요.</translation>
 <translation id="87371078663613140">메뉴 바의 옵션 살펴보기</translation>
+<translation id="8737620822084008350">{count,plural, =1{키보드 위에 저장된 프로필 {count}개가 있습니다.}other{키보드 위에 저장된 프로필 {count}개가 있습니다.}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />에서 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
 <translation id="8750037785291841318">여기에서 탭을 확인할 수 있습니다</translation>
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>

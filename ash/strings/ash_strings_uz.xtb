@@ -358,7 +358,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> nutq fayllari yuklab olinmadi</translation>
 <translation id="2970920913501714344">Ilovalar, kengaytmalar va mavzularni oʻrnating</translation>
 <translation id="2977598380246111477">Keyingi raqam</translation>
-<translation id="2981684127883932071">Takliflar chiqarildi</translation>
 <translation id="2985148236010982088">Barcha ilovalar</translation>
 <translation id="2992327365391326550">Qurilmaning mikrofon tugmasi faolsizlantirildi.</translation>
 <translation id="2996462380875591307">Mahkamlangan lupa yoniq. Uni olib tashlash uchun Ctrl+Qidiruv+D tugmalarini bosing.</translation>
@@ -669,6 +668,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4666082839192943839">Kameraga ruxsat faolsizlantirilganda bu qurilmadagi barcha kameralar butunlay bloklanadi.</translation>
 <translation id="4666911709726371538">Boshqa ilovalar</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> yuklab olinmoqda</translation>
+<translation id="468293128311738995">Telefondagi ilovalar</translation>
 <translation id="4690510401873698237">Javon pastda</translation>
 <translation id="4696813013609194136">Ota-ona kodi bilan qurilmani qulfdan chiqarish</translation>
 <translation id="4702647871202761252">Maxfiylik ekrani yoniq emas</translation>
@@ -1291,6 +1291,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8142441511840089262">Ikki marta bosish</translation>
 <translation id="8142699993796781067">Xususiy tarmoq</translation>
 <translation id="8144760705599030999">Boshqa qurilmalarga tezkor ulanish uchun qurilmani (<ph name="NAME" />) <ph name="EMAIL" /> hisobiga saqlang</translation>
+<translation id="8144914663975476336">Yozuv formatini tanlang</translation>
 <translation id="8149413265954228307">Bluetooth sozlamalarini ochish <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Yopish uchun Ctrl+W tugmalarini bosing.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Avtomatik kiritish</translation>

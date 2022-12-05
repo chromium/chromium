@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Google ಡ್ರೈವ್‌ಗೆ ಸುಸ್ವಾಗತ!</translation>
 <translation id="1379911846207762492">ನಿಮ್ಮ ಬಳಿ ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಇಲ್ಲದಿದ್ದಾಗ, ಪ್ರವೇಶಕ್ಕಾಗಿ ಫೈಲ್‌ಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಾಗುವಂತೆ ನೀವು ಮಾಡಬಹುದು.</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="1388045380422025115">ಎಲ್ಲಾ ಪ್ರಕಾರಗಳು</translation>
 <translation id="1395262318152388157">ಸೀಕ್ ಸ್ಲೈಡರ್</translation>
 <translation id="1399511500114202393">ಯಾವುದೇ ಬಳಕೆದಾರ ಪ್ರಮಾಣಪತ್ರವಿಲ್ಲ</translation>
 <translation id="1403008701842173542">ಎಲ್ಲೆಲ್ಲೂ</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">ಅಮಾನ್ಯವಾದ ವಿಷಯದ ಪರ್ಯಾಯ ಹೆಸರಿನ ಹೊಂದಾಣಿಕೆಯ ನಮೂದು</translation>
 <translation id="1838709767668011582">Google ಸೈಟ್</translation>
 <translation id="1853795129690976061">ಈ ಫೋಲ್ಡರ್ ಅನ್ನು Linux ಮೂಲಕ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
+<translation id="1859422890169495746">ಈ Chromebook</translation>
 <translation id="1864756863218646478">ಫೈಲ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, ಕನೆಕ್ಟ್</translation>
 <translation id="1920670151694390848">ಮಲಯಾಳಂ ಲಿಪ್ಯಂತರಣ</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರ್ ಮಾಡು</translation>
 <translation id="2325650632570794183">ಈ ಫೈಲ್ ಪ್ರಕಾರವು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ಈ ಪ್ರಕಾರ ಫೈಲ್ ತೆರೆಯಬಹುದಾದ ಅಪ್ಲಿಕೇಶನ್ ಹುಡುಕಲು Chrome ವೆಬ್ ಸ್ಟೋರ್‌‌ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
 <translation id="2326539130272988168">ಬಲ್ಗೇರಿಯನ್</translation>
+<translation id="2337715497728194187">Bruschetta ಮೂಲಕ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="23721837607121582">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ಪಟ್ಟಿ ವೀಕ್ಷಣೆಗೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="2377590462528165447">Linux ನೊಂದಿಗೆ <ph name="NUMBER_OF_ITEMS" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">ದೃಢೀಕರಣ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೆಟ್‌ವರ್ಕ್‌ನಿಂದ ತಿರಸ್ಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="255937426064304553">US ಇಂಟರ್‌ನ್ಯಾಷನಲ್</translation>
 <translation id="2563185590376525700">ಕಪ್ಪೆ</translation>
+<translation id="2574327434504608656">Bruschetta ಜೊತೆಗೆ 1 ಫೋಲ್ಡರ್ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="2578394532502990878">ತಮಿಳು ಫೋನೆಟಿಕ್</translation>
 <translation id="2579959351793446050">ಒಡಿಯಾ</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3408236822532681288">ನಿಯೊ 2 ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಜರ್ಮನ್ (ಜರ್ಮನಿ)</translation>
 <translation id="3414856743105198592">ತೆಗೆದುಹಾಕುವ ಮಾಧ್ಯಮದ ಸ್ವರೂಪಣೆಯು ಎಲ್ಲ ಡೇಟಾವನ್ನು ಅಳಿಸಿ ಹಾಕುತ್ತದೆ. ನೀವು ಇದನ್ನು ಮುಂದುವರಿಸಲು ಬಯಸುವಿರಾ?</translation>
+<translation id="3435143625481187092"><ph name="FOLDER_NAME" /> ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು Bruschetta ಗೆ ಅನುಮತಿ ನೀಡಿ</translation>
 <translation id="3437801641691368414">ರಚಿಸಿದ ಸಮಯ</translation>
 <translation id="343907260260897561">ಇನ್‌ಸ್ಟಂಟ್ ಕ್ಯಾಮರಾ</translation>
 <translation id="3455931012307786678">ಎಸ್ಟೋನಿಯನ್</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ಐಟಂಗಳನ್ನು ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="4176286497474237543">ಅನುಪಯುಕ್ತವನ್ನು ಖಾಲಿ ಮಾಡಿ</translation>
 <translation id="4179621117429069925">ಈ ಐಟಂ ನಿಮ್ಮ ಅನುಪಯುಕ್ತದಲ್ಲಿದೆ</translation>
+<translation id="4181839429935094755">Bruschetta ಜೊತೆ <ph name="NUMBER_OF_ITEMS" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="4186579485882418952">ಆಫ್‌ಲೈನ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4193154014135846272">Google ಡಾಕ್ಯುಮೆಂಟ್‌</translation>
 <translation id="4197674956721858839">ಜಿಪ್ ಆಯ್ಕೆ</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">Qwerty ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಝೆಕ್</translation>
 <translation id="4656777537938206294">ಫೈಲ್‌ಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಾಗುವಂತೆ ಮಾಡಿ</translation>
 <translation id="4658782175094886150">ಹಿಮದಲ್ಲಿರುವ ವ್ಯಕ್ತಿ</translation>
+<translation id="466782788172479199">ನಿಮ್ಮ Google ಡ್ರೈವ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳಿಗೆ ಪ್ರವೇಶಿಸಲು, Bruschetta ಗೆ ಅನುಮತಿ ನೀಡಿ. ಈ ಬದಲಾವಣೆಗಳು, ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳೊಂದಿಗೆ ಸಿಂಕ್ ಆಗುತ್ತವೆ.</translation>
 <translation id="4669606053856530811"><ph name="SOURCE_NAME" /> ನ ಸದಸ್ಯರೊಂದಿಗೆ ಈ ಐಟಂಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳದ ಹೊರತು ಅವರು ಪ್ರವೇಶವನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ಸ್ವೀಡಿಶ್</translation>
@@ -525,6 +532,7 @@
 <translation id="5330145655348521461">ಈ ಫೈಲ್‍‍ಗಳನ್ನು ವಿವಿಧ ಡೆಸ್ಕ್‌ಟಾಪ್‍‍ಗಳಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ. ಅದನ್ನು ವೀಕ್ಷಿಸಲು <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ಗೆ ಸರಿಸಿ.</translation>
 <translation id="5330512191124428349">ಮಾಹಿತಿ ಪಡೆಯಿರಿ</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> ಹೊರತುಪಡಿಸಿ ಎಲ್ಲಾ URL ಗಳ ಮೂಲಕ ಫೈಲ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುವುದು</translation>
+<translation id="5344246330454251646">Bruschetta ಹಂಚಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="535792325654997756">ಬೆಕ್ಕುಗಳ ಜೊತೆಯಲ್ಲಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="5358764674931277">ಫ್ರೇಮ್‌ ರೇಟ್</translation>
 <translation id="5363339716524495120">ಇನ್‌ಪುಟ್ ಭಾಷೆ ಚೈನೀಸ್ ಆಗಿದೆ</translation>
@@ -568,6 +576,7 @@
 <translation id="5700087501958648444">ಆಡಿಯೋ ಮಾಹಿತಿ</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ಅನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="5724172041621205163">ಪಟ್ಟಾಚೋಟೆ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಥಾಯ್</translation>
+<translation id="57383366388012121">ಕಳೆದ ತಿಂಗಳು</translation>
 <translation id="5756666464756035725">ಹಂಗೇರಿಯನ್ QWERTY</translation>
 <translation id="5763377084591234761">ಜರ್ಮನ್ (ಸ್ವಿಟ್ಜರ್‌ಲ್ಯಾಂಡ್)</translation>
 <translation id="5769519078756170258">ಹೊರಗಿರಿಸಬೇಕಾದ ಹೋಸ್ಟ್ ಅಥವಾ ಡೊಮೇನ್</translation>
@@ -677,6 +686,7 @@
 <translation id="6710213216561001401">ಹಿಂದಿನದು</translation>
 <translation id="6732801395666424405">ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಲೋಡ್‌ ಮಾಡಲಾಗಲಿಲ್ಲ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Bruschetta ಜೊತೆಗೆ ಫೋಲ್ಡರ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="6751256176799620176">1 ಫೋಲ್ಡರ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6755827872271341378">ChromeOS Flex ಸಾಧನ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
@@ -705,6 +715,7 @@
 <translation id="6935521024859866267">ಮೇಲಿನಿಂದ ಕೆಳಮುಖವಾಗಿ</translation>
 <translation id="6943836128787782965">HTTP ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6949408524333579394">ಸರ್ಬಿಯನ್ ಲಿಪ್ಯಂತರಣ</translation>
+<translation id="69548399407432279">ಕೊನೆಯ ವರ್ಷ</translation>
 <translation id="6960565108681981554">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ. ನಿಮಗೆ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="696203921837389374">ಮೊಬೈಲ್ ಡೇಟಾ ಮೂಲಕ ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6965382102122355670">ಸರಿ</translation>
@@ -848,6 +859,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ಆಡಿಯೋ</translation>
 <translation id="8045462269890919536">ರೊಮೇನಿಯನ್</translation>
 <translation id="8049184478152619004">ಪರ್ಸನಲ್ ಅನ್‌ಬ್ಲಾಕಿಂಗ್ ಕೀ ಅನ್ನು ನಮೂದಿಸಿ (PUK)</translation>
+<translation id="8055538340801153769">ಈ ಫೋಲ್ಡರ್</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> ಬೇರ್ಪಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8106045200081704138">ನನ್ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದ್ದು</translation>

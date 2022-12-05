@@ -71,6 +71,7 @@
 <translation id="1067048845568873861">생성됨</translation>
 <translation id="1067661089446014701">보안 강화를 위해 비밀번호를 Google 계정에 저장하기 전에 기기에서 암호화할 수 있습니다.</translation>
 <translation id="1067922213147265141">다른 Google 서비스</translation>
+<translation id="106814709658156573">지문을 설정하려면 자녀가 키보드의 왼쪽 하단에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="1069104208554708737">이 패스키는 이 기기에만 저장됩니다.</translation>
 <translation id="1069355737714877171">이름이 <ph name="PROFILE_NAME" />인 eSIM 프로필 삭제</translation>
 <translation id="1069814191880976658">다른 화면 선택</translation>
@@ -1010,6 +1011,7 @@
 <translation id="1892341345406963517"><ph name="PARENT_NAME" />님, 안녕하세요</translation>
 <translation id="189358972401248634">다른 언어</translation>
 <translation id="1895658205118569222">종료</translation>
+<translation id="1896043844785689584">지문을 설정하려면 자녀가 키보드의 오른쪽 하단에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="1897120393475391208">안전한 비밀번호를 사용하세요.</translation>
 <translation id="1900305421498694955">Google Play의 앱이 외부 저장장치에 있는 파일을 읽고 쓰기 위해 전체 파일 시스템 액세스 권한을 요구할 수도 있습니다. 이 기기에서 생성된 파일 및 폴더는 외장 드라이브를 사용하는 모든 사람이 볼 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">전체 선택(&amp;A)</translation>
@@ -2239,6 +2241,7 @@
 <translation id="3000378525979847272"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 허용함</translation>
 <translation id="3000461861112256445">모노 오디오</translation>
 <translation id="3001144475369593262">어린이 계정</translation>
+<translation id="3001835006423291524">키보드 오른쪽 하단에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="3003144360685731741">기본 설정된 네트워크</translation>
 <translation id="3003623123441819449">CSS 캐시</translation>
 <translation id="3003828226041301643">기기가 도메인에 가입하지 못했습니다. 기기를 추가할 권한이 계정에 있는지 확인하세요.</translation>
@@ -2320,6 +2323,7 @@
 <translation id="3071624960923923138">여기를 클릭하여 새 탭을 열 수 있습니다</translation>
 <translation id="3072775339180057696">사이트에서 <ph name="FILE_NAME" /> 파일을 보도록 허용하시겠습니까?</translation>
 <translation id="3074499504015191586">전체 페이지 번역</translation>
+<translation id="3075144191779656260"><ph name="DEVICE_TYPE" />의 왼쪽에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="3075874217500066906">Powerwash 프로세스를 시작하려면 다시 시작해야 합니다. 다시 시작하면 계속 진행할 지를 확인하는 메시지가 표시됩니다.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">이 기기에만 저장</translation>
@@ -2641,6 +2645,7 @@
 <translation id="3406290648907941085">가상 현실 기기 및 데이터 사용이 허용됨</translation>
 <translation id="3406396172897554194">언어 또는 입력 이름으로 검색</translation>
 <translation id="3406605057700382950">북마크바 표시(&amp;S)</translation>
+<translation id="3407967630066378878">지문을 설정하려면 자녀가 <ph name="DEVICE_TYPE" /> 왼쪽에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" />의 Google 비밀번호 관리자에 비밀번호 1개 가져옴}other{<ph name="USER_EMAIL" />의 Google 비밀번호 관리자에 비밀번호 {NUM_PASSWORDS}개 가져옴}}</translation>
 <translation id="3409785640040772790">지도</translation>
 <translation id="3412265149091626468">선택 부분으로 이동</translation>
@@ -3763,6 +3768,7 @@
 <translation id="4451479197788154834">비밀번호가 이 기기와 Google 계정에 저장되었습니다.</translation>
 <translation id="4451757071857432900">방해가 되거나 사용자를 현혹하는 광고를 표시하는 사이트에서 광고가 차단됨(권장)</translation>
 <translation id="4452898361839215358">또는 PPD를 선택합니다 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="4453430595102511050">키보드 오른쪽 상단에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />에서 검색하거나 URL을 입력하세요.</translation>
 <translation id="4458535500699390320">이 탭이 비활성 상태인 동안 메모리 절약 모드가 다른 작업을 위해 메모리를 확보했습니다. 언제든지 설정에서 변경할 수 있습니다.</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" />일 전에 사용</translation>
@@ -6035,6 +6041,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6607831829715835317">도구 더보기</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 계정은 이미 <ph name="DOMAIN" />에서 관리하고 있습니다. 다른 Google 계정에 자녀 보호 기능을 사용하려면 설정이 완료된 후 로그아웃하고 로그인 화면에서 '사용자 추가'를 선택하세요.</translation>
 <translation id="6608166463665411119">eSIM 재설정</translation>
+<translation id="6608773371844092260">지문을 설정하려면 자녀가 <ph name="DEVICE_TYPE" /> 오른쪽에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="6609478180749378879">시크릿 모드를 종료한 후 로그인 데이터가 기기에 저장됩니다. 나중에 다시 기기에서 이 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="6610002944194042868">번역 옵션</translation>
 <translation id="6611907964265870728">기기가 인터넷에 연결되어 있는지 확인하세요.</translation>
@@ -6680,6 +6687,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7225082563376899794">Windows Hello를 사용하여 비밀번호 입력</translation>
 <translation id="7225179976675429563">네트워크 유형이 없습니다.</translation>
 <translation id="7227458944009118910">아래에 나열된 앱은 프로토콜 링크도 처리할 수 있습니다. 목록에 없는 앱은 권한을 요청합니다.</translation>
+<translation id="7228056665272655255">지문을 설정하려면 자녀가 키보드 오른쪽 상단에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="7228523857728654909">화면 잠금 및 로그인</translation>
 <translation id="7230222852462421043">창 복원(&amp;R)</translation>
 <translation id="7231260028442989757">휴대전화의 알림을 보고 닫거나 답장합니다.</translation>
@@ -6807,6 +6815,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" />에서 <ph name="PAGE_NUMBER" />페이지 인쇄</translation>
 <translation id="7360257054721917104">저장된 데스크 및 템플릿을 보는 중입니다. 이동하려면 Tab을 누르세요.</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />을(를) 실행하려면 오른쪽 마우스 버튼을 클릭하세요.</translation>
+<translation id="7361914392989692067">전원 버튼을 손가락으로 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="7362387053578559123">사이트에서 블루투스 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="7363349185727752629">개인 정보 보호 선택 가이드</translation>
 <translation id="7364591875953874521">액세스가 요청됨</translation>
@@ -7506,7 +7515,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7978450511781612192">Google 계정에서 로그아웃됩니다. 북마크, 방문 기록, 비밀번호 등이 더 이상 동기화되지 않습니다.</translation>
 <translation id="7980084013673500153">애셋 ID: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">더 빠른 인터넷 사용과 검색을 위해 페이지 미리 로드</translation>
-<translation id="798145602633458219"><ph name="SUGGESTION_NAME" /> 추천 검색어를 검색창에 추가</translation>
 <translation id="7981662863948574132">기기 EID 및 QR 코드 팝업 표시</translation>
 <translation id="7981670705071137488">이후로 소프트웨어 업데이트는 백그라운드에서 실행됩니다. 설정에서 업데이트 환경설정을 확인할 수 있습니다.</translation>
 <translation id="7982083145464587921">오류를 해결하려면 기기를 다시 시작하세요.</translation>
@@ -7860,6 +7868,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8299319456683969623">현재 오프라인 상태</translation>
 <translation id="8300011035382349091">이 탭의 북마크 수정</translation>
 <translation id="8300374739238450534">미드나잇 블루</translation>
+<translation id="8301242268274839723">키보드 왼쪽 하단에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{주소}other{주소 #개}}</translation>
 <translation id="8304383784961451596">이 기기를 사용할 권한이 없습니다. 관리자에게 문의하여 로그인 권한을 요청하거나 Family Link의 감독을 받는 Google 계정으로 로그인하세요.</translation>
 <translation id="8306885873692337975">최신 기능과 보안 개선 사항을 받습니다.</translation>
@@ -8586,10 +8595,12 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> 비밀번호를 잊어버린 경우에도 로컬 데이터를 복원할 수 있습니다. Google 계정에 로그인하거나 계정 복구를 사용해야 합니다.</translation>
 <translation id="8993737615451556423">읽는 음성의 속도를 높이거나 낮추고, 일시중지할 수 있는 제어 기능을 제공합니다.</translation>
 <translation id="899384117894244799">제한된 사용자 삭제</translation>
+<translation id="8993945059918628059">손가락으로 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
 <translation id="899657321862108550">어디에서나 나만의 Chrome을 사용하세요</translation>
 <translation id="8998078711690114234">이러한 형식의 파일은 위험할 수 있습니다. <ph name="ORIGIN" />을(를) 신뢰하는 경우에만 파일을 저장하세요.</translation>
 <translation id="8999560016882908256">섹션 구문 오류: <ph name="ERROR_LINE" /></translation>
+<translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> 오른쪽에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="9003185744423389627">기기 관리 서버 연결 실패. 상태: '<ph name="STATUS_TEXT" />' 시간: <ph name="FAILURE_TIME" /></translation>
 <translation id="9003647077635673607">모든 웹사이트에서 허용</translation>
 <translation id="9003677638446136377">다시 확인</translation>

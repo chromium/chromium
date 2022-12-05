@@ -1970,6 +1970,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="275662540872599901">màn hình tắt</translation>
 <translation id="2757161511365746634">Xem máy in</translation>
 <translation id="2757338480560142065">Đảm bảo mật khẩu bạn đang lưu khớp với mật khẩu cho <ph name="WEBSITE" /></translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Không có kết quả tìm kiếm nào được trả về cho <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Máy ảnh bị chặn</translation>
 <translation id="2764786626780673772">Chi tiết về VPN</translation>
 <translation id="2764920001292228569">Nhập tên hồ sơ</translation>
@@ -5277,6 +5278,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5886112770923972514">Kết nối và thiết lập nhanh các thiết bị Ghép nối nhanh ở gần</translation>
 <translation id="5886384907280980632">Tắt ngay</translation>
 <translation id="5889282057229379085">Số CA gián tiếp tối đa: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">Mã hoá dữ liệu đã đồng bộ hoá bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hoá<ph name="END_LINK" /> của riêng bạn. Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.</translation>
 <translation id="5891688036610113830">Các mạng Wi-Fi ưu tiên</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5895335062901455404">Các tuỳ chọn ưu tiên và hoạt động bạn đã lưu sẽ sẵn sàng trên mọi thiết bị ChromeOS Flex khi bạn đăng nhập bằng Tài khoản Google. Bạn có thể chọn nội dung bạn muốn đồng bộ hoá trong phần Cài đặt.</translation>
@@ -6934,6 +6936,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7465635034594602553">Đã xảy ra lỗi. Vui lòng đợi vài phút rồi chạy lại <ph name="APP_NAME" />.</translation>
 <translation id="7465778193084373987">ULR Thu hồi của Tổ chức Cấp Chứng chỉ Netscape</translation>
 <translation id="7466431077154602932">Chế độ xem thu gọn</translation>
+<translation id="7466556884531675354">Không có ghi chú nào được lưu</translation>
 <translation id="746861123368584540">Đã tải tiện ích</translation>
 <translation id="7470424110735398630">Được phép xem bảng nhớ tạm của bạn</translation>
 <translation id="747114903913869239">Lỗi: Không thể giải mã tiện ích</translation>
@@ -7508,7 +7511,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7978450511781612192">Việc này này sẽ đăng xuất bạn khỏi các Tài khoản Google. Dấu trang, lịch sử, mật khẩu và các dữ liệu khác của bạn sẽ không còn đồng bộ hóa nữa.</translation>
 <translation id="7980084013673500153">ID phần tử: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">Tải trước các trang để tìm kiếm và duyệt web nhanh hơn</translation>
-<translation id="798145602633458219">Thêm đề xuất <ph name="SUGGESTION_NAME" /> vào hộp tìm kiếm</translation>
 <translation id="7981662863948574132">Hiện cửa sổ bật lên hiển thị mã QR và số EID của thiết bị</translation>
 <translation id="7981670705071137488">Sau khi quá trình này kết thúc, việc cập nhật phần mềm sẽ diễn ra ở chế độ nền. Bạn có thể xem xét các lựa chọn ưu tiên về bản cập nhật trong phần Cài đặt.</translation>
 <translation id="7982083145464587921">Vui lòng khởi động lại thiết bị của bạn để sửa lỗi này.</translation>
@@ -7913,6 +7915,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8351316842353540018">Luôn hiển thị các tùy chọn a11y</translation>
 <translation id="8351419472474436977">Tiện ích này đã chiếm quyền kiểm soát cài đặt proxy của bạn, điều đó có nghĩa là tiện ích này có thể thay đổi, làm gián đoạn hoặc nghe trộm bất kỳ điều gì bạn thực hiện trực tuyến. Nếu bạn không chắc chắn về lý do thay đổi này diễn ra, bạn có thể không cần tiện ích này.</translation>
 <translation id="8351630282875799764">Pin hiện không sạc</translation>
+<translation id="8352287103893778223">Tiêu đề nhóm thẻ</translation>
 <translation id="835238322900896202">Đã xảy ra lỗi trong khi gỡ cài đặt. Vui lòng gỡ cài đặt thông qua Thiết bị đầu cuối.</translation>
 <translation id="8353683614194668312">Tiện ích/ứng dụng có thể:</translation>
 <translation id="8354034204605718473">Đã thêm mã PIN của con bạn</translation>
