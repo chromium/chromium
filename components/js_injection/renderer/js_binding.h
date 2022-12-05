@@ -14,6 +14,7 @@
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 namespace v8 {
 template <typename T>
@@ -45,7 +46,7 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
       base::WeakPtr<JsCommunication> js_communication);
 
   // mojom::BrowserToJsMessaging implementation.
-  void OnPostMessage(mojom::JsWebMessagePtr message) override;
+  void OnPostMessage(blink::WebMessagePayload message) override;
 
   void ReleaseV8GlobalObjects();
 
