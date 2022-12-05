@@ -777,6 +777,28 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NextGraphic) {
+  EnableChromeVox();
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+             <button autofocus>Start here</button>
+             <p>before the image</p>
+             <img src="cat.png" alt="A cat curled up on the couch">
+             <p>between the images</p>
+             <img src="dog.png" alt="A happy dog holding a stick in its mouth">
+             <p>after the images</p>)")));
+  });
+  sm_.ExpectSpeech("Start here");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_G); });
+  sm_.ExpectSpeech("A cat curled up on the couch");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_G); });
+  sm_.ExpectSpeech("A happy dog holding a stick in its mouth");
+  sm_.Call([this]() { SendKeyPressWithSearchAndShift(ui::VKEY_G); });
+  sm_.ExpectSpeech("A cat curled up on the couch");
+  sm_.Replay();
+}
+
 // TODO(crbug.com/1312004): Re-enable this test
 // Verify that enable chromeVox won't end overview.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
