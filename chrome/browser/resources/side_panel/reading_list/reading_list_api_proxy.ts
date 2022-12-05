@@ -11,7 +11,7 @@ let instance: ReadingListApiProxy|null = null;
 export interface ReadingListApiProxy {
   getReadLaterEntries(): Promise<{entries: ReadLaterEntriesByStatus}>;
 
-  openURL(url: Url, markAsRead: boolean, clickModifiers: ClickModifiers): void;
+  openUrl(url: Url, markAsRead: boolean, clickModifiers: ClickModifiers): void;
 
   updateReadStatus(url: Url, read: boolean): void;
 
@@ -21,13 +21,13 @@ export interface ReadingListApiProxy {
 
   removeEntry(url: Url): void;
 
-  showContextMenuForURL(url: Url, locationX: number, locationY: number): void;
+  showContextMenuForUrl(url: Url, locationX: number, locationY: number): void;
 
   updateCurrentPageActionButtonState(): void;
 
-  showUI(): void;
+  showUi(): void;
 
-  closeUI(): void;
+  closeUi(): void;
 
   getCallbackRouter(): PageCallbackRouter;
 }
@@ -51,7 +51,7 @@ export class ReadingListApiProxyImpl implements ReadingListApiProxy {
     return this.handler.getReadLaterEntries();
   }
 
-  openURL(url: Url, markAsRead: boolean, clickModifiers: ClickModifiers) {
+  openUrl(url: Url, markAsRead: boolean, clickModifiers: ClickModifiers) {
     this.handler.openURL(url, markAsRead, clickModifiers);
   }
 
@@ -71,7 +71,7 @@ export class ReadingListApiProxyImpl implements ReadingListApiProxy {
     this.handler.removeEntry(url);
   }
 
-  showContextMenuForURL(url: Url, locationX: number, locationY: number) {
+  showContextMenuForUrl(url: Url, locationX: number, locationY: number) {
     this.handler.showContextMenuForURL(url, locationX, locationY);
   }
 
@@ -79,11 +79,11 @@ export class ReadingListApiProxyImpl implements ReadingListApiProxy {
     this.handler.updateCurrentPageActionButtonState();
   }
 
-  showUI() {
+  showUi() {
     this.handler.showUI();
   }
 
-  closeUI() {
+  closeUi() {
     this.handler.closeUI();
   }
 

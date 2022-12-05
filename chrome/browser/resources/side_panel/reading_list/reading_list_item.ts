@@ -76,7 +76,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
       return;
     }
 
-    this.apiProxy_.openURL(this.data.url, true, {
+    this.apiProxy_.openUrl(this.data.url, true, {
       middleButton: true,
       altKey: e.altKey,
       ctrlKey: e.ctrlKey,
@@ -86,7 +86,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
   }
 
   private onClick_(e: MouseEvent|KeyboardEvent) {
-    this.apiProxy_.openURL(this.data.url, true, {
+    this.apiProxy_.openUrl(this.data.url, true, {
       middleButton: false,
       altKey: e.altKey,
       ctrlKey: e.ctrlKey,
@@ -96,7 +96,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
   }
 
   private onContextMenu_(e: MouseEvent) {
-    this.apiProxy_.showContextMenuForURL(this.data.url, e.clientX, e.clientY);
+    this.apiProxy_.showContextMenuForUrl(this.data.url, e.clientX, e.clientY);
   }
 
   private onKeyDown_(e: KeyboardEvent) {

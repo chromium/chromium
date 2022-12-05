@@ -88,7 +88,7 @@ export class BookmarksListElement extends PolymerElement {
     this.setAttribute('role', 'tree');
     if (loadTimeData.getBoolean('unifiedSidePanel')) {
       listenOnce(this.$.bookmarksContainer, 'dom-change', () => {
-        setTimeout(() => this.bookmarksApi_.showUI(), 0);
+        setTimeout(() => this.bookmarksApi_.showUi(), 0);
       });
     }
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);

@@ -102,7 +102,7 @@ suite('ReadingListAppTest', () => {
   test('click on item passes correct url', async () => {
     const expectedUrl = 'https://www.apple.com';
     clickItem(expectedUrl);
-    const [url, updateReadStatus] = await testProxy.whenCalled('openURL');
+    const [url, updateReadStatus] = await testProxy.whenCalled('openUrl');
     assertEquals(url.url, expectedUrl);
     assertTrue(updateReadStatus);
   });
@@ -111,20 +111,20 @@ suite('ReadingListAppTest', () => {
     const item = readingListApp.shadowRoot!.querySelector(
         `[data-url="https://www.apple.com"]`)!;
     item.dispatchEvent(new MouseEvent('click'));
-    const [, , click] = await testProxy.whenCalled('openURL');
+    const [, , click] = await testProxy.whenCalled('openUrl');
     assertFalse(
         click.middleButton || click.altKey || click.ctrlKey || click.metaKey ||
         click.shiftKey);
-    testProxy.resetResolver('openURL');
+    testProxy.resetResolver('openUrl');
 
     // Middle mouse button click.
     item.dispatchEvent(new MouseEvent('auxclick', {button: 1}));
-    const [, , auxClick] = await testProxy.whenCalled('openURL');
+    const [, , auxClick] = await testProxy.whenCalled('openUrl');
     assertTrue(auxClick.middleButton);
     assertFalse(
         auxClick.altKey || auxClick.ctrlKey || auxClick.metaKey ||
         auxClick.shiftKey);
-    testProxy.resetResolver('openURL');
+    testProxy.resetResolver('openUrl');
 
     // Modifier keys.
     item.dispatchEvent(new MouseEvent('click', {
@@ -133,7 +133,7 @@ suite('ReadingListAppTest', () => {
       metaKey: true,
       shiftKey: true,
     }));
-    const [, , modifiedClick] = await testProxy.whenCalled('openURL');
+    const [, , modifiedClick] = await testProxy.whenCalled('openUrl');
     assertFalse(modifiedClick.middleButton);
     assertTrue(
         modifiedClick.altKey && modifiedClick.ctrlKey &&
@@ -187,7 +187,7 @@ suite('ReadingListAppTest', () => {
             `[data-url="${expectedUrl}"]`)!;
 
     keyDownOn(readingListItem, 0, [], 'Enter');
-    const [url, updateReadStatus] = await testProxy.whenCalled('openURL');
+    const [url, updateReadStatus] = await testProxy.whenCalled('openUrl');
     assertEquals(url.url, expectedUrl);
     assertTrue(updateReadStatus);
   });
@@ -199,7 +199,7 @@ suite('ReadingListAppTest', () => {
             `[data-url="${expectedUrl}"]`)!;
 
     keyDownOn(readingListItem, 0, [], ' ');
-    const [url, updateReadStatus] = await testProxy.whenCalled('openURL');
+    const [url, updateReadStatus] = await testProxy.whenCalled('openUrl');
     assertEquals(url.url, expectedUrl);
     assertTrue(updateReadStatus);
   });

@@ -134,7 +134,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     super.connectedCallback();
     this.setAttribute('role', 'tree');
     listenOnce(this.$.powerBookmarksContainer, 'dom-change', () => {
-      setTimeout(() => this.bookmarksApi_.showUI(), 0);
+      setTimeout(() => this.bookmarksApi_.showUi(), 0);
     });
     this.bookmarksApi_.getFolders().then(folders => {
       this.folders_ = folders;

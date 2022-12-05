@@ -72,7 +72,7 @@ export class SidePanelAppElement extends PolymerElement {
     }
 
     // Show the UI as soon as the app is connected.
-    this.apiProxy_.showUI();
+    this.apiProxy_.showUi();
   }
 
   private getTabNames_(): string[] {
@@ -84,7 +84,7 @@ export class SidePanelAppElement extends PolymerElement {
   }
 
   private onCloseClick_() {
-    this.apiProxy_.closeUI();
+    this.apiProxy_.closeUi();
   }
 
   private onSelectedTabChanged_(event: CustomEvent<{value: number}>) {

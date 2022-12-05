@@ -186,10 +186,10 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       listenOnce(this.$.readingListList, 'dom-change', () => {
         // Push ShowUI() callback to the event queue to allow deferred rendering
         // to take place.
-        setTimeout(() => this.apiProxy_.showUI(), 0);
+        setTimeout(() => this.apiProxy_.showUi(), 0);
       });
     } else {
-      setTimeout(() => this.apiProxy_.showUI(), 0);
+      setTimeout(() => this.apiProxy_.showUi(), 0);
     }
 
     this.updateItems_(entries);

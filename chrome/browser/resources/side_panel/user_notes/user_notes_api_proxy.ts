@@ -7,7 +7,7 @@ import {UserNotesPageHandler, UserNotesPageHandlerInterface} from './user_notes.
 let instance: UserNotesApiProxy|null = null;
 
 export interface UserNotesApiProxy {
-  showUI(): void;
+  showUi(): void;
 }
 
 export class UserNotesApiProxyImpl implements UserNotesApiProxy {
@@ -21,7 +21,7 @@ export class UserNotesApiProxyImpl implements UserNotesApiProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  showUI() {
+  showUi() {
     this.handler.showUI();
   }
 
