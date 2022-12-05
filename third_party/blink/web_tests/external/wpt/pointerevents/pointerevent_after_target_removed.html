@@ -1,5 +1,8 @@
 <!DOCTYPE HTML>
 <title>Enter/leave events fired to parent after child is removed</title>
+<meta name="variant" content="?mouse">
+<meta name="variant" content="?touch">
+<meta name="variant" content="?pen">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -20,6 +23,7 @@
 
 <script>
   'use strict';
+  const pointer_type = location.search.substring(1);
 
   const parent = document.getElementById("parent");
   const child = document.getElementById("child");
@@ -42,8 +46,8 @@
   }
 
   function addPromiseTest(remover_event, tested_event_prefix) {
-    const test_name = tested_event_prefix
-        + " events at parent after child is removed at " + remover_event;
+    const test_name = `${tested_event_prefix} events from ${pointer_type} `+
+        `at parent after child is removed at ${remover_event}`;
     const expected_events = ["enter", "over", "out", "leave"]
         .map(suffix => tested_event_prefix + suffix);
 
@@ -61,13 +65,14 @@
 
       let done_click_promise = getEvent("click", done);
 
-      let actions = new test_driver.Actions().addPointer("TestPointer", "mouse")
+      let actions = new test_driver.Actions()
+          .addPointer("TestPointer", pointer_type)
           .pointerMove(0, 0, {origin: parent})
           .pointerDown()
           .pointerUp()
           .pointerMove(0, 0, {origin: done})
           .pointerDown()
-          .pointerUp()
+          .pointerUp();
 
       await actions.send();
       await done_click_promise;
