@@ -86,7 +86,7 @@ BASE_FEATURE(kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling,
 
 BASE_FEATURE(kSyncTrustedVaultPassphrasePromo,
              "SyncTrustedVaultPassphrasePromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Keep this entry in sync with the equivalent name in
 // ChromeFeatureList.java.
