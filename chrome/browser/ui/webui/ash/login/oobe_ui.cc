@@ -163,15 +163,11 @@ constexpr char kArcPlaystoreJSPath[] = "arc_support/playstore.js";
 constexpr char kArcPlaystoreLogoPath[] = "arc_support/icon/playstore.svg";
 constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
 constexpr char kDebuggerMJSPath[] = "debug/debug.m.js";
-constexpr char kDebuggerUtilJSPath[] = "debug/debug_util.js";
 constexpr char kKeyboardUtilsJSPath[] = "keyboard_utils.js";
 constexpr char kKeyboardUtilsForInjectionModulePath[] =
     "components/keyboard_utils_for_injection.m.js";
 
 constexpr char kProductLogoPath[] = "product-logo.png";
-// TODO(crbug.com/1261902): Clean-up old implementation once feature is
-// launched.
-constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJsMPath[] = "test_api/test_api.m.js";
 
 // Components
@@ -219,12 +215,6 @@ void AddArcScreensResources(content::WebUIDataSource* source) {
   source->AddResourcePath(kArcPlaystoreLogoPath,
                           IDR_ARC_SUPPORT_PLAYSTORE_LOGO);
 
-  // TODO(crbug.com/1261902): Clean-up old implementation once feature is
-  // launched.
-  if (!features::IsOobeNewRecommendAppsEnabled()) {
-    source->AddResourcePath(kRecommendAppListViewJSPath,
-                            IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_JS);
-  }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(kArcAppDownloadingVideoPath,
                           IDR_OOBE_ARC_APPS_DOWNLOADING_VIDEO);
@@ -257,12 +247,10 @@ void AddDebuggerResources(content::WebUIDataSource* source) {
   }
 
   if (enable_debugger) {
-    source->AddResourcePath(kDebuggerUtilJSPath, IDR_OOBE_DEBUGGER_UTIL_JS);
     source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_M_JS);
   } else {
     // Serve empty files under all resource paths.
     source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_STUB_JS);
-    source->AddResourcePath(kDebuggerUtilJSPath, IDR_OOBE_DEBUGGER_STUB_JS);
   }
 }
 

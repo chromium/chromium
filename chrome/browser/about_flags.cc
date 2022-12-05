@@ -8579,13 +8579,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabAudioMutingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kEnableTabMuting)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-app-discovery-for-oobe",
-     flag_descriptions::kAppDiscoveryForOobeName,
-     flag_descriptions::kAppDiscoveryForOobeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAppDiscoveryForOobe)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"force-major-version-to-minor",
      flag_descriptions::kForceMajorVersionInMinorPositionInUserAgentName,
      flag_descriptions::kForceMajorVersionInMinorPositionInUserAgentDescription,
