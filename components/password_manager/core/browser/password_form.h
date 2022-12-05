@@ -156,6 +156,13 @@ struct PasswordForm {
     kMaxValue = kNegativeSignalSent,
   };
 
+  // The primary key of the password record in the logins database. This is only
+  // set when the credentials has been read from the login database. Password
+  // forms parsed from the web, or manually added in settings don't have this
+  // field set. Also credentials read from sources other than logins database
+  // (e.g. credential manager on Android) don't have this field set.
+  absl::optional<FormPrimaryKey> primary_key;
+
   Scheme scheme = Scheme::kHtml;
 
   // The "Realm" for the sign-on. This is scheme, host, port for SCHEME_HTML.

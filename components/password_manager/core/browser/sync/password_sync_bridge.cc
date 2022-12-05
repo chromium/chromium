@@ -357,8 +357,9 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
       /*error_callback=*/base::DoNothing());
 
   for (const PasswordStoreChange& change : local_changes) {
+    DCHECK(change.form().primary_key.has_value());
     const std::string storage_key =
-        base::NumberToString(change.primary_key().value());
+        base::NumberToString(change.form().primary_key.value().value());
     switch (change.type()) {
       case PasswordStoreChange::ADD:
       case PasswordStoreChange::UPDATE: {
@@ -533,7 +534,8 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
           return syncer::ModelError(
               FROM_HERE, "Failed to update an entry in the password store.");
         }
-        DCHECK(changes[0].primary_key() == primary_key);
+        DCHECK(changes[0].form().primary_key.has_value());
+        DCHECK_EQ(changes[0].form().primary_key.value(), primary_key);
         password_store_changes.push_back(changes[0]);
       }
     }
@@ -595,11 +597,12 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
         DCHECK_EQ(changes[0].type(), PasswordStoreChange::REMOVE);
         DCHECK_EQ(changes[1].type(), PasswordStoreChange::ADD);
       }
-
+      DCHECK(changes.back().form().primary_key.has_value());
       change_processor()->UpdateStorageKey(
           entity_change->data(),
           /*storage_key=*/
-          base::NumberToString(changes.back().primary_key().value()),
+          base::NumberToString(
+              changes.back().form().primary_key.value().value()),
           metadata_change_list.get());
 
       password_store_changes.insert(password_store_changes.end(),
@@ -716,11 +719,12 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
             DCHECK_EQ(changes[0].type(), PasswordStoreChange::REMOVE);
             DCHECK_EQ(changes[1].type(), PasswordStoreChange::ADD);
           }
-
+          DCHECK(changes.back().form().primary_key.has_value());
           change_processor()->UpdateStorageKey(
               entity_change->data(),
               /*storage_key=*/
-              base::NumberToString(changes.back().primary_key().value()),
+              base::NumberToString(
+                  changes.back().form().primary_key.value().value()),
               metadata_change_list.get());
           break;
         case syncer::EntityChange::ACTION_UPDATE: {
@@ -755,7 +759,8 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
                 FROM_HERE, "Failed to update an entry in the password store.");
           }
           DCHECK_EQ(1U, changes.size());
-          DCHECK(changes[0].primary_key() == primary_key);
+          DCHECK(changes[0].form().primary_key.has_value());
+          DCHECK(changes[0].form().primary_key.value() == primary_key);
           break;
         }
         case syncer::EntityChange::ACTION_DELETE: {
@@ -777,7 +782,8 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
             continue;
           }
           DCHECK_EQ(1U, changes.size());
-          DCHECK_EQ(changes[0].primary_key(), primary_key);
+          DCHECK(changes[0].form().primary_key.has_value());
+          DCHECK(changes[0].form().primary_key.value() == primary_key);
           break;
         }
       }
@@ -920,8 +926,8 @@ void PasswordSyncBridge::ApplyStopSyncChanges(
         GetUnsyncedPasswordsStorageKeys();
     for (const auto& [primary_key, specifics] : credentials) {
       PasswordForm form = PasswordFromSpecifics(*specifics);
-      password_store_changes.emplace_back(PasswordStoreChange::REMOVE, form,
-                                          primary_key);
+      form.primary_key = primary_key;
+      password_store_changes.emplace_back(PasswordStoreChange::REMOVE, form);
       if (unsynced_passwords_storage_keys.count(primary_key) != 0 &&
           !form.blocked_by_user) {
         unsynced_credentials_being_deleted.push_back(std::move(form));

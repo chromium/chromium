@@ -89,27 +89,21 @@ bool LoginDatabaseAsyncHelper::Initialize(
 
 LoginsResultOrError LoginDatabaseAsyncHelper::GetAllLogins() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PrimaryKeyToFormMap key_to_form_map;
+  std::vector<std::unique_ptr<PasswordForm>> forms;
 
   if (!login_db_) {
     return PasswordStoreBackendError(
         PasswordStoreBackendErrorType::kUncategorized,
         PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
-  FormRetrievalResult result = login_db_->GetAllLogins(&key_to_form_map);
+  FormRetrievalResult result = login_db_->GetAllLogins(&forms);
   if (result != FormRetrievalResult::kSuccess &&
       result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
     return PasswordStoreBackendError(
         PasswordStoreBackendErrorType::kUncategorized,
         PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
-
-  std::vector<std::unique_ptr<PasswordForm>> obtained_forms;
-  obtained_forms.reserve(key_to_form_map.size());
-  for (auto& pair : key_to_form_map) {
-    obtained_forms.push_back(std::move(pair.second));
-  }
-  return obtained_forms;
+  return forms;
 }
 
 LoginsResultOrError LoginDatabaseAsyncHelper::GetAutofillableLogins() {
@@ -226,13 +220,12 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
     base::OnceCallback<void(bool)> sync_completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
-  PrimaryKeyToFormMap key_to_form_map;
+  std::vector<std::unique_ptr<PasswordForm>> forms;
   PasswordStoreChangeList changes;
   bool success = login_db_ && login_db_->GetLoginsCreatedBetween(
-                                  delete_begin, delete_end, &key_to_form_map);
+                                  delete_begin, delete_end, &forms);
   if (success) {
-    for (const auto& pair : key_to_form_map) {
-      PasswordForm* form = pair.second.get();
+    for (const auto& form : forms) {
       PasswordStoreChangeList remove_changes;
       if (url_filter.Run(form->url) &&
           login_db_->RemoveLogin(*form, &remove_changes)) {
@@ -273,15 +266,15 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
 PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PrimaryKeyToFormMap key_to_form_map;
+  std::vector<std::unique_ptr<PasswordForm>> forms;
   PasswordStoreChangeList changes;
-  if (!login_db_ || !login_db_->GetAutoSignInLogins(&key_to_form_map))
+  if (!login_db_ || !login_db_->GetAutoSignInLogins(&forms))
     return changes;
 
   std::set<GURL> origins_to_update;
-  for (const auto& pair : key_to_form_map) {
-    if (origin_filter.Run(pair.second->url))
-      origins_to_update.insert(pair.second->url);
+  for (const auto& form : forms) {
+    if (origin_filter.Run(form->url))
+      origins_to_update.insert(form->url);
   }
 
   std::set<GURL> origins_updated;
@@ -290,10 +283,9 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(
       origins_updated.insert(origin);
   }
 
-  for (const auto& pair : key_to_form_map) {
-    if (origins_updated.count(pair.second->url)) {
-      changes.emplace_back(PasswordStoreChange::UPDATE, *pair.second,
-                           FormPrimaryKey(pair.first));
+  for (const auto& form : forms) {
+    if (origins_updated.count(form->url)) {
+      changes.emplace_back(PasswordStoreChange::UPDATE, *form);
     }
   }
   return changes;
@@ -433,11 +425,12 @@ FormRetrievalResult LoginDatabaseAsyncHelper::ReadAllCredentials(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!login_db_)
     return FormRetrievalResult::kDbError;
-  PrimaryKeyToFormMap key_to_form_map;
-  FormRetrievalResult result = login_db_->GetAllLogins(&key_to_form_map);
-  for (const auto& [primary_key, form] : key_to_form_map) {
+  std::vector<std::unique_ptr<PasswordForm>> forms;
+  FormRetrievalResult result = login_db_->GetAllLogins(&forms);
+  for (const auto& form : forms) {
+    DCHECK(form->primary_key.has_value());
     key_to_specifics_map->emplace(
-        primary_key,
+        form->primary_key->value(),
         std::make_unique<sync_pb::PasswordSpecificsData>(
             SpecificsDataFromPassword(*form, /*base_password_data=*/{})));
   }

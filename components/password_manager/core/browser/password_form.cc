@@ -115,6 +115,10 @@ std::u16string ValueElementVectorToString(
 
 // Serializes a PasswordForm to a JSON object. Used only for logging in tests.
 void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
+  target.Set("primary_key",
+             form.primary_key.has_value()
+                 ? base::NumberToString(form.primary_key.value().value())
+                 : "PRIMARY KEY IS MISSING");
   target.Set("scheme", ToString(form.scheme));
   target.Set("signon_realm", form.signon_realm);
   target.Set("is_public_suffix_match", form.is_public_suffix_match);
@@ -312,6 +316,9 @@ bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
 }
 
 bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
+  // TODO(crbug.com/1330906): Revisit whether we should consider the primary_key
+  // field when comparing forms. This is currently used only in tests, and non
+  // of the existing tests test the equality of primary_keys.
   return lhs.scheme == rhs.scheme && lhs.signon_realm == rhs.signon_realm &&
          lhs.url == rhs.url && lhs.action == rhs.action &&
          lhs.submit_element == rhs.submit_element &&

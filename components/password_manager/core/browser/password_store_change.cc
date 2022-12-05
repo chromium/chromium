@@ -9,20 +9,13 @@ namespace password_manager {
 PasswordStoreChange::PasswordStoreChange(Type type, PasswordForm form)
     : type_(type), form_(std::move(form)) {}
 
-PasswordStoreChange::PasswordStoreChange(Type type,
-                                         PasswordForm form,
-                                         FormPrimaryKey primary_key)
-    : type_(type), form_(std::move(form)), primary_key_(primary_key) {}
-
 PasswordStoreChange::PasswordStoreChange(
     Type type,
     PasswordForm form,
-    FormPrimaryKey primary_key,
     bool password_changed,
     InsecureCredentialsChanged insecure_changed)
     : type_(type),
       form_(std::move(form)),
-      primary_key_(primary_key),
       password_changed_(password_changed),
       insecure_credentials_changed_(insecure_changed) {}
 
