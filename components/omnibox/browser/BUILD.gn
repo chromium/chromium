@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
+import("//components/optimization_guide/features.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -249,6 +250,12 @@ static_library("browser") {
     "zero_suggest_verbatim_match_provider.cc",
     "zero_suggest_verbatim_match_provider.h",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "on_device_tail_model_executor.cc",
+      "on_device_tail_model_executor.h",
+    ]
+  }
 
   public_deps = [
     ":buildflags",
@@ -264,6 +271,15 @@ static_library("browser") {
     "//third_party/omnibox_proto",
     "//url",
   ]
+  if (build_with_tflite_lib) {
+    public_deps += [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+    ]
+  }
+
   deps = [
     "//components/bookmarks/browser",
     "//components/component_updater",
@@ -666,6 +682,9 @@ source_set("unit_tests") {
 
   if ((!is_android || enable_vr) && !is_ios) {
     sources += [ "location_bar_model_util_unittest.cc" ]
+  }
+  if (build_with_tflite_lib) {
+    sources += [ "on_device_tail_model_executor_unittest.cc" ]
   }
 
   deps = [
