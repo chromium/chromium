@@ -294,7 +294,7 @@ tast_disabled_tests_from_chrome_all = [
   "login.RestrictSignin",
 
   # http://b/261363192
-  "crostini.*",
+  "crostini.*@kevin",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]

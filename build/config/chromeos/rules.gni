@@ -196,10 +196,16 @@ template("generate_skylab_deps") {
     }
     if (defined(tast_disabled_tests)) {
       foreach(_test, tast_disabled_tests) {
-        _skylab_args += [
-          "--disabled-tests",
-          _test,
-        ]
+        _excluded_test_name_and_board = []
+        _excluded_test_name_and_board = string_split(_test, "@") + [ "" ]
+        _excluded_test_name = _excluded_test_name_and_board[0]
+        _excluded_board = _excluded_test_name_and_board[1]
+        if (_excluded_board == "" || _excluded_board == cros_board) {
+          _skylab_args += [
+            "--disabled-tests",
+            _excluded_test_name,
+          ]
+        }
       }
     }
     action(target_name) {
@@ -530,8 +536,14 @@ template("tast_test") {
   if (defined(tast_disabled_tests)) {
     assert(defined(tast_attr_expr),
            "tast_attr_expr must be used when specifying tast_disabled_tests.")
-    foreach(test, tast_disabled_tests) {
-      tast_attr_expr += " && !\"name:${test}\""
+    foreach(_test, tast_disabled_tests) {
+      _excluded_test_name_and_board = []
+      _excluded_test_name_and_board = string_split(_test, "@") + [ "" ]
+      _excluded_test_name = _excluded_test_name_and_board[0]
+      _excluded_board = _excluded_test_name_and_board[1]
+      if (_excluded_board == "" || _excluded_board == cros_board) {
+        tast_attr_expr += " && !\"name:${_excluded_test_name}\""
+      }
     }
   }
   if (defined(tast_attr_expr)) {
@@ -608,8 +620,14 @@ template("lacros_tast_tests") {
     if (defined(tast_disabled_tests)) {
       assert(defined(tast_attr_expr),
              "tast_attr_expr must be used when specifying tast_disabled_tests.")
-      foreach(test, tast_disabled_tests) {
-        tast_attr_expr += " && !\"name:${test}\""
+      foreach(_test, tast_disabled_tests) {
+        _excluded_test_name_and_board = []
+        _excluded_test_name_and_board = string_split(_test, "@") + [ "" ]
+        _excluded_test_name = _excluded_test_name_and_board[0]
+        _excluded_board = _excluded_test_name_and_board[1]
+        if (_excluded_board == "" || _excluded_board == cros_board) {
+          tast_attr_expr += " && !\"name:${_excluded_test_name}\""
+        }
       }
     }
     if (defined(tast_attr_expr)) {
