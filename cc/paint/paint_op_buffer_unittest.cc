@@ -135,6 +135,8 @@ class PaintOpAppendTest : public ::testing::Test {
 
   void VerifyOps(PaintOpBuffer* buffer) {
     EXPECT_EQ(buffer->size(), 4u);
+    EXPECT_TRUE(buffer->has_draw_ops());
+    EXPECT_TRUE(buffer->has_save_layer_ops());
 
     PaintOpBuffer::Iterator iter(buffer);
     ASSERT_EQ(iter->GetType(), PaintOpType::SaveLayer);
@@ -158,6 +160,19 @@ class PaintOpAppendTest : public ::testing::Test {
     EXPECT_FALSE(iter);
   }
 
+  void CheckInitialState(PaintOpBuffer* buffer, bool expect_empty_buffer) {
+    EXPECT_FALSE(buffer->has_draw_ops());
+    EXPECT_FALSE(buffer->has_save_layer_ops());
+    EXPECT_EQ(0u, buffer->size());
+    EXPECT_EQ(0u, buffer->total_op_count());
+    EXPECT_EQ(0u, buffer->next_op_offset());
+    EXPECT_FALSE(PaintOpBuffer::Iterator(buffer));
+    if (expect_empty_buffer) {
+      EXPECT_EQ(0u, buffer->paint_ops_size());
+      EXPECT_EQ(sizeof(PaintOpBuffer), buffer->bytes_used());
+    }
+  }
+
  private:
   SkRect rect_;
   PaintFlags flags_;
@@ -171,6 +186,7 @@ TEST_F(PaintOpAppendTest, SimpleAppend) {
   VerifyOps(&buffer);
 
   buffer.Reset();
+  CheckInitialState(&buffer, false);
   PushOps(&buffer);
   VerifyOps(&buffer);
 }
@@ -184,8 +200,7 @@ TEST_F(PaintOpAppendTest, MoveThenDestruct) {
   VerifyOps(&destination);
 
   // Original should be empty, and safe to destruct.
-  EXPECT_EQ(original.size(), 0u);
-  EXPECT_EQ(original.bytes_used(), sizeof(PaintOpBuffer));
+  CheckInitialState(&original, true);
 }
 
 TEST_F(PaintOpAppendTest, MoveThenDestructOperatorEq) {
@@ -198,9 +213,7 @@ TEST_F(PaintOpAppendTest, MoveThenDestructOperatorEq) {
   VerifyOps(&destination);
 
   // Original should be empty, and safe to destruct.
-  EXPECT_EQ(original.size(), 0u);
-  EXPECT_EQ(original.bytes_used(), sizeof(PaintOpBuffer));
-  EXPECT_FALSE(PaintOpBuffer::Iterator(&original));
+  CheckInitialState(&original, true);
 }
 
 TEST_F(PaintOpAppendTest, MoveThenReappend) {
@@ -4250,6 +4263,69 @@ TEST(PaintOpBufferTest, PathCaching) {
   SkPath cached_path;
   EXPECT_TRUE(options_provider.service_paint_cache()->GetPath(
       path.getGenerationID(), &cached_path));
+}
+
+TEST(PaintOpBufferTest, ShrinkToFit) {
+  PaintOpBuffer buffer;
+  EXPECT_EQ(sizeof(PaintOpBuffer), buffer.bytes_used());
+  EXPECT_FALSE(&buffer.GetFirstOp());
+  buffer.ShrinkToFit();
+  EXPECT_EQ(sizeof(PaintOpBuffer), buffer.bytes_used());
+  EXPECT_FALSE(&buffer.GetFirstOp());
+
+  buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrc);
+  EXPECT_GT(buffer.bytes_used(), sizeof(PaintOpBuffer) + sizeof(DrawColorOp));
+  const PaintOp* first_op = &buffer.GetFirstOp();
+  ASSERT_TRUE(first_op);
+  buffer.ShrinkToFit();
+  EXPECT_EQ(sizeof(PaintOpBuffer) + sizeof(DrawColorOp), buffer.bytes_used());
+  EXPECT_NE(first_op, &buffer.GetFirstOp());
+
+  first_op = &buffer.GetFirstOp();
+  buffer.ShrinkToFit();
+  EXPECT_EQ(sizeof(PaintOpBuffer) + sizeof(DrawColorOp), buffer.bytes_used());
+  EXPECT_EQ(first_op, &buffer.GetFirstOp());
+}
+
+TEST(PaintOpBufferTest, MoveRetainingBufferIfPossible) {
+  PaintOpBuffer buffer;
+  sk_sp<PaintOpBuffer> move_to = buffer.MoveRetainingBufferIfPossible();
+  EXPECT_EQ(sizeof(PaintOpBuffer), move_to->bytes_used());
+  EXPECT_FALSE(&move_to->GetFirstOp());
+  EXPECT_EQ(sizeof(PaintOpBuffer), buffer.bytes_used());
+  EXPECT_FALSE(&buffer.GetFirstOp());
+
+  // `buffer` has more reserved than used.
+  buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrc);
+  size_t old_bytes_used = buffer.bytes_used();
+  EXPECT_GT(old_bytes_used, sizeof(PaintOpBuffer) + sizeof(DrawColorOp));
+  const PaintOp* first_op = &buffer.GetFirstOp();
+  ASSERT_TRUE(first_op);
+  EXPECT_EQ(1u, buffer.size());
+
+  // `move_to` should allocate a new data buffer that fits, and `buffer` should
+  // retain the old data buffer.
+  move_to = buffer.MoveRetainingBufferIfPossible();
+  EXPECT_EQ(1u, move_to->size());
+  EXPECT_EQ(sizeof(PaintOpBuffer) + sizeof(DrawColorOp), move_to->bytes_used());
+  EXPECT_NE(first_op, &move_to->GetFirstOp());
+  EXPECT_EQ(first_op, &buffer.GetFirstOp());
+  EXPECT_EQ(old_bytes_used, buffer.bytes_used());
+
+  // `buffer` now fits.
+  buffer = std::move(*move_to);
+  old_bytes_used = buffer.bytes_used();
+  EXPECT_EQ(old_bytes_used, sizeof(PaintOpBuffer) + sizeof(DrawColorOp));
+  first_op = &buffer.GetFirstOp();
+  ASSERT_TRUE(first_op);
+
+  // `move_to` takes the data buffer of `buffer`.
+  move_to = buffer.MoveRetainingBufferIfPossible();
+  EXPECT_EQ(1u, move_to->size());
+  EXPECT_EQ(sizeof(PaintOpBuffer) + sizeof(DrawColorOp), move_to->bytes_used());
+  EXPECT_EQ(first_op, &move_to->GetFirstOp());
+  EXPECT_FALSE(&buffer.GetFirstOp());
+  EXPECT_EQ(sizeof(PaintOpBuffer), buffer.bytes_used());
 }
 
 TEST(IteratorTest, IterationTest) {

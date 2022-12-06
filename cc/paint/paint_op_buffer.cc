@@ -2929,11 +2929,12 @@ PaintOpBuffer::PaintOpBuffer(PaintOpBuffer&& other) {
 }
 
 PaintOpBuffer::~PaintOpBuffer() {
-  Reset();
+  DestroyOps();
 }
 
 PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
   data_ = std::move(other.data_);
+  DCHECK(!other.data_);
   used_ = other.used_;
   reserved_ = other.reserved_;
   op_count_ = other.op_count_;
@@ -2950,22 +2951,28 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
       other.has_effects_preventing_lcd_text_for_save_layer_alpha_;
   are_ops_destroyed_ = other.are_ops_destroyed_;
 
-  // Make sure the other pob can destruct safely.
-  other.used_ = 0;
-  other.op_count_ = 0;
+  // Make sure the other pob can destruct safely or is ready for reuse.
   other.reserved_ = 0;
+  other.ResetRetainingBuffer();
   return *this;
 }
 
-void PaintOpBuffer::Reset() {
+void PaintOpBuffer::DestroyOps() {
   if (!are_ops_destroyed_) {
     for (PaintOp& op : Iterator(this)) {
       op.DestroyThis();
     }
   }
+}
 
-  // Leave data_ allocated, reserved_ unchanged. ShrinkToFit will take care of
-  // that if called.
+void PaintOpBuffer::Reset() {
+  DestroyOps();
+  // Leave data_ allocated, reserved_ unchanged. ShrinkToFit() will take care
+  // of that if called.
+  ResetRetainingBuffer();
+}
+
+void PaintOpBuffer::ResetRetainingBuffer() {
   used_ = 0;
   op_count_ = 0;
   num_slow_paths_up_to_min_for_MSAA_ = 0;
@@ -3099,21 +3106,14 @@ const PaintOp* PaintOpBuffer::PlaybackFoldingIterator::NextUnfoldedOp() {
 }
 
 sk_sp<PaintRecord> PaintOpBuffer::MoveRetainingBufferIfPossible() {
-  if (!data_ || used_ == reserved_)
-    return sk_make_sp<PaintOpBuffer>(std::move(*this));
-
   const size_t old_reserved = reserved_;
-  BufferDataPtr old;
-  if (!used_) {
-    old = std::move(data_);
-    reserved_ = 0;
-  } else {
-    old = ReallocBuffer(used_);
+  sk_sp<PaintRecord> result = sk_make_sp<PaintRecord>(std::move(*this));
+  if (BufferDataPtr old_data = result->ReallocIfNeededToFit()) {
+    // Reuse the original buffer for future recording.
+    data_ = std::move(old_data);
+    reserved_ = old_reserved;
   }
-  sk_sp<PaintRecord> copy = sk_make_sp<PaintOpBuffer>(std::move(*this));
-  data_ = std::move(old);
-  reserved_ = old_reserved;
-  return copy;
+  return result;
 }
 
 void PaintOpBuffer::Playback(SkCanvas* canvas,
@@ -3285,7 +3285,7 @@ void* PaintOpBuffer::AllocatePaintOp(size_t skip) {
   DCHECK_LT(skip, PaintOp::kMaxSkip);
   if (used_ + skip > reserved_) {
     // Start reserved_ at kInitialBufferSize and then double.
-    // ShrinkToFit can make this smaller afterwards.
+    // ShrinkToFit() can make this smaller afterwards.
     size_t new_size = reserved_ ? reserved_ : kInitialBufferSize;
     while (used_ + skip > new_size)
       new_size *= 2;
@@ -3300,30 +3300,36 @@ void* PaintOpBuffer::AllocatePaintOp(size_t skip) {
 }
 
 void PaintOpBuffer::ShrinkToFit() {
-  if (used_ == reserved_)
-    return;
+  ReallocIfNeededToFit();
+}
+
+PaintOpBuffer::BufferDataPtr PaintOpBuffer::ReallocIfNeededToFit() {
+  if (used_ == reserved_) {
+    return nullptr;
+  }
   if (!used_) {
     reserved_ = 0;
-    data_.reset();
-  } else {
-    ReallocBuffer(used_);
+    return std::move(data_);
   }
+  return ReallocBuffer(used_);
 }
 
 bool PaintOpBuffer::operator==(const PaintOpBuffer& other) const {
-  if (op_count_ != other.op_count_)
+  // Check status fields first, which is faster than checking equality of
+  // paint operations. This doesn't need to be complete, and should not check
+  // data buffer capacity related fields because they don't affect equality.
+  if (op_count_ != other.op_count_ || used_ != other.used_ ||
+      num_slow_paths_up_to_min_for_MSAA_ !=
+          other.num_slow_paths_up_to_min_for_MSAA_ ||
+      subrecord_op_count_ != other.subrecord_op_count_ ||
+      has_draw_ops_ != other.has_draw_ops_ ||
+      has_draw_text_ops_ != other.has_draw_text_ops_ ||
+      has_effects_preventing_lcd_text_for_save_layer_alpha_ !=
+          other.has_effects_preventing_lcd_text_for_save_layer_alpha_ ||
+      has_non_aa_paint_ != other.has_non_aa_paint_ ||
+      has_discardable_images_ != other.has_discardable_images_) {
     return false;
-  if (num_slow_paths_up_to_min_for_MSAA_ !=
-      other.num_slow_paths_up_to_min_for_MSAA_)
-    return false;
-  if (subrecord_bytes_used_ != other.subrecord_bytes_used_)
-    return false;
-  if (subrecord_op_count_ != other.subrecord_op_count_)
-    return false;
-  if (has_non_aa_paint_ != other.has_non_aa_paint_)
-    return false;
-  if (has_discardable_images_ != other.has_discardable_images_)
-    return false;
+  }
 
   Iterator left_iter(this);
   Iterator right_iter(&other);

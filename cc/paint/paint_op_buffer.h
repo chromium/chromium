@@ -1158,12 +1158,16 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   PaintOpBuffer();
   PaintOpBuffer(const PaintOpBuffer&) = delete;
+  // `other` will be reset to the initial state.
   PaintOpBuffer(PaintOpBuffer&& other);
   ~PaintOpBuffer() override;
 
   PaintOpBuffer& operator=(const PaintOpBuffer&) = delete;
+  // `other` will be reset in the initial state.
   PaintOpBuffer& operator=(PaintOpBuffer&& other);
 
+  // Resets the PaintOpBuffer to the initial state, except that the current
+  // data buffer is retained.
   void Reset();
 
   // Replays the paint op buffer into the canvas.
@@ -1222,17 +1226,18 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool NeedsAdditionalInvalidationForLCDText(
       const PaintOpBuffer& old_buffer) const;
 
-  // Moves the contents of this to the returned object, retaining the buffer if
-  // possible.
+  // Resize the PaintOpBuffer to exactly fit the current amount of used space.
+  void ShrinkToFit();
+
+  // Takes the contents of this. The result is shrunk to fit. If the
+  // shrinking-to-fit allocates a new data buffer, this PaintOpBuffer retains
+  // the original data buffer for future use.
   sk_sp<PaintOpBuffer> MoveRetainingBufferIfPossible();
 
   bool operator==(const PaintOpBuffer& other) const;
   bool operator!=(const PaintOpBuffer& other) const {
     return !(*this == other);
   }
-
-  // Resize the PaintOpBuffer to exactly fit the current amount of used space.
-  void ShrinkToFit();
 
   const PaintOp& GetFirstOp() const {
     return reinterpret_cast<const PaintOp&>(*data_);
@@ -1528,6 +1533,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   friend class SolidColorAnalyzer;
   using BufferDataPtr = std::unique_ptr<char, base::AlignedFreeDeleter>;
 
+  void DestroyOps();
+
   // Replays the paint op buffer into the canvas. If |indices| is specified, it
   // contains indices in an increasing order and only the indices specified in
   // the vector will be replayed.
@@ -1539,8 +1546,14 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // the old exists). Returns the old buffer.
   BufferDataPtr ReallocBuffer(size_t new_size);
 
+  // Shrinks the buffer to fit `used_`. Returns the old buffer if this
+  // allocated a new buffer, or nullptr.
+  BufferDataPtr ReallocIfNeededToFit();
+
   // Returns the allocated op.
   void* AllocatePaintOp(size_t skip);
+
+  void ResetRetainingBuffer();
 
   BufferDataPtr data_;
   size_t used_ = 0;
