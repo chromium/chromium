@@ -2051,3 +2051,43 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
     EXPECT_FALSE(IsPermissionStatusSubscribed);
   }
 }
+
+IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
+                       PermissionChipWithoutUserGesture) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/title1.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  EXPECT_FALSE(manager->IsRequestInProgress());
+
+  {
+    permissions::PermissionRequestObserver observer(web_contents);
+
+    // Request permission in foreground tab, prompt should be shown.
+    EXPECT_TRUE(content::ExecJs(
+        main_rfh, kRequestNotifications,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES |
+            content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+    observer.Wait();
+    EXPECT_TRUE(observer.request_shown());
+  }
+
+  EXPECT_TRUE(manager->IsRequestInProgress());
+  EXPECT_FALSE(permissions::PermissionUtil::HasUserGesture(manager));
+  absl::optional<permissions::PermissionPromptDisposition> disposition =
+      manager->current_request_prompt_disposition_for_testing();
+
+  ASSERT_TRUE(disposition.has_value());
+  EXPECT_EQ(permissions::PermissionPromptDisposition::
+                LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE,
+            disposition.value());
+}
