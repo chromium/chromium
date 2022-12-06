@@ -111,15 +111,15 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::FilePath path(FILE_PATH_LITERAL("/foo"));
 #endif
-    base::DictionaryValue manifest;
-    manifest.SetStringPath(keys::kName, "Protected");
-    manifest.SetStringPath(keys::kVersion, "1");
-    manifest.SetStringPath(keys::kLaunchWebURL,
-                           "http://explicit/protected/start");
-    auto list = std::make_unique<base::ListValue>();
-    list->Append("http://explicit/protected");
-    list->Append("*://*.wildcards/protected");
-    manifest.Set(keys::kWebURLs, std::move(list));
+    base::Value::Dict manifest;
+    manifest.Set(keys::kName, "Protected");
+    manifest.Set(keys::kVersion, "1");
+    manifest.SetByDottedPath(keys::kLaunchWebURL,
+                             "http://explicit/protected/start");
+    base::Value::List list;
+    list.Append("http://explicit/protected");
+    list.Append("*://*.wildcards/protected");
+    manifest.SetByDottedPath(keys::kWebURLs, std::move(list));
     std::string error;
     scoped_refptr<Extension> protected_app =
         Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
@@ -134,18 +134,18 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::FilePath path(FILE_PATH_LITERAL("/bar"));
 #endif
-    base::DictionaryValue manifest;
-    manifest.SetStringPath(keys::kName, "Unlimited");
-    manifest.SetStringPath(keys::kVersion, "1");
-    manifest.SetStringPath(keys::kLaunchWebURL,
-                           "http://explicit/unlimited/start");
-    auto list = std::make_unique<base::ListValue>();
-    list->Append("unlimitedStorage");
-    manifest.Set(keys::kPermissions, std::move(list));
-    list = std::make_unique<base::ListValue>();
-    list->Append("http://explicit/unlimited");
-    list->Append("*://*.wildcards/unlimited");
-    manifest.Set(keys::kWebURLs, std::move(list));
+    base::Value::Dict manifest;
+    manifest.Set(keys::kName, "Unlimited");
+    manifest.Set(keys::kVersion, "1");
+    manifest.SetByDottedPath(keys::kLaunchWebURL,
+                             "http://explicit/unlimited/start");
+    base::Value::List list1;
+    list1.Append("unlimitedStorage");
+    manifest.Set(keys::kPermissions, std::move(list1));
+    base::Value::List list2;
+    list2.Append("http://explicit/unlimited");
+    list2.Append("*://*.wildcards/unlimited");
+    manifest.SetByDottedPath(keys::kWebURLs, std::move(list2));
     std::string error;
     scoped_refptr<Extension> unlimited_app =
         Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
@@ -160,10 +160,11 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::FilePath path(FILE_PATH_LITERAL("/app"));
 #endif
-    base::DictionaryValue manifest;
-    manifest.SetStringPath(keys::kName, "App");
-    manifest.SetStringPath(keys::kVersion, "1");
-    manifest.SetStringPath(keys::kPlatformAppBackgroundPage, "background.html");
+    base::Value::Dict manifest;
+    manifest.Set(keys::kName, "App");
+    manifest.Set(keys::kVersion, "1");
+    manifest.SetByDottedPath(keys::kPlatformAppBackgroundPage,
+                             "background.html");
     std::string error;
     scoped_refptr<Extension> app =
         Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
