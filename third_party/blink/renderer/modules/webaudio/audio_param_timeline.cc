@@ -101,7 +101,7 @@ bool HasSetTargetConverged(float value,
     return true;
   }
 
-  // If `target` is not zero, converged if relative difference betwenn `value`
+  // If `target` is not zero, converged if relative difference between `value`
   // and `target` is small.  That is |`target`-`value`|/|`value`| <
   // `kSetTargetThreshold`.
   if (target != 0 && fabs(target - value) < kSetTargetThreshold * fabs(value)) {
@@ -1263,7 +1263,7 @@ bool AudioParamTimeline::IsEventCurrent(const ParamEvent* event,
   // frames to be processed should be zero in this case.
   if (next_event && next_event->Time() < current_frame / sample_rate) {
     // But if the current event is a SetValue event and the event time is
-    // between currentFrame - 1 and curentFrame (in time). we don't want to
+    // between currentFrame - 1 and currentFrame (in time). we don't want to
     // skip it.  If we do skip it, the SetValue event is completely skipped
     // and not applied, which is wrong.  Other events don't have this problem.
     // (Because currentFrame is unsigned, we do the time check in this funny,

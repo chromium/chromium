@@ -93,7 +93,7 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
   // Update the write index; wrap it around if necessary.
   index_write_ = (index_write_ + input_bus_length) % fifo_length_;
 
-  // In case of overflow, move the |index_read_| to the ipdated |index_write_|
+  // In case of overflow, move the `index_read_` to the updated `index_write_`
   // to avoid reading overwritten frames by the next pull.
   if (input_bus_length > fifo_length_ - frames_available_) {
     index_read_ = index_write_;

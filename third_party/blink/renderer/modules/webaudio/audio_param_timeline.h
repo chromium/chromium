@@ -296,7 +296,7 @@ class AudioParamTimeline {
     const float value2;
     const double time2;
 
-    // The current event, and it's index in the event vector.
+    // The current event, and its index in the event vector.
     const ParamEvent* event;
     const int event_index;
   };

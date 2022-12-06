@@ -111,7 +111,7 @@ void PannerHandler::ProcessIfNecessary(uint32_t frames_to_process) {
     const bool silent_inputs = InputsAreSilent();
 
     {
-      // Need to protect calls to PropagetesSilence (and Process) because the
+      // Need to protect calls to PropagatesSilence (and Process) because the
       // main thread may be changing the panning model that modifies the
       // TailTime and LatencyTime methods called by PropagatesSilence.
       base::AutoTryLock try_locker(process_lock_);
@@ -323,7 +323,7 @@ void PannerHandler::Initialize() {
   listener->AddPanner(*this);
 
   // The panner is already marked as dirty, so `last_position_` and
-  // `last_orientation_` will bet updated on first use.  Don't need to
+  // `last_orientation_` will be updated on first use.  Don't need to
   // set them here.
 
   AudioHandler::Initialize();
