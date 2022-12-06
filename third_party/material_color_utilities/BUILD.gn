@@ -1,0 +1,47 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by an MIT-style license that can be
+# found in the LICENSE file or at https://opensource.org/licenses/MIT.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
+
+config("material_color_utilities_config") {
+  include_dirs = [ "src" ]
+}
+
+source_set("material_color_utilities") {
+  public_configs = [ ":material_color_utilities_config" ]
+
+  sources = [
+    "src/cpp/blend/blend.cc",
+    "src/cpp/blend/blend.h",
+    "src/cpp/cam/cam.cc",
+    "src/cpp/cam/cam.h",
+    "src/cpp/cam/hct.cc",
+    "src/cpp/cam/hct.h",
+    "src/cpp/cam/hct_solver.cc",
+    "src/cpp/cam/hct_solver.h",
+    "src/cpp/cam/viewing_conditions.cc",
+    "src/cpp/cam/viewing_conditions.h",
+    "src/cpp/palettes/core.cc",
+    "src/cpp/palettes/core.h",
+    "src/cpp/palettes/tones.cc",
+    "src/cpp/palettes/tones.h",
+    "src/cpp/quantize/celebi.cc",
+    "src/cpp/quantize/celebi.h",
+    "src/cpp/quantize/lab.cc",
+    "src/cpp/quantize/lab.h",
+    "src/cpp/quantize/wsmeans.cc",
+    "src/cpp/quantize/wsmeans.h",
+    "src/cpp/quantize/wu.cc",
+    "src/cpp/quantize/wu.h",
+    "src/cpp/scheme/scheme.cc",
+    "src/cpp/scheme/scheme.h",
+    "src/cpp/score/score.cc",
+    "src/cpp/score/score.h",
+    "src/cpp/utils/utils.cc",
+    "src/cpp/utils/utils.h",
+  ]
+
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+}

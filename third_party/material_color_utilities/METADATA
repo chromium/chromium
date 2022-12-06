@@ -1,0 +1,19 @@
+name: "material_color_utilities"
+description:
+  "Algorithms and utilities that power the Material Design 3 (M3) color system,"
+  "including choosing theme colors from images and creating tones of colors;"
+  "all in a new color space."
+
+third_party {
+  type: PACKAGE
+  url: {
+    type: GIT
+    value: "https://github.com/material-foundation/material-color-utilities"
+  }
+  version: "20221122"
+  last_upgrade_date {
+    year: 2022
+    month: 11
+    day: 22
+  }
+}

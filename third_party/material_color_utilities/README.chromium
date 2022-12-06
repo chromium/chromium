@@ -1,0 +1,18 @@
+Name: Material color utilities
+Short Name: material_color_utilities
+URL: https://github.com/material-foundation/material-color-utilities
+Version: bd6537fb1c4aa2164d97f96e78a9c826e360a0ed
+Date: 11/22/2022
+
+License: Apache License 2.0
+License File: LICENSE
+Security Critical: no
+License Android Compatible: yes
+
+Description:
+Algorithms and utilities that power the Material Design 3 (M3) color system,
+including choosing theme colors from images and creating tones of colors; all in
+a new color space.
+
+Local Modifications:
+added - BUILD.gn, LICENSE, OWNERS, README.chromium

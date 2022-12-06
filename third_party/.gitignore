@@ -173,6 +173,7 @@
 /llvm-build
 /llvm-build-tools
 /lss
+/material_color_utilities/src
 /material_design_icons/src
 /mesa/src
 /mingw-w64
