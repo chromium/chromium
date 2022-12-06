@@ -850,7 +850,7 @@ BASE_FEATURE(kExoLinuxDmabufV3,
 // e.g. available KMS hardware planes.
 BASE_FEATURE(kExoLinuxDmabufV4,
              "ExoLinuxDmabufV4",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sending explicit modifiers for the zwp_linux_dmabuf_v1 Wayland
 // protocol. This option only has an effect with version 3 or 4 of the protocol.
