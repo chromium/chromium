@@ -2868,9 +2868,6 @@ TEST_F(CrosNetworkConfigTest, NetworkStateChanged) {
   EXPECT_EQ(0, observer()->GetNetworkChangedCount("wifi2_guid"));
 }
 
-// Do not forward information about proxies set by policy.
-// |NetworkStatePropertiesPtr::proxy_mode| is used to show a privacy warning in
-// the system tray. This warning should not be shown for managed networks.
 TEST_F(CrosNetworkConfigTest, PolicyEnforcedProxyMode) {
   // Proxies enforced by policy and/or extension are set in the kProxy
   // preference.
@@ -2879,7 +2876,7 @@ TEST_F(CrosNetworkConfigTest, PolicyEnforcedProxyMode) {
 
   mojom::NetworkStatePropertiesPtr network = GetNetworkState("wifi2_guid");
   ASSERT_TRUE(network);
-  EXPECT_EQ(network->proxy_mode, mojom::ProxyMode::kDirect);
+  EXPECT_EQ(network->proxy_mode, mojom::ProxyMode::kAutoDetect);
 }
 
 TEST_F(CrosNetworkConfigTest, NetworkStateHasIccidAndEid) {

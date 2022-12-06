@@ -60,14 +60,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
   bool MergeEnforcedProxyConfig(const std::string& network_guid,
                                 base::Value::Dict* proxy_settings);
 
-  // Returns true if there is a default network and it has a proxy configuration
-  // with mode == MODE_FIXED_SERVERS.
-  bool HasDefaultNetworkProxyConfigured();
-
-  // Returns the ProxyMode for |network| using |local_state_prefs_|. Proxies
-  // configured by policy or extensions are not being considered. The returned
-  // result is used to display a privacy warning to the user which in the
-  // context of managed networks is not helpful (see https://crbug.com/1130566).
+  // Returns the ProxyMode for |network|. The returned result is used to display
+  // a privacy warning to the user in the system tray.
   ProxyPrefs::ProxyMode ProxyModeForNetwork(const NetworkState* network);
 
  private:

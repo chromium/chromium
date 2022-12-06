@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/fake_network_detailed_network_view.h"
 #include "ash/system/network/fake_network_list_mobile_header_view.h"
@@ -41,7 +43,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -52,8 +57,11 @@ using bluetooth_config::ScopedBluetoothConfigTestHelper;
 using bluetooth_config::mojom::BluetoothSystemState;
 using ::chromeos::network_config::NetworkTypeMatchesType;
 using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::ManagedPropertiesPtr;
+using ::chromeos::network_config::mojom::ManagedString;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
+using ::chromeos::network_config::mojom::PolicySource;
 using ::testing::_;
 using ::testing::IsNull;
 using ::testing::NotNull;
@@ -146,6 +154,24 @@ class TestNetworkStateHandlerObserver : public NetworkStateHandlerObserver {
   size_t tether_scan_request_count_ = 0;
 };
 
+bool IsManagedIcon(views::ImageView* icon) {
+  const gfx::ImageSkia managed_icon = gfx::CreateVectorIcon(
+      kSystemTrayManagedIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary));
+  return gfx::BitmapsAreEqual(*icon->GetImage().bitmap(),
+                              *managed_icon.bitmap());
+}
+
+bool IsSystemIcon(views::ImageView* icon) {
+  const gfx::ImageSkia system_icon = gfx::CreateVectorIcon(
+      kSystemMenuInfoIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary));
+  return gfx::BitmapsAreEqual(*icon->GetImage().bitmap(),
+                              *system_icon.bitmap());
+}
+
 NetworkStatePropertiesPtr GetDefaultNetworkWithProxy(const std::string& guid) {
   auto default_network =
       chromeos::network_config::mojom::NetworkStateProperties::New();
@@ -154,6 +180,35 @@ NetworkStatePropertiesPtr GetDefaultNetworkWithProxy(const std::string& guid) {
       ::chromeos::network_config::mojom::ProxyMode::kAutoDetect;
 
   return default_network;
+}
+
+ManagedPropertiesPtr GetManagedNetworkPropertiesWithVPN(bool is_managed) {
+  auto managed_properties =
+      chromeos::network_config::mojom::ManagedProperties::New();
+  auto host = ManagedString::New();
+  host->active_value = "test";
+  host->policy_source =
+      is_managed ? PolicySource::kUserPolicyEnforced : PolicySource::kNone;
+  auto vpn = chromeos::network_config::mojom::ManagedVPNProperties::New();
+  vpn->host = std::move(host);
+  managed_properties->type_properties =
+      chromeos::network_config::mojom::NetworkTypeManagedProperties::NewVpn(
+          std::move(vpn));
+  return managed_properties;
+}
+
+ManagedPropertiesPtr GetManagedNetworkPropertiesWithProxy(bool is_managed) {
+  auto managed_properties =
+      chromeos::network_config::mojom::ManagedProperties::New();
+  auto proxy_type = ManagedString::New();
+  proxy_type->active_value = "test";
+  proxy_type->policy_source =
+      is_managed ? PolicySource::kUserPolicyEnforced : PolicySource::kNone;
+  auto proxy_settings =
+      chromeos::network_config::mojom::ManagedProxySettings::New();
+  proxy_settings->type = std::move(proxy_type);
+  managed_properties->proxy_settings = std::move(proxy_settings);
+  return managed_properties;
 }
 
 }  // namespace
@@ -306,6 +361,12 @@ class NetworkListViewControllerTest : public AshTestBase,
     return FindViewById<views::Label*>(
         NetworkListViewControllerImpl::NetworkListViewControllerViewChildId::
             kConnectionWarningLabel);
+  }
+
+  views::ImageView* GetConnectionWarningIcon() {
+    return FindViewById<views::ImageView*>(
+        NetworkListViewControllerImpl::NetworkListViewControllerViewChildId::
+            kConnectionWarningIcon);
   }
 
   views::View* GetViewInNetworkList(std::string id) {
@@ -561,6 +622,12 @@ class NetworkListViewControllerTest : public AshTestBase,
   void SetDefaultNetworkForTesting(NetworkStatePropertiesPtr default_network) {
     network_list_view_controller_impl_->SetDefaultNetworkForTesting(
         std::move(default_network));
+  }
+
+  void SetManagedNetworkPropertiesForTesting(
+      ManagedPropertiesPtr managed_properties) {
+    network_list_view_controller_impl_->SetManagedNetworkPropertiesForTesting(
+        std::move(managed_properties));
   }
 
   NetworkStateHandler* network_state_handler() {
@@ -1149,14 +1216,17 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiStatusMessage) {
                            /*wifi_network_count=*/1);
 }
 
-TEST_P(NetworkListViewControllerTest, ConnectionWarningVpn) {
+TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconVpn) {
   EXPECT_EQ(nullptr, GetConnectionWarning());
 
+  SetManagedNetworkPropertiesForTesting(GetManagedNetworkPropertiesWithVPN(
+      /*is_managed=*/false));
   AddVpnDevice();
   std::vector<NetworkStatePropertiesPtr> networks;
   networks.push_back(CreateStandaloneNetworkProperties(
       kVpnName, NetworkType::kVPN, ConnectionStateType::kConnected));
   UpdateNetworkList(networks);
+  base::RunLoop().RunUntilIdle();
 
   ASSERT_THAT(GetConnectionWarning(), NotNull());
   ASSERT_THAT(GetConnectionLabelView(), NotNull());
@@ -1164,20 +1234,66 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningVpn) {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
       GetConnectionLabelView()->GetText());
   EXPECT_EQ(network_list()->children().at(0), GetConnectionWarning());
+  views::ImageView* icon = GetConnectionWarningIcon();
+  ASSERT_THAT(icon, NotNull());
+  EXPECT_TRUE(IsSystemIcon(icon));
 
   // Clear all devices and make sure warning is no longer being shown.
   network_state_helper()->ClearDevices();
   EXPECT_EQ(nullptr, GetConnectionWarning());
 }
 
-TEST_P(NetworkListViewControllerTest, ConnectionWarningProxy) {
-  EXPECT_THAT(GetConnectionWarning(), IsNull());
+TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconVpn) {
+  EXPECT_EQ(nullptr, GetConnectionWarning());
 
-  SetDefaultNetworkForTesting(GetDefaultNetworkWithProxy(kWifiName));
-  AddWifiDevice();
+  SetManagedNetworkPropertiesForTesting(GetManagedNetworkPropertiesWithVPN(
+      /*is_managed=*/true));
+  AddVpnDevice();
+  std::vector<NetworkStatePropertiesPtr> networks;
+  networks.push_back(CreateStandaloneNetworkProperties(
+      kVpnName, NetworkType::kVPN, ConnectionStateType::kConnected));
+  UpdateNetworkList(networks);
+  base::RunLoop().RunUntilIdle();
 
   ASSERT_THAT(GetConnectionWarning(), NotNull());
   ASSERT_THAT(GetConnectionLabelView(), NotNull());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
+      GetConnectionLabelView()->GetText());
+  EXPECT_EQ(network_list()->children().at(0), GetConnectionWarning());
+  views::ImageView* icon = GetConnectionWarningIcon();
+  ASSERT_THAT(icon, NotNull());
+  EXPECT_TRUE(IsManagedIcon(icon));
+
+  // Clear all devices and make sure warning is no longer being shown.
+  network_state_helper()->ClearDevices();
+  EXPECT_EQ(nullptr, GetConnectionWarning());
+}
+
+TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconProxy) {
+  EXPECT_THAT(GetConnectionWarning(), IsNull());
+
+  SetDefaultNetworkForTesting(GetDefaultNetworkWithProxy(kWifiName));
+  SetManagedNetworkPropertiesForTesting(
+      GetManagedNetworkPropertiesWithProxy(/*is_managed*/ false));
+  AddWifiDevice();
+
+  views::ImageView* icon = GetConnectionWarningIcon();
+  ASSERT_THAT(icon, NotNull());
+  EXPECT_TRUE(IsSystemIcon(icon));
+}
+
+TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconProxy) {
+  EXPECT_THAT(GetConnectionWarning(), IsNull());
+
+  SetDefaultNetworkForTesting(GetDefaultNetworkWithProxy(kWifiName));
+  SetManagedNetworkPropertiesForTesting(GetManagedNetworkPropertiesWithProxy(
+      /*is_managed=*/true));
+  AddWifiDevice();
+
+  views::ImageView* icon = GetConnectionWarningIcon();
+  ASSERT_THAT(icon, NotNull());
+  EXPECT_TRUE(IsManagedIcon(icon));
 }
 
 TEST_P(NetworkListViewControllerTest, NetworkScanning) {

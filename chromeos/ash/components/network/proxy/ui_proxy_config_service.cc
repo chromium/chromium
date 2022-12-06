@@ -184,6 +184,23 @@ absl::optional<base::Value::Dict> NetProxyConfigAsOncValue(
   return absl::nullopt;
 }
 
+ProxyPrefs::ProxyMode OncStringToProxyMode(const std::string& onc_proxy_type) {
+  if (onc_proxy_type == ::onc::proxy::kDirect) {
+    return ProxyPrefs::ProxyMode::MODE_DIRECT;
+  }
+  if (onc_proxy_type == ::onc::proxy::kWPAD) {
+    return ProxyPrefs::ProxyMode::MODE_AUTO_DETECT;
+  }
+  if (onc_proxy_type == ::onc::proxy::kPAC) {
+    return ProxyPrefs::ProxyMode::MODE_PAC_SCRIPT;
+  }
+  if (onc_proxy_type == ::onc::proxy::kManual) {
+    return ProxyPrefs::ProxyMode::MODE_FIXED_SERVERS;
+  }
+  NOTREACHED() << "Unsupported ONC proxy type: " << onc_proxy_type;
+  return ProxyPrefs::ProxyMode::MODE_DIRECT;
+}
+
 }  // namespace
 
 UIProxyConfigService::UIProxyConfigService(
@@ -285,14 +302,6 @@ bool UIProxyConfigService::MergeEnforcedProxyConfig(
   return true;
 }
 
-bool UIProxyConfigService::HasDefaultNetworkProxyConfigured() {
-  DCHECK(network_profile_handler_);
-  const NetworkState* network = network_state_handler_->DefaultNetwork();
-  if (!network)
-    return false;
-  return ProxyModeForNetwork(network) == ProxyPrefs::MODE_FIXED_SERVERS;
-}
-
 ProxyPrefs::ProxyMode UIProxyConfigService::ProxyModeForNetwork(
     const NetworkState* network) {
   onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
@@ -300,16 +309,40 @@ ProxyPrefs::ProxyMode UIProxyConfigService::ProxyModeForNetwork(
       proxy_config::GetProxyConfigForNetwork(nullptr, local_state_prefs_,
                                              *network, network_profile_handler_,
                                              &onc_source);
-
-  PrefService* top_pref_service =
-      profile_prefs_ ? profile_prefs_ : local_state_prefs_;
-
   // On the OOBE screen and/or tests.
-  if (!network->IsInProfile() ||
-      !top_pref_service->HasPrefPath(::proxy_config::prefs::kProxy)) {
+  if (!network->IsInProfile()) {
     ProxyPrefs::ProxyMode mode;
-    if (!proxy_dict || !proxy_dict->GetMode(&mode))
+    if (!proxy_dict || !proxy_dict->GetMode(&mode)) {
       return ProxyPrefs::MODE_DIRECT;
+    }
+    return mode;
+  }
+
+  base::Value::Dict proxy_settings;
+  if (proxy_dict) {
+    proxy_settings = proxy_dict->GetDictionary().Clone();
+  }
+  // Check for managed proxy settings.
+  MergeEnforcedProxyConfig(network->guid(), &proxy_settings);
+  if (!proxy_settings.empty()) {
+    base::Value::Dict* proxy_type =
+        proxy_settings.FindDict(::onc::network_config::kType);
+    if (proxy_type) {
+      std::string* proxy_active =
+          proxy_type->FindString(::onc::kAugmentationActiveSetting);
+      if (proxy_active) {
+        return OncStringToProxyMode(*proxy_active);
+      }
+    }
+  }
+
+  if (!proxy_dict) {
+    return ProxyPrefs::MODE_DIRECT;
+  }
+
+  // Check for user set proxy settings.
+  ProxyPrefs::ProxyMode mode;
+  if (proxy_dict->GetMode(&mode)) {
     return mode;
   }
   return ProxyPrefs::ProxyMode::MODE_DIRECT;

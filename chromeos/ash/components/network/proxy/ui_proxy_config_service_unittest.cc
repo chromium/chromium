@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -48,6 +49,13 @@ constexpr char kAugmentedOncValueTemplate[] =
 constexpr char kAugmentedOncValueWithUserSettingTemplate[] =
     R"({"Active": $2, "Effective": "$1", "$1": $2, "UserSetting": $3,
       "UserEditable": $4})";
+
+std::unique_ptr<NetworkState> GetNetworkState(const std::string& guid) {
+  auto network_state = std::make_unique<NetworkState>("path");
+  network_state->PropertyChanged("Profile", base::Value("profile"));
+  network_state->PropertyChanged("GUID", base::Value(guid));
+  return network_state;
+}
 
 std::string UserSettingOncValue(const std::string& value) {
   return base::ReplaceStringPlaceholders(
@@ -534,6 +542,10 @@ TEST_F(UIProxyConfigServiceTest, PolicyPrefOverridesExtensionPref) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_PAC_SCRIPT);
 }
 
 TEST_F(UIProxyConfigServiceTest, PolicyPrefForSharedNetwork) {
@@ -551,6 +563,10 @@ TEST_F(UIProxyConfigServiceTest, PolicyPrefForSharedNetwork) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestSharedWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_AUTO_DETECT);
 }
 
 TEST_F(UIProxyConfigServiceTest, ExtensionPrefForSharedNetwork) {
@@ -568,6 +584,10 @@ TEST_F(UIProxyConfigServiceTest, ExtensionPrefForSharedNetwork) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestSharedWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_AUTO_DETECT);
 }
 
 TEST_F(UIProxyConfigServiceTest, PacOncUserPolicy) {
@@ -592,6 +612,10 @@ TEST_F(UIProxyConfigServiceTest, PacOncUserPolicy) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_PAC_SCRIPT);
 }
 
 TEST_F(UIProxyConfigServiceTest, AutoDetectOncUserPolicy) {
@@ -612,6 +636,10 @@ TEST_F(UIProxyConfigServiceTest, AutoDetectOncUserPolicy) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_AUTO_DETECT);
 }
 
 // Tests that ONC policy configured networks without proxy settings force Direct
@@ -634,6 +662,10 @@ TEST_F(UIProxyConfigServiceTest, OncUserPolicyWithoutProxySettings) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_DIRECT);
 }
 
 TEST_F(UIProxyConfigServiceTest, DirectOncUserPolicy) {
@@ -694,6 +726,10 @@ TEST_F(UIProxyConfigServiceTest, ManualOncUserPolicy) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_FIXED_SERVERS);
 }
 
 TEST_F(UIProxyConfigServiceTest, PartialManualOncUserPolicy) {
@@ -730,6 +766,10 @@ TEST_F(UIProxyConfigServiceTest, PartialManualOncUserPolicy) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_FIXED_SERVERS);
 }
 
 TEST_F(UIProxyConfigServiceTest, OncDevicePolicy) {
@@ -754,6 +794,10 @@ TEST_F(UIProxyConfigServiceTest, OncDevicePolicy) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_PAC_SCRIPT);
 }
 
 TEST_F(UIProxyConfigServiceTest, OncUserPolicyForSharedNetwork) {
@@ -774,6 +818,10 @@ TEST_F(UIProxyConfigServiceTest, OncUserPolicyForSharedNetwork) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestSharedWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_AUTO_DETECT);
 }
 
 TEST_F(UIProxyConfigServiceTest, OncDevicePolicyForSharedNetwork) {
@@ -798,6 +846,10 @@ TEST_F(UIProxyConfigServiceTest, OncDevicePolicyForSharedNetwork) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestSharedWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_PAC_SCRIPT);
 }
 
 TEST_F(UIProxyConfigServiceTest, OncUserAndDevicePolicy) {
@@ -826,6 +878,10 @@ TEST_F(UIProxyConfigServiceTest, OncUserAndDevicePolicy) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_AUTO_DETECT);
 }
 
 TEST_F(UIProxyConfigServiceTest, OncUserAndDevicePolicyBuiltOffLocalState) {
@@ -857,6 +913,10 @@ TEST_F(UIProxyConfigServiceTest, OncUserAndDevicePolicyBuiltOffLocalState) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_PAC_SCRIPT);
 }
 
 TEST_F(UIProxyConfigServiceTest, OncUserPolicyOverridesUserSettings) {
@@ -889,6 +949,10 @@ TEST_F(UIProxyConfigServiceTest, OncUserPolicyOverridesUserSettings) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, *config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_AUTO_DETECT);
 }
 
 TEST_F(UIProxyConfigServiceTest, PolicyPrefOverridesOncPolicy) {
@@ -916,6 +980,10 @@ TEST_F(UIProxyConfigServiceTest, PolicyPrefOverridesOncPolicy) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_PAC_SCRIPT);
 }
 
 TEST_F(UIProxyConfigServiceTest, ExtensionPrefOverridesOncPolicy) {
@@ -943,6 +1011,10 @@ TEST_F(UIProxyConfigServiceTest, ExtensionPrefOverridesOncPolicy) {
       base::JSONReader::ReadDeprecated(expected_json);
   ASSERT_TRUE(expected) << expected_json;
   EXPECT_EQ(*expected, config);
+
+  auto network_state = GetNetworkState(kTestUserWifiGuid);
+  EXPECT_EQ(service->ProxyModeForNetwork(network_state.get()),
+            ProxyPrefs::MODE_PAC_SCRIPT);
 }
 
 }  // namespace ash

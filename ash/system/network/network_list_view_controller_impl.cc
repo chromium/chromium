@@ -43,10 +43,12 @@ using bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
 using bluetooth_config::mojom::BluetoothSystemState;
 using ::chromeos::network_config::NetworkTypeMatchesType;
 using ::chromeos::network_config::StateIsConnected;
+using ::chromeos::network_config::mojom::CrosNetworkConfig;
 using ::chromeos::network_config::mojom::DeviceStateProperties;
 using ::chromeos::network_config::mojom::DeviceStateType;
 using ::chromeos::network_config::mojom::FilterType;
 using ::chromeos::network_config::mojom::GlobalPolicy;
+using ::chromeos::network_config::mojom::ManagedPropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkFilter;
 using ::chromeos::network_config::mojom::NetworkStateProperties;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
@@ -307,7 +309,7 @@ void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(
     const std::vector<NetworkStatePropertiesPtr>& networks) {
   has_mobile_networks_ = false;
   has_wifi_networks_ = false;
-  is_vpn_connected_ = false;
+  connected_vpn_guid_ = std::string();
 
   for (auto& network : networks) {
     if (NetworkTypeMatchesType(network->type, NetworkType::kMobile)) {
@@ -316,7 +318,7 @@ void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(
       has_wifi_networks_ = true;
     } else if (NetworkTypeMatchesType(network->type, NetworkType::kVPN) &&
                StateIsConnected(network->connection_state)) {
-      is_vpn_connected_ = true;
+      connected_vpn_guid_ = network->guid;
     }
   }
 
@@ -336,13 +338,15 @@ size_t NetworkListViewControllerImpl::ShowConnectionWarningIfVpnOrProxy(
   bool using_proxy =
       default_network && default_network->proxy_mode != ProxyMode::kDirect;
 
-  if (is_vpn_connected_ || using_proxy) {
+  if (!connected_vpn_guid_.empty() || using_proxy) {
     if (!connection_warning_)
       ShowConnectionWarning();
 
+    MaybeShowConnectionWarningManagedIcon(using_proxy);
+
     network_detailed_network_view()->network_list()->ReorderChildView(
         connection_warning_, index++);
-  } else if (!is_vpn_connected_ && !using_proxy) {
+  } else if (connected_vpn_guid_.empty() && !using_proxy) {
     RemoveAndResetViewIfExists(&connection_warning_);
   }
 
@@ -354,11 +358,112 @@ void NetworkListViewControllerImpl::SetDefaultNetworkForTesting(
   default_network_for_testing_ = std::move(default_network);
 }
 
+void NetworkListViewControllerImpl::SetManagedNetworkPropertiesForTesting(
+    ManagedPropertiesPtr managed_properties) {
+  managed_network_properties_for_testing_ = std::move(managed_properties);
+}
+
+void NetworkListViewControllerImpl::MaybeShowConnectionWarningManagedIcon(
+    bool using_proxy) {
+  is_proxy_managed_.reset();
+  is_vpn_managed_.reset();
+
+  // If the proxy is set, check if it's a managed setting.
+  const NetworkStateProperties* default_network = GetDefaultNetwork();
+  if (using_proxy && default_network) {
+    GetManagedProperties(
+        default_network->guid,
+        base::BindOnce(
+            &NetworkListViewControllerImpl::OnGetManagedPropertiesResult,
+            weak_ptr_factory_.GetWeakPtr(), default_network->guid));
+  } else {
+    is_proxy_managed_ = false;
+  }
+
+  // If the vpn is set, check if it's a managed setting.
+  if (!connected_vpn_guid_.empty()) {
+    GetManagedProperties(
+        connected_vpn_guid_,
+        base::BindOnce(
+            &NetworkListViewControllerImpl::OnGetManagedPropertiesResult,
+            weak_ptr_factory_.GetWeakPtr(), connected_vpn_guid_));
+  } else {
+    is_vpn_managed_ = false;
+  }
+}
+
+void NetworkListViewControllerImpl::OnGetManagedPropertiesResult(
+    const std::string& guid,
+    ManagedPropertiesPtr properties) {
+  // Check if the proxy is managed.
+  const NetworkStateProperties* default_network = GetDefaultNetwork();
+  if (default_network && default_network->guid == guid) {
+    is_proxy_managed_ =
+        properties && properties->proxy_settings &&
+        properties->proxy_settings->type->policy_source !=
+            chromeos::network_config::mojom::PolicySource::kNone;
+  }
+
+  // Check if the VPN is managed.
+  if (guid == connected_vpn_guid_) {
+    // TODO(b/261009968): Add check for managed WireGuard settings.
+    is_vpn_managed_ =
+        properties && properties->type_properties->is_vpn() &&
+        properties->type_properties->get_vpn()->host &&
+        properties->type_properties->get_vpn()->host->policy_source !=
+            chromeos::network_config::mojom::PolicySource::kNone;
+  }
+
+  bool setManagedIcon = is_proxy_managed_.has_value() &&
+                        is_vpn_managed_.has_value() &&
+                        (is_proxy_managed_.value() || is_vpn_managed_.value());
+
+  if (setManagedIcon) {
+    SetConnectionWarningIcon(connection_warning_, /*use_managed_icon=*/true);
+  }
+}
+
+void NetworkListViewControllerImpl::SetConnectionWarningIcon(
+    TriView* parent,
+    bool use_managed_icon) {
+  DCHECK(parent) << "The connection warning parent view should not be null";
+
+  // Remove the previous icon if set.
+  RemoveAndResetViewIfExists(&connection_warning_icon_);
+
+  // Set 'info' icon on left side.
+  std::unique_ptr<views::ImageView> image_view = base::WrapUnique(
+      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
+  image_view->SetImage(gfx::CreateVectorIcon(
+      use_managed_icon ? kSystemTrayManagedIcon : kSystemMenuInfoIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  image_view->SetID(static_cast<int>(
+      NetworkListViewControllerViewChildId::kConnectionWarningIcon));
+  connection_warning_icon_ = image_view.get();
+  parent->AddView(TriView::Container::START, image_view.release());
+}
+
 const NetworkStateProperties*
 NetworkListViewControllerImpl::GetDefaultNetwork() {
   if (default_network_for_testing_)
     return default_network_for_testing_.get();
   return model()->default_network();
+}
+
+void NetworkListViewControllerImpl::GetManagedProperties(
+    const std::string& guid,
+    CrosNetworkConfig::GetManagedPropertiesCallback callback) {
+  if (managed_network_properties_for_testing_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       managed_network_properties_for_testing_.Clone()));
+    return;
+  }
+  model()->cros_network_config()->GetManagedProperties(guid,
+                                                       std::move(callback));
 }
 
 bool NetworkListViewControllerImpl::ShouldMobileDataSectionBeShown() {
@@ -707,15 +812,8 @@ void NetworkListViewControllerImpl::ShowConnectionWarning() {
       TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false));
   TrayPopupUtils::ConfigureAsStickyHeader(connection_warning.get());
 
-  // Set 'info' icon on left side.
-  std::unique_ptr<views::ImageView> image_view = base::WrapUnique(
-      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
-  image_view->SetImage(gfx::CreateVectorIcon(
-      kSystemMenuInfoIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  connection_warning->AddView(TriView::Container::START, std::move(image_view));
+  SetConnectionWarningIcon(connection_warning.get(),
+                           /*use_managed_icon=*/false);
 
   // Set message label in middle of row.
   std::unique_ptr<views::Label> label =
