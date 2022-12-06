@@ -12684,6 +12684,24 @@
             ]
         }
     ],
+    "WebRTC-SendPacketsOnWorkerThread": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled,_20221205"
+                }
+            ]
+        }
+    ],
     "WebRTC-SlackedTaskQueuePacedSender": [
         {
             "platforms": [
