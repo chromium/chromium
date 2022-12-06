@@ -286,7 +286,6 @@ js_unittest("recent_date_bucket_unittest") {
 }
 
 js_library("storage_adapter") {
-  externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
 
 js_unittest("storage_adapter_unittest") {
@@ -301,10 +300,7 @@ js_library("test_error_reporting") {
 }
 
 js_library("xfm") {
-  deps = [
-    ":notifications_browser_proxy",
-    ":storage_adapter",
-  ]
+  deps = [ ":notifications_browser_proxy" ]
 }
 
 js_library("unittest_util") {

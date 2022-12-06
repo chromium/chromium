@@ -7,9 +7,9 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
 import {DialogType} from '../../common/js/dialog_type.js';
+import {storage} from '../../common/js/storage_adapter.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {xfm} from '../../common/js/xfm.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {Banner} from '../../externs/banner.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -263,7 +263,7 @@ export class BannerController extends EventTarget {
     // Only attach event listeners if the controller is enabled. Used to disable
     // all banners from being loaded.
     if (!this.disableBanners_) {
-      xfm.storage.onChanged.addListener(
+      storage.onChanged.addListener(
           (changes, areaName) => this.onStorageChanged_(changes, areaName));
       this.directoryModel_.addEventListener(
           'directory-changed', event => this.onDirectoryChanged_(event));
@@ -390,7 +390,7 @@ export class BannerController extends EventTarget {
     const cacheKeys = Object.keys(this.localStorageCache_);
     let values = {};
     try {
-      values = await xfm.storage.local.getAsync(cacheKeys);
+      values = await storage.local.getAsync(cacheKeys);
     } catch (e) {
       console.warn(e.message);
     }
@@ -741,10 +741,10 @@ export class BannerController extends EventTarget {
   }
 
   /**
-   * Writes through the localStorage cache to localStorage to ensure values
+   * Writes through the localStorage cache to local storage to ensure values
    * are immediately available.
-   * @param {string} key The key in localStorage to set.
-   * @param {number} value The value to set the key to in localStorage.
+   * @param {string} key The key in local storage to set.
+   * @param {number} value The value to set the key to in local storage.
    * @private
    */
   async setLocalStorage_(key, value) {
@@ -754,7 +754,7 @@ export class BannerController extends EventTarget {
     }
     this.localStorageCache_[key] = value;
     try {
-      await xfm.storage.local.setAsync({[key]: value});
+      await storage.local.setAsync({[key]: value});
     } catch (e) {
       console.warn(e.message);
     }
@@ -902,7 +902,7 @@ export class BannerController extends EventTarget {
    * @private
    */
   onStorageChanged_(changes, areaName) {
-    if (areaName != 'local') {
+    if (areaName !== 'local') {
       return;
     }
 

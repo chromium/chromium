@@ -10,7 +10,6 @@ import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js'
 import {metrics} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {xfm} from '../../common/js/xfm.js';
 
 /**
  * The drive mount path used in the persisted storage. It must be '/drive'.
@@ -21,8 +20,6 @@ const STORED_DRIVE_MOUNT_PATH = '/drive';
 /**
  * Model for the folder shortcuts. This object is ArrayDataModel-like
  * object with additional methods for the folder shortcut feature.
- * This used to use xfm.storage as backend. Now it's migrated to Chrome
- * preferences.
  *
  * Items are always sorted by URL.
  */
@@ -208,27 +205,6 @@ export class FolderShortcutsDataModel extends EventTarget {
         callback();
       }
     });
-  }
-
-  /**
-   * Fetches the shortcut paths from the legacy chrome.storage.sync.
-   *
-   * This can be removed after M108, when we expect all users to have migrated
-   * to the SWA/prefs version.
-   *
-   * @return {!Promise<!Array<string>>}
-   * @private
-   */
-  async getPersistedShortcutPathsLegacy_() {
-    const value =
-        await xfm.storage.sync.getAsync(FolderShortcutsDataModel.NAME);
-    if (value) {
-      const shortcutPaths =
-          /** @type {!Array} */ (value[FolderShortcutsDataModel.NAME] || []);
-      return shortcutPaths;
-    }
-
-    return [];
   }
 
   /**
@@ -573,10 +549,3 @@ export class FolderShortcutsDataModel extends EventTarget {
         decodeURIComponent(url.substr(this.lastDriveRootURL_.length));
   }
 }
-
-/**
- * Key name in xfm.storage. The array are stored with this name.
- * @type {string}
- * @const
- */
-FolderShortcutsDataModel.NAME = 'folder-shortcuts-list';

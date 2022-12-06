@@ -7,8 +7,8 @@
  */
 
 import {metrics} from '../../common/js/metrics.js';
+import {storage} from '../../common/js/storage_adapter.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {xfm} from '../../common/js/xfm.js';
 
 export class HoldingSpaceUtil {
   /**
@@ -54,7 +54,7 @@ export class HoldingSpaceUtil {
   static getTimeOfFirstPin_() {
     return new Promise(resolve => {
       const key = HoldingSpaceUtil.TIME_OF_FIRST_PIN_KEY_;
-      xfm.storage.local.get(key, values => {
+      storage.local.get(key, values => {
         resolve(values[key]);
       });
     });
@@ -70,7 +70,7 @@ export class HoldingSpaceUtil {
   static getTimeOfFirstWelcomeBannerShow_() {
     return new Promise(resolve => {
       const key = HoldingSpaceUtil.TIME_OF_FIRST_WELCOME_BANNER_SHOW_KEY_;
-      xfm.storage.local.get(key, values => {
+      storage.local.get(key, values => {
         resolve(values[key]);
       });
     });
@@ -91,7 +91,7 @@ export class HoldingSpaceUtil {
     // Store time of first pin.
     const values = {};
     values[HoldingSpaceUtil.TIME_OF_FIRST_PIN_KEY_] = now;
-    xfm.storage.local.set(values);
+    storage.local.set(values);
 
     // Record a metric of the interval from the first time the holding space
     // welcome banner was shown to the time of the first pin to holding space.
@@ -133,6 +133,6 @@ export class HoldingSpaceUtil {
     // Store time of first show.
     const values = {};
     values[HoldingSpaceUtil.TIME_OF_FIRST_WELCOME_BANNER_SHOW_KEY_] = now;
-    xfm.storage.local.set(values);
+    storage.local.set(values);
   }
 }

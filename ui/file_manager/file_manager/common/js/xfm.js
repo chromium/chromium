@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 import {notifications} from './notifications_browser_proxy.js';
-import {storage} from './storage_adapter.js';
 
 // namespace
 export const xfm = {
   notifications,
-  storage,
 };

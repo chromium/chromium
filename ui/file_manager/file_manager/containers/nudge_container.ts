@@ -4,8 +4,8 @@
 
 import '../widgets/xf_nudge.js';
 
+import {storage} from '../common/js/storage_adapter.js';
 import {str} from '../common/js/util.js';
-import {xfm} from '../common/js/xfm.js';
 import {NudgeDirection, XfNudge} from '../widgets/xf_nudge.js';
 
 /**
@@ -118,7 +118,7 @@ export class NudgeContainer {
    * previously seen and dismissed by the user.
    */
   async checkSeen(nudgeId: string) {
-    const seen = await xfm.storage.local.getAsync(nudgeId);
+    const seen = await storage.local.getAsync(nudgeId);
     return seen[nudgeId] === 'true';
   }
 
@@ -127,7 +127,7 @@ export class NudgeContainer {
    * and dismissed by the user.
    */
   async setSeen(nudgeId: string) {
-    return xfm.storage.local.setAsync({[nudgeId]: 'true'});
+    return storage.local.setAsync({[nudgeId]: 'true'});
   }
 
   /**

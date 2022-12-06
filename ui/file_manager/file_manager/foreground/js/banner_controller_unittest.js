@@ -6,9 +6,9 @@ import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_
 
 import {DialogType} from '../../common/js/dialog_type.js';
 import {installMockChrome, MockChromeFileManagerPrivateDirectoryChanged, MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
+import {storage} from '../../common/js/storage_adapter.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {xfm} from '../../common/js/xfm.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {Banner} from '../../externs/banner.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -400,8 +400,8 @@ export function setUp() {
 
   mockDate = mockDateNow();
 
-  // Ensure localStorage is cleared between each test.
-  xfm.storage.local.clear();
+  // Ensure local storage is cleared between each test.
+  storage.local.clear();
 }
 
 export function tearDown() {

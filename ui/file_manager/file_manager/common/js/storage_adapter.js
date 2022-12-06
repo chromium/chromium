@@ -6,79 +6,12 @@
 export const storage = {};
 
 /**
- * StorageAreaAsync is a wrapper for existing storage implementations to
- * include async/await compatible version of get/set.
- * @extends {StorageArea}
- */
-class StorageAreaAsync {
-  /**
-   * @param {?StorageArea} storageArea chrome.storage.{local,sync} or null
-   */
-  constructor(storageArea) {
-    this.storageArea_ = (storageArea) ? storageArea : this;
-
-    /**
-     * If the chrome.runtime.lastError should be checked.
-     * @protected {boolean}
-     */
-    this.checkLastError = true;
-
-    this.get = this.storageArea_.get.bind(this.storageArea_);
-    this.set = this.storageArea_.set.bind(this.storageArea_);
-    this.remove = this.storageArea_.remove.bind(this.storageArea_);
-    this.clear = this.storageArea_.clear.bind(this.storageArea_);
-  }
-
-  /**
-   * Convert the storage.{local,sync}.get method to return a Promise.
-   * @param {string|!Array<string>} keys
-   * @returns {!Promise<!Object<string, *>>}
-   */
-  async getAsync(keys) {
-    return new Promise((resolve, reject) => {
-      this.get(keys, (values) => {
-        if (this.checkLastError && chrome && chrome.runtime &&
-            chrome.runtime.lastError) {
-          const keysString = keys && keys.join(', ');
-          reject(`Failed to retrieve keys [${keysString}] from browser storage:
-              ${chrome.runtime.lastError.message}`);
-          return;
-        }
-        resolve(values);
-      });
-    });
-  }
-
-  /**
-   * Convert the storage.{local,sync}.set method to return a Promise.
-   * @param {!Object<string, *>} values
-   * @returns {!Promise<void>}
-   */
-  async setAsync(values) {
-    return new Promise((resolve, reject) => {
-      this.set(values, () => {
-        if (this.checkLastError && chrome && chrome.runtime &&
-            chrome.runtime.lastError) {
-          const keysString = values && Object.keys(values).join(', ');
-          reject(`Failed to update browser storage keys
-              [${keysString}] with supplied values:
-              ${chrome.runtime.lastError.message}`);
-          return;
-        }
-        resolve();
-      });
-    });
-  }
-}
-
-/**
- * Propagates the changes to the storage keys.  It replicates the features of
- * chrome.storage.onChanged for the SWA.
+ * Class used to emit window.localStorage change events to event listeners.
+ * This class does 3 things:
  *
- * This does 3 things:
- * 1. Holds the onChanged event listeners/observes for the current window.
+ * 1. Holds the onChanged event listeners for the current window.
  * 2. Sends broadcast event to all windows.
- * 3. Listens to broadcast events and propagates to the listeners/observes in
+ * 3. Listens to broadcast events and propagates to the listeners in
  *    the current window.
  *
  * NOTE: This doesn't support the `oldValue` because it's simpler and the
@@ -87,43 +20,43 @@ class StorageAreaAsync {
 class StorageChangeTracker {
   constructor(storageNamespace) {
     /**
-     * Listeners for the storage.onChanged.
+     * Storage onChanged event listeners for the current window.
      * @private {!Array<OnChangedListener>}
      * */
-    this.observers_ = [];
+    this.listeners_ = [];
 
     /**
-     * Only used to send to the observers, because the chrome.storage.onChanged
-     * sends the namespace in the event.
+     * Storage namespace argument added when calling listeners.
      * @private {string}
      */
     this.storageNamespace_ = storageNamespace;
 
     /**
-     * Event to propagate changes to the localStorage to all windows listeners.
+     * Event to send local storage changes to all window listeners.
      */
     window.addEventListener('storage', this.onStorageEvent_.bind(this));
   }
 
+  /**
+   * Resets for testing: removes all listeners.
+   */
   resetForTesting() {
-    this.observers_ = [];
+    this.listeners_ = [];
   }
 
   /**
-   * Add a new listener to the onChanged event.
+   * Adds an onChanged event listener for the current window.
    * @param {function(!Object<string, !ValueChanged>, string)} callback
    */
   addListener(callback) {
-    this.observers_.push(callback);
+    this.listeners_.push(callback);
   }
 
   /**
-   * Notifies all listeners of the key changes (triggers the onChanged event
-   * listeners).
+   * Notifies listeners_ of key value changes.
    * @param {!Object<string, *>} changedValues changed.
-   * @param {string} namespace
    */
-  keysChanged(changedValues, namespace) {
+  keysChanged(changedValues) {
     /** @type {!Object<string, !ValueChanged>} */
     const changedKeys = {};
 
@@ -133,19 +66,19 @@ class StorageChangeTracker {
       changedKeys[key] = {newValue: v};
     }
 
-    this.notifyLocally_(changedKeys, namespace);
+    this.notifyLocally_(changedKeys);
   }
 
   /**
-   * Process the `storage` event, propagates to all local listeners/observers.
+   * Process localStorage `storage` event and notify listeners_.
    * @private
    */
   onStorageEvent_(event) {
     if (!event.key) {
       return;
     }
-    /** @type {string} */
-    const key = event.key;
+
+    const key = /** @type {string} */ (event.key);
     const newValue = /** @type {string} */ (event.newValue);
     const changedKeys = {};
 
@@ -158,19 +91,19 @@ class StorageChangeTracker {
           error);
       changedKeys[key] = {newValue};
     }
-    this.notifyLocally_(changedKeys, this.storageNamespace_);
+
+    this.notifyLocally_(changedKeys);
   }
 
   /**
-   * Notifies the local listeners (in this window).
+   * Notifies local (current window) listeners_ of key value changes.
    * @param {!Object<string, ValueChanged>} keys
-   * @param {string} namespace where the change occurred.
    * @private
    */
-  notifyLocally_(keys, namespace) {
-    for (const fn of this.observers_) {
+  notifyLocally_(keys) {
+    for (const listener of this.listeners_) {
       try {
-        fn(keys, namespace);
+        listener(keys, this.storageNamespace_);
       } catch (error) {
         console.error(`Error calling storage.onChanged listener: ${error}`);
       }
@@ -179,35 +112,33 @@ class StorageChangeTracker {
 }
 
 /**
- * StorageAreaSWAImpl enables the SWA version of Files app to continue using the
- * xfm.storage.* APIs by transparently switching them to use window.localStorage
- * instead of the chrome.storage APIs.
+ * StorageAreaImpl using window.localStorage as the storage area.
  */
-class StorageAreaSWAImpl extends StorageAreaAsync {
+class StorageAreaImpl {
   /**
    * @param {string} type
    */
   constructor(type) {
-    super(/** storageArea */ null);
-
-    this.checkLastError = false;
-
-    /** @private {string} */
-    this.type_ = type;
+    /** @private {!StorageChangeTracker} */
+    this.storageChangeTracker_ = new StorageChangeTracker(type);
   }
 
-  /** @override */
+  /**
+   * Gets values of |keys| and return them in the callback.
+   * @param {string|!Array<string>} keys
+   * @param {!function(!Object)} callback
+   */
   get(keys, callback) {
-    const inKeys = Array.isArray(keys) ? keys : [keys];
+    const keyList = Array.isArray(keys) ? keys : [keys];
     const result = {};
-    for (const key of inKeys) {
+    for (const key of keyList) {
       result[key] = this.getValue_(key);
     }
     callback(result);
   }
 
   /**
-   * Gets and parses the value from the storage.
+   * Gets the value of |key| from local storage.
    * @param {string} key
    * @private
    */
@@ -224,7 +155,25 @@ class StorageAreaSWAImpl extends StorageAreaAsync {
     }
   }
 
-  /** @override */
+  /**
+   * Async version of this.get() storage method.
+   * @param {string|!Array<string>} keys
+   * @returns {!Promise<!Object<string, *>>}
+   */
+  async getAsync(keys) {
+    return new Promise((resolve, reject) => {
+      this.get(keys, (values) => {
+        resolve(values);
+      });
+    });
+  }
+
+  /**
+   * Stores items in local storage.
+   * @param {!Object<string, *>} items The items to store.
+   * @param {?function()=} opt_callback Optional callback to be called when
+   *   the items have been stored.
+   */
   set(items, opt_callback) {
     for (const key in items) {
       const value = JSON.stringify(items[key]);
@@ -236,8 +185,24 @@ class StorageAreaSWAImpl extends StorageAreaAsync {
     }
   }
 
-  /** @override */
-  remove(keys, callback) {
+  /**
+   * Async version of this.set() storage method.
+   * @param {!Object<string, *>} items The items to store.
+   * @returns {!Promise<void>}
+   */
+  async setAsync(items) {
+    return new Promise((resolve, reject) => {
+      this.set(items, () => {
+        resolve();
+      });
+    });
+  }
+
+  /**
+   * Removes the given |keys| from local storage.
+   * @param {string|!Array<string>} keys
+   */
+  remove(keys) {
     const keyList = Array.isArray(keys) ? keys : [keys];
     for (const key of keyList) {
       window.localStorage.removeItem(key);
@@ -245,14 +210,16 @@ class StorageAreaSWAImpl extends StorageAreaAsync {
     this.notifyChange_(keyList);
   }
 
-  /** @override */
-  clear(callback) {
+  /**
+   * Clears local storage.
+   */
+  clear() {
     window.localStorage.clear();
     this.notifyChange_([]);
   }
 
   /**
-   * Notifies the changes for `keys` to listeners of `onChanged`.
+   * Notifies key changes to storage change tracker listeners.
    * @param {!Array<string>} keys
    * @private
    */
@@ -261,26 +228,24 @@ class StorageAreaSWAImpl extends StorageAreaAsync {
     for (const k of keys) {
       values[k] = this.getValue_(k);
     }
-    if (!storageChangeTracker) {
-      console.error('Error xfm.storage requires the storageChangeTracker');
-      return;
-    }
-    storageChangeTracker.keysChanged(values, this.type_);
+
+    this.getStorageChangeTracker_().keysChanged(values);
+  }
+
+  /**
+   * Gets storage change tracker.
+   * @returns {!StorageChangeTracker}
+   * @private
+   */
+  getStorageChangeTracker_() {
+    return this.storageChangeTracker_;
   }
 }
 
 /**
- * NOTE: This in only available for legacy Files app and will be removed in the
- * future.
- * It's only used to allow FolderShortcuts to be migrated to prefs.
- * @type {!StorageAreaAsync}
+ * @type {!StorageAreaImpl}
  */
-storage.sync;
-
-/**
- * @type {!StorageAreaAsync}
- */
-storage.local;
+storage.local = new StorageAreaImpl('local');
 
 /**
  * @typedef {function(!Object<string, !ValueChanged>, string)}
@@ -295,18 +260,12 @@ export let OnChangedListener;
 export let ValueChanged;
 
 /**
- * NOTE: Here we only expose the addListener() from the StorageChangeTracker.
+ * NOTE: Here we only expose StorageChangeTracker APIs addListener() and
+ * resetForTesting().
  *
  * @type {{
  *   addListener: function(OnChangedListener),
  *   resetForTesting: function(),
  * }}
  */
-storage.onChanged;
-
-/** @private {?StorageChangeTracker} */
-let storageChangeTracker = null;
-
-storage.local = new StorageAreaSWAImpl('local');
-storageChangeTracker = new StorageChangeTracker('local');
-storage.onChanged = storageChangeTracker;
+storage.onChanged = storage.local.getStorageChangeTracker_();

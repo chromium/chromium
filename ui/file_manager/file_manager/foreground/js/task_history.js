@@ -5,12 +5,12 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
+import {storage} from '../../common/js/storage_adapter.js';
 import {util} from '../../common/js/util.js';
-import {xfm} from '../../common/js/xfm.js';
 
 /**
- * TaskHistory object keeps track of the history of task executions.
- * This is responsible for keeping the history in persistent xfm.storage, too.
+ * TaskHistory object keeps track of the history of task executions. Recent
+ * history is stored in local storage.
  */
 export class TaskHistory extends EventTarget {
   constructor() {
@@ -23,7 +23,7 @@ export class TaskHistory extends EventTarget {
      */
     this.lastExecutedTime_ = {};
 
-    xfm.storage.onChanged.addListener(this.onLocalStorageChanged_.bind(this));
+    storage.onChanged.addListener(this.onLocalStorageChanged_.bind(this));
     this.load_();
   }
 
@@ -50,35 +50,35 @@ export class TaskHistory extends EventTarget {
   }
 
   /**
-   * Loads current history from local xfm.storage.
+   * Loads the current history from local storage.
    * @private
    */
   load_() {
-    xfm.storage.local.get(TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME, value => {
+    storage.local.get(TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME, value => {
       this.lastExecutedTime_ =
           value[TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME] || {};
     });
   }
 
   /**
-   * Saves current history to local xfm.storage.
+   * Saves the current history to local storage.
    * @private
    */
   save_() {
     const objectToSave = {};
     objectToSave[TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME] =
         this.lastExecutedTime_;
-    xfm.storage.local.set(objectToSave);
+    storage.local.set(objectToSave);
   }
 
   /**
-   * Handles change event on xfm.storage to update current history.
+   * Handles local storage change event to update the current history.
    * @param {!Object<string, !StorageChange>} changes
    * @param {string} areaName
    * @private
    */
   onLocalStorageChanged_(changes, areaName) {
-    if (areaName != 'local') {
+    if (areaName !== 'local') {
       return;
     }
 
@@ -126,7 +126,7 @@ TaskHistory.EventType = {
 };
 
 /**
- * This key is used to store the history in chrome's local xfm.storage.
+ * Key used to store the task history in local storage.
  * @const {string}
  */
 TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME = 'task-last-executed-time';

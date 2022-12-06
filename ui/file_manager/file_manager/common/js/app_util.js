@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {xfm} from './xfm.js';
+
+import {storage} from './storage_adapter.js';
 
 const appUtil = {};
 
@@ -17,7 +18,7 @@ appUtil.saveAppState = () => {
   const items = {};
 
   items[window.appID] = JSON.stringify(window.appState);
-  xfm.storage.local.setAsync(items);
+  storage.local.setAsync(items);
 };
 
 /**
