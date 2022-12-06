@@ -79,6 +79,7 @@ export function createAudioDevice(
 
 export interface FakeCrosAudioConfigInterface extends CrosAudioConfigInterface {
   setActiveDevice(outputDevice: AudioDevice): void;
+  setOutputMuted(muted: boolean): void;
 }
 
 export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
@@ -123,6 +124,15 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
    */
   setAudioSystemProperties(properties: AudioSystemProperties): void {
     this.audioSystemProperties = properties;
+    this.notifyAudioSystemPropertiesUpdated();
+  }
+
+  /**
+   * Sets the mute state based on provided value.
+   */
+  setOutputMuted(muted: boolean): void {
+    this.audioSystemProperties.outputMuteState =
+        muted ? MuteState.kMutedByUser : MuteState.kNotMuted;
     this.notifyAudioSystemPropertiesUpdated();
   }
 
