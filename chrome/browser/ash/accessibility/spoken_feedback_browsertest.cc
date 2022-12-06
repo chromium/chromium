@@ -709,6 +709,44 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowHeadingList) {
+  EnableChromeVox();
+
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+        <h1>Page Title</h1>
+        <h2>First Section</h2>
+        <h3>Sub-category</h3>
+        <p>Text</p>
+        <h3>Second sub-category<h3>
+        <button autofocus>Next page</button>)")));
+  });
+  sm_.ExpectSpeech("Next page");
+  sm_.Call([this]() { SendKeyPressWithSearchAndControl(ui::VKEY_H); });
+  sm_.ExpectSpeech("Heading Menu");
+  sm_.ExpectSpeechPattern("Page Title Heading 1 Menu item 1 of *");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeechPattern("First Section Heading 2 Menu item 2 of *");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeechPattern("Sub-category Heading 3 Menu item 3 of *");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeechPattern("Second sub-category Heading 3 Menu item 4 of *");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });
+  sm_.ExpectSpeechPattern("Sub-category Heading 3 Menu item 3 of *");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Sub-category");
+  sm_.Call([this]() {
+    SendKeyPressWithSearch(ui::VKEY_DOWN);
+    SendKeyPressWithSearch(ui::VKEY_DOWN);
+    SendKeyPressWithSearch(ui::VKEY_DOWN);
+    SendKeyPressWithSearch(ui::VKEY_DOWN);
+  });
+  sm_.ExpectSpeech("Next page Button");
+
+  sm_.Replay();
+}
+
 // Verifies that an announcement is triggered when focusing a blocked app
 // ShelfItem.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
