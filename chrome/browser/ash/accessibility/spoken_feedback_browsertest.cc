@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, VolumeSlider) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NextLandmark) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, LandmarkNavigation) {
   ui::KeyboardCode semicolon = ui::VKEY_OEM_1;
 
   EnableChromeVox();
@@ -917,6 +917,34 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NextLandmark) {
   sm_.ExpectSpeech("navigation");
   sm_.Call([this, semicolon]() { SendKeyPressWithSearchAndShift(semicolon); });
   sm_.ExpectSpeech("main");
+
+  // Navigate the landmark list.
+  sm_.Call(
+      [this, semicolon]() { SendKeyPressWithSearchAndControl(semicolon); });
+  sm_.ExpectSpeech("Landmark Menu");
+  sm_.ExpectSpeech("Application Menu item 1 of 7");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Banner Menu item 2 of 7");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Complementary Menu item 3 of 7");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Form Menu item 4 of 7");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Main Menu item 5 of 7");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Navigation Menu item 6 of 7");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Search Menu item 7 of 7");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });
+  sm_.ExpectSpeech("Navigation Menu item 6 of 7");
+
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Navigation");
+  sm_.Call([this]() {
+    SendKeyPressWithSearch(ui::VKEY_UP);
+    SendKeyPressWithSearch(ui::VKEY_UP);
+  });
+  sm_.ExpectSpeech("after main");
 
   sm_.Replay();
 }
