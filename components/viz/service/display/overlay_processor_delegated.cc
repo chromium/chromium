@@ -158,8 +158,9 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
       is_delegated_context, supports_clip_rect_ && enable_clip_rect());
 
-  std::vector<QuadList::Iterator> candidate_quads;
+  candidates->reserve(quad_list->size());
   int num_quads_skipped = 0;
+
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
     auto& transform = it->shared_quad_state->quad_to_target_transform;
@@ -179,7 +180,6 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
       }
       candidates->push_back(candidate);
-      candidate_quads.push_back(it);
     } else if (candidate_status ==
                OverlayCandidate::CandidateStatus::kFailVisible) {
       // This quad can be intentionally skipped.
