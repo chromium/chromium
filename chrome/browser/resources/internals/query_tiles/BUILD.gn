@@ -2,25 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_android)
 
-js_type_check("closure_compile") {
-  deps = [
-    ":query_tiles_internals",
-    ":query_tiles_internals_browser_proxy",
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [
+    "query_tiles_internals.ts",
+    "query_tiles_internals_browser_proxy.ts",
   ]
-}
-
-js_library("query_tiles_internals") {
-  deps = [
-    ":query_tiles_internals_browser_proxy",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("query_tiles_internals_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
 }

@@ -143,7 +143,6 @@ if (enable_js_type_check) {
         "explore_sites_internals:closure_compile",
         "internals/lens:closure_compile",
         "internals/notifications:closure_compile",
-        "internals/query_tiles:closure_compile",
         "video_tutorials:closure_compile",
       ]
     }

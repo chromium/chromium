@@ -48,8 +48,8 @@ This file specifies browser resources for developer-facing chrome:// pages
 
       <if expr="is_android">
         <include name="IDR_QUERY_TILES_INTERNALS_HTML" file="resources\internals\query_tiles\query_tiles_internals.html" type="BINDATA" />
-        <include name="IDR_QUERY_TILES_INTERNALS_JS" file="resources\internals\query_tiles\query_tiles_internals.js" type="BINDATA" />
-        <include name="IDR_QUERY_TILES_INTERNALS_BROWSER_PROXY_JS" file="resources\internals\query_tiles\query_tiles_internals_browser_proxy.js" type="BINDATA" />
+        <include name="IDR_QUERY_TILES_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\internals\query_tiles\tsc\query_tiles_internals.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_QUERY_TILES_INTERNALS_BROWSER_PROXY_JS" file="${root_gen_dir}\chrome\browser\resources\internals\query_tiles\tsc\query_tiles_internals_browser_proxy.js" use_base_dir="false" type="BINDATA" />
       </if>
 
       <if expr="enable_supervised_users">
