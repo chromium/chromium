@@ -103068,6 +103068,7 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Invalid entropy mode"/>
   <int value="4" label="Slots do not divide low entropy domain"/>
   <int value="5" label="Invalid slot bounds"/>
+  <int value="6" label="Unknown fields"/>
 </enum>
 
 <enum name="VariationsInvalidStudyReason">
