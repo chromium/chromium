@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/keyboard_delegate_for_testing.h"
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/check.h"
 #include "base/notreached.h"
