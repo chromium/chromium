@@ -2813,7 +2813,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  return !self.toolbarAccessoryPresenter.presenting;
+  // When screeen size is not regular, overscroll actions should be enabled.
+  return !self.toolbarAccessoryPresenter.presenting && !self.canShowTabStrip;
 }
 
 - (UIView*)headerViewForOverscrollActionsController:

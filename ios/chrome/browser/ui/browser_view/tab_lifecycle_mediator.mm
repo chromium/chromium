@@ -99,9 +99,7 @@
     passwordTabHelper->SetDispatcher(_commandDispatcher);
   }
 
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
-  }
+  OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
 
   web_deprecated::SetSwipeRecognizerProvider(webState, _sideSwipeController);
 
@@ -135,9 +133,7 @@
     passwordTabHelper->SetDispatcher(nil);
   }
 
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
-  }
+  OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 
   web_deprecated::SetSwipeRecognizerProvider(webState, nil);
 
