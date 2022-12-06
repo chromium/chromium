@@ -49,7 +49,7 @@ seed/xml.stamp: genSeed$(EXEEXT)
 	@touch seed/xml.stamp
 
 xml_SOURCES = xml.c fuzz.c
-xml_LDFLAGS = -fsanitize=fuzzer
+xml_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
 
 fuzz-xml: xml$(EXEEXT) seed/xml.stamp
 	@mkdir -p corpus/xml
@@ -67,7 +67,7 @@ seed/html.stamp: genSeed$(EXEEXT)
 	@touch seed/html.stamp
 
 html_SOURCES = html.c fuzz.c
-html_LDFLAGS = -fsanitize=fuzzer
+html_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
 
 fuzz-html: html$(EXEEXT) seed/html.stamp
 	@mkdir -p corpus/html
@@ -85,7 +85,7 @@ seed/regexp.stamp:
 	@touch seed/regexp.stamp
 
 regexp_SOURCES = regexp.c fuzz.c
-regexp_LDFLAGS = -fsanitize=fuzzer
+regexp_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
 
 fuzz-regexp: regexp$(EXEEXT)
 	@mkdir -p corpus/regexp
@@ -103,7 +103,7 @@ seed/uri.stamp:
 	@touch seed/uri.stamp
 
 uri_SOURCES = uri.c fuzz.c
-uri_LDFLAGS = -fsanitize=fuzzer
+uri_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
 
 fuzz-uri: uri$(EXEEXT)
 	@mkdir -p corpus/uri
@@ -120,7 +120,7 @@ seed/schema.stamp: genSeed$(EXEEXT)
 	@touch seed/schema.stamp
 
 schema_SOURCES = schema.c fuzz.c
-schema_LDFLAGS = -fsanitize=fuzzer
+schema_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
 
 fuzz-schema: schema$(EXEEXT) seed/schema.stamp
 	@mkdir -p corpus/schema
@@ -138,7 +138,7 @@ seed/xpath.stamp: genSeed$(EXEEXT)
 	@touch seed/xpath.stamp
 
 xpath_SOURCES = xpath.c fuzz.c
-xpath_LDFLAGS = -fsanitize=fuzzer
+xpath_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
 
 fuzz-xpath: xpath$(EXEEXT) seed/xpath.stamp
 	@mkdir -p corpus/xpath

@@ -42,7 +42,7 @@ XML_INTDIR_A = int.a.bcb
 UTILS_INTDIR = int.utils.bcb
 
 # The preprocessor and its options.
-CPP = cpp32.exe -P- -DWIN32
+CPP = cpp32.exe -P-
 CPPFLAGS = -I"$(XML_SRCDIR)\include" -DNOLIBTOOL 
 !if "$(WITH_THREADS)" != "no"
 CPPFLAGS = $(CPPFLAGS) -D_REENTRANT -D__MT__
@@ -50,7 +50,7 @@ CPPFLAGS = $(CPPFLAGS) -D_REENTRANT -D__MT__
 
 # The compiler and its options.
 CC = bcc32.exe
-CFLAGS = -q -DWIN32 -D_NO_VCL -D_WINDOWS -D_MBCS -DEILSEQ=2 -DNOLIBTOOL -w-
+CFLAGS = -q -D_NO_VCL -D_WINDOWS -D_MBCS -DEILSEQ=2 -DNOLIBTOOL -w-
 CFLAGS = $(CFLAGS) -I"$(XML_SRCDIR)" -I"$(XML_SRCDIR)\include" -I"$(INCPREFIX)" -I"$(INCLUDE)"
 !if "$(WITH_THREADS)" != "no"
 CFLAGS = $(CFLAGS) -D_REENTRANT -tWM
@@ -59,9 +59,7 @@ CFLAGS = $(CFLAGS) -D_REENTRANT -tWM
 CFLAGS = $(CFLAGS) -tWR
 !endif
 !if "$(WITH_THREADS)" == "yes" || "$(WITH_THREADS)" == "ctls"
-CFLAGS = $(CFLAGS) -DHAVE_WIN32_THREADS -DHAVE_COMPILER_TLS
-!else if "$(WITH_THREADS)" == "native"
-CFLAGS = $(CFLAGS) -DHAVE_WIN32_THREADS
+CFLAGS = $(CFLAGS) -DHAVE_COMPILER_TLS
 !else if "$(WITH_THREADS)" == "posix"
 CFLAGS = $(CFLAGS) -DHAVE_PTHREAD_H
 !endif
@@ -205,7 +203,6 @@ XML_OBJS_A = $(XML_INTDIR_A)\buf.obj\
 # Xmllint and friends executables.
 UTILS = $(BINDIR)\xmllint.exe\
 	$(BINDIR)\xmlcatalog.exe\
-	$(BINDIR)\testAutomata.exe\
 	$(BINDIR)\testModule.exe\
 	$(BINDIR)\runtest.exe\
 	$(BINDIR)\runsuite.exe\

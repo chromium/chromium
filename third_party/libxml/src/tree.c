@@ -1216,11 +1216,6 @@ xmlFreeDoc(xmlDocPtr cur) {
 #endif
 	return;
     }
-#ifdef LIBXML_DEBUG_RUNTIME
-#ifdef LIBXML_DEBUG_ENABLED
-    xmlDebugCheckDocument(stderr, cur);
-#endif
-#endif
 
     if (cur != NULL) dict = cur->dict;
 
@@ -4810,12 +4805,12 @@ xmlGetNodePath(const xmlNode *node)
         return (NULL);
 
     buf_len = 500;
-    buffer = (xmlChar *) xmlMallocAtomic(buf_len * sizeof(xmlChar));
+    buffer = (xmlChar *) xmlMallocAtomic(buf_len);
     if (buffer == NULL) {
 	xmlTreeErrMemory("getting node path");
         return (NULL);
     }
-    buf = (xmlChar *) xmlMallocAtomic(buf_len * sizeof(xmlChar));
+    buf = (xmlChar *) xmlMallocAtomic(buf_len);
     if (buf == NULL) {
 	xmlTreeErrMemory("getting node path");
         xmlFree(buffer);
@@ -7148,7 +7143,7 @@ xmlBufferCreate(void) {
     ret->use = 0;
     ret->size = xmlDefaultBufferSize;
     ret->alloc = xmlBufferAllocScheme;
-    ret->content = (xmlChar *) xmlMallocAtomic(ret->size * sizeof(xmlChar));
+    ret->content = (xmlChar *) xmlMallocAtomic(ret->size);
     if (ret->content == NULL) {
 	xmlTreeErrMemory("creating buffer");
 	xmlFree(ret);
@@ -7181,7 +7176,7 @@ xmlBufferCreateSize(size_t size) {
     ret->alloc = xmlBufferAllocScheme;
     ret->size = (size ? size + 1 : 0);         /* +1 for ending null */
     if (ret->size){
-        ret->content = (xmlChar *) xmlMallocAtomic(ret->size * sizeof(xmlChar));
+        ret->content = (xmlChar *) xmlMallocAtomic(ret->size);
         if (ret->content == NULL) {
 	    xmlTreeErrMemory("creating buffer");
             xmlFree(ret);
@@ -7458,7 +7453,7 @@ xmlBufferDump(FILE *file, xmlBufferPtr buf) {
     }
     if (file == NULL)
 	file = stdout;
-    ret = fwrite(buf->content, sizeof(xmlChar), buf->use, file);
+    ret = fwrite(buf->content, 1, buf->use, file);
     return(ret > INT_MAX ? INT_MAX : ret);
 }
 
@@ -7665,7 +7660,7 @@ xmlBufferAdd(xmlBufferPtr buf, const xmlChar *str, int len) {
         }
     }
 
-    memmove(&buf->content[buf->use], str, len*sizeof(xmlChar));
+    memmove(&buf->content[buf->use], str, len);
     buf->use += len;
     buf->content[buf->use] = 0;
     return 0;
@@ -10248,5 +10243,50 @@ xmlDOMWrapAdoptNode(xmlDOMWrapCtxtPtr ctxt,
 	}
     }
     return (0);
+}
+
+/************************************************************************
+ *									*
+ *			XHTML detection					*
+ *									*
+ ************************************************************************/
+
+#define XHTML_STRICT_PUBLIC_ID BAD_CAST \
+   "-//W3C//DTD XHTML 1.0 Strict//EN"
+#define XHTML_STRICT_SYSTEM_ID BAD_CAST \
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+#define XHTML_FRAME_PUBLIC_ID BAD_CAST \
+   "-//W3C//DTD XHTML 1.0 Frameset//EN"
+#define XHTML_FRAME_SYSTEM_ID BAD_CAST \
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
+#define XHTML_TRANS_PUBLIC_ID BAD_CAST \
+   "-//W3C//DTD XHTML 1.0 Transitional//EN"
+#define XHTML_TRANS_SYSTEM_ID BAD_CAST \
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+
+/**
+ * xmlIsXHTML:
+ * @systemID:  the system identifier
+ * @publicID:  the public identifier
+ *
+ * Try to find if the document correspond to an XHTML DTD
+ *
+ * Returns 1 if true, 0 if not and -1 in case of error
+ */
+int
+xmlIsXHTML(const xmlChar *systemID, const xmlChar *publicID) {
+    if ((systemID == NULL) && (publicID == NULL))
+	return(-1);
+    if (publicID != NULL) {
+	if (xmlStrEqual(publicID, XHTML_STRICT_PUBLIC_ID)) return(1);
+	if (xmlStrEqual(publicID, XHTML_FRAME_PUBLIC_ID)) return(1);
+	if (xmlStrEqual(publicID, XHTML_TRANS_PUBLIC_ID)) return(1);
+    }
+    if (systemID != NULL) {
+	if (xmlStrEqual(systemID, XHTML_STRICT_SYSTEM_ID)) return(1);
+	if (xmlStrEqual(systemID, XHTML_FRAME_SYSTEM_ID)) return(1);
+	if (xmlStrEqual(systemID, XHTML_TRANS_SYSTEM_ID)) return(1);
+    }
+    return(0);
 }
 

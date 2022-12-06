@@ -130,6 +130,9 @@
  */
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
 #define XPATH_MAX_RECURSION_DEPTH 500
+#elif defined(_WIN32)
+/* Windows typically limits stack size to 1MB. */
+#define XPATH_MAX_RECURSION_DEPTH 1000
 #else
 #define XPATH_MAX_RECURSION_DEPTH 5000
 #endif
@@ -3098,7 +3101,7 @@ xmlXPathPopExternal (xmlXPathParserContextPtr ctxt) {
 #define CUR_CHAR(l) xmlXPathCurrentChar(ctxt, &l)
 
 #define COPY_BUF(l,b,i,v)                                              \
-    if (l == 1) b[i++] = (xmlChar) v;                                  \
+    if (l == 1) b[i++] = v;                                            \
     else i += xmlCopyChar(l,&b[i],v)
 
 #define NEXTL(l)  ctxt->cur += l
@@ -4855,7 +4858,7 @@ xmlXPathRegisterFuncNS(xmlXPathContextPtr ctxt, const xmlChar *name,
 	return(-1);
     if (f == NULL)
         return(xmlHashRemoveEntry2(ctxt->funcHash, name, ns_uri, NULL));
-XML_IGNORE_PEDANTIC_WARNINGS
+XML_IGNORE_FPTR_CAST_WARNINGS
     return(xmlHashAddEntry2(ctxt->funcHash, name, ns_uri, (void *) f));
 XML_POP_WARNINGS
 }
@@ -4938,7 +4941,7 @@ xmlXPathFunctionLookupNS(xmlXPathContextPtr ctxt, const xmlChar *name,
     if (ctxt->funcHash == NULL)
 	return(NULL);
 
-XML_IGNORE_PEDANTIC_WARNINGS
+XML_IGNORE_FPTR_CAST_WARNINGS
     ret = (xmlXPathFunction) xmlHashLookup2(ctxt->funcHash, name, ns_uri);
 XML_POP_WARNINGS
     return(ret);
@@ -9921,7 +9924,7 @@ xmlXPathParseNameComplex(xmlXPathParserContextPtr ctxt, int qualified) {
             if (len > XML_MAX_NAME_LENGTH) {
                 XP_ERRORNULL(XPATH_EXPR_ERROR);
             }
-	    buffer = (xmlChar *) xmlMallocAtomic(max * sizeof(xmlChar));
+	    buffer = (xmlChar *) xmlMallocAtomic(max);
 	    if (buffer == NULL) {
 		XP_ERRORNULL(XPATH_MEMORY_ERROR);
 	    }
@@ -9938,8 +9941,7 @@ xmlXPathParseNameComplex(xmlXPathParserContextPtr ctxt, int qualified) {
                         XP_ERRORNULL(XPATH_EXPR_ERROR);
                     }
 		    max *= 2;
-		    tmp = (xmlChar *) xmlRealloc(buffer,
-			                         max * sizeof(xmlChar));
+		    tmp = (xmlChar *) xmlRealloc(buffer, max);
 		    if (tmp == NULL) {
                         xmlFree(buffer);
 			XP_ERRORNULL(XPATH_MEMORY_ERROR);

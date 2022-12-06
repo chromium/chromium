@@ -48,9 +48,6 @@
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
@@ -78,26 +75,15 @@
  * A couple portability macros
  */
 #ifndef _WINSOCKAPI_
-#if !defined(__BEOS__) || defined(__HAIKU__)
 #define closesocket(s) close(s)
-#endif
-#endif
-
-#ifdef __BEOS__
-#ifndef PF_INET
-#define PF_INET AF_INET
-#endif
-#endif
-
-#ifdef _AIX
-#ifdef HAVE_BROKEN_SS_FAMILY
-#define ss_family __ss_family
-#endif
 #endif
 
 #ifndef XML_SOCKLEN_T
 #define XML_SOCKLEN_T unsigned int
 #endif
+
+#define GETHOSTBYNAME_ARG_CAST (char *)
+#define SEND_ARG2_CAST (char *)
 
 #define FTP_COMMAND_OK		200
 #define FTP_SYNTAX_ERROR	500

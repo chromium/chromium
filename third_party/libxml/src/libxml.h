@@ -55,18 +55,6 @@ int vfprintf(FILE *, const char *, va_list);
 #endif
 
 #if defined(__clang__) || \
-    (defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406))
-#define XML_IGNORE_PEDANTIC_WARNINGS \
-    _Pragma("GCC diagnostic push") \
-    _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
-#define XML_POP_WARNINGS \
-    _Pragma("GCC diagnostic pop")
-#else
-#define XML_IGNORE_PEDANTIC_WARNINGS
-#define XML_POP_WARNINGS
-#endif
-
-#if defined(__clang__) || \
     (defined(__GNUC__) && (__GNUC__ >= 8))
 #define ATTRIBUTE_NO_SANITIZE(arg) __attribute__((no_sanitize(arg)))
 #else

@@ -313,7 +313,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 /**
  * LIBXML_DEBUG_RUNTIME:
  *
- * Whether the runtime debugging is configured in
+ * Removed
  */
 #if 0
 #define LIBXML_DEBUG_RUNTIME
@@ -409,12 +409,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 #endif
 
 #ifdef __GNUC__
-
-/**
- * ATTRIBUTE_UNUSED:
- *
- * Macro used to signal to GCC unused function parameters
- */
+/** DOC_DISABLE */
 
 #ifndef ATTRIBUTE_UNUSED
 # if ((__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ >= 7)))
@@ -423,12 +418,6 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 #  define ATTRIBUTE_UNUSED
 # endif
 #endif
-
-/**
- * LIBXML_ATTR_ALLOC_SIZE:
- *
- * Macro used to indicate to GCC this is an allocator function
- */
 
 #ifndef LIBXML_ATTR_ALLOC_SIZE
 # if (!defined(__clang__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3))))
@@ -439,12 +428,6 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 #else
 # define LIBXML_ATTR_ALLOC_SIZE(x)
 #endif
-
-/**
- * LIBXML_ATTR_FORMAT:
- *
- * Macro used to indicate to GCC the parameter are printf like
- */
 
 #ifndef LIBXML_ATTR_FORMAT
 # if ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 3)))
@@ -465,6 +448,19 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 #  endif
 #endif
 
+#if defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
+#define XML_IGNORE_FPTR_CAST_WARNINGS \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Wpedantic\"") \
+    _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
+#define XML_POP_WARNINGS \
+    _Pragma("GCC diagnostic pop")
+#else
+#define XML_IGNORE_FPTR_CAST_WARNINGS
+#define XML_POP_WARNINGS
+#endif
+
+/** DOC_ENABLE */
 #else /* ! __GNUC__ */
 /**
  * ATTRIBUTE_UNUSED:
@@ -493,6 +489,18 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 #ifndef XML_DEPRECATED
 #define XML_DEPRECATED
 #endif
+/**
+ * LIBXML_IGNORE_FPTR_CAST_WARNINGS:
+ *
+ * Macro used to ignore pointer cast warnings that can't be worked around.
+ */
+#define XML_IGNORE_FPTR_CAST_WARNINGS
+/**
+ * LIBXML_POP_WARNINGS:
+ *
+ * Macro used to restore warnings state.
+ */
+#define XML_POP_WARNINGS
 #endif /* __GNUC__ */
 
 #ifdef __cplusplus
