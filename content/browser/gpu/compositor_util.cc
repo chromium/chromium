@@ -149,10 +149,9 @@ const GpuFeatureData GetGpuFeatureData(
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE),
 #if BUILDFLAG(IS_LINUX)
-     !base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux),
-#else
-     command_line.HasSwitch(switches::kDisableAcceleratedVideoDecode),
+     !base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux) ||
 #endif  // BUILDFLAG(IS_LINUX)
+         command_line.HasSwitch(switches::kDisableAcceleratedVideoDecode),
      DisableInfo::Problem(
          "Accelerated video decode has been disabled, either via blocklist, "
          "about:flags or the command line."),
