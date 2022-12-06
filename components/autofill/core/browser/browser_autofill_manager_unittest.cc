@@ -713,7 +713,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
         .Times(AtLeast(1));
-    browser_autofill_manager_->FillOrPreviewCreditCardFormForTest(
+    browser_autofill_manager_->FillOrPreviewCreditCardForm(
         mojom::RendererFormDataAction::kFill, kDefaultPageID, *form,
         form->fields[0], card);
   }
@@ -2308,7 +2308,7 @@ TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
   FormData form = CreateTestCreditCardFormData(true, false);
   FormsSeen({form});
   CreditCard credit_card = test::GetMaskedServerCard();
-  browser_autofill_manager_->FillOrPreviewCreditCardFormForTest(
+  browser_autofill_manager_->FillOrPreviewCreditCardForm(
       mojom::RendererFormDataAction::kFill, kDefaultPageID, form,
       form.fields[0], &credit_card);
 

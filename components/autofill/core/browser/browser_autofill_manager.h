@@ -169,6 +169,16 @@ class BrowserAutofillManager : public AutofillManager,
                           const FormData& form,
                           const FormFieldData& field);
 
+  // Fills or previews the credit card form.
+  // Assumes the form and field are valid.
+  // Asks for authentication via CVC before filling with server card data.
+  // TODO(crbug.com/1330108): Clean up the API.
+  virtual void FillOrPreviewCreditCardForm(mojom::RendererFormDataAction action,
+                                           int query_id,
+                                           const FormData& form,
+                                           const FormFieldData& field,
+                                           const CreditCard* credit_card);
+
   // Called only from Autofill Assistant through
   // ContentAutofillDriver::FillFormForAssistant().
   // TODO(crbug.com/1330108): Clean up the API.
@@ -382,14 +392,6 @@ class BrowserAutofillManager : public AutofillManager,
     return WillFillCreditCardNumber(form, field);
   }
 
-  void FillOrPreviewCreditCardFormForTest(mojom::RendererFormDataAction action,
-                                          int query_id,
-                                          const FormData& form,
-                                          const FormFieldData& field,
-                                          const CreditCard* credit_card) {
-    FillOrPreviewCreditCardForm(action, query_id, form, field, credit_card);
-  }
-
   void FillOrPreviewDataModelFormForTest(
       mojom::RendererFormDataAction action,
       int query_id,
@@ -522,15 +524,6 @@ class BrowserAutofillManager : public AutofillManager,
   // will need to unmask a card.
   bool WillFillCreditCardNumber(const FormData& form,
                                 const FormFieldData& triggered_field);
-
-  // Fills or previews the credit card form.
-  // Assumes the form and field are valid.
-  // TODO(crbug.com/1330108): Clean up the API.
-  void FillOrPreviewCreditCardForm(mojom::RendererFormDataAction action,
-                                   int query_id,
-                                   const FormData& form,
-                                   const FormFieldData& field,
-                                   const CreditCard* credit_card);
 
   // Fills or previews the profile form.
   // Assumes the form and field are valid.

@@ -123,8 +123,12 @@ void TouchToFillDelegateImpl::ShowCreditCardSettings() {
 
 void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
   HideTouchToFill();
-  // TODO(crbug/1247698): Authenticate before using server cards.
-  // TODO(crbug/1247698): Fill the card data.
+  PersonalDataManager* pdm = manager_->client()->GetPersonalDataManager();
+  DCHECK(pdm);
+  CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
+  manager_->FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill,
+                                        query_id_, query_form_, query_field_,
+                                        card);
 }
 
 base::WeakPtr<TouchToFillDelegateImpl> TouchToFillDelegateImpl::GetWeakPtr() {

@@ -100,6 +100,13 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const std::u16string& cvc,
                int query_id),
               (override));
+  MOCK_METHOD(void,
+              FillOrPreviewCreditCardForm,
+              (mojom::RendererFormDataAction action,
+               int query_id,
+               const FormData& form,
+               const FormFieldData& field,
+               const CreditCard* credit_card));
 };
 
 }  // namespace
@@ -405,6 +412,17 @@ TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionClosesTheSheet) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard).Times(1);
+  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id());
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionFillsCardForm) {
+  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  CreditCard credit_card = autofill::test::GetCreditCard();
+  autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
+
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
   touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id());
 }
 
