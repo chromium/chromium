@@ -17,7 +17,7 @@ import './title_item.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporter, MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {listenOnce} from 'chrome://resources/js/util_ts.js';
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';

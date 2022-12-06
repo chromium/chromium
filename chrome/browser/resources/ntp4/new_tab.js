@@ -6,7 +6,7 @@ import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {$, appendParam, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {AppInfo} from './app_info.js';

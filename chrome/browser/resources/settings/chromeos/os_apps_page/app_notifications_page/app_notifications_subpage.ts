@@ -12,7 +12,7 @@ import './app_notification_row.js';
 import '../../../controls/settings_toggle_button.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {App, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver} from '../../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';

@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // <if expr="is_chromeos">
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';

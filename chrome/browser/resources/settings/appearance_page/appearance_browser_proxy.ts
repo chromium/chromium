@@ -4,7 +4,7 @@
 
 // clang-format off
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // clang-format on
 
 export interface AppearanceBrowserProxy {

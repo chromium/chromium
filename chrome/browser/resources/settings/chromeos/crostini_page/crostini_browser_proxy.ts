@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {GuestId, TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';

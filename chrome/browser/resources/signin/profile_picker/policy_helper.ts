@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 export function isGuestModeEnabled(): boolean {
   return loadTimeData.getBoolean('isGuestModeEnabled');

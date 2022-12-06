@@ -5,7 +5,7 @@
 // <if expr="is_linux or is_chromeos">
 import './strings.m.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
 
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';

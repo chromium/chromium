@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {PrinterListEntry} from './cups_printer_types.js';
 import {CupsPrinterInfo, PrinterSetupResult, PrintServerResult} from './cups_printers_browser_proxy.js';

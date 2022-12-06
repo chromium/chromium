@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/mwb_shared_icons.html.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
 
 import {MouseHoverableMixin} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ariaLabel, TabGroupData} from './tab_data.js';

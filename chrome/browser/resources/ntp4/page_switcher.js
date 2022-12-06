@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DragWrapper} from 'chrome://resources/js/drag_wrapper.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCardSlider} from './new_tab.js';
 import {getCurrentlyDraggingTile} from './tile_page.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './tab_group.html.js';
 import {TabGroupVisualData} from './tab_strip.mojom-webui.js';

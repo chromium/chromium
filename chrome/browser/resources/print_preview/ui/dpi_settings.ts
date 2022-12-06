@@ -7,7 +7,7 @@ import './settings_section.js';
 import '../strings.m.js';
 import './settings_select.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DpiCapability, DpiOption, SelectOption} from '../data/cdd.js';

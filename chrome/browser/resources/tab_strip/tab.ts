@@ -8,7 +8,7 @@ import './alert_indicators.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {getFavicon} from 'chrome://resources/js/icon.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isRTL} from 'chrome://resources/js/util_ts.js';
 
 import {AlertIndicatorsElement} from './alert_indicators.js';

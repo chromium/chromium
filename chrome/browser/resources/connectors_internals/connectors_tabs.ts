@@ -5,7 +5,7 @@
 import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './connectors_tabs.html.js';
 import {DeviceTrustConnectorElement} from './device_trust_connector.js';

@@ -5,7 +5,7 @@
 /** @fileoverview Handles interprocess communication for the system page. */
 
 // clang-format on
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // clang-format off
 
 export interface SystemPageBrowserProxy {

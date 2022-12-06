@@ -7,7 +7,7 @@
  * shared usb devices subpage for Crostini.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {ContainerInfo} from '../guest_os/guest_os_browser_proxy.js';
 import {SettingsGuestOsSharedUsbDevicesElement} from '../guest_os/guest_os_shared_usb_devices.js';

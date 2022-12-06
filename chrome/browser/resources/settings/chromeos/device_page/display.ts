@@ -29,7 +29,7 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {CrSliderElement, SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';

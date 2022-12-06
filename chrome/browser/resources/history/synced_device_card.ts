@@ -13,7 +13,7 @@ import './strings.m.js';
 
 import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

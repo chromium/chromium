@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectItem} from './actions.js';

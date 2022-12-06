@@ -17,7 +17,7 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
 import {FocusRow} from 'chrome://resources/js/focus_row.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';

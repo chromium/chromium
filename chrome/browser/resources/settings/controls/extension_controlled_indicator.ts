@@ -7,7 +7,7 @@ import '../i18n_setup.js';
 import '../settings_shared.css.js';
 
 import {assert} from '//resources/js/assert_ts.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';

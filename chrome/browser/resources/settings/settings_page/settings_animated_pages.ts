@@ -19,7 +19,7 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 // <if expr="chromeos_ash">
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 // </if>
 
 import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
