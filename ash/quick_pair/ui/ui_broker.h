@@ -39,11 +39,7 @@ class UIBroker {
   virtual void ShowPairingFailed(scoped_refptr<Device> device) = 0;
   virtual void ShowAssociateAccount(scoped_refptr<Device> device) = 0;
   virtual void ShowCompanionApp(scoped_refptr<Device> device) = 0;
-  virtual void RemoveNotifications(
-      bool clear_already_shown_discovery_notification_cache) = 0;
-  virtual void RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
-      scoped_refptr<Device> device) = 0;
-  virtual void StartDeviceLostTimer(scoped_refptr<Device> device) = 0;
+  virtual void RemoveNotifications() = 0;
 };
 
 }  // namespace quick_pair

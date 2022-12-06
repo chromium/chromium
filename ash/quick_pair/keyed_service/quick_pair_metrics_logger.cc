@@ -170,8 +170,6 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiDismissedByTimeout);
       break;
-    case DiscoveryAction::kAlreadyDisplayed:
-      break;
   }
 }
 

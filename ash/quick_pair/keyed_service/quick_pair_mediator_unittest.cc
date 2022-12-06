@@ -399,38 +399,6 @@ TEST_F(MediatorTest, NotifyPairFailure_AddressConnect) {
   mock_pairer_broker_->NotifyPairFailure(device_, PairFailure::kAddressConnect);
 }
 
-TEST_F(MediatorTest,
-       RemoveDeviceFromAlreadyShownDiscoveryNotificationCache_PairFailure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kFastPairPreventNotificationsForRecentlyLostDevice},
-      /*disabled_features=*/{});
-
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  EXPECT_CALL(*mock_ui_broker_,
-              RemoveDeviceFromAlreadyShownDiscoveryNotificationCache);
-  EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_, PairFailure::kAddressConnect);
-}
-
-TEST_F(
-    MediatorTest,
-    RemoveDeviceFromAlreadyShownDiscoveryNotificationCache_PairFailure_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          features::kFastPairPreventNotificationsForRecentlyLostDevice});
-
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  EXPECT_CALL(*mock_ui_broker_,
-              RemoveDeviceFromAlreadyShownDiscoveryNotificationCache)
-      .Times(0);
-  EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_, PairFailure::kAddressConnect);
-}
-
 TEST_F(MediatorTest, InvokesShowAssociateAccount) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount);
@@ -448,61 +416,6 @@ TEST_F(MediatorTest, DoesntInvokeShowAssociateAccount_FastPairDisabled) {
   feature_status_tracker_->SetIsFastPairEnabled(false);
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount).Times(0);
   fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(device_);
-}
-
-TEST_F(MediatorTest, RemoveNotificationOnPaired_FlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kFastPairPreventNotificationsForRecentlyLostDevice},
-      /*disabled_features=*/{});
-
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
-  EXPECT_CALL(*mock_ui_broker_,
-              RemoveDeviceFromAlreadyShownDiscoveryNotificationCache);
-  mock_pairer_broker_->NotifyDevicePaired(device_);
-}
-
-TEST_F(MediatorTest, RemoveNotificationOnPaired_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          features::kFastPairPreventNotificationsForRecentlyLostDevice});
-
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
-  EXPECT_CALL(*mock_ui_broker_,
-              RemoveDeviceFromAlreadyShownDiscoveryNotificationCache)
-      .Times(0);
-  mock_pairer_broker_->NotifyDevicePaired(device_);
-}
-
-TEST_F(MediatorTest, RemoveNotification_StartTimer_OnDeviceLost_FlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kFastPairPreventNotificationsForRecentlyLostDevice},
-      /*disabled_features=*/{});
-
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
-  EXPECT_CALL(*mock_ui_broker_, StartDeviceLostTimer);
-  mock_scanner_broker_->NotifyDeviceLost(device_);
-}
-
-TEST_F(MediatorTest, RemoveNotification_StartTimer_OnDeviceLost_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          features::kFastPairPreventNotificationsForRecentlyLostDevice});
-
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
-  EXPECT_CALL(*mock_ui_broker_, StartDeviceLostTimer).Times(0);
-  mock_scanner_broker_->NotifyDeviceLost(device_);
 }
 
 TEST_F(

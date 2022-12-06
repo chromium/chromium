@@ -15,8 +15,7 @@ enum class DiscoveryAction {
   kDismissedByUser = 1,
   kDismissedByOs = 2,
   kLearnMore = 3,
-  kAlreadyDisplayed = 4,
-  kDismissedByTimeout = 5,
+  kDismissedByTimeout = 4,
 };
 
 enum class AssociateAccountAction {
