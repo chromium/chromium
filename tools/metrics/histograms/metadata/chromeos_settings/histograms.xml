@@ -46,7 +46,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Apps.DoNotDisturbOnOff"
-    enum="BooleanToggled" expires_after="2023-03-19">
+    enum="BooleanToggled" expires_after="2023-06-04">
   <owner>hsuregan@chromium.org</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <summary>
@@ -195,7 +195,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NotificationPage.PermissionOnOff"
-    enum="BooleanToggled" expires_after="2023-03-19">
+    enum="BooleanToggled" expires_after="2023-06-04">
   <owner>hsuregan@chromium.org</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <summary>
@@ -215,7 +215,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumClicksUntilChange"
-    units="clicks" expires_after="2023-03-19">
+    units="clicks" expires_after="2023-06-04">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -233,7 +233,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumSearchesUntilChange"
-    units="searches" expires_after="2023-03-19">
+    units="searches" expires_after="2023-06-04">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -391,7 +391,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.TimeUntilChange" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-06-04">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>khorimoto@chromium.org</owner>
@@ -436,7 +436,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.WindowOpenDuration" units="ms"
-    expires_after="2023-03-26">
+    expires_after="2023-06-04">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
   <summary>

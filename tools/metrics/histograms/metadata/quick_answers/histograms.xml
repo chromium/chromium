@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
-    expires_after="2023-03-26">
+    expires_after="2023-06-04">
   <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close" enum="BooleanClicked"
-    expires_after="2023-03-21">
+    expires_after="2023-06-04">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.NetworkError.IntentType"
-    enum="QuickAnswersIntentType" expires_after="2023-03-21">
+    enum="QuickAnswersIntentType" expires_after="2023-06-04">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -266,7 +266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.TextToSpeech.EngineEvent"
-    enum="QuickAnswersTextToSpeechEngineEvent" expires_after="2023-03-21">
+    enum="QuickAnswersTextToSpeechEngineEvent" expires_after="2023-06-04">
   <owner>updowndota@chromium.org</owner>
   <owner>angelaxiao@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>

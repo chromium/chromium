@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.UnpinShortcut.ProcessError" enum="BooleanError"
-    expires_after="2023-03-30">
+    expires_after="2023-06-04">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>

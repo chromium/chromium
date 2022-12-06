@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PluginVm.DlcUseResult" enum="PluginVmDlcUseResult"
-    expires_after="2023-03-26">
+    expires_after="2023-06-04">
   <owner>kimjae@google.com</owner>
   <owner>timloh@google.com</owner>
   <summary>Recorded at each time PluginVM DLC is installed.</summary>
@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Foreground" units="ms"
-    expires_after="2023-03-26">
+    expires_after="2023-06-04">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.PluginVmTotal" units="ms"
-    expires_after="2023-03-26">
+    expires_after="2023-06-04">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Total" units="ms"
-    expires_after="2023-03-26">
+    expires_after="2023-06-04">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.SetupResult" enum="PluginVmSetupResult"
-    expires_after="2023-03-26">
+    expires_after="2023-06-04">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>

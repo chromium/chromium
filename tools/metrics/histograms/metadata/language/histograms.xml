@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.Action"
-    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2023-03-19">
+    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2023-06-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.IsTopLanguageSelected"
-    enum="BooleanYesNo" expires_after="2023-03-19">
+    enum="BooleanYesNo" expires_after="2023-06-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.TopULPMatchStatus"
-    enum="ULPTopLanguageMatch" expires_after="2023-03-19">
+    enum="ULPTopLanguageMatch" expires_after="2023-06-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.SplitInstallFinalStatus"
-    enum="LanguageSettingsSplitInstallStatus" expires_after="2023-03-19">
+    enum="LanguageSettingsSplitInstallStatus" expires_after="2023-06-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage" enum="LanguageName"
-    expires_after="2023-03-19">
+    expires_after="2023-06-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.Count" units="count"
-    expires_after="2023-03-19">
+    expires_after="2023-06-04">
   <owner>dvallet@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageName"
-    expires_after="2023-03-19">
+    expires_after="2023-06-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Availability"
-    enum="LanguageUsage.UI.Android.Availability" expires_after="2023-03-19">
+    enum="LanguageUsage.UI.Android.Availability" expires_after="2023-06-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -334,7 +334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Correctness.NoOverride"
-    enum="LanguageUsage.UI.Android.Correctness" expires_after="2023-03-19">
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2023-06-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Correctness.Override"
-    enum="LanguageUsage.UI.Android.Correctness" expires_after="2023-03-19">
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2023-06-04">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -440,7 +440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base"
-    units="%" expires_after="2023-03-19">
+    units="%" expires_after="2023-06-04">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.ChromeUILanguageInULP"
-    enum="ULPLanguageStatus" expires_after="2023-03-19">
+    enum="ULPLanguageStatus" expires_after="2023-06-04">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -468,7 +468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.Count" units="count"
-    expires_after="2023-03-19">
+    expires_after="2023-06-04">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -479,7 +479,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP"
-    enum="LocaleCodeISO639" expires_after="2023-03-19">
+    enum="LocaleCodeISO639" expires_after="2023-06-04">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -492,7 +492,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP.Count"
-    units="count" expires_after="2023-03-19">
+    units="count" expires_after="2023-06-04">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -542,7 +542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.TopAcceptLanguageInULP"
-    enum="ULPLanguageStatus" expires_after="2023-03-19">
+    enum="ULPLanguageStatus" expires_after="2023-06-04">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -555,7 +555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.TranslateTargetInULP"
-    enum="ULPLanguageStatus" expires_after="2023-03-19">
+    enum="ULPLanguageStatus" expires_after="2023-06-04">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

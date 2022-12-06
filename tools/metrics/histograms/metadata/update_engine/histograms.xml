@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.TimeSinceLastAttemptMinutes"
-    units="minutes" expires_after="2023-03-12">
+    units="minutes" expires_after="2023-06-04">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Daily.OSAgeDays" units="days"
-    expires_after="2023-03-12">
+    expires_after="2023-06-04">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -624,7 +624,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.DownloadSourcesUsed"
-    enum="UpdateEngineDownloadSources" expires_after="2023-03-26">
+    enum="UpdateEngineDownloadSources" expires_after="2023-06-04">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.PayloadType"
-    enum="UpdateEnginePayloadFormat" expires_after="2023-03-19">
+    enum="UpdateEnginePayloadFormat" expires_after="2023-06-04">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

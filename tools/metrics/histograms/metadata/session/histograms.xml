@@ -806,7 +806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebState.CustomWebViewSerializedSize" units="KB"
-    expires_after="2023-02-26">
+    expires_after="2023-06-04">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.SerializedSize" units="KB"
-    expires_after="2023-02-26">
+    expires_after="2023-06-04">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>

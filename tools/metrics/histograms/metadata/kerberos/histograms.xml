@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Kerberos.AcquireKerberosTgtTime" units="ms"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.DailyActiveUsers" enum="KerberosUserType"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Managed" units="units"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.RememberedPassword" units="units"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Total" units="units"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.Unmanaged" units="units"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.NumberOfAccounts.UseLoginPassword" units="units"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.AcquireKerberosTgt" enum="KerberosErrorType"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.AddAccount" enum="KerberosErrorType"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.ListAccounts" enum="KerberosErrorType"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kerberos.Result.SetConfig" enum="KerberosErrorType"
-    expires_after="2023-03-05">
+    expires_after="2023-06-04">
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
