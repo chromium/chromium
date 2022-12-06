@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_sync_result.h"
+#include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 
 namespace cryptauthv2 {
 class ClientMetadata;
@@ -64,51 +65,6 @@ namespace device_sync {
 // call. For a new DeviceSync attempt, a new object should be created.
 class CryptAuthDeviceSyncer {
  public:
-  enum class GroupPrivateKeyStatus {
-    // The CryptAuth SyncMetadata response that includes the encrypted group
-    // private key hasn't been received yet.
-    kWaitingForGroupPrivateKey,
-
-    // The SyncMetadata response was been received, but doesn't include any
-    // encrypted group private key. This is expected when no other user device
-    // uploaded the key or if we already own the key.
-    kNoEncryptedGroupPrivateKeyReceived,
-
-    // The SyncMetadata response was received, but the included encrypted group
-    // private key is empty.
-    kEncryptedGroupPrivateKeyEmpty,
-
-    // This device's CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether key is
-    // missing, so the encrypted group private key cannot be decrypted.
-    kLocalDeviceSyncBetterTogetherKeyMissing,
-
-    // An error occurred when decrypting the group private key.
-    kGroupPrivateKeyDecryptionFailed,
-
-    // The group private key was successfully decrypted. This is the expected
-    // final state of this flow.
-    kGroupPrivateKeySuccessfullyDecrypted
-  };
-
-  enum class BetterTogetherMetadataStatus {
-    // The attempt to process the encrypted device metadata hasn't started yet.
-    // If the device sync attempt finishes and this is still the metadata
-    // status, clients can inspect GroupPrivateKeyStatus to understand why.
-    kWaitingToProcessDeviceMetadata,
-
-    // The group private key required to decrypt the metadata is missing.
-    // Clients can inspect GroupPrivateKeyStatus to understand why the group
-    // private key is missing.
-    kGroupPrivateKeyMissing,
-
-    // CryptAuth didn't send any encrypted metadata.
-    kEncryptedMetadataEmpty,
-
-    // Device metadata was decrypted. This is the expected final state of this
-    // flow.
-    kMetadataDecrypted,
-  };
-
   CryptAuthDeviceSyncer(const CryptAuthDeviceSyncer&) = delete;
   CryptAuthDeviceSyncer& operator=(const CryptAuthDeviceSyncer&) = delete;
 

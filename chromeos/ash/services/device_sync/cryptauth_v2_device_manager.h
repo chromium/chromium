@@ -13,7 +13,7 @@
 #include "chromeos/ash/services/device_sync/cryptauth_device.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_sync_result.h"
-#include "chromeos/ash/services/device_sync/cryptauth_device_syncer.h"
+#include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -72,12 +72,12 @@ class CryptAuthV2DeviceManager {
   // object. Clients can inspect GetDeviceSyncerGroupPrivateKeyStatus() if this
   // returns "waiting to process device metadata" or "group private key missing"
   // in order to understand why.
-  virtual CryptAuthDeviceSyncer::BetterTogetherMetadataStatus
+  virtual BetterTogetherMetadataStatus
   GetDeviceSyncerBetterTogetherMetadataStatus() const = 0;
 
   // Returns current group private key status of the owned device syncer object.
-  virtual CryptAuthDeviceSyncer::GroupPrivateKeyStatus
-  GetDeviceSyncerGroupPrivateKeyStatus() const = 0;
+  virtual GroupPrivateKeyStatus GetDeviceSyncerGroupPrivateKeyStatus()
+      const = 0;
 
   // Returns the time of the last successful v2 DeviceSync. Returns null if no
   // successful v2 DeviceSync has ever occurred.

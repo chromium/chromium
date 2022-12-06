@@ -38,6 +38,7 @@
 #include "chromeos/ash/services/device_sync/fake_cryptauth_metadata_syncer.h"
 #include "chromeos/ash/services/device_sync/fake_ecies_encryption.h"
 #include "chromeos/ash/services/device_sync/fake_synced_bluetooth_address_tracker.h"
+#include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/mock_cryptauth_client.h"
 #include "chromeos/ash/services/device_sync/network_request_error.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
@@ -50,10 +51,6 @@
 namespace ash {
 
 namespace device_sync {
-
-using GroupPrivateKeyStatus = CryptAuthDeviceSyncer::GroupPrivateKeyStatus;
-using BetterTogetherMetadataStatus =
-    CryptAuthDeviceSyncer::BetterTogetherMetadataStatus;
 
 namespace {
 
@@ -889,8 +886,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
       GetAllTestDeviceIds(), CryptAuthDeviceSyncResult::ResultCode::kSuccess);
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kNoEncryptedGroupPrivateKeyReceived,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
-          kGroupPrivateKeyMissing);
+      BetterTogetherMetadataStatus::kGroupPrivateKeyMissing);
 
   // Even though the new device BetterTogether metadata could not be decrypted,
   // the new registry should preserve the BetterTogether metadata from the
@@ -931,7 +927,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kNoEncryptedGroupPrivateKeyReceived,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::kMetadataDecrypted);
+      BetterTogetherMetadataStatus::kMetadataDecrypted);
   VerifyGroupPrivateKeySharerInput(GetGroupKey(), device_ids);
   FinishShareGroupPrivateKeyAttempt(
       CryptAuthDeviceSyncResult::ResultCode::kSuccess);
@@ -969,8 +965,7 @@ TEST_F(
       GetAllTestDeviceIds(), CryptAuthDeviceSyncResult::ResultCode::kSuccess);
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kEncryptedGroupPrivateKeyEmpty,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
-          kGroupPrivateKeyMissing);
+      BetterTogetherMetadataStatus::kGroupPrivateKeyMissing);
 
   // Only the local device has its BetterTogetherDeviceMetadata in the device
   // registry since the other metadata cannot be decrypted without the group
@@ -1012,7 +1007,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kNoEncryptedGroupPrivateKeyReceived,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::kMetadataDecrypted);
+      BetterTogetherMetadataStatus::kMetadataDecrypted);
   VerifyGroupPrivateKeySharerInput(
       GetGroupKey(), GetAllTestDeviceIdsThatNeedGroupPrivateKey());
   FinishShareGroupPrivateKeyAttempt(
@@ -1060,7 +1055,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kGroupPrivateKeySuccessfullyDecrypted,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::kMetadataDecrypted);
+      BetterTogetherMetadataStatus::kMetadataDecrypted);
   VerifyGroupPrivateKeySharerInput(
       GetGroupKey(), GetAllTestDeviceIdsThatNeedGroupPrivateKey());
   FinishShareGroupPrivateKeyAttempt(
@@ -1113,8 +1108,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
   // decrypt.
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kGroupPrivateKeySuccessfullyDecrypted,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
-          kEncryptedMetadataEmpty);
+      BetterTogetherMetadataStatus::kEncryptedMetadataEmpty);
   VerifyGroupPrivateKeySharerInput(
       GetGroupKey(), GetAllTestDeviceIdsThatNeedGroupPrivateKey());
   FinishShareGroupPrivateKeyAttempt(
@@ -1367,8 +1361,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kWaitingForGroupPrivateKey,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
-          kWaitingToProcessDeviceMetadata);
+      BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata);
   VerifyDeviceSyncResult(
       CryptAuthDeviceSyncResult(CryptAuthDeviceSyncResult::ResultCode::
                                     kErrorMissingLocalDeviceFeatureStatuses,
@@ -1399,8 +1392,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kWaitingForGroupPrivateKey,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
-          kWaitingToProcessDeviceMetadata);
+      BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata);
   VerifyDeviceSyncResult(CryptAuthDeviceSyncResult(
                              CryptAuthDeviceSyncResult::ResultCode::
                                  kErrorBatchGetFeatureStatusesApiCallBadRequest,
@@ -1439,8 +1431,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kLocalDeviceSyncBetterTogetherKeyMissing,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
-          kWaitingToProcessDeviceMetadata);
+      BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata);
   VerifyDeviceSyncResult(CryptAuthDeviceSyncResult(
                              CryptAuthDeviceSyncResult::ResultCode::
                                  kErrorMissingLocalDeviceSyncBetterTogetherKey,
@@ -1473,8 +1464,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
   RunGroupPrivateKeyDecryptor(encrypted_group_private_key, false /* succeed */);
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kGroupPrivateKeyDecryptionFailed,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
-          kWaitingToProcessDeviceMetadata);
+      BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata);
   VerifyDeviceSyncResult(
       CryptAuthDeviceSyncResult(CryptAuthDeviceSyncResult::ResultCode::
                                     kErrorDecryptingGroupPrivateKey,
@@ -1514,7 +1504,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kNoEncryptedGroupPrivateKeyReceived,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::kMetadataDecrypted);
+      BetterTogetherMetadataStatus::kMetadataDecrypted);
   VerifyDeviceSyncResult(
       CryptAuthDeviceSyncResult(CryptAuthDeviceSyncResult::ResultCode::
                                     kErrorShareGroupPrivateKeyApiCallBadRequest,
@@ -1547,8 +1537,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kWaitingForGroupPrivateKey,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
-          kWaitingToProcessDeviceMetadata);
+      BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata);
   VerifyDeviceSyncResult(
       CryptAuthDeviceSyncResult(
           CryptAuthDeviceSyncResult::ResultCode::
@@ -1585,8 +1574,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
 
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kGroupPrivateKeySuccessfullyDecrypted,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::
-          kWaitingToProcessDeviceMetadata);
+      BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata);
   VerifyDeviceSyncResult(
       CryptAuthDeviceSyncResult(
           CryptAuthDeviceSyncResult::ResultCode::
@@ -1625,7 +1613,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
                              {} /* device_ids_to_fail */);
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kNoEncryptedGroupPrivateKeyReceived,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::kMetadataDecrypted);
+      BetterTogetherMetadataStatus::kMetadataDecrypted);
   FinishShareGroupPrivateKeyAttempt(
       CryptAuthDeviceSyncResult::ResultCode::kSuccess);
 
@@ -1660,7 +1648,7 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
                              {} /* device_ids_to_fail */);
   VerifyGroupPrivateKeyAndBetterTogetherMetadataStatus(
       GroupPrivateKeyStatus::kNoEncryptedGroupPrivateKeyReceived,
-      CryptAuthDeviceSyncer::BetterTogetherMetadataStatus::kMetadataDecrypted);
+      BetterTogetherMetadataStatus::kMetadataDecrypted);
   FinishShareGroupPrivateKeyAttempt(
       CryptAuthDeviceSyncResult::ResultCode::kSuccess);
 

@@ -10,6 +10,10 @@ static_library("feature_status_change") {
   sources = [ "feature_status_change.h" ]
 }
 
+static_library("group_private_key_and_better_together_metadata_status") {
+  sources = [ "group_private_key_and_better_together_metadata_status.h" ]
+}
+
 static_library("device_sync") {
   sources = [
     "async_execution_time_metrics_logger.cc",
@@ -151,6 +155,7 @@ static_library("device_sync") {
 
   public_deps = [
     ":feature_status_change",
+    ":group_private_key_and_better_together_metadata_status",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/services/device_sync/public/mojom",
