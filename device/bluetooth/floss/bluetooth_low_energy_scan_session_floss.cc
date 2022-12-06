@@ -11,9 +11,11 @@
 namespace floss {
 
 BluetoothLowEnergyScanSessionFloss::BluetoothLowEnergyScanSessionFloss(
+    std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
     base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate,
     base::OnceCallback<void(const std::string&)> destructor_callback)
-    : delegate_(std::move(delegate)),
+    : filter_(std::move(filter)),
+      delegate_(std::move(delegate)),
       destructor_callback_(std::move(destructor_callback)) {}
 
 BluetoothLowEnergyScanSessionFloss::~BluetoothLowEnergyScanSessionFloss() {
@@ -72,6 +74,30 @@ void BluetoothLowEnergyScanSessionFloss::OnDeviceLost(
 void BluetoothLowEnergyScanSessionFloss::OnRegistered(
     device::BluetoothUUID uuid) {
   uuid_ = uuid;
+}
+
+absl::optional<ScanFilter>
+BluetoothLowEnergyScanSessionFloss::GetFlossScanFilter() {
+  if (!filter_)
+    return absl::nullopt;
+
+  ScanFilter filter;
+  filter.rssi_high_threshold = filter_->device_found_rssi_threshold();
+  filter.rssi_low_threshold = filter_->device_lost_rssi_threshold();
+  filter.rssi_low_timeout = filter_->device_lost_timeout().InSeconds();
+  filter.rssi_sampling_period =
+      filter_->rssi_sampling_period().value().InMilliseconds() / 100;
+
+  for (auto& pattern : filter_->patterns()) {
+    ScanFilterPattern p;
+    p.start_position = pattern.start_position();
+    p.ad_type = static_cast<uint8_t>(pattern.data_type());
+    p.content = pattern.value();
+
+    filter.condition.patterns.push_back(p);
+  }
+
+  return filter;
 }
 
 }  // namespace floss
