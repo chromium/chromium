@@ -128,12 +128,12 @@ def _GenerateBundleApks(info,
 def _InstallBundle(devices, apk_helper_instance, modules, fake_modules):
 
   def Install(device):
-    device.Install(
-        apk_helper_instance,
-        permissions=[],
-        modules=modules,
-        fake_modules=fake_modules,
-        allow_downgrade=True)
+    device.Install(apk_helper_instance,
+                   permissions=[],
+                   modules=modules,
+                   fake_modules=fake_modules,
+                   allow_downgrade=True,
+                   reinstall=True)
 
   # Basic checks for |modules| and |fake_modules|.
   # * |fake_modules| cannot include 'base'.
