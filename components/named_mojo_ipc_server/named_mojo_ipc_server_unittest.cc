@@ -143,7 +143,8 @@ void NamedMojoIpcServerTest::CreateIpcServer() {
       test_server_name_,
       GetParam() ? NamedMojoIpcServerBase::kUseIsolatedConnection
                  : kTestMessagePipeId,
-      this, base::BindRepeating([](base::ProcessId) { return true; }));
+      base::BindRepeating(
+          [](test::mojom::Echo* impl, base::ProcessId) { return impl; }, this));
   ipc_server_->set_on_server_endpoint_created_callback_for_testing(
       base::BindRepeating(&NamedMojoIpcServerTest::OnServerEndpointCreated,
                           base::Unretained(this)));

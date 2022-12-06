@@ -136,8 +136,13 @@ void ChromotingHost::StartChromotingHostServices() {
 #endif
   ipc_server_ = std::make_unique<
       named_mojo_ipc_server::NamedMojoIpcServer<mojom::ChromotingHostServices>>(
-      GetChromotingHostServicesServerName(), message_pipe_id, this,
-      base::BindRepeating(&IsTrustedMojoEndpoint));
+      GetChromotingHostServicesServerName(), message_pipe_id,
+      base::BindRepeating(&IsTrustedMojoEndpoint)
+          .Then(base::BindRepeating(
+              [](mojom::ChromotingHostServices* impl, bool trusted) {
+                return trusted ? impl : nullptr;
+              },
+              base::Unretained(this))));
   ipc_server_->StartServer();
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
 #else

@@ -95,11 +95,6 @@ MakeStateChangeObserverCallbacks(
       base::BindOnce(&StateChangeObserverWrapper::OnComplete, wrapper)};
 }
 
-// TODO(crbug.com/1378742): Implement some form of validation.
-static bool IsTrustedIPCEndpoint(base::ProcessId /*caller_pid*/) {
-  return true;
-}
-
 }  // namespace
 
 UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
@@ -107,8 +102,14 @@ UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
     : server_(
           GetActiveDutySocketPath(scope).MaybeAsASCII(),
           named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
-          this,
-          base::BindRepeating(&IsTrustedIPCEndpoint)),
+          base::BindRepeating(base::BindRepeating(
+              [](mojom::UpdateService* interface,
+                 base::ProcessId /* caller_pid */) {
+                // TODO(crbug.com/1378742): Implement some form of
+                // validation.
+                return interface;
+              },
+              this))),
       impl_(impl) {
   server_.set_disconnect_handler(base::BindRepeating(
       &UpdateServiceStub::OnClientDisconnected, base::Unretained(this)));

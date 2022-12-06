@@ -26,14 +26,12 @@ class MyInterfaceImpl: public mojom::MyInterface {
     server_.Close(server_.current_receiver());
   }
 
-  static bool IsTrustedMojoEndpoint(base::ProcessId caller_pid) {
-    // Verify the calling process...
-    return true;
-  }
-
   NamedMojoIpcServer<mojom::MyInterface> server_{"my_server_name",
       kMessagePipeId, this,
-      base::BindRepeating(&MyInterfaceImpl::IsTrustedMojoEndpoint)};
+      base::BindRepeating([](mojom::MyInterface* impl, base::ProcessId caller) {
+        // Verify the calling process, returning nullptr if unverified.
+        return impl; // impl must outlive NamedMojoIpcServer.
+      }, this)};
 };
 ```
 
@@ -66,3 +64,7 @@ additional connection brokerage steps which are abstracted by the former.
 
 On Windows, the server needs to have the following access rights on the client
 process: `PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION`.
+
+It is possible to bind a different implementation of the interface to each
+connection by returning different `mojom::MyInterface*` values rather than
+`this`. All implementations must outlive the NamedMojoIpcServer.

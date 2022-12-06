@@ -28,12 +28,13 @@ UpdateServiceInternalStub::UpdateServiceInternalStub(
     : server_(
           GetUpdateServiceInternalServerName(scope),
           named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
-          this,
-          base::BindRepeating([](base::ProcessId pid) {
-            // TODO(crbug.com/1394773): Check the UID of the connecting process,
-            // not the PID.
-            return true;
-          })),
+          base::BindRepeating(
+              [](mojom::UpdateServiceInternal* interface, base::ProcessId pid) {
+                // TODO(crbug.com/1394773): Check the UID of the connecting
+                // process, not the PID.
+                return interface;
+              },
+              this)),
       impl_(impl),
       task_start_listener_(task_start_listener),
       task_end_listener_(task_end_listener) {

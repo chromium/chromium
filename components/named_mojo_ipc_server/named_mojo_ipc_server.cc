@@ -60,10 +60,10 @@ void NamedMojoIpcServerBase::DelegateProxy::OnServerEndpointCreated() {
 NamedMojoIpcServerBase::NamedMojoIpcServerBase(
     const mojo::NamedPlatformChannel::ServerName& server_name,
     absl::optional<uint64_t> message_pipe_id,
-    IsTrustedMojoEndpointCallback is_trusted_endpoint_callback)
+    base::RepeatingCallback<void*(base::ProcessId)> impl_provider)
     : server_name_(server_name),
       message_pipe_id_(message_pipe_id),
-      is_trusted_endpoint_callback_(std::move(is_trusted_endpoint_callback)) {
+      impl_provider_(impl_provider) {
   io_sequence_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 }
@@ -118,7 +118,8 @@ void NamedMojoIpcServerBase::OnIpcDisconnected() {
 void NamedMojoIpcServerBase::OnClientConnected(
     mojo::PlatformChannelEndpoint endpoint,
     base::ProcessId peer_pid) {
-  if (!is_trusted_endpoint_callback_.Run(peer_pid)) {
+  void* impl = impl_provider_.Run(peer_pid);
+  if (!impl) {
     LOG(ERROR) << "Process " << peer_pid
                << " is not a trusted mojo endpoint. Connection refused.";
     return;
@@ -130,7 +131,7 @@ void NamedMojoIpcServerBase::OnClientConnected(
     mojo::ScopedMessagePipeHandle message_pipe =
         connection->Connect(std::move(endpoint));
     mojo::ReceiverId receiver_id =
-        TrackMessagePipe(std::move(message_pipe), peer_pid);
+        TrackMessagePipe(std::move(message_pipe), impl, peer_pid);
     active_connections_[receiver_id] = std::move(connection);
     return;
   }
@@ -158,7 +159,7 @@ void NamedMojoIpcServerBase::OnClientConnected(
 #undef INVALID_PROCESS_LOG
   mojo::OutgoingInvitation::Send(std::move(invitation), peer_process.Handle(),
                                  std::move(endpoint));
-  TrackMessagePipe(std::move(message_pipe), peer_pid);
+  TrackMessagePipe(std::move(message_pipe), impl, peer_pid);
 }
 
 void NamedMojoIpcServerBase::OnServerEndpointCreated() {
