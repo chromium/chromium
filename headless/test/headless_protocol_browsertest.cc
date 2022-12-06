@@ -427,8 +427,15 @@ class HeadlessProtocolBrowserTestWithDataPath
     RunTest();                                                              \
   }
 
+// TODO(crbug.com/1396402)  Re-enable after resolving MSAN flaky failures.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_FileInputDirectoryUpload DISABLED_FileInputDirectoryUpload
+#else
+#define MAYBE_FileInputDirectoryUpload FileInputDirectoryUpload
+#endif
+
 HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(
-    FileInputDirectoryUpload,
+    MAYBE_FileInputDirectoryUpload,
     "sanity/file-input-directory-upload.js",
     "sanity/resources/file-input-directory-upload")
 
