@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -696,11 +696,16 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
 
   // Initiate any uninstall actions to clean up os integration, disk data, etc.
   if (!apps_to_delete.empty()) {
-    command_manager_->NotifySyncSourceRemoved(apps_to_delete);
-    install_delegate_->UninstallFromSync(
-        apps_to_delete,
+    auto callback =
         base::BindRepeating(&WebAppSyncBridge::OnWebAppUninstallComplete,
-                            weak_ptr_factory_.GetWeakPtr()));
+                            weak_ptr_factory_.GetWeakPtr());
+    if (uninstall_from_sync_before_registry_update_callback_for_testing_) {
+      uninstall_from_sync_before_registry_update_callback_for_testing_.Run(
+          apps_to_delete, callback);
+    } else {
+      command_manager_->NotifySyncSourceRemoved(apps_to_delete);
+      install_delegate_->UninstallFromSync(apps_to_delete, callback);
+    }
   }
 
   // Do a full follow up install for all remote entities that don’t exist
@@ -708,8 +713,7 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
   if (!apps_to_install.empty()) {
     // TODO(dmurph): Just call the InstallFromSync command.
     // https://crbug.com/1328968
-    install_delegate_->InstallWebAppsAfterSync(std::move(apps_to_install),
-                                               base::DoNothing());
+    InstallWebAppsAfterSync(std::move(apps_to_install), base::DoNothing());
   }
 }
 
@@ -812,6 +816,17 @@ void WebAppSyncBridge::SetRetryIncompleteUninstallsCallbackForTesting(
   retry_incomplete_uninstalls_callback_for_testing_ = std::move(callback);
 }
 
+void WebAppSyncBridge::SetInstallWebAppsAfterSyncCallbackForTesting(
+    InstallWebAppsAfterSyncCallback callback) {
+  install_web_apps_after_sync_callback_for_testing_ = std::move(callback);
+}
+
+void WebAppSyncBridge::SetUninstallFromSyncCallbackForTesting(
+    UninstallFromSyncCallback callback) {
+  uninstall_from_sync_before_registry_update_callback_for_testing_ =
+      std::move(callback);
+}
+
 void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
   std::vector<AppId> apps_uninstalling;
 
@@ -850,9 +865,24 @@ void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation() {
   }
 
   if (!apps_in_sync_install.empty()) {
-    install_delegate_->InstallWebAppsAfterSync(std::move(apps_in_sync_install),
-                                               base::DoNothing());
+    if (install_web_apps_after_sync_callback_for_testing_) {
+      install_web_apps_after_sync_callback_for_testing_.Run(
+          std::move(apps_in_sync_install), base::DoNothing());
+      return;
+    }
+    InstallWebAppsAfterSync(std::move(apps_in_sync_install), base::DoNothing());
   }
+}
+
+void WebAppSyncBridge::InstallWebAppsAfterSync(
+    std::vector<WebApp*> web_apps,
+    RepeatingInstallCallback callback) {
+  if (install_web_apps_after_sync_callback_for_testing_) {
+    install_web_apps_after_sync_callback_for_testing_.Run(std::move(web_apps),
+                                                          callback);
+    return;
+  }
+  install_delegate_->InstallWebAppsAfterSync(std::move(web_apps), callback);
 }
 
 }  // namespace web_app

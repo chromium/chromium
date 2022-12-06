@@ -78,6 +78,12 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
                      WebAppCommandScheduler* command_scheduler_);
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
+  using RepeatingInstallCallback =
+      base::RepeatingCallback<void(const AppId& app_id,
+                                   webapps::InstallResultCode code)>;
+  using RepeatingUninstallCallback =
+      base::RepeatingCallback<void(const AppId& app_id,
+                                   webapps::UninstallResultCode code)>;
   // This is the writable API for the registry. Any updates will be written to
   // LevelDb and sync service. There can be only 1 update at a time.
   std::unique_ptr<WebAppRegistryUpdate> BeginUpdate();
@@ -165,6 +171,18 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void SetRetryIncompleteUninstallsCallbackForTesting(
       RetryIncompleteUninstallsCallback callback);
 
+  using InstallWebAppsAfterSyncCallback =
+      base::RepeatingCallback<void(std::vector<WebApp*> web_apps,
+                                   RepeatingInstallCallback callback)>;
+  void SetInstallWebAppsAfterSyncCallbackForTesting(
+      InstallWebAppsAfterSyncCallback callback);
+
+  using UninstallFromSyncCallback =
+      base::RepeatingCallback<void(const std::vector<AppId>& web_apps,
+                                   RepeatingUninstallCallback callback)>;
+  void SetUninstallFromSyncCallbackForTesting(
+      UninstallFromSyncCallback callback);
+
   WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
 
  private:
@@ -200,6 +218,9 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void MaybeUninstallAppsPendingUninstall();
   void MaybeInstallAppsFromSyncAndPendingInstallation();
 
+  void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
+                               RepeatingInstallCallback callback);
+
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
   raw_ptr<SyncInstallDelegate, DanglingUntriaged> install_delegate_;
@@ -211,6 +232,10 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   RetryIncompleteUninstallsCallback
       retry_incomplete_uninstalls_callback_for_testing_;
+  InstallWebAppsAfterSyncCallback
+      install_web_apps_after_sync_callback_for_testing_;
+  UninstallFromSyncCallback
+      uninstall_from_sync_before_registry_update_callback_for_testing_;
 
   base::WeakPtrFactory<WebAppSyncBridge> weak_ptr_factory_{this};
 };
