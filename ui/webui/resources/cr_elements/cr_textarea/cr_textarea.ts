@@ -100,6 +100,16 @@ export class CrTextareaElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      /**
+       * Attribute to enable limiting the maximum height of a autogrow textarea.
+       * Use --cr-textarea-autogrow-max-height to set the height.
+       */
+      hasMaxHeight: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       /** Whether the textarea is invalid or not. */
       invalid: {
         type: Boolean,
@@ -134,6 +144,7 @@ export class CrTextareaElement extends PolymerElement {
   label: string;
   value: string;
   autogrow: boolean;
+  hasMaxHeight: boolean;
   invalid: boolean;
   firstFooter: string;
   secondFooter: string;

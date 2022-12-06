@@ -8,6 +8,10 @@
     background-color: var(--cr-input-background-color);
   }
 
+  :host([autogrow][has-max-height]) #input-container {
+    max-height: var(--cr-textarea-autogrow-max-height);
+  }
+
   :host([invalid]) #underline {
     border-color: var(--cr-input-error-color);
   }
@@ -59,6 +63,12 @@
     resize: none;
     top: 0;
     width: 100%;
+  }
+
+  :host([autogrow][has-max-height]) #mirror,
+  :host([autogrow][has-max-height]) textarea {
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 </style>
 <div id="label" class="cr-form-field-label" hidden="[[!label]]">
