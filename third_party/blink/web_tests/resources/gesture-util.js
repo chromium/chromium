@@ -757,3 +757,46 @@ function raf() {
     });
   });
 }
+
+// Resets the scroll position to (0,0).  If a scroll is required, then the
+// promise is not resolved until the scrollend event is received.
+async function waitForScrollReset(scroller) {
+  return new Promise(resolve => {
+    if (scroller.scrollTop == 0 &&
+        scroller.scrollLeft == 0) {
+      resolve();
+    } else {
+      scroller.scrollTop = 0;
+      scroller.scrollLeft = 0;
+      waitForScrollendEvent(document).then(resolve());
+    }
+  });
+}
+
+// Call with an asynchronous function that triggers a scroll. The promise is
+// resolved once |scrollendEventReceiver| gets the scrollend event.
+async function triggerScrollAndWaitForScrollEnd(
+    scrollTriggerFn, scrollendEventReceiver = document) {
+  const scrollPromise = waitForScrollendEvent(scrollendEventReceiver);
+  await scrollTriggerFn();
+  return scrollPromise;
+}
+
+// Generates a synthetic click and returns a promise that is resolved once
+// |scrollendEventReceiver| gets the scrollend event.
+async function clickAndWaitForScroll(x, y, scrollendEventReceiver = document) {
+  return triggerScrollAndWaitForScrollEnd(async () => {
+    if (!window.test_driver) {
+      throw new Error('Test requires import of testdriver. Please add ' +
+                      'testdriver.js, testdriver-actions.js and ' +
+                      'testdriver-vendor.js to your test file');
+    }
+
+    return new test_driver.Actions()
+        .pointerMove(x, y)
+        .pointerDown()
+        .addTick()
+        .pointerUp()
+        .send();
+  }, scrollendEventReceiver);
+}

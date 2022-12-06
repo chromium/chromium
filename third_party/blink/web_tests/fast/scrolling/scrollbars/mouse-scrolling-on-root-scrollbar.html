@@ -4,6 +4,9 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/scrollbar-util.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-actions.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <body style="height: 1000px; width: 1000px">
 <script>
 if (window.internals)
@@ -28,67 +31,62 @@ window.onload = () => {
       return;
 
     await waitForCompositorCommit();
-    resetScrollOffset(document.scrollingElement);
+    await waitForScrollReset(document.scrollingElement);
 
     // Click on the Down arrow of the viewport.
     let x = window.innerWidth - BUTTON_WIDTH / 2;
     let y = window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
+    await clickAndWaitForScroll(x, y);
     assert_equals(window.scrollY, SCROLL_AMOUNT_Y, "Pressing the down arrow didn't scroll.");
 
     // Click on the Up arrow of the viewport.
     x = window.innerWidth - BUTTON_WIDTH / 2;
     y = BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
+    await clickAndWaitForScroll(x, y);
     assert_equals(window.scrollY, 0, "Pressing the up arrow didn't scroll.");
 
     // Click on the Right arrow of the viewport.
     x = window.innerWidth - SCROLL_CORNER - BUTTON_WIDTH / 2;
     y = window.innerHeight - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollX;});
+    await clickAndWaitForScroll(x, y);
     assert_equals(window.scrollX, SCROLL_AMOUNT_X, "Pressing the right arrow didn't scroll.");
 
     // Click on the Left arrow of the viewport.
     x = BUTTON_WIDTH / 2;
     y = window.innerHeight - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollX;});
+    await clickAndWaitForScroll(x, y);
     assert_equals(window.scrollX, 0, "Pressing the left arrow didn't scroll.");
   }, "Test mouse click on non-custom composited root scrollbar arrows.");
 
   promise_test (async () => {
     await waitForCompositorCommit();
-    resetScrollOffset(document.scrollingElement);
+    await waitForScrollReset(document.scrollingElement);
 
     // Click on the track part just above the down arrow.
     let x = window.innerWidth - BUTTON_WIDTH / 2;
     let y = window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH - 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
-    assert_equals(window.scrollY, 431, "Pressing the down trackpart didn't scroll.");
+    await clickAndWaitForScroll(x, y);
+    assert_equals(window.scrollY, 431,
+                  "Pressing the down trackpart didn't scroll.");
 
     // Click on the track part just below the up arrow.
     x = window.innerWidth - BUTTON_WIDTH / 2;
     y = BUTTON_WIDTH + 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollY;});
-    assert_equals(window.scrollY, 0, "Pressing the up trackpart didn't scroll.");
+    await clickAndWaitForScroll(x, y);
+    assert_equals(window.scrollY, 0,
+                  "Pressing the up trackpart didn't scroll.");
 
     // Click on the track part just to the left of the right arrow.
     x = window.innerWidth - SCROLL_CORNER - BUTTON_WIDTH - 2;
     y = window.innerHeight - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollX;});
-    assert_equals(window.scrollX, 223, "Pressing the right trackpart didn't scroll.");
+    await clickAndWaitForScroll(x, y);
+    assert_equals(window.scrollX, 223,
+                  "Pressing the right trackpart didn't scroll.");
 
     // Click on the track part just to the right of the left arrow.
     x = BUTTON_WIDTH + 2;
     y = window.innerHeight - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return window.scrollX;});
+    await clickAndWaitForScroll(x, y);
     assert_equals(window.scrollX, 0, "Pressing the left trackpart didn't scroll.");
   }, "Test mouse click on non-custom composited root scrollbar empty trackparts.");
 }
