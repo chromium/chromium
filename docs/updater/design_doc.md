@@ -878,17 +878,26 @@ the updater that is present in the base install directory.
 TODO(crbug.com/1035895): Document usage of Keystone tickets on macOS.
 
 ### IPC
-On Mac, the IPC utilized for the updater is XPC, which is the macOS native IPC
-system controlled by launchd. The main portion to utilize XPC is to create
-launch agent plists under `${HOME}/Library/LaunchAgents` for user level installs
-and launch daemon plists under `/Library/LaunchDaemons` for system level
-installs.
+On macOS, the updater uses both XPC (for non-side-by-side communications) and
+mojo (for communications within a single version of the program). XPC is the
+macOS native IPC system controlled by launchd. The main portion to utilize XPC
+is to create launch agent plists under `${HOME}/Library/LaunchAgents` for user
+level installs and launch daemon plists under `/Library/LaunchDaemons` for
+system level installs. XPC should be replaced with mojo in the future.
 
-The updater uses multiple layers of XPC to start-up separate processes
-that are responsible for different actions. There are two XPC plists that the
-updater creates for the server. The first is the `.internal` plist, which goes
-through some control tasks first, and then there's the `.service` plist, which
-actually performs the update check and the update itself.
+The updater uses multiple layers of RPC to start-up separate processes that are
+responsible for different actions. Mojo is used for UpdateServiceInternal,
+while the `.service` plist covers UpdateService, which actually performs the
+update check and the update itself.
+
+Mojo does not orchestrate process launches and connections. When using mojo,
+the updater first attempts to connect to an existing process, and if this
+fails, launches the server process and then repeatedly retries to connect.
+
+Since Mojo's NamedPlatformChannel is not reusable for multiple connections, the
+updater relies on NamedMojoIpcServer's utilities to bootstrap mojo connections
+using multiple connections on a mach port, and for messages to that port to
+contain a reply port.
 
 The XPC interface is also utilized to communicate between the browser and the
 updater for on-demand updates. The protocol utilized by the browser has to be in

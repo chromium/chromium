@@ -9,6 +9,8 @@
 
 #include <xpc/xpc.h>
 
+#include <memory>
+
 #include "base/atomic_ref_count.h"
 #include "base/callback_forward.h"
 #include "base/mac/scoped_nsobject.h"
@@ -16,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/app/server/mac/service_delegate.h"
+#include "chrome/updater/app/server/posix/update_service_internal_stub.h"
 #import "chrome/updater/configurator.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/update_service_impl.h"
@@ -60,12 +63,10 @@ class AppServerMac : public AppServer {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
   base::scoped_nsobject<CRUUpdateCheckServiceXPCDelegate>
       update_check_delegate_;
   base::scoped_nsobject<NSXPCListener> update_check_listener_;
-  base::scoped_nsobject<CRUUpdateServiceInternalXPCDelegate>
-      update_service_internal_delegate_;
-  base::scoped_nsobject<NSXPCListener> update_service_internal_listener_;
 
   // Task runner bound to the main sequence and the update service instance.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

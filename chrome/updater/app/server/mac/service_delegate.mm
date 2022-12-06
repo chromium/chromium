@@ -516,76 +516,6 @@
 }
 @end
 
-@interface CRUUpdateServiceInternalXPCImpl
-    : NSObject <CRUUpdateServicingInternal>
-
-- (instancetype)init NS_UNAVAILABLE;
-
-// Designated initializers.
-- (instancetype)
-    initWithUpdateServiceInternal:
-        (scoped_refptr<updater::UpdateServiceInternal>)service
-                        appServer:
-                            (scoped_refptr<updater::AppServerMac>)appServer
-                   callbackRunner:
-                       (scoped_refptr<base::SequencedTaskRunner>)callbackRunner
-    NS_DESIGNATED_INITIALIZER;
-
-@end
-
-@implementation CRUUpdateServiceInternalXPCImpl {
-  scoped_refptr<updater::UpdateServiceInternal> _service;
-  scoped_refptr<updater::AppServerMac> _appServer;
-  scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
-}
-
-- (instancetype)
-    initWithUpdateServiceInternal:
-        (scoped_refptr<updater::UpdateServiceInternal>)service
-                        appServer:
-                            (scoped_refptr<updater::AppServerMac>)appServer
-                   callbackRunner:(scoped_refptr<base::SequencedTaskRunner>)
-                                      callbackRunner {
-  if (self = [super init]) {
-    _service = service;
-    _appServer = appServer;
-    _callbackRunner = callbackRunner;
-  }
-  return self;
-}
-
-#pragma mark CRUUpdateServicingInternal
-- (void)performTasksWithReply:(void (^)(void))reply {
-  auto cb = base::BindOnce(base::RetainBlock(^(void) {
-    VLOG(0) << "performTasks complete.";
-    if (reply)
-      reply();
-
-    _appServer->TaskCompleted();
-  }));
-
-  _appServer->TaskStarted();
-  _callbackRunner->PostTask(
-      FROM_HERE, base::BindOnce(&updater::UpdateServiceInternal::Run, _service,
-                                std::move(cb)));
-}
-
-- (void)performHelloWithReply:(void (^)(void))reply {
-  auto cb = base::BindOnce(base::RetainBlock(^(void) {
-    if (reply)
-      reply();
-
-    _appServer->TaskCompleted();
-  }));
-
-  _appServer->TaskStarted();
-  _callbackRunner->PostTask(
-      FROM_HERE, base::BindOnce(&updater::UpdateServiceInternal::Hello,
-                                _service, std::move(cb)));
-}
-
-@end
-
 @implementation CRUUpdateCheckServiceXPCDelegate {
   scoped_refptr<updater::UpdateService> _service;
   scoped_refptr<updater::AppServerMac> _appServer;
@@ -620,50 +550,6 @@
         [[CRUUpdateServiceXPCFilterUnprivileged alloc] initWithService:impl]);
     newConnection.exportedObject = unprivileged.get();
   }
-  [newConnection resume];
-  return YES;
-}
-
-@end
-
-@implementation CRUUpdateServiceInternalXPCDelegate {
-  scoped_refptr<updater::UpdateServiceInternal> _service;
-  scoped_refptr<updater::AppServerMac> _appServer;
-  scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
-}
-
-- (instancetype)initWithUpdateServiceInternal:
-                    (scoped_refptr<updater::UpdateServiceInternal>)service
-                                    appServer:
-                                        (scoped_refptr<updater::AppServerMac>)
-                                            appServer {
-  if (self = [super init]) {
-    _service = service;
-    _appServer = appServer;
-    _callbackRunner = base::SequencedTaskRunner::GetCurrentDefault();
-  }
-  return self;
-}
-
-- (BOOL)listener:(NSXPCListener*)listener
-    shouldAcceptNewConnection:(NSXPCConnection*)newConnection {
-  // Reject connections from other users.
-  if (newConnection.effectiveUserIdentifier != geteuid()) {
-    VLOG(1) << "Rejecting UpdateServiceInternal XPC connection from EUID "
-            << newConnection.effectiveUserIdentifier << ", required "
-            << geteuid() << ".";
-    return NO;
-  }
-
-  newConnection.exportedInterface =
-      updater::GetXPCUpdateServicingInternalInterface();
-
-  base::scoped_nsobject<CRUUpdateServiceInternalXPCImpl> object(
-      [[CRUUpdateServiceInternalXPCImpl alloc]
-          initWithUpdateServiceInternal:_service.get()
-                              appServer:_appServer
-                         callbackRunner:_callbackRunner.get()]);
-  newConnection.exportedObject = object.get();
   [newConnection resume];
   return YES;
 }

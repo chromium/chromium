@@ -191,39 +191,6 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
       base::scoped_policy::RETAIN);
 }
 
-base::ScopedCFTypeRef<CFDictionaryRef> CreateUpdateServiceInternalLaunchdPlist(
-    UpdaterScope scope,
-    const base::FilePath& updater_path) {
-  // See the man page for launchd.plist.
-  NSMutableArray<NSString*>* program_arguments =
-      [NSMutableArray<NSString*> array];
-  [program_arguments addObjectsFromArray:@[
-    base::SysUTF8ToNSString(updater_path.value()),
-    MakeProgramArgument(kServerSwitch),
-    MakeProgramArgumentWithValue(kServerServiceSwitch,
-                                 kServerUpdateServiceInternalSwitchValue),
-    MakeProgramArgument(kEnableLoggingSwitch),
-    MakeProgramArgumentWithValue(kLoggingModuleSwitch,
-                                 kLoggingModuleSwitchValue)
-  ]];
-  if (IsSystemInstall(scope))
-    [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
-
-  NSDictionary<NSString*, id>* launchd_plist = @{
-    @LAUNCH_JOBKEY_LABEL : GetUpdateServiceInternalLaunchdLabel(scope),
-    @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
-    @LAUNCH_JOBKEY_MACHSERVICES :
-        @{GetUpdateServiceInternalMachName(scope) : @YES},
-    @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope),
-    @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
-  };
-
-  return base::ScopedCFTypeRef<CFDictionaryRef>(
-      base::mac::CFCast<CFDictionaryRef>(launchd_plist),
-      base::scoped_policy::RETAIN);
-}
-
 bool CreateUpdateServiceLaunchdJobPlist(UpdaterScope scope,
                                         const base::FilePath& updater_path) {
   // We're creating directories and writing a file.
@@ -249,19 +216,6 @@ bool CreateWakeLaunchdJobPlist(UpdaterScope scope,
       CopyWakeLaunchdName(scope), plist);
 }
 
-bool CreateUpdateServiceInternalLaunchdJobPlist(
-    UpdaterScope scope,
-    const base::FilePath& updater_path) {
-  // We're creating directories and writing a file.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  base::ScopedCFTypeRef<CFDictionaryRef> plist(
-      CreateUpdateServiceInternalLaunchdPlist(scope, updater_path));
-  return Launchd::GetInstance()->WritePlistToFile(
-      LaunchdDomain(scope), ServiceLaunchdType(scope),
-      CopyUpdateServiceInternalLaunchdName(scope), plist);
-}
-
 bool StartUpdateServiceVersionedLaunchdJob(
     UpdaterScope scope,
     const base::ScopedCFTypeRef<CFStringRef> name) {
@@ -274,12 +228,6 @@ bool StartUpdateWakeVersionedLaunchdJob(UpdaterScope scope) {
   return Launchd::GetInstance()->RestartJob(
       LaunchdDomain(scope), ServiceLaunchdType(scope),
       CopyWakeLaunchdName(scope), CFSessionType(scope));
-}
-
-bool StartUpdateServiceInternalVersionedLaunchdJob(UpdaterScope scope) {
-  return Launchd::GetInstance()->RestartJob(
-      LaunchdDomain(scope), ServiceLaunchdType(scope),
-      CopyUpdateServiceInternalLaunchdName(scope), CFSessionType(scope));
 }
 
 bool StartLaunchdServiceJob(UpdaterScope scope) {
@@ -308,11 +256,6 @@ bool RemoveUpdateWakeJobFromLaunchd(UpdaterScope scope) {
   return RemoveServiceJobFromLaunchd(scope, CopyWakeLaunchdName(scope));
 }
 
-bool RemoveUpdateServiceInternalJobFromLaunchd(UpdaterScope scope) {
-  return RemoveServiceJobFromLaunchd(
-      scope, CopyUpdateServiceInternalLaunchdName(scope));
-}
-
 bool DeleteInstallFolder(UpdaterScope scope) {
   return DeleteFolder(GetBaseInstallDirectory(scope));
 }
@@ -324,7 +267,6 @@ bool DeleteDataFolder(UpdaterScope scope) {
 void CleanAfterInstallFailure(UpdaterScope scope) {
   // If install fails at any point, attempt to clean the install.
   DeleteCandidateInstallFolder(scope);
-  RemoveUpdateServiceInternalJobFromLaunchd(scope);
 }
 
 bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path,
@@ -373,13 +315,6 @@ int DoSetup(UpdaterScope scope) {
                "cause Gatekeeper to show a prompt to the user.";
   }
 
-  if (!CreateUpdateServiceInternalLaunchdJobPlist(scope,
-                                                  updater_executable_path))
-    return kErrorFailedToCreateUpdateServiceInternalLaunchdJobPlist;
-
-  if (!StartUpdateServiceInternalVersionedLaunchdJob(scope))
-    return kErrorFailedToStartLaunchdUpdateServiceInternalJob;
-
   return kErrorOk;
 }
 
@@ -423,21 +358,10 @@ int PromoteCandidate(UpdaterScope scope) {
 
 #pragma mark Uninstall
 int UninstallCandidate(UpdaterScope scope) {
-  int error = kErrorOk;
-
-  if (!DeleteCandidateInstallFolder(scope) ||
-      !DeleteFolder(GetVersionedDataDirectory(scope))) {
-    error = kErrorFailedToDeleteFolder;
-  }
-
-  // Removing the Update Internal job has to be the last step because launchd is
-  // likely to terminate the current process. Clients should expect the
-  // connection to invalidate (possibly with an interruption beforehand) as a
-  // result of service uninstallation.
-  if (!RemoveUpdateServiceInternalJobFromLaunchd(scope))
-    error = kErrorFailedToRemoveUpdateServiceInternalJobFromLaunchd;
-
-  return error;
+  return !DeleteCandidateInstallFolder(scope) ||
+                 !DeleteFolder(GetVersionedDataDirectory(scope))
+             ? kErrorFailedToDeleteFolder
+             : kErrorOk;
 }
 
 int Uninstall(UpdaterScope scope) {

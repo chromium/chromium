@@ -189,7 +189,7 @@ if (is_win || is_mac || is_linux) {
         "app/server/mac/service_delegate.mm",
         "device_management/dm_storage_mac.mm",
         "installer_mac.cc",
-        "ipc/update_service_internal_proxy_mac.h",
+        "ipc/ipc_names_mac.mm",
         "ipc/update_service_internal_proxy_mac.mm",
         "launchd_util.cc",
         "launchd_util.h",
@@ -322,6 +322,23 @@ if (is_win || is_mac || is_linux) {
       ]
     }
 
+    if (is_posix) {
+      sources += [
+        "app/server/posix/update_service_internal_stub.cc",
+        "app/server/posix/update_service_internal_stub.h",
+        "ipc/ipc_names.h",
+        "ipc/ipc_support.cc",
+        "ipc/ipc_support.h",
+        "ipc/update_service_internal_proxy_posix.cc",
+        "ipc/update_service_internal_proxy_posix.h",
+      ]
+
+      deps += [
+        "//chrome/updater/app/server/posix/mojom",
+        "//components/named_mojo_ipc_server",
+      ]
+    }
+
     if (is_linux) {
       sources += [
         "activity_impl_util_linux.cc",
@@ -330,10 +347,8 @@ if (is_win || is_mac || is_linux) {
         "app/server/linux/update_service_stub.cc",
         "app/server/linux/update_service_stub.h",
         "device_management/dm_storage_linux.cc",
+        "ipc/ipc_names_linux.cc",
         "ipc/update_service_internal_proxy_linux.cc",
-        "ipc/update_service_internal_proxy_linux.h",
-        "linux/ipc_support.cc",
-        "linux/ipc_support.h",
         "linux/setup/setup.cc",
         "net/network_fetcher_linux.cc",
         "prefs_linux.cc",
@@ -342,7 +357,6 @@ if (is_win || is_mac || is_linux) {
       ]
 
       deps += [
-        "//chrome/updater/app/server/linux/mojom",
         "//components/named_mojo_ipc_server",
         "//mojo/core/embedder",
       ]
@@ -555,8 +569,6 @@ if (is_win || is_mac || is_linux) {
         "util/linux_util.cc",
         "util/linux_util.h",
       ]
-
-      deps += [ "//chrome/updater/app/server/linux/mojom" ]
     }
 
     if (is_mac) {
@@ -583,6 +595,8 @@ if (is_win || is_mac || is_linux) {
         "util/posix_util.cc",
         "util/posix_util.h",
       ]
+
+      deps += [ "//chrome/updater/app/server/posix/mojom" ]
     }
   }
 
@@ -883,7 +897,7 @@ if (is_win || is_mac || is_linux) {
         "test/integration_tests_linux.cc",
       ]
 
-      deps += [ "//chrome/updater/app/server/linux/mojom" ]
+      deps += [ "//chrome/updater/app/server/posix/mojom" ]
     }
   }
 

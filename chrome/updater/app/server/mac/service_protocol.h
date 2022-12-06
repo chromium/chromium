@@ -93,28 +93,11 @@
 
 @end
 
-// Protocol for the XPC update service internal tasks of the Updater.
-@protocol CRUUpdateServicingInternal <NSObject>
-
-// Performs the task (activate service, uninstall service, or no-op) that is
-// relevant to the state of the Updater.
-- (void)performTasksWithReply:(void (^_Nullable)(void))reply;
-
-// Performs the task that is relevant to the state of the Updater.
-// Does not perform an UpdateCheck.
-- (void)performHelloWithReply:(void (^_Nullable)(void))reply;
-
-@end
-
 namespace updater {
 
 // Constructs an NSXPCInterface for a connection using CRUUpdateServicing
 // and CRUUpdateStateObserving protocols.
 NSXPCInterface* _Nonnull GetXPCUpdateServicingInterface();
-
-// Constructs an NSXPCInterface for a connection using
-// CRUUpdateServicingInternal protocol.
-NSXPCInterface* _Nonnull GetXPCUpdateServicingInternalInterface();
 
 }  // namespace updater
 
