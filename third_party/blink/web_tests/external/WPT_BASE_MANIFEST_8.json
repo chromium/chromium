@@ -259268,16 +259268,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "fc2fcabb52f45ac8de7626a441032b4b3cf8b31e",
-     []
-    ],
-    "mtime.json": [
-     "133bb6c89af14db1eab54a2f739597d0bf297d24",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -259326,7 +259316,7 @@
      ]
     },
     "web-identity": [
-     "425ccef3f7449816d45c1535aa50acf68d223518",
+     "cba0cb331e714c9a4208bdff1e7d74f19c314f03",
      []
     ]
    },
@@ -266330,11 +266320,11 @@
      ],
      "fedcm": {
       "accounts.py": [
-       "f645dfda4c764e5f81c61151ce32df051e96c041",
+       "088ce5967cd585d41ce91a30dd6492c42bf872a3",
        []
       ],
       "client_metadata.py": [
-       "d81cd96c67ae149e5e14497378a2b87f3ffd99b9",
+       "e6f6a776329062987b14a57a4199e67e6b7af0cc",
        []
       ],
       "client_metadata.py.headers": [
@@ -266358,7 +266348,7 @@
        []
       ],
       "manifest.py": [
-       "a125c2e391f26b25bfb50dd13132ae52dd4745c6",
+       "3e72faf75a48a298d00e7a53edc11fce793452fb",
        []
       ],
       "manifest_redirect_accounts.json": [
@@ -266378,7 +266368,7 @@
        []
       ],
       "token.py": [
-       "2f5e807b6e0d344a761ecca4784684047c2ec777",
+       "867dab9592f89a36fd2ef6d3656046318673cf5b",
        []
       ]
      },
@@ -275097,6 +275087,10 @@
      "support": {
       "green-16x16.png": [
        "e19a3ffddd2567de2be00a9bcede541935d79bd0",
+       []
+      ],
+      "test-common.js": [
+       "5ef7a951b420a9efac659c61101229c909e5b039",
        []
       ]
      }
@@ -373103,7 +373097,7 @@
       []
      ],
      "sandboxed-iframe-locking.html": [
-      "74f6ec9261000272c7f7ea87aa16423c821b6ac8",
+      "436c67f5b53b1f88ef1537072be3b0011724d7b3",
       []
      ]
     },
@@ -377552,7 +377546,7 @@
        []
       ],
       "utils.sub.js": [
-       "b29dd6bba134a2bab4e03ef3f7ecfee5276474ee",
+       "a306b8cea9817d7bd907f3940acd9718530e97f9",
        []
       ]
      },
@@ -385790,7 +385784,7 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "31a77c90cf9eeda8dba89af6c4f1375417e8a284",
+     "d7d7abd0986c2604a6578b395a9540fb21f3b69d",
      []
     ],
     "idlharness.https.any.js.ini": [
@@ -427296,6 +427290,41 @@
      ],
      "anchor-query-fallback.html": [
       "8d413fd862d5b697b07d4777ce12053b34c4d7e5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-scroll-fallback-position-001.html": [
+      "a9a5d8c0ff4e84858c180eb440b514400ab97779",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-scroll-fallback-position-002.html": [
+      "e51f675fffe1e935804a4bb970bbd4815305c15a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-scroll-fallback-position-003.html": [
+      "ae212f919081ef6ef3a169ea4fae1cdaf01f7a26",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-scroll-fallback-position-004.html": [
+      "0227fa753ef434a8237061712db8e4433862ef20",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-scroll-fallback-position-005.html": [
+      "3dedd4d7e686505c10dcad99ca5f58f8cae38c2b",
       [
        null,
        {}
@@ -568338,7 +568367,28 @@
        }
       ]
      ]
-    }
+    },
+    "pointerup_after_pointerdown_target_removed.html": [
+     "65c6ea314c8fd0b316290de9319c7750a676721a",
+     [
+      "pointerevents/pointerup_after_pointerdown_target_removed.html?mouse",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerup_after_pointerdown_target_removed.html?pen",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerup_after_pointerdown_target_removed.html?touch",
+      {
+       "testdriver": true
+      }
+     ]
+    ]
    },
    "pointerlock": {
     "constructor.html": [
@@ -593074,7 +593124,7 @@
       ]
      ],
      "referrer-policy-from-rules.https.html": [
-      "ce3db0f999ac5db488a845370d6020c54d8d71c0",
+      "bbb03435094b287599bf1685ba361392a4df3dea",
       [
        "speculation-rules/prefetch/referrer-policy-from-rules.https.html?1-1",
        {}
@@ -593096,14 +593146,22 @@
        {}
       ],
       [
-       "speculation-rules/prefetch/referrer-policy-from-rules.https.html?6-last",
+       "speculation-rules/prefetch/referrer-policy-from-rules.https.html?6-6",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/referrer-policy-from-rules.https.html?7-last",
        {}
       ]
      ],
      "referrer-policy-not-accepted.https.html": [
-      "25b11283ca5dc7524040463975fe891d80e93085",
+      "d7c003b3ca52b309ba646a44d7e862d0b32d265b",
       [
-       null,
+       "speculation-rules/prefetch/referrer-policy-not-accepted.https.html?1-1",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/referrer-policy-not-accepted.https.html?2-last",
        {}
       ]
      ],

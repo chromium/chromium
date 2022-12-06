@@ -1608,7 +1608,7 @@ crbug.com/958381 [ Mac ] fragmentation/single-line-cells-paginated-with-text.htm
 
 # Popover test needing a fix
 
-crbug.com/1396139 virtual/popover-disabled/popover-disabled.html [ Pass Failure ]
+crbug.com/1396139 virtual/popover-disabled/popover-disabled.html [ Failure Pass ]
 
 # TablesNG ends
 
