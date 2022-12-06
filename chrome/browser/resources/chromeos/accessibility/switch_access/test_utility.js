@@ -17,10 +17,10 @@
  */
 const TestUtility = {
   async setup() {
-    await importModule('Commands', '/switch_access/commands.js');
     await importModule(
         'FocusRingManager', '/switch_access/focus_ring_manager.js');
     await importModule('Navigator', '/switch_access/navigator.js');
+    await importModule('SwitchAccess', '/switch_access/switch_access.js');
     await importModule(
         'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
 
@@ -41,17 +41,17 @@ const TestUtility = {
   },
 
   pressNextSwitch() {
-    Commands.instance.runCommand_(
+    SwitchAccess.commands.runCommand_(
         chrome.accessibilityPrivate.SwitchAccessCommand.NEXT);
   },
 
   pressPreviousSwitch() {
-    Commands.instance.runCommand_(
+    SwitchAccess.commands.runCommand_(
         chrome.accessibilityPrivate.SwitchAccessCommand.PREVIOUS);
   },
 
   pressSelectSwitch() {
-    Commands.instance.runCommand_(
+    SwitchAccess.commands.runCommand_(
         chrome.accessibilityPrivate.SwitchAccessCommand.SELECT);
   },
 
