@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
@@ -44,6 +45,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -52,6 +54,7 @@
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
@@ -313,6 +316,13 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
   is_hidden_ = hidden;
   if (is_hidden_)
     recycled_color_buffer_queue_.clear();
+
+  if (base::FeatureList::IsEnabled(features::kCanvasFreeMemoryWhenHidden)) {
+    auto* context_support = ContextProvider()->ContextSupport();
+    if (context_support)
+      context_support->SetAggressivelyFreeResources(hidden);
+  }
+
   gl_->ContextVisibilityHintCHROMIUM(is_hidden_ ? GL_FALSE : GL_TRUE);
   gl_->Flush();
 }

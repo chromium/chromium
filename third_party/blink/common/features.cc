@@ -696,6 +696,11 @@ BASE_FEATURE(kWebviewAccelerateSmallCanvases,
              "WebviewAccelerateSmallCanvases",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to aggressively free resources for canvases in background pages.
+BASE_FEATURE(kCanvasFreeMemoryWhenHidden,
+             "CanvasFreeMemoryWhenHidden",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, frees up CachedMetadata after consumption by script resources
 // and modules. Needed for the experiment in http://crbug.com/1045052.
 BASE_FEATURE(kDiscardCodeCacheAfterFirstUse,

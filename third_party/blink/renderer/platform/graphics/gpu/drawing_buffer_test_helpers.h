@@ -50,6 +50,8 @@ class WebGraphicsContext3DProviderForTests
   gpu::webgpu::WebGPUInterface* WebGPUInterface() override {
     return webgpu_.get();
   }
+  gpu::ContextSupport* ContextSupport() override { return nullptr; }
+
   bool BindToCurrentSequence() override { return false; }
   const gpu::Capabilities& GetCapabilities() const override {
     return capabilities_;

@@ -35,6 +35,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 
@@ -385,6 +386,17 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
   is_hidden_ = hidden;
   if (ResourceProvider())
     ResourceProvider()->SetResourceRecyclingEnabled(!IsHidden());
+
+  // Conserve memory.
+  if (base::FeatureList::IsEnabled(features::kCanvasFreeMemoryWhenHidden) &&
+      IsAccelerated() && SharedGpuContext::ContextProviderWrapper() &&
+      SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
+    auto* context_support = SharedGpuContext::ContextProviderWrapper()
+                                ->ContextProvider()
+                                ->ContextSupport();
+    if (context_support)
+      context_support->SetAggressivelyFreeResources(hidden);
+  }
 
   if (!lose_context_in_background_ && !lose_context_in_background_scheduled_ &&
       ResourceProvider() && !context_lost_ && IsHidden() &&

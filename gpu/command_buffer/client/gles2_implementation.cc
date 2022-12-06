@@ -1516,7 +1516,6 @@ void GLES2Implementation::IssueShallowFlush() {
   FlushHelper();
 }
 
-
 void GLES2Implementation::FlushHelper() {
   // Flush our command buffer
   // (tell the service to execute up to the flush cmd.)

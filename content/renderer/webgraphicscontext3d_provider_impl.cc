@@ -60,6 +60,10 @@ WebGraphicsContext3DProviderImpl::WebGPUInterface() {
   return provider_->WebGPUInterface();
 }
 
+gpu::ContextSupport* WebGraphicsContext3DProviderImpl::ContextSupport() {
+  return provider_->ContextSupport();
+}
+
 bool WebGraphicsContext3DProviderImpl::IsContextLost() {
   return RasterInterface() &&
          RasterInterface()->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
