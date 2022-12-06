@@ -1892,7 +1892,7 @@ cr.define('cr.ui.login.debug', function() {
       ];
       LANGUAGES.forEach(function(pair) {
         new DebugButton(langPanel.content, pair[0], function(locale) {
-          chrome.send('WelcomeScreen.setLocaleId', [locale]);
+          chrome.send('login.WelcomeScreen.userActed', ['setLocaleId', locale]);
         }.bind(null, pair[1]));
       });
     }
