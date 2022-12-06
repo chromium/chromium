@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -90,6 +91,13 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                  IconPurpose purpose,
                  const SortedSizesPx& icon_sizes,
                  ReadIconsCallback callback);
+
+  using ReadIconsUpdateTimeCallback = base::OnceCallback<void(
+      base::flat_map<SquareSizePx, base::Time> time_map)>;
+  // Reads all the last updated time for all icons in the app. Returns empty map
+  // in |callback| if IO error.
+  void ReadIconsLastUpdateTime(const AppId& app_id,
+                               ReadIconsUpdateTimeCallback callback);
 
   // TODO (crbug.com/1102701): Callback with const ref instead of value.
   using ReadIconBitmapsCallback =

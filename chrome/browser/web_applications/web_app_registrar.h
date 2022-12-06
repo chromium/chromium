@@ -20,6 +20,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -331,6 +332,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns the URL of the pinned home tab for tabbed apps which have this
   // enabled, otherwise returns nullopt.
   absl::optional<GURL> GetAppPinnedHomeTabUrl(const AppId& app_id) const;
+
+  // Returns the current WebAppOsIntegrationState stored in the web_app DB.
+  absl::optional<proto::WebAppOsIntegrationState>
+  GetAppCurrentOsIntegrationState(const AppId& app_id) const;
 
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen(const AppId& app_id) const;

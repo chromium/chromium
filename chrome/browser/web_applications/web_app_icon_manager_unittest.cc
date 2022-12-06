@@ -16,6 +16,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
@@ -674,6 +676,29 @@ TEST_F(WebAppIconManagerTest, ReadAllIcons_AnyOnly) {
 
     run_loop.Run();
   }
+}
+
+TEST_F(WebAppIconManagerTest, ReadAllIconsLastUpdateTime) {
+  auto web_app = test::CreateWebApp();
+  const AppId app_id = web_app->app_id();
+
+  const std::vector<int> sizes_px{icon_size::k256, icon_size::k512};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  IconManagerWriteGeneratedIcons(icon_manager(), app_id,
+                                 {{IconPurpose::ANY, sizes_px, colors}});
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+
+  AddAppToRegistry(std::move(web_app));
+  base::test::TestFuture<base::flat_map<SquareSizePx, base::Time>> future;
+  {
+    icon_manager().ReadIconsLastUpdateTime(app_id, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
+  base::flat_map<SquareSizePx, base::Time> time_data_map = future.Get();
+  EXPECT_EQ(2u, time_data_map.size());
+  EXPECT_FALSE(time_data_map[sizes_px[0]].is_null());
+  EXPECT_FALSE(time_data_map[sizes_px[1]].is_null());
 }
 
 TEST_F(WebAppIconManagerTest, ReadAllIcons_AnyAndMaskable) {

@@ -362,6 +362,8 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
   EXPECT_CALL(*os_integration_manager_,
               RegisterWebAppOsUninstallation(app_id, testing::_))
       .Times(1);
+  EXPECT_CALL(*os_integration_manager_, Synchronize(app_id, testing::_))
+      .Times(1);
 #else
   EXPECT_CALL(*os_integration_manager_,
               RegisterWebAppOsUninstallation(app_id, testing::_))

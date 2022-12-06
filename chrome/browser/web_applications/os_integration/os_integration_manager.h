@@ -94,6 +94,11 @@ class OsIntegrationManager : public AppRegistrarObserver {
     base::AutoReset<bool> scope_;
   };
 
+  // Sets a |callback| for testing code to get notified whenever a Synchronize()
+  // has completed executing and the new states has been written to the DB.
+  void SetSynchronizeCompleteCallbackForTesting(
+      base::OnceClosure synchronize_complete_callback);
+
   explicit OsIntegrationManager(
       Profile* profile,
       std::unique_ptr<WebAppShortcutManager> shortcut_manager,
@@ -290,13 +295,12 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   virtual void ExecuteAllSubManagerConfigurations(
       const AppId& app_id,
-      const proto::WebAppOsIntegrationState& desired_state,
-      const absl::optional<proto::WebAppOsIntegrationState>& expected_state,
+      std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
       base::OnceClosure callback);
 
   virtual void WriteStateToDB(
       const AppId& app_id,
-      const proto::WebAppOsIntegrationState& desired_state,
+      std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
       base::OnceClosure callback);
 
   void OnShortcutsCreated(const AppId& app_id,
@@ -332,6 +336,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
   std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
+  base::OnceClosure synchronize_complete_callback_for_testing_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};

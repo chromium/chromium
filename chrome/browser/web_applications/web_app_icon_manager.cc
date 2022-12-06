@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -215,6 +216,27 @@ TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
 }
 
 // Performs blocking I/O. May be called on another thread.
+// Returns null base::Time if any errors occurred.
+TypedResult<base::Time> ReadIconTimeBlocking(
+    scoped_refptr<FileUtilsWrapper> utils,
+    const base::FilePath& web_apps_directory,
+    const IconId& icon_id) {
+  base::FilePath icon_file = GetIconFileName(web_apps_directory, icon_id);
+  base::File::Info file_info;
+  if (!utils->GetFileInfo(icon_file, &file_info)) {
+    return {.error_log = {CreateError(
+                {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
+  }
+
+  TypedResult<base::Time> access_time;
+  access_time.value = base::Time();
+  if (!file_info.last_modified.is_null()) {
+    access_time.value = file_info.last_modified;
+  }
+  return access_time;
+}
+
+// Performs blocking I/O. May be called on another thread.
 // Returns empty SkBitmap if any errors occurred.
 TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
@@ -289,6 +311,27 @@ TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
         ReadIconBlocking(utils, web_apps_directory, icon_id);
     read_result.DepositErrorLog(result.error_log);
     if (!read_result.value.empty())
+      result.value[icon_size_px] = std::move(read_result.value);
+  }
+
+  return result;
+}
+
+// Performs blocking I/O. May be called on another thread.
+TypedResult<base::flat_map<SquareSizePx, base::Time>>
+ReadIconsLastUpdateTimeBlocking(scoped_refptr<FileUtilsWrapper> utils,
+                                const base::FilePath& web_apps_directory,
+                                const AppId& app_id,
+                                IconPurpose purpose,
+                                const std::vector<SquareSizePx>& icon_sizes) {
+  TypedResult<base::flat_map<SquareSizePx, base::Time>> result;
+
+  for (SquareSizePx icon_size_px : icon_sizes) {
+    IconId icon_id(app_id, purpose, icon_size_px);
+    TypedResult<base::Time> read_result =
+        ReadIconTimeBlocking(utils, web_apps_directory, icon_id);
+    read_result.DepositErrorLog(result.error_log);
+    if (!read_result.value.is_null())
       result.value[icon_size_px] = std::move(read_result.value);
   }
 
@@ -832,6 +875,29 @@ void WebAppIconManager::ReadIcons(const AppId& app_id,
           std::vector<SquareSizePx>(icon_sizes.begin(), icon_sizes.end())),
       base::BindOnce(&LogErrorsCallCallback<std::map<SquareSizePx, SkBitmap>>,
                      GetWeakPtr(), std::move(callback)));
+}
+
+void WebAppIconManager::ReadIconsLastUpdateTime(
+    const AppId& app_id,
+    ReadIconsUpdateTimeCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const WebApp* web_app = registrar_->GetAppById(app_id);
+  if (!web_app) {
+    std::move(callback).Run(base::flat_map<SquareSizePx, base::Time>());
+    return;
+  }
+
+  const SortedSizesPx& sizes_px =
+      web_app->downloaded_icon_sizes(IconPurpose::ANY);
+  icon_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          ReadIconsLastUpdateTimeBlocking, utils_, web_apps_directory_, app_id,
+          IconPurpose::ANY,
+          std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end())),
+      base::BindOnce(
+          &LogErrorsCallCallback<base::flat_map<SquareSizePx, base::Time>>,
+          GetWeakPtr(), std::move(callback)));
 }
 
 void WebAppIconManager::ReadAllIcons(const AppId& app_id,

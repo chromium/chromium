@@ -9,11 +9,11 @@
 
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,6 +25,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/os_integration/shortcut_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -50,6 +51,21 @@ bool g_suppress_os_hooks_for_testing_ = false;
 }  // namespace
 
 namespace web_app {
+
+namespace {
+
+bool AreOsIntegrationSubManagersEnabled() {
+  return base::FeatureList::IsEnabled(features::kOsIntegrationSubManagers);
+}
+
+bool AreSubManagersExecuteEnabled() {
+  if (!AreOsIntegrationSubManagersEnabled())
+    return false;
+  return (features::kOsIntegrationSubManagersStageParam.Get() ==
+          features::OsIntegrationSubManagersStage::kExecuteAndWriteConfig);
+}
+
+}  // namespace
 
 OsIntegrationManager::ScopedSuppressForTesting::ScopedSuppressForTesting()
     :
@@ -83,6 +99,12 @@ class OsIntegrationManager::OsHooksBarrier
     return base::BindOnce(&OsHooksBarrier::AddResult, this, type);
   }
 
+  base::OnceClosure CreateBarrierCallbackForSynchronize(
+      base::OnceClosure synchronize_callback) {
+    return base::BindOnce(&OsHooksBarrier::WaitForSynchronize, this,
+                          std::move(synchronize_callback));
+  }
+
  private:
   friend class base::RefCounted<OsHooksBarrier>;
 
@@ -97,6 +119,11 @@ class OsIntegrationManager::OsHooksBarrier
     errors_[type] = result == Result::kError ? true : false;
   }
 
+  void WaitForSynchronize(base::OnceClosure synchronize_callback) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    std::move(synchronize_callback).Run();
+  }
+
   OsHooksErrors errors_;
   InstallOsHooksCallback callback_;
 };
@@ -106,6 +133,12 @@ InstallOsHooksOptions::InstallOsHooksOptions(
     const InstallOsHooksOptions& other) = default;
 InstallOsHooksOptions& InstallOsHooksOptions::operator=(
     const InstallOsHooksOptions& other) = default;
+
+void OsIntegrationManager::SetSynchronizeCompleteCallbackForTesting(
+    base::OnceClosure synchronize_complete_callback) {
+  synchronize_complete_callback_for_testing_ =  // IN-TEST
+      std::move(synchronize_complete_callback);
+}
 
 OsIntegrationManager::OsIntegrationManager(
     Profile* profile,
@@ -117,10 +150,7 @@ OsIntegrationManager::OsIntegrationManager(
       shortcut_manager_(std::move(shortcut_manager)),
       file_handler_manager_(std::move(file_handler_manager)),
       protocol_handler_manager_(std::move(protocol_handler_manager)),
-      url_handler_manager_(std::move(url_handler_manager)) {
-  // Add sub_manager unique_ptrs to the sub_manager vector.
-  // Also ensure each sub_manager gets started before Synchronize is called.
-}
+      url_handler_manager_(std::move(url_handler_manager)) {}
 
 OsIntegrationManager::~OsIntegrationManager() = default;
 
@@ -139,6 +169,11 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
     protocol_handler_manager_->SetSubsystems(registrar);
   if (url_handler_manager_)
     url_handler_manager_->SetSubsystems(registrar);
+
+  auto shortcut_handling_sub_manager =
+      std::make_unique<ShortcutHandlingSubManager>(profile_, *icon_manager,
+                                                   *registrar);
+  sub_managers_.push_back(std::move(shortcut_handling_sub_manager));
 }
 
 void OsIntegrationManager::Start() {
@@ -159,16 +194,46 @@ void OsIntegrationManager::Start() {
 
 void OsIntegrationManager::Synchronize(const AppId& app_id,
                                        base::OnceClosure callback) {
-  proto::WebAppOsIntegrationState desired_state;
-  const absl::optional<proto::WebAppOsIntegrationState> current_state =
-      registrar_->GetAppById(app_id)->current_os_integration_states();
-  auto configure_barrier = base::BarrierClosure(
-      sub_managers_.size(),
-      base::BindOnce(&OsIntegrationManager::ExecuteAllSubManagerConfigurations,
-                     weak_ptr_factory_.GetWeakPtr(), app_id, desired_state,
-                     current_state, std::move(callback)));
+  if (synchronize_complete_callback_for_testing_) {  // IN-TEST
+    callback = std::move(callback).Then(
+        std::move(synchronize_complete_callback_for_testing_));  // IN-TEST
+  }
+
+  if (!AreOsIntegrationSubManagersEnabled()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  if (!registrar_->GetAppById(app_id)) {
+    std::move(callback).Run();
+    return;
+  }
+
+  std::unique_ptr<proto::WebAppOsIntegrationState> desired_states =
+      std::make_unique<proto::WebAppOsIntegrationState>();
+  proto::WebAppOsIntegrationState* desired_states_ptr = desired_states.get();
+
+  base::RepeatingClosure configure_barrier;
+  if (AreSubManagersExecuteEnabled()) {
+    configure_barrier = base::BarrierClosure(
+        sub_managers_.size(),
+        base::BindOnce(
+            &OsIntegrationManager::ExecuteAllSubManagerConfigurations,
+            weak_ptr_factory_.GetWeakPtr(), app_id, std::move(desired_states),
+            std::move(callback)));
+  } else {
+    configure_barrier = base::BarrierClosure(
+        sub_managers_.size(),
+        base::BindOnce(&OsIntegrationManager::WriteStateToDB,
+                       weak_ptr_factory_.GetWeakPtr(), app_id,
+                       std::move(desired_states), std::move(callback)));
+  }
+
   for (const auto& sub_manager : sub_managers_) {
-    sub_manager->Configure(app_id, desired_state, configure_barrier);
+    // This dereference is safe because the barrier closure guarantees that it
+    // will not be called until `configure_barrier` is called from each sub-
+    // manager.
+    sub_manager->Configure(app_id, *desired_states_ptr, configure_barrier);
   }
 }
 
@@ -207,6 +272,9 @@ void OsIntegrationManager::InstallOsHooks(
   }
 #endif
 
+  Synchronize(app_id,
+              barrier->CreateBarrierCallbackForSynchronize(base::DoNothing()));
+
   // TODO(ortuno): Make adding a shortcut to the applications menu independent
   // from adding a shortcut to desktop.
   if (options.os_hooks[OsHookType::kShortcuts]) {
@@ -240,6 +308,9 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
   OsHooksErrors os_hooks_errors;
   scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
       os_hooks_errors, std::move(callback));
+
+  Synchronize(app_id,
+              barrier->CreateBarrierCallbackForSynchronize(base::DoNothing()));
 
   if (os_hooks[OsHookType::kShortcutsMenu]) {
     bool success = UnregisterShortcutsMenu(
@@ -300,6 +371,9 @@ void OsIntegrationManager::UpdateOsHooks(
   OsHooksErrors os_hooks_errors;
   scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
       os_hooks_errors, std::move(callback));
+
+  Synchronize(app_id,
+              barrier->CreateBarrierCallbackForSynchronize(base::DoNothing()));
 
   UpdateFileHandlers(app_id, file_handlers_need_os_update,
                      base::BindOnce(barrier->CreateBarrierCallbackForType(
@@ -794,27 +868,43 @@ std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
 
 void OsIntegrationManager::ExecuteAllSubManagerConfigurations(
     const AppId& app_id,
-    const proto::WebAppOsIntegrationState& desired_state,
-    const absl::optional<proto::WebAppOsIntegrationState>& current_state,
+    std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
     base::OnceClosure callback) {
+  // This can never be a use-case where we execute OS integration registration/
+  // unregistration but do not update the WebAppOsIntegrationState proto in the
+  // web_app DB.
+  DCHECK(AreOsIntegrationSubManagersEnabled());
+
+  const WebApp* web_app = registrar_->GetAppById(app_id);
+  if (!web_app) {
+    std::move(callback).Run();
+    return;
+  }
+
+  proto::WebAppOsIntegrationState* desired_states_ptr = desired_states.get();
   auto write_state_callback = base::BarrierClosure(
       sub_managers_.size(),
       base::BindOnce(&OsIntegrationManager::WriteStateToDB,
-                     weak_ptr_factory_.GetWeakPtr(), app_id, desired_state,
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(desired_states), std::move(callback)));
+
+  const absl::optional<proto::WebAppOsIntegrationState> current_state =
+      web_app->current_os_integration_states();
 
   for (const auto& sub_manager : sub_managers_) {
-    sub_manager->Execute(app_id, desired_state, current_state,
+    sub_manager->Execute(app_id, *desired_states_ptr, current_state,
                          write_state_callback);
   }
 }
 
 void OsIntegrationManager::WriteStateToDB(
     const AppId& app_id,
-    const proto::WebAppOsIntegrationState& desired_state,
+    std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
     base::OnceClosure callback) {
-  // Exit early if the app is scheduled to be uninstalled.
-  if (registrar_->GetAppById(app_id)->is_uninstalling()) {
+  // Exit early if the app is scheduled to be uninstalled or is already
+  // uninstalled.
+  const WebApp* existing_app = registrar_->GetAppById(app_id);
+  if (!existing_app || existing_app->is_uninstalling()) {
     std::move(callback).Run();
     return;
   }
@@ -822,8 +912,9 @@ void OsIntegrationManager::WriteStateToDB(
   {
     ScopedRegistryUpdate update(sync_bridge_);
     WebApp* web_app = update->UpdateApp(app_id);
-    web_app->SetCurrentOsIntegrationStates(desired_state);
+    web_app->SetCurrentOsIntegrationStates(*desired_states.get());
   }
+
   std::move(callback).Run();
 }
 

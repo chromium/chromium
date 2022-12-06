@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -535,6 +536,15 @@ absl::optional<GURL> WebAppRegistrar::GetAppPinnedHomeTabUrl(
   }
   // Apps with home_tab set to 'auto' will not have a home tab.
   return absl::nullopt;
+}
+
+absl::optional<proto::WebAppOsIntegrationState>
+WebAppRegistrar::GetAppCurrentOsIntegrationState(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app)
+    return absl::nullopt;
+
+  return web_app->current_os_integration_states();
 }
 
 #if BUILDFLAG(IS_MAC)
