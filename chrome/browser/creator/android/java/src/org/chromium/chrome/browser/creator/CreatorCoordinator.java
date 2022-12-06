@@ -43,6 +43,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,8 +152,8 @@ public class CreatorCoordinator
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
 
         if (processScope != null) {
-            mDependencyProvider =
-                    new FeedSurfaceScopeDependencyProvider(mActivity, mActivity, false);
+            mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
+                    mActivity, mActivity, ColorUtils.inNightMode(mActivity));
             mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);
         } else {
             mDependencyProvider = null;
