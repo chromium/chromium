@@ -22,8 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 namespace {
 
@@ -41,6 +40,8 @@ constexpr uint64_t kProjectFourHash = UINT64_C(6801665881746546626);
 constexpr uint64_t kProjectFiveHash = UINT64_C(3960582687892677139);
 // The name hash of "TestProjectSix"
 constexpr uint64_t kProjectSixHash = UINT64_C(6972396123792667134);
+// The name hash of "CrOSEvents"
+constexpr uint64_t kCrOSEventsProjectHash = UINT64_C(12657197978410187837);
 
 // The name hash of "chrome::TestProjectOne::TestEventOne".
 constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
@@ -1051,5 +1052,36 @@ TEST_F(StructuredMetricsProviderHwidTest,
   ExpectNoErrors();
 }
 
-}  // namespace structured
-}  // namespace metrics
+// Ensures that events part of event sequence are recorded properly.
+TEST_F(StructuredMetricsProviderTest, EventSequenceLogging) {
+  Init();
+
+  const int test_time = 50;
+  const double test_metric = 1.0;
+
+  events::v2::cr_os_events::Test1 test_event;
+  EXPECT_TRUE(test_event.IsEventSequenceType());
+  test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
+  test_event.SetRecordedTimeSinceBoot(base::Milliseconds(test_time));
+  test_event.SetMetric1(test_metric).Record();
+
+  const auto data = GetIndependentMetrics();
+  ASSERT_EQ(data.events_size(), 1);
+
+  const auto& event = data.events(0);
+  EXPECT_EQ(event.project_name_hash(), kCrOSEventsProjectHash);
+
+  // Verify that event sequence metadata has been serialized correctly.
+  const auto& event_metadata = event.event_sequence_metadata();
+  EXPECT_EQ(event_metadata.reset_counter(), 1);
+  EXPECT_TRUE(event_metadata.has_event_unique_id());
+  EXPECT_EQ(event_metadata.system_uptime(), test_time);
+
+  ASSERT_EQ(event.metrics_size(), 1);
+  const auto& metric = event.metrics(0);
+  EXPECT_EQ(metric.value_double(), 1.0);
+
+  ExpectNoErrors();
+}
+
+}  // namespace metrics::structured

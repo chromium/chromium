@@ -2,7 +2,6 @@
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Model of a structured metrics description xml file.
 
 This marshals an XML string into a Model, and validates that the XML is
@@ -14,9 +13,14 @@ import xml.etree.ElementTree as ET
 import textwrap as tw
 import model_util as util
 
-
 # Default key rotation period if not explicitly specified in the XML.
 DEFAULT_KEY_ROTATION_PERIOD = 90
+
+# Project name for event sequencing.
+#
+# This project name should be consistent with the name in structured.xml as well
+# as the server.
+EVENT_SEQUENCE_PROJECT_NAME = 'CrOSEvents'
 
 
 def wrap(text, indent):
@@ -137,6 +141,7 @@ class Project:
     self.owners = util.get_text_children(elem, 'owner', Model.OWNER_REGEX)
 
     self.key_rotation_period = DEFAULT_KEY_ROTATION_PERIOD
+    self.is_event_sequence_project = self.name == EVENT_SEQUENCE_PROJECT_NAME
 
     # Check if key-rotation is specified. If so, then change the
     # key_rotation_period.
@@ -237,7 +242,7 @@ class Metric:
 
     if self.type == 'raw-string' and project.id != 'none':
       util.error(
-          elem, "raw-string metrics must be in a project with id type "
+          elem, 'raw-string metrics must be in a project with id type '
           "'none', but {} has id type '{}'".format(project.name, project.id))
 
   def __repr__(self):

@@ -72,7 +72,7 @@ void ChromeStructuredMetricsRecorder::RegisterUserProfilePrefs(
 
 void ChromeStructuredMetricsRecorder::Initialize() {
   // Adds CrOSEvents processor if feature is enabled.
-  if (base::FeatureList::IsEnabled(kCrOSEvents)) {
+  if (base::FeatureList::IsEnabled(kEventSequenceLogging)) {
     StructuredMetricsClient::Get()->AddEventsProcessor(
         std::make_unique<cros_event::CrOSEventsProcessor>());
   }

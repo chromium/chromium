@@ -86,8 +86,10 @@ namespace {project.namespace} {{
 IMPL_EVENT_TEMPLATE = """\
 {event.name}::{event.name}() :
   ::metrics::structured::Event(\"{event.project_name}\",
-                               \"{event.name}\") {{}}
+                               \"{event.name}\",
+                               {event.is_event_sequence}) {{}}
 {event.name}::~{event.name}() = default;
+
 {metric_code}\
 """
 

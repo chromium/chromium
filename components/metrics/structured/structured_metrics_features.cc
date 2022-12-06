@@ -6,15 +6,14 @@
 
 #include "base/metrics/field_trial_params.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 BASE_FEATURE(kStructuredMetrics,
              "EnableStructuredMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCrOSEvents,
-             "EnableCrOSEvents",
+BASE_FEATURE(kEventSequenceLogging,
+             "EnableEventSequenceLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(b/181724341): Remove this experimental once the feature is rolled out.
@@ -44,5 +43,4 @@ int GetFileSizeByteLimit() {
   return kFileSizeByteLimitParam.Get();
 }
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured

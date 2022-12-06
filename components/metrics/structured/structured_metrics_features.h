@@ -13,8 +13,8 @@ namespace structured {
 // This can be used to disable structured metrics as a whole.
 BASE_DECLARE_FEATURE(kStructuredMetrics);
 
-// Controls whether CrOSEvents logging is enabled or not.
-BASE_DECLARE_FEATURE(kCrOSEvents);
+// Controls whether event sequence logging is enabled or not.
+BASE_DECLARE_FEATURE(kEventSequenceLogging);
 
 BASE_DECLARE_FEATURE(kBluetoothSessionizedMetrics);
 

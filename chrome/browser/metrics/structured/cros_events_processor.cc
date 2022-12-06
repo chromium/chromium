@@ -17,7 +17,7 @@ void CrOSEventsProcessor::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {}
 
 bool CrOSEventsProcessor::ShouldProcessOnEventRecord(const Event& event) {
-  return event.IsCrOSEvent();
+  return event.IsEventSequenceType();
 }
 
 void CrOSEventsProcessor::OnEventsRecord(Event* event) {}

@@ -407,6 +407,28 @@
   </event>
 </project>
 
+<project name="CrOSEvents">
+  <owner>jongahn@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <key-rotation>120</key-rotation>
+  <summary>
+    Project used to record a sequence of events that are related to each other.
+  </summary>
+
+  <event name="Test1">
+    <summary>
+      Test event used for unit tests to ensure that the code-gen for the event
+      sequence project is working properly.
+    </summary>
+    <metric name="Metric1" type="double">
+      <summary>
+        Test metric1
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="TestProjectOne">
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
