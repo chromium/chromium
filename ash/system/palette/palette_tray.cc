@@ -266,6 +266,8 @@ PaletteTray::PaletteTray(Shelf* shelf)
 
   Shell::Get()->AddShellObserver(this);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
+
+  shelf->AddObserver(this);
 }
 
 PaletteTray::~PaletteTray() {
@@ -275,6 +277,7 @@ PaletteTray::~PaletteTray() {
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  shelf()->RemoveObserver(this);
 }
 
 // static
@@ -797,6 +800,33 @@ void PaletteTray::UpdateIconVisibility() {
   SetVisiblePreferred(visible_preferred);
   if (visible_preferred)
     UpdateLayout();
+}
+
+void PaletteTray::OnAutoHideStateChanged(ShelfAutoHideState state) {
+  if (!bubble_)
+    return;
+
+  // The anchor rect should be placed with the `work_area` + the `PaletteTray`'s
+  // position on the shelf.
+  gfx::Rect work_area = shelf()->GetSystemTrayAnchorRect();
+  gfx::Rect tray_anchor = GetBubbleAnchor()->GetAnchorBoundsInScreen();
+  gfx::Rect anchor_rect;
+  switch (shelf()->alignment()) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      anchor_rect =
+          gfx::Rect(base::i18n::IsRTL() ? tray_anchor.x() : tray_anchor.right(),
+                    work_area.bottom(), 0, 0);
+      break;
+    case ShelfAlignment::kLeft:
+      anchor_rect = gfx::Rect(work_area.x(), tray_anchor.bottom(), 0, 0);
+      break;
+    case ShelfAlignment::kRight:
+      anchor_rect = gfx::Rect(work_area.right(), tray_anchor.bottom(), 0, 0);
+      break;
+  }
+
+  bubble_->bubble_view()->ChangeAnchorRect(anchor_rect);
 }
 
 }  // namespace ash

@@ -11,6 +11,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/stylus_battery_delegate.h"
@@ -36,7 +37,7 @@ class TouchEvent;
 namespace views {
 class ImageView;
 class Widget;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -53,6 +54,7 @@ class TrayBubbleWrapper;
 // the display has stylus hardware.
 class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                public SessionObserver,
+                               public ShelfObserver,
                                public ShellObserver,
                                public WindowTreeHostManager::Observer,
                                public PaletteToolManager::Delegate,
@@ -169,6 +171,9 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // Have the palette act as though it is on a display with a stylus for
   // testing purposes.
   void SetDisplayHasStylusForTesting();
+
+  // ShelfObserver:
+  void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
 
   std::unique_ptr<PaletteToolManager> palette_tool_manager_;
   std::unique_ptr<PaletteWelcomeBubble> welcome_bubble_;
