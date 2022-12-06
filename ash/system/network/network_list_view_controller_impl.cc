@@ -191,7 +191,7 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
 
   // Show a warning that the connection might be monitored if connected to a VPN
   // or if the default network has a proxy installed.
-  index = ShowConnectionWarningIfVpnOrProxy(index);
+  index = ShowConnectionWarningIfNetworkMonitored(index);
 
   // Show Ethernet section first.
   index = CreateItemViewsIfMissingAndReorder(NetworkType::kEthernet, index,
@@ -332,17 +332,20 @@ void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(
       model()->GetDeviceState(NetworkType::kWiFi) == DeviceStateType::kEnabled;
 }
 
-size_t NetworkListViewControllerImpl::ShowConnectionWarningIfVpnOrProxy(
+size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
     size_t index) {
   const NetworkStateProperties* default_network = GetDefaultNetwork();
   bool using_proxy =
       default_network && default_network->proxy_mode != ProxyMode::kDirect;
+  bool dns_queries_monitored =
+      default_network && default_network->dns_queries_monitored;
 
-  if (!connected_vpn_guid_.empty() || using_proxy) {
+  if (!connected_vpn_guid_.empty() || using_proxy || dns_queries_monitored) {
     if (!connection_warning_)
-      ShowConnectionWarning();
+      ShowConnectionWarning(/*show_managed_icon=*/dns_queries_monitored);
 
-    MaybeShowConnectionWarningManagedIcon(using_proxy);
+    if (!dns_queries_monitored)
+      MaybeShowConnectionWarningManagedIcon(using_proxy);
 
     network_detailed_network_view()->network_list()->ReorderChildView(
         connection_warning_, index++);
@@ -806,14 +809,15 @@ size_t NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
   return index;
 }
 
-void NetworkListViewControllerImpl::ShowConnectionWarning() {
+void NetworkListViewControllerImpl::ShowConnectionWarning(
+    bool show_managed_icon) {
   // Set up layout and apply sticky row property.
   std::unique_ptr<TriView> connection_warning(
       TrayPopupUtils::CreateDefaultRowView(/*use_wide_layout=*/false));
   TrayPopupUtils::ConfigureAsStickyHeader(connection_warning.get());
 
   SetConnectionWarningIcon(connection_warning.get(),
-                           /*use_managed_icon=*/false);
+                           /*use_managed_icon=*/show_managed_icon);
 
   // Set message label in middle of row.
   std::unique_ptr<views::Label> label =

@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "components/country_codes/country_codes.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -116,6 +117,11 @@ void SecureDnsManager::OnPrefChanged() {
 
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
       shill::kDNSProxyDOHProvidersProperty, doh_providers);
+
+  NetworkHandler::Get()
+      ->network_metadata_store()
+      ->set_secure_dns_templates_with_identifiers_active(
+          doh_templates_uri_resolver_->GetDohWithIdentifiersActive());
 }
 
 }  // namespace ash

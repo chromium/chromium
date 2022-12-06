@@ -414,6 +414,13 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
                 NetworkHandler::GetUiProxyConfigService()->ProxyModeForNetwork(
                     network))
           : mojom::ProxyMode::kDirect;
+  result->dns_queries_monitored =
+      NetworkHandler::IsInitialized() &&
+              NetworkHandler::Get()->network_metadata_store()
+          ? NetworkHandler::Get()
+                ->network_metadata_store()
+                ->secure_dns_templates_with_identifiers_active()
+          : false;
 
   switch (type) {
     case mojom::NetworkType::kCellular: {

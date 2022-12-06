@@ -107,9 +107,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
           chromeos::network_config::mojom::NetworkStatePropertiesPtr>&
           networks);
 
-  // Adds a warning indicator if connected to a VPN or if the default network
-  // has a proxy installed.
-  size_t ShowConnectionWarningIfVpnOrProxy(size_t index);
+  // Adds a warning indicator if connected to a VPN, if the default network
+  // has a proxy installed or if the secure DNS template URIs contain user or
+  // device identifiers.
+  size_t ShowConnectionWarningIfNetworkMonitored(size_t index);
 
   // Returns true if mobile data section should be added to view.
   bool ShouldMobileDataSectionBeShown();
@@ -153,8 +154,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
       NetworkIdToViewMap* previous_views);
 
   // Creates a view that indicates connections might be monitored if
-  // connected to a VPN or if the default network has a proxy installed.
-  void ShowConnectionWarning();
+  // connected to a VPN, if the default network has a proxy installed or if the
+  // secure DNS template URIs contain identifiers.
+  void ShowConnectionWarning(bool show_managed_icon);
 
   // Determines whether a scan for WiFi and Tether networks should be requested
   // and updates the scanning bar accordingly.

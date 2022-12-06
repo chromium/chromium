@@ -605,6 +605,7 @@ export class OncMojo {
       source: OncSource.kNone,
       type: type,
       typeState: {},
+      dnsQueriesMonitored: false,
     };
     switch (type) {
       case NetworkType.kCellular:

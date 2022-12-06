@@ -1296,6 +1296,22 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconProxy) {
   EXPECT_TRUE(IsManagedIcon(icon));
 }
 
+TEST_P(NetworkListViewControllerTest,
+       ConnectionWarningDnsTemplateUriWithIdentifier) {
+  EXPECT_THAT(GetConnectionWarning(), IsNull());
+  auto default_network =
+      chromeos::network_config::mojom::NetworkStateProperties::New();
+  default_network->guid = kWifiName;
+  default_network->dns_queries_monitored = true;
+  SetDefaultNetworkForTesting(std::move(default_network));
+
+  AddWifiDevice();
+
+  views::ImageView* icon = GetConnectionWarningIcon();
+  ASSERT_THAT(icon, NotNull());
+  EXPECT_TRUE(IsManagedIcon(icon));
+}
+
 TEST_P(NetworkListViewControllerTest, NetworkScanning) {
   network_state_helper()->ClearDevices();
   network_state_helper()->manager_test()->SetInteractiveDelay(

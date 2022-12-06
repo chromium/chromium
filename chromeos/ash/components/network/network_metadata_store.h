@@ -139,6 +139,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   const base::Value* GetDayOfTrafficCountersAutoReset(
       const std::string& network_guid);
 
+  // Records if the default network is configured to use secure DNS template
+  // URIs which contain user or device identifiers.
+  void set_secure_dns_templates_with_identifiers_active(bool active) {
+    secure_dns_templates_with_identifiers_active_ = active;
+  }
+
+  // Returns whether the default network is configured to use secure DNS
+  // template URIs which contain user or device identifiers.
+  bool secure_dns_templates_with_identifiers_active() const {
+    return secure_dns_templates_with_identifiers_active_;
+  }
+
   // Manage observers.
   void AddObserver(NetworkMetadataObserver* observer);
   void RemoveObserver(NetworkMetadataObserver* observer);
@@ -177,6 +189,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   PrefService* device_pref_service_;
   bool is_enterprise_managed_;
   bool has_profile_loaded_ = false;
+  bool secure_dns_templates_with_identifiers_active_ = false;
   base::WeakPtrFactory<NetworkMetadataStore> weak_ptr_factory_{this};
 };
 

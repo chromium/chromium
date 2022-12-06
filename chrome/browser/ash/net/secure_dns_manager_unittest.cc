@@ -13,9 +13,14 @@
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_metadata_store.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,7 +94,12 @@ class SecureDnsManagerTest : public testing::Test {
     pref_service_.registry()->RegisterStringPref(
         prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
     pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsSalt, "");
+    network_handler_test_helper_.RegisterPrefs(pref_service_.registry(),
+                                               local_state_.registry());
+    network_handler_test_helper_.InitializePrefs(&pref_service_, &local_state_);
   }
+
+  void TearDown() override { NetworkHandler::Get()->ShutdownPrefServices(); }
 
   PrefService* pref_service() { return &pref_service_; }
 
@@ -97,6 +107,7 @@ class SecureDnsManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple pref_service_;
+  TestingPrefServiceSimple local_state_;
 };
 
 TEST_F(SecureDnsManagerTest, SetModeOff) {
@@ -207,6 +218,38 @@ TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
 
   EXPECT_THAT(providers, SizeIs(1));
   EXPECT_THAT(providers, Contains(Key(effectiveTemplate)));
+}
+
+TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
+  // Setup an active user.
+  user_manager::FakeUserManager* fake_user_manager =
+      new user_manager::FakeUserManager();
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager =
+      std::make_unique<user_manager::ScopedUserManager>(
+          base::WrapUnique(fake_user_manager));
+  const AccountId account_id(
+      AccountId::FromUserEmailGaiaId("test-user@testdomain.com", "1234567890"));
+  fake_user_manager->AddUser(account_id);
+
+  auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
+  pref_service()->Set(prefs::kDnsOverHttpsMode,
+                      base::Value(SecureDnsConfig::kModeAutomatic));
+  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                      base::Value("https://dns.google/dns-query{?dns}"));
+  pref_service()->Set(prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
+
+  auto providers = GetDOHProviders();
+
+  EXPECT_TRUE(NetworkHandler::Get()
+                  ->network_metadata_store()
+                  ->secure_dns_templates_with_identifiers_active());
+
+  pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  providers = GetDOHProviders();
+
+  EXPECT_FALSE(NetworkHandler::Get()
+                   ->network_metadata_store()
+                   ->secure_dns_templates_with_identifiers_active());
 }
 
 }  // namespace
