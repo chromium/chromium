@@ -106,18 +106,14 @@ bool SharedImageFormat::IsBitmapFormatSupported() const {
 int SharedImageFormat::NumberOfPlanes() const {
   if (is_single_plane())
     return 1;
-  if (is_multi_plane()) {
-    switch (plane_config()) {
-      case PlaneConfig::kY_V_U:
-        return 3;
-      case PlaneConfig::kY_UV:
-        return 2;
-      case PlaneConfig::kY_UV_A:
-        return 3;
-    }
+  switch (plane_config()) {
+    case PlaneConfig::kY_V_U:
+      return 3;
+    case PlaneConfig::kY_UV:
+      return 2;
+    case PlaneConfig::kY_UV_A:
+      return 3;
   }
-  NOTREACHED();
-  return 0;
 }
 
 bool SharedImageFormat::IsValidPlaneIndex(int plane_index) const {
@@ -155,6 +151,7 @@ gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
   }
 }
 
+// For multiplanar formats.
 int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
   DCHECK(IsValidPlaneIndex(plane_index));
   switch (plane_config()) {
@@ -169,6 +166,7 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
   return 0;
 }
 
+// For multiplanar formats.
 int SharedImageFormat::MultiplanarBitDepth() const {
   switch (channel_format()) {
     case ChannelFormat::k8:
@@ -210,16 +208,14 @@ bool SharedImageFormat::HasAlpha() const {
       default:
         return false;
     }
-  } else if (is_multi_plane()) {
-    switch (plane_config()) {
-      case PlaneConfig::kY_UV_A:
-        return true;
-      default:
-        return false;
-    }
   }
-  NOTREACHED();
-  return false;
+  switch (plane_config()) {
+    case PlaneConfig::kY_V_U:
+    case PlaneConfig::kY_UV:
+      return false;
+    case PlaneConfig::kY_UV_A:
+      return true;
+  }
 }
 
 bool SharedImageFormat::IsCompressed() const {
