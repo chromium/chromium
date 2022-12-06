@@ -63,6 +63,8 @@ public abstract class MinidumpUploadJobService
         // 2) each time a job is scheduled, it has the same params.getExtras().
         mShouldReschedule = mActiveJob != null;
         if (mShouldReschedule) {
+            // Querying size forces unparcelling, which changes the output of toString().
+            assert params.getExtras().size() + mActiveJobParams.getExtras().size() < 10000;
             assert params.getExtras().toString().equals(mActiveJobParams.getExtras().toString())
                 : params.getExtras().toString()
                     + " vs " + mActiveJobParams.getExtras().toString();
