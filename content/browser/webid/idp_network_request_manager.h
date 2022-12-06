@@ -220,12 +220,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   std::unique_ptr<network::ResourceRequest> CreateUncredentialedResourceRequest(
       const GURL& target_url,
-      bool send_referrer,
+      bool send_origin,
       bool follow_redirects = false) const;
 
   std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
       const GURL& target_url,
-      bool send_referrer) const;
+      bool send_origin) const;
 
   url::Origin relying_party_origin_;
 
