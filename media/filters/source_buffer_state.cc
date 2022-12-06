@@ -726,19 +726,28 @@ bool SourceBufferState::OnNewConfigs(
       DCHECK(video_config.IsValidConfig());
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
-      // When ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is true, encrypted Dolby
-      // Vision is allowed in Media Source while clear Dolby Vision is not
-      // allowed, unless when
-      // `kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled` is
-      // specified which force allow Dolby Vision in Media Source.
-      if (!base::FeatureList::IsEnabled(
-              kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled) &&
-          video_config.codec() == VideoCodec::kDolbyVision &&
-          !video_config.is_encrypted()) {
-        MEDIA_LOG(ERROR, media_log_)
-            << "MSE playback of DolbyVision is only supported via platform "
-               "decryptor, but the provided DV track is not encrypted.";
-        return false;
+      // When ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is true, in general
+      // encrypted Dolby Vision is allowed while clear Dolby Vision is not.
+      if (video_config.codec() == VideoCodec::kDolbyVision) {
+        // If `kPlatformEncryptedDolbyVision` is disabled, encrypted Dolby
+        // Vision is also not allowed, so just return false.
+        if (!base::FeatureList::IsEnabled(kPlatformEncryptedDolbyVision)) {
+          MEDIA_LOG(ERROR, media_log_)
+              << "MSE playback of DolbyVision is not supported because "
+                 "kPlatformEncryptedDolbyVision feature is disabled.";
+          return false;
+        }
+
+        // If `kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled` is
+        // specified which force allow Dolby Vision in Media Source.
+        if (!base::FeatureList::IsEnabled(
+                kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled) &&
+            !video_config.is_encrypted()) {
+          MEDIA_LOG(ERROR, media_log_)
+              << "MSE playback of DolbyVision is only supported via platform "
+                 "decryptor, but the provided DV track is not encrypted.";
+          return false;
+        }
       }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 

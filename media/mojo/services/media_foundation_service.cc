@@ -339,9 +339,17 @@ absl::optional<CdmCapability> GetCdmCapability(
   // Query video codecs.
   for (const auto video_codec : kAllVideoCodecs) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    // Only query HEVC when the feature is enabled.
+    // Only query encrypted HEVC when the feature is enabled.
     if (video_codec == VideoCodec::kHEVC &&
         !base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+      continue;
+    }
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+    // Only query encrypted Dolby Vision when the feature is enabled.
+    if (video_codec == VideoCodec::kDolbyVision &&
+        !base::FeatureList::IsEnabled(kPlatformEncryptedDolbyVision)) {
       continue;
     }
 #endif
@@ -359,7 +367,7 @@ absl::optional<CdmCapability> GetCdmCapability(
       // lead support is fixed and the query works as expected.
       video_codec_info.supports_clear_lead = false;
 
-#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION) && BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
       // Dolby Vision on Windows only support profile 4/5/8 now.
       if (video_codec == VideoCodec::kDolbyVision) {
         video_codec_info.supported_profiles = {

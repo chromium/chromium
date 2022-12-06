@@ -576,6 +576,9 @@ class EncryptedMediaSupportedTypesWidevineHwSecureTest
  protected:
   EncryptedMediaSupportedTypesWidevineHwSecureTest() {
     EnableFeature(media::kHardwareSecureDecryption);
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+    EnableFeature(media::kPlatformEncryptedDolbyVision);
+#endif
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

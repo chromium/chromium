@@ -1071,10 +1071,20 @@ const base::FeatureParam<MediaFoundationClearRenderingStrategy>
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
-// When ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is true, encrypted Dolby Vision
-// is allowed in Media Source while clear Dolby Vision is not allowed. This
-// feature allows the support of clear Dolby Vision in Media Source, which is
-// useful to work around some JavaScript player limitations.
+// When ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is enabled at build time, allow
+// the support of encrypted Dolby Vision. Have no effect when
+// ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is disabled.
+BASE_FEATURE(kPlatformEncryptedDolbyVision,
+             "PlatformEncryptedDolbyVision",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION is enabled at build time and
+// `kPlatformEncryptedDolbyVision` is enabled at run time, encrypted Dolby
+// Vision is allowed in Media Source while clear Dolby Vision is not allowed.
+// In this case, this feature allows the support of clear Dolby Vision in Media
+// Source, which is useful to work around some JavaScript player limitations.
+// Otherwise, this feature has no effect and neither encrypted nor clear Dolby
+// Vision is allowed.
 BASE_FEATURE(kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled,
              "AllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
