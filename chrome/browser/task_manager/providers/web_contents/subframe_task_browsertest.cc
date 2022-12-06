@@ -172,7 +172,7 @@ class HungWebContentsTaskManager : public MockWebContentsTaskManager {
   Task* unresponsive_task() { return unresponsive_task_; }
 
  private:
-  raw_ptr<Task> unresponsive_task_;
+  raw_ptr<Task, DanglingUntriaged> unresponsive_task_;
 };
 
 // If sites are isolated, makes sure that subframe tasks can react to

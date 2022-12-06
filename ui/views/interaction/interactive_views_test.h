@@ -281,7 +281,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // Creates the follow-up step for a mouse action.
   StepBuilder CreateMouseFollowUpStep();
 
-  base::raw_ptr<Widget> context_widget_ = nullptr;
+  base::raw_ptr<Widget, DanglingUntriaged> context_widget_ = nullptr;
 };
 
 // Test fixture for Views tests that supports the InteractiveViewsTestApi

@@ -269,7 +269,7 @@ void DirectFromSellerSignalsRequester::OnSignalsDownloaded(
   auto it = coalesced_downloads_.find(signals_url);
   DCHECK(it != coalesced_downloads_.end());
   DCHECK_EQ(signals_url, it->second.downloader->source_url());
-  std::list<raw_ptr<Request>> requests;
+  std::list<raw_ptr<Request, DanglingUntriaged>> requests;
   std::swap(requests, it->second.requests);
   coalesced_downloads_.erase(it);
 

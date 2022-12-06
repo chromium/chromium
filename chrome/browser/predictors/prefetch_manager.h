@@ -137,7 +137,7 @@ class PrefetchManager {
   // across all main frame URLs.
   size_t inflight_jobs_count_ = 0;
 
-  raw_ptr<Observer> observer_for_testing_ = nullptr;
+  raw_ptr<Observer, DanglingUntriaged> observer_for_testing_ = nullptr;
 
   base::WeakPtrFactory<PrefetchManager> weak_factory_{this};
 };

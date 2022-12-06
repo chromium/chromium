@@ -65,8 +65,9 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
 
   std::unique_ptr<Wrapper> wrapper_;
 
-  const raw_ptr<Browser> browser_;
-  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  const raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<ExtensionsToolbarContainer, DanglingUntriaged> extensions_container_ =
+      nullptr;
 
   // Helps make sure that |menu_view_| set to null when destroyed by the widget
   // or via manual means.

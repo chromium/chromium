@@ -103,11 +103,11 @@ class LowLevelPolicy {
 
  private:
   struct RuleNode {
-    raw_ptr<const PolicyRule> rule;
+    raw_ptr<const PolicyRule, DanglingUntriaged> rule;
     IpcTag service;
   };
   std::list<RuleNode> rules_;
-  raw_ptr<PolicyGlobal> policy_store_;
+  raw_ptr<PolicyGlobal, DanglingUntriaged> policy_store_;
 };
 
 // There are 'if' rules and 'if not' comparisons

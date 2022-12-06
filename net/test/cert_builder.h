@@ -376,7 +376,7 @@ class CertBuilder {
   bssl::UniquePtr<CRYPTO_BUFFER> cert_;
   bssl::UniquePtr<EVP_PKEY> key_;
 
-  raw_ptr<CertBuilder> issuer_ = nullptr;
+  raw_ptr<CertBuilder, DanglingUntriaged> issuer_ = nullptr;
 };
 
 }  // namespace net

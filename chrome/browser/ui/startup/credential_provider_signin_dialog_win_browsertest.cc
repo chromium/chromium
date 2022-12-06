@@ -54,8 +54,8 @@ class CredentialProviderSigninDialogWinBaseTest : public InProcessBrowserTest {
   content::WebContents* web_contents() { return web_contents_; }
   virtual void WaitForDialogToLoad();
 
-  raw_ptr<views::WebDialogView> web_view_ = nullptr;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<views::WebDialogView, DanglingUntriaged> web_view_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 };
 
 CredentialProviderSigninDialogWinBaseTest::

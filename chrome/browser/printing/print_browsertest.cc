@@ -387,7 +387,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   uint32_t rendered_page_count_ = 0;
 
   const bool wait_for_loaded_;
-  raw_ptr<content::WebContents> preview_dialog_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> preview_dialog_ = nullptr;
   base::RunLoop* run_loop_ = nullptr;
 };
 

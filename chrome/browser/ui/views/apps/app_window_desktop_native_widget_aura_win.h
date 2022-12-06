@@ -37,7 +37,7 @@ class AppWindowDesktopNativeWidgetAuraWin
 
  private:
   // Ownership managed by the views system.
-  raw_ptr<ChromeNativeAppWindowViewsWin> app_window_;
+  raw_ptr<ChromeNativeAppWindowViewsWin, DanglingUntriaged> app_window_;
 
   // Owned by superclass DesktopNativeWidgetAura.
   raw_ptr<views::DesktopWindowTreeHost, DanglingUntriaged> tree_host_;

@@ -154,7 +154,8 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
     void RunCallbackSync(Result result);
     void RunCallbackAsync(Result result);
 
-    void set_coalesce_iterator(std::list<raw_ptr<Request>>::iterator it) {
+    void set_coalesce_iterator(
+        std::list<raw_ptr<Request, DanglingUntriaged>>::iterator it) {
       DCHECK_EQ(*it, this);
       maybe_coalesce_iterator_ = it;
     }
@@ -173,7 +174,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
     // NOTE: This can be nullopt if serving from cache, or if the download
     // already completed -- it will have a value when there is still an
     // outstanding request for `signals_url_`.
-    absl::optional<std::list<raw_ptr<Request>>::iterator>
+    absl::optional<std::list<raw_ptr<Request, DanglingUntriaged>>::iterator>
         maybe_coalesce_iterator_;
 
     // Must appear after all other members.
@@ -221,7 +222,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
     //
     // This guarantees that none of these raw pointers ever point to destroyed
     // Requests.
-    std::list<raw_ptr<Request>> requests;
+    std::list<raw_ptr<Request, DanglingUntriaged>> requests;
   };
 
   // Called only when the AuctionDownloader loads new signals.

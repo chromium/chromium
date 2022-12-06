@@ -407,7 +407,8 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   // through the dialog.
   mutable HandleGcpwSigninCompleteResult signin_callback_;
 
-  mutable raw_ptr<CredentialProviderWebUIMessageHandler> handler_ = nullptr;
+  mutable raw_ptr<CredentialProviderWebUIMessageHandler, DanglingUntriaged>
+      handler_ = nullptr;
 };
 
 bool ValidateSigninCompleteResult(const std::string& access_token,

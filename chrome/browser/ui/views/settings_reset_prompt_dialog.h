@@ -42,7 +42,8 @@ class SettingsResetPromptDialog : public views::DialogDelegateView {
 
  private:
   const raw_ptr<Browser> browser_;
-  raw_ptr<safe_browsing::SettingsResetPromptController> controller_;
+  raw_ptr<safe_browsing::SettingsResetPromptController, DanglingUntriaged>
+      controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SETTINGS_RESET_PROMPT_DIALOG_H_

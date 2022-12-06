@@ -344,7 +344,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   raw_ptr<TextInputClient> text_input_client_ = nullptr;
 
   // ImeKeyEventDispatcher instance which is used dispatch key events.
-  raw_ptr<ImeKeyEventDispatcher> ime_key_event_dispatcher_ = nullptr;
+  raw_ptr<ImeKeyEventDispatcher, DanglingUntriaged> ime_key_event_dispatcher_ =
+      nullptr;
 
   //  |string_buffer_document_| contains all string in current active view.
   //  |string_pending_insertion_| contains only string in current edit session.

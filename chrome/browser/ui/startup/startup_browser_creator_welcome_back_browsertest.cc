@@ -80,7 +80,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(browser_creator_.Start(
         base::CommandLine(base::CommandLine::NO_PROGRAM), base::FilePath(),
-        {profile_, StartupProfileMode::kBrowserWindow},
+        {raw_ptr(profile_.get()), StartupProfileMode::kBrowserWindow},
         g_browser_process->profile_manager()->GetLastOpenedProfiles()));
     ASSERT_EQ(1U, BrowserList::GetInstance()->size());
   }
@@ -97,7 +97,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> scoped_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> scoped_profile_keep_alive_;
   StartupBrowserCreator browser_creator_;

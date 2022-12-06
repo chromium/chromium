@@ -235,7 +235,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
 
   // The global PrintJobManager. May be null in testing contexts
   // only. Otherwise guaranteed to outlive this object.
-  raw_ptr<PrintJobManager> print_job_manager_ = nullptr;
+  raw_ptr<PrintJobManager, DanglingUntriaged> print_job_manager_ = nullptr;
 
   // The printed document.
   scoped_refptr<PrintedDocument> document_;

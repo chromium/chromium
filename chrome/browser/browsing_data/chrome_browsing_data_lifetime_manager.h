@@ -101,7 +101,7 @@ class ChromeBrowsingDataLifetimeManager : public KeyedService {
   std::vector<ScheduledRemovalSettings> scheduled_removals_settings_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<Profile> profile_;
-  raw_ptr<content::BrowsingDataRemover::Observer>
+  raw_ptr<content::BrowsingDataRemover::Observer, DanglingUntriaged>
       testing_data_remover_observer_ = nullptr;
   absl::optional<base::Time> end_time_for_testing_;
   base::WeakPtrFactory<ChromeBrowsingDataLifetimeManager> weak_ptr_factory_{

@@ -105,7 +105,7 @@ class MoveLoopMouseWatcher {
   void Unhook();
 
   // HWNDMessageHandler that created us.
-  raw_ptr<HWNDMessageHandler> host_;
+  raw_ptr<HWNDMessageHandler, DanglingUntriaged> host_;
 
   // Should the window be hidden when escape is pressed?
   const bool hide_on_escape_;

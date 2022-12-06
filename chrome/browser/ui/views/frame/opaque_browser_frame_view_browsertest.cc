@@ -401,8 +401,9 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     std::ignore = title_watcher.WaitAndGetTitle();
   }
 
-  raw_ptr<BrowserView> browser_view_ = nullptr;
-  raw_ptr<OpaqueBrowserFrameView> opaque_browser_frame_view_ = nullptr;
+  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
+  raw_ptr<OpaqueBrowserFrameView, DanglingUntriaged>
+      opaque_browser_frame_view_ = nullptr;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
  private:

@@ -168,7 +168,7 @@ class HighEfficiencyChipInteractiveTest : public InteractiveBrowserTest {
   resource_coordinator::ScopedSetTickClockForTesting
       scoped_set_tick_clock_for_testing_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<TabStripModel> tab_strip_model_;
+  raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_model_;
   GURL test_url_;
   std::unique_ptr<WebContentsInteractionTestUtil> util_;
 };
