@@ -3387,12 +3387,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NTP_MANAGE_FEED" desc="Menu item to manage feed settings from the feed header overflow menu.">
         Manage
       </message>
-      <message name="IDS_CORMORANT_CREATOR_OFFLINE_ERROR_TITLE" desc="Creator page error title when the user is offline.">
-        You're offline
-      </message>
-      <message name="IDS_CORMORANT_CREATOR_OFFLINE_ERROR_DESCRIPTION" desc="Creator page error description when the user is offline.">
-        Check your internet connection and try again
-      </message>
       <message name="IDS_CORMORANT_CREATOR_CONTENT_UNAVAILABLE_ERROR_TITLE" desc="Creator page error title when the creator has no content available.">
         Nothing to show yet
       </message>

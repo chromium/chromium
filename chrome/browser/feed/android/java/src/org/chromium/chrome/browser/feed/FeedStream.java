@@ -1145,11 +1145,8 @@ public class FeedStream implements Stream {
         }
         if (mStreamKind == StreamKind.SINGLE_WEB_FEED) {
             View creatorErrorCard;
+            // TODO(crbug/1396161): Add offline error scenario.
             if (slice.getZeroStateSlice().getType()
-                    == FeedUiProto.ZeroStateSlice.Type.CANT_REFRESH) {
-                creatorErrorCard = LayoutInflater.from(mActivity).inflate(
-                        R.layout.creator_offline_error, mRecyclerView, false);
-            } else if (slice.getZeroStateSlice().getType()
                     == FeedUiProto.ZeroStateSlice.Type.NO_CARDS_AVAILABLE) {
                 creatorErrorCard = LayoutInflater.from(mActivity).inflate(
                         R.layout.creator_content_unavailable_error, mRecyclerView, false);
