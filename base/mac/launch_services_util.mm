@@ -60,16 +60,11 @@ void OpenApplication(const base::FilePath& app_bundle_path,
                      const std::vector<std::string>& url_specs,
                      OpenApplicationOptions options,
                      ApplicationOpenedCallback callback) {
-  __block ApplicationOpenedCallback callback_block_access = std::move(callback);
-
   NSURL* bundle_url = FilePathToNSURL(app_bundle_path);
   if (!bundle_url) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      std::move(callback_block_access)
-          .Run(nil, [NSError errorWithDomain:NSCocoaErrorDomain
-                                        code:NSFileNoSuchFileError
-                                    userInfo:nil]);
-    });
+    std::move(callback).Run(nil, [NSError errorWithDomain:NSCocoaErrorDomain
+                                                     code:NSFileNoSuchFileError
+                                                 userInfo:nil]);
     return;
   }
 
@@ -83,6 +78,9 @@ void OpenApplication(const base::FilePath& app_bundle_path,
   }
 
   if (@available(macOS 10.15, *)) {
+    __block ApplicationOpenedCallback callback_block_access =
+        std::move(callback);
+
     void (^action_block)(NSRunningApplication*, NSError*) =
         ^void(NSRunningApplication* app, NSError* error) {
           dispatch_async(dispatch_get_main_queue(), ^{
@@ -131,9 +129,7 @@ void OpenApplication(const base::FilePath& app_bundle_path,
       LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
     }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-      std::move(callback_block_access).Run(app, error);
-    });
+    std::move(callback).Run(app, error);
   }
 }
 
