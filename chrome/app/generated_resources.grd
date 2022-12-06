@@ -2799,6 +2799,18 @@ are declared in tools/grit/grit_rule.gni.
             </message>
           </if>
       </if>
+      <if expr="not use_titlecase">
+          <message name="IDS_DOWNLOAD_BUBBLE_BACK_RECENT_DOWNLOADS"
+            desc="Accessibility/tooltip label for returning to recent downloads">
+            Back to recent downloads
+          </message>
+        </if>
+        <if expr="use_titlecase">
+          <message name="IDS_DOWNLOAD_BUBBLE_BACK_RECENT_DOWNLOADS"
+            desc="In Title Case: Accessibility/tooltip label for returning to recent downloads">
+            Back to Recent Downloads
+          </message>
+        </if>
 
       <!-- Tailored Warning in Download Bubble -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT"
