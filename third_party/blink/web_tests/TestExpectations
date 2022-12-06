@@ -6995,6 +6995,7 @@ crbug.com/1183990 http/tests/devtools/sources/debugger-ui/scripts-with-same-sour
 
 # Interop PE 2022-2023 investigation
 crbug.com/269917 external/wpt/uievents/mouse/cancel-mousedown-in-subframe.html [ Timeout ]
+crbug.com/346473 external/wpt/uievents/mouse/mousemove_prevent_default_action.tentative.html [ Failure ]
 
 # Sheriff 2022-01-17
 crbug.com/1233938 http/tests/notifications/click-shared-worker.html [ Pass Timeout ]
