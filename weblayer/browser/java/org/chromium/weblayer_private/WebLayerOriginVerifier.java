@@ -9,13 +9,16 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.components.digital_asset_links.OriginVerifier;
 import org.chromium.components.digital_asset_links.Relationship;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * WebLayerOriginVerifier performs OriginVerifications for Weblayer.
@@ -24,7 +27,11 @@ import java.util.List;
 public class WebLayerOriginVerifier extends OriginVerifier {
     private static final String METADATA_SKIP_ORIGIN_VERIFICATION_KEY =
             "org.chromium.weblayer.skipOriginVerification";
+    private static final String METADATA_STRICT_LOCALHOST_VERIFICATION_KEY =
+            "org.chromium.weblayer.strictLocalhostVerification";
     private final boolean mSkipOriginVerification = getSkipOriginVerificationFromManifest();
+    private final boolean mStrictLocalhostVerification =
+            getStrictLocalhostVerificationFromManifest();
 
     /**
      * Main constructor.
@@ -42,6 +49,12 @@ public class WebLayerOriginVerifier extends OriginVerifier {
 
     @Override
     public boolean isAllowlisted(String packageName, Origin origin, String relation) {
+        String host = origin.uri().getHost();
+
+        if (UrlConstants.LOCALHOST.equals(host.toLowerCase(Locale.US))) {
+            return !mStrictLocalhostVerification;
+        }
+
         return false;
     }
 
@@ -83,6 +96,22 @@ public class WebLayerOriginVerifier extends OriginVerifier {
                                       .metaData;
             if (metaData != null) {
                 return metaData.getBoolean(METADATA_SKIP_ORIGIN_VERIFICATION_KEY);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        return false;
+    }
+
+    @VisibleForTesting
+    boolean getStrictLocalhostVerificationFromManifest() {
+        try {
+            Context context = ContextUtils.getApplicationContext();
+            Bundle metaData = context.getPackageManager()
+                                      .getApplicationInfo(context.getPackageName(),
+                                              PackageManager.GET_META_DATA)
+                                      .metaData;
+            if (metaData != null) {
+                return metaData.getBoolean(METADATA_STRICT_LOCALHOST_VERIFICATION_KEY);
             }
         } catch (PackageManager.NameNotFoundException e) {
         }

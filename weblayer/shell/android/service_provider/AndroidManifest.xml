@@ -27,6 +27,7 @@ found in the LICENSE file.
         </service>
 
       <meta-data android:name="org.chromium.weblayer.skipOriginVerification" android:value="false" />
+      <meta-data android:name="org.chromium.weblayer.strictLocalhostVerification" android:value="true" />
 
       <!-- TODO(rayankans): Make this a template. -->
       <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
