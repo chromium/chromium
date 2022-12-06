@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
 import java.io.Serializable;
@@ -29,4 +30,12 @@ public interface WebsiteEntry extends Serializable {
      * search query.
      */
     boolean matches(String search);
+
+    /**
+     * Some Google-affiliated domains are not allowed to delete cookies for supervised accounts.
+     * If the entry represents a single {@link Website}, just that origin is checked.
+     * If the entry is a {@link WebsiteGroup}, checked if this holds for EVERY {@link Website} in
+     * the group.
+     */
+    boolean isCookieDeletionDisabled(BrowserContextHandle browserContextHandle);
 }

@@ -4,17 +4,26 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -27,6 +36,15 @@ import java.util.List;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class WebsiteGroupTest {
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Mock
+    private WebsitePreferenceBridge.Natives mBridgeMock;
+
+    @Mock
+    private BrowserContextHandle mContextHandleMock;
+
     private WebsiteEntry getEntryWithTitle(List<WebsiteEntry> entries, String title) {
         for (WebsiteEntry entry : entries) {
             if (entry.getTitleForPreferenceRow().equals(title)) return entry;
@@ -35,9 +53,15 @@ public class WebsiteGroupTest {
     }
 
     @BeforeClass
-    public static void setUp() {
+    public static void setupSuite() {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
         LibraryLoader.getInstance().ensureInitialized();
+    }
+
+    @Before
+    public void setupTest() {
+        MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mBridgeMock);
     }
 
     @Test
@@ -124,5 +148,33 @@ public class WebsiteGroupTest {
                 new ArrayList<>(Arrays.asList(origin1, origin2, origin3)));
 
         Assert.assertEquals(fpsInfo, group.getFPSInfo());
+    }
+
+    @Test
+    @SmallTest
+    public void testCookieDeletionDisabled() {
+        String origin1 = "https://google.com";
+        String origin2 = "http://maps.google.com";
+        Website site1 = new Website(WebsiteAddress.create(origin1), null);
+        Website site2 = new Website(WebsiteAddress.create(origin2), null);
+        when(mBridgeMock.isCookieDeletionDisabled(eq(mContextHandleMock), eq(origin1)))
+                .thenReturn(false);
+        when(mBridgeMock.isCookieDeletionDisabled(eq(mContextHandleMock), eq(origin2)))
+                .thenReturn(true);
+        // Individual sites should just return the same thing the bridge does.
+        Assert.assertFalse(site1.isCookieDeletionDisabled(mContextHandleMock));
+        Assert.assertTrue(site2.isCookieDeletionDisabled(mContextHandleMock));
+        // This group consists entirely of sites with cookie deletion being possible.
+        WebsiteGroup group1 = new WebsiteGroup(
+                site1.getAddress().getDomainAndRegistry(), new ArrayList<>(Arrays.asList(site1)));
+        Assert.assertFalse(group1.isCookieDeletionDisabled(mContextHandleMock));
+        // This group consists entirely of sites with cookie deletion disabled.
+        WebsiteGroup group2 = new WebsiteGroup(
+                site2.getAddress().getDomainAndRegistry(), new ArrayList<>(Arrays.asList(site2)));
+        Assert.assertTrue(group2.isCookieDeletionDisabled(mContextHandleMock));
+        // This one has at least one, for which deletion is possible.
+        WebsiteGroup group3 = new WebsiteGroup(site1.getAddress().getDomainAndRegistry(),
+                new ArrayList<>(Arrays.asList(site1, site2)));
+        Assert.assertFalse(group3.isCookieDeletionDisabled(mContextHandleMock));
     }
 }

@@ -364,4 +364,10 @@ public final class Website implements WebsiteEntry {
     public boolean matches(String search) {
         return getTitle().contains(search);
     }
+
+    @Override
+    public boolean isCookieDeletionDisabled(BrowserContextHandle browserContextHandle) {
+        return WebsitePreferenceBridge.isCookieDeletionDisabled(
+                browserContextHandle, mOrigin.getOrigin());
+    }
 }

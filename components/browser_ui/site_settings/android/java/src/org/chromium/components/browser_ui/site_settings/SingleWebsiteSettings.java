@@ -539,9 +539,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                         Formatter.formatShortFileSize(context, usage)));
             }
             preference.setDataForDisplay(mSite.getTitle(), appFound);
-            if (WebsitePreferenceBridge.isCookieDeletionDisabled(
-                        getSiteSettingsDelegate().getBrowserContextHandle(),
-                        mSite.getAddress().getOrigin())) {
+            if (mSite.isCookieDeletionDisabled(
+                        getSiteSettingsDelegate().getBrowserContextHandle())) {
                 preference.setEnabled(false);
             }
         } else {
@@ -562,9 +561,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         preference.setTitle(titleResId);
         preference.setOrder(mMaxPermissionOrder + 1);
         preference.setOnPreferenceClickListener(this);
-        if (WebsitePreferenceBridge.isCookieDeletionDisabled(
-                    getSiteSettingsDelegate().getBrowserContextHandle(),
-                    mSite.getAddress().getOrigin())) {
+        if (mSite.isCookieDeletionDisabled(getSiteSettingsDelegate().getBrowserContextHandle())) {
             preference.setEnabled(false);
         }
     }

@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -115,6 +116,22 @@ public class WebsiteGroup implements WebsiteEntry {
         }
         // No matches.
         return false;
+    }
+
+    /**
+     * Some Google-affiliated domains are not allowed to delete cookies for supervised accounts.
+     * @return true only if every single website in the group has the deletion disabled.
+     */
+    @Override
+    public boolean isCookieDeletionDisabled(BrowserContextHandle browserContextHandle) {
+        if (mWebsites.isEmpty()) return false;
+        for (Website site : mWebsites) {
+            if (!site.isCookieDeletionDisabled(browserContextHandle)) {
+                // At least one website is deletable, so the whole group is.
+                return false;
+            }
+        }
+        return true;
     }
 
     public FPSCookieInfo getFPSInfo() {

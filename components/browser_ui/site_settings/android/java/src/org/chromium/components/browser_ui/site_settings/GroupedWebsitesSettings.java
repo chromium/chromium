@@ -64,7 +64,7 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
                         getContext().getString(R.string.domain_settings_sites_in_group,
                                 mSiteGroup.getDomainAndRegistry())));
         setUpClearDataPreference();
-        setupRelatedSitesPreferences();
+        setUpRelatedSitesPreferences();
         updateSitesInGroup();
     }
 
@@ -86,13 +86,15 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
                     preference.getContext(), storage, cookies));
             // TODO(crbug.com/1342991): Get clearingApps information from underlying sites.
             preference.setDataForDisplay(mSiteGroup.getDomainAndRegistry(), /*clearingApps=*/false);
-            // TODO(crbug.com/1342991): Disable the preference if all underlying origins have
-            // cookie deletion disabled.
+            if (mSiteGroup.isCookieDeletionDisabled(
+                        getSiteSettingsDelegate().getBrowserContextHandle())) {
+                preference.setEnabled(false);
+            }
         } else {
             getPreferenceScreen().removePreference(preference);
         }
     }
-    private void setupRelatedSitesPreferences() {
+    private void setUpRelatedSitesPreferences() {
         var relatedSitesHeader = findPreference(PREF_RELATED_SITES_HEADER);
         TextMessagePreference relatedSitesText = findPreference(PREF_RELATED_SITES);
         boolean shouldRelatedSitesPrefBeVisible =
