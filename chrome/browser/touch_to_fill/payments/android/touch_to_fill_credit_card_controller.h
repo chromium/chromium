@@ -45,11 +45,9 @@ class TouchToFillCreditCardController
   void Hide();
 
   // TouchToFillCreditCardViewController:
-  // Called whenever the surface gets hidden (regardless of the cause).
   void OnDismissed(JNIEnv* env) override;
-  // Calls credit card scanner
   void ScanCreditCard(JNIEnv* env) override;
-  // Called whenever a card gets selected.
+  void ShowCreditCardSettings(JNIEnv* env) override;
   void SuggestionSelected(
       JNIEnv* env,
       base::android::JavaParamRef<jstring> unique_id) override;

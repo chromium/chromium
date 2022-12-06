@@ -25,7 +25,6 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 
 import static java.util.Arrays.asList;
 
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +35,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -62,33 +60,29 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillCreditCardViewTest {
-    private BottomSheetController mBottomSheetController;
-    private BottomSheetTestSupport mSheetSupport;
-    private TouchToFillCreditCardCoordinator mCoordinator;
-
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    @Mock
-    private TouchToFillCreditCardComponent.Delegate mDelegateMock;
     private static final CreditCard VISA =
             createLocalCreditCard("Visa", "4111111111111111", "5", "2050");
     private static final CreditCard MASTER_CARD =
             createLocalCreditCard("MasterCard", "5555555555554444", "8", "2050");
 
-    private TouchToFillCreditCardView mTouchToFillCreditCardView;
-    private View mContentView;
-    private PropertyModel mTouchToFillCreditCardModel;
-
-    @Mock
-    private Callback<Integer> mDismissCallback;
-
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Mock
+    private TouchToFillCreditCardComponent.Delegate mDelegateMock;
+    @Mock
+    private Callback<Integer> mDismissCallback;
+
+    private BottomSheetController mBottomSheetController;
+    private BottomSheetTestSupport mSheetSupport;
+    private TouchToFillCreditCardCoordinator mCoordinator;
+    private TouchToFillCreditCardView mTouchToFillCreditCardView;
+    private PropertyModel mTouchToFillCreditCardModel;
+
     @Before
     public void setupTest() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
@@ -106,7 +100,6 @@ public class TouchToFillCreditCardViewTest {
                             .build();
             mTouchToFillCreditCardView = new TouchToFillCreditCardView(
                     mActivityTestRule.getActivity(), mBottomSheetController);
-            mContentView = mTouchToFillCreditCardView.getContentView();
             PropertyModelChangeProcessor.create(mTouchToFillCreditCardModel,
                     mTouchToFillCreditCardView,
                     TouchToFillCreditCardViewBinder::bindTouchToFillCreditCardView);
@@ -175,6 +168,19 @@ public class TouchToFillCreditCardViewTest {
         onView(withId(R.id.scan_new_card)).perform(click());
 
         verify(mDelegateMock).scanCreditCard();
+    }
+
+    @Test
+    @MediumTest
+    public void testManagePaymentMethodsClick() {
+        runOnUiThreadBlocking(
+                () -> mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        runOnUiThreadBlocking(() -> mSheetSupport.setSheetState(SheetState.FULL, false));
+
+        onView(withId(R.id.manage_payment_methods)).perform(click());
+
+        verify(mDelegateMock).showCreditCardSettings();
     }
 
     private RecyclerView getCreditCards() {

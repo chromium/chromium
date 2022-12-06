@@ -116,6 +116,11 @@ void TouchToFillDelegateImpl::OnCreditCardScanned(const CreditCard& card) {
                                    std::u16string(), query_id_);
 }
 
+void TouchToFillDelegateImpl::ShowCreditCardSettings() {
+  HideTouchToFill();
+  manager_->client()->ShowAutofillSettings(/*show_credit_card_settings=*/true);
+}
+
 void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
   HideTouchToFill();
   // TODO(crbug/1247698): Authenticate before using server cards.

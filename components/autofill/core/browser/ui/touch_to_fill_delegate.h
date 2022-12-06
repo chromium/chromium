@@ -24,6 +24,7 @@ class TouchToFillDelegate {
   virtual bool ShouldShowScanCreditCard() = 0;
   virtual void ScanCreditCard() = 0;
   virtual void OnCreditCardScanned(const CreditCard& card) = 0;
+  virtual void ShowCreditCardSettings() = 0;
   virtual void SuggestionSelected(std::string unique_id) = 0;
 };
 

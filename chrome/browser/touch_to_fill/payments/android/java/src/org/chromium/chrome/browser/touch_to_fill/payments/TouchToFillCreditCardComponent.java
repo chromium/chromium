@@ -29,6 +29,11 @@ interface TouchToFillCreditCardComponent {
         void scanCreditCard();
 
         /**
+         * Causes navigation to the payment methods settings page.
+         */
+        void showCreditCardSettings();
+
+        /**
          * Called when the user selects a card.
          * @param uniqueId A backend id of the card.
          */

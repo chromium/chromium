@@ -771,5 +771,11 @@
       Add card
     </message>
   </if>
+  <!-- Touch to fill bottom sheet -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS" desc="An option in the autofill bottom sheet that triggers navigation to the payment settings." formatter_data="android_java">
+      Manage payment methods
+    </message>
+  </if>
 
 </grit-part>
