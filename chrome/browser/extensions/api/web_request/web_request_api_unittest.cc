@@ -171,8 +171,9 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
   // Now remove the listeners one at a time, verifying the counts after each
   // removal.
   ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListener(
-      ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove, &profile_,
-      ext_id, kSubEventName1, extensions::kMainThreadId,
+      ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove,
+      ExtensionWebRequestEventRouter::GetBrowserContextID(&profile_), ext_id,
+      kSubEventName1, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
   EXPECT_EQ(
       1u,
@@ -180,8 +181,9 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
           &profile_, kEventName));
 
   ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListener(
-      ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove, &profile_,
-      ext_id, kSubEventName2, extensions::kMainThreadId,
+      ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove,
+      ExtensionWebRequestEventRouter::GetBrowserContextID(&profile_), ext_id,
+      kSubEventName2, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
   EXPECT_EQ(
       0u,

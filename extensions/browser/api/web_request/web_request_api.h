@@ -301,6 +301,11 @@ class ExtensionWebRequestEventRouter {
  public:
   struct BlockedRequest;
 
+  // Identifier for a `BrowserContext` to scope the lifetime for references.
+  // `BrowserContextID` is derived from `BrowserContext*`, used in comparison
+  // only, and are never deferenced.
+  using BrowserContextID = std::uintptr_t;
+
   // The events denoting the lifecycle of a given network request.
   enum EventTypes {
     kInvalidEvent = 0,
@@ -628,7 +633,7 @@ class ExtensionWebRequestEventRouter {
     raw_ptr<content::BrowserContext> cross_context = nullptr;
   };
 
-  using DataMap = std::map<content::BrowserContext*, BrowserContextData>;
+  using DataMap = std::map<BrowserContextID, BrowserContextData>;
   using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
   // Map of request_id -> bit vector of EventTypes already signaled
   using SignaledRequestMap = std::map<uint64_t, int>;
@@ -667,7 +672,7 @@ class ExtensionWebRequestEventRouter {
   // `update_type` indicates whether the listener is fully removed or if it's
   // a lazy listener that had its context shut down.
   void UpdateActiveListener(ListenerUpdateType update_type,
-                            content::BrowserContext* browser_context,
+                            BrowserContextID browser_context_id,
                             const ExtensionId& extension_id,
                             const std::string& sub_event_name,
                             int worker_thread_id,
@@ -688,7 +693,7 @@ class ExtensionWebRequestEventRouter {
       const std::string& sub_event_name,
       absl::optional<int> worker_thread_id,
       absl::optional<int64_t> service_worker_version_id,
-      content::BrowserContext* browser_context);
+      BrowserContextID browser_context_id);
 
   // Cleans up for a listener being removed, unblocking any requests and
   // updating counts as appropriate.
@@ -737,6 +742,9 @@ class ExtensionWebRequestEventRouter {
       bool crosses_incognito,
       RawListeners* listeners_out,
       int* extra_info_spec_out);
+
+  static BrowserContextID GetBrowserContextID(
+      const content::BrowserContext* browser_context);
 
   // Decrements the count of event handlers blocking the given request. When the
   // count reaches 0, we stop blocking the request and proceed it using the
