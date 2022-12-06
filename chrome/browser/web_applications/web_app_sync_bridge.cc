@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -703,8 +704,12 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
       uninstall_from_sync_before_registry_update_callback_for_testing_.Run(
           apps_to_delete, callback);
     } else {
-      command_manager_->NotifySyncSourceRemoved(apps_to_delete);
-      install_delegate_->UninstallFromSync(apps_to_delete, callback);
+      for (const AppId& app_id : apps_to_delete) {
+        command_scheduler_->Uninstall(app_id,
+                                      /*external_install_source=*/absl::nullopt,
+                                      webapps::WebappUninstallSource::kSync,
+                                      base::BindOnce(callback, app_id));
+      }
     }
   }
 

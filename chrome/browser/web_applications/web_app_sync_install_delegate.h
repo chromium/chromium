@@ -34,17 +34,6 @@ class SyncInstallDelegate {
   // |web_apps| are already registered and owned by the registrar.
   virtual void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
                                        RepeatingInstallCallback callback) = 0;
-
-  // Sync-initiated uninstall.
-  // Called before the web apps are removed from the registry by sync. This:
-  // * Begins process of uninstalling OS hooks, which initially requires the
-  //   registrar to still contain the web app data.
-  // * Notifies observers of WebAppWillBeUninstalled.
-  // After the app data is fully deleted & os hooks uninstalled:
-  // * Notifies observers of WebAppUninstalled.
-  // * `callback` is called.
-  virtual void UninstallFromSync(const std::vector<AppId>& web_apps,
-                                 RepeatingUninstallCallback callback) = 0;
 };
 
 }  // namespace web_app
