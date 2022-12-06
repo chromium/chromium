@@ -3017,8 +3017,6 @@ source_set("browser") {
       "speech/tts_android.h",
       "speech/tts_environment_android_impl.cc",
       "speech/tts_environment_android_impl.h",
-      "tracing/background_reached_code_tracing_observer_android.cc",
-      "tracing/background_reached_code_tracing_observer_android.h",
       "web_contents/view_structure_builder_android.cc",
       "web_contents/view_structure_builder_android.h",
       "web_contents/web_contents_android.cc",
