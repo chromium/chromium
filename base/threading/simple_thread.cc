@@ -4,6 +4,8 @@
 
 #include "base/threading/simple_thread.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
