@@ -62,6 +62,10 @@ COMPONENT_EXPORT(AX_PLATFORM)
 - (instancetype)initWithNode:(ui::AXPlatformNodeBase*)node;
 - (void)detach;
 
+// Returns this node's internal role, i.e. the one that is stored in
+// the internal accessibility tree as opposed to the platform tree.
+- (ax::mojom::Role)internalRole;
+
 @property(nonatomic, readonly) NSRect boundsInScreen;
 @property(nonatomic, readonly) ui::AXPlatformNodeBase* node;
 @property(nonatomic, readonly) ui::AXPlatformNodeDelegate* nodeDelegate;

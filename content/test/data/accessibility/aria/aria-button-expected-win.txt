@@ -18,6 +18,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0><obj1><obj2><obj3><
 ++ROLE_SYSTEM_BUTTONMENU name='Example haspopup' HASPOPUP xml-roles:button haspopup:listbox ia2_hypertext='Example haspopup'
 ++ROLE_SYSTEM_BUTTONMENU name='Example haspopup' HASPOPUP xml-roles:button haspopup:tree ia2_hypertext='Example haspopup'
 ++ROLE_SYSTEM_BUTTONMENU name='Example haspopup' HASPOPUP xml-roles:button haspopup:grid ia2_hypertext='Example haspopup'
-++ROLE_SYSTEM_BUTTONMENU name='Example haspopup' HASPOPUP xml-roles:button haspopup:dialog ia2_hypertext='Example haspopup'
+++ROLE_SYSTEM_PUSHBUTTON name='Example haspopup' HASPOPUP xml-roles:button haspopup:dialog ia2_hypertext='Example haspopup'
 ++ROLE_SYSTEM_PUSHBUTTON name='Example haspopup' xml-roles:button ia2_hypertext='Example haspopup'
 ++ROLE_SYSTEM_PUSHBUTTON name='Example haspopup' xml-roles:button ia2_hypertext='Example haspopup'

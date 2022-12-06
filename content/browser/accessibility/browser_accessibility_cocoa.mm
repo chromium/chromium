@@ -1035,14 +1035,6 @@ bool content::IsNSRange(id value) {
   return [NSValue valueWithPoint:pointInScreen];
 }
 
-// Returns an enum indicating the role from owner_.
-// internal
-- (ax::mojom::Role)internalRole {
-  if ([self instanceActive])
-    return static_cast<ax::mojom::Role>(_owner->GetRole());
-  return ax::mojom::Role::kNone;
-}
-
 - (content::BrowserAccessibility*)owner {
   return _owner;
 }

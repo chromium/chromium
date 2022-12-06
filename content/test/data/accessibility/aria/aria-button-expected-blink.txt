@@ -46,7 +46,7 @@ rootWebArea
 ++++++popUpButton name='Example haspopup' haspopup=grid
 ++++++++staticText name='Example haspopup'
 ++++++++++inlineTextBox name='Example haspopup'
-++++++popUpButton name='Example haspopup' haspopup=dialog
+++++++button name='Example haspopup' haspopup=dialog
 ++++++++staticText name='Example haspopup'
 ++++++++++inlineTextBox name='Example haspopup'
 ++++++button name='Example haspopup'

@@ -82,10 +82,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // Invalidate children for a non-ignored ancestor (including self).
 - (void)childrenChanged;
 
-// Convenience method to get the internal, cross-platform role
-// from browserAccessibility_.
-- (ax::mojom::Role)internalRole;
-
 // Get the BrowserAccessibility that this object wraps.
 - (content::BrowserAccessibility*)owner;
 

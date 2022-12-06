@@ -1155,10 +1155,8 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     }
   }
 
-  // For pop up buttons, we want to return more specific roles based on various
-  // values of the kHasPopup attribute.
-  if (GetRole() == ax::mojom::Role::kPopUpButton ||
-      GetRole() == ax::mojom::Role::kComboBoxSelect) {
+  // For buttons with a kHasPopup attribute, return a more specific role.
+  if (ui::IsButton(GetRole())) {
     switch (static_cast<ax::mojom::HasPopup>(
         GetIntAttribute(ax::mojom::IntAttribute::kHasPopup))) {
       case ax::mojom::HasPopup::kTrue:

@@ -221,10 +221,6 @@ void CollectAncestorRoles(
 // Returns AXValue, or nil if AXValue isn't an NSString.
 - (NSString*)getAXValueAsString;
 
-// Returns this node's internal role, i.e. the one that is stored in
-// the internal accessibility tree as opposed to the platform tree.
-- (ax::mojom::Role)internalRole;
-
 // Returns the native wrapper for the given node id.
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id;
 
@@ -694,8 +690,18 @@ void CollectAncestorRoles(
 }
 
 - (ax::mojom::Role)internalRole {
-  if ([self instanceActive])
-    return _node->GetRole();
+  if ([self instanceActive]) {
+    ax::mojom::Role role = static_cast<ax::mojom::Role>(_node->GetRole());
+    // Make sure to use Role::kPopupButton instead of Role::kButton for all
+    // values of kHasPopup. This is normally already true, but the default
+    // implementation does not use kPopupButton if aria-haspopup="dialog".
+    if (role == ax::mojom::Role::kButton &&
+        _node->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup)) {
+      return ax::mojom::Role::kPopUpButton;
+    }
+    return role;
+  }
+
   return ax::mojom::Role::kUnknown;
 }
 
@@ -2352,13 +2358,14 @@ void CollectAncestorRoles(
   }
 
   NSString* role = [self accessibilityRole];
-  switch (_node->GetRole()) {
+  switch ([self internalRole]) {
     case ax::mojom::Role::kColorWell:            // Use platform's "color well"
     case ax::mojom::Role::kFooterAsNonLandmark:  // Default: IDS_AX_ROLE_FOOTER
     case ax::mojom::Role::kHeaderAsNonLandmark:  // Default: IDS_AX_ROLE_HEADER
     case ax::mojom::Role::kImage:                // Default: IDS_AX_ROLE_GRAPHIC
     case ax::mojom::Role::kInputTime:            // Use platform's "time field"
     case ax::mojom::Role::kMeter:     // Use platform's "level indicator"
+    case ax::mojom::Role::kPopUpButton:  // Use platform's "popup button"
     case ax::mojom::Role::kTabList:   // Use platform's "tab group"
     case ax::mojom::Role::kTree:      // Use platform's "outline"
     case ax::mojom::Role::kTreeItem:  // Use platform's "outline row"

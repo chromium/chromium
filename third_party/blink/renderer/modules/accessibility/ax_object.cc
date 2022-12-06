@@ -6640,10 +6640,16 @@ ax::mojom::blink::Role AXObject::ButtonRoleType() const {
   // http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed
   if (AriaPressedIsPresent())
     return ax::mojom::blink::Role::kToggleButton;
-  if (HasPopup() != ax::mojom::blink::HasPopup::kFalse)
+
+  // If aria-haspopup is present and is not "dialog", expose as a popup button,
+  // which is exposed in MSAA/IA2 with a role of button menu. Note that this is
+  // not done for dialog because screen readers use the button menu role as a
+  // tip to turn off the virtual buffer mode.
+  // Here is the GitHub issue -- ARIA WG is working to update the spec to match.
+  if (HasPopup() != ax::mojom::blink::HasPopup::kFalse &&
+      HasPopup() != ax::mojom::blink::HasPopup::kDialog) {
     return ax::mojom::blink::Role::kPopUpButton;
-  // We don't contemplate RadioButtonRole, as it depends on the input
-  // type.
+  }
 
   return ax::mojom::blink::Role::kButton;
 }
