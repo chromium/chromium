@@ -7,7 +7,9 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -16,6 +18,13 @@ namespace {
 
 constexpr char kCloudUploadProgressNotificationId[] = "cloud-upload-progress";
 
+// Minimum amount of time, in seconds, for which the notification should be
+// displayed.
+const base::TimeDelta kMinNotificationTime = base::Seconds(5);
+
+// Time, in seconds, for which the "Complete" notification should display.
+const base::TimeDelta kCompleteNotificationTimeout = base::Seconds(2);
+
 // If no other class instance holds a reference to the notification manager, the
 // notification manager goes out of scope.
 void OnNotificationManagerDone(
@@ -23,8 +32,15 @@ void OnNotificationManagerDone(
 
 }  // namespace
 
-CloudUploadNotificationManager::CloudUploadNotificationManager(Profile* profile)
-    : profile_(profile) {
+CloudUploadNotificationManager::CloudUploadNotificationManager(
+    Profile* profile,
+    const std::string& file_name,
+    const std::string& cloud_provider_name,
+    const std::string& target_app_name)
+    : profile_(profile),
+      file_name_(file_name),
+      cloud_provider_name_(cloud_provider_name),
+      target_app_name_(target_app_name) {
   // Keep the new `CloudUploadNotificationManager` instance alive at least until
   // `OnNotificationManagerDone` executes.
   callback_ =
@@ -34,8 +50,7 @@ CloudUploadNotificationManager::CloudUploadNotificationManager(Profile* profile)
 CloudUploadNotificationManager::~CloudUploadNotificationManager() {
   // Make sure open notifications are dismissed before the notification manager
   // goes out of scope.
-  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
-                                         kCloudUploadProgressNotificationId);
+  CloseNotification();
 }
 
 NotificationDisplayService*
@@ -44,63 +59,150 @@ CloudUploadNotificationManager::GetNotificationDisplayService() {
 }
 
 std::unique_ptr<message_center::Notification>
-CloudUploadNotificationManager::CreateProgressNotification() {
+CloudUploadNotificationManager::CreateUploadProgressNotification() {
+  std::string title = "Moving \"" + file_name_ + "\"";
+  std::string message = "Moving to " + cloud_provider_name_ +
+                        ". Your file will open automatically when completed.";
+
   return ash::CreateSystemNotification(
       /*type=*/message_center::NOTIFICATION_TYPE_PROGRESS,
-      /*id=*/kCloudUploadProgressNotificationId,
-      /*title=*/std::u16string(u"Office upload"),
-      /*message=*/std::u16string(), /*display_source=*/std::u16string(),
+      /*id=*/kCloudUploadProgressNotificationId, base::UTF8ToUTF16(title),
+      base::UTF8ToUTF16(message), /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&CloudUploadNotificationManager::Completed,
-                              weak_ptr_factory_.GetWeakPtr())),
+          base::BindRepeating(
+              &CloudUploadNotificationManager::CloseNotification,
+              weak_ptr_factory_.GetWeakPtr())),
       /*small_image=*/gfx::VectorIcon(),
       /*warning_level=*/message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
 std::unique_ptr<message_center::Notification>
-CloudUploadNotificationManager::CreateErrorNotification(std::string message) {
+CloudUploadNotificationManager::CreateUploadCompleteNotification() {
+  std::string title = "Move completed";
+  std::string message =
+      "1 item moved to \"from Chromebook\" folder. Opening in " +
+      target_app_name_;
   return ash::CreateSystemNotification(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-      /*id=*/kCloudUploadProgressNotificationId,
-      /*title=*/std::u16string(u"Office upload error"),
-      /*message=*/base::UTF8ToUTF16(message),
+      /*id=*/kCloudUploadProgressNotificationId, base::UTF8ToUTF16(title),
+      base::UTF8ToUTF16(message),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&CloudUploadNotificationManager::Completed,
-                              weak_ptr_factory_.GetWeakPtr())),
+          base::BindRepeating(
+              &CloudUploadNotificationManager::CloseNotification,
+              weak_ptr_factory_.GetWeakPtr())),
+      /*small_image=*/gfx::VectorIcon(),
+      /*warning_level=*/
+      message_center::SystemNotificationWarningLevel::NORMAL);
+}
+
+std::unique_ptr<message_center::Notification>
+CloudUploadNotificationManager::CreateUploadErrorNotification(
+    std::string message) {
+  std::string title = "Failed to move " + file_name_;
+  return ash::CreateSystemNotification(
+      /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
+      /*id=*/kCloudUploadProgressNotificationId, base::UTF8ToUTF16(title),
+      base::UTF8ToUTF16(message),
+      /*display_source=*/std::u16string(),
+      /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
+      /*optional_fields=*/{},
+      /*delegate=*/
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              &CloudUploadNotificationManager::CloseNotification,
+              weak_ptr_factory_.GetWeakPtr())),
       /*small_image=*/gfx::VectorIcon(),
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::WARNING);
 }
 
-void CloudUploadNotificationManager::ShowProgress(int progress) {
+void CloudUploadNotificationManager::ShowUploadProgress(int progress) {
   std::unique_ptr<message_center::Notification> notification =
-      CreateProgressNotification();
+      CreateUploadProgressNotification();
   notification->set_progress(progress);
   notification->set_never_timeout(true);
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
                                            /*metadata=*/nullptr);
+
+  // Start the "min time" notification timer when the first progress
+  // notification is shown.
+  if (!first_notification_shown) {
+    first_notification_shown = true;
+    notification_timer_.Start(
+        FROM_HERE, kMinNotificationTime,
+        base::BindOnce(
+            &CloudUploadNotificationManager::OnMinNotificationTimeReached,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
-void CloudUploadNotificationManager::ShowError(std::string message) {
+void CloudUploadNotificationManager::ShowUploadComplete() {
   std::unique_ptr<message_center::Notification> notification =
-      CreateErrorNotification(message);
+      CreateUploadCompleteNotification();
+  notification->set_never_timeout(true);
+  GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
+                                           *notification,
+                                           /*metadata=*/nullptr);
+
+  // If the complete notification is shown before any progress notifications,
+  // start the `kMinNotificationTime` timer.
+  if (!first_notification_shown) {
+    first_notification_shown = true;
+    notification_timer_.Start(
+        FROM_HERE, kMinNotificationTime,
+        base::BindOnce(
+            &CloudUploadNotificationManager::OnMinNotificationTimeReached,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // Start the timer to automatically dismiss the "Complete" notification.
+  complete_notification_timer_.Start(
+      FROM_HERE, kCompleteNotificationTimeout,
+      base::BindOnce(
+          &CloudUploadNotificationManager::OnCompleteNotificationTimeout,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CloudUploadNotificationManager::ShowUploadError(std::string message) {
+  std::unique_ptr<message_center::Notification> notification =
+      CreateUploadErrorNotification(message);
   notification->set_never_timeout(true);
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
                                            /*metadata=*/nullptr);
 }
 
-void CloudUploadNotificationManager::Completed() {
+void CloudUploadNotificationManager::OnMinNotificationTimeReached() {
+  // Close the notification only if the "Complete notification" has timed out.
+  // Error notifications can only be dismissed by users.
+  if (completed_) {
+    CloseNotification();
+  }
+}
+
+void CloudUploadNotificationManager::OnCompleteNotificationTimeout() {
+  completed_ = true;
+
+  // If `kMinNotificationTime` hasn't been reached yet, do not close the
+  // notification.
+  if (!notification_timer_.IsRunning()) {
+    CloseNotification();
+  }
+}
+
+void CloudUploadNotificationManager::CloseNotification() {
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                          kCloudUploadProgressNotificationId);
+  notification_timer_.Stop();
+  complete_notification_timer_.Stop();
   if (callback_) {
     std::move(callback_).Run();
   }

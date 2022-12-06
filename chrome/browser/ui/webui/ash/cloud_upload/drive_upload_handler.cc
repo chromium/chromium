@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
@@ -37,6 +38,20 @@ void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
   std::move(callback).Run(hosted_url);
 }
 
+std::string GetTargetAppName(base::FilePath file_path) {
+  const std::string extension = file_path.FinalExtension();
+  if (extension == "doc" || extension == "docx") {
+    return "Google Docs";
+  }
+  if (extension == "xls" || extension == "xlsx") {
+    return "Google Sheets";
+  }
+  if (extension == "ppt" || extension == "pptx") {
+    return "Google Slides";
+  }
+  return "Google Docs";
+}
+
 }  // namespace
 
 // static.
@@ -58,7 +73,11 @@ DriveUploadHandler::DriveUploadHandler(Profile* profile,
       drive_integration_service_(
           drive::DriveIntegrationServiceFactory::FindForProfile(profile)),
       notification_manager_(
-          base::MakeRefCounted<CloudUploadNotificationManager>(profile)),
+          base::MakeRefCounted<CloudUploadNotificationManager>(
+              profile,
+              source_url.path().BaseName().value(),
+              "OneDrive",
+              GetTargetAppName(source_url.path()))),
       source_url_(source_url) {
   observed_task_id_ = -1;
 }
@@ -133,7 +152,7 @@ void DriveUploadHandler::UpdateProgressNotification() {
   // The move progress and the syncing progress arbitrarily respectively account
   // for 20% and 80% of the upload workflow.
   int progress = move_progress_ * 0.2 + sync_progress_ * 0.8;
-  notification_manager_->ShowProgress(progress);
+  notification_manager_->ShowUploadProgress(progress);
 }
 
 void DriveUploadHandler::OnEndUpload(GURL hosted_url,
@@ -145,10 +164,10 @@ void DriveUploadHandler::OnEndUpload(GURL hosted_url,
   // Resolve notifications.
   if (notification_manager_) {
     if (hosted_url.is_valid()) {
-      notification_manager_->Completed();
+      notification_manager_->ShowUploadComplete();
     } else if (!error_message.empty()) {
       LOG(ERROR) << "Cloud upload: " << error_message;
-      notification_manager_->ShowError(error_message);
+      notification_manager_->ShowUploadError(error_message);
     }
   }
   if (callback_) {

@@ -51,7 +51,11 @@ OneDriveUploadHandler::OneDriveUploadHandler(Profile* profile,
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
       notification_manager_(
-          base::MakeRefCounted<CloudUploadNotificationManager>(profile)),
+          base::MakeRefCounted<CloudUploadNotificationManager>(
+              profile,
+              source_url.path().BaseName().value(),
+              "OneDrive",
+              "Microsoft 365")),
       source_url_(source_url) {
   observed_task_id_ = -1;
 }
@@ -127,10 +131,10 @@ void OneDriveUploadHandler::OnEndUpload(const FileSystemURL& uploaded_file_url,
   // Resolve notifications.
   if (notification_manager_) {
     if (uploaded_file_url.is_valid()) {
-      notification_manager_->Completed();
+      notification_manager_->ShowUploadComplete();
     } else if (!error_message.empty()) {
       LOG(ERROR) << "Upload to OneDrive: " << error_message;
-      notification_manager_->ShowError(error_message);
+      notification_manager_->ShowUploadError(error_message);
     }
   }
   if (callback_) {
@@ -172,12 +176,12 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       return;
     case file_manager::io_task::State::kInProgress:
       if (status.total_bytes > 0) {
-        notification_manager_->ShowProgress(100 * status.bytes_transferred /
-                                            status.total_bytes);
+        notification_manager_->ShowUploadProgress(
+            100 * status.bytes_transferred / status.total_bytes);
       }
       return;
     case file_manager::io_task::State::kSuccess:
-      notification_manager_->ShowProgress(100);
+      notification_manager_->ShowUploadProgress(100);
       DCHECK_EQ(status.outputs.size(), 1u);
       file_manager::util::ShowItemInFolder(
           profile_, status.outputs[0].url.path(),
