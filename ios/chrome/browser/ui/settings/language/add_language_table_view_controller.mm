@@ -36,7 +36,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface AddLanguageTableViewController () <UISearchResultsUpdating>
+@interface AddLanguageTableViewController () <UISearchResultsUpdating> {
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
+}
 
 // The data source passed to this instance.
 @property(nonatomic, strong) id<LanguageSettingsDataSource> dataSource;
@@ -163,6 +166,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   [self updateLanguagesSectionFromDataSource:NO];
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+}
+
+- (void)reportBackUserAction {
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  // No-op as there are no C++ objects or observers.
+
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark - Public methods
