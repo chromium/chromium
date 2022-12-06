@@ -296,12 +296,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public GURL getCurrentGurl() {
-        if (mOptimizationsEnabled) {
-            return mVisibleGurl;
-        }
-
         if (isInOverviewAndShowingOmnibox()) {
             return UrlConstants.ntpGurl();
+        }
+
+        if (mOptimizationsEnabled) {
+            return mVisibleGurl;
         }
 
         Tab tab = getTab();
@@ -320,6 +320,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 mFormattedFullUrl = "";
                 mUrlForDisplay = "";
                 mVisibleGurl = UrlConstants.ntpGurl();
+                return true;
             }
 
             GURL gurl = getUrlOfVisibleNavigationEntry();
@@ -824,6 +825,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      */
     public void setStartSurfaceState(@StartSurfaceState int startSurfaceState) {
         mStartSurfaceState = startSurfaceState;
+        notifyUrlChanged();
     }
 
     @NativeMethods
