@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.Enabled{Process}"
-    enum="BooleanEnabled" expires_after="2022-12-02">
+    enum="BooleanEnabled" expires_after="2023-06-05">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.SamplesPerSnapshot{Process}"
-    units="samples" expires_after="2022-12-02">
+    units="samples" expires_after="2023-06-05">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -102,24 +102,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HeapProfiling.InProcess.SnapshotInterval" units="ms"
-    expires_after="2022-02-02">
-  <obsolete>
-    Replaced by
-    HeapProfiling.InProcess.SnapshotInterval.{Platform}.{RecordingTime} on
-    2022-02-02.
-  </obsolete>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    The time until the next heap snapshot is scheduled. Emitted once per
-    snapshot when the in-process heap profiler is enabled.
-  </summary>
-</histogram>
-
 <histogram
     name="HeapProfiling.InProcess.SnapshotInterval.{Platform}.{RecordingTime}{Process}"
-    units="ms" expires_after="2022-12-02">
+    units="ms" expires_after="2023-06-05">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -144,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.TotalSampledMemory{Process}"
-    units="samples" expires_after="2023-04-30">
+    units="MB" expires_after="2023-04-30">
   <owner>joenotcharles@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>

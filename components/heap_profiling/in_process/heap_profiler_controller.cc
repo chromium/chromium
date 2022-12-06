@@ -28,6 +28,7 @@
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/services/heap_profiling/public/cpp/merge_samples.h"
 #include "components/version_info/channel.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace heap_profiling {
 
@@ -284,6 +285,19 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
     ProcessType process_type,
     base::TimeDelta time_since_profiler_creation) {
   using Sample = base::SamplingHeapProfiler::Sample;
+
+  // Always log the total sampled memory before returning. If `samples` is empty
+  // this will be logged as 0 MB.
+  base::ClampedNumeric<uint64_t> total_sampled_bytes;
+  absl::Cleanup log_total_sampled_memory = [&total_sampled_bytes,
+                                            &process_type] {
+    constexpr int kBytesPerMB = 1024 * 1024;
+    base::UmaHistogramMemoryLargeMB(
+        ProcessHistogramName("HeapProfiling.InProcess.TotalSampledMemory",
+                             process_type),
+        base::ClampDiv(total_sampled_bytes, kBytesPerMB));
+  };
+
   std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
   base::UmaHistogramCounts100000(
@@ -305,7 +319,6 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
 
   SampleMap merged_samples = MergeSamples(samples);
 
-  base::ClampedNumeric<uint64_t> total_sampled_bytes;
   for (auto& pair : merged_samples) {
     const Sample& sample = pair.first;
     const SampleValue& value = pair.second;
@@ -335,12 +348,6 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
   }
 
   profile_builder.OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
-
-  constexpr int kBytesPerMB = 1024 * 1024;
-  base::UmaHistogramMemoryLargeMB(
-      ProcessHistogramName("HeapProfiling.InProcess.TotalSampledMemory",
-                           process_type),
-      base::ClampDiv(total_sampled_bytes, kBytesPerMB));
 }
 
 }  // namespace heap_profiling
