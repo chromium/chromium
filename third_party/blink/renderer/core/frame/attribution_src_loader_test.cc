@@ -147,8 +147,9 @@ class MockAttributionHost : public mojom::blink::ConversionHost {
       std::move(quit_).Run();
   }
 
-  void RegisterDataHost(mojo::PendingReceiver<mojom::blink::AttributionDataHost>
-                            data_host) override {
+  void RegisterDataHost(
+      mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
+      blink::mojom::AttributionRegistrationType) override {
     mock_data_host_ = std::make_unique<MockDataHost>(std::move(data_host));
   }
 

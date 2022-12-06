@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
@@ -92,12 +93,9 @@ class CORE_EXPORT AttributionSrcLoader
  private:
   class ResourceClient;
 
-  // Represents what events are able to be registered from an attributionsrc.
-  enum class SrcType { kUndetermined, kSource, kTrigger };
-
   ResourceClient* DoRegistration(
       const KURL& src_url,
-      SrcType src_type,
+      mojom::blink::AttributionRegistrationType,
       absl::optional<mojom::blink::AttributionNavigationType> nav_type);
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
@@ -113,14 +111,14 @@ class CORE_EXPORT AttributionSrcLoader
   ResourceClient* CreateAndSendRequest(
       const KURL& src_url,
       HTMLElement* element,
-      SrcType src_type,
+      mojom::blink::AttributionRegistrationType,
       absl::optional<mojom::blink::AttributionNavigationType> nav_type);
 
   // Returns whether OS-level attribution is supported.
   bool HasOsSupport() const;
 
   void RegisterAttributionHeaders(
-      SrcType src_type,
+      mojom::blink::AttributionRegistrationType,
       attribution_reporting::SuitableOrigin reporting_origin,
       const AtomicString& source_json,
       const AtomicString& trigger_json,

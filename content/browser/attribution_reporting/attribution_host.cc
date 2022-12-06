@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -320,7 +321,8 @@ AttributionHost::TopFrameOriginForSecureContext() {
 }
 
 void AttributionHost::RegisterDataHost(
-    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
+    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+    blink::mojom::AttributionRegistrationType registration_type) {
   // If there is no attribution manager available, ignore any registrations.
   AttributionManager* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
@@ -339,7 +341,8 @@ void AttributionHost::RegisterDataHost(
 
   data_host_manager->RegisterDataHost(
       std::move(data_host), std::move(*top_frame_origin),
-      receivers_.GetCurrentTargetFrame()->IsNestedWithinFencedFrame());
+      receivers_.GetCurrentTargetFrame()->IsNestedWithinFencedFrame(),
+      registration_type);
 }
 
 void AttributionHost::RegisterNavigationDataHost(

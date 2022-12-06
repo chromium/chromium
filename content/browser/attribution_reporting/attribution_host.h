@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
 namespace attribution_reporting {
@@ -62,8 +63,9 @@ class CONTENT_EXPORT AttributionHost
   friend class WebContentsUserData<AttributionHost>;
 
   // blink::mojom::ConversionHost:
-  void RegisterDataHost(mojo::PendingReceiver<blink::mojom::AttributionDataHost>
-                            data_host) override;
+  void RegisterDataHost(
+      mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
+      blink::mojom::AttributionRegistrationType) override;
   void RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token,

@@ -30,6 +30,7 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
+using ::blink::mojom::AttributionRegistrationType;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Pointee;
@@ -89,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -128,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillRepeatedly(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_hosts.push_back(GetRegisteredDataHost(std::move(host)));
             if (data_hosts.size() == 2)
               loop.Quit();

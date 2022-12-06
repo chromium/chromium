@@ -9,6 +9,7 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
 
 namespace attribution_reporting {
@@ -35,7 +36,8 @@ class AttributionDataHostManager {
   virtual void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       attribution_reporting::SuitableOrigin context_origin,
-      bool is_within_fenced_frame) = 0;
+      bool is_within_fenced_frame,
+      blink::mojom::AttributionRegistrationType) = 0;
 
   // Registers a new data host which is associated with a navigation. The
   // context origin will be provided at a later time in

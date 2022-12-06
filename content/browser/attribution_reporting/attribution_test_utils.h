@@ -108,7 +108,8 @@ class MockAttributionHost : public AttributionHost {
   MOCK_METHOD(
       void,
       RegisterDataHost,
-      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host),
+      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+       blink::mojom::AttributionRegistrationType),
       (override));
 
   MOCK_METHOD(
@@ -172,7 +173,8 @@ class MockDataHostManager : public AttributionDataHostManager {
       RegisterDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
        attribution_reporting::SuitableOrigin context_origin,
-       bool is_within_fenced_frame),
+       bool is_within_fenced_frame,
+       blink::mojom::AttributionRegistrationType),
       (override));
 
   MOCK_METHOD(

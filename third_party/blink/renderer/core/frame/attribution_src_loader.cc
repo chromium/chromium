@@ -63,6 +63,8 @@ namespace blink {
 
 namespace {
 
+using ::blink::mojom::blink::AttributionRegistrationType;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AttributionSrcRequestStatus {
@@ -138,7 +140,7 @@ class AttributionSrcLoader::ResourceClient
   // produced by this client will need to be associated with a navigation.
   ResourceClient(
       AttributionSrcLoader* loader,
-      SrcType type,
+      AttributionRegistrationType type,
       absl::optional<mojom::blink::AttributionNavigationType> nav_type)
       : loader_(loader), type_(type) {
     DCHECK(loader_);
@@ -158,8 +160,8 @@ class AttributionSrcLoader::ResourceClient
           *nav_type);
     } else {
       // Send the data host normally.
-      conversion_host->RegisterDataHost(
-          data_host_.BindNewPipeAndPassReceiver());
+      conversion_host->RegisterDataHost(data_host_.BindNewPipeAndPassReceiver(),
+                                        type);
     }
   }
 
@@ -215,7 +217,7 @@ class AttributionSrcLoader::ResourceClient
   // Type of events this request can register. In some cases, this will not be
   // assigned until the first event is received. A single attributionsrc
   // request can only register one type of event across redirects.
-  SrcType type_;
+  AttributionRegistrationType type_;
 
   // Token used to identify an attributionsrc request in the browser process.
   // Only generated for attributionsrc requests that are associated with a
@@ -240,7 +242,8 @@ void AttributionSrcLoader::Trace(Visitor* visitor) const {
 }
 
 void AttributionSrcLoader::Register(const KURL& src_url, HTMLElement* element) {
-  CreateAndSendRequest(src_url, element, SrcType::kUndetermined,
+  CreateAndSendRequest(src_url, element,
+                       AttributionRegistrationType::kSourceOrTrigger,
                        /*nav_type=*/absl::nullopt);
 }
 
@@ -250,8 +253,8 @@ absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     HTMLElement* element) {
   // TODO(apaseltiner): Add tests to ensure that this method can't be used to
   // register triggers.
-  ResourceClient* client =
-      CreateAndSendRequest(src_url, element, SrcType::kSource, nav_type);
+  ResourceClient* client = CreateAndSendRequest(
+      src_url, element, AttributionRegistrationType::kSource, nav_type);
   if (!client)
     return absl::nullopt;
 
@@ -265,7 +268,7 @@ AttributionSrcLoader::ResourceClient*
 AttributionSrcLoader::CreateAndSendRequest(
     const KURL& src_url,
     HTMLElement* element,
-    SrcType src_type,
+    AttributionRegistrationType src_type,
     absl::optional<mojom::blink::AttributionNavigationType> nav_type) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_->IsAttached())
@@ -298,7 +301,7 @@ AttributionSrcLoader::CreateAndSendRequest(
 
 AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
     const KURL& src_url,
-    SrcType src_type,
+    AttributionRegistrationType src_type,
     absl::optional<mojom::blink::AttributionNavigationType> nav_type) {
   if (!local_frame_->IsAttached())
     return nullptr;
@@ -315,13 +318,13 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   const char* eligible = [src_type,
                           associated_with_navigation]() -> const char* {
     switch (src_type) {
-      case SrcType::kSource:
+      case AttributionRegistrationType::kSource:
         return associated_with_navigation ? kAttributionEligibleNavigationSource
                                           : kAttributionEligibleEventSource;
-      case SrcType::kTrigger:
+      case AttributionRegistrationType::kTrigger:
         NOTREACHED();
         return nullptr;
-      case SrcType::kUndetermined:
+      case AttributionRegistrationType::kSourceOrTrigger:
         DCHECK(!associated_with_navigation);
         return kAttributionEligibleEventSourceAndTrigger;
     }
@@ -474,7 +477,8 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   if (!reporting_origin)
     return false;
 
-  SrcType src_type = SrcType::kUndetermined;
+  AttributionRegistrationType src_type =
+      AttributionRegistrationType::kSourceOrTrigger;
 
   // Determine eligibility for this registration by considering first request
   // for a resource (even if `response` is for a redirect). This indicates
@@ -487,7 +491,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   if (eligible_header.IsNull()) {
     // All subresources are eligible to register triggers if they do *not*
     // specify the header.
-    src_type = SrcType::kTrigger;
+    src_type = AttributionRegistrationType::kTrigger;
   } else {
     absl::optional<net::structured_headers::Dictionary> dict =
         net::structured_headers::ParseDictionary(
@@ -505,13 +509,11 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     const bool allows_trigger = dict->contains(kAttributionEligibleTrigger);
 
     if (allows_event_source && allows_trigger) {
-      // We use an undetermined SrcType which indicates either a source or
-      // trigger may be registered.
-      src_type = SrcType::kUndetermined;
+      src_type = AttributionRegistrationType::kSourceOrTrigger;
     } else if (allows_event_source) {
-      src_type = SrcType::kSource;
+      src_type = AttributionRegistrationType::kSource;
     } else if (allows_trigger) {
-      src_type = SrcType::kTrigger;
+      src_type = AttributionRegistrationType::kTrigger;
     } else {
       MaybeLogSourceIgnored(local_frame_->DomWindow(), request_id, source_json);
       MaybeLogTriggerIgnored(local_frame_->DomWindow(), request_id,
@@ -539,7 +541,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 }
 
 void AttributionSrcLoader::RegisterAttributionHeaders(
-    SrcType src_type,
+    AttributionRegistrationType src_type,
     attribution_reporting::SuitableOrigin reporting_origin,
     const AtomicString& source_json,
     const AtomicString& trigger_json,
@@ -636,7 +638,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
   DCHECK(!source_json.IsNull() || !trigger_json.IsNull());
 
   switch (type_) {
-    case SrcType::kSource:
+    case AttributionRegistrationType::kSource:
       MaybeLogTriggerIgnored(loader_->local_frame_->DomWindow(), request_id,
                              trigger_json);
 
@@ -645,7 +647,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
                                  request_id);
       }
       break;
-    case SrcType::kTrigger:
+    case AttributionRegistrationType::kTrigger:
       MaybeLogSourceIgnored(loader_->local_frame_->DomWindow(), request_id,
                             source_json);
 
@@ -654,7 +656,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
                                   request_id);
       }
       break;
-    case SrcType::kUndetermined:
+    case AttributionRegistrationType::kSourceOrTrigger:
       if (!source_json.IsNull() && !trigger_json.IsNull()) {
         LogAuditIssue(loader_->local_frame_->DomWindow(),
                       AttributionReportingIssueType::kSourceAndTriggerHeaders,
@@ -664,14 +666,14 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
       }
 
       if (!source_json.IsNull()) {
-        type_ = SrcType::kSource;
+        type_ = AttributionRegistrationType::kSource;
         HandleSourceRegistration(source_json, std::move(reporting_origin),
                                  request_id);
         return;
       }
 
       if (!trigger_json.IsNull()) {
-        type_ = SrcType::kTrigger;
+        type_ = AttributionRegistrationType::kTrigger;
         HandleTriggerRegistration(trigger_json, std::move(reporting_origin),
                                   request_id);
       }
@@ -684,7 +686,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     const AtomicString& json,
     attribution_reporting::SuitableOrigin reporting_origin,
     uint64_t request_id) {
-  DCHECK_EQ(type_, SrcType::kSource);
+  DCHECK_EQ(type_, AttributionRegistrationType::kSource);
   DCHECK(!json.IsNull());
 
   auto source_data = attribution_reporting::SourceRegistration::Parse(
@@ -704,7 +706,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     const AtomicString& json,
     attribution_reporting::SuitableOrigin reporting_origin,
     uint64_t request_id) {
-  DCHECK_EQ(type_, SrcType::kTrigger);
+  DCHECK_EQ(type_, AttributionRegistrationType::kTrigger);
   DCHECK(!json.IsNull());
 
   auto trigger_data = attribution_reporting::TriggerRegistration::Parse(

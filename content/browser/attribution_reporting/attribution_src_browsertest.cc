@@ -49,6 +49,7 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
+using ::blink::mojom::AttributionRegistrationType;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -111,7 +112,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -153,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
     base::RunLoop loop, disconnect_loop;
     EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
         .WillOnce(
-            [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+                AttributionRegistrationType) {
               data_host = GetRegisteredDataHost(std::move(host));
               data_host->receiver().set_disconnect_handler(
                   disconnect_loop.QuitClosure());
@@ -202,7 +205,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop trigger_loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillRepeatedly(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             if (!source_data_host) {
               source_data_host = GetRegisteredDataHost(std::move(host));
               source_loop.Quit();
@@ -502,7 +506,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -541,7 +546,8 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -579,7 +585,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -613,7 +620,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -660,7 +668,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -904,7 +913,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -965,7 +975,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -1029,7 +1040,8 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -1084,7 +1096,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -1131,7 +1144,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -1173,7 +1187,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -1225,7 +1240,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -1305,7 +1321,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -1375,7 +1392,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
   base::RunLoop loop;
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });
@@ -1483,7 +1501,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcFencedFrameBrowserTest,
 
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              AttributionRegistrationType) {
             data_host = GetRegisteredDataHost(std::move(host));
             loop.Quit();
           });

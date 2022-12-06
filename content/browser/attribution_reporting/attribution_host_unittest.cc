@@ -53,6 +53,7 @@ using testing::_;
 using testing::Return;
 
 using ::blink::mojom::AttributionNavigationType;
+using ::blink::mojom::AttributionRegistrationType;
 
 const char kConversionUrl[] = "https://b.com";
 
@@ -319,7 +320,8 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
   EXPECT_CALL(
       *mock_data_host_manager(),
       RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
-                       /*is_within_fenced_frame=*/false));
+                       /*is_within_fenced_frame=*/false,
+                       AttributionRegistrationType::kSource));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -330,7 +332,8 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterDataHost(
-      data_host_remote.BindNewPipeAndPassReceiver());
+      data_host_remote.BindNewPipeAndPassReceiver(),
+      AttributionRegistrationType::kSource);
 
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.
@@ -349,7 +352,8 @@ TEST_F(AttributionHostTest, DISABLED_DataHostOnInsecurePage_BadMessage) {
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterDataHost(
-      data_host_remote.BindNewPipeAndPassReceiver());
+      data_host_remote.BindNewPipeAndPassReceiver(),
+      AttributionRegistrationType::kSource);
 
   EXPECT_EQ(
       "blink.mojom.ConversionHost can only be used with a secure top-level "
@@ -404,7 +408,8 @@ TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
   EXPECT_CALL(
       *mock_data_host_manager(),
       RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
-                       /*is_within_fenced_frame=*/false));
+                       /*is_within_fenced_frame=*/false,
+                       AttributionRegistrationType::kSource));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
 
@@ -421,7 +426,8 @@ TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterDataHost(
-      data_host_remote.BindNewPipeAndPassReceiver());
+      data_host_remote.BindNewPipeAndPassReceiver(),
+      AttributionRegistrationType::kSource);
 
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.
@@ -447,7 +453,8 @@ TEST_F(AttributionHostTest,
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterDataHost(
-      data_host_remote.BindNewPipeAndPassReceiver());
+      data_host_remote.BindNewPipeAndPassReceiver(),
+      AttributionRegistrationType::kSource);
 
   EXPECT_EQ(
       "blink.mojom.ConversionHost can only be used with a secure top-level "
@@ -459,7 +466,8 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
   EXPECT_CALL(
       *mock_data_host_manager(),
       RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
-                       /*is_within_fenced_frame=*/true));
+                       /*is_within_fenced_frame=*/true,
+                       AttributionRegistrationType::kSource));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   RenderFrameHost* fenced_frame =
@@ -475,7 +483,8 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterDataHost(
-      data_host_remote.BindNewPipeAndPassReceiver());
+      data_host_remote.BindNewPipeAndPassReceiver(),
+      AttributionRegistrationType::kSource);
 
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.

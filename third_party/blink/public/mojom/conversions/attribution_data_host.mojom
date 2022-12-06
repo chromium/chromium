@@ -175,6 +175,13 @@ struct AttributionOsTrigger {
   url.mojom.Url url;
 };
 
+// Indicates which registrations an AttributionDataHost permits.
+enum AttributionRegistrationType {
+  kSourceOrTrigger,
+  kSource,
+  kTrigger,
+};
+
 // Browser-process interface responsible for processing attribution
 // configurations registered by the renderer. These configurations may be sent
 // out of the normal frame lifecycle, e.g. after the frame is destroyed.
