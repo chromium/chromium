@@ -85,7 +85,8 @@
   <div class="start settings-box-text" id="cursorColorOptionsLabel">
     $i18n{cursorColorOptionsLabel}
   </div>
-  <settings-dropdown-menu aria-labeledby="cursorColorOptionsLabel"
+  <settings-dropdown-menu id="cursorColorDropdown"
+      aria-labeledby="cursorColorOptionsLabel"
       pref="{{prefs.settings.a11y.cursor_color}}"
       menu-options="[[cursorColorOptions_]]"
       on-settings-control-change="onA11yCursorColorChange_"

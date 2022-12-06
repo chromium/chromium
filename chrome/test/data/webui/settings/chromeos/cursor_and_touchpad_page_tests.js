@@ -4,9 +4,7 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {DevicePageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -14,33 +12,22 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
+const DEFAULT_BLACK_CURSOR_COLOR = 0;
+const RED_CURSOR_COLOR = 0xd93025;
+
 suite('CursorAndTouchpadPageTests', function() {
   let page = null;
   let deviceBrowserProxy = null;
 
-  function initPage(opt_prefs) {
-    page = document.createElement('settings-cursor-and-touchpad-page');
-    page.prefs = opt_prefs || getDefaultPrefs();
-    document.body.appendChild(page);
-  }
+  async function initPage() {
+    const prefElement = document.createElement('settings-prefs');
+    document.body.appendChild(prefElement);
 
-  function getDefaultPrefs() {
-    return {
-      'settings': {
-        'a11y': {
-          'tablet_mode_shelf_nav_buttons_enabled': {
-            key: 'settings.a11y.tablet_mode_shelf_nav_buttons_enabled',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: false,
-          },
-        },
-        'accessibility': {
-          key: 'settings.accessibility',
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
-    };
+    await CrSettingsPrefs.initialized;
+    page = document.createElement('settings-cursor-and-touchpad-page');
+    page.prefs = prefElement.prefs;
+    document.body.appendChild(page);
+    flush();
   }
 
   setup(function() {
@@ -61,12 +48,40 @@ suite('CursorAndTouchpadPageTests', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
+  test('cursor color prefs and dropdown synced', async function() {
+    await initPage();
+
+    // Make sure cursor color dropdown is black, matching default pref state.
+    const cursorColorDropdown =
+        page.shadowRoot.querySelector('#cursorColorDropdown');
+    await waitAfterNextRender(cursorColorDropdown);
+    const cursorColorSelectElement =
+        cursorColorDropdown.shadowRoot.querySelector('select');
+    assertEquals(
+        String(DEFAULT_BLACK_CURSOR_COLOR), cursorColorSelectElement.value);
+
+    // Turn cursor color to red, and verify pref is also red.
+    cursorColorSelectElement.value = RED_CURSOR_COLOR;
+    cursorColorSelectElement.dispatchEvent(new CustomEvent('change'));
+    const cursorColorPref = page.getPref('settings.a11y.cursor_color');
+    const cursorColorEnabledPref =
+        page.getPref('settings.a11y.cursor_color_enabled');
+    assertEquals(RED_CURSOR_COLOR, cursorColorPref.value);
+    assertTrue(cursorColorEnabledPref.value);
+
+    // Turn cursor color back to default, and verify pref is also default.
+    cursorColorSelectElement.value = DEFAULT_BLACK_CURSOR_COLOR;
+    cursorColorSelectElement.dispatchEvent(new CustomEvent('change'));
+    assertEquals(DEFAULT_BLACK_CURSOR_COLOR, cursorColorPref.value);
+    assertFalse(cursorColorEnabledPref.value);
+  });
+
   test(
       'should focus pointerSubpageButton button when returning from Pointers subpage',
       async () => {
         const selector = '#pointerSubpageButton';
         const route = routes.POINTERS;
-        initPage();
+        await initPage();
         flush();
         const router = Router.getInstance();
 
@@ -90,8 +105,8 @@ suite('CursorAndTouchpadPageTests', function() {
             `${selector} should be focused`);
       });
 
-  test('Pointers row only visible if mouse/touchpad present', function() {
-    initPage();
+  test('Pointers row only visible if mouse/touchpad present', async function() {
+    await initPage();
     const row = page.shadowRoot.querySelector('#pointerSubpageButton');
     assertFalse(row.hidden);
 
@@ -112,24 +127,24 @@ suite('CursorAndTouchpadPageTests', function() {
     assertFalse(row.hidden);
   });
 
-  test('tablet mode buttons visible', function() {
+  test('tablet mode buttons visible', async function() {
     loadTimeData.overrideValues({
       isKioskModeActive: false,
       showTabletModeShelfNavigationButtonsSettings: true,
     });
-    initPage();
+    await initPage();
     flush();
 
     assertTrue(isVisible(page.shadowRoot.querySelector(
         '#shelfNavigationButtonsEnabledControl')));
   });
 
-  test('toggle tablet mode buttons', function() {
+  test('toggle tablet mode buttons', async function() {
     loadTimeData.overrideValues({
       isKioskModeActive: false,
       showTabletModeShelfNavigationButtonsSettings: true,
     });
-    initPage();
+    await initPage();
     flush();
 
     const navButtonsToggle =
@@ -157,62 +172,63 @@ suite('CursorAndTouchpadPageTests', function() {
         page.prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value);
   });
 
-  test('tablet mode buttons toggle disabled with spoken feedback', function() {
-    loadTimeData.overrideValues({
-      isKioskModeActive: false,
-      showTabletModeShelfNavigationButtonsSettings: true,
-    });
+  test(
+      'tablet mode buttons toggle disabled with spoken feedback',
+      async function() {
+        loadTimeData.overrideValues({
+          isKioskModeActive: false,
+          showTabletModeShelfNavigationButtonsSettings: true,
+        });
 
-    const prefs = getDefaultPrefs();
-    // Enable spoken feedback.
-    prefs.settings.accessibility.value = true;
+        await initPage();
+        flush();
 
-    initPage(prefs);
-    flush();
+        // Enable spoken feedback (ChromeVox).
+        page.setPrefValue('settings.accessibility', true);
 
-    const navButtonsToggle =
-        page.shadowRoot.querySelector('#shelfNavigationButtonsEnabledControl');
-    assertTrue(isVisible(navButtonsToggle));
+        const navButtonsToggle = page.shadowRoot.querySelector(
+            '#shelfNavigationButtonsEnabledControl');
+        assertTrue(isVisible(navButtonsToggle));
 
-    // If spoken feedback is enabled, the shelf nav buttons toggle should be
-    // disabled and checked.
-    assertTrue(navButtonsToggle.disabled);
-    assertTrue(navButtonsToggle.checked);
+        // If spoken feedback is enabled, the shelf nav buttons toggle should be
+        // disabled and checked.
+        assertTrue(navButtonsToggle.disabled);
+        assertTrue(navButtonsToggle.checked);
 
-    // Clicking the toggle should have no effect.
-    navButtonsToggle.click();
-    flush();
+        // Clicking the toggle should have no effect.
+        navButtonsToggle.click();
+        flush();
 
-    assertTrue(navButtonsToggle.disabled);
-    assertTrue(navButtonsToggle.checked);
-    assertFalse(
-        page.prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value);
+        assertTrue(navButtonsToggle.disabled);
+        assertTrue(navButtonsToggle.checked);
+        assertFalse(page.prefs.settings.a11y
+                        .tablet_mode_shelf_nav_buttons_enabled.value);
 
-    // The toggle should be enabled if the spoken feedback gets disabled.
-    page.set('prefs.settings.accessibility.value', false);
-    flush();
+        // The toggle should be enabled if the spoken feedback gets disabled.
+        page.set('prefs.settings.accessibility.value', false);
+        flush();
 
-    assertFalse(!!navButtonsToggle.disabled);
-    assertFalse(navButtonsToggle.checked);
-    assertFalse(
-        page.prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value);
+        assertFalse(!!navButtonsToggle.disabled);
+        assertFalse(navButtonsToggle.checked);
+        assertFalse(page.prefs.settings.a11y
+                        .tablet_mode_shelf_nav_buttons_enabled.value);
 
-    // Clicking the toggle should update the backing pref.
-    navButtonsToggle.click();
-    flush();
+        // Clicking the toggle should update the backing pref.
+        navButtonsToggle.click();
+        flush();
 
-    assertFalse(!!navButtonsToggle.disabled);
-    assertTrue(navButtonsToggle.checked);
-    assertTrue(
-        page.prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value);
-  });
+        assertFalse(!!navButtonsToggle.disabled);
+        assertTrue(navButtonsToggle.checked);
+        assertTrue(page.prefs.settings.a11y
+                       .tablet_mode_shelf_nav_buttons_enabled.value);
+      });
 
-  test('some parts are hidden in kiosk mode', function() {
+  test('some parts are hidden in kiosk mode', async function() {
     loadTimeData.overrideValues({
       isKioskModeActive: true,
       showTabletModeShelfNavigationButtonsSettings: true,
     });
-    initPage();
+    await initPage();
     // Add mouse and touchpad to show some hidden settings.
     deviceBrowserProxy.hasMouse = true;
     deviceBrowserProxy.hasTouchpad = true;
