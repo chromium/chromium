@@ -64,7 +64,7 @@
 <translation id="5972844218283131174">Desmarcar tudo</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6054741997831917303">O preço deste item caiu de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
-<translation id="6193448654517602979">Selecione as guias</translation>
+<translation id="6193448654517602979">Selecionar guias</translation>
 <translation id="6228793724645064692">(nota da loja)</translation>
 <translation id="6333260925957816943">Informações sobre a loja</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Desagrupar <ph name="TABS_COUNT_MANY" /> guia selecionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>

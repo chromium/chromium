@@ -64,7 +64,7 @@
 <translation id="5972844218283131174">Tümünün seçimini kaldır</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
-<translation id="6193448654517602979">Sekmeleri seçin</translation>
+<translation id="6193448654517602979">Sekmeleri seç</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
 <translation id="6333260925957816943">Bu mağazayla ilgili bilgiler</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekme grubunu iptal et}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekme grubunu iptal et}}</translation>

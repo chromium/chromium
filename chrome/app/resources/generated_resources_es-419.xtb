@@ -4145,7 +4145,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4838170306476614339">Ve las fotos, el contenido multimedia y las notificaciones del teléfono</translation>
 <translation id="4838836835474292213">Se permitió el acceso de lectura al portapapeles</translation>
 <translation id="4838907349371614303">Se actualizó la contraseña</translation>
-<translation id="4838958829619609362">La selección no está disponible en <ph name="LANGUAGE" /></translation>
+<translation id="4838958829619609362">La selección no está en <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Guardar video como...</translation>
 <translation id="4839910546484524995">Verifica tu dispositivo</translation>
 <translation id="4840096453115567876">¿Deseas salir del modo Incógnito de todas formas?</translation>
@@ -6766,7 +6766,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7343372807593926528">Describe el problema antes de enviar los comentarios.</translation>
 <translation id="7344585835349671209">Administra certificados HTTPS/SSL en tu dispositivo.</translation>
 <translation id="7345706641791090287">Confirma tu contraseña</translation>
-<translation id="7345919885156673810">La selección no está disponible en <ph name="LANGUAGE" /></translation>
+<translation id="7345919885156673810">La selección no está en <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7347751611463936647">Para usar esta extensión, escribe "<ph name="EXTENSION_KEYWORD" />", luego TAB, luego tu comando o búsqueda.</translation>
 <translation id="7347943691222276892">Haz clic para salir de <ph name="SUBPAGE_TITLE" />.</translation>

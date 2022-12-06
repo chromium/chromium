@@ -56,7 +56,7 @@
 <translation id="5533021382642990449">Показать позже</translation>
 <translation id="5556417849629758491">Просмотр сведений о магазине, параметр вверху экрана</translation>
 <translation id="5558362125926932819">Закрыть группу вкладок. Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="5580090775658607195">Вкладки сгруппированы (всего <ph name="TAB_COUNT" />).</translation>
+<translation id="5580090775658607195">Вкладки (<ph name="TAB_COUNT" />) сгруппированы.</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ссылка из Chrome}one{<ph name="TABS_COUNT_MANY" /> ссылка из Chrome}few{<ph name="TABS_COUNT_MANY" /> ссылки из Chrome}many{<ph name="TABS_COUNT_MANY" /> ссылок из Chrome}other{<ph name="TABS_COUNT_MANY" /> ссылки из Chrome}}</translation>
 <translation id="575494663145460764">Получать оповещения о скидках?</translation>
 <translation id="58326064309361797">Перетаскивайте вкладки, чтобы группировать их</translation>
@@ -64,7 +64,7 @@
 <translation id="5972844218283131174">Отменить выбор</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
-<translation id="6193448654517602979">Выберите вкладки</translation>
+<translation id="6193448654517602979">Выбрать вкладки</translation>
 <translation id="6228793724645064692">(оценка магазина)</translation>
 <translation id="6333260925957816943">Информация об этом магазине</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Отменить группировку для <ph name="TABS_COUNT_ONE" /> выбранной вкладки}one{Отменить группировку для <ph name="TABS_COUNT_MANY" /> выбранной вкладки}few{Отменить группировку для <ph name="TABS_COUNT_MANY" /> выбранных вкладок}many{Отменить группировку для <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Отменить группировку для <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
