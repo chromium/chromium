@@ -216,15 +216,20 @@ void PrefetchService::PrefetchUrl(
   }
 
   if (delegate_) {
-    bool allow_all_domains = PrefetchAllowAllDomains() ||
-                             (PrefetchAllowAllDomainsForExtendedPreloading() &&
-                              delegate_->IsExtendedPreloadingEnabled());
-    if (!allow_all_domains &&
-        !delegate_->IsDomainInPrefetchAllowList(
-            RenderFrameHost::FromID(
-                prefetch_container->GetReferringRenderFrameHostId())
-                ->GetLastCommittedURL())) {
-      return;
+    const auto& prefetch_type = prefetch_container->GetPrefetchType();
+    if (prefetch_type.IsProxyRequired() &&
+        !prefetch_type.IsProxyBypassedForTesting()) {
+      bool allow_all_domains =
+          PrefetchAllowAllDomains() ||
+          (PrefetchAllowAllDomainsForExtendedPreloading() &&
+           delegate_->IsExtendedPreloadingEnabled());
+      if (!allow_all_domains &&
+          !delegate_->IsDomainInPrefetchAllowList(
+              RenderFrameHost::FromID(
+                  prefetch_container->GetReferringRenderFrameHostId())
+                  ->GetLastCommittedURL())) {
+        return;
+      }
     }
 
     delegate_->OnPrefetchLikely(WebContents::FromRenderFrameHost(

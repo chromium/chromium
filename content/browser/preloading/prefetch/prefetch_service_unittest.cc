@@ -801,6 +801,73 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
   EXPECT_FALSE(serveable_prefetch_container);
 }
 
+TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
+  base::HistogramTester histogram_tester;
+
+  // Assume we have a delegate which will not grant access to the proxy for this
+  // domain. Nonetheless a non-proxied prefetch should work.
+  std::unique_ptr<MockPrefetchServiceDelegate> mock_prefetch_service_delegate =
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>();
+  ON_CALL(*mock_prefetch_service_delegate, IsExtendedPreloadingEnabled)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(*mock_prefetch_service_delegate,
+          IsDomainInPrefetchAllowList(testing::_))
+      .WillByDefault(testing::Return(false));
+
+  MakePrefetchService(std::move(mock_prefetch_service_delegate));
+
+  MakePrefetchOnMainFrame(GURL("https://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/false,
+                                       /*use_prefetch_proxy=*/false));
+  base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           /*use_prefetch_proxy=*/false);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
+
+  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+      PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
+  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
+  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
+
+  absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
+      GetMetricsForMostRecentNavigation();
+  ASSERT_TRUE(serving_page_metrics);
+  EXPECT_TRUE(serving_page_metrics->prefetch_status);
+  EXPECT_EQ(serving_page_metrics->prefetch_status.value(),
+            static_cast<int>(PrefetchStatus::kPrefetchSuccessful));
+  EXPECT_FALSE(serving_page_metrics->required_private_prefetch_proxy);
+  EXPECT_TRUE(serving_page_metrics->same_tab_as_prefetching_tab);
+  EXPECT_TRUE(serving_page_metrics->prefetch_header_latency);
+  EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
+            base::Milliseconds(kHeaderLatency));
+
+  base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
+      prefetch_service_->GetPrefetchToServe(GURL("https://example.com"));
+  ASSERT_TRUE(serveable_prefetch_container);
+  EXPECT_TRUE(serveable_prefetch_container->HasPrefetchStatus());
+  EXPECT_EQ(serveable_prefetch_container->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
+  EXPECT_TRUE(serveable_prefetch_container->HasValidPrefetchedResponse(
+      base::TimeDelta::Max()));
+}
+
 TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
   base::HistogramTester histogram_tester;
 
