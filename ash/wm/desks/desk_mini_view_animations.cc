@@ -264,11 +264,12 @@ void PerformNewDeskMiniViewAnimation(
 
   // The new desk button and the desk templates button in the expanded desks bar
   // always move to the right when a new desk is added.
-  AnimateView(expanded_state_new_desk_button, mini_views_right_begin_transform);
-  if (expanded_state_desks_templates_button) {
-    AnimateView(expanded_state_desks_templates_button,
-                mini_views_right_begin_transform);
-  }
+  const auto& button_transform = base::i18n::IsRTL()
+                                     ? mini_views_left_begin_transform
+                                     : mini_views_right_begin_transform;
+  AnimateView(expanded_state_new_desk_button, button_transform);
+  if (expanded_state_desks_templates_button)
+    AnimateView(expanded_state_desks_templates_button, button_transform);
 }
 
 void PerformRemoveDeskMiniViewAnimation(
@@ -289,11 +290,13 @@ void PerformRemoveDeskMiniViewAnimation(
 
   AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
   AnimateMiniViews(mini_views_right, mini_views_right_begin_transform);
-  AnimateView(expanded_state_new_desk_button, mini_views_right_begin_transform);
-  if (expanded_state_desks_templates_button) {
-    AnimateView(expanded_state_desks_templates_button,
-                mini_views_right_begin_transform);
-  }
+
+  const auto& button_transform = base::i18n::IsRTL()
+                                     ? mini_views_left_begin_transform
+                                     : mini_views_right_begin_transform;
+  AnimateView(expanded_state_new_desk_button, button_transform);
+  if (expanded_state_desks_templates_button)
+    AnimateView(expanded_state_desks_templates_button, button_transform);
 }
 
 void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view) {

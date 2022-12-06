@@ -576,9 +576,7 @@ void DeskPreviewView::MaybeSwapHighlightedView(bool right) {
   const int old_index = mini_view_->owner_bar()->GetMiniViewIndex(mini_view_);
   DCHECK_NE(old_index, -1);
 
-  const bool mirrored = mini_view_->owner_bar()->GetMirrored();
-  // If mirrored, flip the swap direction.
-  int new_index = mirrored ^ right ? old_index + 1 : old_index - 1;
+  int new_index = right ? old_index + 1 : old_index - 1;
   if (new_index < 0 ||
       new_index ==
           static_cast<int>(mini_view_->owner_bar()->mini_views().size())) {

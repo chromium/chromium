@@ -6143,8 +6143,8 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
       ->highlight_controller()
       ->MoveHighlightToView(mini_view_0->desk_preview());
 
-  // Swap the positions of the |desk_0| and the |desk_2| by pressing Ctrl + <-.
-  event_generator->PressKey(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
+  // Swap the positions of the |desk_0| and the |desk_2| by pressing Ctrl + ->.
+  event_generator->PressKey(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
 
   // Now, the desks order should be [1, 2, 0]:
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));

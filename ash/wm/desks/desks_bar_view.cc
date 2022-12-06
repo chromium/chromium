@@ -291,9 +291,14 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
       return;
     }
 
-    const std::vector<DeskMiniView*>& mini_views = bar_view_->mini_views();
+    std::vector<DeskMiniView*> mini_views = bar_view_->mini_views();
     if (mini_views.empty())
       return;
+    // When RTL is enabled, we still want desks to be laid our in LTR, to match
+    // the spatial order of desks. Therefore, we reverse the order of the mini
+    // views before laying them out.
+    if (base::i18n::IsRTL())
+      base::ranges::reverse(mini_views);
 
     auto* expanded_state_desks_templates_button =
         bar_view_->expanded_state_desks_templates_button();
@@ -1111,16 +1116,8 @@ int DesksBarView::DetermineMoveIndex(int location_screen_x) const {
   const int views_size = static_cast<int>(mini_views_.size());
 
   // We find the target position according to the x-axis coordinate of the
-  // desks' center positions in screen in ascending order. Therefore, if the
-  // desks bar is mirrored, check from right to left, otherwise check from left
-  // to right.
-  const bool mirrored = GetMirrored();
-  const int start_index = mirrored ? views_size - 1 : 0;
-  const int end_index = mirrored ? -1 : views_size;
-  const int iter_step = mirrored ? -1 : 1;
-
-  for (int new_index = start_index; new_index != end_index;
-       new_index += iter_step) {
+  // desks' center positions in screen in ascending order.
+  for (int new_index = 0; new_index != views_size - 1; ++new_index) {
     auto* mini_view = mini_views_[new_index];
 
     // Note that we cannot directly use |GetBoundsInScreen|. Because we may
@@ -1134,7 +1131,7 @@ int DesksBarView::DetermineMoveIndex(int location_screen_x) const {
       return new_index;
   }
 
-  return end_index - iter_step;
+  return views_size - 1;
 }
 
 bool DesksBarView::MaybeScrollByDraggedDesk() {
