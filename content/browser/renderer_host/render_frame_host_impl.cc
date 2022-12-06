@@ -7783,7 +7783,7 @@ void RenderFrameHostImpl::ReceivedDelegatedCapability(
 }
 
 void RenderFrameHostImpl::BeginNavigation(
-    blink::mojom::CommonNavigationParamsPtr common_params,
+    blink::mojom::CommonNavigationParamsPtr unvalidated_common_params,
     blink::mojom::BeginNavigationParamsPtr begin_params,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
@@ -7793,7 +7793,7 @@ void RenderFrameHostImpl::BeginNavigation(
         renderer_cancellation_listener) {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::BeginNavigation",
               ChromeTrackEvent::kRenderFrameHost, this, "url",
-              common_params->url.possibly_invalid_spec());
+              unvalidated_common_params->url.possibly_invalid_spec());
 
   // Only active and prerendered documents are allowed to start navigation in
   // their frame.
@@ -7815,10 +7815,12 @@ void RenderFrameHostImpl::BeginNavigation(
 
   DCHECK(navigation_client.is_valid());
 
-  blink::mojom::CommonNavigationParamsPtr validated_params =
-      common_params.Clone();
-  if (!VerifyBeginNavigationCommonParams(GetSiteInstance(), &*validated_params))
+  blink::mojom::CommonNavigationParamsPtr validated_common_params =
+      unvalidated_common_params.Clone();
+  if (!VerifyBeginNavigationCommonParams(GetSiteInstance(),
+                                         &*validated_common_params)) {
     return;
+  }
 
   // BeginNavigation() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -7862,7 +7864,7 @@ void RenderFrameHostImpl::BeginNavigation(
   // Only uuid-in-package: URL are allowed for navigation to a resource in
   // Subresource WebBundles.
   if (begin_params->web_bundle_token &&
-      !common_params->url.SchemeIs(url::kUuidInPackageScheme)) {
+      !validated_common_params->url.SchemeIs(url::kUuidInPackageScheme)) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::WEB_BUNDLE_INVALID_NAVIGATION_URL);
     return;
@@ -7873,12 +7875,12 @@ void RenderFrameHostImpl::BeginNavigation(
   // If the request was for a blob URL, but the validated URL is no longer a
   // blob URL, reset the blob_url_token to prevent hitting the ReportBadMessage
   // below, and to make sure we don't incorrectly try to use the blob_url_token.
-  if (common_params->url.SchemeIsBlob() &&
-      !validated_params->url.SchemeIsBlob()) {
+  if (unvalidated_common_params->url.SchemeIsBlob() &&
+      !validated_common_params->url.SchemeIsBlob()) {
     blob_url_token = mojo::NullRemote();
   }
 
-  if (blob_url_token && !validated_params->url.SchemeIsBlob()) {
+  if (blob_url_token && !validated_common_params->url.SchemeIsBlob()) {
     mojo::ReportBadMessage("Blob URL Token, but not a blob: URL");
     return;
   }
@@ -7894,14 +7896,14 @@ void RenderFrameHostImpl::BeginNavigation(
   // situation where a renderer currently doesn't have an easy way of resolving
   // the blob URL. For those situations resolve the blob URL here, as we don't
   // care about ordering with other blob URL manipulation anyway.
-  if (validated_params->url.SchemeIsBlob() && !blob_url_loader_factory) {
+  if (validated_common_params->url.SchemeIsBlob() && !blob_url_loader_factory) {
     blob_url_loader_factory = ChromeBlobStorageContext::URLLoaderFactoryForUrl(
-        GetStoragePartition(), validated_params->url);
+        GetStoragePartition(), validated_common_params->url);
   }
 
   if (waiting_for_init_) {
     pending_navigate_ = std::make_unique<PendingNavigation>(
-        std::move(validated_params), std::move(begin_params),
+        std::move(validated_common_params), std::move(begin_params),
         std::move(blob_url_loader_factory), std::move(navigation_client),
         std::move(renderer_cancellation_listener));
     return;
@@ -7916,9 +7918,9 @@ void RenderFrameHostImpl::BeginNavigation(
   // |initiator_policy_container_host_keep_alive_handle| along.
 
   owner_->GetCurrentNavigator().OnBeginNavigation(
-      frame_tree_node(), std::move(validated_params), std::move(begin_params),
-      std::move(blob_url_loader_factory), std::move(navigation_client),
-      EnsurePrefetchedSignedExchangeCache(),
+      frame_tree_node(), std::move(validated_common_params),
+      std::move(begin_params), std::move(blob_url_loader_factory),
+      std::move(navigation_client), EnsurePrefetchedSignedExchangeCache(),
       std::move(renderer_cancellation_listener));
 }
 
