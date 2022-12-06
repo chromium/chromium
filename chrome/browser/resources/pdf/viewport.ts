@@ -5,6 +5,7 @@
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util_ts.js';
 
 import {ExtendedKeyEvent, FittingType, Point} from './constants.js';
@@ -1056,8 +1057,9 @@ export class Viewport implements ViewportInterface {
   /** Announce zoom level for screen readers. */
   private announceZoom_(): void {
     const announcer = getAnnouncerInstance();
-    announcer.announce(
-        `$i18n{zoomTextInputAriaLabel}: ${Math.round(100 * this.getZoom())}%`);
+    const ariaLabel = loadTimeData.getString('zoomTextInputAriaLabel');
+    const zoom = Math.round(100 * this.getZoom());
+    announcer.announce(`${ariaLabel}: ${zoom}%`);
   }
 
   private pageUpDownSpaceHandler_(e: KeyboardEvent, formFieldFocused: boolean) {
@@ -1236,6 +1238,7 @@ export class Viewport implements ViewportInterface {
   setDocumentDimensions(documentDimensions: DocumentDimensions) {
     this.mightZoom_(() => {
       const initialDimensions = !this.documentDimensions_;
+      const initialRotations = this.getClockwiseRotations();
       this.documentDimensions_ = documentDimensions;
 
       // Override layout direction based on isRTL().
@@ -1258,7 +1261,21 @@ export class Viewport implements ViewportInterface {
       }
       this.contentSizeChanged_();
       this.resize_();
+
+      if (initialRotations !== this.getClockwiseRotations()) {
+        this.announceRotation_();
+      }
     });
+  }
+
+  /** Announce state of rotation, clockwise, for screen readers. */
+  private announceRotation_() {
+    const announcer = getAnnouncerInstance();
+
+    const clockwiseRotationsDegrees = this.getClockwiseRotations() * 90;
+    const rotationStateLabel = loadTimeData.getString(
+        `rotationStateLabel${clockwiseRotationsDegrees}`);
+    announcer.announce(rotationStateLabel);
   }
 
   /** @return The bounds for page `page` minus the shadows. */

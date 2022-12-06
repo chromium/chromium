@@ -116,6 +116,18 @@
     <message name="IDS_PDF_TOOLTIP_ROTATE_CCW" desc="Button tooltip for the button which rotates a PDF document counterclockwise">
       Rotate counterclockwise
     </message>
+    <message name="IDS_PDF_ROTATION_STATE_LABEL_0" desc="Label spoken by screen readers after rotating the PDF document, but is not visually rendered. Describes how many degrees the PDF document is rotated clockwise">
+      0 degrees
+    </message>
+    <message name="IDS_PDF_ROTATION_STATE_LABEL_90" desc="Label spoken by screen readers after rotating the PDF document, but is not visually rendered. Describes how many degrees the PDF document is rotated clockwise">
+      90 degrees
+    </message>
+    <message name="IDS_PDF_ROTATION_STATE_LABEL_180" desc="Label spoken by screen readers after rotating the PDF document, but is not visually rendered. Describes how many degrees the PDF document is rotated clockwise">
+      180 degrees
+    </message>
+    <message name="IDS_PDF_ROTATION_STATE_LABEL_270" desc="Label spoken by screen readers after rotating the PDF document, but is not visually rendered. Describes how many degrees the PDF document is rotated clockwise">
+      270 degrees
+    </message>
     <message name="IDS_PDF_TOOLTIP_DOWNLOAD" desc="Button tooltip for the button to download a PDF document">
       Download
     </message>
