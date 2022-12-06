@@ -49,6 +49,12 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   // Creates all the children views and adds them into layout.
   void CreateLayoutAndChildren();
 
+  // Returns true if full generation popup with `password_view_` was created.
+  // The absence of this view means that only the minimized version of the popup
+  // was created (with just a warning icon signaling that the currently typed
+  // password is weak and expanding to password strength indicator on hover).
+  bool FullPopupVisible() const;
+
   // views:Views implementation.
   void OnThemeChanged() override;
   void OnPaint(gfx::Canvas* canvas) override;

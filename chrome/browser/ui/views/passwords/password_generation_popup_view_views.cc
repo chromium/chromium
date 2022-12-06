@@ -235,7 +235,7 @@ bool PasswordGenerationPopupViewViews::Show() {
 void PasswordGenerationPopupViewViews::Hide() {
   // The controller is no longer valid after it hides us.
   controller_ = nullptr;
-  if (password_view_) {
+  if (FullPopupVisible()) {
     password_view_->reset_controller();
   }
 
@@ -250,7 +250,7 @@ void PasswordGenerationPopupViewViews::UpdateState() {
 }
 
 void PasswordGenerationPopupViewViews::UpdateGeneratedPasswordValue() {
-  if (password_view_) {
+  if (FullPopupVisible()) {
     password_view_->UpdateGeneratedPassword(controller_->password());
   }
   Layout();
@@ -261,17 +261,17 @@ bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
 }
 
 void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
+  DCHECK(FullPopupVisible());
+
   if (controller_->password_selected())
     NotifyAXSelection(this);
 
   if (!GetWidget())
     return;
 
-  if (password_view_) {
-    password_view_->UpdateBackground(controller_->password_selected()
-                                         ? GetSelectedBackgroundColor()
-                                         : GetBackgroundColor());
-  }
+  password_view_->UpdateBackground(controller_->password_selected()
+                                       ? GetSelectedBackgroundColor()
+                                       : GetBackgroundColor());
   SchedulePaint();
 }
 
@@ -335,10 +335,14 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
                         kHorizontalMargin)));
 }
 
+bool PasswordGenerationPopupViewViews::FullPopupVisible() const {
+  return password_view_;
+}
+
 void PasswordGenerationPopupViewViews::OnThemeChanged() {
   autofill::AutofillPopupBaseView::OnThemeChanged();
   SetBackground(views::CreateSolidBackground(GetBackgroundColor()));
-  if (password_view_) {
+  if (FullPopupVisible()) {
     password_view_->UpdateBackground(controller_->password_selected()
                                          ? GetSelectedBackgroundColor()
                                          : GetBackgroundColor());
@@ -358,7 +362,7 @@ void PasswordGenerationPopupViewViews::OnPaint(gfx::Canvas* canvas) {
 
   // Divider line needs to be drawn after OnPaint() otherwise the background
   // will overwrite the divider.
-  if (password_view_) {
+  if (FullPopupVisible()) {
     gfx::Rect divider_bounds(0, password_view_->bounds().bottom(),
                              password_view_->width(), 1);
     canvas->FillRect(divider_bounds,
@@ -378,8 +382,7 @@ void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
 }
 
 gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize() const {
-  // TODO(crbug.com/1345766): Explain this condition here and in other places.
-  if (!password_view_) {
+  if (!FullPopupVisible()) {
     return gfx::Size(kMinimizedPopupWidth, kMinimizedPopupHeight);
   }
 
