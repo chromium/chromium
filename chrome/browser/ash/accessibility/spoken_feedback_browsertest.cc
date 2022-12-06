@@ -791,6 +791,54 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, VolumeSlider) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NextLandmark) {
+  ui::KeyboardCode semicolon = ui::VKEY_OEM_1;
+
+  EnableChromeVox();
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+        <button autofocus>Start here</button>
+        <p>before first landmark</p>
+        <div role="application">application</div>
+        <p>after application</p>
+        <div role="banner">banner</div>
+        <p>after banner</p>
+        <div role="complementary">complementary</div>
+        <p>after complementary</p>
+        <form aria-label="form"></form>
+        <button>after form</button>
+        <div role="main">main</div>
+        <h2>after main</h2>
+        <nav>navigation</nav>
+        <img alt="after navigation"></img>
+        <input type="text" role="search" id="search"></input>
+        <label for="search">search</label>
+        <p>after search</p>)")));
+  });
+  sm_.ExpectSpeech("Start here");
+  sm_.Call([this, semicolon]() { SendKeyPressWithSearch(semicolon); });
+  sm_.ExpectSpeech("application");
+  sm_.Call([this, semicolon]() { SendKeyPressWithSearch(semicolon); });
+  sm_.ExpectSpeech("banner");
+  sm_.Call([this, semicolon]() { SendKeyPressWithSearch(semicolon); });
+  sm_.ExpectSpeech("complementary");
+  sm_.Call([this, semicolon]() { SendKeyPressWithSearch(semicolon); });
+  sm_.ExpectSpeech("form");
+  sm_.Call([this, semicolon]() { SendKeyPressWithSearch(semicolon); });
+  sm_.ExpectSpeech("main");
+  sm_.Call([this, semicolon]() { SendKeyPressWithSearch(semicolon); });
+  sm_.ExpectSpeech("navigation");
+  sm_.Call([this, semicolon]() { SendKeyPressWithSearch(semicolon); });
+  sm_.ExpectSpeech("search");
+  sm_.Call([this, semicolon]() { SendKeyPressWithSearchAndShift(semicolon); });
+  sm_.ExpectSpeech("navigation");
+  sm_.Call([this, semicolon]() { SendKeyPressWithSearchAndShift(semicolon); });
+  sm_.ExpectSpeech("main");
+
+  sm_.Replay();
+}
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
   EnableChromeVox();
   sm_.Call([this]() {
