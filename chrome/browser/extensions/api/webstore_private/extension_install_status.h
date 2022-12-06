@@ -39,21 +39,24 @@ enum ExtensionInstallStatus {
 
 // Returns the Extension install status for a Chrome web store extension with
 // |extension_id| in |profile|. Note that this function won't check whether the
-// extension's manifest type or required permissions are blocked by enterprise
-// policy. type blocking or permission blocking. Please use this function only
-// if manifest file is not available.
+// extension's manifest type, required permissions are blocked by enterprise
+// policy. type blocking or permission blocking or manifest version. Please use
+// this function only if manifest file is not available.
 ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     const ExtensionId& extension_id,
     Profile* profile);
 
 // Returns the Extension install status for a Chrome web store extension with
-// |extension_id| in |profile|. Also check if |manifest_type| or any permission
-// in |required_permission_set| is blocked by enterprise policy.
+// `extension_id` in `profile`. Also check if `manifest_type`, any permission
+// in `required_permission_set` is blocked by enterprise policy or
+// `manifest_version` is allowed.  `manifest_version` is only valid for
+// TYPE_EXTENSION.
 ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     const ExtensionId& extension_id,
     Profile* profile,
     const Manifest::Type manifest_type,
-    const PermissionSet& required_permission_set);
+    const PermissionSet& required_permission_set,
+    int manifest_version = 3);
 
 }  // namespace extensions
 

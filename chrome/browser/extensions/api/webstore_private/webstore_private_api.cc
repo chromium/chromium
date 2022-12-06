@@ -562,7 +562,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
   // Check the management policy before the installation process begins.
   ExtensionInstallStatus install_status = GetWebstoreExtensionInstallStatus(
       id, profile_, dummy_extension_->manifest()->type(),
-      PermissionsParser::GetRequiredPermissions(dummy_extension_.get()));
+      PermissionsParser::GetRequiredPermissions(dummy_extension_.get()),
+      dummy_extension_->manifest_version());
   if (install_status == kBlockedByPolicy) {
     ShowBlockedByPolicyDialog(
         dummy_extension_.get(), icon_, web_contents,
@@ -1331,7 +1332,8 @@ void WebstorePrivateGetExtensionStatusFunction::OnManifestParsed(
 
   ExtensionInstallStatus status = GetWebstoreExtensionInstallStatus(
       extension_id, profile, dummy_extension->GetType(),
-      PermissionsParser::GetRequiredPermissions(dummy_extension.get()));
+      PermissionsParser::GetRequiredPermissions(dummy_extension.get()),
+      dummy_extension->manifest_version());
   api::webstore_private::ExtensionInstallStatus api_status =
       ConvertExtensionInstallStatusForAPI(status);
   Respond(ArgumentList(GetExtensionStatus::Results::Create(api_status)));

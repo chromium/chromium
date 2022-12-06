@@ -10,6 +10,7 @@
 #include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -541,6 +542,53 @@ TEST_F(ExtensionInstallStatusTest, NonWebstoreUpdateUrlPolicy) {
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
                 PermissionSet(api_permissions.Clone(), ManifestPermissionSet(),
                               URLPatternSet(), URLPatternSet())));
+}
+
+TEST_F(ExtensionInstallStatusTest, ManifestVersionIsBlocked) {
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/2));
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/3));
+  SetPolicy(pref_names::kManifestV2Availability,
+            std::make_unique<base::Value>(static_cast<int>(
+                internal::GlobalSettings::ManifestV2Setting::kDisabled)));
+  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/2));
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/3));
+}
+
+TEST_F(ExtensionInstallStatusTest,
+       ManifestVersionIsBlockedWithExtensionRequest) {
+  SetPolicy(prefs::kCloudExtensionRequestEnabled,
+            std::make_unique<base::Value>(true));
+  EXPECT_EQ(ExtensionInstallStatus::kCanRequest,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/2));
+  EXPECT_EQ(ExtensionInstallStatus::kCanRequest,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/3));
+  SetPolicy(pref_names::kManifestV2Availability,
+            std::make_unique<base::Value>(static_cast<int>(
+                internal::GlobalSettings::ManifestV2Setting::kDisabled)));
+  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/2));
+  EXPECT_EQ(ExtensionInstallStatus::kCanRequest,
+            GetWebstoreExtensionInstallStatus(
+                kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
+                PermissionSet(), /*manifest_version=*/3));
 }
 
 }  // namespace extensions
