@@ -12,12 +12,18 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -54,9 +60,12 @@ const char kTestMetricsServiceJs[] =
 
 const char kEmptyHtml[] = "<head></head><body></body>";
 
-class DemoModeAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
+// Base class that sets everything up for the Demo Mode SWA to run, except for
+// putting the device in Demo Mode itself. This is used to verify that the app
+// cannot run outside of Demo Mode.
+class DemoModeAppIntegrationTestBase : public ash::SystemWebAppIntegrationTest {
  public:
-  DemoModeAppIntegrationTest() {
+  DemoModeAppIntegrationTestBase() {
     scoped_feature_list_.InitAndEnableFeature(chromeos::features::kDemoModeSWA);
   }
 
@@ -75,6 +84,27 @@ class DemoModeAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
   base::ScopedTempDir component_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
+};
+
+class DemoModeAppIntegrationTest : public DemoModeAppIntegrationTestBase {
+ public:
+  using DemoModeAppIntegrationTestBase::DemoModeAppIntegrationTestBase;
+
+ protected:
+  // ash::SystemWebAppIntegrationTest:
+  void SetUp() override {
+    // Need to set demo config before SystemWebAppManager is created.
+    ash::DemoSession::SetDemoConfigForTesting(
+        ash::DemoSession::DemoModeConfig::kOnline);
+    DemoModeAppIntegrationTestBase::SetUp();
+  }
+
+  // ash::SystemWebAppIntegrationTest:
+  void SetUpOnMainThread() override {
+    // Need to set install attributes after browser process is created.
+    ash::test::LockDemoDeviceInstallAttributes();
+    DemoModeAppIntegrationTestBase::SetUpOnMainThread();
+  }
 };
 
 // Class that waits for, then asserts, that a widget has entered or exited
@@ -108,6 +138,24 @@ class WidgetFullscreenWaiter : public views::WidgetObserver {
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 };
+
+// Verify that the app isn't registered by SystemWebAppManager when not in Demo
+// Mode.
+IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTestBase, AppIsMissing) {
+  WaitForTestSystemAppInstall();
+
+  absl::optional<web_app::AppId> missing_app_id =
+      GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::DEMO_MODE);
+  ASSERT_FALSE(missing_app_id.has_value());
+}
+
+// Verify that WebUI cannot be navigated to directly from the browser when not
+// in Demo Mode.
+IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTestBase, WebUIDoesNotLaunch) {
+  ASSERT_FALSE(
+      content::NavigateToURL(chrome_test_utils::GetActiveWebContents(this),
+                             GURL(ash::kChromeUntrustedUIDemoModeAppIndexURL)));
+}
 
 // Test that the Demo Mode App installs and launches correctly
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeApp) {
@@ -211,6 +259,9 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
       content::EvalJs(web_contents, R"(document.documentElement.innerHTML)",
                       content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
 }
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
+    DemoModeAppIntegrationTestBase);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
     DemoModeAppIntegrationTest);

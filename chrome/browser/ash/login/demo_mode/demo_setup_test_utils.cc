@@ -117,7 +117,7 @@ void LockDemoDeviceInstallAttributes() {
       g_browser_process->platform_part()->browser_policy_connector_ash();
   LOG(INFO) << "Locking demo mode install attributes";
   connector->GetInstallAttributes()->LockDevice(
-      policy::DEVICE_MODE_ENTERPRISE, "domain.com",
+      policy::DEVICE_MODE_DEMO, "domain.com",
       std::string(),  // realm
       "device-id",
       base::BindOnce(&OnEnterpriseDeviceLock, run_loop.QuitClosure()));
