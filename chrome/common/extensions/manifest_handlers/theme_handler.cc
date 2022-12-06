@@ -21,13 +21,13 @@ namespace errors = manifest_errors;
 
 namespace {
 
-bool LoadImages(const base::DictionaryValue* theme_value,
+bool LoadImages(const base::Value::Dict& theme_dict,
                 std::u16string* error,
                 ThemeInfo* theme_info) {
-  const base::DictionaryValue* images_value = nullptr;
-  if (theme_value->GetDictionary(keys::kThemeImages, &images_value)) {
+  if (const base::Value::Dict* images_dict =
+          theme_dict.FindDict(keys::kThemeImages)) {
     // Validate that the images are all strings.
-    for (const auto item : images_value->GetDict()) {
+    for (const auto item : *images_dict) {
       // The value may be a dictionary of scales and files paths.
       // Or the value may be a file path, in which case a scale
       // of 100% is assumed.
@@ -44,21 +44,18 @@ bool LoadImages(const base::DictionaryValue* theme_value,
       }
     }
     theme_info->theme_images_ = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(images_value->Clone()));
+        base::Value::ToUniquePtrValue(base::Value(images_dict->Clone())));
   }
   return true;
 }
 
-bool LoadColors(const base::Value* theme_value,
+bool LoadColors(const base::Value::Dict& theme_dict,
                 std::u16string* error,
                 ThemeInfo* theme_info) {
-  DCHECK(theme_value);
-  DCHECK(theme_value->is_dict());
-  const base::Value* colors_value =
-      theme_value->FindDictPath(keys::kThemeColors);
-  if (colors_value) {
+  if (const base::Value::Dict* colors_value =
+          theme_dict.FindDict(keys::kThemeColors)) {
     // Validate that the colors are RGB or RGBA lists.
-    for (const auto it : colors_value->DictItems()) {
+    for (const auto it : *colors_value) {
       if (!it.second.is_list()) {
         *error = errors::kInvalidThemeColors;
         return false;
@@ -87,20 +84,20 @@ bool LoadColors(const base::Value* theme_value,
     }
 
     theme_info->theme_colors_ =
-        base::Value::ToUniquePtrValue(colors_value->Clone());
+        base::Value::ToUniquePtrValue(base::Value(colors_value->Clone()));
   }
   return true;
 }
 
-bool LoadTints(const base::DictionaryValue* theme_value,
+bool LoadTints(const base::Value::Dict& theme_dict,
                std::u16string* error,
                ThemeInfo* theme_info) {
-  const base::DictionaryValue* tints_value = nullptr;
-  if (!theme_value->GetDictionary(keys::kThemeTints, &tints_value))
+  const base::Value::Dict* tints_dict = theme_dict.FindDict(keys::kThemeTints);
+  if (!tints_dict)
     return true;
 
   // Validate that the tints are all reals.
-  for (const auto item : tints_value->GetDict()) {
+  for (const auto item : *tints_dict) {
     if (!item.second.is_list()) {
       *error = errors::kInvalidThemeTints;
       return false;
@@ -120,18 +117,18 @@ bool LoadTints(const base::DictionaryValue* theme_value,
   }
 
   theme_info->theme_tints_ = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(tints_value->Clone()));
+      base::Value::ToUniquePtrValue(base::Value(tints_dict->Clone())));
   return true;
 }
 
-bool LoadDisplayProperties(const base::DictionaryValue* theme_value,
+bool LoadDisplayProperties(const base::Value::Dict& theme_dict,
                            std::u16string* error,
                            ThemeInfo* theme_info) {
-  const base::DictionaryValue* display_properties_value = nullptr;
-  if (theme_value->GetDictionary(keys::kThemeDisplayProperties,
-                                 &display_properties_value)) {
-    theme_info->theme_display_properties_ = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(display_properties_value->Clone()));
+  if (const base::Value::Dict* display_properties_value =
+          theme_dict.FindDict(keys::kThemeDisplayProperties)) {
+    theme_info->theme_display_properties_ =
+        base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+            base::Value(display_properties_value->Clone())));
   }
   return true;
 }
@@ -180,20 +177,20 @@ ThemeHandler::~ThemeHandler() {
 }
 
 bool ThemeHandler::Parse(Extension* extension, std::u16string* error) {
-  const base::DictionaryValue* theme_value = nullptr;
-  if (!extension->manifest()->GetDictionary(keys::kTheme, &theme_value)) {
+  const base::Value::Dict* theme_dict =
+      extension->manifest()->FindDictPath(keys::kTheme);
+  if (!theme_dict) {
     *error = errors::kInvalidTheme;
     return false;
   }
-
   std::unique_ptr<ThemeInfo> theme_info(new ThemeInfo);
-  if (!LoadImages(theme_value, error, theme_info.get()))
+  if (!LoadImages(*theme_dict, error, theme_info.get()))
     return false;
-  if (!LoadColors(theme_value, error, theme_info.get()))
+  if (!LoadColors(*theme_dict, error, theme_info.get()))
     return false;
-  if (!LoadTints(theme_value, error, theme_info.get()))
+  if (!LoadTints(*theme_dict, error, theme_info.get()))
     return false;
-  if (!LoadDisplayProperties(theme_value, error, theme_info.get()))
+  if (!LoadDisplayProperties(*theme_dict, error, theme_info.get()))
     return false;
 
   extension->SetManifestData(keys::kTheme, std::move(theme_info));

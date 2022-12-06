@@ -56,9 +56,8 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
                                                   std::u16string* error) {
   const bool has_permission = extensions::PermissionsParser::HasAPIPermission(
       extension, mojom::APIPermissionID::kFileSystemProvider);
-  const base::DictionaryValue* section = nullptr;
-  extension->manifest()->GetDictionary(
-      manifest_keys::kFileSystemProviderCapabilities, &section);
+  const base::Value* section = extension->manifest()->FindDictPathAsValue(
+      manifest_keys::kFileSystemProviderCapabilities);
 
   if (has_permission && !section) {
     *error = manifest_errors::kInvalidFileSystemProviderMissingCapabilities;

@@ -171,8 +171,11 @@ class Manifest final {
   absl::optional<bool> FindBoolPath(base::StringPiece path) const;
   absl::optional<int> FindIntPath(base::StringPiece path) const;
   const std::string* FindStringPath(base::StringPiece path) const;
-  // Deprecated: Use the GetDictionary() overload that accepts a base::Value
-  // output parameter instead.
+
+  const base::Value::Dict* FindDictPath(base::StringPiece path) const;
+  const base::Value* FindDictPathAsValue(base::StringPiece path) const;
+
+  // Deprecated: Use the FindDictPath(asValue) functions instead.
   bool GetDictionary(const std::string& path,
                      const base::DictionaryValue** out_value) const;
   bool GetDictionary(const std::string& path,
