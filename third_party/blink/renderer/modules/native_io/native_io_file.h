@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_file_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -77,28 +78,28 @@ class NativeIOFile final : public ScriptWrappable {
 
   // Performs the file I/O part of close().
   static void DoClose(
-      CrossThreadPersistent<NativeIOFile> native_io_file,
-      CrossThreadPersistent<ScriptPromiseResolver> resolver,
+      CrossThreadHandle<NativeIOFile> native_io_file,
+      CrossThreadHandle<ScriptPromiseResolver> resolver,
       scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
   // Performs the post file I/O part of close(), on the main thread.
-  void DidClose(CrossThreadPersistent<ScriptPromiseResolver> resolver);
+  void DidClose(ScriptPromiseResolver* resolver);
 
   // Performs the file I/O part of getLength(), off the main thread.
   static void DoGetLength(
-      CrossThreadPersistent<NativeIOFile> native_io_file,
-      CrossThreadPersistent<ScriptPromiseResolver> resolver,
+      CrossThreadHandle<NativeIOFile> native_io_file,
+      CrossThreadHandle<ScriptPromiseResolver> resolver,
       scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
   // Performs the post file I/O part of getLength(), on the main thread.
-  void DidGetLength(CrossThreadPersistent<ScriptPromiseResolver> resolver,
+  void DidGetLength(ScriptPromiseResolver* resolver,
                     int64_t length,
                     base::File::Error get_length_error);
 
   // Performs the file I/O part of getLength(), off the main thread.
   static void DoSetLength(
-      CrossThreadPersistent<NativeIOFile> native_io_file,
-      CrossThreadPersistent<ScriptPromiseResolver> resolver,
+      CrossThreadHandle<NativeIOFile> native_io_file,
+      CrossThreadHandle<ScriptPromiseResolver> resolver,
       scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner,
       int64_t expected_length);
@@ -106,7 +107,7 @@ class NativeIOFile final : public ScriptWrappable {
   //
   // `actual_length` is negative if the I/O operation was unsuccessful and the
   // correct length of the file could not be determined.
-  void DidSetLengthIo(CrossThreadPersistent<ScriptPromiseResolver> resolver,
+  void DidSetLengthIo(ScriptPromiseResolver* resolver,
                       int64_t actual_length,
                       base::File::Error set_length_result);
 #if BUILDFLAG(IS_MAC)
@@ -121,23 +122,23 @@ class NativeIOFile final : public ScriptWrappable {
 #endif  // BUILDFLAG(IS_MAC)
 
   // Performs the file I/O part of read(), off the main thread.
-  static void DoRead(CrossThreadPersistent<NativeIOFile> native_io_file,
-                     CrossThreadPersistent<ScriptPromiseResolver> resolver,
+  static void DoRead(CrossThreadHandle<NativeIOFile> native_io_file,
+                     CrossThreadHandle<ScriptPromiseResolver> resolver,
                      scoped_refptr<NativeIOFile::FileState> file_state,
                      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
                      std::unique_ptr<NativeIODataBuffer> result_buffer_data,
                      uint64_t file_offset,
                      int read_size);
   // Performs the post file I/O part of read(), on the main thread.
-  void DidRead(CrossThreadPersistent<ScriptPromiseResolver> resolver,
+  void DidRead(ScriptPromiseResolver* resolver,
                std::unique_ptr<NativeIODataBuffer> result_buffer_data,
                int read_bytes,
                base::File::Error read_error);
 
   // Performs the file I/O part of write(), off the main thread.
   static void DoWrite(
-      CrossThreadPersistent<NativeIOFile> native_io_file,
-      CrossThreadPersistent<ScriptPromiseResolver> resolver,
+      CrossThreadHandle<NativeIOFile> native_io_file,
+      CrossThreadHandle<ScriptPromiseResolver> resolver,
       scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
       std::unique_ptr<NativeIODataBuffer> result_buffer_data,
@@ -147,7 +148,7 @@ class NativeIOFile final : public ScriptWrappable {
   //
   // `actual_file_length_on_failure` is negative if the I/O operation was
   // unsuccessful and the correct length of the file could not be determined.
-  void DidWrite(CrossThreadPersistent<ScriptPromiseResolver> resolver,
+  void DidWrite(ScriptPromiseResolver* resolver,
                 std::unique_ptr<NativeIODataBuffer> result_buffer_data,
                 int written_bytes,
                 base::File::Error write_error,
@@ -156,13 +157,12 @@ class NativeIOFile final : public ScriptWrappable {
 
   // Performs the file I/O part of flush().
   static void DoFlush(
-      CrossThreadPersistent<NativeIOFile> native_io_file,
-      CrossThreadPersistent<ScriptPromiseResolver> resolver,
+      CrossThreadHandle<NativeIOFile> native_io_file,
+      CrossThreadHandle<ScriptPromiseResolver> resolver,
       scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
   // Performs the post file-I/O part of flush(), on the main thread.
-  void DidFlush(CrossThreadPersistent<ScriptPromiseResolver> resolver,
-                base::File::Error flush_error);
+  void DidFlush(ScriptPromiseResolver* resolver, base::File::Error flush_error);
 
   // Kicks off closing the file from the main thread.
   void CloseBackingFile();
