@@ -141,6 +141,7 @@ class ApnListItem extends ApnListItemBase {
       return;
     }
 
+    /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
     this.networkConfig_.removeCustomApn(
         this.guid, /** @type {string} */ (this.apn.id));
   }
