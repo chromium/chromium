@@ -170,6 +170,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::NOTIFICATION_INTERACTIONS, nullptr},
     {ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, nullptr},
     {ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, nullptr},
+    {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS,
+     nullptr},
     // PPAPI_BROKER has been deprecated. The content setting is not used or
     // called from UI, so we don't need a representation JS string.
     {ContentSettingsType::DEPRECATED_PPAPI_BROKER, nullptr},

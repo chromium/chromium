@@ -15,6 +15,7 @@ class BrowserContext;
 }
 
 class FederatedIdentityAccountKeyedPermissionContext;
+class FederatedIdentityIdentityProviderSigninStatusContext;
 
 // Context for storing permissions associated with the ability for a relying
 // party site to pass an identity request to an identity provider through a
@@ -62,6 +63,8 @@ class FederatedIdentityPermissionContext
       active_session_context_;
   std::unique_ptr<FederatedIdentityAccountKeyedPermissionContext>
       sharing_context_;
+  std::unique_ptr<FederatedIdentityIdentityProviderSigninStatusContext>
+      idp_signin_context_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_PERMISSION_CONTEXT_H_

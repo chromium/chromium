@@ -187,6 +187,10 @@ void RemoveFederatedSiteSettingsData(
       pattern_predicate);
 
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS,
+      delete_begin, delete_end, pattern_predicate);
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::FEDERATED_IDENTITY_SHARING, delete_begin, delete_end,
       pattern_predicate);
 }

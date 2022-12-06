@@ -1877,6 +1877,8 @@ static_library("browser") {
     "webid/federated_identity_api_permission_context.h",
     "webid/federated_identity_api_permission_context_factory.cc",
     "webid/federated_identity_api_permission_context_factory.h",
+    "webid/federated_identity_identity_provider_signin_status_context.cc",
+    "webid/federated_identity_identity_provider_signin_status_context.h",
     "webid/federated_identity_permission_context.cc",
     "webid/federated_identity_permission_context.h",
     "webid/federated_identity_permission_context_factory.cc",

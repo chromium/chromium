@@ -5,12 +5,12 @@
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 
 #include "chrome/browser/webid/federated_identity_account_keyed_permission_context.h"
+#include "chrome/browser/webid/federated_identity_identity_provider_signin_status_context.h"
 #include "content/public/browser/browser_context.h"
 
 namespace {
 const char kActiveSessionIdpKey[] = "identity-provider";
 const char kSharingIdpKey[] = "idp-origin";
-const char kIdpSigninStatusKey[] = "idp-signin-status";
 
 }  // namespace
 
@@ -24,7 +24,10 @@ FederatedIdentityPermissionContext::FederatedIdentityPermissionContext(
       sharing_context_(new FederatedIdentityAccountKeyedPermissionContext(
           browser_context,
           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
-          kSharingIdpKey)) {}
+          kSharingIdpKey)),
+      idp_signin_context_(
+          new FederatedIdentityIdentityProviderSigninStatusContext(
+              browser_context)) {}
 
 FederatedIdentityPermissionContext::~FederatedIdentityPermissionContext() =
     default;
@@ -78,35 +81,17 @@ void FederatedIdentityPermissionContext::GrantSharingPermission(
 
 absl::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
     const url::Origin& idp_origin) {
-  auto granted_object =
-      sharing_context_->GetGrantedObject(idp_origin, idp_origin.Serialize());
-
-  if (!granted_object)
-    return absl::nullopt;
-
-  return granted_object->value.GetDict().FindBool(kIdpSigninStatusKey);
+  return idp_signin_context_->GetSigninStatus(idp_origin);
 }
 
 void FederatedIdentityPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     bool idp_signin_status) {
-  auto granted_object =
-      sharing_context_->GetGrantedObject(idp_origin, idp_origin.Serialize());
-  if (granted_object) {
-    base::Value new_object = granted_object->value.Clone();
-    new_object.GetDict().Set(kIdpSigninStatusKey, idp_signin_status);
-    sharing_context_->UpdateObjectPermission(idp_origin, granted_object->value,
-                                             std::move(new_object));
-  } else {
-    base::Value::Dict new_object;
-    new_object.Set(kSharingIdpKey, idp_origin.Serialize());
-    new_object.Set(kIdpSigninStatusKey, base::Value(idp_signin_status));
-    sharing_context_->GrantObjectPermission(idp_origin,
-                                            base::Value(std::move(new_object)));
-  }
+  idp_signin_context_->SetSigninStatus(idp_origin, idp_signin_status);
 }
 
 void FederatedIdentityPermissionContext::FlushScheduledSaveSettingsCalls() {
   active_session_context_->FlushScheduledSaveSettingsCalls();
   sharing_context_->FlushScheduledSaveSettingsCalls();
+  idp_signin_context_->FlushScheduledSaveSettingsCalls();
 }
