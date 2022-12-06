@@ -36848,6 +36848,8 @@ Called by update_extension_permission.py.-->
   <int value="22" label="Failed to bond to device via public address"/>
   <int value="23"
       label="BLE device instance lost mid pair with classic device instance"/>
+  <int value="24"
+      label="Timed out while attempting to create bond with device"/>
   <int value="25"
       label="Potential pairing device lost while attempting GATT connection"/>
 </enum>
