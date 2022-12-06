@@ -184,16 +184,8 @@ void UkmSource::PopulateProto(Source* proto_source) const {
   if (navigation_data_.is_same_document_navigation)
     proto_source->set_is_same_document_navigation(true);
 
-  ukm::Source_SameOriginStatus status = ukm::Source::UNSET;
-  if (navigation_data_.same_origin_status ==
-      UkmSource::NavigationData::SameOriginStatus::SAME_ORIGIN) {
-    status = ukm::Source::SAME_ORIGIN;
-  } else if (navigation_data_.same_origin_status ==
-             UkmSource::NavigationData::SameOriginStatus::CROSS_ORIGIN) {
-    status = ukm::Source::CROSS_ORIGIN;
-  }
-
-  proto_source->mutable_navigation_metadata()->set_same_origin_status(status);
+  proto_source->mutable_navigation_metadata()->set_same_origin_status(
+      navigation_data_.same_origin_status);
   proto_source->mutable_navigation_metadata()->set_is_renderer_initiated(
       navigation_data_.is_renderer_initiated);
   proto_source->mutable_navigation_metadata()->set_is_error_page(

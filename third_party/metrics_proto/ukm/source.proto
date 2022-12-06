@@ -35,23 +35,67 @@ enum AndroidActivityType {
   WEB_APK = 4;
 }
 
-// Source contains data related to a top-level navigation.
+// This signifies if the reported source is a navigation to the same origin as
+// the previous document.
+// Its value is "unset" for error pages and same document navigations.
+// It is "same origin" when the previous document is of the same origin as the
+// one we're navigating to.
+// Otherwise, it is "cross origin".
+enum SameOriginStatus {
+  SAME_ORIGIN_STATUS_UNSET = 0;
+  SAME_ORIGIN = 1;
+  CROSS_ORIGIN = 2;
+}
+
+enum UrlScheme {
+  URL_SCHEME_UNSUPPORTED = 0;
+  HTTP = 1;
+  HTTPS = 2;
+  FTP = 3;
+  ABOUT = 4;
+  CHROME = 5;
+  CHROME_EXTENSION = 6;
+  APP = 7;
+}
+
+message UrlInfo {
+  optional string url = 1;
+
+  // Number of URLs seen for this source before the current URL.
+  // If unset, it’s equivalent to the count of the UrlInfo before it + 1,
+  // or 0 if it’s the first UrlInfo.
+  optional int32 previous_url_count = 2;
+}
+
+message NavigationMetadata {
+  // Whether this is the same origin as the previous document, cross-origin or
+  // unset.
+  optional SameOriginStatus same_origin_status = 1;
+
+  // Whether this navigation is initiated by the renderer.
+  // Renderer-initiated navigations include navigations that were triggered
+  // from Javascript, by users interacting with the content (e.g. clicking
+  // on <a> links or submitting forms, or by client-side redirects.
+  // On the other hand, we have browser-initiated navigations, e.g. ones
+  // triggered by the user interacting with the browser's UI.
+  optional bool is_renderer_initiated = 2;
+
+  // Whether the navigation committed an error page, as a result of a network
+  // error.
+  optional bool is_error_page = 3;
+}
+
 // Next tag: 20
 message Source {
-  // The URL scheme, such as HTTP, HTTPS, CHROME_EXTENSION, etc.
-  enum UrlScheme {
-    UNSUPPORTED = 0;
-    HTTP = 1;
-    HTTPS = 2;
-    FTP = 3;
-    ABOUT = 4;
-    CHROME = 5;
-    CHROME_EXTENSION = 6;
-    APP = 7;
-  }
-
   // An identifier for the source. This should be unique within a session.
   optional int64 id = 1;
+
+  // The type, which is based on how the Source is created.
+  optional SourceType type = 16;
+
+  // Unique identifier (for a given client_id/session_id) for the tab this
+  // source is associated with. Should only be set for navigation sources.
+  optional int64 tab_id = 10;
 
   // The source id of the last committed non-same-document navigation for the
   // tab this source is in. Should only be set for navigation sources. For
@@ -78,21 +122,7 @@ message Source {
   // navigation source in a tab.
   optional int64 opener_source_id = 12;
 
-  // Type of the source id.
-  optional SourceType type = 16;
-
-  // Holds data about a URL seen by the client.
-  message UrlInfo {
-    // The URL seen by the client.
-    optional string url = 1;
-
-    // Number of URLs seen for this source before the current URL.
-    // If unset, it’s equivalent to the count of the UrlInfo before it + 1,
-    // or 0 if it’s the first UrlInfo.
-    optional int32 previous_url_count = 2;
-  }
-
-  // Data about each URL associated with the source_id within the record's
+  // Data about each URL associated with the Source within the record's
   // scope, in the order that the URLs were encountered. Data may include full
   // or partial redirect chains for main frame navigations.
   repeated UrlInfo urls = 8;
@@ -105,36 +135,6 @@ message Source {
   // document navigations are fragment navigations, pushState/replaceState,
   // and same page history navigation.
   optional bool is_same_document_navigation = 13;
-
-  // This signifies if the reported source is a navigation to the same origin as
-  // the previous document.
-  // Its value is "unset" for error pages and same document navigations.
-  // It is "same origin" when the previous document is of the same origin as the
-  // one we're navigating to.
-  // Otherwise, it is "cross origin".
-  enum SameOriginStatus {
-    UNSET = 0;
-    SAME_ORIGIN = 1;
-    CROSS_ORIGIN = 2;
-  }
-
-  message NavigationMetadata {
-    // Whether this is the same origin as the previous document, cross-origin or
-    // unset.
-    optional SameOriginStatus same_origin_status = 1;
-
-    // Whether this navigation is initiated by the renderer.
-    // Renderer-initiated navigations include navigations that were triggered
-    // from Javascript, by users interacting with the content (e.g. clicking
-    // on <a> links or submitting forms, or by client-side redirects.
-    // On the other hand, we have browser-initiated navigations, e.g. ones
-    // triggered by the user interacting with the browser's UI.
-    optional bool is_renderer_initiated = 2;
-
-    // Whether the navigation committed an error page, as a result of a network
-    // error.
-    optional bool is_error_page = 3;
-  }
 
   // Metadata about the navigation that is set when the URL is recorded.
   optional NavigationMetadata navigation_metadata = 17;
@@ -150,14 +150,9 @@ message Source {
   // The initial URL of the source. Set in cases where the source URL changed
   // (e.g. it was redirected), otherwise unset. If this URL has not been
   // discovered by Google's crawler, it should not be recorded.
-  optional string initial_url = 6;
+  optional string deprecated_initial_url = 6 [deprecated = true];
 
-  // Flag indicating if the metric was collected while inside a "custom tab".
-  // Replaced by |android_activity_type| below.
-  optional bool deprecated_is_custom_tab = 7 [deprecated = true];
-
-  // For Android only. Denotes the Chrome activity type when the source was
-  // created. See
+  // Denotes the Chrome Android activity type when created. See
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/flags/android/chrome_session_state.h;l=20;drc=c14f6f4b9c44fe479a8d004576b42723b2a5feb6
   optional AndroidActivityType android_activity_type = 18;
 
@@ -169,7 +164,6 @@ message Source {
   // monotonically increase within each session.
   optional int64 navigation_time_msec = 3;
 
-  // Unique identifier (for a given client_id/session_id) for the tab this
-  // source is associated with. Should only be set for navigation sources.
-  optional int64 tab_id = 10;
+  reserved 4;
+  reserved 7;
 }

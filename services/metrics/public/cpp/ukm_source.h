@@ -14,6 +14,7 @@
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/ukm/source.pb.h"
 #include "url/gurl.h"
 
 namespace ukm {
@@ -49,8 +50,8 @@ class METRICS_EXPORT UkmSource {
     // - For navigation sources, this will only contain at most two elements,
     //   one for the first URL in the redirect chain and one for the final URL
     //   that committed.
-    //   TODO(crbug.com/869123): This may end up containing all the URLs in the
-    //   redirect chain for navigation sources.
+    // TODO(crbug.com/869123): This may end up containing all the URLs in the
+    // redirect chain for navigation sources.
     std::vector<GURL> urls;
 
     // The previous source id for this tab.
@@ -75,20 +76,13 @@ class METRICS_EXPORT UkmSource {
     // and same page history navigation.
     bool is_same_document_navigation = false;
 
-    // Represents the same origin status of the navigation compared to the
-    // previous document.
-    enum SameOriginStatus {
-      UNSET = 0,
-      SAME_ORIGIN,
-      CROSS_ORIGIN,
-    };
-
     // Whether this is the same origin as the previous document.
     //
     // This is set to the NavigationHandle's same origin state when the
     // navigation is committed, is not a same document navigation and is not
     // committed as an error page. Otherwise, this remains unset.
-    SameOriginStatus same_origin_status = SameOriginStatus::UNSET;
+    SameOriginStatus same_origin_status =
+        SameOriginStatus::SAME_ORIGIN_STATUS_UNSET;
 
     // Whether this navigation is initiated by the renderer.
     bool is_renderer_initiated = false;

@@ -247,7 +247,7 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, NavigationMetadata) {
   EXPECT_TRUE(full_nav_source1.has_id());
   EXPECT_FALSE(full_nav_source1.navigation_metadata().is_renderer_initiated());
   EXPECT_EQ(full_nav_source1.navigation_metadata().same_origin_status(),
-            ukm::Source::CROSS_ORIGIN);
+            ukm::CROSS_ORIGIN);
   EXPECT_FALSE(full_nav_source1.navigation_metadata().is_error_page());
 
   // The second navigation was a same-origin renderer-initiated navigation to
@@ -257,7 +257,7 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, NavigationMetadata) {
   EXPECT_TRUE(
       same_origin_source1.navigation_metadata().is_renderer_initiated());
   EXPECT_EQ(same_origin_source1.navigation_metadata().same_origin_status(),
-            ukm::Source::SAME_ORIGIN);
+            ukm::SAME_ORIGIN);
   EXPECT_FALSE(same_origin_source1.navigation_metadata().is_error_page());
 
   // The third navigation was a browser initiated navigation to url2.
@@ -265,7 +265,7 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, NavigationMetadata) {
   EXPECT_TRUE(full_nav_source2.has_id());
   EXPECT_FALSE(full_nav_source2.navigation_metadata().is_renderer_initiated());
   EXPECT_EQ(full_nav_source2.navigation_metadata().same_origin_status(),
-            ukm::Source::CROSS_ORIGIN);
+            ukm::CROSS_ORIGIN);
   EXPECT_FALSE(full_nav_source2.navigation_metadata().is_error_page());
 
   // The fourth navigation was a cross-origin renderer-initiated navigation to
@@ -275,7 +275,7 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, NavigationMetadata) {
   EXPECT_TRUE(
       cross_origin_source2.navigation_metadata().is_renderer_initiated());
   EXPECT_EQ(cross_origin_source2.navigation_metadata().same_origin_status(),
-            ukm::Source::CROSS_ORIGIN);
+            ukm::CROSS_ORIGIN);
   EXPECT_FALSE(cross_origin_source2.navigation_metadata().is_error_page());
 
   // The fifth navigation was an error page. Make sure it's is_error_page flag
@@ -284,6 +284,6 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, NavigationMetadata) {
   EXPECT_TRUE(error_page_source.has_id());
   EXPECT_FALSE(error_page_source.navigation_metadata().is_renderer_initiated());
   EXPECT_EQ(error_page_source.navigation_metadata().same_origin_status(),
-            ukm::Source::UNSET);
+            ukm::SAME_ORIGIN_STATUS_UNSET);
   EXPECT_TRUE(error_page_source.navigation_metadata().is_error_page());
 }
