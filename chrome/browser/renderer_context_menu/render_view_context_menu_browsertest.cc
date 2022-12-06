@@ -62,6 +62,7 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metadata.mojom.h"
+#include "components/lens/lens_testing_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_data.h"
@@ -106,6 +107,8 @@
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
@@ -1827,6 +1830,18 @@ class SearchByRegionBrowserBaseTest : public InProcessBrowserTest {
       quit_closure_.Run();
   }
 
+  // Ensures the last request seen by |web_contents| contained encoded image
+  // data
+  void ExpectThatRequestContainsImageData(content::WebContents* web_contents) {
+    auto* last_entry = web_contents->GetController().GetLastCommittedEntry();
+    EXPECT_TRUE(last_entry);
+    EXPECT_TRUE(last_entry->GetHasPostData());
+
+    std::string post_data = last_entry->GetPageState().ToEncodedData();
+    std::string image_bytes = lens::GetImageBytesFromEncodedPostData(post_data);
+    EXPECT_FALSE(image_bytes.empty());
+  }
+
   // Sets up a custom test default search engine in order to test region search
   // for non-Google DSEs. Parameter to choose whether this test search engine
   // supports side image search.
@@ -1887,7 +1902,7 @@ class SearchByRegionWithSidePanelBrowserTest
     InProcessBrowserTest::SetUp();
   }
 
-  void SimulateDragAndVerifyLensUrl(RenderViewContextMenu* menu) {
+  void SimulateDragAndVerifyLensRequest(RenderViewContextMenu* menu) {
     // Create the Lens side panel controller if it does not exist. This allows
     // us to get the side panel web contents without waiting for it to be
     // created post-drag on a first time start up.
@@ -1908,6 +1923,7 @@ class SearchByRegionWithSidePanelBrowserTest
     std::string side_panel_content =
         contents->GetLastCommittedURL().GetContent();
     VerifyLensUrl(side_panel_content, expected_content);
+    ExpectThatRequestContainsImageData(contents);
   }
 
   void AttemptLensRegionSearchWithSidePanel() {
@@ -1917,7 +1933,7 @@ class SearchByRegionWithSidePanelBrowserTest
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
         base::BindOnce(&SearchByRegionWithSidePanelBrowserTest::
-                           SimulateDragAndVerifyLensUrl,
+                           SimulateDragAndVerifyLensRequest,
                        base::Unretained(this)));
     RightClickToOpenContextMenu();
   }
@@ -1988,7 +2004,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     VerifyLensUrl(side_panel_content, expected_content);
   }
 
-  void SimulateDragAndVerifyLensUrl(RenderViewContextMenu* menu) {
+  void SimulateDragAndVerifyLensRequest(RenderViewContextMenu* menu) {
     SearchByRegionBrowserBaseTest::SimulateDragAndVerifyOverlayUI(menu);
     content::WebContents* contents =
         GetLensUnifiedSidePanelWebContentsAfterNavigation();
@@ -1997,6 +2013,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     std::string side_panel_content =
         contents->GetLastCommittedURL().GetContent();
     VerifyLensUrl(side_panel_content, expected_content);
+    ExpectThatRequestContainsImageData(contents);
   }
 
   void SimulateDragAndVerifyNonGoogleUrl(RenderViewContextMenu* menu) {
@@ -2014,6 +2031,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
         side_panel_content,
         testing::MatchesRegex(expected_content.substr(0, query_start_pos) +
                               ".*sideimagesearch=1"));
+    ExpectThatRequestContainsImageData(contents);
     quit_closure_.Run();
   }
 
@@ -2037,7 +2055,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
         base::BindOnce(&SearchByRegionWithUnifiedSidePanelBrowserTest::
-                           SimulateDragAndVerifyLensUrl,
+                           SimulateDragAndVerifyLensRequest,
                        base::Unretained(this)));
     RightClickToOpenContextMenu();
   }

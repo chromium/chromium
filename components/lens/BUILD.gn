@@ -21,6 +21,8 @@ static_library("lens") {
     "lens_metadata.cc",
     "lens_metadata.h",
     "lens_rendering_environment.h",
+    "lens_testing_utils.cc",
+    "lens_testing_utils.h",
     "lens_url_utils.cc",
     "lens_url_utils.h",
   ]
