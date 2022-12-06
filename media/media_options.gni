@@ -118,39 +118,39 @@ declare_args() {
 
 assert(
     !enable_platform_ac3_eac3_audio || proprietary_codecs,
-    "proprietary_codecs=true is required for enable_platform_ac3_eac3_audio=true.")
+    "proprietary_codecs required for enable_platform_ac3_eac3_audio")
 assert(
     !enable_platform_mpeg_h_audio || proprietary_codecs,
-    "proprietary_codecs=true is required for enable_platform_mpeg_h_audio=true.")
+    "proprietary_codecs required for enable_platform_mpeg_h_audio")
 assert(
     !enable_mse_mpeg2ts_stream_parser || proprietary_codecs,
-    "proprietary_codecs=true is required for enable_mse_mpeg2ts_stream_parser=true.")
+    "proprietary_codecs required for enable_mse_mpeg2ts_stream_parser")
 assert(
     !enable_platform_dolby_vision || proprietary_codecs,
-    "proprietary_codecs=true is required for enable_platform_dolby_vision=true.")
+    "proprietary_codecs required for enable_platform_dolby_vision")
 assert(
     !enable_platform_encrypted_dolby_vision || enable_platform_dolby_vision,
-    "enable_platform_dolby_vision=true is required for enable_platform_encrypted_dolby_vision=true.")
+    "enable_platform_dolby_vision required for enable_platform_encrypted_dolby_vision")
 assert(!enable_hls_sample_aes || proprietary_codecs,
-       "proprietary_codecs=true is required for enable_hls_sample_aes=true.")
+       "proprietary_codecs required for enable_hls_sample_aes")
 assert(
     !enable_platform_dts_audio || proprietary_codecs,
-    "proprietary_codecs=true is required for enable_platform_dts_audio=true.")
+    "proprietary_codecs required for enable_platform_dts_audio")
 
 assert(
     !enable_hls_sample_aes || enable_mse_mpeg2ts_stream_parser,
-    "enable_mse_mpeg2ts_stream_parser=true is required for enable_hls_sample_aes=true.")
+    "enable_mse_mpeg2ts_stream_parser required for enable_hls_sample_aes")
 
 assert(
     !enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,
-    "enable_mse_mpeg2ts_stream_parser=true is required for enable_hls_demuxer=true.")
+    "enable_mse_mpeg2ts_stream_parser required for enable_hls_demuxer")
 
 assert(!enable_platform_hevc || proprietary_codecs,
-       "proprietary_codecs=true is required for enable_platform_hevc=true.")
+       "proprietary_codecs required for enable_platform_hevc")
 
 assert(
     !enable_hevc_parser_and_hw_decoder || enable_platform_hevc,
-    "enable_platform_hevc=true is required for enable_hevc_parser_and_hw_decoder=true.")
+    "enable_platform_hevc required for enable_hevc_parser_and_hw_decoder")
 
 # Most DolbyVision profiles (4, 5, 7, 8, not 9) require HEVC support. It's very
 # unlikely that we support DolbyVision on a new platform without requiring HEVC
@@ -158,7 +158,7 @@ assert(
 # https://professionalsupport.dolby.com/s/article/What-is-Dolby-Vision-Profile
 assert(
     !enable_platform_dolby_vision || enable_platform_hevc,
-    "enable_platform_hevc=true is required for enable_platform_dolby_vision=true.")
+    "enable_platform_hevc required for enable_platform_dolby_vision")
 
 # Use another declare_args() to pick up possible overrides of |use_cras|.
 declare_args() {
