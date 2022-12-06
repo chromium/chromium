@@ -1,0 +1,22 @@
+diff --git a/third_party/private_membership/src/private_membership_rlwe.proto b/third_party/private_membership/src/private_membership_rlwe.proto
+index 34a4f25b34b1e..b431a1bd40405 100644
+--- a/third_party/private_membership/src/private_membership_rlwe.proto
++++ b/third_party/private_membership/src/private_membership_rlwe.proto
+@@ -97,7 +97,7 @@ message RlwePlaintextId {
+ 
+ // Different use cases of the RLWE-based PSM protocol.
+ //
+-// NEXT ID: 18
++// NEXT ID: 21
+ enum RlweUseCase {
+   RLWE_USE_CASE_UNDEFINED = 0;
+   TEST_USE_CASE = 1;
+@@ -117,6 +117,8 @@ enum RlweUseCase {
+   CROS_FRESNEL_FIRST_ACTIVE = 15;
+   CROS_FRESNEL_7DAY_ACTIVE = 16;
+   CROS_FRESNEL_28DAY_ACTIVE = 17;
++  CROS_FRESNEL_CHURN_MONTHLY_COHORT = 19;
++  CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION = 20;
+ 
+   reserved 4, 6, 7, 8, 9, 10, 11;
+ }
