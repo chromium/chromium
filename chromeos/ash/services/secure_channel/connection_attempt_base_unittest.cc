@@ -424,7 +424,7 @@ TEST_F(SecureChannelConnectionAttemptBaseTest,
   EXPECT_EQ(2u, extracted_client_data.size());
 
   // The extracted client data may not be returned in the same order that as the
-  // associated requests were added to |conenction_attempt_|, since
+  // associated requests were added to |connection_attempt_|, since
   // ConnectionAttemptBase internally utilizes a std::unordered_map. Sort the
   // data before making verifications to ensure correctness.
   std::sort(extracted_client_data.begin(), extracted_client_data.end(),

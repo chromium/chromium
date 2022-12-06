@@ -310,7 +310,7 @@ class MockConnectionObserver : public ConnectionObserver {
   void OnMessageReceived(const Connection& connection,
                          const WireMessage& message) override {}
 
-  void OnSendCompleted(const Connection& conenction,
+  void OnSendCompleted(const Connection& connection,
                        const WireMessage& message,
                        bool success) override {
     last_deserialized_message_ = message.payload();
