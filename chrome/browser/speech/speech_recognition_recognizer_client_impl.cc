@@ -145,7 +145,7 @@ void SpeechRecognitionRecognizerClientImpl::OnSpeechRecognitionError() {
 
 void SpeechRecognitionRecognizerClientImpl::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
-  // Do nothing.
+  // TODO(b/260372471): pipe through language info.
 }
 
 void SpeechRecognitionRecognizerClientImpl::OnSpeechRecognitionStopped() {

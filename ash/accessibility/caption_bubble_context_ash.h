@@ -5,6 +5,7 @@
 #ifndef ASH_ACCESSIBILITY_CAPTION_BUBBLE_CONTEXT_ASH_H_
 #define ASH_ACCESSIBILITY_CAPTION_BUBBLE_CONTEXT_ASH_H_
 
+#include "ash/ash_export.h"
 #include "components/live_caption/caption_bubble_context.h"
 
 namespace ash {
@@ -15,7 +16,8 @@ namespace captions {
 //
 //  The implementation of the Caption Bubble Context for Ash.
 //
-class CaptionBubbleContextAsh : public ::captions::CaptionBubbleContext {
+class ASH_EXPORT CaptionBubbleContextAsh
+    : public ::captions::CaptionBubbleContext {
  public:
   CaptionBubbleContextAsh();
   ~CaptionBubbleContextAsh() override;
