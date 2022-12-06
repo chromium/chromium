@@ -32,8 +32,7 @@ using CertIssuerSources = std::vector<CertIssuerSource*>;
 // Returns a hex-encoded sha256 of the DER-encoding of |cert|.
 std::string FingerPrintParsedCertificate(const net::ParsedCertificate* cert) {
   uint8_t digest[SHA256_DIGEST_LENGTH];
-  SHA256(cert->der_cert().AsSpan().data(), cert->der_cert().AsSpan().size(),
-         digest);
+  SHA256(cert->der_cert().UnsafeData(), cert->der_cert().Length(), digest);
   return net::string_util::HexEncode(digest, sizeof(digest));
 }
 

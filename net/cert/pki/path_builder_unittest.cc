@@ -8,7 +8,6 @@
 
 #include "base/base_paths.h"
 #include "base/callback_forward.h"
-#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
