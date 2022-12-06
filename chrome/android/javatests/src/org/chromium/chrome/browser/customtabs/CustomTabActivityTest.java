@@ -37,7 +37,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -447,13 +446,8 @@ public class CustomTabActivityTest {
                                    .shouldEmphasizeHttpsScheme());
         // TODO(https://crbug.com/871805): Use helper class to determine whether dark status icons
         // are supported.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            assertEquals(expectedColor,
-                    mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());
-        } else {
-            assertEquals(ColorUtils.getDarkenedColorForStatusBar(expectedColor),
-                    mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());
-        }
+        assertEquals(expectedColor,
+                mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());
 
         MenuButton menuButtonView = toolbarView.findViewById(R.id.menu_button_wrapper);
         assertEquals(ColorUtils.shouldUseLightForegroundOnBackground(expectedColor)

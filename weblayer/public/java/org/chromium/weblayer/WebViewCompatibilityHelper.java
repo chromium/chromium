@@ -33,11 +33,9 @@ final class WebViewCompatibilityHelper {
         // Prepend "/." to all library paths. This changes the library path while still pointing to
         // the same directory, allowing us to get around a check in the JVM. This is only necessary
         // for N+, where we rely on linker namespaces.
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            for (int i = 0; i < libraryPaths.length; i++) {
-                assert libraryPaths[i].startsWith("/");
-                libraryPaths[i] = "/." + libraryPaths[i];
-            }
+        for (int i = 0; i < libraryPaths.length; i++) {
+            assert libraryPaths[i].startsWith("/");
+            libraryPaths[i] = "/." + libraryPaths[i];
         }
 
         String dexPath = getAllApkPaths(info.applicationInfo);

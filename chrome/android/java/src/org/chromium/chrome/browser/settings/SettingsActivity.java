@@ -484,9 +484,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         if (UiUtils.isSystemUiThemingDisabled()) return;
 
-        // Dark status icons only supported on M+.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
-
         // Use transparent color, so the AppBarLayout can color the status bar on scroll.
         ApiCompatibilityUtils.setStatusBarColor(getWindow(), Color.TRANSPARENT);
 

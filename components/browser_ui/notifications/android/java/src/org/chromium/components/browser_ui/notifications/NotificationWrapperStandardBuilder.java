@@ -83,9 +83,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
 
     @Override
     public NotificationWrapperBuilder setSmallIcon(Icon icon) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ApiHelperForM.setSmallIcon(mBuilder, icon);
-        }
+        ApiHelperForM.setSmallIcon(mBuilder, icon);
         return this;
     }
 
