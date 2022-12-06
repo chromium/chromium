@@ -141,7 +141,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
       std::unique_ptr<base::RepeatingTimer> report_timer,
       const std::string& fresnel_server_url,
       const std::string& api_key,
-      std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases);
+      std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases,
+      base::Time chrome_first_run_time);
   DeviceActivityClient(const DeviceActivityClient&) = delete;
   DeviceActivityClient& operator=(const DeviceActivityClient&) = delete;
   ~DeviceActivityClient() override;
@@ -269,6 +270,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // This field is only used to determine total state duration, which is
   // reported to UMA via. histograms.
   base::ElapsedTimer state_timer_;
+
+  // The chrome first run sentinel creation time.
+  base::Time chrome_first_run_time_;
 
   // Tracks the visible networks and their properties.
   // |network_state_handler_| outlives the lifetime of this class.

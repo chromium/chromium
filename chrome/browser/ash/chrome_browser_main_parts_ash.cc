@@ -1684,8 +1684,7 @@ void ChromeBrowserMainPartsAsh::StartDeviceActivityController() {
           g_browser_process->local_state(),
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory(),
-          device_activity::DeviceActivityController::DetermineStartUpDelay(
-              first_run::GetFirstRunSentinelCreationTime()));
+          first_run::GetFirstRunSentinelCreationTime());
 #endif
 }
 

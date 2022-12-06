@@ -56,7 +56,7 @@ class DeviceActivityControllerTest : public testing::Test {
 
     device_activity_controller_ = std::make_unique<DeviceActivityController>(
         kFakeChromeParameters, local_state(), test_shared_loader_factory_,
-        /* start_up_delay */ base::Minutes(0));
+        /* first_run_sentinel_time*/ base::Time());
   }
 
   void TearDown() override { device_activity_controller_.reset(); }

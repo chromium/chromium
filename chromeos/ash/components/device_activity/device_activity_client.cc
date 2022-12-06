@@ -233,8 +233,10 @@ DeviceActivityClient::DeviceActivityClient(
     std::unique_ptr<base::RepeatingTimer> report_timer,
     const std::string& fresnel_base_url,
     const std::string& api_key,
-    std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases)
-    : network_state_handler_(handler),
+    std::vector<std::unique_ptr<DeviceActiveUseCase>> use_cases,
+    base::Time chrome_first_run_time)
+    : chrome_first_run_time_(chrome_first_run_time),
+      network_state_handler_(handler),
       url_loader_factory_(url_loader_factory),
       report_timer_(std::move(report_timer)),
       fresnel_base_url_(fresnel_base_url),
@@ -446,11 +448,23 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
       }
     }
   } else {
-    RecordPreservedFileState(
-        DeviceActivityClient::PreservedFileState::kReadFail);
-    LOG(ERROR) << "Preserved File read has failed. State of local states is "
-                  "not checked. "
-               << "Error from DBus: " << response.error_message();
+    base::Time current_time = base::Time::Now();
+    // If the device is not a new device and the local pref is empty, then
+    // record the error count in uma histogram.
+    if ((current_time - chrome_first_run_time_) > base::Days(1)) {
+      DeviceActiveUseCase* device_active_use_case_ptr =
+          GetUseCasePtr(psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY);
+      if (!device_active_use_case_ptr->IsLastKnownPingTimestampSet()) {
+        // Local pref is empty. To avoid when the chrome signout or reboot
+        // to record unnecessary uma hisgtogram.
+        RecordPreservedFileState(
+            DeviceActivityClient::PreservedFileState::kReadFail);
+        LOG(ERROR)
+            << "Preserved File read has failed. State of local states is "
+               "not checked. "
+            << "Error from DBus: " << response.error_message();
+      }
+    }
   }
 
   // Always trigger step to check for network status changing after reading the

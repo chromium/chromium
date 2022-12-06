@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::TimeDelta start_up_delay);
+      base::Time chrome_first_run_time);
   DeviceActivityController(const DeviceActivityController&) = delete;
   DeviceActivityController& operator=(const DeviceActivityController&) = delete;
   ~DeviceActivityController();
@@ -74,6 +74,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
       const std::string& psm_device_active_secret);
 
   std::unique_ptr<DeviceActivityClient> da_client_network_;
+
+  // Reads the creation time of the first run sentinel file. If the first run
+  // sentinel file does not exist, it will return base::Time().
+  const base::Time chrome_first_run_time_;
 
   // Creates a copy of chrome parameters, which is owned throughout
   // |DeviceActivityController| object lifetime.
