@@ -3669,9 +3669,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForNonEmbeddedPDF) {
-  WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
+
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
 
   // Verify that current focus state is document element.
   const std::string script =
@@ -3681,7 +3684,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForNonEmbeddedPDF) {
 
   bool result = false;
   ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(guest_contents, script, &result));
+      content::ExecuteScriptAndExtractBool(guest_mainframe, script, &result));
   ASSERT_TRUE(result);
 }
 
