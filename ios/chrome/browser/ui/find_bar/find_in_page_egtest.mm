@@ -171,14 +171,17 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
 - (void)openFindInPage {
   [ChromeEarlGreyUI openToolsMenu];
+
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuFindInPageId),
                                    grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 250)
-      onElementWithMatcher:grey_accessibilityID(
-                               kPopupMenuToolsMenuActionListId)]
-      performAction:grey_tap()];
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
 }
 
 - (void)closeFindInPage {
