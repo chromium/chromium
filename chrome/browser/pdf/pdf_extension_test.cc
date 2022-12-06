@@ -2090,9 +2090,9 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ContextMenuPrintCommandPluginFrame) {
-  content::WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
   ASSERT_TRUE(plugin_frame);
 
   // Makes sure that the correct frame invoked the context menu.
@@ -2102,7 +2102,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ContextMenuPrintCommandPluginFrame) {
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   PrintObserver print_observer(plugin_frame);
-  SetInputFocusOnPlugin(guest_contents);
+  SetInputFocusOnPlugin(guest);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitForPrintPreview();
