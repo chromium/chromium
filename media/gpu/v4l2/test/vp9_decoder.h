@@ -79,6 +79,9 @@ class Vp9Decoder : public VideoDecoder {
   // VP9-specific data.
   const std::unique_ptr<Vp9Parser> vp9_parser_;
 
+  // Supports parsed compressed headers
+  const bool supports_compressed_headers_;
+
   // Reference frames currently in use.
   std::array<scoped_refptr<MmapedBuffer>, kVp9NumRefFrames> ref_frames_;
 };

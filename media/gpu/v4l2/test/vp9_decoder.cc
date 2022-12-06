@@ -100,7 +100,40 @@ void FillV4L2VP9SegmentationParams(const Vp9SegmentationParams& vp9_seg_params,
   SafeArrayMemcpy(v4l2_seg->feature_data, vp9_seg_params.feature_data);
 }
 
-// TODO(b/228876644): assert that |parsing_compressed_header| is indeed false.
+static void FillV4L2VP9MvProbsParams(const Vp9FrameContext& vp9_ctx,
+                                     struct v4l2_vp9_mv_probs* v4l2_mv_probs) {
+  SafeArrayMemcpy(v4l2_mv_probs->joint, vp9_ctx.mv_joint_probs);
+  SafeArrayMemcpy(v4l2_mv_probs->sign, vp9_ctx.mv_sign_prob);
+  SafeArrayMemcpy(v4l2_mv_probs->classes, vp9_ctx.mv_class_probs);
+  SafeArrayMemcpy(v4l2_mv_probs->class0_bit, vp9_ctx.mv_class0_bit_prob);
+  SafeArrayMemcpy(v4l2_mv_probs->bits, vp9_ctx.mv_bits_prob);
+  SafeArrayMemcpy(v4l2_mv_probs->class0_fr, vp9_ctx.mv_class0_fr_probs);
+  SafeArrayMemcpy(v4l2_mv_probs->fr, vp9_ctx.mv_fr_probs);
+  SafeArrayMemcpy(v4l2_mv_probs->class0_hp, vp9_ctx.mv_class0_hp_prob);
+  SafeArrayMemcpy(v4l2_mv_probs->hp, vp9_ctx.mv_hp_prob);
+}
+
+static void FillV4L2VP9ProbsParams(
+    const Vp9FrameContext& vp9_ctx,
+    struct v4l2_ctrl_vp9_compressed_hdr* v4l2_probs) {
+  SafeArrayMemcpy(v4l2_probs->tx8, vp9_ctx.tx_probs_8x8);
+  SafeArrayMemcpy(v4l2_probs->tx16, vp9_ctx.tx_probs_16x16);
+  SafeArrayMemcpy(v4l2_probs->tx32, vp9_ctx.tx_probs_32x32);
+  SafeArrayMemcpy(v4l2_probs->coef, vp9_ctx.coef_probs);
+  SafeArrayMemcpy(v4l2_probs->skip, vp9_ctx.skip_prob);
+  SafeArrayMemcpy(v4l2_probs->inter_mode, vp9_ctx.inter_mode_probs);
+  SafeArrayMemcpy(v4l2_probs->interp_filter, vp9_ctx.interp_filter_probs);
+  SafeArrayMemcpy(v4l2_probs->is_inter, vp9_ctx.is_inter_prob);
+  SafeArrayMemcpy(v4l2_probs->comp_mode, vp9_ctx.comp_mode_prob);
+  SafeArrayMemcpy(v4l2_probs->single_ref, vp9_ctx.single_ref_prob);
+  SafeArrayMemcpy(v4l2_probs->comp_ref, vp9_ctx.comp_ref_prob);
+  SafeArrayMemcpy(v4l2_probs->y_mode, vp9_ctx.y_mode_probs);
+  SafeArrayMemcpy(v4l2_probs->uv_mode, vp9_ctx.uv_mode_probs);
+  SafeArrayMemcpy(v4l2_probs->partition, vp9_ctx.partition_probs);
+
+  FillV4L2VP9MvProbsParams(vp9_ctx, &v4l2_probs->mv);
+}
+
 Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                        std::unique_ptr<V4L2Queue> OUTPUT_queue,
@@ -110,23 +143,20 @@ Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                                  std::move(CAPTURE_queue)),
       ivf_parser_(std::move(ivf_parser)),
       vp9_parser_(
-          std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false)) {
+          std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/true)),
+      supports_compressed_headers_(
+          v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP9_COMPRESSED_HDR)) {
   DCHECK(v4l2_ioctl_);
-
-  // TODO(b/230021497): add change in SetExtCtrls function.
-  CHECK(!v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP9_COMPRESSED_HDR))
-      << "VP9 compressed header not supported with current platform decoding "
-         "code.";
-
-  // MTK8192, MTK8195 don't support V4L2_CID_STATELESS_VP9_COMPRESSED_HDR.
-  LOG(INFO) << "VIDIOC_QUERYCTRL ioctl failure with "
-               "V4L2_CID_STATELESS_VP9_COMPRESSED_HDR is expected because VP9 "
-               "compressed header is not supported on current platform. VP9 "
-               "compressed header support is optional.";
 
   // This control was landed in v5.17 and is pretty much a marker that the
   // driver supports the stable API.
   DCHECK(v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP9_FRAME));
+
+  // MediaTek platforms don't support V4L2_CID_STATELESS_VP9_COMPRESSED_HDR.
+  LOG_IF(INFO, !supports_compressed_headers_)
+      << "VIDIOC_QUERYCTRL ioctl failure with "
+         "V4L2_CID_STATELESS_VP9_COMPRESSED_HDR is expected because VP9 "
+         "compressed header support is optional.";
 }
 
 Vp9Decoder::~Vp9Decoder() = default;
@@ -459,11 +489,21 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   SetupFrameParams(frame_hdr, &v4l2_frame_params);
 
-  struct v4l2_ext_control ext_ctrl = {.id = V4L2_CID_STATELESS_VP9_FRAME,
-                                      .size = sizeof(v4l2_frame_params),
-                                      .ptr = &v4l2_frame_params};
+  struct v4l2_ext_control ext_ctrl[2] = {{.id = V4L2_CID_STATELESS_VP9_FRAME,
+                                          .size = sizeof(v4l2_frame_params),
+                                          .ptr = &v4l2_frame_params}};
 
-  struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = &ext_ctrl};
+  struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = ext_ctrl};
+
+  struct v4l2_ctrl_vp9_compressed_hdr v4l2_compressed_hdr_probs = {};
+  if (supports_compressed_headers_) {
+    v4l2_compressed_hdr_probs.tx_mode = frame_hdr.compressed_header.tx_mode;
+    FillV4L2VP9ProbsParams(frame_hdr.frame_context, &v4l2_compressed_hdr_probs);
+
+    ext_ctrl[ext_ctrls.count++] = {.id = V4L2_CID_STATELESS_VP9_COMPRESSED_HDR,
+                                   .size = sizeof(v4l2_compressed_hdr_probs),
+                                   .ptr = &v4l2_compressed_hdr_probs};
+  }
 
   if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls))
     LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
