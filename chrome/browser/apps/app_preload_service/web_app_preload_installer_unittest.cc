@@ -143,15 +143,4 @@ TEST_F(WebAppPreloadInstallerTest, InstallOverUserApp) {
   ASSERT_TRUE(found);
 }
 
-TEST_F(WebAppPreloadInstallerTest, GetAppId) {
-  WebAppPreloadInstaller installer(profile());
-
-  proto::AppProvisioningResponse_App app;
-  app.set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
-  app.mutable_web_extras()->set_manifest_id("https://cursive.apps.chrome/");
-
-  ASSERT_EQ(installer.GetAppId(PreloadAppDefinition(app)),
-            "apignacaigpffemhdbhmnajajaccbckh");
-}
-
 }  // namespace apps

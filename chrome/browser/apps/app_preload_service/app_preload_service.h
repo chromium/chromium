@@ -66,8 +66,6 @@ class AppPreloadService : public KeyedService {
   // whether the overall flow was successful.
   void OnFirstLoginFlowComplete(bool success);
 
-  bool ShouldInstallApp(const PreloadAppDefinition& app);
-
   const base::Value::Dict& GetStateManager() const;
 
   raw_ptr<Profile> profile_;
