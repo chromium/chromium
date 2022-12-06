@@ -7355,7 +7355,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         No network connection
       </message>
       <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_OFFLINE_SUBTITLE_TEXT" desc="Instructions to user when they are offline.">
-        please check your internet connection and try again
+        Check your internet connection and try again
       </message>
       <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_OFFLINE_BUTTON_LABEL" desc="Label for button which allows the user to retry connection.">
         Try again
