@@ -73,6 +73,7 @@ class UserImageManagerImpl : public UserImageManager,
 
   static void IgnoreProfileDataDownloadDelayForTesting();
   static void SkipProfileImageDownloadForTesting();
+  static void SkipDefaultUserImageDownloadForTesting();
 
   // Key for a dictionary that maps user IDs to user image data with images
   // stored in JPEG format.

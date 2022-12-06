@@ -64,6 +64,8 @@ static bool g_ignore_profile_data_download_delay_ = false;
 
 static bool g_skip_profile_download = false;
 
+static bool g_skip_default_user_image_download = false;
+
 // Saves `image_bytes` at `image_path`, and delete the old file at
 // `old_image_path` if needed.
 bool SaveAndDeleteImage(scoped_refptr<base::RefCountedBytes> image_bytes,
@@ -325,6 +327,17 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
   if (ash::features::IsAvatarsCloudMigrationEnabled()) {
     // Fetch the default image from cloud before caching it.
     image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
+
+    if (g_skip_default_user_image_download) {
+      auto user_image = std::make_unique<user_manager::UserImage>(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_LOGIN_DEFAULT_USER));
+      UpdateUser(std::move(user_image));
+      UpdateLocalState();
+      NotifyJobDone();
+      return;
+    }
+
     user_image_loader::StartWithGURLAnimated(
         image_url_, base::BindOnce(&Job::OnLoadImageDone,
                                    weak_factory_.GetWeakPtr(), true));
@@ -780,6 +793,11 @@ void UserImageManagerImpl::IgnoreProfileDataDownloadDelayForTesting() {
 // static
 void UserImageManagerImpl::SkipProfileImageDownloadForTesting() {
   g_skip_profile_download = true;
+}
+
+// static
+void UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting() {
+  g_skip_default_user_image_download = true;
 }
 
 bool UserImageManagerImpl::NeedsProfilePicture() const {

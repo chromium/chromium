@@ -314,7 +314,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
 class UserImageManagerTest : public UserImageManagerTestBase {
  public:
   UserImageManagerTest() {
-    feature_list_.InitAndDisableFeature(ash::features::kAvatarsCloudMigration);
+    feature_list_.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
     login_manager_mixin_.AppendRegularUsers(1);
     test_account_id1_ = login_manager_mixin_.users()[0].account_id;
   }
@@ -373,9 +373,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
       user_manager::UserManager::Get()->FindUser(test_account_id1_);
   ASSERT_TRUE(user);
 
-  const gfx::ImageSkia& default_image =
-      default_user_image::GetDefaultImageDeprecated(
-          default_user_image::kFirstDefaultImageIndex);
+  UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
 
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
@@ -384,7 +382,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
-  EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
   ExpectUserImageInfo(test_account_id1_,
                       default_user_image::kFirstDefaultImageIndex,
                       base::FilePath());
@@ -540,7 +537,7 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
  protected:
   UserImageManagerPolicyTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()) {
-    feature_list_.InitAndDisableFeature(ash::features::kAvatarsCloudMigration);
+    feature_list_.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
     login_manager_.AppendManagedUsers(1);
     enterprise_account_id_ = login_manager_.users()[0].account_id;
     cryptohome_id_ = cryptohome::CreateAccountIdentifierFromAccountId(
@@ -668,6 +665,8 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   EXPECT_EQ(policy_image_.width(), saved_image.width());
   EXPECT_EQ(policy_image_.height(), saved_image.height());
 
+  UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
+
   // Clear policy. Verify that the user image switches to a random default
   // image.
   user_policy_.payload().Clear();
@@ -683,24 +682,19 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
 
   const int default_image_index = user->image_index();
   EXPECT_TRUE(user->HasDefaultImage());
-  ASSERT_LE(default_user_image::kFirstDefaultImageIndex, default_image_index);
-  ASSERT_GT(default_user_image::kFirstDefaultImageIndex +
-                default_user_image::kDefaultImagesCount,
-            default_image_index);
-  const gfx::ImageSkia& default_image =
-      default_user_image::GetDefaultImageDeprecated(default_image_index);
-  EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
+  EXPECT_TRUE(default_user_image::IsValidIndex(default_image_index));
+  EXPECT_TRUE(default_user_image::IsInCurrentImageSet(default_image_index));
   ExpectUserImageInfo(enterprise_account_id_, default_image_index,
                       base::FilePath());
 
   // Choose a different user image. Verify that the chosen user image is set and
   // persisted.
   const int user_image_index =
-      default_user_image::kFirstDefaultImageIndex +
-      (default_image_index - default_user_image::kFirstDefaultImageIndex + 1) %
-          default_user_image::kDefaultImagesCount;
-  const gfx::ImageSkia& user_image =
-      default_user_image::GetDefaultImageDeprecated(user_image_index);
+      default_image_index == default_user_image::kFirstDefaultImageIndex
+          ? default_user_image::kFirstDefaultImageIndex + 1
+          : default_user_image::kFirstDefaultImageIndex;
+  EXPECT_TRUE(default_user_image::IsValidIndex(user_image_index));
+  EXPECT_TRUE(default_user_image::IsInCurrentImageSet(user_image_index));
 
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(enterprise_account_id_);
@@ -708,7 +702,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(user_image_index, user->image_index());
-  EXPECT_TRUE(test::AreImagesEqual(user_image, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_, user_image_index,
                       base::FilePath());
 }
@@ -727,12 +720,10 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   policy::CloudPolicyStore* store = GetStoreForUser(user);
   ASSERT_TRUE(store);
 
+  UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
+
   // Choose a user image. Verify that the chosen user image is set and
   // persisted.
-  const gfx::ImageSkia& default_image =
-      default_user_image::GetDefaultImageDeprecated(
-          default_user_image::kFirstDefaultImageIndex);
-
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(enterprise_account_id_);
   user_image_manager->SaveUserDefaultImageIndex(
@@ -740,7 +731,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
-  EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_,
                       default_user_image::kFirstDefaultImageIndex,
                       base::FilePath());
