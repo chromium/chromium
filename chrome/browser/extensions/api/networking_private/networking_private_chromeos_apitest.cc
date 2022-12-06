@@ -136,22 +136,22 @@ class NetworkingPrivateChromeOSApiTestBase
     AddProfile(kUser1ProfilePath, userhash);
 
     // Add IPConfigs
-    base::DictionaryValue ipconfig;
-    ipconfig.SetKey(shill::kAddressProperty, base::Value("0.0.0.0"));
-    ipconfig.SetKey(shill::kGatewayProperty, base::Value("0.0.0.1"));
-    ipconfig.SetKey(shill::kPrefixlenProperty, base::Value(0));
-    ipconfig.SetKey(shill::kMethodProperty, base::Value(shill::kTypeIPv4));
-    AddIPConfig(kIPConfigPath, ipconfig);
+    base::Value::Dict ipconfig;
+    ipconfig.Set(shill::kAddressProperty, "0.0.0.0");
+    ipconfig.Set(shill::kGatewayProperty, "0.0.0.1");
+    ipconfig.Set(shill::kPrefixlenProperty, 0);
+    ipconfig.Set(shill::kMethodProperty, shill::kTypeIPv4);
+    AddIPConfig(kIPConfigPath, base::Value(std::move(ipconfig)));
 
     // Add Devices
     AddDevice(kEthernetDevicePath, shill::kTypeEthernet,
               "stub_ethernet_device1");
 
     AddDevice(kWifiDevicePath, shill::kTypeWifi, "stub_wifi_device1");
-    base::ListValue wifi_ip_configs;
+    base::Value::List wifi_ip_configs;
     wifi_ip_configs.Append(kIPConfigPath);
     SetDeviceProperty(kWifiDevicePath, shill::kIPConfigsProperty,
-                      wifi_ip_configs);
+                      base::Value(std::move(wifi_ip_configs)));
     SetDeviceProperty(kWifiDevicePath, shill::kAddressProperty,
                       base::Value("001122aabbcc"));
 
@@ -176,16 +176,16 @@ class NetworkingPrivateChromeOSApiTestBase
                        base::Value(true));
     SetServiceProperty(kWifi1ServicePath, shill::kDeviceProperty,
                        base::Value(kWifiDevicePath));
-    base::DictionaryValue static_ipconfig;
-    static_ipconfig.SetKey(shill::kAddressProperty, base::Value("1.2.3.4"));
-    static_ipconfig.SetKey(shill::kGatewayProperty, base::Value("0.0.0.0"));
-    static_ipconfig.SetKey(shill::kPrefixlenProperty, base::Value(1));
+    base::Value::Dict static_ipconfig;
+    static_ipconfig.Set(shill::kAddressProperty, "1.2.3.4");
+    static_ipconfig.Set(shill::kGatewayProperty, "0.0.0.0");
+    static_ipconfig.Set(shill::kPrefixlenProperty, 1);
     SetServiceProperty(kWifi1ServicePath, shill::kStaticIPConfigProperty,
-                       static_ipconfig);
-    base::ListValue frequencies1;
+                       base::Value(std::move(static_ipconfig)));
+    base::Value::List frequencies1;
     frequencies1.Append(2400);
     SetServiceProperty(kWifi1ServicePath, shill::kWifiFrequencyListProperty,
-                       frequencies1);
+                       base::Value(std::move(frequencies1)));
     SetServiceProperty(kWifi1ServicePath, shill::kWifiFrequency,
                        base::Value(2400));
     AddServiceToProfile(kUser1ProfilePath, kWifi1ServicePath);
@@ -199,11 +199,11 @@ class NetworkingPrivateChromeOSApiTestBase
     SetServiceProperty(kWifi2ServicePath, shill::kConnectableProperty,
                        base::Value(true));
 
-    base::ListValue frequencies2;
+    base::Value::List frequencies2;
     frequencies2.Append(2400);
     frequencies2.Append(5000);
     SetServiceProperty(kWifi2ServicePath, shill::kWifiFrequencyListProperty,
-                       frequencies2);
+                       base::Value(std::move(frequencies2)));
     SetServiceProperty(kWifi2ServicePath, shill::kWifiFrequency,
                        base::Value(5000));
     SetServiceProperty(kWifi2ServicePath, shill::kProfileProperty,
@@ -227,12 +227,12 @@ class NetworkingPrivateChromeOSApiTestBase
     // Add a Cellular GSM Device.
     AddDevice(kCellularDevicePath, shill::kTypeCellular,
               "stub_cellular_device1");
-    base::DictionaryValue home_provider;
-    home_provider.SetStringKey("name", "Cellular1_Provider");
-    home_provider.SetStringKey("code", "000000");
-    home_provider.SetStringKey("country", "us");
+    base::Value::Dict home_provider;
+    home_provider.Set("name", "Cellular1_Provider");
+    home_provider.Set("code", "000000");
+    home_provider.Set("country", "us");
     SetDeviceProperty(kCellularDevicePath, shill::kHomeProviderProperty,
-                      home_provider);
+                      base::Value(std::move(home_provider)));
     SetDeviceProperty(kCellularDevicePath, shill::kTechnologyFamilyProperty,
                       base::Value(shill::kNetworkTechnologyGsm));
     SetDeviceProperty(kCellularDevicePath, shill::kMeidProperty,
@@ -1077,21 +1077,21 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
 #endif
   SetupCellular();
   // Create fake list of found networks.
-  std::unique_ptr<base::ListValue> found_networks =
+  base::Value::List found_networks =
       extensions::ListBuilder()
           .Append(extensions::DictionaryBuilder()
                       .Set(shill::kNetworkIdProperty, "network1")
                       .Set(shill::kTechnologyProperty, "GSM")
                       .Set(shill::kStatusProperty, "current")
-                      .Build())
+                      .BuildDict())
           .Append(extensions::DictionaryBuilder()
                       .Set(shill::kNetworkIdProperty, "network2")
                       .Set(shill::kTechnologyProperty, "GSM")
                       .Set(shill::kStatusProperty, "available")
-                      .Build())
-          .Build();
+                      .BuildDict())
+          .BuildList();
   SetDeviceProperty(kCellularDevicePath, shill::kFoundNetworksProperty,
-                    *found_networks);
+                    base::Value(std::move(found_networks)));
   EXPECT_TRUE(RunNetworkingSubtest("selectCellularMobileNetwork")) << message_;
 }
 
@@ -1109,19 +1109,19 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, CellularSimPuk) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, GetGlobalPolicy) {
-  base::DictionaryValue global_config;
-  global_config.SetKey(
+  base::Value::Dict global_config;
+  global_config.Set(
       ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
-      base::Value(true));
-  global_config.SetKey(
-      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
-      base::Value(false));
-  global_config.SetKey("SomeNewGlobalPolicy", base::Value(false));
+      true);
+  global_config.Set(::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
+                    false);
+  global_config.Set("SomeNewGlobalPolicy", false);
   ash::NetworkHandler::Get()
       ->managed_network_configuration_handler()
       ->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
-                  std::string() /* no username hash */, base::ListValue(),
-                  global_config);
+                  std::string() /* no username hash */,
+                  base::Value(base::Value::List()),
+                  base::Value(std::move(global_config)));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(RunNetworkingSubtest("getGlobalPolicy")) << message_;
