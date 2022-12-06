@@ -55,7 +55,20 @@ constexpr inline bool is_raw_ref_v = is_raw_ref<T>::value;
 // means the reference inside it can be moved and reassigned.
 template <class T, class RawPtrType = DefaultRawPtrType>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
+  // operator* is used with the expectation of GetForExtraction semantics:
+  //
+  // raw_ref<Foo> foo_raw_ref = something;
+  // Foo& foo_ref = *foo_raw_ref;
+  //
+  // The implementation of operator* provides GetForDereference semantics, and
+  // this results in spurious crashes in BRP-ASan builds, so we need to disable
+  // BRP-ASan instrumentation for raw_ref.
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  using Inner = raw_ptr<T, RawPtrNoOp>;
+#else
   using Inner = raw_ptr<T, RawPtrType>;
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
   using Impl = typename raw_ptr_traits::RawPtrTypeToImpl<RawPtrType>::Impl;
   // These impls do not clear on move, which produces an inconsistent behaviour.
   // We want consistent behaviour such that using a raw_ref after move is caught
