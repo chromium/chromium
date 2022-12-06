@@ -60,7 +60,6 @@ CSSStyleSheet* InlineCSSStyleDeclaration::ParentStyleSheet() const {
 void InlineCSSStyleDeclaration::Trace(Visitor* visitor) const {
   visitor->Trace(parent_element_);
   AbstractPropertySetCSSStyleDeclaration::Trace(visitor);
-  ElementRareDataField::Trace(visitor);
 }
 
 }  // namespace blink

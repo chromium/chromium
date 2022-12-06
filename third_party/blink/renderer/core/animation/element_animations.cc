@@ -56,7 +56,6 @@ void ElementAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(effect_stack_);
   visitor->Trace(animations_);
   visitor->Trace(worklet_animations_);
-  ElementRareDataField::Trace(visitor);
 }
 
 bool ElementAnimations::UpdateBoxSizeAndCheckTransformAxisAlignment(

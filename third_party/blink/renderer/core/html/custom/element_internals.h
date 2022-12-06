@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
@@ -23,8 +22,7 @@ class HTMLElement;
 class ValidityStateFlags;
 
 class CORE_EXPORT ElementInternals : public ScriptWrappable,
-                                     public ListedElement,
-                                     public ElementRareDataField {
+                                     public ListedElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

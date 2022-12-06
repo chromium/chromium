@@ -29,13 +29,11 @@
 #include "third_party/blink/renderer/core/css/abstract_property_set_css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 
 namespace blink {
 
 class InlineCSSStyleDeclaration final
-    : public AbstractPropertySetCSSStyleDeclaration,
-      public ElementRareDataField {
+    : public AbstractPropertySetCSSStyleDeclaration {
  public:
   explicit InlineCSSStyleDeclaration(Element* parent_element)
       : AbstractPropertySetCSSStyleDeclaration(

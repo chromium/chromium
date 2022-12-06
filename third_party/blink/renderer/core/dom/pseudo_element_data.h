@@ -7,14 +7,12 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/transition_pseudo_element_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class PseudoElementData final : public GarbageCollected<PseudoElementData>,
-                                public ElementRareDataField {
+class PseudoElementData final : public GarbageCollected<PseudoElementData> {
  public:
   PseudoElementData() = default;
   PseudoElementData(const PseudoElementData&) = delete;
@@ -32,14 +30,13 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
 
   bool HasPseudoElements() const;
   void ClearPseudoElements();
-  void Trace(Visitor* visitor) const override {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(generated_before_);
     visitor->Trace(generated_after_);
     visitor->Trace(generated_marker_);
     visitor->Trace(generated_first_letter_);
     visitor->Trace(backdrop_);
     visitor->Trace(transition_data_);
-    ElementRareDataField::Trace(visitor);
   }
 
  private:

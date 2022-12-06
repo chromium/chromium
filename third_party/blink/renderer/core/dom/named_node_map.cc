@@ -131,7 +131,6 @@ bool NamedNodeMap::NamedPropertyQuery(const AtomicString& name,
 void NamedNodeMap::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   ScriptWrappable::Trace(visitor);
-  ElementRareDataField::Trace(visitor);
 }
 
 }  // namespace blink

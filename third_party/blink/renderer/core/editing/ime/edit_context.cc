@@ -870,7 +870,6 @@ void EditContext::Trace(Visitor* visitor) const {
   ActiveScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
-  ElementRareDataField::Trace(visitor);
   visitor->Trace(attached_elements_);
 }
 

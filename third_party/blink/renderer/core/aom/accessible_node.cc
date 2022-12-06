@@ -1218,7 +1218,6 @@ void AccessibleNode::Trace(Visitor* visitor) const {
   visitor->Trace(children_);
   visitor->Trace(parent_);
   EventTargetWithInlineData::Trace(visitor);
-  ElementRareDataField::Trace(visitor);
 }
 
 }  // namespace blink

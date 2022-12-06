@@ -8,12 +8,10 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 
 namespace blink {
 
-class CORE_EXPORT InlineStylePropertyMap final : public StylePropertyMap,
-                                                 public ElementRareDataField {
+class CORE_EXPORT InlineStylePropertyMap final : public StylePropertyMap {
  public:
   explicit InlineStylePropertyMap(Element* owner_element)
       : owner_element_(owner_element) {}
@@ -23,7 +21,6 @@ class CORE_EXPORT InlineStylePropertyMap final : public StylePropertyMap,
   void Trace(Visitor* visitor) const override {
     visitor->Trace(owner_element_);
     StylePropertyMap::Trace(visitor);
-    ElementRareDataField::Trace(visitor);
   }
 
   unsigned int size() const final;

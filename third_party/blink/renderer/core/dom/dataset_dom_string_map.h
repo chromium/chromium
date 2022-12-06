@@ -27,15 +27,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DATASET_DOM_STRING_MAP_H_
 
 #include "third_party/blink/renderer/core/dom/dom_string_map.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 
 namespace blink {
 
 class Element;
 class ExceptionState;
 
-class DatasetDOMStringMap final : public DOMStringMap,
-                                  public ElementRareDataField {
+class DatasetDOMStringMap final : public DOMStringMap {
  public:
   explicit DatasetDOMStringMap(Element* element) : element_(element) {}
 

@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NAMED_NODE_MAP_H_
 
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -36,7 +35,7 @@ namespace blink {
 class Attr;
 class ExceptionState;
 
-class NamedNodeMap final : public ScriptWrappable, public ElementRareDataField {
+class NamedNodeMap final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
   friend class Element;
 

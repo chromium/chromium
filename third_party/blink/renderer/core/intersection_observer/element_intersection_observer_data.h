@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
-#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -21,8 +20,7 @@ class IntersectionObserverController;
 
 class CORE_EXPORT ElementIntersectionObserverData final
     : public GarbageCollected<ElementIntersectionObserverData>,
-      public NameClient,
-      public ElementRareDataField {
+      public NameClient {
  public:
   ElementIntersectionObserverData();
   ~ElementIntersectionObserverData() final = default;
@@ -49,7 +47,7 @@ class CORE_EXPORT ElementIntersectionObserverData final
   // algorithm is invalid and must be recomputed.
   void InvalidateCachedRects();
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override {
     return "ElementIntersectionObserverData";
   }

@@ -23,7 +23,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_RARE_DATA_H_
 
 #include "base/check_op.h"
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -143,7 +142,7 @@ struct DowncastTraits<ElementRareData> {
   }
 };
 
-class CORE_EXPORT NodeRenderingData final : public NodeData {
+class NodeRenderingData final : public NodeData {
  public:
   NodeRenderingData(LayoutObject*,
                     scoped_refptr<const ComputedStyle> computed_style);
