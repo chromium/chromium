@@ -470,6 +470,11 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
            sampler_state_.min_filter != GL_LINEAR;
   }
 
+  size_t MaxValidMipLevel() const {
+    DCHECK(!face_infos_.empty());
+    return face_infos_[0].level_infos.size();
+  }
+
  private:
   friend class MailboxManagerTest;
   friend class TextureManager;
@@ -932,6 +937,11 @@ class GPU_GLES2_EXPORT TextureManager
   bool ValidForTarget(
       GLenum target, GLint level,
       GLsizei width, GLsizei height, GLsizei depth);
+  bool ValidForTextureTarget(const Texture* texture,
+                             GLint level,
+                             GLsizei width,
+                             GLsizei height,
+                             GLsizei depth);
 
   // True if this texture meets all the GLES2 criteria for rendering.
   // See section 3.8.2 of the GLES2 spec.
