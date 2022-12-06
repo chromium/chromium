@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 
+#include <ostream>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
