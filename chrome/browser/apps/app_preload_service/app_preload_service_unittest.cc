@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
@@ -42,6 +43,15 @@ constexpr char kApsStateManager[] = "apps.app_preload_service.state_manager";
 
 const base::Value::Dict& GetStateManager(Profile* profile) {
   return profile->GetPrefs()->GetDict(kApsStateManager);
+}
+
+void FillWebExtras(apps::proto::AppProvisioningResponse_WebExtras* extras,
+                   const std::string& start_url) {
+  extras->set_manifest_id(start_url);
+  extras->set_start_url(start_url);
+  extras->set_scope(start_url);
+  extras->set_display_mode(
+      apps::proto::AppProvisioningResponse::DISPLAY_MODE_STANDALONE);
 }
 
 }  // namespace
@@ -188,12 +198,7 @@ TEST_F(AppPreloadServiceTest, WebAppInstall) {
   app->set_name("Peanut Types");
   app->set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
   app->set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
-  auto* web_extras = app->mutable_web_extras();
-  web_extras->set_manifest_id("https://peanuttypes.com/app");
-  web_extras->set_start_url("https://peanuttypes.com/app");
-  web_extras->set_scope("https://peanuttypes.com/");
-  web_extras->set_display_mode(
-      proto::AppProvisioningResponse::DISPLAY_MODE_STANDALONE);
+  FillWebExtras(app->mutable_web_extras(), "https://peanuttypes.com/app");
 
   url_loader_factory_.AddResponse(
       AppPreloadServerConnector::GetServerUrl().spec(),
@@ -214,6 +219,94 @@ TEST_F(AppPreloadServiceTest, WebAppInstall) {
             EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
             EXPECT_EQ(update.PublisherId(), "https://peanuttypes.com/app");
           });
+  ASSERT_TRUE(found);
+}
+
+TEST_F(AppPreloadServiceTest, IgnoreDefaultAppInstall) {
+  proto::AppProvisioningResponse response;
+  auto* app = response.add_apps_to_install();
+  app->set_name("Peanut Types");
+  app->set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
+  app->set_install_reason(
+      proto::AppProvisioningResponse::INSTALL_REASON_DEFAULT);
+  FillWebExtras(app->mutable_web_extras(), "https://peanuttypes.com/app");
+
+  url_loader_factory_.AddResponse(
+      AppPreloadServerConnector::GetServerUrl().spec(),
+      response.SerializeAsString());
+
+  base::test::TestFuture<bool> result;
+  auto* service = AppPreloadService::Get(GetProfile());
+  service->SetInstallationCompleteCallbackForTesting(result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  auto app_id = web_app::GenerateAppId(absl::nullopt,
+                                       GURL("https://peanuttypes.com/app"));
+  bool found = AppServiceProxyFactory::GetForProfile(GetProfile())
+                   ->AppRegistryCache()
+                   .ForOneApp(app_id, [](const AppUpdate&) {});
+  ASSERT_FALSE(found);
+}
+
+TEST_F(AppPreloadServiceTest, IgnoreAndroidAppInstall) {
+  constexpr char kPackageName[] = "com.peanuttypes";
+  constexpr char kActivityName[] = "com.peanuttypes.PeanutTypesActivity";
+
+  proto::AppProvisioningResponse response;
+  auto* app = response.add_apps_to_install();
+  app->set_name("Peanut Types");
+  app->set_platform(proto::AppProvisioningResponse::PLATFORM_ANDROID);
+  app->set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
+  app->mutable_android_extras()->set_package_name(kPackageName);
+  app->mutable_android_extras()->set_activity_name(kActivityName);
+
+  url_loader_factory_.AddResponse(
+      AppPreloadServerConnector::GetServerUrl().spec(),
+      response.SerializeAsString());
+
+  base::test::TestFuture<bool> result;
+  auto* service = AppPreloadService::Get(GetProfile());
+  service->SetInstallationCompleteCallbackForTesting(result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  // It's hard to assert conclusively that nothing happens in this case, but for
+  // now we just assert that the app wasn't added to App Service.
+  auto app_id = ArcAppListPrefs::GetAppId(kPackageName, kActivityName);
+  bool found = AppServiceProxyFactory::GetForProfile(GetProfile())
+                   ->AppRegistryCache()
+                   .ForOneApp(app_id, [](const AppUpdate&) {});
+  ASSERT_FALSE(found);
+}
+
+TEST_F(AppPreloadServiceTest, InstallOverUserApp) {
+  constexpr char kStartUrl[] = "https://www.example.com/";
+  constexpr char kUserAppName[] = "User Installed App";
+
+  auto app_id = web_app::test::InstallDummyWebApp(GetProfile(), kUserAppName,
+                                                  GURL(kStartUrl));
+
+  proto::AppProvisioningResponse response;
+  auto* app = response.add_apps_to_install();
+
+  app->set_name("OEM Installed app");
+  app->set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
+  app->set_install_reason(proto::AppProvisioningResponse::INSTALL_REASON_OEM);
+  FillWebExtras(app->mutable_web_extras(), kStartUrl);
+
+  url_loader_factory_.AddResponse(
+      AppPreloadServerConnector::GetServerUrl().spec(),
+      response.SerializeAsString());
+
+  base::test::TestFuture<bool> result;
+  auto* service = AppPreloadService::Get(GetProfile());
+  service->SetInstallationCompleteCallbackForTesting(result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  bool found = AppServiceProxyFactory::GetForProfile(GetProfile())
+                   ->AppRegistryCache()
+                   .ForOneApp(app_id, [](const AppUpdate& update) {
+                     EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
+                   });
   ASSERT_TRUE(found);
 }
 

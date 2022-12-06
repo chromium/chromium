@@ -31,6 +31,13 @@ class PreloadAppDefinition {
   // called if `GetPlatform()` returns `AppType::kWeb`.
   std::unique_ptr<WebAppInstallInfo> CreateWebAppInstallInfo() const;
 
+  // Returns the Web App manifest ID for the app, which is the canonical
+  // identifier for this app, as specified by
+  // https://www.w3.org/TR/appmanifest/#id-member. Does not attempt to validate
+  // the value in the proto. Must only be called if `GetPlatform()` returns
+  // `AppType::kWeb`.
+  std::string GetWebAppManifestId() const;
+
  private:
   proto::AppProvisioningResponse_App app_proto_;
 };

@@ -141,6 +141,12 @@ PreloadAppDefinition::CreateWebAppInstallInfo() const {
   return install_info;
 }
 
+std::string PreloadAppDefinition::GetWebAppManifestId() const {
+  DCHECK_EQ(GetPlatform(), AppType::kWeb);
+
+  return app_proto_.web_extras().manifest_id();
+}
+
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
   os << "- Name: " << app.GetName();
   os << "- Platform: " << EnumToString(app.GetPlatform());

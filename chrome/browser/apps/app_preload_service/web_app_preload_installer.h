@@ -34,6 +34,11 @@ class WebAppPreloadInstaller {
   void InstallApp(const PreloadAppDefinition& app,
                   WebAppPreloadInstalledCallback callback);
 
+  // Returns the app ID for the given `app` if it were to be installed as a web
+  // app. Does not validate whether the `app` is valid and able to be installed.
+  // Must only be called if `app.GetPlatform()` returns `AppType::kWeb`.
+  std::string GetAppId(const PreloadAppDefinition& app) const;
+
  private:
   void InstallAppImpl(PreloadAppDefinition app,
                       WebAppPreloadInstalledCallback callback);
