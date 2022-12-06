@@ -15,7 +15,7 @@
 namespace blink {
 
 class ExecutionContext;
-const CSSUnresolvedProperty& GetCSSPropertyVariableInternal();
+CORE_EXPORT const CSSUnresolvedProperty& GetCSSPropertyVariableInternal();
 
 // TODO(crbug.com/793288): audit and consider redesigning how aliases are
 // handled once more of project Ribbon is done and all use of aliases can be

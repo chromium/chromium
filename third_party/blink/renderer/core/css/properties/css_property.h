@@ -27,7 +27,11 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
  public:
   using Flags = uint64_t;
 
-  static const CSSProperty& Get(CSSPropertyID);
+  static const CSSProperty& Get(CSSPropertyID id) {
+    DCHECK(id != CSSPropertyID::kInvalid);
+    DCHECK(id <= kLastCSSProperty);  // last property id
+    return To<CSSProperty>(CSSUnresolvedProperty::GetNonAliasProperty(id));
+  }
 
   static bool IsShorthand(const CSSPropertyName&);
   static bool IsRepeated(const CSSPropertyName&);
