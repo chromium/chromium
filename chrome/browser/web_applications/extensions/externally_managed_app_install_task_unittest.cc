@@ -217,11 +217,6 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
             }));
   }
 
-  void RetryIncompleteUninstalls(
-      const base::flat_set<AppId>& apps_to_uninstall) override {
-    NOTREACHED();
-  }
-
   bool CanUserUninstallWebApp(const AppId& app_id) const override {
     NOTIMPLEMENTED();
     return false;

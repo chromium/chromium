@@ -285,15 +285,6 @@ void WebAppInstallFinalizer::UninstallWebApp(
                            webapp_uninstall_source, std::move(callback));
 }
 
-void WebAppInstallFinalizer::RetryIncompleteUninstalls(
-    const base::flat_set<AppId>& apps_to_uninstall) {
-  for (const AppId& app_id : apps_to_uninstall) {
-    ScheduleUninstallCommand(app_id, /*external_install_source=*/absl::nullopt,
-                             webapps::WebappUninstallSource::kStartupCleanup,
-                             base::DoNothing());
-  }
-}
-
 bool WebAppInstallFinalizer::CanReparentTab(const AppId& app_id,
                                             bool shortcut_created) const {
   // Reparent the web contents into its own window only if that is the

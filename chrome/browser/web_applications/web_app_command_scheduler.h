@@ -126,6 +126,12 @@ class WebAppCommandScheduler {
                              const IsolationData& isolation_data,
                              InstallIsolatedWebAppCallback callback);
 
+  // Schedules a command that uninstalls a web app.
+  void Uninstall(const AppId& app_id,
+                 absl::optional<WebAppManagement::Type> external_install_source,
+                 webapps::WebappUninstallSource uninstall_source,
+                 WebAppInstallFinalizer::UninstallWebAppCallback callback);
+
   // Schedules a command that updates run on os login to provided `login_mode`
   // for a web app.
   void SetRunOnOsLoginMode(const AppId& app_id,

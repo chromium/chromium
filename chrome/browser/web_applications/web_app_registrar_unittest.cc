@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -89,8 +90,11 @@ class WebAppRegistrarTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    command_manager_ = std::make_unique<WebAppCommandManager>(
-        profile(), FakeWebAppProvider::Get(profile()));
+    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
+    command_manager_ =
+        std::make_unique<WebAppCommandManager>(profile(), provider);
+    command_scheduler_ =
+        std::make_unique<WebAppCommandScheduler>(*profile(), provider);
     registrar_mutable_ = std::make_unique<WebAppRegistrarMutable>(profile());
     sync_bridge_ = std::make_unique<WebAppSyncBridge>(
         registrar_mutable_.get(), mock_processor_.CreateForwardingProcessor());
@@ -98,7 +102,8 @@ class WebAppRegistrarTest : public WebAppTest {
 
     sync_bridge_->SetSubsystems(database_factory_.get(),
                                 /*install_delegate=*/nullptr,
-                                command_manager_.get());
+                                command_manager_.get(),
+                                command_scheduler_.get());
 
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
@@ -114,6 +119,10 @@ class WebAppRegistrarTest : public WebAppTest {
     if (command_manager_) {
       command_manager_->Shutdown();
       command_manager_.reset();
+    }
+    if (command_scheduler_) {
+      command_scheduler_->Shutdown();
+      command_scheduler_.reset();
     }
     if (registrar_mutable_) {
       registrar_mutable_.reset();
@@ -212,6 +221,7 @@ class WebAppRegistrarTest : public WebAppTest {
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<FakeWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppCommandManager> command_manager_;
+  std::unique_ptr<WebAppCommandScheduler> command_scheduler_;
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };

@@ -76,8 +76,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                                RepeatingInstallCallback callback) override;
   void UninstallFromSync(const std::vector<AppId>& web_apps,
                          RepeatingUninstallCallback callback) override;
-  void RetryIncompleteUninstalls(
-      const base::flat_set<AppId>& apps_to_uninstall) override;
 
   virtual void AddObserver(WebAppInstallManagerObserver* observer);
   virtual void RemoveObserver(WebAppInstallManagerObserver* observer);
@@ -127,11 +125,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                                    RepeatingUninstallCallback callback)>;
   void SetUninstallFromSyncDelegateForTesting(
       UninstallFromSyncDelegate delegate);
-
-  using RetryIncompleteUninstallsDelegate = base::RepeatingCallback<void(
-      const base::flat_set<AppId>& apps_to_uninstall)>;
-  void SetRetryIncompleteUninstallsDelegateForTesting(
-      RetryIncompleteUninstallsDelegate delegate);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebAppInstallManagerTest,
@@ -213,7 +206,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   InstallWebAppsAfterSyncDelegate install_web_apps_after_sync_delegate_;
   UninstallFromSyncDelegate
       uninstall_from_sync_before_registry_update_delegate_;
-  RetryIncompleteUninstallsDelegate retry_incomplete_uninstalls_delegate_;
 
   bool started_ = false;
 

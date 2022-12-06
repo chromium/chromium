@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -138,7 +139,8 @@ WebAppSyncBridge::~WebAppSyncBridge() = default;
 void WebAppSyncBridge::SetSubsystems(
     AbstractWebAppDatabaseFactory* database_factory,
     SyncInstallDelegate* install_delegate,
-    WebAppCommandManager* command_manager) {
+    WebAppCommandManager* command_manager,
+    WebAppCommandScheduler* command_scheduler) {
   DCHECK(database_factory);
   database_ = std::make_unique<WebAppDatabase>(
       database_factory,
@@ -146,6 +148,7 @@ void WebAppSyncBridge::SetSubsystems(
                           base::Unretained(this)));
   install_delegate_ = install_delegate;
   command_manager_ = command_manager;
+  command_scheduler_ = command_scheduler;
 }
 
 std::unique_ptr<WebAppRegistryUpdate> WebAppSyncBridge::BeginUpdate() {
@@ -804,6 +807,11 @@ std::string WebAppSyncBridge::GetStorageKey(
   return GetClientTag(entity_data);
 }
 
+void WebAppSyncBridge::SetRetryIncompleteUninstallsCallbackForTesting(
+    RetryIncompleteUninstallsCallback callback) {
+  retry_incomplete_uninstalls_callback_for_testing_ = std::move(callback);
+}
+
 void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
   std::vector<AppId> apps_uninstalling;
 
@@ -815,9 +823,22 @@ void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
   base::UmaHistogramCounts100("WebApp.Uninstall.NonSyncIncompleteCount",
                               apps_uninstalling.size());
 
-  if (!apps_uninstalling.empty())
-    install_delegate_->RetryIncompleteUninstalls(
-        base::flat_set<AppId>(std::move(apps_uninstalling)));
+  // Retrying incomplete uninstalls
+  if (!apps_uninstalling.empty()) {
+    if (retry_incomplete_uninstalls_callback_for_testing_) {
+      retry_incomplete_uninstalls_callback_for_testing_.Run(apps_uninstalling);
+      return;
+    }
+    auto callback =
+        base::BindRepeating(&WebAppSyncBridge::OnWebAppUninstallComplete,
+                            weak_ptr_factory_.GetWeakPtr());
+    for (const auto& app_id : apps_uninstalling) {
+      command_scheduler_->Uninstall(app_id,
+                                    /*external_install_source=*/absl::nullopt,
+                                    webapps::WebappUninstallSource::kSync,
+                                    base::BindOnce(callback, app_id));
+    }
+  }
 }
 
 void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation() {

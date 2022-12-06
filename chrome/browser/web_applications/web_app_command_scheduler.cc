@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
+#include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -256,6 +257,23 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, isolation_data, CreateIsolatedWebAppWebContents(*profile_),
           std::make_unique<WebAppUrlLoader>(), *profile_, std::move(callback)));
+}
+
+void WebAppCommandScheduler::Uninstall(
+    const AppId& app_id,
+    absl::optional<WebAppManagement::Type> external_install_source,
+    webapps::WebappUninstallSource uninstall_source,
+    WebAppUninstallCommand::UninstallWebAppCallback callback) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  webapps::UninstallResultCode::kCancelled));
+    return;
+  }
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          app_id, external_install_source, uninstall_source,
+          std::move(callback), &profile_.get()));
 }
 
 void WebAppCommandScheduler::SetRunOnOsLoginMode(const AppId& app_id,

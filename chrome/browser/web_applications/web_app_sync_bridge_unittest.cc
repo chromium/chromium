@@ -193,8 +193,11 @@ class WebAppSyncBridgeTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    command_manager_ = std::make_unique<WebAppCommandManager>(
-        profile(), FakeWebAppProvider::Get(profile()));
+    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
+    command_manager_ =
+        std::make_unique<WebAppCommandManager>(profile(), provider);
+    command_scheduler_ =
+        std::make_unique<WebAppCommandScheduler>(*profile(), provider);
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     registrar_mutable_ = std::make_unique<WebAppRegistrarMutable>(profile());
     sync_bridge_ = std::make_unique<WebAppSyncBridge>(
@@ -202,7 +205,8 @@ class WebAppSyncBridgeTest : public WebAppTest {
     database_factory_ = std::make_unique<FakeWebAppDatabaseFactory>();
 
     sync_bridge_->SetSubsystems(database_factory_.get(), install_manager_.get(),
-                                command_manager_.get());
+                                command_manager_.get(),
+                                command_scheduler_.get());
 
     install_manager_->Start();
 
@@ -275,6 +279,10 @@ class WebAppSyncBridgeTest : public WebAppTest {
       command_manager_->Shutdown();
       command_manager_.reset();
     }
+    if (command_scheduler_) {
+      command_scheduler_->Shutdown();
+      command_scheduler_.reset();
+    }
     if (install_manager_) {
       install_manager_.reset();
     }
@@ -302,6 +310,7 @@ class WebAppSyncBridgeTest : public WebAppTest {
 
  private:
   std::unique_ptr<WebAppCommandManager> command_manager_;
+  std::unique_ptr<WebAppCommandScheduler> command_scheduler_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppRegistrarMutable> registrar_mutable_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
@@ -1250,7 +1259,7 @@ TEST_F(WebAppSyncBridgeTest, RetryIncompleteUninstalls) {
   SetSyncInstallDelegateFailureIfCalled();
 
   base::RunLoop run_loop;
-  install_manager().SetRetryIncompleteUninstallsDelegateForTesting(
+  sync_bridge().SetRetryIncompleteUninstallsCallbackForTesting(
       base::BindLambdaForTesting(
           [&](const base::flat_set<AppId>& apps_to_uninstall) {
             EXPECT_EQ(apps_to_uninstall.size(), 5ul);

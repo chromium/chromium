@@ -126,9 +126,6 @@ class WebAppInstallFinalizer {
                                webapps::WebappUninstallSource uninstall_surface,
                                UninstallWebAppCallback callback);
 
-  virtual void RetryIncompleteUninstalls(
-      const base::flat_set<AppId>& apps_to_uninstall);
-
   virtual bool CanUserUninstallWebApp(const AppId& app_id) const;
 
   virtual bool CanReparentTab(const AppId& app_id, bool shortcut_created) const;

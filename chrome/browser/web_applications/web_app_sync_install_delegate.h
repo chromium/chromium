@@ -45,13 +45,6 @@ class SyncInstallDelegate {
   // * `callback` is called.
   virtual void UninstallFromSync(const std::vector<AppId>& web_apps,
                                  RepeatingUninstallCallback callback) = 0;
-
-  // Uninstall the given web app ids that were found on startup as partially
-  // uninstalled. `apps_to_uninstall` are in the registrar with
-  // `is_uninstalling()` set to true. They are expected to be eventually deleted
-  // by this call.
-  virtual void RetryIncompleteUninstalls(
-      const base::flat_set<AppId>& apps_to_uninstall) = 0;
 };
 
 }  // namespace web_app

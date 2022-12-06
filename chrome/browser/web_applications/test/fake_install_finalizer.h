@@ -46,8 +46,6 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
   void UninstallWebApp(const AppId& app_id,
                        webapps::WebappUninstallSource uninstall_source,
                        UninstallWebAppCallback callback) override;
-  void RetryIncompleteUninstalls(
-      const base::flat_set<AppId>& apps_to_uninstall) override;
   bool CanReparentTab(const AppId& app_id,
                       bool shortcut_created) const override;
   void ReparentTab(const AppId& app_id,

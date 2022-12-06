@@ -89,11 +89,6 @@ void FakeInstallFinalizer::UninstallWebApp(
   NOTIMPLEMENTED();
 }
 
-void FakeInstallFinalizer::RetryIncompleteUninstalls(
-    const base::flat_set<AppId>& apps_to_uninstall) {
-  NOTREACHED();
-}
-
 bool FakeInstallFinalizer::CanReparentTab(const AppId& app_id,
                                           bool shortcut_created) const {
   return true;

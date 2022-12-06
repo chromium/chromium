@@ -194,17 +194,6 @@ void WebAppInstallManager::UninstallFromSync(
   }
 }
 
-void WebAppInstallManager::RetryIncompleteUninstalls(
-    const base::flat_set<AppId>& apps_to_uninstall) {
-  if (!started_)
-    return;
-
-  if (retry_incomplete_uninstalls_delegate_)
-    retry_incomplete_uninstalls_delegate_.Run(apps_to_uninstall);
-  else
-    finalizer_->RetryIncompleteUninstalls(apps_to_uninstall);
-}
-
 void WebAppInstallManager::SetDataRetrieverFactoryForTesting(
     DataRetrieverFactory data_retriever_factory) {
   data_retriever_factory_ = std::move(data_retriever_factory);
@@ -277,11 +266,6 @@ void WebAppInstallManager::SetInstallWebAppsAfterSyncDelegateForTesting(
 void WebAppInstallManager::SetUninstallFromSyncDelegateForTesting(
     UninstallFromSyncDelegate delegate) {
   uninstall_from_sync_before_registry_update_delegate_ = std::move(delegate);
-}
-
-void WebAppInstallManager::SetRetryIncompleteUninstallsDelegateForTesting(
-    RetryIncompleteUninstallsDelegate delegate) {
-  retry_incomplete_uninstalls_delegate_ = std::move(delegate);
 }
 
 void WebAppInstallManager::DeleteTask(WebAppInstallTask* task) {

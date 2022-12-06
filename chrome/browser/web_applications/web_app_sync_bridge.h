@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/model/entity_change.h"
@@ -73,7 +74,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void SetSubsystems(AbstractWebAppDatabaseFactory* database_factory,
                      SyncInstallDelegate* install_delegate,
-                     WebAppCommandManager* command_manager);
+                     WebAppCommandManager* command_manager,
+                     WebAppCommandScheduler* command_scheduler_);
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
   // This is the writable API for the registry. Any updates will be written to
@@ -158,6 +160,11 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
     disable_checks_for_testing_ = disable_checks_for_testing;
   }
 
+  using RetryIncompleteUninstallsCallback = base::RepeatingCallback<void(
+      const base::flat_set<AppId>& apps_to_uninstall)>;
+  void SetRetryIncompleteUninstallsCallbackForTesting(
+      RetryIncompleteUninstallsCallback callback);
+
   WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
 
  private:
@@ -197,9 +204,13 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
   raw_ptr<SyncInstallDelegate, DanglingUntriaged> install_delegate_;
   raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_;
+  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_;
 
   bool is_in_update_ = false;
   bool disable_checks_for_testing_ = false;
+
+  RetryIncompleteUninstallsCallback
+      retry_incomplete_uninstalls_callback_for_testing_;
 
   base::WeakPtrFactory<WebAppSyncBridge> weak_ptr_factory_{this};
 };
