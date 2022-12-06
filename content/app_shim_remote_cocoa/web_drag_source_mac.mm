@@ -4,6 +4,8 @@
 
 #import "content/app_shim_remote_cocoa/web_drag_source_mac.h"
 
+#include <Cocoa/Cocoa.h>
+#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #include <sys/param.h>
 
 #include <memory>
@@ -13,6 +15,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
+#include "base/memory/scoped_policy.h"
 #include "base/pickle.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -25,6 +28,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
 #include "net/base/filename_util.h"
+#include "net/base/mac/url_conversions.h"
 #include "net/base/mime_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -32,11 +36,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "url/url_constants.h"
-
-using base::SysNSStringToUTF8;
-using base::SysUTF8ToNSString;
-using base::SysUTF16ToNSString;
-using content::DropData;
 
 @interface WebDragSource(Private)
 
@@ -50,7 +49,7 @@ using content::DropData;
 
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
                         view:(NSView*)contentsView
-                    dropData:(const DropData*)dropData
+                    dropData:(const content::DropData*)dropData
                        image:(NSImage*)image
                       offset:(NSPoint)offset
                   pasteboard:(NSPasteboard*)pboard
@@ -61,7 +60,7 @@ using content::DropData;
     _contentsView = contentsView;
     DCHECK(_contentsView);
 
-    _dropData = std::make_unique<DropData>(*dropData);
+    _dropData = std::make_unique<content::DropData>(*dropData);
     DCHECK(_dropData.get());
 
     _dragImage.reset([image retain]);
@@ -88,8 +87,8 @@ using content::DropData;
 }
 
 - (void)pasteboard:(NSPasteboard*)pboard provideDataForType:(NSString*)type {
-  // NSHTMLPboardType requires the character set to be declared. Otherwise, it
-  // assumes US-ASCII. Awesome.
+  // NSPasteboardTypeHTML requires the character set to be declared. Otherwise,
+  // it assumes US-ASCII. Awesome.
   static constexpr char16_t kHtmlHeader[] =
       u"<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">";
 
@@ -100,18 +99,17 @@ using content::DropData;
   }
 
   // HTML.
-  if ([type isEqualToString:NSHTMLPboardType] ||
+  if ([type isEqualToString:NSPasteboardTypeHTML] ||
       [type isEqualToString:ui::kUTTypeChromiumImageAndHTML]) {
     DCHECK(_dropData->html && !_dropData->html->empty());
     // See comment on |kHtmlHeader| above.
-    [pboard setString:SysUTF16ToNSString(kHtmlHeader + *_dropData->html)
+    [pboard setString:base::SysUTF16ToNSString(kHtmlHeader + *_dropData->html)
               forType:type];
 
   // URL.
-  } else if ([type isEqualToString:NSURLPboardType] ||
-             [type isEqualToString:base::mac::CFToNSCast(kUTTypeURL)]) {
+  } else if ([type isEqualToString:NSPasteboardTypeURL]) {
     DCHECK(_dropData->url.is_valid());
-    NSURL* url = [NSURL URLWithString:SysUTF8ToNSString(_dropData->url.spec())];
+    NSURL* url = net::NSURLWithGURL(_dropData->url);
     // If NSURL creation failed, check for a badly-escaped JavaScript URL.
     // Strip out any existing escapes and then re-escape uniformly.
     if (!url && _dropData->url.SchemeIs(url::kJavaScriptScheme)) {
@@ -119,26 +117,26 @@ using content::DropData;
           base::UnescapeBinaryURLComponent(_dropData->url.spec());
       std::string escapedUrlString =
           base::EscapeUrlEncodedData(unescapedUrlString, false);
-      url = [NSURL URLWithString:SysUTF8ToNSString(escapedUrlString)];
+      url = [NSURL URLWithString:base::SysUTF8ToNSString(escapedUrlString)];
     }
     [url writeToPasteboard:pboard];
 
   // URL title.
   } else if ([type isEqualToString:ui::kUTTypeURLName]) {
-    [pboard setString:SysUTF16ToNSString(_dropData->url_title)
+    [pboard setString:base::SysUTF16ToNSString(_dropData->url_title)
               forType:ui::kUTTypeURLName];
 
   // File contents.
-  } else if ([type isEqualToString:base::mac::CFToNSCast(_fileUTI)]) {
+  } else if ([type isEqualToString:_fileUTType]) {
     [pboard setData:[NSData dataWithBytes:_dropData->file_contents.data()
                                    length:_dropData->file_contents.length()]
-            forType:base::mac::CFToNSCast(_fileUTI.get())];
+            forType:_fileUTType.get()];
 
   // Plain text.
-  } else if ([type isEqualToString:NSStringPboardType]) {
+  } else if ([type isEqualToString:NSPasteboardTypeString]) {
     DCHECK(_dropData->text && !_dropData->text->empty());
-    [pboard setString:SysUTF16ToNSString(*_dropData->text)
-              forType:NSStringPboardType];
+    [pboard setString:base::SysUTF16ToNSString(*_dropData->text)
+              forType:NSPasteboardTypeString];
 
   // Custom MIME data.
   } else if ([type isEqualToString:ui::kUTTypeChromiumWebCustomData]) {
@@ -236,7 +234,7 @@ using content::DropData;
 
 - (void)clearPasteboard {
   // Since all drag operations share the same pasteboard, we only want to
-  // reset the pasteboard if we were the last to use it
+  // reset the pasteboard if we were the last to use it.
   if ([_pasteboard changeCount] == _changeCount) {
     // Make sure the pasteboard owner isn't us.
     [_pasteboard declareTypes:@[] owner:nil];
@@ -251,10 +249,10 @@ using content::DropData;
     NOTREACHED() << "No drag-and-drop data available for promised file.";
     return nil;
   }
-  base::FilePath filePath(SysNSStringToUTF8(path));
+  base::FilePath filePath(base::SysNSStringToUTF8(path));
   filePath = filePath.Append(_downloadFileName);
   _host->DragPromisedFileTo(filePath, *_dropData, _downloadURL, &filePath);
-  return SysUTF8ToNSString(filePath.BaseName().value());
+  return base::SysUTF8ToNSString(filePath.BaseName().value());
 }
 
 @end  // @implementation WebDragSource
@@ -262,19 +260,20 @@ using content::DropData;
 @implementation WebDragSource (Private)
 
 - (void)fillPasteboard {
-  if (!_contentsView)
+  if (!_contentsView) {
     return;
+  }
 
   DCHECK(_pasteboard.get());
 
+  // Always add kUTTypeChromiumInitiatedDrag to mark this drag as something
+  // to accept.
   _changeCount = [_pasteboard declareTypes:@[ ui::kUTTypeChromiumInitiatedDrag ]
                                      owner:self];
 
   // URL (and title).
   if (_dropData->url.is_valid()) {
-    [_pasteboard addTypes:@[
-      NSURLPboardType, ui::kUTTypeURLName, base::mac::CFToNSCast(kUTTypeURL)
-    ]
+    [_pasteboard addTypes:@[ NSPasteboardTypeURL, ui::kUTTypeURLName ]
                     owner:self];
   }
 
@@ -320,10 +319,17 @@ using content::DropData;
     }
 
     if (!mimeType.empty()) {
-      base::ScopedCFTypeRef<CFStringRef> mimeTypeCF(
-          base::SysUTF8ToCFStringRef(mimeType));
-      _fileUTI.reset(UTTypeCreatePreferredIdentifierForTag(
-          kUTTagClassMIMEType, mimeTypeCF.get(), NULL));
+      if (@available(macOS 11, *)) {
+        UTType* type =
+            [UTType typeWithMIMEType:base::SysUTF8ToNSString(mimeType)];
+        _fileUTType.reset(type.identifier, base::scoped_policy::RETAIN);
+      } else {
+        base::ScopedCFTypeRef<CFStringRef> mimeTypeCF(
+            base::SysUTF8ToCFStringRef(mimeType));
+        _fileUTType.reset(
+            base::mac::CFToNSCast(UTTypeCreatePreferredIdentifierForTag(
+                kUTTagClassMIMEType, mimeTypeCF.get(), nullptr)));
+      }
 
       // File (HFS) promise.
       // There are two ways to drag/drop files. NSFilesPromisePboardType is the
@@ -345,13 +351,14 @@ using content::DropData;
       //   right of the desktop rather than at the position at which it was
       //   dropped. <http://crbug.com/284942> <rdar://14943881>
       //   <http://openradar.me/14943881>
-      NSArray* fileUTIList = @[ base::mac::CFToNSCast(_fileUTI.get()) ];
+      NSArray* fileUTTypeList = @[ _fileUTType.get() ];
       [_pasteboard addTypes:@[ NSFilesPromisePboardType ] owner:self];
-      [_pasteboard setPropertyList:fileUTIList
+      [_pasteboard setPropertyList:fileUTTypeList
                            forType:NSFilesPromisePboardType];
 
-      if (!_dropData->file_contents.empty())
-        [_pasteboard addTypes:fileUTIList owner:self];
+      if (!_dropData->file_contents.empty()) {
+        [_pasteboard addTypes:fileUTTypeList owner:self];
+      }
     }
   }
 
@@ -364,20 +371,27 @@ using content::DropData;
   //
   // (The only time that Blink fills in the DropData::file_contents is with
   // an image drop, but the MIME time is tested anyway for paranoia's sake.)
-  bool hasImageData = !_dropData->file_contents.empty() &&
-                      _fileUTI &&
-                      UTTypeConformsTo(_fileUTI.get(), kUTTypeImage);
+  bool hasImageData;
+  if (@available(macOS 11, *)) {
+    hasImageData = !_dropData->file_contents.empty() && _fileUTType &&
+                   [[UTType typeWithIdentifier:_fileUTType.get()]
+                       conformsToType:UTTypeImage];
+  } else {
+    hasImageData = !_dropData->file_contents.empty() && _fileUTType &&
+                   UTTypeConformsTo(base::mac::NSToCFCast(_fileUTType.get()),
+                                    kUTTypeImage);
+  }
   if (hasHTMLData) {
     if (hasImageData) {
       [_pasteboard addTypes:@[ ui::kUTTypeChromiumImageAndHTML ] owner:self];
     } else {
-      [_pasteboard addTypes:@[ NSHTMLPboardType ] owner:self];
+      [_pasteboard addTypes:@[ NSPasteboardTypeHTML ] owner:self];
     }
   }
 
   // Plain text.
   if (_dropData->text && !_dropData->text->empty()) {
-    [_pasteboard addTypes:@[ NSStringPboardType ] owner:self];
+    [_pasteboard addTypes:@[ NSPasteboardTypeString ] owner:self];
   }
 
   if (!_dropData->custom_data.empty()) {

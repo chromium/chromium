@@ -36,7 +36,7 @@ TEST_F(WebDragSourceMacTest, DragInvalidlyEscapedBookmarklet) {
 
   // Test that this call doesn't throw any exceptions: http://crbug.com/128371
   scoped_refptr<ui::UniquePasteboard> pasteboard2 = new ui::UniquePasteboard;
-  [source pasteboard:pasteboard2->get() provideDataForType:NSURLPboardType];
+  [source pasteboard:pasteboard2->get() provideDataForType:NSPasteboardTypeURL];
 }
 
 }  // namespace content
