@@ -1009,7 +1009,12 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
     recent_redirects_.Put(request.url, extended_redirect_chain);
   }
 
-  if (request.context_annotations) {
+  // The below code assumes that last_visit_id should be populated with the
+  // VisitID for the visit that is being added by this method.
+  bool current_visit_was_successfully_added =
+      last_visit_id != kInvalidVisitID && last_visit_id != from_visit_id;
+
+  if (current_visit_was_successfully_added && request.context_annotations) {
     // The `request` contains only the on-visit annotation fields; all other
     // fields aren't known yet. Leave them empty.
     VisitContextAnnotations annotations;
@@ -1032,7 +1037,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                                     ui::PAGE_TRANSITION_AUTO_SUBFRAME) &&
       !ui::PageTransitionCoreTypeIs(request_transition,
                                     ui::PAGE_TRANSITION_MANUAL_SUBFRAME) &&
-      !is_keyword_generated) {
+      !is_keyword_generated && current_visit_was_successfully_added) {
     tracker_.AddVisit(request.context_id, request.nav_entry_id, request.url,
                       last_visit_id);
   }
@@ -1506,6 +1511,11 @@ VisitID HistoryBackend::AddSyncedVisit(
       visit.opener_visit, title, visit.visit_duration,
       visit.originator_cache_guid, visit.originator_visit_id,
       visit.originator_referring_visit, visit.originator_opener_visit);
+
+  if (visit_id == kInvalidVisitID) {
+    // Adding the page visit failed, do not continue.
+    return 0;
+  }
 
   if (context_annotations) {
     AddContextAnnotationsForVisit(visit_id, *context_annotations);
