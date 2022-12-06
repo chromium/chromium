@@ -1,0 +1,43 @@
+Tests the data of image decoding trace events
+Recording started
+Tracing complete
+Got a Decode Image event:
+Object: {
+	args: {
+		LazyPixelRef: number
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+Got an Draw LazyPixelRef event
+Object: {
+	args: {
+		imageType: string
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Got a Decode LazyPixelRef Event
+Object: {
+	args: {
+		LazyPixelRef: number
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
