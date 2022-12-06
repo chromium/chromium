@@ -27,7 +27,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -190,31 +189,24 @@ public class StandardNotificationBuilderTest {
 
         Assert.assertNotNull(result);
 
-        if (NotificationBuilderBase.deviceSupportsBitmapStatusBarIcons()) {
-            // Check the white overlay was applied.
-            Bitmap expected = bitmap.copy(bitmap.getConfig(), true);
-            NotificationBuilderBase.applyWhiteOverlayToBitmap(expected);
-            Assert.assertTrue(expected.sameAs(result));
+        // Check the white overlay was applied.
+        Bitmap expected = bitmap.copy(bitmap.getConfig(), true);
+        NotificationBuilderBase.applyWhiteOverlayToBitmap(expected);
+        Assert.assertTrue(expected.sameAs(result));
 
-            // Check using the same bitmap on another builder gives the same result.
-            NotificationBuilderBase otherBuilder = new StandardNotificationBuilder(context);
-            otherBuilder.setStatusBarIcon(bitmap).setChannelId(
-                    ChromeChannelDefinitions.ChannelId.SITES);
-            Notification otherNotification = buildNotification(otherBuilder);
-            Assert.assertTrue(expected.sameAs(
-                    NotificationTestUtil.getSmallIconFromNotification(context, otherNotification)));
-        } else {
-            Bitmap expected =
-                    BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_chrome);
-            Assert.assertTrue(expected.sameAs(result));
-        }
+        // Check using the same bitmap on another builder gives the same result.
+        NotificationBuilderBase otherBuilder = new StandardNotificationBuilder(context);
+        otherBuilder.setStatusBarIcon(bitmap).setChannelId(
+                ChromeChannelDefinitions.ChannelId.SITES);
+        Notification otherNotification = buildNotification(otherBuilder);
+        Assert.assertTrue(expected.sameAs(
+                NotificationTestUtil.getSmallIconFromNotification(context, otherNotification)));
     }
 
     /**
      * Regression test for crash observed on Samsung/Coolpad Marshmallow devices - see crbug/829367.
      */
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     @Feature({"Browser", "Notifications"})
     public void testRenotifyWithCustomBadgeDoesNotCrash() {
         Context context = RuntimeEnvironment.getApplication();

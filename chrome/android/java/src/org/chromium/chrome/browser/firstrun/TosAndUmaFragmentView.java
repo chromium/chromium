@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -317,14 +316,6 @@ public class TosAndUmaFragmentView extends RelativeLayout {
                 useWideScreen ? RelativeLayout.CENTER_HORIZONTAL : RelativeLayout.ALIGN_PARENT_END;
         int addedRule =
                 useWideScreen ? RelativeLayout.ALIGN_PARENT_END : RelativeLayout.CENTER_HORIZONTAL;
-
-        // Remove left & right align. On M, #removeRule on ALIGN_PARENT_END does not translate
-        // into removing ALIGN_PARENT_LEFT or RIGHT automatically. This is fixed on M+ in Android.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            bottomGroupParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            bottomGroupParams.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        }
-
         bottomGroupParams.removeRule(removedRule);
         bottomGroupParams.addRule(addedRule);
 

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import android.app.Activity;
-import android.os.Build;
 import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
@@ -93,8 +92,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         // Merge tabs if this TabModelSelector is for a ChromeTabbedActivity created in
         // fullscreen mode and there are no TabModelSelector's currently alive. This indicates
         // that it is a cold start or process restart in fullscreen mode.
-        boolean mergeTabs = Build.VERSION.SDK_INT > Build.VERSION_CODES.M && mTabMergingEnabled
-                && !activity.isInMultiWindowMode();
+        boolean mergeTabs = mTabMergingEnabled && !activity.isInMultiWindowMode();
         if (MultiInstanceManager.shouldMergeOnStartup(activity)) {
             mergeTabs = mergeTabs
                     && (!MultiWindowUtils.getInstance().isInMultiDisplayMode(activity)

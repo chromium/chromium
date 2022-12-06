@@ -431,10 +431,8 @@ public class MultiWindowUtils implements ActivityStateListener {
         // 0. Use always ChromeTabbedActivity when multi-instance support in S+ is enabled.
         if (mMultiInstanceApi31Enabled) return ChromeTabbedActivity.class;
 
-        // 1. Exit early if the build version doesn't support Android N+ multi-window mode or
-        // ChromeTabbedActivity2 isn't running.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M
-                || (mTabbedActivity2TaskRunning != null && !mTabbedActivity2TaskRunning)) {
+        // 1. Exit early if ChromeTabbedActivity2 isn't running.
+        if (mTabbedActivity2TaskRunning != null && !mTabbedActivity2TaskRunning) {
             return ChromeTabbedActivity.class;
         }
 

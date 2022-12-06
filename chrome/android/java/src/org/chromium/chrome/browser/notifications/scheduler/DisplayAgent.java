@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -251,8 +250,7 @@ public class DisplayAgent {
 
         boolean hasSmallIcon = notificationData.icons.containsKey(IconType.SMALL_ICON);
 
-        if (hasSmallIcon && notificationData.icons.get(IconType.SMALL_ICON).bitmap != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (hasSmallIcon && notificationData.icons.get(IconType.SMALL_ICON).bitmap != null) {
             // Use bitmap as small icon.
             Icon smallIcon =
                     Icon.createWithBitmap(notificationData.icons.get(IconType.SMALL_ICON).bitmap);

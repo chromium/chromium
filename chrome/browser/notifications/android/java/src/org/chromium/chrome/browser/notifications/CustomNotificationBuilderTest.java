@@ -118,10 +118,8 @@ public class CustomNotificationBuilderTest {
         Assert.assertEquals(100L, notification.vibrate[0]);
 
         Assert.assertNotNull(notification.publicVersion);
-        Assert.assertEquals("origin",
-                Build.VERSION.SDK_INT <= Build.VERSION_CODES.M
-                        ? NotificationTestUtil.getExtraTitle(notification.publicVersion)
-                        : NotificationTestUtil.getExtraSubText(notification.publicVersion));
+        Assert.assertEquals(
+                "origin", NotificationTestUtil.getExtraSubText(notification.publicVersion));
 
         // The regular actions and the settings action are added together in the notification
         // actions array, so they can be exposed on e.g. Wear and custom lockscreens.
@@ -434,12 +432,9 @@ public class CustomNotificationBuilderTest {
     private static void assertSmallNotificationIconAsExpected(
             Context context, Notification notification, Bitmap expectedIcon) {
         // 1. Check small icon property on the notification, for M+.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Bitmap icon =
-                    NotificationTestUtil.getBitmapFromIcon(context, notification.getSmallIcon());
-            Assert.assertNotNull(icon);
-            Assert.assertTrue(expectedIcon.sameAs(icon));
-        }
+        Bitmap icon = NotificationTestUtil.getBitmapFromIcon(context, notification.getSmallIcon());
+        Assert.assertNotNull(icon);
+        Assert.assertTrue(expectedIcon.sameAs(icon));
 
         // 2. Check the small icon in the custom layouts.
         View compactView = notification.contentView.apply(context, new LinearLayout(context));

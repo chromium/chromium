@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -225,9 +224,7 @@ public abstract class NotificationBuilderBase {
      * a small icon bitmap, it will take precedence over one specified as a resource id.
      */
     public NotificationBuilderBase setStatusBarIcon(@Nullable Bitmap iconBitmap) {
-        if (deviceSupportsBitmapStatusBarIcons()) {
-            mSmallIconBitmapForStatusBar = applyWhiteOverlay(iconBitmap);
-        }
+        mSmallIconBitmapForStatusBar = applyWhiteOverlay(iconBitmap);
         return this;
     }
 
@@ -259,18 +256,10 @@ public abstract class NotificationBuilderBase {
      */
     public NotificationBuilderBase setStatusBarIconForRemoteApp(
             int iconId, @Nullable Bitmap iconBitmap) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // On Android M+, the small icon has to be from the resources of the app whose context
-            // is passed to the Notification.Builder constructor. Thus we can't use iconId directly,
-            // and instead use the decoded Bitmap.
-            if (deviceSupportsBitmapStatusBarIcons()) {
-                setStatusBarIcon(iconBitmap);
-            }
-        } else {
-            // Pre Android M, the small icon has to be from the resources of the app whose
-            // NotificationManager is used in NotificationManager#notify.
-            setSmallIconId(iconId);
-        }
+        // The small icon has to be from the resources of the app whose context
+        // is passed to the Notification.Builder constructor. Thus we can't use iconId directly,
+        // and instead use the decoded Bitmap.
+        setStatusBarIcon(iconBitmap);
         return this;
     }
 
@@ -464,29 +453,15 @@ public abstract class NotificationBuilderBase {
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(mChannelId)
                         .setContentText(context.getString(R.string.notification_hidden_text))
-                        .setSmallIcon(R.drawable.ic_chrome);
-
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            // On N, 'subtext' displays at the top of the notification and this looks better.
-            builder.setSubText(mOrigin);
-        } else {
-            // Set origin as title on L & M, because they look odd without one.
-            builder.setContentTitle(mOrigin);
-            // Hide the timestamp to match Android's default public notifications on L and M.
-            builder.setShowWhen(false);
-        }
+                        .setSmallIcon(R.drawable.ic_chrome)
+                        .setSubText(mOrigin);
 
         // Use the badge if provided and SDK supports it, else use a generated icon.
-        if (mSmallIconBitmapForStatusBar != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (mSmallIconBitmapForStatusBar != null) {
             // The Icon class was added in Android M.
             Bitmap publicIcon = mSmallIconBitmapForStatusBar.copy(
                     mSmallIconBitmapForStatusBar.getConfig(), true);
             builder.setSmallIcon(ApiHelperForM.createIconWithBitmap(publicIcon));
-        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && mOrigin != null) {
-            // Only set the large icon for L & M because on N(+?) it would add an extra icon on
-            // the right hand side, which looks odd without a notification title.
-            builder.setLargeIcon(mIconGenerator.generateIconForUrl(mOrigin.toString(), true));
         }
         return builder.build();
     }
@@ -510,36 +485,10 @@ public abstract class NotificationBuilderBase {
     protected static void setStatusBarIcon(
             NotificationWrapperBuilder builder, int iconId, @Nullable Bitmap iconBitmap) {
         if (iconBitmap != null) {
-            assert deviceSupportsBitmapStatusBarIcons();
             builder.setSmallIcon(ApiHelperForM.createIconWithBitmap(iconBitmap));
         } else {
             builder.setSmallIcon(iconId);
         }
-    }
-
-    /**
-     * Returns true if it is safe to call Notification.Builder.setSmallIcon(Icon) on this device.
-     */
-    @VisibleForTesting
-    static boolean deviceSupportsBitmapStatusBarIcons() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            // The Icon class was only added in Android M.
-            return false;
-        }
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-            // Updating a notification with a bitmap status bar icon leads to a crash on Samsung
-            // and Coolpad (Yulong) devices on Marshmallow, see https://crbug.com/829367.
-            // Also, there are crashes on Lenovo M devices: https://crbug.com/894361. These include
-            // Lenovo Zuk devices, which have Build.MANUFACTURER="ZUK": https://crbug.com/927271.
-            // And some more crashes from Hisense and LeEco devices: https://crbug.com/903268.
-            for (String name :
-                    new String[] {"samsung", "yulong", "lenovo", "zuk", "hisense", "leeco"}) {
-                if (Build.MANUFACTURER.equalsIgnoreCase(name)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     /**
@@ -581,7 +530,7 @@ public abstract class NotificationBuilderBase {
 
     private static NotificationCompat.Action.Builder getActionBuilder(Action action) {
         PendingIntent intent = action.intent.getPendingIntent();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && action.iconBitmap != null) {
+        if (action.iconBitmap != null) {
             IconCompat icon = IconCompat.createWithBitmap(action.iconBitmap);
             return new NotificationCompat.Action.Builder(icon, action.title, intent);
         }

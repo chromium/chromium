@@ -219,13 +219,11 @@ import java.util.List;
 
         Display.Mode currentMode = null;
         List<Display.Mode> supportedModes = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            currentMode = ApiHelperForM.getDisplayMode(display);
-            supportedModes = Arrays.asList(ApiHelperForM.getDisplaySupportedModes(display));
-            assert currentMode != null;
-            assert supportedModes != null;
-            assert supportedModes.size() > 0;
-        }
+        currentMode = ApiHelperForM.getDisplayMode(display);
+        supportedModes = Arrays.asList(ApiHelperForM.getDisplaySupportedModes(display));
+        assert currentMode != null;
+        assert supportedModes != null;
+        assert supportedModes.size() > 0;
 
         super.update(size, density, xdpi, ydpi, bitsPerPixel(pixelFormatId),
                 bitsPerComponent(pixelFormatId), display.getRotation(), isWideColorGamut, null,

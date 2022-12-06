@@ -531,10 +531,7 @@ public class MultiInstanceManager
      * @return True if tab model merging for Android N+ is enabled.
      */
     public boolean isTabModelMergingEnabled() {
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)) {
-            return false;
-        }
-        return Build.VERSION.SDK_INT > Build.VERSION_CODES.M;
+        return !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING);
     }
 
     @VisibleForTesting

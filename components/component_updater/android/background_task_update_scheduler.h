@@ -18,9 +18,6 @@ namespace component_updater {
 // BackgroundTaskScheduler.
 class BackgroundTaskUpdateScheduler : public UpdateScheduler {
  public:
-  // Returns true if this scheduler can be used.
-  static bool IsAvailable();
-
   BackgroundTaskUpdateScheduler();
 
   BackgroundTaskUpdateScheduler(const BackgroundTaskUpdateScheduler&) = delete;

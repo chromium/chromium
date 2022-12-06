@@ -7,7 +7,6 @@ package org.chromium.components.security_interstitials;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
-import android.os.Build;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -62,36 +61,13 @@ public class CaptivePortalHelper {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (Network network : connectivityManager.getAllNetworks()) {
-                // Try both true and false for |hasConnectivity|, that's what reportBadNetwork does.
-                // See
-                // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/net/ConnectivityManager.java#L2463
-                // for details.
-                connectivityManager.reportNetworkConnectivity(network, true);
-                connectivityManager.reportNetworkConnectivity(network, false);
-            }
-            return;
-        }
-
-        try {
-            Class<?> networkClass = Class.forName("android.net.Network");
-            Method reportNetworkConnectivityMethod =
-                    connectivityManager.getClass().getMethod("reportNetworkConnectivity",
-                            Class.forName("android.net.Network"), boolean.class);
-            Method getAllNetworksMethod =
-                    connectivityManager.getClass().getMethod("getAllNetworks");
-
-            for (Object obj : (Object[]) getAllNetworksMethod.invoke(connectivityManager)) {
-                // Try both true and false for |hasConnectivity|, as above.
-                reportNetworkConnectivityMethod.invoke(
-                        connectivityManager, new Object[] {networkClass.cast(obj), true});
-                reportNetworkConnectivityMethod.invoke(
-                        connectivityManager, new Object[] {networkClass.cast(obj), false});
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException
-                | ClassNotFoundException e) {
-            // Ignore and do nothing.
+        for (Network network : connectivityManager.getAllNetworks()) {
+            // Try both true and false for |hasConnectivity|, that's what reportBadNetwork does.
+            // See
+            // https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/java/android/net/ConnectivityManager.java#L2463
+            // for details.
+            connectivityManager.reportNetworkConnectivity(network, true);
+            connectivityManager.reportNetworkConnectivity(network, false);
         }
     }
 

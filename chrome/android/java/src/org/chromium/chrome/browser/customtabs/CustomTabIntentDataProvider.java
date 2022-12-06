@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -104,8 +103,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     public static final String EXTRA_KEEP_ALIVE = "android.support.customtabs.extra.KEEP_ALIVE";
 
-    public static final String ANIMATION_BUNDLE_PREFIX =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? "android:activity." : "android:";
+    public static final String ANIMATION_BUNDLE_PREFIX = "android:activity.";
     public static final String BUNDLE_PACKAGE_NAME = ANIMATION_BUNDLE_PREFIX + "packageName";
     public static final String BUNDLE_ENTER_ANIMATION_RESOURCE =
             ANIMATION_BUNDLE_PREFIX + "animEnterRes";

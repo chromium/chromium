@@ -4,8 +4,6 @@
 
 package org.chromium.components.component_updater;
 
-import android.os.Build;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -14,7 +12,6 @@ import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFini
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
-import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 /** Java-side implementation of the component update scheduler using the BackgroundTaskScheduler. */
 @JNINamespace("component_updater")
@@ -30,13 +27,6 @@ public class UpdateScheduler {
             sInstance = new UpdateScheduler();
         }
         return sInstance;
-    }
-
-    @CalledByNative
-    /* package */ static boolean isAvailable() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                || ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
-                        ContextUtils.getApplicationContext());
     }
 
     /* package */ void onStartTaskBeforeNativeLoaded(TaskFinishedCallback callback) {

@@ -18,13 +18,7 @@ const base::TimeDelta kOnStartTaskDelay = base::Seconds(2);
 
 }  // namespace
 
-// static
-bool BackgroundTaskUpdateScheduler::IsAvailable() {
-  return Java_UpdateScheduler_isAvailable(base::android::AttachCurrentThread());
-}
-
 BackgroundTaskUpdateScheduler::BackgroundTaskUpdateScheduler() {
-  DCHECK(IsAvailable());
   JNIEnv* env = base::android::AttachCurrentThread();
   j_update_scheduler_.Reset(Java_UpdateScheduler_getInstance(env));
   Java_UpdateScheduler_setNativeScheduler(env, j_update_scheduler_,
