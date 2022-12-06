@@ -7,10 +7,16 @@
 #include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
+#ifdef __SSE2__
+#include <immintrin.h>
+#elif defined(__aarch64__)
+#include <arm_neon.h>
+#endif
 
 #include <cstdio>
 #include <string>
 
+#include "base/bits.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
 
@@ -18,12 +24,62 @@ namespace url {
 
 namespace {
 
+// Find the initial segment of the given string that consists solely
+// of characters valid for CHAR_QUERY. (We can have false negatives in
+// one specific case, namely the exclamation mark 0x21, but false negatives
+// are fine, and it's not worth adding a separate test for.) This is
+// a fast path to speed up checking of very long query strings that are
+// already valid, which happen on some web pages.
+//
+// This has some startup cost to load the constants and such, so it's
+// usually not worth it for short strings.
+size_t FindInitialQuerySafeString(const char* source, size_t length) {
+#if defined(__SSE2__) || defined(__aarch64__)
+  constexpr size_t kChunkSize = 16;
+  size_t i;
+  for (i = 0; i < base::bits::AlignDown(length, kChunkSize); i += kChunkSize) {
+    char b __attribute__((vector_size(16)));
+    memcpy(&b, source + i, sizeof(b));
+
+    // Compare each element with the ranges for CHAR_QUERY
+    // (see kSharedCharTypeTable), vectorized so that it creates
+    // a mask of which elements match. For completeness, we could
+    // have had (...) | b == 0x21 here, but exclamation marks are
+    // rare and the extra test costs us some time.
+    auto mask = b >= 0x24 && b <= 0x7e && b != 0x27 && b != 0x3c && b != 0x3e;
+
+#ifdef __SSE2__
+    if (_mm_movemask_epi8(mask) != 0xffff) {
+      return i;
+    }
+#else
+    if (vminvq_u8(mask) == 0) {
+      return i;
+    }
+#endif
+  }
+  return i;
+#else
+  // Need SIMD support (with fast reductions) for this to be efficient.
+  return 0;
+#endif
+}
+
 template <typename CHAR, typename UCHAR>
 void DoAppendStringOfType(const CHAR* source,
                           size_t length,
                           SharedCharTypes type,
                           CanonOutput* output) {
-  for (size_t i = 0; i < length; i++) {
+  size_t i = 0;
+  // We only instantiate this for char, to avoid a Clang crash
+  // (and because Append() does not support converting).
+  if constexpr (sizeof(CHAR) == 1) {
+    if (type == CHAR_QUERY && length >= kMinimumLengthForSIMD) {
+      i = FindInitialQuerySafeString(source, length);
+      output->Append(source, i);
+    }
+  }
+  for (; i < length; i++) {
     if (static_cast<UCHAR>(source[i]) >= 0x80) {
       // ReadChar will fill the code point with kUnicodeReplacementCharacter
       // when the input is invalid, which is what we want.

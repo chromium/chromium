@@ -98,8 +98,7 @@ class CanonOutputT {
       if (!Grow(str_len - (buffer_len_ - cur_len_)))
         return;
     }
-    for (size_t i = 0; i < str_len; i++)
-      buffer_[cur_len_ + i] = str[i];
+    memcpy(buffer_ + cur_len_, str, str_len * sizeof(T));
     cur_len_ += str_len;
   }
 

@@ -459,6 +459,13 @@ inline unsigned long long _strtoui64(const char* nptr,
 
 #endif  // WIN32
 
+// The threshold we set to consider SIMD processing, in bytes; there is
+// no deep theory here, it's just set empirically to a value that seems
+// to be good. (We don't really know why there's a slowdown for zero;
+// but a guess would be that there's no need in going into a complex loop
+// with a lot of setup for a five-byte string.)
+static constexpr int kMinimumLengthForSIMD = 50;
+
 }  // namespace url
 
 #endif  // URL_URL_CANON_INTERNAL_H_

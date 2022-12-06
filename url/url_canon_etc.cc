@@ -31,12 +31,22 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
   // Fast verification that there's nothing that needs removal. This is the 99%
   // case, so we want it to be fast and don't care about impacting the speed
   // when we do find whitespace.
-  int found_whitespace = false;
-  for (int i = 0; i < input_len; i++) {
-    if (!IsRemovableURLWhitespace(input[i]))
-      continue;
-    found_whitespace = true;
-    break;
+  bool found_whitespace = false;
+  if (sizeof(*input) == 1 && input_len >= kMinimumLengthForSIMD) {
+    // For large strings, memchr is much faster than any scalar code we can
+    // write, even if we need to run it three times. (If this turns out to still
+    // be a bottleneck, we could write our own vector code, but given that
+    // memchr is so fast, it's unlikely to be relevant.)
+    found_whitespace = memchr(input, '\n', input_len) != nullptr ||
+                       memchr(input, '\r', input_len) != nullptr ||
+                       memchr(input, '\t', input_len) != nullptr;
+  } else {
+    for (int i = 0; i < input_len; i++) {
+      if (!IsRemovableURLWhitespace(input[i]))
+        continue;
+      found_whitespace = true;
+      break;
+    }
   }
 
   if (!found_whitespace) {

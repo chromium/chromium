@@ -181,22 +181,39 @@ inline void FindQueryAndRefParts(const CHAR* spec,
                                  const Component& path,
                                  int* query_separator,
                                  int* ref_separator) {
-  int path_end = path.begin + path.len;
-  for (int i = path.begin; i < path_end; i++) {
-    switch (spec[i]) {
-      case '?':
-        // Only match the query string if it precedes the reference fragment
-        // and when we haven't found one already.
-        if (*query_separator < 0)
-          *query_separator = i;
-        break;
-      case '#':
-        // Record the first # sign only.
-        if (*ref_separator < 0) {
-          *ref_separator = i;
-          return;
-        }
-        break;
+  if constexpr (sizeof(*spec) == 1) {
+    // memchr is much faster than any scalar code we can write.
+    const CHAR* ptr = spec + path.begin;
+    const CHAR* first_hash =
+        reinterpret_cast<const CHAR*>(memchr(ptr, '#', path.len));
+    size_t len_before_fragment =
+        first_hash == nullptr ? path.len : first_hash - ptr;
+    const CHAR* first_question =
+        reinterpret_cast<const CHAR*>(memchr(ptr, '?', len_before_fragment));
+    if (first_hash != nullptr) {
+      *ref_separator = first_hash - spec;
+    }
+    if (first_question != nullptr) {
+      *query_separator = first_question - spec;
+    }
+  } else {
+    int path_end = path.begin + path.len;
+    for (int i = path.begin; i < path_end; i++) {
+      switch (spec[i]) {
+        case '?':
+          // Only match the query string if it precedes the reference fragment
+          // and when we haven't found one already.
+          if (*query_separator < 0)
+            *query_separator = i;
+          break;
+        case '#':
+          // Record the first # sign only.
+          if (*ref_separator < 0) {
+            *ref_separator = i;
+            return;
+          }
+          break;
+      }
     }
   }
 }
