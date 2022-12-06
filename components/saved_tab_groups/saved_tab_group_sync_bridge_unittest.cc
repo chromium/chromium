@@ -41,8 +41,6 @@
 using testing::_;
 
 namespace {
-constexpr base::TimeDelta discard_orphaned_tabs_threshold =
-    base::Microseconds(base::Time::kMicrosecondsPerDay * 90);
 
 // Do not check update times for specifics as adding tabs to a group through the
 // bridge will change the update times for the group object.
@@ -295,96 +293,6 @@ TEST_F(SavedTabGroupSyncBridgeTest, OrphanedTabAddedIntoGroupWhenFound) {
       *orphaned_tab.ToSpecifics(),
       *orphaned_group_from_model->GetTab(orphaned_tab.saved_tab_guid())
            ->ToSpecifics()));
-}
-
-// Verify orphaned tabs (tabs missing their group) that have not been updated
-// for 90 days are discarded and not added into the model.
-TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter90Days) {
-  // Merge an orphaned tab. Then merge its missing group. This aims to
-  // simulate data spread out over multiple changes.
-  base::GUID orphaned_guid = base::GUID::GenerateRandomV4();
-  SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
-                                orphaned_guid);
-  orphaned_tab.SetUpdateTimeWindowsEpochMicros(base::Time::Now() -
-                                               discard_orphaned_tabs_threshold);
-
-  syncer::EntityChangeList orphaned_tab_change_list;
-  orphaned_tab_change_list.push_back(
-      CreateEntityChange(orphaned_tab.ToSpecifics(),
-                         syncer::EntityChange::ChangeType::ACTION_ADD));
-
-  bridge_->MergeSyncData(bridge_->CreateMetadataChangeList(),
-                         std::move(orphaned_tab_change_list));
-
-  EXPECT_FALSE(saved_tab_group_model_.Contains(orphaned_tab.group_guid()));
-  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
-
-  SavedTabGroup missing_group(u"New Group Title",
-                              tab_groups::TabGroupColorId::kOrange, {},
-                              orphaned_guid);
-  syncer::EntityChangeList missing_group_change_list;
-  missing_group_change_list.push_back(
-      CreateEntityChange(missing_group.ToSpecifics(),
-                         syncer::EntityChange::ChangeType::ACTION_ADD));
-  bridge_->ApplySyncChanges(bridge_->CreateMetadataChangeList(),
-                            std::move(missing_group_change_list));
-
-  EXPECT_TRUE(saved_tab_group_model_.Contains(orphaned_guid));
-  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
-
-  SavedTabGroup* orphaned_group_from_model =
-      saved_tab_group_model_.Get(orphaned_guid);
-
-  EXPECT_TRUE(orphaned_group_from_model->saved_tabs().empty());
-  EXPECT_FALSE(orphaned_group_from_model->ContainsTab(orphaned_tab.guid()));
-}
-
-// Verify orphaned tabs (tabs missing their group) that have not been updated
-// for 90 days are have a group are not discarded.
-TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter90Days) {
-  // Merge an orphaned tab. Then merge its missing group. This aims to
-  // simulate data spread out over multiple changes.
-  base::GUID orphaned_guid = base::GUID::GenerateRandomV4();
-
-  SavedTabGroup missing_group(u"New Group Title",
-                              tab_groups::TabGroupColorId::kOrange, {},
-                              orphaned_guid);
-  syncer::EntityChangeList missing_group_change_list;
-  missing_group_change_list.push_back(
-      CreateEntityChange(missing_group.ToSpecifics(),
-                         syncer::EntityChange::ChangeType::ACTION_ADD));
-
-  bridge_->MergeSyncData(bridge_->CreateMetadataChangeList(),
-                         std::move(missing_group_change_list));
-
-  EXPECT_TRUE(saved_tab_group_model_.Contains(orphaned_guid));
-  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
-
-  SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
-                                orphaned_guid);
-  orphaned_tab.SetUpdateTimeWindowsEpochMicros(base::Time::Now() -
-                                               discard_orphaned_tabs_threshold);
-  syncer::EntityChangeList orphaned_tab_change_list;
-  orphaned_tab_change_list.push_back(
-      CreateEntityChange(orphaned_tab.ToSpecifics(),
-                         syncer::EntityChange::ChangeType::ACTION_ADD));
-
-  bridge_->ApplySyncChanges(bridge_->CreateMetadataChangeList(),
-                            std::move(orphaned_tab_change_list));
-
-  EXPECT_TRUE(saved_tab_group_model_.Contains(orphaned_guid));
-  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
-
-  SavedTabGroup* orphaned_group_from_model =
-      saved_tab_group_model_.Get(orphaned_guid);
-
-  EXPECT_EQ(orphaned_group_from_model->saved_tabs().size(), 1u);
-  EXPECT_TRUE(orphaned_group_from_model->ContainsTab(orphaned_tab.guid()));
-  EXPECT_TRUE(AreGroupSpecificsEqual(
-      *missing_group.ToSpecifics(), *orphaned_group_from_model->ToSpecifics()));
-  EXPECT_TRUE(AreTabSpecificsEqual(
-      *orphaned_tab.ToSpecifics(),
-      *orphaned_group_from_model->GetTab(orphaned_tab.guid())->ToSpecifics()));
 }
 
 // Verify that when we add data into the sync bridge the SavedTabGroupModel
