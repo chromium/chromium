@@ -48,6 +48,20 @@ export class PumpkinParseStrategy extends ParseStrategy {
     this.locale_ = null;
     /** @private {boolean} */
     this.requestedPumpkinInstall_ = false;
+    /** @private {boolean} */
+    this.isMoreCommandsFeatureEnabled_ = false;
+
+    /** @private {!Array<!MacroName>}*/
+    this.moreCommandsSet_ = [
+      MacroName.DELETE_ALL_TEXT,
+      MacroName.NAV_START_TEXT,
+      MacroName.NAV_END_TEXT,
+      MacroName.SELECT_PREV_WORD,
+      MacroName.SELECT_NEXT_WORD,
+      MacroName.SELECT_NEXT_CHAR,
+      MacroName.SELECT_PREV_CHAR,
+      MacroName.REPEAT,
+    ];
 
     this.init_();
   }
@@ -70,6 +84,13 @@ export class PumpkinParseStrategy extends ParseStrategy {
         this.onPumpkinInstalled_(data);
       });
     });
+
+    const moreCommandsFeature = chrome.accessibilityPrivate.AccessibilityFeature
+                                    .DICTATION_MORE_COMMANDS;
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        moreCommandsFeature, enabled => {
+          this.isMoreCommandsFeatureEnabled_ = enabled;
+        });
   }
 
   /**
@@ -346,11 +367,31 @@ export class PumpkinParseStrategy extends ParseStrategy {
       return null;
     }
 
-    return this.macroFromPumpkinHypothesis_(taggerResults.hypothesisList[0]);
+    const macro =
+        this.macroFromPumpkinHypothesis_(taggerResults.hypothesisList[0]);
+    return this.shouldReturnMacro_(macro) ? macro : null;
   }
 
   /** @override */
   isEnabled() {
     return this.enabled && this.featureEnabled_;
+  }
+
+  /**
+   * @param {Macro} macro
+   * @return {boolean}
+   * @private
+   */
+  shouldReturnMacro_(macro) {
+    if (!macro) {
+      return false;
+    }
+
+    const isNewCommand = this.moreCommandsSet_.includes(macro.getMacroName());
+    if (!isNewCommand) {
+      return true;
+    }
+
+    return this.isMoreCommandsFeatureEnabled_;
   }
 }

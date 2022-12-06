@@ -40,6 +40,8 @@ DictationPumpkinParseTest = class extends DictationE2ETestAllowConsole {
   async setUpDeferred() {
     this.mockAccessibilityPrivate.enableFeatureForTest(
         'dictationPumpkinParsing', true);
+    this.mockAccessibilityPrivate.enableFeatureForTest(
+        'dictationMoreCommands', true);
     await this.mockAccessibilityPrivate.initializePumpkinData();
     // Re-initialize PumpkinParseStrategy after mock Pumpkin data has been
     // created.

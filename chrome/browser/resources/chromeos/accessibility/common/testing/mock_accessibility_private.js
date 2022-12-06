@@ -42,6 +42,7 @@ class MockAccessibilityPrivate {
 
     this.AccessibilityFeature = {
       DICTATION_PUMPKIN_PARSING: 'dictationPumpkinParsing',
+      DICTATION_MORE_COMMANDS: 'dictationMoreCommands',
     };
 
     this.DictationBubbleIconType = {

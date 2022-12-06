@@ -1098,12 +1098,6 @@ class DictationCommandsTest : public DictationTest {
   DictationCommandsTest(const DictationCommandsTest&) = delete;
   DictationCommandsTest& operator=(const DictationCommandsTest&) = delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DictationTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityDictationMoreCommands);
-  }
-
   void SetUpOnMainThread() override {
     DictationTest::SetUpOnMainThread();
     ToggleDictationWithKeystroke();
@@ -1281,164 +1275,6 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordMiddleOfWord) {
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
   SendFinalResultAndWaitForEditableValue("delete the previous word",
                                          "This is a t.");
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextSimple) {
-  SendFinalResultAndWaitForEditableValue("Hello, world.", "Hello, world.");
-  SendFinalResultAndWaitForEditableValue("delete all", "");
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextMultiLineString) {
-  if (!RunOnMultilineContent())
-    return;
-
-  std::string text = " Hello, world. \n Hello, world. \n Hello, world. \n";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWaitForEditableValue("delete all", "");
-}
-
-// TODO(crbug.com/1362842) Add a test where
-// you disable the MoreCommands Feature Flag
-// and ensure that you can't run the Dictation
-// Commands under that feature flag.
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextSimple) {
-  SendFinalResultAndWaitForEditableValue("Is good", "Is good");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
-  SendFinalResultAndWaitForEditableValue("The weather outside",
-                                         "The weather outside Is good");
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextMultiLineString) {
-  if (!RunOnMultilineContent())
-    return;
-
-  std::string text = "Is good\n and we should go for a run.";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
-  std::string expected = "The weather outside " + text;
-  SendFinalResultAndWaitForEditableValue("The weather outside", expected);
-}
-
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_NavEndTextSimple DISABLED_NavEndTextSimple
-#else
-#define MAYBE_NavEndTextSimple NavEndTextSimple
-#endif
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MAYBE_NavEndTextSimple) {
-  SendFinalResultAndWaitForEditableValue("The weather outside is",
-                                         "The weather outside is");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the end");
-  std::string expected = "The weather outside is good";
-  SendFinalResultAndWaitForEditableValue("good", expected);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavEndTextMultiLineString) {
-  if (!RunOnMultilineContent())
-    return;
-
-  std::string text = "The weather outside is\n";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the end");
-  std::string expected = text + "good";
-  SendFinalResultAndWaitForEditableValue("good", expected);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevWordSimple) {
-  SendFinalResultAndWaitForEditableValue("The weather today is bad",
-                                         "The weather today is bad");
-  SendFinalResultAndWaitForSelectionChanged("highlight the previous word");
-  std::string expected = "The weather today is nice";
-  SendFinalResultAndWaitForEditableValue("nice", expected);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevWordNewLine) {
-  if (!RunOnMultilineContent())
-    return;
-
-  std::string text = "The weather today is bad\n";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWait("highlight the previous word");
-  std::string expected = "The weather today is badnice";
-  SendFinalResultAndWaitForEditableValue("nice", expected);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextWordSimple) {
-  SendFinalResultAndWaitForEditableValue("The weather today is bad",
-                                         "The weather today is bad");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWaitForSelectionChanged("highlight the next word");
-  std::string expected = "The weather today is nice";
-  SendFinalResultAndWaitForEditableValue("nice", expected);
-}
-
-// TODO(crbug.com/1377314): Test is flaky.
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DISABLED_SelectNextWordNewLine) {
-  std::string text = "The weather today is\n";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWait("move to the previous character");
-  SendFinalResultAndWait("highlight the next word");
-  std::string expected = "The weather today isnice";
-  SendFinalResultAndWaitForEditableValue("nice", expected);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextCharSimple) {
-  SendFinalResultAndWaitForEditableValue("Text", "Text");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWaitForCaretBoundsChanged("highlight the next character");
-  std::string expected = "ext";
-  SendFinalResultAndWaitForEditableValue("delete", expected);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextCharMultiLineString) {
-  if (!RunOnMultilineContent())
-    return;
-
-  std::string text = "Hello, world.\n";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWait("highlight the next character");
-  std::string expected = "Hello, world.";
-  SendFinalResultAndWaitForEditableValue("delete", expected);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevCharSimple) {
-  SendFinalResultAndWaitForEditableValue("Text", "Text");
-  SendFinalResultAndWaitForCaretBoundsChanged("highlight the previous character");
-  std::string expected = "Tex";
-  SendFinalResultAndWaitForEditableValue("delete", expected);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevCharMultiLineString) {
-  if (!RunOnMultilineContent())
-    return;
-
-  std::string text = "Hello, world.\n";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWait("highlight the previous character");
-  std::string expected = "Hello, world.";
-  SendFinalResultAndWaitForEditableValue("delete", expected);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, RepeatSimple) {
-  std::string text = "Hello, world.";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWaitForEditableValue("delete all","");
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWaitForEditableValue("repeat", "");
-}
-
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, RepeatAdvanced) {
-  std::string text = "Hello, world.";
-  SendFinalResultAndWaitForEditableValue(text, text);
-  SendFinalResultAndWaitForEditableValue("delete","Hello, world");
-  SendFinalResultAndWaitForEditableValue("repeat", "Hello, worl");
-  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous character");
-  SendFinalResultAndWaitForCaretBoundsChanged("repeat");
-  std::string expected = "Hello, wrl";
-  SendFinalResultAndWaitForEditableValue("delete", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
@@ -1954,16 +1790,22 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterCommandExecuted) {
 
 // Tests behavior of Dictation using the Pumpkin semantic parser.
 class DictationPumpkinTest : public DictationTest {
- protected:
+ public:
   DictationPumpkinTest() = default;
   ~DictationPumpkinTest() = default;
   DictationPumpkinTest(const DictationPumpkinTest&) = delete;
   DictationPumpkinTest& operator=(const DictationPumpkinTest&) = delete;
 
+ protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DictationTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityDictationWithPumpkin);
+    std::vector<base::test::FeatureRef> enabled_features;
+    enabled_features.emplace_back(base::test::FeatureRef(
+        ::features::kExperimentalAccessibilityDictationWithPumpkin));
+    enabled_features.emplace_back(base::test::FeatureRef(
+        ::features::kExperimentalAccessibilityDictationMoreCommands));
+    scoped_feature_list_.InitWithFeatures(
+        enabled_features, std::vector<base::test::FeatureRef>());
   }
 
   void SetUpOnMainThread() override {
@@ -2243,8 +2085,6 @@ class DictationContextCheckingTest : public DictationTest {
     DictationTest::SetUpCommandLine(command_line);
 
     std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.emplace_back(base::test::FeatureRef(
-        ::features::kExperimentalAccessibilityDictationMoreCommands));
     enabled_features.emplace_back(base::test::FeatureRef(
         ::features::kExperimentalAccessibilityDictationContextChecking));
     scoped_feature_list_.InitWithFeatures(

@@ -116,23 +116,13 @@ AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
   macro = await strategy.parse('move to the previous sentence');
   assertEquals('NAV_PREV_SENT', macro.getMacroNameString());
   assertTrue(macro.isSmart());
+
+  // Unsupported commands.
+  macro = await strategy.parse('highlight the next word');
+  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
+  macro = await strategy.parse('repeat');
+  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
 });
-
-// TODO(crbug.com/1264544): This test fails because of a memory issues
-// when loading Pumpkin. The issue is not present in google3 test of Pumpkin
-// WASM or when running Chrome with Dictation, so it is likely a limitation in
-// the Chrome test framework. The test is only run when the default-false gn
-// arg, enable_pumpkin_for_dictation, is set to true.
-AX_TEST_F(
-    'DictationParseTest', 'DISABLED_PumpkinDeleteCommand', async function() {
-      const strategy = this.getPumpkinParseStrategy();
-      if (!strategy) {
-        return;
-      }
-
-      const macro = await strategy.parse('delete two characters');
-      assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
-    });
 
 AX_TEST_F('DictationParseTest', 'NoSmartMacrosForRTLLocales', async function() {
   const strategy = this.getSimpleParseStrategy();
