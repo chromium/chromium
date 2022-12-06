@@ -45,9 +45,7 @@ class VideoCaptureDeviceChromeOSDelegate;
 class CAPTURE_EXPORT CameraHalDelegate final
     : public cros::mojom::CameraModuleCallbacks {
  public:
-  explicit CameraHalDelegate(
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
-
+  CameraHalDelegate();
   // CameraHalDelegate is functional only after this call succeeds.
   bool Init();
 
@@ -104,8 +102,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
   int GetCameraIdFromDeviceId(const std::string& device_id);
 
  private:
-  class PowerManagerClientProxy;
-
   friend class base::RefCountedThreadSafe<CameraHalDelegate>;
 
   void OnRegisteredCameraHalClient(int32_t result);
@@ -236,11 +232,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
       vcd_delegate_map_;
 
   std::vector<std::unique_ptr<CameraClientObserver>> local_client_observers_;
-
-  // Proxy for communicating with PowerManagerClient.
-  std::unique_ptr<PowerManagerClientProxy> power_manager_client_proxy_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 };
 
 }  // namespace media

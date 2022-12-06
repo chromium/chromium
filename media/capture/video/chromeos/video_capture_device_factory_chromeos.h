@@ -22,7 +22,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
     : public VideoCaptureDeviceFactory {
  public:
   explicit VideoCaptureDeviceFactoryChromeOS(
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner>
+          task_runner_for_screen_observer);
 
   VideoCaptureDeviceFactoryChromeOS(const VideoCaptureDeviceFactoryChromeOS&) =
       delete;
@@ -44,7 +45,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   // succeeds.
   bool Init();
 
-  const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner>
+      task_runner_for_screen_observer_;
 
   // Communication interface to the camera HAL.
   std::unique_ptr<CameraHalDelegate> camera_hal_delegate_;
