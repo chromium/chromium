@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -248,6 +249,17 @@ String ToHEXA(const Color& color) {
                         color.Blue(), color.Alpha());
 }
 
+std::unique_ptr<protocol::ListValue> ToRGBAList(const Color& color) {
+  SkColor4f skColor = color.toSkColor4f();
+
+  std::unique_ptr<protocol::ListValue> list = protocol::ListValue::create();
+  list->pushValue(protocol::FundamentalValue::create(skColor.fR));
+  list->pushValue(protocol::FundamentalValue::create(skColor.fG));
+  list->pushValue(protocol::FundamentalValue::create(skColor.fB));
+  list->pushValue(protocol::FundamentalValue::create(skColor.fA));
+  return list;
+}
+
 namespace ContrastAlgorithmEnum = protocol::Overlay::ContrastAlgorithmEnum;
 
 String ContrastAlgorithmToString(const ContrastAlgorithm& contrast_algorithm) {
@@ -299,6 +311,7 @@ void AppendStyleInfo(Node* node,
     AtomicString name = CSSPropertyName(properties[i]).ToAtomicString();
     if (value->IsColorValue()) {
       Color color = static_cast<const cssvalue::CSSColor*>(value)->Value();
+      computed_style->setArray(name + "-unclamped-rgba", ToRGBAList(color));
       if (!color.IsLegacyColor()) {
         computed_style->setString(name + "-css-text", value->CssText());
       }
@@ -316,6 +329,10 @@ void AppendStyleInfo(Node* node,
     contrast->setString("fontWeight", node_contrast.font_weight);
     contrast->setString("backgroundColor",
                         ToHEXA(node_contrast.background_color));
+    contrast->setArray("backgroundColorUnclampedRgba",
+                       ToRGBAList(node_contrast.background_color));
+    contrast->setString("backgroundColorCssText",
+                        node_contrast.background_color.SerializeAsCSSColor());
     contrast->setString("contrastAlgorithm",
                         ContrastAlgorithmToString(contrast_algorithm));
     contrast->setDouble("textOpacity", node_contrast.text_opacity);

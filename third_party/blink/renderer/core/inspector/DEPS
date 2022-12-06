@@ -32,6 +32,9 @@ specific_include_rules = {
   "inspector_highlight_test.cc": [
     "+base/test/values_test_util.h",
   ],
+  "inspector_highlight.cc" : [
+    "+third_party/skia/include/core/SkColor.h",
+  ],
   "inspector_contrast.cc": [
     "+ui/gfx/color_utils.h",
   ],

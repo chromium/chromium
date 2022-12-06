@@ -13,12 +13,18 @@
           background-color: blue;
           font-size: 20px;
       }
+      section#section-with-wide-gamut-colors {
+        color: color(xyz-d50 2 0.9 0.79);
+        background-color: lab(86 26 -3.8);
+      }
       </style>
       <div id="empty-div"></div>
       <div id="div-with-text">I have text</div>
+      <section id="section-with-wide-gamut-colors">I'm a text</section>
     `);
 
   await ElementsTestRunner.dumpInspectorHighlightStyleJSON('empty-div');
   await ElementsTestRunner.dumpInspectorHighlightStyleJSON('div-with-text');
+  await ElementsTestRunner.dumpInspectorHighlightStyleJSON('section-with-wide-gamut-colors');
   TestRunner.completeTest();
 })();
