@@ -192,7 +192,7 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
    * Returns the sanitized URL for apps downloaded from
    * the Chrome browser, to be shown in the tooltip.
    */
-  private getSanitizedURL_(app: App): string {
+  private getSanitizedUrl_(app: App): string {
     return app.publisherId.replace(/\?.*$/g, '');
   }
 }

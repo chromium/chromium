@@ -115,7 +115,7 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
     this.passkeys_ = passkeys;
   }
 
-  private getIconURL_(passkey: Passkey): string {
+  private getIconUrl_(passkey: Passkey): string {
     // `passkey.relyingPartyId` comes from the OS and hopefully can be trusted,
     // but don't let bad data form an unexpected URL. Thus drop any passkeys
     // with characters in the RP ID that are meaningful in a host per

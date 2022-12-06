@@ -14,7 +14,7 @@ export interface TimeZoneBrowserProxy {
   dateTimePageReady(): void;
 
   /** Notifies C++ code to show the chrome://set-time standalone dialog. */
-  showSetDateTimeUI(): void;
+  showSetDateTimeUi(): void;
 
   getTimeZones(): Promise<string[][]>;
 }
@@ -38,7 +38,7 @@ export class TimeZoneBrowserProxyImpl implements TimeZoneBrowserProxy {
     chrome.send('dateTimePageReady');
   }
 
-  showSetDateTimeUI() {
+  showSetDateTimeUi() {
     chrome.send('showSetDateTimeUI');
   }
 

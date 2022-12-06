@@ -249,7 +249,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
    * @return the background color as a RGBA string.
    */
   private computeBackgroundColor_(): string {
-    const backgroundColor = this.formatRGAString_(
+    const backgroundColor = this.formatRgaString_(
         'accessibility.captions.background_color',
         'accessibility.captions.background_opacity');
 
@@ -262,7 +262,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
    * @return the text color as a RGBA string.
    */
   private computeTextColor_(): string {
-    const textColor = this.formatRGAString_(
+    const textColor = this.formatRgaString_(
         'accessibility.captions.text_color',
         'accessibility.captions.text_opacity');
 
@@ -279,7 +279,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
    *     value as a percentage.
    * @return The formatted RGBA string.
    */
-  private formatRGAString_(colorPreference: string, opacityPreference: string):
+  private formatRgaString_(colorPreference: string, opacityPreference: string):
       string {
     const color = this.getPref(colorPreference).value;
 

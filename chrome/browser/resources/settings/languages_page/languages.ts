@@ -138,7 +138,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       'neverTranslateSitesPrefChanged_(' +
           'prefs.translate_site_blocklist_with_time.value.*, languages)',
       // <if expr="is_win">
-      'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
+      'prospectiveUiLanguageChanged_(prefs.intl.app_locale.value, languages)',
       // </if>
       'preferredLanguagesPrefChanged_(' +
           'prefs.intl.accept_languages.value, languages)',
@@ -243,7 +243,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     // <if expr="is_win">
     // Fetch the starting UI language, which affects which actions should be
     // enabled.
-    promises.push(this.browserProxy_.getProspectiveUILanguage().then(
+    promises.push(this.browserProxy_.getProspectiveUiLanguage().then(
         prospectiveUILanguage => {
           this.originalProspectiveUILanguage_ =
               prospectiveUILanguage || window.navigator.language;
@@ -288,7 +288,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   /**
    * Updates the prospective UI language based on the new pref value.
    */
-  private prospectiveUILanguageChanged_(prospectiveUILanguage: string) {
+  private prospectiveUiLanguageChanged_(prospectiveUILanguage: string) {
     this.set(
         'languages.prospectiveUILanguage',
         prospectiveUILanguage || this.originalProspectiveUILanguage_);
@@ -726,8 +726,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
    * Sets the prospective UI language to the chosen language. This won't affect
    * the actual UI language until a restart.
    */
-  setProspectiveUILanguage(languageCode: string) {
-    this.browserProxy_.setProspectiveUILanguage(languageCode);
+  setProspectiveUiLanguage(languageCode: string) {
+    this.browserProxy_.setProspectiveUiLanguage(languageCode);
   }
 
   /**

@@ -81,11 +81,11 @@ class SecurityKeysSubpageElement extends PolymerElement {
     Router.getInstance().navigateTo(routes.SECURITY_KEYS_PHONES);
   }
 
-  private onSetPIN_() {
+  private onSetPin_() {
     this.showSetPINDialog_ = true;
   }
 
-  private onSetPINDialogClosed_() {
+  private onSetPinDialogClosed_() {
     this.showSetPINDialog_ = false;
     focusWithoutInk(this.$.setPINButton);
   }

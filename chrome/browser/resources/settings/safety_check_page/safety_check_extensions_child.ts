@@ -150,7 +150,7 @@ export class SettingsSafetyCheckExtensionsChildElement extends
   }
 
   private openExtensionsPage_() {
-    OpenWindowProxyImpl.getInstance().openURL('chrome://extensions');
+    OpenWindowProxyImpl.getInstance().openUrl('chrome://extensions');
   }
 }
 

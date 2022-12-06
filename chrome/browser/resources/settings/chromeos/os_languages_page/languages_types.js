@@ -92,7 +92,7 @@ export class LanguageHelper {
    * the actual UI language until a restart.
    * @param {string} languageCode
    */
-  setProspectiveUILanguage(languageCode) {}
+  setProspectiveUiLanguage(languageCode) {}
 
   /**
    * True if the prospective UI language has been changed.

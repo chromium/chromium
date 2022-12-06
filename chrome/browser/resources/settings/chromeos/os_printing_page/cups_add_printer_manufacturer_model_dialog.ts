@@ -213,15 +213,15 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
   }
 
   private onBrowseFile_(): void {
-    this.browserProxy_.getCupsPrinterPPDPath().then(
-        this.printerPPDPathChanged_.bind(this));
+    this.browserProxy_.getCupsPrinterPpdPath().then(
+        this.printerPpdPathChanged_.bind(this));
   }
 
 
   /**
    * @param path The full path to the selected PPD file
    */
-  private printerPPDPathChanged_(path: string): void {
+  private printerPpdPathChanged_(path: string): void {
     this.set('activePrinter.printerPPDPath', path);
     this.invalidPPD_ = !path;
     this.newUserPPD_ = getBaseName(path);

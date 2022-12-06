@@ -22,13 +22,13 @@ import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy
 class TestOpenWindowProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'openURL',
+      'openUrl',
     ]);
   }
 
   /** @override */
-  openURL(url) {
-    this.methodCalled('openURL', url);
+  openUrl(url) {
+    this.methodCalled('openUrl', url);
   }
 }
 
@@ -463,7 +463,7 @@ suite('OSSettingsSearchBox', () => {
 
         assertEquals(
             'chrome://personalization/test',
-            await openWindowProxy.whenCalled('openURL'));
+            await openWindowProxy.whenCalled('openUrl'));
       });
 
   test(
@@ -484,7 +484,7 @@ suite('OSSettingsSearchBox', () => {
 
         assertEquals(
             'chrome://personalization/test',
-            await openWindowProxy.whenCalled('openURL'));
+            await openWindowProxy.whenCalled('openUrl'));
       });
 
   test('Keypress Enter on row causes route change', async () => {

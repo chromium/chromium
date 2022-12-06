@@ -46,16 +46,16 @@
                 <cr-input id="currentPIN" value="{{currentPIN_}}"
                     min-length="[[currentMinPinLength_]]"
                     max-length="255" spellcheck="false"
-                    on-input="onCurrentPINInput_"
+                    on-input="onCurrentPinInput_"
                     invalid="[[isNonEmpty_(currentPINError_)]]"
                     label="$i18n{securityKeysCurrentPIN}"
                     type$="[[inputType_(pinsVisible_)]]"
                     error-message="[[currentPINError_]]">
                   <cr-icon-button slot="suffix" id="showPINsButton"
-                      class$="[[showPINsClass_(pinsVisible_)]]"
-                      title="[[showPINsTitle_(pinsVisible_)]]"
+                      class$="[[showPinsClass_(pinsVisible_)]]"
+                      title="[[showPinsTitle_(pinsVisible_)]]"
                       focus-row-control focus-type="showPassword"
-                      on-click="showPINsClick_"></cr-icon-button>
+                      on-click="showPinsClick_"></cr-icon-button>
                 </cr-input>
 
               </div>
@@ -66,7 +66,7 @@
             <div id="newPINRow">
               <cr-input id="newPIN" value="{{newPIN_}}"
                   min-length="[[newMinPinLength_]]"
-                  max-length="255" spellcheck="false" on-input="onNewPINInput_"
+                  max-length="255" spellcheck="false" on-input="onNewPinInput_"
                   label="$i18n{securityKeysPIN}"
                   type$="[[inputType_(pinsVisible_)]]"
                   invalid="[[isNonEmpty_(newPINError_)]]"
@@ -81,17 +81,17 @@
               <cr-input id="confirmPIN" value="{{confirmPIN_}}"
                   min-length="[[newMinPinLength_]]"
                   max-length="255" spellcheck="false"
-                  on-input="onConfirmPINInput_"
+                  on-input="onConfirmPinInput_"
                   label="$i18n{securityKeysConfirmPIN}"
                   invalid="[[isNonEmpty_(confirmPINError_)]]"
                   type$="[[inputType_(pinsVisible_)]]"
                   error-message="[[confirmPINError_]]">
                 <cr-icon-button slot="suffix"
-                    class$="[[showPINsClass_(pinsVisible_)]]"
-                    title="[[showPINsTitle_(pinsVisible_)]]"
+                    class$="[[showPinsClass_(pinsVisible_)]]"
+                    title="[[showPinsTitle_(pinsVisible_)]]"
                     hidden="[[showCurrentEntry_]]"
                     focus-row-control focus-type="showPassword"
-                    on-click="showPINsClick_"></cr-icon-button>
+                    on-click="showPinsClick_"></cr-icon-button>
               </cr-input>
             </div>
           </div>

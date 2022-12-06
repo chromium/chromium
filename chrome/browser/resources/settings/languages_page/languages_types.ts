@@ -76,7 +76,7 @@ export interface LanguageHelper {
    * Sets the prospective UI language to the chosen language. This won't affect
    * the actual UI language until a restart.
    */
-  setProspectiveUILanguage(languageCode: string): void;
+  setProspectiveUiLanguage(languageCode: string): void;
 
   /**
    * True if the prospective UI language has been changed.

@@ -194,7 +194,7 @@ export interface AboutPageBrowserProxy {
    * Request TPM firmware update status from the browser. It results in one or
    * more 'tpm-firmware-update-status-changed' WebUI events.
    */
-  refreshTPMFirmwareUpdateStatus(): void;
+  refreshTpmFirmwareUpdateStatus(): void;
 
   /**
    * Checks if the device is connected to the internet.
@@ -299,7 +299,7 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
     return sendWithPromise('checkInternetConnection');
   }
 
-  refreshTPMFirmwareUpdateStatus(): void {
+  refreshTpmFirmwareUpdateStatus(): void {
     chrome.send('refreshTPMFirmwareUpdateStatus');
   }
 

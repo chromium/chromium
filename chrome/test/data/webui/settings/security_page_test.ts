@@ -83,7 +83,7 @@ suite('CrSettingsSecurityPageTest', function() {
   // <if expr="is_macosx or is_win">
   test('NativeCertificateManager', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
-    return testPrivacyBrowserProxy.whenCalled('showManageSSLCertificates');
+    return testPrivacyBrowserProxy.whenCalled('showManageSslCertificates');
   });
   // </if>
 
@@ -93,7 +93,7 @@ suite('CrSettingsSecurityPageTest', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
     assertTrue(!!row);
     row.click();
-    const url = await openWindowProxy.whenCalled('openURL');
+    const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   });
   // </if>

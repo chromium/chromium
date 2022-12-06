@@ -62,7 +62,7 @@ export interface PrivacyPageBrowserProxy {
 
   // <if expr="is_win or is_macosx">
   /** Invokes the native certificate manager (used by win and mac). */
-  showManageSSLCertificates(): void;
+  showManageSslCertificates(): void;
 
   // </if>
 
@@ -108,7 +108,7 @@ export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
   }
 
   // <if expr="is_win or is_macosx">
-  showManageSSLCertificates() {
+  showManageSslCertificates() {
     chrome.send('showManageSSLCertificates');
   }
   // </if>

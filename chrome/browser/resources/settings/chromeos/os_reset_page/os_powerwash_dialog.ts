@@ -62,7 +62,7 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
         type: Boolean,
         value: false,
         computed:
-            'computeShouldShowESimWarning_(installedESimProfiles, hasContinueBeenTapped_)',
+            'computeShouldShowEsimWarning_(installedESimProfiles, hasContinueBeenTapped_)',
       },
 
       isESimCheckboxChecked_: {
@@ -123,7 +123,7 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  private computeShouldShowESimWarning_(): boolean {
+  private computeShouldShowEsimWarning_(): boolean {
     if (this.hasContinueBeenTapped_) {
       return false;
     }

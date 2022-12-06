@@ -390,7 +390,7 @@ export class PasswordsDeviceSectionElement extends
   }
 
   private onManageAccountPasswordsClicked_() {
-    OpenWindowProxyImpl.getInstance().openURL(
+    OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('googlePasswordManagerUrl'));
   }
 

@@ -8,10 +8,10 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestOpenWindowProxy extends TestBrowserProxy implements
     OpenWindowProxy {
   constructor() {
-    super(['openURL']);
+    super(['openUrl']);
   }
 
-  openURL(url: string) {
-    this.methodCalled('openURL', url);
+  openUrl(url: string) {
+    this.methodCalled('openUrl', url);
   }
 }

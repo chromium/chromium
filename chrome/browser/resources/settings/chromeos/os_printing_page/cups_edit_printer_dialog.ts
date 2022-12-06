@@ -322,7 +322,7 @@ class SettingsCupsEditPrinterDialogElement extends
         this.i18n('editPrinterDialogTitle');
   }
 
-  private getPrinterURI_(printer: CupsPrinterInfo): string {
+  private getPrinterUri_(printer: CupsPrinterInfo): string {
     if (!printer) {
       return '';
     } else if (
@@ -472,8 +472,8 @@ class SettingsCupsEditPrinterDialogElement extends
   }
 
   private onBrowseFile_(): void {
-    this.browserProxy_.getCupsPrinterPPDPath().then(
-        this.printerPPDPathChanged_.bind(this));
+    this.browserProxy_.getCupsPrinterPpdPath().then(
+        this.printerPpdPathChanged_.bind(this));
   }
 
   private manufacturerListChanged_(manufacturersInfo: ManufacturersInfo): void {
@@ -503,7 +503,7 @@ class SettingsCupsEditPrinterDialogElement extends
   /**
    * @param path The full path to the selected PPD file
    */
-  private printerPPDPathChanged_(path: string): void {
+  private printerPpdPathChanged_(path: string): void {
     this.set('pendingPrinter_.printerPPDPath', path);
     this.invalidPPD_ = !path;
     if (!this.invalidPPD_) {

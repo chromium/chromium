@@ -39,7 +39,7 @@ export interface IncompatibleApplicationsBrowserProxy {
   /**
    * Opens the specified URL in a new tab.
    */
-  openURL(url: string): void;
+  openUrl(url: string): void;
 
   /**
    * Requests the plural string for the subtitle of the Incompatible
@@ -71,7 +71,7 @@ export class IncompatibleApplicationsBrowserProxyImpl implements
     chrome.send('startApplicationUninstallation', [applicationName]);
   }
 
-  openURL(url: string) {
+  openUrl(url: string) {
     window.open(url);
   }
 

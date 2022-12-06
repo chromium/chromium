@@ -356,8 +356,8 @@ export class SettingsPaymentsSectionElement extends
   /**
    * Listens for the enable-authentication event, and calls the private API.
    */
-  private setFIDOAuthenticationEnabledState_() {
-    this.paymentsManager_.setCreditCardFIDOAuthEnabledState(
+  private setFidoAuthenticationEnabledState_() {
+    this.paymentsManager_.setCreditCardFidoAuthEnabledState(
         this.shadowRoot!
             .querySelector<SettingsToggleButtonElement>(
                 '#autofillCreditCardFIDOAuthToggle')!.checked);

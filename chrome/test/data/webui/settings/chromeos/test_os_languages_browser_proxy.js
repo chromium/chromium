@@ -11,7 +11,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestLanguagesBrowserProxy extends TestBrowserProxy {
   constructor() {
     const methodNames = [];
-    methodNames.push('getProspectiveUILanguage', 'setProspectiveUILanguage');
+    methodNames.push('getProspectiveUiLanguage', 'setProspectiveUiLanguage');
 
     super(methodNames);
 
@@ -35,14 +35,14 @@ export class TestLanguagesBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  getProspectiveUILanguage() {
-    this.methodCalled('getProspectiveUILanguage');
+  getProspectiveUiLanguage() {
+    this.methodCalled('getProspectiveUiLanguage');
     return Promise.resolve('en-US');
   }
 
   /** @override */
-  setProspectiveUILanguage(language) {
-    this.methodCalled('setProspectiveUILanguage', language);
+  setProspectiveUiLanguage(language) {
+    this.methodCalled('setProspectiveUiLanguage', language);
   }
 
 

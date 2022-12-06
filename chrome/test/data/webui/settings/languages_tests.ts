@@ -58,7 +58,7 @@ suite('settings-languages', function() {
     document.body.appendChild(settingsLanguages);
     await languageHelper.whenReady();
     // <if expr="is_win">
-    await browserProxy.whenCalled('getProspectiveUILanguage');
+    await browserProxy.whenCalled('getProspectiveUiLanguage');
     // </if>
   });
 

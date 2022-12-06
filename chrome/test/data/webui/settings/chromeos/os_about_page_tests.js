@@ -75,7 +75,7 @@ suite('AboutPageTest', function() {
     return Promise.all([
       aboutBrowserProxy.whenCalled('getChannelInfo'),
       aboutBrowserProxy.whenCalled('refreshUpdateStatus'),
-      aboutBrowserProxy.whenCalled('refreshTPMFirmwareUpdateStatus'),
+      aboutBrowserProxy.whenCalled('refreshTpmFirmwareUpdateStatus'),
       aboutBrowserProxy.whenCalled('checkInternetConnection'),
     ]);
   }
@@ -475,7 +475,7 @@ suite('AboutPageTest', function() {
   test('TPMFirmwareUpdate', async () => {
     assertTrue(page.$.aboutTPMFirmwareUpdate.hidden);
     aboutBrowserProxy.setTPMFirmwareUpdateStatus({updateAvailable: true});
-    aboutBrowserProxy.refreshTPMFirmwareUpdateStatus();
+    aboutBrowserProxy.refreshTpmFirmwareUpdateStatus();
     assertFalse(page.$.aboutTPMFirmwareUpdate.hidden);
     page.$.aboutTPMFirmwareUpdate.click();
     await flushTasks();

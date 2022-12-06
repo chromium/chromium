@@ -613,7 +613,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   onSearchResultSelected() {
     if (isPersonalizationSearchResult(this.searchResult)) {
       this.recordSearchResultMetrics_();
-      OpenWindowProxyImpl.getInstance().openURL(
+      OpenWindowProxyImpl.getInstance().openUrl(
           loadTimeData.getString('personalizationAppUrl') +
           this.searchResult.relativeUrl);
       return;

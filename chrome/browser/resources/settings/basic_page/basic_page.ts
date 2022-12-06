@@ -365,7 +365,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   // <if expr="chromeos_ash">
-  private onOpenChromeOSLanguagesSettingsClick_() {
+  private onOpenChromeOsLanguagesSettingsClick_() {
     const chromeOSLanguagesSettingsPath =
         loadTimeData.getString('chromeOSLanguagesSettingsPath');
     window.location.href =

@@ -47,7 +47,7 @@ export class SettingsPerformancePageElement extends
   private onLearnMoreOrSendFeedbackClick_(e: CustomEvent<string>) {
     switch (e.detail) {
       case 'highEfficiencyLearnMore':
-        OpenWindowProxyImpl.getInstance().openURL(
+        OpenWindowProxyImpl.getInstance().openUrl(
             loadTimeData.getString('highEfficiencyLearnMoreUrl'));
         break;
       case 'highEfficiencySendFeedback':

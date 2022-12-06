@@ -491,7 +491,7 @@ suite('languages page', () => {
 
       actionButton.click();
       assertEquals(
-          'en-CA', await browserProxy.whenCalled('setProspectiveUILanguage'));
+          'en-CA', await browserProxy.whenCalled('setProspectiveUiLanguage'));
       assertEquals(
           LanguagesPageInteraction.RESTART,
           await metricsProxy.whenCalled('recordInteraction'));
@@ -511,7 +511,7 @@ suite('languages page', () => {
           actionButton.click();
           assertEquals(
               'en-CA',
-              await browserProxy.whenCalled('setProspectiveUILanguage'));
+              await browserProxy.whenCalled('setProspectiveUiLanguage'));
           assertTrue(languageHelper.getPref('intl.accept_languages')
                          .value.startsWith('en-CA'));
         });
@@ -532,7 +532,7 @@ suite('languages page', () => {
           actionButton.click();
           assertEquals(
               'en-CA',
-              await browserProxy.whenCalled('setProspectiveUILanguage'));
+              await browserProxy.whenCalled('setProspectiveUiLanguage'));
           assertTrue(languageHelper.getPref('intl.accept_languages')
                          .value.startsWith('en-CA'));
         });

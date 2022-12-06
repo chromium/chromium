@@ -467,11 +467,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private onTrustedVaultBannerClick_() {
     switch (this.trustedVaultBannerState_) {
       case TrustedVaultBannerState.OPTED_IN:
-        OpenWindowProxyImpl.getInstance().openURL(
+        OpenWindowProxyImpl.getInstance().openUrl(
             loadTimeData.getString('trustedVaultLearnMoreUrl'));
         break;
       case TrustedVaultBannerState.OFFER_OPT_IN:
-        OpenWindowProxyImpl.getInstance().openURL(
+        OpenWindowProxyImpl.getInstance().openUrl(
             loadTimeData.getString('trustedVaultOptInUrl'));
         break;
       case TrustedVaultBannerState.NOT_SHOWN:

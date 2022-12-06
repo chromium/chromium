@@ -95,7 +95,7 @@ export class IncompatibleApplicationItemElement extends
     } else if (
         this.actionType === ActionTypes.MORE_INFO ||
         this.actionType === ActionTypes.UPGRADE) {
-      this.browserProxy_.openURL(this.actionUrl);
+      this.browserProxy_.openUrl(this.actionUrl);
     } else {
       assertNotReached();
     }

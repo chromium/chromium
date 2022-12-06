@@ -16,10 +16,10 @@ export class LanguagesBrowserProxy {
    * affect the actual UI language until a restart.
    * @param {string} languageCode
    */
-  setProspectiveUILanguage(languageCode) {}
+  setProspectiveUiLanguage(languageCode) {}
 
   /** @return {!Promise<string>} */
-  getProspectiveUILanguage() {}
+  getProspectiveUiLanguage() {}
 
   /** @return {!LanguageSettingsPrivate} */
   getLanguageSettingsPrivate() {}
@@ -46,12 +46,12 @@ export class LanguagesBrowserProxyImpl {
   }
 
   /** @override */
-  setProspectiveUILanguage(languageCode) {
+  setProspectiveUiLanguage(languageCode) {
     chrome.send('setProspectiveUILanguage', [languageCode]);
   }
 
   /** @override */
-  getProspectiveUILanguage() {
+  getProspectiveUiLanguage() {
     return sendWithPromise('getProspectiveUILanguage');
   }
 

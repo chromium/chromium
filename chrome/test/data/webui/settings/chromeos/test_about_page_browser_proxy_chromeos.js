@@ -24,7 +24,7 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
       'launchReleaseNotes',
       'openOsHelpPage',
       'openDiagnostics',
-      'refreshTPMFirmwareUpdateStatus',
+      'refreshTpmFirmwareUpdateStatus',
       'requestUpdate',
       'setChannel',
       'getFirmwareUpdateCount',
@@ -214,8 +214,8 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
   }
 
   /** @override */
-  refreshTPMFirmwareUpdateStatus() {
-    this.methodCalled('refreshTPMFirmwareUpdateStatus');
+  refreshTpmFirmwareUpdateStatus() {
+    this.methodCalled('refreshTpmFirmwareUpdateStatus');
     webUIListenerCallback(
         'tpm-firmware-update-status-changed', this.tpmFirmwareUpdateStatus_);
   }

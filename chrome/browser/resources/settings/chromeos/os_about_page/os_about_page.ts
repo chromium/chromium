@@ -363,8 +363,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
     this.aboutBrowserProxy_.refreshUpdateStatus();
     this.addWebUiListener(
         'tpm-firmware-update-status-changed',
-        this.onTPMFirmwareUpdateStatusChanged_.bind(this));
-    this.aboutBrowserProxy_.refreshTPMFirmwareUpdateStatus();
+        this.onTpmFirmwareUpdateStatusChanged_.bind(this));
+    this.aboutBrowserProxy_.refreshTpmFirmwareUpdateStatus();
   }
 
   private onUpdateStatusChanged_(event: UpdateStatusChangedEvent) {
@@ -678,12 +678,12 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
     this.hasCheckedForUpdates_ = false;
   }
 
-  private onTPMFirmwareUpdateStatusChanged_(
+  private onTpmFirmwareUpdateStatusChanged_(
       event: TpmFirmwareUpdateStatusChangedEvent) {
     this.showTPMFirmwareUpdateLineItem_ = event.updateAvailable;
   }
 
-  private onTPMFirmwareUpdateClick_() {
+  private onTpmFirmwareUpdateClick_() {
     this.showTPMFirmwareUpdateDialog_ = true;
   }
 

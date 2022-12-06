@@ -382,7 +382,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
    * Open URL for managing your Google Account.
    */
   private openGoogleAccount_() {
-    OpenWindowProxyImpl.getInstance().openURL(
+    OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('googleAccountUrl'));
     chrome.metricsPrivate.recordUserAction('ManageGoogleAccount_Clicked');
   }

@@ -21,7 +21,7 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
     super([
       'getMetricsReporting',
       'setMetricsReportingEnabled',
-      'showManageSSLCertificates',
+      'showManageSslCertificates',
       'setBlockAutoplayEnabled',
       'getSecureDnsResolverList',
       'getSecureDnsSetting',
@@ -57,8 +57,8 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('setMetricsReportingEnabled', enabled);
   }
 
-  showManageSSLCertificates() {
-    this.methodCalled('showManageSSLCertificates');
+  showManageSslCertificates() {
+    this.methodCalled('showManageSslCertificates');
   }
 
   setBlockAutoplayEnabled(enabled: boolean) {

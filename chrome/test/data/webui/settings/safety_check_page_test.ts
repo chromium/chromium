@@ -827,7 +827,7 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
         await metricsBrowserProxy.whenCalled('recordAction'));
     // Ensure the browser proxy call is done.
     assertEquals(
-        'chrome://extensions', await openWindowProxy.whenCalled('openURL'));
+        'chrome://extensions', await openWindowProxy.whenCalled('openUrl'));
   }
 
   test('extensionsCheckingUiTest', function() {
@@ -878,7 +878,7 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
         'Settings.SafetyCheck.ReviewExtensionsThroughCaretNavigation',
         await metricsBrowserProxy.whenCalled('recordAction'));
     // Ensure the browser proxy call is done.
-    const url = await openWindowProxy.whenCalled('openURL');
+    const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals('chrome://extensions', url);
   });
 
@@ -899,7 +899,7 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
         .querySelector<SettingsSafetyCheckChildElement>(
             '#safetyCheckChild')!.click();
     // Ensure the browser proxy call is done.
-    const url = await openWindowProxy.whenCalled('openURL');
+    const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals('chrome://extensions', url);
   });
 

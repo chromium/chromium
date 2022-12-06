@@ -562,7 +562,7 @@ suite('PasswordsCheckSection', function() {
     assertTrue(!!button);
     button.click();
 
-    const url = await testOpenWindowProxy.whenCalled('openURL');
+    const url = await testOpenWindowProxy.whenCalled('openUrl');
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     assertEquals('http://one.com/', url);
@@ -1875,7 +1875,7 @@ suite('PasswordsCheckSection', function() {
     assertTrue(!!button);
     button.click();
 
-    await testOpenWindowProxy.whenCalled('openURL');
+    await testOpenWindowProxy.whenCalled('openUrl');
 
     assertTrue(isElementVisible(alreadyChanged));
   });

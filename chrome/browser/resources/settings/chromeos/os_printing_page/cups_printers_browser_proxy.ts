@@ -122,7 +122,7 @@ export interface CupsPrintersBrowserProxy {
   retrieveCupsPrinterPpd(printerId: string, printerName: string):
       Promise<CupsPrinterPpdInfo>;
 
-  getCupsPrinterPPDPath(): Promise<string>;
+  getCupsPrinterPpdPath(): Promise<string>;
 
   addCupsPrinter(newPrinter: CupsPrinterInfo): Promise<PrinterSetupResult>;
 
@@ -211,7 +211,7 @@ export class CupsPrintersBrowserProxyImpl implements CupsPrintersBrowserProxy {
     return sendWithPromise('reconfigureCupsPrinter', printer);
   }
 
-  getCupsPrinterPPDPath(): Promise<string> {
+  getCupsPrinterPpdPath(): Promise<string> {
     return sendWithPromise('selectPPDFile');
   }
 

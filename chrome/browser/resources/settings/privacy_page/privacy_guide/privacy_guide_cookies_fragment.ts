@@ -97,12 +97,12 @@ export class PrivacyGuideCookiesFragmentElement extends
     this.metricsBrowserProxy_.recordPrivacyGuideSettingsStatesHistogram(state!);
   }
 
-  private onCookies3PIncognitoClick_() {
+  private onCookies3pIncognitoClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito');
   }
 
-  private onCookies3PClick_() {
+  private onCookies3pClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacyGuide.ChangeCookiesBlock3P');
   }

@@ -178,7 +178,7 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
   onActionButtonTap_() {
     assert(this.selectedLanguage_);
     const languageCode = this.selectedLanguage_.code;
-    this.languageHelper.setProspectiveUILanguage(languageCode);
+    this.languageHelper.setProspectiveUiLanguage(languageCode);
     // If the language isn't enabled yet, it should be added.
     if (!this.languageHelper.isLanguageEnabled(languageCode)) {
       this.languageHelper.enableLanguage(languageCode);

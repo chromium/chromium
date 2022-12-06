@@ -165,11 +165,11 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
     this.dialogPage_ = CredentialManagementDialogPage.ERROR;
   }
 
-  private submitPIN_() {
+  private submitPin_() {
     // Disable the confirm button to prevent concurrent submissions.
     this.confirmButtonDisabled_ = true;
 
-    this.$.pin.trySubmit(pin => this.browserProxy_.providePIN(pin))
+    this.$.pin.trySubmit(pin => this.browserProxy_.providePin(pin))
         .then(
             () => {
               // Leave confirm button disabled while enumerating credentials.
@@ -263,7 +263,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
   private onConfirmButtonClick_() {
     switch (this.dialogPage_) {
       case CredentialManagementDialogPage.PIN_PROMPT:
-        this.submitPIN_();
+        this.submitPin_();
         break;
       case CredentialManagementDialogPage.PIN_ERROR:
         this.$.dialog.close();

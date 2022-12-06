@@ -9,7 +9,7 @@
     <p>$i18n{securityKeysPINPrompt}</p>
     <cr-input id="pin" value="{{value_}}" min-length="[[minPinLength]]"
         max-length="255" spellcheck="false"
-        on-input="onPINInput_"
+        on-input="onPinInput_"
         invalid="[[isNonEmpty_(error_)]]"
         label="$i18n{securityKeysPIN}"
         type$="[[inputType_(inputVisible_)]]"

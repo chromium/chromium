@@ -20,7 +20,7 @@ class TestIncompatibleApplicationsBrowserProxy extends TestBrowserProxy
     super([
       'requestIncompatibleApplicationsList',
       'startApplicationUninstallation',
-      'openURL',
+      'openUrl',
       'getSubtitlePluralString',
       'getSubtitleNoAdminRightsPluralString',
       'getListTitlePluralString',
@@ -36,8 +36,8 @@ class TestIncompatibleApplicationsBrowserProxy extends TestBrowserProxy
     this.methodCalled('startApplicationUninstallation', applicationName);
   }
 
-  openURL(url: string) {
-    this.methodCalled('openURL', url);
+  openUrl(url: string) {
+    this.methodCalled('openUrl', url);
   }
 
   getSubtitlePluralString(numApplications: number) {
@@ -197,7 +197,7 @@ suite('incompatibleApplicationsHandler', function() {
     item.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
 
     const url =
-        await incompatibleApplicationsBrowserProxy.whenCalled('openURL');
+        await incompatibleApplicationsBrowserProxy.whenCalled('openUrl');
     assertEquals(updateIncompatibleApplication.url, url);
   });
 

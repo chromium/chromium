@@ -20,7 +20,7 @@ class TestTimeZoneBrowserProxy extends TestBrowserProxy {
       'dateTimePageReady',
       'getTimeZones',
       'showParentAccessForTimeZone',
-      'showSetDateTimeUI',
+      'showSetDateTimeUi',
     ]);
 
     /** @private {!Array<!Array<string>>} */
@@ -49,8 +49,8 @@ class TestTimeZoneBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  showSetDateTimeUI() {
-    this.methodCalled('showSetDateTimeUI');
+  showSetDateTimeUi() {
+    this.methodCalled('showSetDateTimeUi');
   }
 }
 
@@ -516,10 +516,10 @@ suite('settings-date-time-page', function() {
     await flushTasks();
     assertGT(setDateTimeButton.offsetHeight, 0);
 
-    assertEquals(0, testBrowserProxy.getCallCount('showSetDateTimeUI'));
+    assertEquals(0, testBrowserProxy.getCallCount('showSetDateTimeUi'));
     setDateTimeButton.click();
 
-    assertEquals(1, testBrowserProxy.getCallCount('showSetDateTimeUI'));
+    assertEquals(1, testBrowserProxy.getCallCount('showSetDateTimeUi'));
 
     // Make the date and time not editable.
     webUIListenerCallback('can-set-date-time-changed', false);

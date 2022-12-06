@@ -92,7 +92,7 @@ export interface Enrollment {
 }
 
 /**
- * SetPinResponse represents the response to startSetPIN and setPIN requests.
+ * SetPinResponse represents the response to startSetPin and setPin requests.
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
@@ -132,19 +132,19 @@ export interface SecurityKeysPinBrowserProxy {
    * with a pair of numbers. The first is one if the process has immediately
    * completed (i.e. failed). In this case the second is a CTAP error code.
    * Otherwise the process is ongoing and must be completed by calling
-   * |setPIN|. In this case the second number is either the number of tries
+   * |setPin|. In this case the second number is either the number of tries
    * remaining to correctly specify the current PIN, or else null to indicate
    * that no PIN is currently set.
    */
-  startSetPIN(): Promise<SetPinResponse>;
+  startSetPin(): Promise<SetPinResponse>;
 
   /**
    * Attempts a PIN set/change operation. Resolves with a pair of numbers
-   * whose meaning is the same as with |startSetPIN|. The first number will
+   * whose meaning is the same as with |startSetPin|. The first number will
    * always be 1 to indicate that the process has completed and thus the
    * second will be the CTAP error code.
    */
-  setPIN(oldPIN: string, newPIN: string): Promise<SetPinResponse>;
+  setPin(oldPIN: string, newPIN: string): Promise<SetPinResponse>;
 
   /** Cancels all outstanding operations. */
   close(): void;
@@ -171,11 +171,11 @@ export interface SecurityKeysCredentialBrowserProxy {
    * @return A promise that resolves with null if the PIN
    *     was correct or the number of retries remaining otherwise.
    */
-  providePIN(pin: string): Promise<number|null>;
+  providePin(pin: string): Promise<number|null>;
 
   /**
    * Enumerates credentials on the authenticator. A correct PIN must have
-   * previously been supplied via providePIN() before this
+   * previously been supplied via providePin() before this
    * method may be called.
    */
   enumerateCredentials(): Promise<Credential[]>;
@@ -240,17 +240,17 @@ export interface SecurityKeysBioEnrollProxy {
    * @return Resolves with null if the PIN was correct, or
    *     with the number of retries remaining otherwise.
    */
-  providePIN(pin: string): Promise<number|null>;
+  providePin(pin: string): Promise<number|null>;
 
   /**
    * Obtains the |SensorInfo| for the authenticator. A correct PIN must have
-   * previously been supplied via providePIN() before this method may be called.
+   * previously been supplied via providePin() before this method may be called.
    */
   getSensorInfo(): Promise<SensorInfo>;
 
   /**
    * Enumerates enrollments on the authenticator. A correct PIN must have
-   * previously been supplied via providePIN() before this method may be called.
+   * previously been supplied via providePin() before this method may be called.
    */
   enumerateEnrollments(): Promise<Enrollment[]>;
 
@@ -335,11 +335,11 @@ export interface SecurityKeysPhonesBrowserProxy {
 
 export class SecurityKeysPinBrowserProxyImpl implements
     SecurityKeysPinBrowserProxy {
-  startSetPIN() {
+  startSetPin() {
     return sendWithPromise('securityKeyStartSetPIN');
   }
 
-  setPIN(oldPIN: string, newPIN: string) {
+  setPin(oldPIN: string, newPIN: string) {
     return sendWithPromise('securityKeySetPIN', oldPIN, newPIN);
   }
 
@@ -365,7 +365,7 @@ export class SecurityKeysCredentialBrowserProxyImpl implements
     return sendWithPromise('securityKeyCredentialManagementStart');
   }
 
-  providePIN(pin: string) {
+  providePin(pin: string) {
     return sendWithPromise('securityKeyCredentialManagementPIN', pin);
   }
 
@@ -435,7 +435,7 @@ export class SecurityKeysBioEnrollProxyImpl implements
     return sendWithPromise('securityKeyBioEnrollStart');
   }
 
-  providePIN(pin: string) {
+  providePin(pin: string) {
     return sendWithPromise('securityKeyBioEnrollProvidePIN', pin);
   }
 

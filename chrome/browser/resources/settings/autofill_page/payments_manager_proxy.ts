@@ -50,7 +50,7 @@ export interface PaymentsManagerProxy {
   /**
    * Enables FIDO authentication for card unmasking.
    */
-  setCreditCardFIDOAuthEnabledState(enabled: boolean): void;
+  setCreditCardFidoAuthEnabledState(enabled: boolean): void;
 
   /**
    * Requests the list of UPI IDs from personal data.
@@ -109,7 +109,7 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
     chrome.autofillPrivate.logServerCardLinkClicked();
   }
 
-  setCreditCardFIDOAuthEnabledState(enabled: boolean) {
+  setCreditCardFidoAuthEnabledState(enabled: boolean) {
     chrome.autofillPrivate.setCreditCardFIDOAuthEnabledState(enabled);
   }
 

@@ -215,7 +215,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
     this.title_ = this.i18n('securityKeysSetPINInitialTitle');
     this.$.dialog.showModal();
 
-    this.browserProxy_.startSetPIN().then(
+    this.browserProxy_.startSetPin().then(
         ({done, error, currentMinPinLength, newMinPinLength, retries}) => {
           if (done) {
             // Operation is complete. error is a CTAP error code. See
@@ -303,19 +303,19 @@ export class SettingsSecurityKeysSetPinDialogElement extends
     e.stopPropagation();
   }
 
-  private onCurrentPINInput_() {
+  private onCurrentPinInput_() {
     // Typing in the current PIN box after an error makes the error message
     // disappear.
     this.currentPINError_ = '';
   }
 
-  private onNewPINInput_() {
+  private onNewPinInput_() {
     // Typing in the new PIN box after an error makes the error message
     // disappear.
     this.newPINError_ = '';
   }
 
-  private onConfirmPINInput_() {
+  private onConfirmPinInput_() {
     // Typing in the confirm PIN box after an error makes the error message
     // disappear.
     this.confirmPINError_ = '';
@@ -325,7 +325,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
     @param pin A candidate PIN.
     @return An error string or else '' to indicate validity.
   */
-  private isValidPIN_(pin: string, minLength: number): string {
+  private isValidPin_(pin: string, minLength: number): string {
     // The UTF-8 encoding of the PIN must be between minLength and 63 bytes, and
     // the final byte cannot be zero.
     const utf8Encoded = new TextEncoder().encode(pin);
@@ -397,7 +397,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
   private pinSubmitNew_() {
     if (this.showCurrentEntry_) {
       this.currentPINError_ =
-          this.isValidPIN_(this.currentPIN_, this.currentMinPinLength_!);
+          this.isValidPin_(this.currentPIN_, this.currentMinPinLength_!);
       if (this.currentPINError_ !== '') {
         this.focusOn_(this.$.currentPIN);
         this.fire_('ui-ready');  // for test synchronization.
@@ -405,7 +405,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
       }
     }
 
-    this.newPINError_ = this.isValidPIN_(this.newPIN_, this.newMinPinLength_!);
+    this.newPINError_ = this.isValidPin_(this.newPIN_, this.newMinPinLength_!);
     if (this.newPINError_ !== '') {
       this.focusOn_(this.$.newPIN);
       this.fire_('ui-ready');  // for test synchronization.
@@ -427,7 +427,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
     }
 
     this.setPINButtonValid_ = false;
-    this.browserProxy_.setPIN(this.currentPIN_, this.newPIN_).then(response => {
+    this.browserProxy_.setPin(this.currentPIN_, this.newPIN_).then(response => {
       const error = response.error;
       // This call always completes the process so response.done is always
       // true. error is a CTAP2 error code. See
@@ -460,7 +460,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
   /**
    * onClick handler for the show/hide icon.
    */
-  private showPINsClick_() {
+  private showPinsClick_() {
     this.pinsVisible_ = !this.pinsVisible_;
   }
 
@@ -504,14 +504,14 @@ export class SettingsSecurityKeysSetPinDialogElement extends
   /**
    * @return The class (and thus icon) to be displayed.
    */
-  private showPINsClass_(): string {
+  private showPinsClass_(): string {
     return 'icon-visibility' + (this.pinsVisible_ ? '-off' : '');
   }
 
   /**
    * @return The tooltip for the icon.
    */
-  private showPINsTitle_(): string {
+  private showPinsTitle_(): string {
     return this.i18n(
         this.pinsVisible_ ? 'securityKeysHidePINs' : 'securityKeysShowPINs');
   }

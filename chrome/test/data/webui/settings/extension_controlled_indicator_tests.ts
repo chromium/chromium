@@ -55,7 +55,7 @@ suite('extension controlled indicator', function() {
     const button = indicator.shadowRoot!.querySelector<HTMLElement>('#manage');
     assertTrue(!!button);
     button!.click();
-    const url = await openWindowProxy.whenCalled('openURL');
+    const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, `chrome://extensions/?id=${indicator.extensionId}`);
   });
 

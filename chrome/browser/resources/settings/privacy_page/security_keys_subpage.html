@@ -10,7 +10,7 @@
     class="hr"
     label="$i18n{securityKeysSetPIN}"
     sub-label="$i18n{securityKeysSetPINDesc}"
-    on-click="onSetPIN_"></cr-link-row>
+    on-click="onSetPin_"></cr-link-row>
 <cr-link-row
     id="credentialManagementButton"
     class="hr"
@@ -33,13 +33,13 @@
     on-click="onReset_"></cr-link-row>
 
 <template is="dom-if" if="[[showSetPINDialog_]]" restamp>
-  <settings-security-keys-set-pin-dialog on-close="onSetPINDialogClosed_">
+  <settings-security-keys-set-pin-dialog on-close="onSetPinDialogClosed_">
   </settings-security-keys-set-pin-dialog>
 </template>
 
 <template is="dom-if" if="[[showCredentialManagementDialog_]]" restamp>
   <settings-security-keys-credential-management-dialog
-      on-credential-management-set-pin="onSetPIN_"
+      on-credential-management-set-pin="onSetPin_"
       on-close="onCredentialManagementDialogClosed_">
   </settings-security-keys-credential-management-dialog>
 </template>
@@ -51,7 +51,7 @@
 
 <template is="dom-if" if="[[showBioEnrollDialog_]]" restamp>
   <settings-security-keys-bio-enroll-dialog
-      on-bio-enroll-set-pin="onSetPIN_"
+      on-bio-enroll-set-pin="onSetPin_"
       on-close="onBioEnrollDialogClosed_">
   </settings-security-keys-bio-enroll-dialog>
 </template>

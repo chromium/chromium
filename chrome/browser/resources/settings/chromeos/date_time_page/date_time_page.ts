@@ -153,7 +153,7 @@ class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {
   }
 
   private onSetDateTimeTap_() {
-    this.browserProxy_.showSetDateTimeUI();
+    this.browserProxy_.showSetDateTimeUi();
   }
 
   private computeTimeZoneSettingSubLabel_(): string {

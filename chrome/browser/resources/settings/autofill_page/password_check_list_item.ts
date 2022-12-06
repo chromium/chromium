@@ -123,7 +123,7 @@ export class PasswordCheckListItemElement extends
     this.fire_('change-password-clicked', {id: this.item.id});
 
     assert(this.item.changePasswordUrl);
-    OpenWindowProxyImpl.getInstance().openURL(this.item.changePasswordUrl);
+    OpenWindowProxyImpl.getInstance().openUrl(this.item.changePasswordUrl);
     PasswordManagerImpl.getInstance().recordChangePasswordFlowStarted(
         this.item);
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(

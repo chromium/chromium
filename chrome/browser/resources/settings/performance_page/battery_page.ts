@@ -87,7 +87,7 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
   private onLearnMoreOrSendFeedbackClick_(e: CustomEvent<string>) {
     switch (e.detail) {
       case 'batterySaverLearnMore':
-        OpenWindowProxyImpl.getInstance().openURL(
+        OpenWindowProxyImpl.getInstance().openUrl(
             loadTimeData.getString('batterySaverLearnMoreUrl'));
         break;
       case 'batterySaverSendFeedback':

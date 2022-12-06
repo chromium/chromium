@@ -120,7 +120,7 @@ suite('BatteryPage', function() {
             '#batterySaverLearnMore');
     assertTrue(!!learnMoreLink);
     learnMoreLink.click();
-    const url = await openWindowProxy.whenCalled('openURL');
+    const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(loadTimeData.getString('batterySaverLearnMoreUrl'), url);
   });
 

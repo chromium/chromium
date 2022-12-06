@@ -437,13 +437,13 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
     this.$.previewVoiceOptions.render();
 
     // Set something if nothing exists. This useful for new users where
-    // sometimes browserProxy.getProspectiveUILanguage() does not complete the
+    // sometimes browserProxy.getProspectiveUiLanguage() does not complete the
     // callback.
     if (!this.defaultPreviewVoice) {
       this.set('defaultPreviewVoice', this.getBestVoiceForLocale_(allVoices));
     }
 
-    this.langBrowserProxy_.getProspectiveUILanguage().then(
+    this.langBrowserProxy_.getProspectiveUiLanguage().then(
         prospectiveUILanguage => {
           let result: string = '';
           if (prospectiveUILanguage && prospectiveUILanguage !== '' &&
