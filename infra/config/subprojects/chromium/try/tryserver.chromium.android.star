@@ -24,9 +24,6 @@ try_.defaults.set(
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.list_view(
@@ -40,9 +37,6 @@ try_.builder(
         "ci/android-10-arm64-rel",
     ],
     goma_backend = None,
-
-    # TODO(crbug.com/1362440): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 try_.builder(
@@ -52,9 +46,6 @@ try_.builder(
     ],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-
-    # TODO(crbug.com/1362440): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 try_.builder(
@@ -65,9 +56,6 @@ try_.builder(
     ],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-
-    # TODO(crbug.com/1362440): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 try_.orchestrator_builder(
@@ -82,9 +70,6 @@ try_.orchestrator_builder(
     tryjob = try_.job(
         experiment_percentage = 60,
     ),
-
-    # TODO(crbug.com/1362440): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 try_.compilator_builder(
@@ -102,9 +87,6 @@ try_.builder(
         "ci/Android x64 Builder (dbg)",
         "ci/android-12l-x64-dbg-tests",
     ],
-
-    # TODO(crbug.com/1362440): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 try_.orchestrator_builder(
@@ -183,6 +165,9 @@ try_.builder(
     },
     tryjob = try_.job(),
     ssd = True,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 try_.builder(
@@ -300,12 +285,18 @@ try_.builder(
     name = "android-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 try_.builder(
     name = "android-deterministic-rel",
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 try_.builder(
@@ -412,9 +403,6 @@ try_.builder(
         "ci/Android arm64 Builder (dbg)",
         "ci/android-pie-arm64-dbg",
     ],
-
-    # TODO(crbug.com/1362440): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 # TODO(crbug/1182468) Remove when experiment is done.
@@ -490,9 +478,6 @@ try_.builder(
         "ci/android-pie-x86-rel",
     ],
     goma_backend = None,
-
-    # TODO(crbug.com/1362440): remove this after confirm py3 works on this builder.
-    omit_python2 = True,
 )
 
 # TODO(crbug/1182468) Remove when coverage is enabled on CQ.
