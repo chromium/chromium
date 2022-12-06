@@ -1,0 +1,4 @@
+raw_ptr_exclude_fields.cpp:9:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass* raw_ptr_field;
+             ^
+1 error generated.

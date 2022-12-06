@@ -105,8 +105,8 @@ class RawPtrFieldMatcher : public MatchFinder::MatchCallback {
   }
 
   void Register(MatchFinder& match_finder) {
-    auto field_decl_matcher =
-        AffectedRawPtrFieldDecl(fields_to_exclude_.get(), paths_to_exclude_.get());
+    auto field_decl_matcher = AffectedRawPtrFieldDecl(paths_to_exclude_.get(),
+                                                      fields_to_exclude_.get());
     match_finder.addMatcher(field_decl_matcher, this);
   }
   void run(const MatchFinder::MatchResult& result) override {
