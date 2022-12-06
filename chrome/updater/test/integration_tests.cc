@@ -258,9 +258,15 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->UninstallApp(app_id);
   }
 
-  void RunWake(int exit_code) { test_commands_->RunWake(exit_code); }
+  void RunWake(int exit_code) {
+    EXPECT_TRUE(WaitForUpdaterExit());
+    test_commands_->RunWake(exit_code);
+  }
 
-  void RunWakeAll() { test_commands_->RunWakeAll(); }
+  void RunWakeAll() {
+    EXPECT_TRUE(WaitForUpdaterExit());
+    test_commands_->RunWakeAll();
+  }
 
   void RunWakeActive(int exit_code) {
     test_commands_->RunWakeActive(exit_code);

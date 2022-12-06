@@ -23,7 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
+#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/registration_data.h"
