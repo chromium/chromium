@@ -184,7 +184,7 @@ bool IsCredentialPhished(const sync_pb::PasswordSpecificsData& specifics) {
 // the local copy, to be replaced by the remote version coming from Sync during
 // merge.
 bool ShouldRecoverPasswordsDuringMerge() {
-  // Delete the local undecryptable copy when this is MacOS only.
+  // Delete the local undecryptable copy when this is MacOS or Linux only.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return true;
 #else
@@ -193,7 +193,7 @@ bool ShouldRecoverPasswordsDuringMerge() {
 }
 
 bool ShouldCleanSyncMetadataDuringStartupWhenDecryptionFails() {
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return ShouldRecoverPasswordsDuringMerge() &&
          base::FeatureList::IsEnabled(
              features::kForceInitialSyncWhenDecryptionFails);
@@ -273,9 +273,9 @@ PasswordSyncBridge::PasswordSyncBridge(
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
-    } else if (ShouldCleanSyncMetadataDuringStartupWhenDecryptionFails() &&
-               DoesPasswordStoreHaveEncryptionServiceFailures(
-                   password_store_sync_)) {
+    } else if (DoesPasswordStoreHaveEncryptionServiceFailures(
+                   password_store_sync_) &&
+               ShouldCleanSyncMetadataDuringStartupWhenDecryptionFails()) {
       // Some Credentials in the passwords store cannot be read, force initial
       // sync by dropping the metadata.
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();

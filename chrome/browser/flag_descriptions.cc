@@ -6397,14 +6397,6 @@ const char kWebBluetoothConfirmPairingSupportDescription[] =
     "Bluetooth";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_LINUX)
-const char kForcePasswordInitialSyncWhenDecryptionFailsName[] =
-    "Force initial sync to clean local undecryptable passwords during startup";
-const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[] =
-    "During startup checks if there are undecryptable passwords in the local "
-    "storage and requests initial sync.";
-#endif  // BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 const char kSkipUndecryptablePasswordsName[] =
     "Skip undecryptable passwords to use the available decryptable "
@@ -6412,6 +6404,11 @@ const char kSkipUndecryptablePasswordsName[] =
 const char kSkipUndecryptablePasswordsDescription[] =
     "Makes the decryptable passwords available in the password manager when "
     "there are undecryptable ones.";
+const char kForcePasswordInitialSyncWhenDecryptionFailsName[] =
+    "Force initial sync to clean local undecryptable passwords during startup";
+const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[] =
+    "During startup checks if there are undecryptable passwords in the local "
+    "storage and requests initial sync.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

@@ -887,7 +887,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotDeleteSyncMetadataWhenDoesNotExist) {
                                       /*kNone*/ 0, 1);
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
