@@ -149,7 +149,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   std::unique_ptr<FieldTrialRegister> field_trial_register_;
 
   std::unique_ptr<StorageService> storage_service_;
-  bool storage_initialized_ = false;
+  // Storage initialization status.
+  absl::optional<bool> storage_init_status_;
 
   // Signal processing.
   SignalHandler signal_handler_;
