@@ -306,7 +306,9 @@ public abstract class SyncService {
     public abstract boolean shouldOfferTrustedVaultOptIn();
 
     /**
-     * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
+     * @return Whether sync is enabled to sync urls with a non custom passphrase.
+     * TODO(crbug.com/1396310): Rename method to reflect that it returns true with TrustedVault
+     * passphrase.
      */
     public abstract boolean isSyncingUrlsWithKeystorePassphrase();
 
