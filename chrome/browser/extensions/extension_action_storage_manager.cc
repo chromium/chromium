@@ -156,7 +156,7 @@ void SetDefaultsFromValue(const base::Value::Dict& dict,
   }
 }
 
-// Store |action|'s default values in a DictionaryValue for use in storing to
+// Store |action|'s default values in a base::Value::Dict for use in storing to
 // disk.
 base::Value::Dict DefaultsToValue(ExtensionAction* action) {
   const int kDefaultTabId = ExtensionAction::kDefaultTabId;
