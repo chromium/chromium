@@ -701,10 +701,16 @@ class WebViewFinchTestCase(FinchTestCase):
       experiments_loaded = ('Active field trial '
                             '"UMA-Uniformity-Trial-100-Percent" '
                             'in group "group_01"') in logcat_content
+
+      # The check for field trials logged in the logcat is flaky therefore we
+      # should set the expected results field to 'PASS FAIL'. When the check
+      # is fixed, then we can revert back to setting the expected result
+      # to 'PASS'.
+      expected_results = 'PASS FAIL'
       field_trials_loaded_results_dict = (
           all_results_dict['tests'].setdefault(
               'check_field_trials_loaded',
-              {'expected': 'PASS',
+              {'expected': expected_results,
                'artifacts': {'logcat_path': [logcat_relpath]}}))
 
       if experiments_loaded:
@@ -716,6 +722,11 @@ class WebViewFinchTestCase(FinchTestCase):
         field_trials_loaded_results_dict['actual'] = 'FAIL'
         all_results_dict['num_failures_by_type'].setdefault('FAIL', 0)
         all_results_dict['num_failures_by_type']['FAIL'] += 1
+
+        if 'FAIL' in expected_results:
+          # If the check for field trial configs is flaky then only
+          # use the seed_loaded variable to set the return code.
+          return 0 if seed_loaded else 1
 
       return 0 if seed_loaded and experiments_loaded else 1
 
