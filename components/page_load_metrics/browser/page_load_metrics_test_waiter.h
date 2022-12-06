@@ -142,6 +142,11 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     expected_num_input_events_ = expected_num_input_events;
   }
 
+  // Add the number of interactions count expectation.
+  void AddNumInteractionsExpectation(uint64_t expected_num_interactions) {
+    expected_num_interactions_ = expected_num_interactions;
+  }
+
  protected:
   virtual bool ExpectationsSatisfied() const;
   void AssertExpectationsSatisfied() const;
@@ -223,7 +228,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // Updates observed page fields when a input timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied
   // after update.
-  void OnPageInputTimingUpdated(uint64_t num_input_events);
+  void OnPageInputTimingUpdated(uint64_t num_interactions,
+                                uint64_t num_input_events);
 
   // Updates observed page fields when a timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied
@@ -295,6 +301,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool MemoryUpdateExpectationsSatisfied() const;
   bool TotalInputDelayExpectationsSatisfied() const;
   bool LayoutShiftExpectationsSatisfied() const;
+  bool NumInteractionsExpectationsSatisfied() const;
 
   void AddObserver(page_load_metrics::PageLoadTracker* tracker);
 
@@ -345,6 +352,9 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   uint64_t current_num_input_events_ = 0;
   uint64_t expected_num_input_events_ = 0;
+
+  uint64_t current_num_interactions_ = 0;
+  uint64_t expected_num_interactions_ = 0;
 
   ShiftFrame shift_frame_ = ShiftFrame::NoLayoutShift;
 

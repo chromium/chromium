@@ -344,7 +344,8 @@ class PageLoadMetricsObserverInterface {
 
   // OnPageInputTimingUpdate is triggered when an updated InputTiming is
   // available at the page level.
-  virtual void OnPageInputTimingUpdate(uint64_t num_input_events) = 0;
+  virtual void OnPageInputTimingUpdate(uint64_t num_interactions,
+                                       uint64_t num_input_events) = 0;
 
   // OnPageRenderDataChanged is triggered when an updated PageRenderData is
   // available at the page level. This method may be called multiple times over

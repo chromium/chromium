@@ -341,6 +341,7 @@ void AssertPageLoadMetricsObserver::OnUserInput(
 }
 
 void AssertPageLoadMetricsObserver::OnPageInputTimingUpdate(
+    uint64_t num_interactions,
     uint64_t num_input_events) {
   DCHECK(committed_);
   // If prerendered, input events are triggered after activation.

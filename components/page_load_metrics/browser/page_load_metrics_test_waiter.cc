@@ -54,7 +54,8 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
 
   void OnSoftNavigationCountUpdated() override;
 
-  void OnPageInputTimingUpdate(uint64_t num_input_events) override;
+  void OnPageInputTimingUpdate(uint64_t num_interactions,
+                               uint64_t num_input_events) override;
 
   void OnCpuTimingUpdate(content::RenderFrameHost* subframe_rfh,
                          const mojom::CpuTiming& timing) override;
@@ -290,9 +291,16 @@ void PageLoadMetricsTestWaiter::OnSoftNavigationCountUpdated() {
 }
 
 void PageLoadMetricsTestWaiter::OnPageInputTimingUpdated(
+    uint64_t num_interactions,
     uint64_t num_input_events) {
+  // The number of user interactions, including click, tap and key press in this
+  // update.
+  current_num_interactions_ += num_interactions;
+  // The total number of input events including click, tap, key press,
+  // cancellable touchstart, or pointer down followed by a pointer up...
   current_num_input_events_ = num_input_events;
-  observed_.page_fields_.Set(TimingField::kTotalInputDelay);
+  if (num_input_events)
+    observed_.page_fields_.Set(TimingField::kTotalInputDelay);
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
 }
@@ -612,6 +620,12 @@ bool PageLoadMetricsTestWaiter::LayoutShiftExpectationsSatisfied() const {
   return expected_.layout_shift_ == observed_.layout_shift_;
 }
 
+bool PageLoadMetricsTestWaiter::NumInteractionsExpectationsSatisfied() const {
+  if (expected_num_interactions_ == 0)
+    return true;
+  return current_num_interactions_ == expected_num_interactions_;
+}
+
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
   return expected_.page_fields_.AreAllSetIn(observed_.page_fields_) &&
          expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_) &&
@@ -626,7 +640,8 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          MainFrameViewportRectExpectationsSatisfied() &&
          MemoryUpdateExpectationsSatisfied() &&
          TotalInputDelayExpectationsSatisfied() &&
-         LayoutShiftExpectationsSatisfied();
+         LayoutShiftExpectationsSatisfied() &&
+         NumInteractionsExpectationsSatisfied();
 }
 
 void PageLoadMetricsTestWaiter::AssertExpectationsSatisfied() const {
@@ -686,9 +701,10 @@ void WaiterMetricsObserver::OnSoftNavigationCountUpdated() {
     waiter_->OnSoftNavigationCountUpdated();
 }
 
-void WaiterMetricsObserver::OnPageInputTimingUpdate(uint64_t num_input_events) {
+void WaiterMetricsObserver::OnPageInputTimingUpdate(uint64_t num_interactions,
+                                                    uint64_t num_input_events) {
   if (waiter_)
-    waiter_->OnPageInputTimingUpdated(num_input_events);
+    waiter_->OnPageInputTimingUpdated(num_interactions, num_input_events);
 }
 
 void WaiterMetricsObserver::OnCpuTimingUpdate(
