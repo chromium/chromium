@@ -16,12 +16,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
-using base::ListValue;
-using base::UserMetricsAction;
-using content::WebContents;
+MetricsHandler::MetricsHandler() = default;
 
-MetricsHandler::MetricsHandler() {}
-MetricsHandler::~MetricsHandler() {}
+MetricsHandler::~MetricsHandler() = default;
 
 void MetricsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
