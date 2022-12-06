@@ -281,11 +281,6 @@ bool IOSChromeSavePasswordInfoBarDelegate::IsCurrentPasswordSaved() const {
   return current_password_saved_;
 }
 
-NSString* IOSChromeSavePasswordInfoBarDelegate::GetInfobarModalTitleText()
-    const {
-  return l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_TITLE);
-}
-
 infobars::InfoBarDelegate::InfoBarIdentifier
 IOSChromeSavePasswordInfoBarDelegate::GetIdentifier() const {
   return SAVE_PASSWORD_INFOBAR_DELEGATE_MOBILE;

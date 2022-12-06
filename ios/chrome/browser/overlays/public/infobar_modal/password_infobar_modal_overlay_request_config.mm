@@ -27,7 +27,6 @@ PasswordInfobarModalOverlayRequestConfig::
           infobar_->delegate());
   action_ = delegate->IsPasswordUpdate() ? PasswordAction::kUpdate
                                          : PasswordAction::kSave;
-  title_ = delegate->GetInfobarModalTitleText();
   username_ = delegate->GetUserNameText();
   password_ = delegate->GetPasswordText();
   details_text_ = delegate->GetDetailsMessageText();

@@ -99,9 +99,6 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // the InfobarModal is created.
   bool IsCurrentPasswordSaved() const;
 
-  // The title for the InfobarModal being presented.
-  NSString* GetInfobarModalTitleText() const;
-
  private:
   // ConfirmInfoBarDelegate implementation.
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
