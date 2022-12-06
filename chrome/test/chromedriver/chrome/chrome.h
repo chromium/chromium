@@ -89,7 +89,6 @@ class Chrome {
   virtual Status SetPermission(
       std::unique_ptr<base::Value::Dict> permission_descriptor,
       PermissionState desired_state,
-      bool one_realm,
       WebView* current_view) = 0;
 
   // Get the operation system where Chrome is running.

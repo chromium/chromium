@@ -52,7 +52,6 @@ class ChromeImpl : public Chrome {
   Status SetAcceptInsecureCerts() override;
   Status SetPermission(std::unique_ptr<base::Value::Dict> permission_descriptor,
                        PermissionState desired_state,
-                       bool unused_one_realm,
                        WebView* current_view) override;
   bool IsMobileEmulationEnabled() const override;
   bool HasTouchScreen() const override;

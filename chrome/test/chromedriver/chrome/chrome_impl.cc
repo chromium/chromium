@@ -740,7 +740,6 @@ Status ChromeImpl::SetAcceptInsecureCerts() {
 Status ChromeImpl::SetPermission(
     std::unique_ptr<base::Value::Dict> permission_descriptor,
     PermissionState desired_state,
-    bool unused_one_realm,  // This is ignored. https://crbug.com/977612.
     WebView* current_view) {
   Status status = devtools_websocket_client_->ConnectIfNecessary();
   if (status.IsError())

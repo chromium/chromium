@@ -2815,10 +2815,6 @@ Status ExecuteSetPermission(Session* session,
   if (!permission_state)
     return Status(kInvalidArgument, "no permission state");
 
-  bool one_realm = false;
-  if (!GetOptionalBool(params, "oneRealm", &one_realm, nullptr))
-    return Status(kInvalidArgument, "oneRealm defined but not a boolean");
-
   Chrome::PermissionState valid_state;
   if (*permission_state == "granted")
     valid_state = Chrome::PermissionState::kGranted;
@@ -2830,6 +2826,5 @@ Status ExecuteSetPermission(Session* session,
     return Status(kInvalidArgument, "unrecognized permission state");
 
   auto dict = std::make_unique<base::Value::Dict>(descriptor->Clone());
-  return session->chrome->SetPermission(std::move(dict), valid_state, one_realm,
-                                        web_view);
+  return session->chrome->SetPermission(std::move(dict), valid_state, web_view);
 }
