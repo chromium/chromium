@@ -96,8 +96,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
 // Tests that find in page allows iteration between search results and displays
 // correct number of results.
-// TODO(crbug.com/1109740) : Fix failing test.
-- (void)FLAKY_testFindInPage {
+- (void)testFindInPage {
   // Type "find".
   [self typeFindInPageText:@"find"];
   // Should be highlighting result 1 of 2.
@@ -114,8 +113,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 // Tests that Find In Page search term retention is working as expected, e.g.
 // the search term is persisted between FIP runs, but in incognito search term
 // is not retained and not autofilled.
-// TODO(crbug.com/1109740) : Fix failing test.
-- (void)FLAKY_testFindInPageRetainsSearchTerm {
+- (void)testFindInPageRetainsSearchTerm {
   // Type "find".
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
@@ -156,9 +154,14 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 }
 
 // Tests accessibility of the Find in Page screen.
-// TODO(crbug.com/1109740) : Fix failing test.
-- (void)FLAKY_testAccessibilityOnFindInPage {
-  [self typeFindInPageText:@"find"];
+- (void)testAccessibilityOnFindInPage {
+  if (@available(iOS 16, *)) {
+    [self typeFindInPageText:@"find"];
+  } else {
+    // On iOS 15, the keyboard is not passing the accessibility test. Press
+    // enter to dismiss it.
+    [self typeFindInPageText:@"find\n"];
+  }
   [self assertResultStringIsResult:1 outOfTotal:2];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
