@@ -4,6 +4,7 @@
 
 #import "content/browser/web_contents/web_drag_dest_mac.h"
 
+#include <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
 
 #include "base/mac/scoped_nsobject.h"
@@ -413,19 +414,19 @@ void PopulateDropDataFromPasteboard(content::DropData* data,
                                         NO);
 
   // Get plain text.
-  if ([types containsObject:NSStringPboardType]) {
+  if ([types containsObject:NSPasteboardTypeString]) {
     data->text =
-        base::SysNSStringToUTF16([pboard stringForType:NSStringPboardType]);
+        base::SysNSStringToUTF16([pboard stringForType:NSPasteboardTypeString]);
   }
 
   // Get HTML. If there's no HTML, try RTF.
-  if ([types containsObject:NSHTMLPboardType]) {
-    NSString* html = [pboard stringForType:NSHTMLPboardType];
+  if ([types containsObject:NSPasteboardTypeHTML]) {
+    NSString* html = [pboard stringForType:NSPasteboardTypeHTML];
     data->html = base::SysNSStringToUTF16(html);
   } else if ([types containsObject:ui::kUTTypeChromiumImageAndHTML]) {
     NSString* html = [pboard stringForType:ui::kUTTypeChromiumImageAndHTML];
     data->html = base::SysNSStringToUTF16(html);
-  } else if ([types containsObject:NSRTFPboardType]) {
+  } else if ([types containsObject:NSPasteboardTypeRTF]) {
     NSString* html = ui::ClipboardUtil::GetHTMLFromRTFOnPasteboard(pboard);
     data->html = base::SysNSStringToUTF16(html);
   }
