@@ -180,11 +180,6 @@ class V8ValueConverterImplTest : public testing::Test {
     return list[index].type() == base::Value::Type::NONE;
   }
 
-  // Deprecated. Convert callers to use base::Value::List and remove.
-  bool IsNullDeprecated(base::ListValue* value, uint32_t index) {
-    return IsNull(value->GetList(), index);
-  }
-
   bool IsNull(v8::Local<v8::Array> value, uint32_t index) {
     v8::Local<v8::Value> child;
     if (!value->Get(isolate_->GetCurrentContext(), index).ToLocal(&child)) {
@@ -772,11 +767,10 @@ TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
   array->Set(context, 0, v8::String::NewFromUtf8Literal(isolate_, "1")).Check();
   array->Set(context, 1, array).Check();
 
-  std::unique_ptr<base::ListValue> list_result(
-      base::ListValue::From(converter.FromV8Value(array, context)));
-  ASSERT_TRUE(list_result.get());
-  EXPECT_EQ(2u, list_result->GetList().size());
-  EXPECT_TRUE(IsNullDeprecated(list_result.get(), 1));
+  base::Value::List list_result(
+      std::move(*converter.FromV8Value(array, context)).TakeList());
+  EXPECT_EQ(2u, list_result.size());
+  EXPECT_TRUE(IsNull(list_result, 1));
 }
 
 TEST_F(V8ValueConverterImplTest, WeirdProperties) {
@@ -835,10 +829,9 @@ TEST_F(V8ValueConverterImplTest, ArrayGetters) {
   v8::Local<v8::Array> array = CompileRun<v8::Array>(context, source);
 
   V8ValueConverterImpl converter;
-  std::unique_ptr<base::ListValue> result(
-      base::ListValue::From(converter.FromV8Value(array, context)));
-  ASSERT_TRUE(result.get());
-  EXPECT_EQ(2u, result->GetList().size());
+  base::Value::List result(
+      std::move(*converter.FromV8Value(array, context)).TakeList());
+  EXPECT_EQ(2u, result.size());
 }
 
 TEST_F(V8ValueConverterImplTest, UndefinedValueBehavior) {
@@ -1028,13 +1021,12 @@ TEST_F(V8ValueConverterImplTest, ReuseObjects) {
     v8::Local<v8::Array> array = CompileRun<v8::Array>(context, source);
 
     // The actual result.
-    std::unique_ptr<base::ListValue> list_result(
-        base::ListValue::From(converter.FromV8Value(array, context)));
-    ASSERT_TRUE(list_result.get());
-    ASSERT_EQ(2u, list_result->GetList().size());
-    for (size_t i = 0; i < list_result->GetList().size(); ++i) {
-      ASSERT_FALSE(IsNullDeprecated(list_result.get(), i));
-      base::Value::Dict* dict_value = list_result->GetList()[0].GetIfDict();
+    base::Value::List list_result(
+        std::move(*converter.FromV8Value(array, context)).TakeList());
+    ASSERT_EQ(2u, list_result.size());
+    for (size_t i = 0; i < list_result.size(); ++i) {
+      ASSERT_FALSE(IsNull(list_result, i));
+      base::Value::Dict* dict_value = list_result[0].GetIfDict();
       ASSERT_TRUE(dict_value);
       EXPECT_STREQ("same value", dict_value->FindString("key")->c_str());
     }
