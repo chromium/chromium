@@ -47,6 +47,8 @@ class VerticalDateView : public views::View {
   void UpdateText();
 
  private:
+  friend class TimeViewTest;
+
   views::ImageView* icon_ = nullptr;
   views::Label* text_label_ = nullptr;
 };
