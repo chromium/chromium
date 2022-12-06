@@ -38,7 +38,7 @@ suite('ShortcutsTest', () => {
   }
 
   function assertShown(shown: boolean) {
-    assertEquals(shown, customizeShortcuts.$.showToggle.checked);
+    assertEquals(shown, customizeShortcuts.$.showShortcutsToggle.checked);
   }
 
   function assertCustomLinksEnabled() {
@@ -59,13 +59,13 @@ suite('ShortcutsTest', () => {
     await setInitialSettings(
         /* customLinksEnabled= */ true, /* shortcutsVisible= */ false);
     assertShown(false);
-    customizeShortcuts.$.showToggle.click();
+    customizeShortcuts.$.showShortcutsToggle.click();
     assertCustomLinksEnabled();
     customizeShortcuts.$.mostVisitedButton.click();
     assertUseMostVisited();
-    customizeShortcuts.$.showToggle.click();
+    customizeShortcuts.$.showShortcutsToggle.click();
     assertShown(false);
-    customizeShortcuts.$.showToggle.click();
+    customizeShortcuts.$.showShortcutsToggle.click();
     assertUseMostVisited();
   });
 
@@ -73,7 +73,7 @@ suite('ShortcutsTest', () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ false);
     const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    customizeShortcuts.$.showToggle.click();
+    customizeShortcuts.$.showShortcutsToggle.click();
     const [customLinksEnabled, visible] = await setSettingsCalled;
     assertFalse(customLinksEnabled);
     assertTrue(visible);

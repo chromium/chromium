@@ -1,8 +1,38 @@
+<style>
+  :host {
+    --horizontal-rule-color: var(--google-grey-300);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --horizontal-rule-color: var(--google-grey-700);
+    }
+  }
+
+  .header {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    margin-bottom: 16px;
+    margin-inline-start: 16px;
+    margin-top: 16px;
+  }
+
+  .horizontal-rule {
+    background-color: var(--horizontal-rule-color);
+    border: none;
+    height: 2px;
+    width: 100%;
+  }
+</style>
 <iron-pages selected="[[page_]]" attr-for-selected="page-name">
   <div page-name="overview" id="overviewPage">
+    <h1 class="header">$i18n{appearanceHeader}</h1>
     <customize-chrome-appearance on-edit-theme-click="onEditThemeClick_"
-        id="appearanceElement">
+      id="appearanceElement">
     </customize-chrome-appearance>
+    <hr class="horizontal-rule">
+    <h1 class="header">$i18n{shortcutsHeader}</h1>
     <customize-chrome-shortcuts></customize-chrome-shortcuts>
   </div>
   <customize-chrome-categories on-back-click="onBackClick_"

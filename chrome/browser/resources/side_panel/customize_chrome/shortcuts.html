@@ -1,11 +1,5 @@
 <style>
-  #shortcutsTitle {
-    font-weight: 500;
-    margin-bottom: 34px;
-    margin-inline-start: 16px;
-  }
-
-  #showToggleContainer {
+  #showShortcutsToggleContainer {
     align-items: center;
     display: flex;
     margin-bottom: 16px;
@@ -19,10 +13,9 @@
     margin-inline-start: 40px;
   }
 </style>
-<div id="shortcutsTitle">$i18n{shortcutsMenuItem}</div>
-<div id="showToggleContainer">
-  <div id="showToggleTitle">$i18n{showToggleTitle}</div>
-  <cr-toggle id="showToggle" title="$i18n{showToggleTitle}"
+<div id="showShortcutsToggleContainer">
+  <div id="showShortcutsToggle">$i18n{showShortcutsToggle}</div>
+  <cr-toggle id="showShortcutsToggle" title="$i18n{showShortcutsToggle}"
       checked="[[show_]]" on-change="onShowChange_"></cr-toggle>
 </div>
 <div id="options">

@@ -17,7 +17,7 @@ import {getTemplate} from './shortcuts.html.js';
 
 export interface ShortcutsElement {
   $: {
-    showToggle: CrToggleElement,
+    showShortcutsToggle: CrToggleElement,
     shortcutsRadioSelection: CrRadioGroupElement,
     customLinksButton: CrRadioButtonElement,
     mostVisitedButton: CrRadioButtonElement,

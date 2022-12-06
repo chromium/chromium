@@ -29,13 +29,13 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"customizeThisPage", IDS_NTP_CUSTOM_BG_CUSTOMIZE_NTP_LABEL},
+      {"appearanceHeader", IDS_NTP_CUSTOMIZE_APPEARANCE_LABEL},
       {"mostVisited", IDS_NTP_CUSTOMIZE_MOST_VISITED_LABEL},
       {"myShortcuts", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_LABEL},
       {"shortcutsCurated", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_DESC},
-      {"shortcutsMenuItem", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
-      {"shortcutsOption", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
+      {"shortcutsHeader", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
       {"shortcutsSuggested", IDS_NTP_CUSTOMIZE_MOST_VISITED_DESC},
-      {"showToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
+      {"showShortcutsToggle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
       {"title", IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
