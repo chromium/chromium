@@ -16,6 +16,7 @@
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/software_output_device.h"
+#include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gfx/vsync_provider.h"
@@ -85,7 +86,10 @@ void SoftwareOutputSurface::SwapBuffersCallback(base::TimeTicks swap_time,
   latency_tracker_.OnGpuSwapBuffersCompleted(
       std::move(stored_latency_info_.front()));
   stored_latency_info_.pop();
-  client_->DidReceiveSwapBuffersAck({swap_time, swap_time},
+  gpu::SwapBuffersCompleteParams params;
+  params.swap_response.timings = {swap_time, swap_time};
+  params.swap_response.result = gfx::SwapResult::SWAP_ACK;
+  client_->DidReceiveSwapBuffersAck(params,
                                     /*release_fence=*/gfx::GpuFenceHandle());
 
   base::TimeTicks now = base::TimeTicks::Now();

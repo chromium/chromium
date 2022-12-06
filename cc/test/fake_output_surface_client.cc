@@ -7,8 +7,9 @@
 
 namespace cc {
 
-void FakeOutputSurfaceClient::DidReceiveSwapBuffersAck(const gfx::SwapTimings&,
-                                                       gfx::GpuFenceHandle) {
+void FakeOutputSurfaceClient::DidReceiveSwapBuffersAck(
+    const gpu::SwapBuffersCompleteParams& params,
+    gfx::GpuFenceHandle) {
   swap_count_++;
 }
 

@@ -42,6 +42,10 @@ class ColorSpace;
 class RRectF;
 }  // namespace gfx
 
+namespace gpu {
+struct SwapBuffersCompleteParams;
+}
+
 namespace viz {
 class BspWalkActionDrawPolygon;
 class DrawPolygon;
@@ -109,7 +113,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   };
   virtual void SwapBuffers(SwapFrameData swap_frame_data) = 0;
   virtual void SwapBuffersSkipped() {}
-  virtual void SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {}
+  virtual void SwapBuffersComplete(const gpu::SwapBuffersCompleteParams& params,
+                                   gfx::GpuFenceHandle release_fence) {}
   virtual void BuffersPresented() {}
   virtual void DidReceiveReleasedOverlays(
       const std::vector<gpu::Mailbox>& released_overlays) {}

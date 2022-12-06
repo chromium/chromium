@@ -11,6 +11,7 @@
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/transform.h"
@@ -45,8 +46,10 @@ void PixelTestOutputSurface::SwapBuffers(viz::OutputSurfaceFrame frame) {
 
 void PixelTestOutputSurface::SwapBuffersCallback() {
   base::TimeTicks now = base::TimeTicks::Now();
-  gfx::SwapTimings timings = {now, now};
-  client_->DidReceiveSwapBuffersAck(timings,
+  gpu::SwapBuffersCompleteParams params;
+  params.swap_response.timings = {now, now};
+  params.swap_response.result = gfx::SwapResult::SWAP_ACK;
+  client_->DidReceiveSwapBuffersAck(params,
                                     /*release_fence=*/gfx::GpuFenceHandle());
   client_->DidReceivePresentationFeedback(
       gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(), 0));

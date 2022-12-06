@@ -1032,11 +1032,10 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
   DCHECK(client_);
   last_swapped_mailbox_ = params.primary_plane_mailbox;
 
-  if (params.swap_response.result ==
-      gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
-    client_->SetNeedsRedrawRect(gfx::Rect(size_));
-    if (frame_buffer_damage_tracker_)
-      frame_buffer_damage_tracker_->FrameBuffersChanged(size_);
+  if (frame_buffer_damage_tracker_ &&
+      params.swap_response.result ==
+          gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
+    frame_buffer_damage_tracker_->FrameBuffersChanged(size_);
   }
 
   if (use_damage_area_from_skia_output_device_) {
@@ -1046,8 +1045,7 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
 
   if (!params.ca_layer_params.is_empty)
     client_->DidReceiveCALayerParams(params.ca_layer_params);
-  client_->DidReceiveSwapBuffersAck(params.swap_response.timings,
-                                    std::move(release_fence));
+  client_->DidReceiveSwapBuffersAck(params, std::move(release_fence));
   if (!params.released_overlays.empty())
     client_->DidReceiveReleasedOverlays(params.released_overlays);
   if (needs_swap_size_notifications_)

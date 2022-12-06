@@ -62,6 +62,7 @@
 #include "components/viz/test/test_surface_id_allocator.h"
 #include "components/viz/test/viz_test_suite.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -660,7 +661,10 @@ TEST_F(DisplayTest, DisableSwapUntilResize) {
       [&swap_callback_run]() { swap_callback_run = true; }));
   EXPECT_TRUE(scheduler_->swapped());
 
-  display_->DidReceiveSwapBuffersAck(GetTestSwapTimings(),
+  gpu::SwapBuffersCompleteParams params;
+  params.swap_response.timings = GetTestSwapTimings();
+  params.swap_response.result = gfx::SwapResult::SWAP_ACK;
+  display_->DidReceiveSwapBuffersAck(params,
                                      /*release_fence=*/gfx::GpuFenceHandle());
   EXPECT_TRUE(swap_callback_run);
 

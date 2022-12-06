@@ -5,7 +5,7 @@ include_rules = [
   "+gpu/command_buffer/client/gles2_implementation.h",
   "+gpu/command_buffer/client/raster_implementation_gles.h",
   "+gpu/command_buffer/client/shared_memory_limits.h",
-  "+gpu/command_buffer/common/skia_utils.h",
+  "+gpu/command_buffer/common",
   "+gpu/command_buffer/service/gpu_switches.h",
   "+gpu/config/gpu_feature_type.h",
   "+gpu/config/gpu_info.h",

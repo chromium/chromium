@@ -51,6 +51,7 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/ext/opacity_filter_canvas.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -977,12 +978,18 @@ void SkiaRenderer::SwapBuffersSkipped() {
   FlushOutputSurface();
 }
 
-void SkiaRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
+void SkiaRenderer::SwapBuffersComplete(
+    const gpu::SwapBuffersCompleteParams& params,
+    gfx::GpuFenceHandle release_fence) {
   auto& read_lock_release_fence_overlay_locks =
       read_lock_release_fence_overlay_locks_.emplace_back();
   auto read_fence_lock_iter = committed_overlay_locks_.end();
 
   if (buffer_queue_) {
+    if (params.swap_response.result ==
+        gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
+      buffer_queue_->RecreateBuffers();
+    }
     buffer_queue_->SwapBuffersComplete();
   }
   if (!release_fence.is_null()) {

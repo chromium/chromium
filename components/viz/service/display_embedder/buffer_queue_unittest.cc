@@ -19,8 +19,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Contains;
 using ::testing::Expectation;
 using ::testing::Ne;
+using ::testing::Not;
 using ::testing::Return;
 
 namespace viz {
@@ -105,12 +107,13 @@ class BufferQueueTest : public ::testing::Test {
     return true;
   }
 
-  void SendDamagedFrame(const gfx::Rect& damage) {
+  gpu::Mailbox SendDamagedFrame(const gfx::Rect& damage) {
     // We don't care about the GL-level implementation here, just how it uses
     // damage rects.
-    buffer_queue_->GetCurrentBuffer();
+    auto mailbox = buffer_queue_->GetCurrentBuffer();
     buffer_queue_->SwapBuffers(damage);
     buffer_queue_->SwapBuffersComplete();
+    return mailbox;
   }
 
   void SendFullFrame() { SendDamagedFrame(gfx::Rect(buffer_queue_->size_)); }
@@ -551,6 +554,41 @@ TEST_F(BufferQueueTest, GetLastSwappedBuffer) {
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox3);
   buffer_queue_->SwapBuffersComplete();
   EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox1);
+}
+
+TEST_F(BufferQueueTest, RecreateBuffers) {
+  EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     kBufferQueueFormat));
+  auto mb1 = SendDamagedFrame(small_damage);
+  auto mb2 = SendDamagedFrame(small_damage);
+  auto mb3 = SendDamagedFrame(small_damage);
+  std::vector<gpu::Mailbox> original_buffers = {mb1, mb2, mb3};
+
+  EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mb1);
+  buffer_queue_->SwapBuffers(small_damage);
+  EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mb2);
+  buffer_queue_->SwapBuffers(small_damage);
+
+  buffer_queue_->RecreateBuffers();
+  buffer_queue_->SwapBuffersComplete();  // mb1
+
+  auto mb4 = buffer_queue_->GetCurrentBuffer();
+  EXPECT_THAT(original_buffers, Not(Contains(mb4)));
+  buffer_queue_->SwapBuffers(small_damage);
+
+  buffer_queue_->SwapBuffersComplete();  // mb2
+
+  auto mb5 = buffer_queue_->GetCurrentBuffer();
+  EXPECT_THAT(original_buffers, Not(Contains(mb5)));
+  buffer_queue_->SwapBuffers(small_damage);
+  buffer_queue_->SwapBuffersComplete();  // mb4
+  buffer_queue_->SwapBuffersComplete();  // mb5
+
+  auto mb6 = SendDamagedFrame(small_damage);
+  EXPECT_THAT(original_buffers, Not(Contains(mb6)));
+
+  // New queue of buffers loops.
+  EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mb4);
 }
 
 }  // namespace viz

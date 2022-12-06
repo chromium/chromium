@@ -35,6 +35,7 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
+#include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -377,7 +378,10 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     // expects that every frame will receive a swap ack and presentation
     // feedback so we send null signals here.
     now = base::TimeTicks::Now();
-    display_->DidReceiveSwapBuffersAck({now, now},
+    gpu::SwapBuffersCompleteParams params;
+    params.swap_response.timings = {now, now};
+    params.swap_response.result = gfx::SwapResult::SWAP_ACK;
+    display_->DidReceiveSwapBuffersAck(params,
                                        /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback(
         gfx::PresentationFeedback::Failure());

@@ -107,6 +107,11 @@ bool BufferQueue::Reshape(const gfx::Size& size,
   return true;
 }
 
+void BufferQueue::RecreateBuffers() {
+  FreeAllBuffers();
+  AllocateBuffers(number_of_buffers_);
+}
+
 void BufferQueue::FreeAllBuffers() {
   FreeBuffer(std::move(displayed_buffer_));
   FreeBuffer(std::move(current_buffer_));
