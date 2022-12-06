@@ -180,16 +180,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HeapProfiling.RecordTrace.Success" enum="BooleanSuccess"
-    expires_after="2021-02-25">
-  <owner>erikchen@chromium.org</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    The metric is emitted each time Chrome attempts to record a memory-infra
-    trace to upload an out-of-process heap-profiling memory dump.
-  </summary>
-</histogram>
-
 <histogram name="HeapProfiling.SamplingIntervalKB" units="KB"
     expires_after="2023-04-16">
   <owner>joenotcharles@chromium.org</owner>
@@ -198,26 +188,6 @@ chromium-metrics-reviews@google.com.
     The mean number of kilobytes between samples used by the
     SamplingHeapProfiler. Emitted each time the profiler is started, which
     happens at Chrome launch when HeapProfiling.InProcess.Enabled is true.
-  </summary>
-</histogram>
-
-<histogram name="HeapProfiling.UploadTrace.Size" units="bytes"
-    expires_after="2021-02-25">
-  <owner>erikchen@chromium.org</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    The metric is emitted each time Chrome uploads a trace. It reflects the
-    uncompressed size of the trace.
-  </summary>
-</histogram>
-
-<histogram name="HeapProfiling.UploadTrace.Success" enum="BooleanSuccess"
-    expires_after="2021-02-25">
-  <owner>erikchen@chromium.org</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    The metric is emitted each time Chrome uploads a trace. It reflects whether
-    the upload was successful.
   </summary>
 </histogram>
 
