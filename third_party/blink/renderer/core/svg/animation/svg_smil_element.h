@@ -189,7 +189,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
 
   SMILTime BeginTimeForPrioritization(SMILTime presentation_time) const;
 
-  SMILInterval ResolveInterval(SMILTime begin_after, SMILTime end_after) const;
+  SMILInterval ResolveInterval(SMILTime begin_after, SMILTime end_after);
   // Check if the current interval is still current, and apply restart
   // semantics. Returns true if a new interval should be resolved.
   bool HandleIntervalRestart(SMILTime presentation_time);
