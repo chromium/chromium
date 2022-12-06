@@ -28,8 +28,6 @@ class PasswordInfobarBannerOverlayRequestConfig
   NSString* username() const { return username_; }
   // The text to show on the banner's confirm button.
   NSString* button_text() const { return button_text_; }
-  // The name of the banner's icon image.
-  NSString* icon_image_name() const { return icon_image_name_; }
   // The length of the password being saved/updated.
   size_t password_length() const { return password_length_; }
 
@@ -47,7 +45,6 @@ class PasswordInfobarBannerOverlayRequestConfig
   NSString* message_ = nil;
   NSString* username_ = nil;
   NSString* button_text_ = nil;
-  NSString* icon_image_name_ = nil;
   size_t password_length_ = 0;
 };
 

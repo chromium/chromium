@@ -21,7 +21,6 @@
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/grit/ios_theme_resources.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -285,10 +284,6 @@ bool IOSChromeSavePasswordInfoBarDelegate::IsCurrentPasswordSaved() const {
 NSString* IOSChromeSavePasswordInfoBarDelegate::GetInfobarModalTitleText()
     const {
   return l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_TITLE);
-}
-
-int IOSChromeSavePasswordInfoBarDelegate::GetIconId() const {
-  return IDR_IOS_INFOBAR_SAVE_PASSWORD;
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

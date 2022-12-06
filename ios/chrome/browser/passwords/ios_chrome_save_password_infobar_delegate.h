@@ -104,7 +104,6 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
 
  private:
   // ConfirmInfoBarDelegate implementation.
-  int GetIconId() const override;
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
 
   // The password_manager::PasswordFormManager managing the form we're asking
