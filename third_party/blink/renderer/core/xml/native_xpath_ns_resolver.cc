@@ -25,19 +25,42 @@
 
 #include "third_party/blink/renderer/core/xml/native_xpath_ns_resolver.h"
 
+#include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/character_data.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+namespace {
+
+void CountNonElementResolver(const Node* node) {
+  if (!node || !node->IsElementNode())
+    return;
+  if (const auto* attr = DynamicTo<Attr>(node)) {
+    if (attr->ownerElement())
+      return;
+  } else if (const auto* char_data = DynamicTo<CharacterData>(node)) {
+    if (char_data->parentElement())
+      return;
+  }
+  node->GetDocument().CountUse(WebFeature::kCreateNSResolverWithNonElements);
+}
+
+}  // namespace
 
 NativeXPathNSResolver::NativeXPathNSResolver(Node* node) : node_(node) {}
 
 AtomicString NativeXPathNSResolver::lookupNamespaceURI(const String& prefix) {
   // This is not done by Node::lookupNamespaceURI as per the DOM3 Core spec,
   // but the XPath spec says that we should do it for XPathNSResolver.
-  if (prefix == "xml")
+  if (prefix == "xml") {
+    CountNonElementResolver(node_);
     return xml_names::kNamespaceURI;
+  }
 
   return node_ ? node_->lookupNamespaceURI(prefix) : g_null_atom;
 }
