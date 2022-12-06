@@ -171,6 +171,8 @@ class CompoundTabContainer : public TabContainer {
 
   base::RepeatingCallback<int()> available_width_callback_;
 
+  const raw_ptr<TabHoverCardController> hover_card_controller_;
+
   // Animates tabs between pinned and unpinned states.
   views::BoundsAnimator bounds_animator_;
 };

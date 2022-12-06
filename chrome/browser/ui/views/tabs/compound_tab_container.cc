@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_animation_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -223,6 +224,7 @@ CompoundTabContainer::CompoundTabContainer(
           drag_context,
           tab_slot_controller,
           scroll_contents_view))),
+      hover_card_controller_(hover_card_controller),
       bounds_animator_(this) {
   const views::FlexSpecification tab_container_flex_spec =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -467,7 +469,19 @@ absl::optional<int> CompoundTabContainer::GetModelIndexOfFirstNonClosingTab(
 void CompoundTabContainer::UpdateHoverCard(
     Tab* tab,
     TabSlotController::HoverCardUpdateType update_type) {
-  // TODO(crbug.com/1346023): probably hover card controller ownership is wrong
+  // Some operations (including e.g. starting a drag) can cause the tab focus
+  // to change at the same time as the tabstrip is starting to animate; the
+  // hover card should not be visible at this time.
+  // See crbug.com/1220840 for an example case.
+  if (controller_->IsAnimatingInTabStrip()) {
+    tab = nullptr;
+    update_type = TabSlotController::HoverCardUpdateType::kAnimating;
+  }
+
+  if (!hover_card_controller_)
+    return;
+
+  hover_card_controller_->UpdateHoverCard(tab, update_type);
 }
 
 void CompoundTabContainer::HandleLongTap(ui::GestureEvent* const event) {
