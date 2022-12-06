@@ -1,86 +1,11 @@
 <!doctype html>
-<title>Payment App: Test for invoking payment app</title>
 <head>
-  <link rel="manifest" href="manifest.json">
-</head>
+<title>Payment App: Test for invoking payment app</title>
 <script src="../result_queue.js"></script>
 <script>
-
-function registerPaymentApp() {
-  navigator.serviceWorker.register('payment_app.js', { scope: './' })
-    .then(() => {
-        return navigator.serviceWorker.ready;
-      })
-    .then(registration => {
-      const instrumentPromises = [
-      registration.paymentManager.instruments.set(
-        'basic-card-payment-app-id',
-        {
-          name: 'Visa ****',
-          method: 'basic-card',
-          icons: [
-            {
-              'src': 'icon-1x.png',
-              'sizes': '48x48',
-              'type': 'image/png'
-            },
-            {
-              'src': 'icon-1-5x.png',
-              'sizes': '72x72',
-              'type': 'image/png'
-            },
-            {
-              'src': 'icon-2x.png',
-              'sizes': '96x96',
-              'type': 'image/png',
-              'purpose': 'any monochrome'
-            }
-          ]
-        }),
-
-      registration.paymentManager.instruments.set(
-        'bobpay-payment-app-id',
-        {
-          name: 'Bob Pay',
-          method: 'https://bobpay.com',
-          icons: [
-            {
-              'src': 'icon-1x.png',
-              'sizes': '72x72',
-              'type': 'image/png'
-            },
-            {
-              'src': 'icon-3x.png',
-              'sizes': '144x144',
-              'type': 'image/png'
-            },
-            {
-              'src': 'icon-4x.png',
-              'sizes': '192x192',
-              'type': 'image/png'
-            },
-            {
-              'src': 'invalid_icon.png',
-              'sizes': '192x192',
-              'type': 'image/png'
-            }
-          ]
-        }),
-      ];
-
-      return Promise.all(instrumentPromises);
-      })
-    .then(result => {
-        sendResultToTest('registered');
-      })
-    .catch(result => {
-        sendResultToTest(result);
-      });
-}
-
 var resultQueue = new ResultQueue();
 navigator.serviceWorker.addEventListener('message', e => {
   resultQueue.push(e.data);
 });
-
 </script>
+</head>

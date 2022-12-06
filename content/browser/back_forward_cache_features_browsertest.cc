@@ -15,6 +15,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
 #include "content/public/browser/media_session.h"
+#include "content/public/browser/payment_app_provider.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1514,9 +1515,36 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheSMSService) {
       blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService, FROM_HERE);
 }
 
+namespace {
+
+void OnInstallPaymentApp(base::OnceClosure done_callback,
+                         bool* out_success,
+                         bool success) {
+  *out_success = success;
+  std::move(done_callback).Run();
+}
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoesNotCachePaymentManager) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
+
+  base::RunLoop run_loop;
+  GURL service_worker_javascript_file_url =
+      https_server()->GetURL("a.test", "/payments/payment_app.js");
+  bool success = false;
+  PaymentAppProvider::GetOrCreateForWebContents(shell()->web_contents())
+      ->InstallPaymentAppForTesting(
+          /*app_icon=*/SkBitmap(), service_worker_javascript_file_url,
+          /*service_worker_scope=*/
+          service_worker_javascript_file_url.GetWithoutFilename(),
+          /*payment_method_identifier=*/
+          url::Origin::Create(service_worker_javascript_file_url).Serialize(),
+          base::BindOnce(&OnInstallPaymentApp, run_loop.QuitClosure(),
+                         &success));
+  run_loop.Run();
+  ASSERT_TRUE(success);
 
   // 1) Navigate to a page which includes PaymentManager functionality. Note
   // that service workers are used, and therefore we use https server instead of
@@ -1530,7 +1558,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Execute functionality that calls PaymentManager.
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     new Promise(async resolve => {
-      registerPaymentApp();
+      const registration = await navigator.serviceWorker.getRegistration(
+          '/payments/payment_app.js');
+      await registration.paymentManager.enableDelegations(['shippingAddress']);
       resolve();
     });
   )"));

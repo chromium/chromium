@@ -1,9 +1,0 @@
-{
-  "name": "Bob pay web app",
-  "short_name": "bobpay",
-  "icons": [{
-  	"src": "images/bobpay.png",
-  	"sizes": "32x32",
-  	"type": "image/png"
-  }]
-}
