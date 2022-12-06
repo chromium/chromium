@@ -463,6 +463,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        ModelExecutes) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   TestPageContentAnnotator test_annotator;
@@ -519,6 +520,9 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   EXPECT_NE(-1.0, got_content_annotations->model_annotations.visibility_score);
   EXPECT_TRUE(got_content_annotations->model_annotations.categories.empty());
 
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageContentAnnotations2::kEntryName);
+  EXPECT_EQ(1u, entries.size());
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
