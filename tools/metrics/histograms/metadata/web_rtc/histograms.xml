@@ -98,32 +98,6 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
-<histogram name="WebRTC.AecFilterHasDivergence" units="%" expires_after="M85">
-  <owner>grunell@chromium.org</owner>
-  <owner>minyue@chromium.org</owner>
-  <summary>
-    The percentage of measurement periods during a capture stream's lifetime
-    when the echo canceler's filter is considered to have diverged at least
-    once. A diverged filter could mean that there was echo och ducking
-    experienced. The measurement period size is fixed and in the order of one
-    second. The first measurement period is larger, typically 2-3 seconds.
-    Capture streams with shorter lifetimes (i.e. no data available) are not
-    recorded here.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.ApplicationMaxConsecutiveBytesDiscard.v2" units="units"
-    expires_after="M77">
-  <owner>guoweis@chromium.org</owner>
-  <summary>
-    The maximum consecutive discarded bytes caused by not enough buffer
-    available in WebRTC's socket implementation. This happens when WebRTC
-    IpcPacketSocket's throttling mechanism kicks in. The maximum bucket is
-    expanded from previous version to provide more insight when upper layer
-    feeds a lot of packets.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.ApplicationPercentPacketsDiscarded" units="%"
     expires_after="M81">
   <owner>guoweis@chromium.org</owner>
@@ -1128,13 +1102,6 @@ chromium-metrics-reviews@google.com.
     Records whether a user would potentially see a permission prompt for moving
     the camera. It is recorded when showing a camera permission prompt
     regardless of whether or not the site requested camera movement.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.NAT.Metrics" enum="NatTypeCounters" expires_after="M85">
-  <owner>guoweis@chromium.org</owner>
-  <summary>
-    Counters on various types of NAT observed. This is logged once per session.
   </summary>
 </histogram>
 
@@ -3804,11 +3771,6 @@ chromium-metrics-reviews@google.com.
     A session is a crude estimate since its implemented as the lifetime of the
     render process that called the WebRTC API.
   </summary>
-</histogram>
-
-<histogram name="WebRTC.WindowCaptureTime" units="ms" expires_after="M77">
-  <owner>jiayl@chromium.org</owner>
-  <summary>Time for capturing one frame in window capturing.</summary>
 </histogram>
 
 <histogram name="WebRtcEventLogging.Api" enum="WebRtcEventLoggingApiEnum"

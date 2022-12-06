@@ -69019,13 +69019,6 @@ Called by update_use_counter_css.py.-->
   <int value="14" label="Invalid username"/>
 </enum>
 
-<enum name="NatTypeCounters">
-  <int value="0" label="Not behind a NAT."/>
-  <int value="1" label="Behind a NAT of unknown type."/>
-  <int value="2" label="Behind a Symmetric NAT."/>
-  <int value="3" label="Behind a Non-Symmetric NAT."/>
-</enum>
-
 <enum name="NavigationBrowserMappedUrnUuidInIframeOrFencedFrame">
   <int value="0" label="Browser mapped urn::uuid is rendered in fenced frame"/>
   <int value="1" label="Browser mapped urn::uuid is rendered in iframe"/>
