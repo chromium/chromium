@@ -16,7 +16,7 @@ class FontFeatureValuesMapIterationSource final
  public:
   FontFeatureValuesMapIterationSource(const CSSFontFeatureValuesMap& map,
                                       const FontFeatureAliases* aliases)
-      : map_(map), iterator_(aliases->begin()) {}
+      : map_(map), aliases_(aliases), iterator_(aliases->begin()) {}
 
   bool Next(ScriptState* script_state,
             String& map_key,
@@ -41,7 +41,7 @@ class FontFeatureValuesMapIterationSource final
  private:
   // Needs to be kept alive while we're iterating over it.
   const Member<const CSSFontFeatureValuesMap> map_;
-  FontFeatureAliases* aliases_;
+  const FontFeatureAliases* aliases_;
   FontFeatureAliases::const_iterator iterator_;
 };
 
