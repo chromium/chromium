@@ -31,9 +31,10 @@ namespace {
 
 // A size that if used to create a dawn_wire buffer, will guarantee we'll OOM
 // immediately. It is an implementation detail of dawn_wire but that's tested
-// on CQ in Dawn.
-constexpr uint64_t kGuaranteedBufferOOMSize =
-    std::numeric_limits<size_t>::max();
+// on CQ in Dawn. Note that we set kGuaranteedBufferOOMSize to
+// (WGPU_WHOLE_MAP_SIZE - 1) to ensure we never pass WGPU_WHOLE_MAP_SIZE from
+// blink to wire_client.
+constexpr uint64_t kGuaranteedBufferOOMSize = WGPU_WHOLE_MAP_SIZE - 1u;
 
 WGPUBufferDescriptor AsDawnType(const GPUBufferDescriptor* webgpu_desc,
                                 std::string* label) {
