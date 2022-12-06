@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
@@ -441,27 +442,20 @@ void ExtensionManagement::Refresh() {
   TRACE_EVENT0("browser,startup", "ExtensionManagement::Refresh");
   SCOPED_UMA_HISTOGRAM_TIMER("Extensions.Management_Refresh");
   // Load all extension management settings preferences.
-  const base::ListValue* allowed_list_pref =
-      static_cast<const base::ListValue*>(LoadPreference(
-          pref_names::kInstallAllowList, true, base::Value::Type::LIST));
+  const base::Value::List* allowed_list_pref =
+      LoadListPreference(pref_names::kInstallAllowList, true);
   // Allow user to use preference to block certain extensions. Note that policy
   // managed forcelist or allowlist will always override this.
-  const base::ListValue* denied_list_pref =
-      static_cast<const base::ListValue*>(LoadPreference(
-          pref_names::kInstallDenyList, false, base::Value::Type::LIST));
-  const base::DictionaryValue* forced_list_pref =
-      static_cast<const base::DictionaryValue*>(LoadPreference(
-          pref_names::kInstallForceList, true, base::Value::Type::DICTIONARY));
-  const base::ListValue* install_sources_pref =
-      static_cast<const base::ListValue*>(LoadPreference(
-          pref_names::kAllowedInstallSites, true, base::Value::Type::LIST));
-  const base::ListValue* allowed_types_pref =
-      static_cast<const base::ListValue*>(LoadPreference(
-          pref_names::kAllowedTypes, true, base::Value::Type::LIST));
-  const base::DictionaryValue* dict_pref =
-      static_cast<const base::DictionaryValue*>(
-          LoadPreference(pref_names::kExtensionManagement, true,
-                         base::Value::Type::DICTIONARY));
+  const base::Value::List* denied_list_pref =
+      LoadListPreference(pref_names::kInstallDenyList, false);
+  const base::Value::Dict* forced_list_pref =
+      LoadDictPreference(pref_names::kInstallForceList, true);
+  const base::Value::List* install_sources_pref =
+      LoadListPreference(pref_names::kAllowedInstallSites, true);
+  const base::Value::List* allowed_types_pref =
+      LoadListPreference(pref_names::kAllowedTypes, true);
+  const base::Value::Dict* dict_pref =
+      LoadDictPreference(pref_names::kExtensionManagement, true);
   const base::Value* extension_request_pref = LoadPreference(
       prefs::kCloudExtensionRequestEnabled, false, base::Value::Type::BOOLEAN);
 
@@ -477,39 +471,41 @@ void ExtensionManagement::Refresh() {
 
   // Parse default settings.
   const base::Value wildcard("*");
-  if ((denied_list_pref &&
-       base::Contains(denied_list_pref->GetList(), wildcard)) ||
+  if ((denied_list_pref && base::Contains(*denied_list_pref, wildcard)) ||
       (extension_request_pref && extension_request_pref->GetBool())) {
     default_settings_->installation_mode = INSTALLATION_BLOCKED;
   }
 
-  const base::DictionaryValue* subdict = nullptr;
-  if (dict_pref &&
-      dict_pref->GetDictionary(schema_constants::kWildcard, &subdict)) {
+  if (const base::Value::Dict* subdict =
+          dict_pref ? dict_pref->FindDict(schema_constants::kWildcard)
+                    : nullptr) {
     if (!default_settings_->Parse(
-            subdict, internal::IndividualSettings::SCOPE_DEFAULT)) {
+            *subdict, internal::IndividualSettings::SCOPE_DEFAULT)) {
       LOG(WARNING) << "Default extension management settings parsing error.";
       default_settings_->Reset();
     }
 
     // Settings from new preference have higher priority over legacy ones.
-    const base::ListValue* list_value = nullptr;
-    if (subdict->GetList(schema_constants::kInstallSources, &list_value))
+    const base::Value::List* list_value =
+        subdict->FindList(schema_constants::kInstallSources);
+    if (list_value)
       install_sources_pref = list_value;
-    if (subdict->GetList(schema_constants::kAllowedTypes, &list_value))
+
+    list_value = subdict->FindList(schema_constants::kAllowedTypes);
+    if (list_value)
       allowed_types_pref = list_value;
   }
 
   // Parse legacy preferences.
   if (allowed_list_pref) {
-    for (const auto& entry : allowed_list_pref->GetList()) {
+    for (const auto& entry : *allowed_list_pref) {
       if (entry.is_string() && crx_file::id_util::IdIsValid(entry.GetString()))
         AccessById(entry.GetString())->installation_mode = INSTALLATION_ALLOWED;
     }
   }
 
   if (denied_list_pref) {
-    for (const auto& entry : denied_list_pref->GetList()) {
+    for (const auto& entry : *denied_list_pref) {
       if (entry.is_string() && crx_file::id_util::IdIsValid(entry.GetString()))
         AccessById(entry.GetString())->installation_mode = INSTALLATION_BLOCKED;
     }
@@ -519,7 +515,7 @@ void ExtensionManagement::Refresh() {
 
   if (install_sources_pref) {
     global_settings_->install_sources = URLPatternSet();
-    for (const auto& entry : install_sources_pref->GetList()) {
+    for (const auto& entry : *install_sources_pref) {
       if (entry.is_string()) {
         std::string url_pattern = entry.GetString();
         URLPattern pattern(URLPattern::SCHEME_ALL);
@@ -536,7 +532,7 @@ void ExtensionManagement::Refresh() {
 
   if (allowed_types_pref) {
     global_settings_->allowed_types.emplace();
-    for (const auto& entry : allowed_types_pref->GetList()) {
+    for (const auto& entry : *allowed_types_pref) {
       if (entry.is_int() && entry.GetInt() >= 0 &&
           entry.GetInt() < Manifest::Type::NUM_LOAD_TYPES) {
         global_settings_->allowed_types->push_back(
@@ -569,10 +565,11 @@ void ExtensionManagement::Refresh() {
         installed_extensions.insert(extension_info->extension_id);
     }
 
-    for (auto iter : dict_pref->DictItems()) {
+    for (auto iter : *dict_pref) {
       if (iter.first == schema_constants::kWildcard)
         continue;
-      if (!iter.second.GetAsDictionary(&subdict))
+      const base::Value::Dict* subdict = iter.second.GetIfDict();
+      if (!subdict)
         continue;
       if (base::StartsWith(iter.first, schema_constants::kUpdateUrlPrefix,
                            base::CompareCase::SENSITIVE)) {
@@ -585,7 +582,7 @@ void ExtensionManagement::Refresh() {
         internal::IndividualSettings* by_update_url =
             AccessByUpdateUrl(update_url);
         if (!by_update_url->Parse(
-                subdict, internal::IndividualSettings::SCOPE_UPDATE_URL)) {
+                *subdict, internal::IndividualSettings::SCOPE_UPDATE_URL)) {
           settings_by_update_url_.erase(update_url);
           LOG(WARNING) << "Malformed Extension Management settings for "
                           "extensions with update url: "
@@ -602,7 +599,7 @@ void ExtensionManagement::Refresh() {
 
           if (defer_load_settings) {
             auto should_defer = [&extension_id, &installed_extensions](
-                                    const base::Value* subdict,
+                                    const base::Value::Dict& dict,
                                     const SettingsIdMap* settings_by_id) {
               // If in legacy force list, don't defer since already have an
               // entry. This ensures that the entry in these settings matches
@@ -613,7 +610,7 @@ void ExtensionManagement::Refresh() {
                 return false;
               }
               auto* install_mode =
-                  subdict->FindStringKey(schema_constants::kInstallationMode);
+                  dict.FindString(schema_constants::kInstallationMode);
               if (!install_mode)
                 return true;
               // Don't defer if the extension needs to be installed.
@@ -621,7 +618,7 @@ void ExtensionManagement::Refresh() {
                      *install_mode != schema_constants::kNormalInstalled;
             };
 
-            if (should_defer(subdict, &settings_by_id_)) {
+            if (should_defer(*subdict, &settings_by_id_)) {
               deferred_ids_.insert(extension_id);
               continue;
             }
@@ -630,7 +627,7 @@ void ExtensionManagement::Refresh() {
           internal::IndividualSettings* by_id = AccessById(extension_id);
           const bool included_in_forcelist =
               by_id->installation_mode == InstallationMode::INSTALLATION_FORCED;
-          if (!ParseById(extension_id, subdict))
+          if (!ParseById(extension_id, *subdict))
             continue;
 
           // If applying the ExtensionSettings policy changes installation mode
@@ -655,7 +652,7 @@ void ExtensionManagement::Refresh() {
 }
 
 bool ExtensionManagement::ParseById(const std::string& extension_id,
-                                    const base::DictionaryValue* subdict) {
+                                    const base::Value::Dict& subdict) {
   internal::IndividualSettings* by_id = AccessById(extension_id);
   if (by_id->Parse(subdict, internal::IndividualSettings::SCOPE_INDIVIDUAL))
     return true;
@@ -688,26 +685,24 @@ void ExtensionManagement::LoadDeferredExtensionSetting(
   // No need to check again later.
   deferred_ids_.erase(extension_id);
 
-  const base::DictionaryValue* dict_pref =
-      static_cast<const base::DictionaryValue*>(
-          LoadPreference(pref_names::kExtensionManagement, true,
-                         base::Value::Type::DICTIONARY));
+  const base::Value::Dict* dict_pref =
+      LoadDictPreference(pref_names::kExtensionManagement, true);
   bool found = false;
-  for (auto iter : dict_pref->DictItems()) {
+  for (auto iter : *dict_pref) {
     if (iter.first == schema_constants::kWildcard ||
         base::StartsWith(iter.first, schema_constants::kUpdateUrlPrefix,
                          base::CompareCase::SENSITIVE)) {
       continue;
     }
-    const base::DictionaryValue* subdict = nullptr;
-    if (!iter.second.GetAsDictionary(&subdict))
+    const base::Value::Dict* subdict = iter.second.GetIfDict();
+    if (!subdict)
       continue;
 
     auto extension_ids = base::SplitStringPiece(
         iter.first, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (base::Contains(extension_ids, extension_id)) {
       // Found our settings. After parsing, continue looking for more entries.
-      ParseById(extension_id, subdict);
+      ParseById(extension_id, *subdict);
       found = true;
     }
   }
@@ -730,6 +725,22 @@ const base::Value* ExtensionManagement::LoadPreference(
       return value;
   }
   return nullptr;
+}
+
+const base::Value::Dict* ExtensionManagement::LoadDictPreference(
+    const char* pref_name,
+    bool force_managed) const {
+  const base::Value* value =
+      LoadPreference(pref_name, force_managed, base::Value::Type::DICTIONARY);
+  return value ? &value->GetDict() : nullptr;
+}
+
+const base::Value::List* ExtensionManagement::LoadListPreference(
+    const char* pref_name,
+    bool force_managed) const {
+  const base::Value* value =
+      LoadPreference(pref_name, force_managed, base::Value::Type::LIST);
+  return value ? &value->GetList() : nullptr;
 }
 
 void ExtensionManagement::OnExtensionPrefChanged() {
@@ -780,26 +791,26 @@ base::Value::Dict ExtensionManagement::GetInstallListByMode(
 }
 
 void ExtensionManagement::UpdateForcedExtensions(
-    const base::DictionaryValue* extension_dict) {
+    const base::Value::Dict* extension_dict) {
   if (!extension_dict)
     return;
 
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);
-  for (auto it : extension_dict->DictItems()) {
+  for (auto it : *extension_dict) {
     if (!crx_file::id_util::IdIsValid(it.first)) {
       install_stage_tracker->ReportFailure(
           it.first, InstallStageTracker::FailureReason::INVALID_ID);
       continue;
     }
-    const base::DictionaryValue* dict_value = nullptr;
-    if (!it.second.GetAsDictionary(&dict_value)) {
+    const base::Value::Dict* dict_value = it.second.GetIfDict();
+    if (!dict_value) {
       install_stage_tracker->ReportFailure(
           it.first, InstallStageTracker::FailureReason::NO_UPDATE_URL);
       continue;
     }
     const std::string* update_url =
-        dict_value->FindStringKey(ExternalProviderImpl::kExternalUpdateUrl);
+        dict_value->FindString(ExternalProviderImpl::kExternalUpdateUrl);
     if (!update_url) {
       install_stage_tracker->ReportFailure(
           it.first, InstallStageTracker::FailureReason::NO_UPDATE_URL);

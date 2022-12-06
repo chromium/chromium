@@ -25,9 +25,10 @@ const char kMalformedPreferenceWarning[] =
 // Maximum number of characters for a 'blocked_install_message' value.
 const int kBlockedInstallMessageMaxLength = 1000;
 
-bool GetString(const base::Value& dict, const char* key, std::string* result) {
-  DCHECK(dict.is_dict());
-  const std::string* value = dict.FindStringKey(key);
+bool GetString(const base::Value::Dict& dict,
+               const char* key,
+               std::string* result) {
+  const std::string* value = dict.FindString(key);
   if (!value)
     return false;
   *result = *value;
@@ -53,13 +54,12 @@ IndividualSettings::IndividualSettings(
   // now, we will keep it as is until there is a long term plan.
 }
 
-IndividualSettings::~IndividualSettings() {
-}
+IndividualSettings::~IndividualSettings() = default;
 
-bool IndividualSettings::Parse(const base::DictionaryValue* dict,
+bool IndividualSettings::Parse(const base::Value::Dict& dict,
                                ParsingScope scope) {
   std::string installation_mode_str;
-  if (GetString(*dict, schema_constants::kInstallationMode,
+  if (GetString(dict, schema_constants::kInstallationMode,
                 &installation_mode_str)) {
     if (installation_mode_str == schema_constants::kAllowed) {
       installation_mode = ExtensionManagement::INSTALLATION_ALLOWED;
@@ -88,7 +88,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
         return false;
       }
       std::string update_url_str;
-      if (GetString(*dict, schema_constants::kUpdateUrl, &update_url_str) &&
+      if (GetString(dict, schema_constants::kUpdateUrl, &update_url_str) &&
           GURL(update_url_str).is_valid()) {
         update_url = update_url_str;
       } else {
@@ -107,12 +107,14 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   if (is_policy_installed &&
       !extension_urls::IsWebstoreUpdateUrl(GURL(update_url))) {
     const absl::optional<bool> is_update_url_overridden =
-        dict->FindBoolKey(schema_constants::kOverrideUpdateUrl);
+        dict.FindBool(schema_constants::kOverrideUpdateUrl);
     if (is_update_url_overridden)
       override_update_url = is_update_url_overridden.value();
   }
 
   // Parses the blocked permission settings.
+  std::u16string error;
+
   // Parse the blocked and allowed permissions.
   // Note that we currently don't use default permission settings for
   // per-update-url or per-id settings at all even though they are not set.
@@ -127,9 +129,8 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   // for the same reason, we keep the code for now.
   APIPermissionSet parsed_blocked_permissions;
   APIPermissionSet explicitly_allowed_permissions;
-  std::u16string error;
   const base::Value::List* list_value =
-      dict->GetDict().FindList(schema_constants::kAllowedPermissions);
+      dict.FindList(schema_constants::kAllowedPermissions);
   if (list_value) {
     if (!APIPermissionSet::ParseFromJSON(
             *list_value, APIPermissionSet::kDisallowInternalPermissions,
@@ -137,7 +138,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
       LOG(WARNING) << error;
     }
   }
-  list_value = dict->GetDict().FindList(schema_constants::kBlockedPermissions);
+  list_value = dict.FindList(schema_constants::kBlockedPermissions);
   if (list_value) {
     if (!APIPermissionSet::ParseFromJSON(
             *list_value, APIPermissionSet::kDisallowInternalPermissions,
@@ -150,13 +151,12 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
                                &blocked_permissions);
 
   // Parses list of Match Patterns into a URLPatternSet.
-  auto parse_url_pattern_set = [](const base::DictionaryValue* dict,
+  auto parse_url_pattern_set = [](const base::Value::Dict& dict,
                                   const char key[], URLPatternSet* out_value) {
     // Get the list of URLPatterns.
-    const base::Value* host_list_value = dict->FindListKey(key);
+    const base::Value::List* host_list_value = dict.FindList(key);
     if (host_list_value) {
-      const base::Value::List& host_list_view = host_list_value->GetList();
-      if (host_list_view.size() > schema_constants::kMaxItemsURLPatternSet) {
+      if (host_list_value->size() > schema_constants::kMaxItemsURLPatternSet) {
         LOG(WARNING) << "Exceeded maximum number of URL match patterns ("
                      << schema_constants::kMaxItemsURLPatternSet
                      << ") for attribute '" << key << "'";
@@ -165,12 +165,12 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
       out_value->ClearPatterns();
       const int extension_scheme_mask =
           URLPattern::GetValidSchemeMaskForExtensions();
-      auto numItems = std::min(host_list_view.size(),
-                               schema_constants::kMaxItemsURLPatternSet);
-      for (size_t i = 0; i < numItems; ++i) {
+      auto num_items = std::min(host_list_value->size(),
+                                schema_constants::kMaxItemsURLPatternSet);
+      for (size_t i = 0; i < num_items; ++i) {
         std::string unparsed_str;
-        if (host_list_view[i].is_string())
-          unparsed_str = host_list_view[i].GetString();
+        if ((*host_list_value)[i].is_string())
+          unparsed_str = (*host_list_value)[i].GetString();
         URLPattern pattern(extension_scheme_mask);
         if (unparsed_str != URLPattern::kAllUrlsPattern)
           unparsed_str.append("/*");
@@ -198,7 +198,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   // Parses the minimum version settings.
   std::string minimum_version_required_str;
   if (scope == SCOPE_INDIVIDUAL &&
-      GetString(*dict, schema_constants::kMinimumVersionRequired,
+      GetString(dict, schema_constants::kMinimumVersionRequired,
                 &minimum_version_required_str)) {
     std::unique_ptr<base::Version> version(
         new base::Version(minimum_version_required_str));
@@ -210,7 +210,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
       minimum_version_required = std::move(version);
   }
 
-  if (GetString(*dict, schema_constants::kBlockedInstallMessage,
+  if (GetString(dict, schema_constants::kBlockedInstallMessage,
                 &blocked_install_message)) {
     if (blocked_install_message.length() > kBlockedInstallMessageMaxLength) {
       LOG(WARNING) << "Truncated blocked install message to 1000 characters";
@@ -220,7 +220,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   }
 
   std::string toolbar_pin_str;
-  if (GetString(*dict, schema_constants::kToolbarPin, &toolbar_pin_str)) {
+  if (GetString(dict, schema_constants::kToolbarPin, &toolbar_pin_str)) {
     if (toolbar_pin_str == schema_constants::kDefaultUnpinned) {
       toolbar_pin = ExtensionManagement::ToolbarPinMode::kDefaultUnpinned;
     } else if (toolbar_pin_str == schema_constants::kForcePinned) {

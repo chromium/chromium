@@ -8,13 +8,13 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
 class Version;
 }  // namespace base
 
@@ -64,7 +64,7 @@ struct IndividualSettings {
   // Note that in case of parsing errors, |this| will NOT be left untouched.
   // This method is required to be called for SCOPE_DEFAULT first, then
   // for SCOPE_INDIVIDUAL and SCOPE_UPDATE_URL.
-  bool Parse(const base::DictionaryValue* dict, ParsingScope scope);
+  bool Parse(const base::Value::Dict& dict, ParsingScope scope);
 
   // Extension installation mode. Setting this to INSTALLATION_FORCED or
   // INSTALLATION_RECOMMENDED will enable extension auto-loading (only

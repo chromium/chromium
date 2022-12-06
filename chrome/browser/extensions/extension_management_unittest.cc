@@ -294,14 +294,14 @@ class ExtensionManagementServiceTest : public testing::Test {
       const std::string& version,
       const std::string& id,
       const std::string& update_url) {
-    base::DictionaryValue manifest_dict;
-    manifest_dict.SetStringPath(manifest_keys::kName, "test");
-    manifest_dict.SetStringPath(manifest_keys::kVersion, version);
-    manifest_dict.SetIntPath(manifest_keys::kManifestVersion, 2);
-    manifest_dict.SetStringPath(manifest_keys::kUpdateURL, update_url);
+    base::Value::Dict manifest_dict;
+    manifest_dict.Set(manifest_keys::kName, "test");
+    manifest_dict.Set(manifest_keys::kVersion, version);
+    manifest_dict.Set(manifest_keys::kManifestVersion, 2);
+    manifest_dict.Set(manifest_keys::kUpdateURL, update_url);
     std::string error;
     scoped_refptr<const Extension> extension =
-        Extension::Create(base::FilePath(), location, manifest_dict,
+        Extension::Create(base::FilePath(), location, std::move(manifest_dict),
                           Extension::NO_FLAGS, id, &error);
     CHECK(extension.get()) << error;
     return extension;
@@ -328,24 +328,24 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
   }
 
   void CreateExtension(ManifestLocation location) {
-    base::DictionaryValue values;
+    base::Value::Dict values;
     CreateExtensionFromValues(location, &values);
   }
 
   void CreateHostedApp(ManifestLocation location) {
-    base::DictionaryValue values;
-    values.SetPath(extensions::manifest_keys::kWebURLs,
-                   base::Value(base::Value::Type::LIST));
-    values.SetStringPath(extensions::manifest_keys::kLaunchWebURL,
-                         "http://www.example.com");
+    base::Value::Dict values;
+    values.SetByDottedPath(extensions::manifest_keys::kWebURLs,
+                           base::Value(base::Value::Type::LIST));
+    values.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
+                           "http://www.example.com");
     CreateExtensionFromValues(location, &values);
   }
 
   void CreateExtensionFromValues(ManifestLocation location,
-                                 base::DictionaryValue* values) {
-    values->SetStringPath(extensions::manifest_keys::kName, "test");
-    values->SetStringPath(extensions::manifest_keys::kVersion, "0.1");
-    values->SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
+                                 base::Value::Dict* values) {
+    values->Set(extensions::manifest_keys::kName, "test");
+    values->Set(extensions::manifest_keys::kVersion, "0.1");
+    values->Set(extensions::manifest_keys::kManifestVersion, 2);
     std::string error;
     extension_ = Extension::Create(base::FilePath(), location, *values,
                                    Extension::NO_FLAGS, &error);

@@ -245,11 +245,11 @@ class ExtensionManagement : public KeyedService {
   // refresh the settings.
   void Refresh();
 
-  // Tries to parse the individual setting in |settings_by_id_| for
-  // |extension_id|. Returns true if it succeeds, otherwise returns false and
-  // removes the entry from |settings_by_id_|.
+  // Tries to parse the individual setting in `settings_by_id_` for
+  // `extension_id`. Returns true if it succeeds, otherwise returns false and
+  // removes the entry from `settings_by_id_`.
   bool ParseById(const std::string& extension_id,
-                 const base::DictionaryValue* subdict);
+                 const base::Value::Dict& subdict);
 
   // Returns the individual settings for |extension_id| if it exists, otherwise
   // returns nullptr. This method will also lazy load the settings if they're
@@ -260,13 +260,23 @@ class ExtensionManagement : public KeyedService {
   // Loads the deferred settings information for |extension_id|.
   void LoadDeferredExtensionSetting(const std::string& extension_id);
 
-  // Load preference with name |pref_name| and expected type |expected_type|.
+  // Loads preference with name |pref_name| and expected type |expected_type|.
   // If |force_managed| is true, only loading from the managed preference store
   // is allowed. Returns NULL if the preference is not present, not allowed to
   // be loaded from or has the wrong type.
   const base::Value* LoadPreference(const char* pref_name,
                                     bool force_managed,
                                     base::Value::Type expected_type) const;
+
+  // Loads the dictionary preference with name `pref_name` - see
+  // `LoadPreference` for more details.
+  const base::Value::Dict* LoadDictPreference(const char* pref_name,
+                                              bool force_managed) const;
+
+  // Loads the list preference with name `pref_name` - see `LoadPreference` for
+  // more details.
+  const base::Value::List* LoadListPreference(const char* pref_name,
+                                              bool force_managed) const;
 
   void OnExtensionPrefChanged();
   void NotifyExtensionManagementPrefChanged();
@@ -284,8 +294,8 @@ class ExtensionManagement : public KeyedService {
   base::Value::Dict GetInstallListByMode(
       InstallationMode installation_mode) const;
 
-  // Helper to update |extension_dict| for forced installs.
-  void UpdateForcedExtensions(const base::DictionaryValue* extension_dict);
+  // Helper to update `extension_dict` for forced installs.
+  void UpdateForcedExtensions(const base::Value::Dict* extension_dict);
 
   // Helper function to access |settings_by_id_| with |id| as key.
   // Adds a new IndividualSettings entry to |settings_by_id_| if none exists for

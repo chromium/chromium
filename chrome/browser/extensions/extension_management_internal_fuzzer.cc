@@ -35,7 +35,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   for (auto parsing_scope : kAllParsingScopes) {
     IndividualSettings settings;
-    settings.Parse(&base::Value::AsDictionaryValue(*value), parsing_scope);
+    settings.Parse(value->GetDict(), parsing_scope);
   }
   return 0;
 }
