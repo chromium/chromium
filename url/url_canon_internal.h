@@ -132,9 +132,8 @@ char CanonicalSchemeChar(char16_t ch);
 // does no checking that thee character requires escaping.
 // Escaping makes sense only 8 bit chars, so code works in all cases of
 // input parameters (8/16bit).
-template<typename UINCHAR, typename OUTCHAR>
-inline void AppendEscapedChar(UINCHAR ch,
-                              CanonOutputT<OUTCHAR>* output) {
+template <typename UINCHAR, typename OUTCHAR>
+inline void AppendEscapedChar(UINCHAR ch, CanonOutputT<OUTCHAR>* output) {
   output->push_back('%');
   output->push_back(static_cast<OUTCHAR>(kHexCharLookup[(ch >> 4) & 0xf]));
   output->push_back(static_cast<OUTCHAR>(kHexCharLookup[ch & 0xf]));
@@ -173,22 +172,17 @@ inline void DoAppendUTF8(base_icu::UChar32 char_value, Output* output) {
     Appender(static_cast<unsigned char>(char_value), output);
   } else if (char_value <= 0x7ff) {
     // 110xxxxx 10xxxxxx
-    Appender(static_cast<unsigned char>(0xC0 | (char_value >> 6)),
-             output);
-    Appender(static_cast<unsigned char>(0x80 | (char_value & 0x3f)),
-             output);
+    Appender(static_cast<unsigned char>(0xC0 | (char_value >> 6)), output);
+    Appender(static_cast<unsigned char>(0x80 | (char_value & 0x3f)), output);
   } else if (char_value <= 0xffff) {
     // 1110xxxx 10xxxxxx 10xxxxxx
-    Appender(static_cast<unsigned char>(0xe0 | (char_value >> 12)),
-             output);
+    Appender(static_cast<unsigned char>(0xe0 | (char_value >> 12)), output);
     Appender(static_cast<unsigned char>(0x80 | ((char_value >> 6) & 0x3f)),
              output);
-    Appender(static_cast<unsigned char>(0x80 | (char_value & 0x3f)),
-             output);
+    Appender(static_cast<unsigned char>(0x80 | (char_value & 0x3f)), output);
   } else {
     // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-    Appender(static_cast<unsigned char>(0xf0 | (char_value >> 18)),
-             output);
+    Appender(static_cast<unsigned char>(0xf0 | (char_value >> 18)), output);
     Appender(static_cast<unsigned char>(0x80 | ((char_value >> 12) & 0x3f)),
              output);
     Appender(static_cast<unsigned char>(0x80 | ((char_value >> 6) & 0x3f)),
@@ -316,8 +310,8 @@ inline bool DecodeEscaped(const CHAR* spec,
                           size_t* begin,
                           size_t end,
                           unsigned char* unescaped_value) {
-  if (*begin + 3 > end ||
-      !Is8BitChar(spec[*begin + 1]) || !Is8BitChar(spec[*begin + 2])) {
+  if (*begin + 3 > end || !Is8BitChar(spec[*begin + 1]) ||
+      !Is8BitChar(spec[*begin + 2])) {
     // Invalid escape sequence because there's not enough room, or the
     // digits are not ASCII.
     return false;
@@ -446,7 +440,7 @@ COMPONENT_EXPORT(URL)
 int _itow_s(int value, char16_t* buffer, size_t size_in_chars, int radix);
 
 // Secure template overloads for these functions
-template<size_t N>
+template <size_t N>
 inline int _itoa_s(int value, char (&buffer)[N], int radix) {
   return _itoa_s(value, buffer, N, radix);
 }
@@ -458,7 +452,8 @@ inline int _itow_s(int value, char16_t (&buffer)[N], int radix) {
 
 // _strtoui64 and strtoull behave the same
 inline unsigned long long _strtoui64(const char* nptr,
-                                     char** endptr, int base) {
+                                     char** endptr,
+                                     int base) {
   return strtoull(nptr, endptr, base);
 }
 

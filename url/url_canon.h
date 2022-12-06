@@ -26,7 +26,7 @@ namespace url {
 // resize function that is called when the existing buffer is not big enough.
 // The derived class is then in charge of setting up our buffer which we will
 // manage.
-template<typename T>
+template <typename T>
 class CanonOutputT {
  public:
   CanonOutputT() = default;
@@ -60,12 +60,8 @@ class CanonOutputT {
   // Called by the user of this class to get the output. The output will NOT
   // be NULL-terminated. Call length() to get the
   // length.
-  const T* data() const {
-    return buffer_;
-  }
-  T* data() {
-    return buffer_;
-  }
+  const T* data() const { return buffer_; }
+  T* data() { return buffer_; }
 
   // Shortens the URL to the new length. Used for "backing up" when processing
   // relative paths. This can also be used if an external function writes a lot
@@ -140,7 +136,7 @@ class CanonOutputT {
 // Simple implementation of the CanonOutput using new[]. This class
 // also supports a static buffer so if it is allocated on the stack, most
 // URLs can be canonicalized with no heap allocations.
-template<typename T, int fixed_capacity = 1024>
+template <typename T, int fixed_capacity = 1024>
 class RawCanonOutputT : public CanonOutputT<T> {
  public:
   RawCanonOutputT() : CanonOutputT<T>() {
@@ -178,7 +174,7 @@ extern template class EXPORT_TEMPLATE_DECLARE(COMPONENT_EXPORT(URL))
 typedef CanonOutputT<char> CanonOutput;
 typedef CanonOutputT<char16_t> CanonOutputW;
 
-template<int fixed_capacity>
+template <int fixed_capacity>
 class RawCanonOutput : public RawCanonOutputT<char, fixed_capacity> {};
 template <int fixed_capacity>
 class RawCanonOutputW : public RawCanonOutputT<char16_t, fixed_capacity> {};
@@ -357,16 +353,16 @@ struct CanonHostInfo {
 
   // This field summarizes how the input was classified by the canonicalizer.
   enum Family {
-    NEUTRAL,   // - Doesn't resemble an IP address. As far as the IP
-               //   canonicalizer is concerned, it should be treated as a
-               //   hostname.
-    BROKEN,    // - Almost an IP, but was not canonicalized. This could be an
-               //   IPv4 address where truncation occurred, or something
-               //   containing the special characters :[] which did not parse
-               //   as an IPv6 address. Never attempt to connect to this
-               //   address, because it might actually succeed!
-    IPV4,      // - Successfully canonicalized as an IPv4 address.
-    IPV6,      // - Successfully canonicalized as an IPv6 address.
+    NEUTRAL,  // - Doesn't resemble an IP address. As far as the IP
+              //   canonicalizer is concerned, it should be treated as a
+              //   hostname.
+    BROKEN,   // - Almost an IP, but was not canonicalized. This could be an
+              //   IPv4 address where truncation occurred, or something
+              //   containing the special characters :[] which did not parse
+              //   as an IPv6 address. Never attempt to connect to this
+              //   address, because it might actually succeed!
+    IPV4,     // - Successfully canonicalized as an IPv4 address.
+    IPV6,     // - Successfully canonicalized as an IPv6 address.
   };
   Family family;
 
@@ -391,7 +387,6 @@ struct CanonHostInfo {
     return family == IPV4 ? 4 : (family == IPV6 ? 16 : 0);
   }
 };
-
 
 // Host.
 //
@@ -709,7 +704,7 @@ bool CanonicalizeMailtoURL(const char16_t* spec,
 // This structures does not own any data. It is the caller's responsibility to
 // ensure that the data the pointers point to stays in scope and is not
 // modified.
-template<typename CHAR>
+template <typename CHAR>
 struct URLComponentSource {
   // Constructor normally used by callers wishing to replace components. This
   // will make them all NULL, which is no replacement. The caller would then
@@ -734,8 +729,7 @@ struct URLComponentSource {
         port(default_value),
         path(default_value),
         query(default_value),
-        ref(default_value) {
-  }
+        ref(default_value) {}
 
   const CHAR* scheme;
   const CHAR* username;
@@ -757,11 +751,10 @@ struct URLComponentSource {
 // IN SCOPE BY THE CALLER for as long as this object exists!
 //
 // Prefer the 8-bit replacement version if possible since it is more efficient.
-template<typename CHAR>
+template <typename CHAR>
 class Replacements {
  public:
-  Replacements() {
-  }
+  Replacements() {}
 
   // Scheme
   void SetScheme(const CHAR* s, const Component& comp) {

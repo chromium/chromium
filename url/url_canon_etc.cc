@@ -72,6 +72,7 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
 // Contains the canonical version of each possible input letter in the scheme
 // (basically, lower-cased). The corresponding entry will be 0 if the letter
 // is not allowed in a scheme.
+// clang-format off
 const char kSchemeCanonical[0x80] = {
 // 00-1f: all are invalid
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -88,6 +89,7 @@ const char kSchemeCanonical[0x80] = {
      0 , 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
 //   p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~
     'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',  0 ,  0 ,  0 ,  0 ,  0 };
+// clang-format on
 
 // This could be a table lookup as well by setting the high bit for each
 // valid character, but it's only called once per URL, and it makes the lookup
@@ -96,7 +98,7 @@ inline bool IsSchemeFirstChar(unsigned char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-template<typename CHAR, typename UCHAR>
+template <typename CHAR, typename UCHAR>
 bool DoScheme(const CHAR* spec,
               const Component& scheme,
               CanonOutput* output,
@@ -161,7 +163,7 @@ bool DoScheme(const CHAR* spec,
 // *_spec strings. Typically, these specs will be the same (we're
 // canonicalizing a single source string), but may be different when
 // replacing components.
-template<typename CHAR, typename UCHAR>
+template <typename CHAR, typename UCHAR>
 bool DoUserInfo(const CHAR* username_spec,
                 const Component& username,
                 const CHAR* password_spec,
@@ -209,7 +211,7 @@ inline void WritePortInt(char* output, int output_len, int port) {
 }
 
 // This function will prepend the colon if there will be a port.
-template<typename CHAR, typename UCHAR>
+template <typename CHAR, typename UCHAR>
 bool DoPort(const CHAR* spec,
             const Component& port,
             int default_port_for_scheme,
@@ -284,7 +286,7 @@ const bool kShouldEscapeCharInFragment[0x80] = {
 };
 // clang-format on
 
-template<typename CHAR, typename UCHAR>
+template <typename CHAR, typename UCHAR>
 void DoCanonicalizeRef(const CHAR* spec,
                        const Component& ref,
                        CanonOutput* output,
@@ -364,9 +366,9 @@ bool CanonicalizeUserInfo(const char* username_source,
                           CanonOutput* output,
                           Component* out_username,
                           Component* out_password) {
-  return DoUserInfo<char, unsigned char>(
-      username_source, username, password_source, password,
-      output, out_username, out_password);
+  return DoUserInfo<char, unsigned char>(username_source, username,
+                                         password_source, password, output,
+                                         out_username, out_password);
 }
 
 bool CanonicalizeUserInfo(const char16_t* username_source,
@@ -386,8 +388,7 @@ bool CanonicalizePort(const char* spec,
                       int default_port_for_scheme,
                       CanonOutput* output,
                       Component* out_port) {
-  return DoPort<char, unsigned char>(spec, port,
-                                     default_port_for_scheme,
+  return DoPort<char, unsigned char>(spec, port, default_port_for_scheme,
                                      output, out_port);
 }
 

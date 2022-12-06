@@ -113,6 +113,7 @@ bool PrepareUTF16OverrideComponent(const char16_t* override_source,
 }  // namespace
 
 // See the header file for this array's declaration.
+// clang-format off
 const unsigned char kSharedCharTypeTable[0x100] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x00 - 0x0f
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x10 - 0x1f
@@ -221,6 +222,7 @@ const unsigned char kSharedCharTypeTable[0x100] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0xe0 - 0xef
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0xf0 - 0xff
 };
+// clang-format on
 
 const char kHexCharLookup[0x10] = {
     '0', '1', '2', '3', '4', '5', '6', '7',
@@ -324,27 +326,27 @@ void SetupOverrideComponents(const char* base,
   const URLComponentSource<char>& repl_source = repl.sources();
   const Parsed& repl_parsed = repl.components();
 
-  DoOverrideComponent(repl_source.scheme, repl_parsed.scheme,
-                      &source->scheme, &parsed->scheme);
+  DoOverrideComponent(repl_source.scheme, repl_parsed.scheme, &source->scheme,
+                      &parsed->scheme);
   DoOverrideComponent(repl_source.username, repl_parsed.username,
                       &source->username, &parsed->username);
   DoOverrideComponent(repl_source.password, repl_parsed.password,
                       &source->password, &parsed->password);
 
   // Our host should be empty if not present, so override the default setup.
-  DoOverrideComponent(repl_source.host, repl_parsed.host,
-                      &source->host, &parsed->host);
+  DoOverrideComponent(repl_source.host, repl_parsed.host, &source->host,
+                      &parsed->host);
   if (parsed->host.len == -1)
     parsed->host.len = 0;
 
-  DoOverrideComponent(repl_source.port, repl_parsed.port,
-                      &source->port, &parsed->port);
-  DoOverrideComponent(repl_source.path, repl_parsed.path,
-                      &source->path, &parsed->path);
-  DoOverrideComponent(repl_source.query, repl_parsed.query,
-                      &source->query, &parsed->query);
-  DoOverrideComponent(repl_source.ref, repl_parsed.ref,
-                      &source->ref, &parsed->ref);
+  DoOverrideComponent(repl_source.port, repl_parsed.port, &source->port,
+                      &parsed->port);
+  DoOverrideComponent(repl_source.path, repl_parsed.path, &source->path,
+                      &parsed->path);
+  DoOverrideComponent(repl_source.query, repl_parsed.query, &source->query,
+                      &parsed->query);
+  DoOverrideComponent(repl_source.ref, repl_parsed.ref, &source->ref,
+                      &parsed->ref);
 }
 
 bool SetupUTF16OverrideComponents(const char* base,
@@ -359,41 +361,43 @@ bool SetupUTF16OverrideComponents(const char* base,
   const Parsed& repl_parsed = repl.components();
 
   success &= PrepareUTF16OverrideComponent(
-      repl_source.scheme, repl_parsed.scheme,
-      utf8_buffer, &parsed->scheme);
-  success &= PrepareUTF16OverrideComponent(
-      repl_source.username, repl_parsed.username,
-      utf8_buffer, &parsed->username);
-  success &= PrepareUTF16OverrideComponent(
-      repl_source.password, repl_parsed.password,
-      utf8_buffer, &parsed->password);
-  success &= PrepareUTF16OverrideComponent(
-      repl_source.host, repl_parsed.host,
-      utf8_buffer, &parsed->host);
-  success &= PrepareUTF16OverrideComponent(
-      repl_source.port, repl_parsed.port,
-      utf8_buffer, &parsed->port);
-  success &= PrepareUTF16OverrideComponent(
-      repl_source.path, repl_parsed.path,
-      utf8_buffer, &parsed->path);
-  success &= PrepareUTF16OverrideComponent(
-      repl_source.query, repl_parsed.query,
-      utf8_buffer, &parsed->query);
-  success &= PrepareUTF16OverrideComponent(
-      repl_source.ref, repl_parsed.ref,
-      utf8_buffer, &parsed->ref);
+      repl_source.scheme, repl_parsed.scheme, utf8_buffer, &parsed->scheme);
+  success &=
+      PrepareUTF16OverrideComponent(repl_source.username, repl_parsed.username,
+                                    utf8_buffer, &parsed->username);
+  success &=
+      PrepareUTF16OverrideComponent(repl_source.password, repl_parsed.password,
+                                    utf8_buffer, &parsed->password);
+  success &= PrepareUTF16OverrideComponent(repl_source.host, repl_parsed.host,
+                                           utf8_buffer, &parsed->host);
+  success &= PrepareUTF16OverrideComponent(repl_source.port, repl_parsed.port,
+                                           utf8_buffer, &parsed->port);
+  success &= PrepareUTF16OverrideComponent(repl_source.path, repl_parsed.path,
+                                           utf8_buffer, &parsed->path);
+  success &= PrepareUTF16OverrideComponent(repl_source.query, repl_parsed.query,
+                                           utf8_buffer, &parsed->query);
+  success &= PrepareUTF16OverrideComponent(repl_source.ref, repl_parsed.ref,
+                                           utf8_buffer, &parsed->ref);
 
   // PrepareUTF16OverrideComponent will not have set the data pointer since the
   // buffer could be resized, invalidating the pointers. We set the data
   // pointers for affected components now that the buffer is finalized.
-  if (repl_source.scheme)   source->scheme = utf8_buffer->data();
-  if (repl_source.username) source->username = utf8_buffer->data();
-  if (repl_source.password) source->password = utf8_buffer->data();
-  if (repl_source.host)     source->host = utf8_buffer->data();
-  if (repl_source.port)     source->port = utf8_buffer->data();
-  if (repl_source.path)     source->path = utf8_buffer->data();
-  if (repl_source.query)    source->query = utf8_buffer->data();
-  if (repl_source.ref)      source->ref = utf8_buffer->data();
+  if (repl_source.scheme)
+    source->scheme = utf8_buffer->data();
+  if (repl_source.username)
+    source->username = utf8_buffer->data();
+  if (repl_source.password)
+    source->password = utf8_buffer->data();
+  if (repl_source.host)
+    source->host = utf8_buffer->data();
+  if (repl_source.port)
+    source->port = utf8_buffer->data();
+  if (repl_source.path)
+    source->path = utf8_buffer->data();
+  if (repl_source.query)
+    source->query = utf8_buffer->data();
+  if (repl_source.ref)
+    source->ref = utf8_buffer->data();
 
   return success;
 }
