@@ -768,8 +768,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::Dict::FindString()`.
   const std::string* FindStringKey(StringPiece key) const;
   std::string* FindStringKey(StringPiece key);
-  // DEPRECATED: prefer `Value::Dict::FindBlob()`.
-  const BlobStorage* FindBlobKey(StringPiece key) const;
   // DEPRECATED: prefer `Value::Dict::FindDict()`.
   const Value* FindDictKey(StringPiece key) const;
   Value* FindDictKey(StringPiece key);
@@ -1363,9 +1361,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // otherwise.
   bool GetList(StringPiece path, const ListValue** out_value) const;
   bool GetList(StringPiece path, ListValue** out_value);
-
-  // Swaps contents with the `other` dictionary.
-  void Swap(DictionaryValue* other);
 };
 
 // This type of Value represents a list of other Value values.

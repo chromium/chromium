@@ -1120,10 +1120,6 @@ std::string* Value::FindStringKey(StringPiece key) {
   return GetDict().FindString(key);
 }
 
-const Value::BlobStorage* Value::FindBlobKey(StringPiece key) const {
-  return GetDict().FindBlob(key);
-}
-
 const Value* Value::FindDictKey(StringPiece key) const {
   return FindKeyOfType(key, Type::DICTIONARY);
 }
@@ -1761,11 +1757,6 @@ bool DictionaryValue::GetList(StringPiece path,
 bool DictionaryValue::GetList(StringPiece path, ListValue** out_value) {
   return std::as_const(*this).GetList(path,
                                       const_cast<const ListValue**>(out_value));
-}
-
-void DictionaryValue::Swap(DictionaryValue* other) {
-  CHECK(other->is_dict());
-  dict().swap(other->dict());
 }
 
 ///////////////////// ListValue ////////////////////
