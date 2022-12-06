@@ -24,6 +24,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/client_info.h"
@@ -777,13 +778,14 @@ TEST_F(VariationsServiceTest, LoadPermanentConsistencyCountry) {
     if (!test.permanent_consistency_country_before) {
       prefs_.ClearPref(prefs::kVariationsPermanentConsistencyCountry);
     } else {
-      base::ListValue list_value;
+      base::Value::List list_value;
       for (const std::string& component :
            base::SplitString(test.permanent_consistency_country_before, ",",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
         list_value.Append(component);
       }
-      prefs_.Set(prefs::kVariationsPermanentConsistencyCountry, list_value);
+      prefs_.SetList(prefs::kVariationsPermanentConsistencyCountry,
+                     std::move(list_value));
     }
 
     VariationsSeed seed(CreateTestSeed());
@@ -846,13 +848,14 @@ TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
     if (test.permanent_consistency_country_before.empty()) {
       prefs_.ClearPref(prefs::kVariationsPermanentConsistencyCountry);
     } else {
-      base::ListValue list_value;
+      base::Value::List list_value;
       for (const std::string& component :
            base::SplitString(test.permanent_consistency_country_before, ",",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
         list_value.Append(component);
       }
-      prefs_.Set(prefs::kVariationsPermanentConsistencyCountry, list_value);
+      prefs_.SetList(prefs::kVariationsPermanentConsistencyCountry,
+                     std::move(list_value));
     }
 
     VariationsSeed seed(CreateTestSeed());
