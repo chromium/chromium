@@ -151,6 +151,8 @@ source_set("common") {
     "dom_storage/session_storage_namespace_id.cc",
     "features.cc",
     "fenced_frame/fenced_frame_utils.cc",
+    "fenced_frame/redacted_fenced_frame_config.cc",
+    "fenced_frame/redacted_fenced_frame_config_mojom_traits.cc",
     "fetch/fetch_api_request_body_mojom_traits.cc",
     "frame/frame_ad_evidence.cc",
     "frame/frame_ad_evidence_mojom_traits.cc",

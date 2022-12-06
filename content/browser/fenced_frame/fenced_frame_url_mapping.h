@@ -14,9 +14,9 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -24,14 +24,6 @@ namespace content {
 
 class FencedFrameURLMappingTestPeer;
 
-extern const char kURNUUIDprefix[];
-
-struct AdAuctionData {
-  url::Origin interest_group_owner;
-  std::string interest_group_name;
-};
-
-using ReportingMetadata = blink::mojom::FencedFrameReporting;
 using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
 
 // Keeps a mapping of fenced frames URN:UUID and URL. Also keeps a set of
@@ -39,17 +31,6 @@ using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
 // https://github.com/WICG/fenced-frame/blob/master/explainer/opaque_src.md
 class CONTENT_EXPORT FencedFrameURLMapping {
  public:
-  // The metadata for the shared storage runURLSelectionOperation's budget,
-  // which includes the shared storage's origin and the amount of budget to
-  // charge when a fenced frame that originates from the URN is navigating a top
-  // frame. Before the fenced frame results in a top navigation, this
-  // `SharedStorageBudgetMetadata` will be stored/associated with the URN inside
-  // the `FencedFrameURLMapping`.
-  struct CONTENT_EXPORT SharedStorageBudgetMetadata {
-    url::Origin origin;
-    mutable double budget_to_charge = 0;
-  };
-
   // The runURLSelectionOperation's url mapping result. It contains the mapped
   // url and the `SharedStorageBudgetMetadata`.
   struct CONTENT_EXPORT SharedStorageURNMappingResult {
@@ -61,165 +42,6 @@ class CONTENT_EXPORT FencedFrameURLMapping {
                                   SharedStorageBudgetMetadata budget_metadata,
                                   SharedStorageReportingMap reporting_map);
     ~SharedStorageURNMappingResult();
-  };
-
- private:
-  // Contains the fenced frame configuration a particular URN is mapped to.
-  // This specifies how to generate a set of `FencedFrameProperties` to install
-  // at navigation commit time.
-  // Most properties are copied over directly from the configuration, but some
-  // require some additional processing (e.g. `ad_component_configs`).
-  struct MapInfo {
-    MapInfo();
-    explicit MapInfo(const GURL& url);
-    MapInfo(const GURL& url,
-            const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
-            const ReportingMetadata& reporting_metadata = ReportingMetadata());
-    MapInfo(const MapInfo&);
-    MapInfo(MapInfo&&);
-    ~MapInfo();
-
-    MapInfo& operator=(const MapInfo&);
-    MapInfo& operator=(MapInfo&&);
-
-    GURL mapped_url;
-
-    // Extra data set if `mapped_url` is the result of a FLEDGE auction. Used
-    // to fill in `AdAuctionDocumentData` for the fenced frame that navigates
-    // to `mapped_url`.
-    absl::optional<AdAuctionData> ad_auction_data;
-
-    // Should be invoked whenever the URN is navigated to.
-    base::RepeatingClosure on_navigate_callback;
-
-    // Configurations for nested ad components.
-    // Currently only used by FLEDGE.
-    // When a fenced frame loads this configuration, these component
-    // configurations will be mapped to URNs themselves, and those URNs will be
-    // provided to the fenced frame for use in nested fenced frames.
-    absl::optional<std::vector<MapInfo>> ad_component_configs;
-
-    // Contains the metadata needed for shared storage budget charging. Will be
-    // initialized to absl::nullopt if the associated URN is not generated from
-    // shared storage. Its `budget_to_charge` can be updated to 0 when the
-    // budget is charged.
-    absl::optional<SharedStorageBudgetMetadata> shared_storage_budget_metadata;
-
-    // If reporting events from fenced frames are registered, then this
-    // information gets filled here.
-    ReportingMetadata reporting_metadata;
-  };
-
- public:
-  // When the result of an ad auction is a main ad URL with a set of ad
-  // component URLs (instead of just a single ad URL), a URN that maps to the
-  // main ad URL needs to be loaded in a (parent) fenced frame, and then that
-  // frame needs to have access to a new list of URNs, one for each ad component
-  // URL, which it can then load in its own child fenced frames.
-  //
-  // To do this, the parent fenced frame needs two things, on commit:
-  // 1) A list of URNs for the ad components, provided to the parent fenced
-  //     frame via a Javascript API.
-  // 2) Its URN to URL mapping needs to be updated to map those URNs to the ad
-  //     component URLs returned by the auction.
-  //
-  // This class has functions that do both of these. GetURNs() returns the list
-  // of URNs that need to be provided to the parent fenced frame so they are
-  // accessible by the frame's scripts, and AddToMapping(), when invoked on the
-  // parent fenced frame's FencedFrameURLMapping (not that of the frame that
-  // actually ran the auction) adds those URNs and their corresponding URLs to
-  // that mapping.
-  class CONTENT_EXPORT PendingAdComponentsMap {
-   public:
-    PendingAdComponentsMap(const PendingAdComponentsMap&);
-    PendingAdComponentsMap(PendingAdComponentsMap&&);
-
-    ~PendingAdComponentsMap();
-
-    PendingAdComponentsMap& operator=(const PendingAdComponentsMap&);
-    PendingAdComponentsMap& operator=(PendingAdComponentsMap&&);
-
-    // Returns the ordered list of URNs in this map.
-    std::vector<GURL> GetURNs() const;
-
-    // Exports URN to URL mappings to the passed in mapping. Generally only
-    // called once per PendingAdComponentsMap, on the mapping associated with a
-    // frame being navigated to a URN. Calling this twice with the
-    // PendingAdComponentsMap on the same FencedFrameURLMapping will assert,
-    // since it will result in adding the same URNs twice to the same mapping.
-    void ExportToMapping(FencedFrameURLMapping& mapping) const;
-
-   private:
-    friend class FencedFrameURLMapping;
-
-    // Contains an ad component URN and the configuration it maps to.
-    struct AdComponent {
-      GURL urn;
-      MapInfo config;
-    };
-
-    explicit PendingAdComponentsMap(
-        const std::vector<MapInfo>& ad_component_configs);
-
-    std::vector<AdComponent> component_ads_;
-  };
-
-  // Contains a set of fenced frame properties. These are generated at
-  // urn:uuid navigation time according to a fenced frame configuration,
-  // specified by `MapInfo` above.
-  // Most of these are copied from `MapInfo` directly, but some are generated
-  // by another transformation, e.g.:
-  // * We generate urns for the configs in `ad_component_configs` and store
-  //   them in `pending_ad_components_map`.
-  // * We generate a pointer to `shared_storage_budget_metadata` and store it in
-  //   `shared_storage_budget_metadata`, because it should only take effect once
-  //   across all fenced frames navigated to a particular configuration.
-  // These `FencedFrameProperties` are stored in the fenced frame root
-  // `FrameTreeNode`, and live between embedder-initiated fenced frame
-  // navigations.
-  struct CONTENT_EXPORT FencedFrameProperties {
-    // The empty constructor is used for:
-    // * pre-navigation fenced frames
-    // * embedder-initiated non-opaque url navigations
-    // All fields are empty, except a randomly generated partition nonce.
-    FencedFrameProperties();
-
-    // For opaque url navigations, the properties should be constructed from
-    // a `MapInfo` that was previously created.
-    explicit FencedFrameProperties(const MapInfo& map_info);
-    FencedFrameProperties(const FencedFrameProperties&);
-    FencedFrameProperties(FencedFrameProperties&&);
-    ~FencedFrameProperties();
-
-    FencedFrameProperties& operator=(const FencedFrameProperties&);
-    FencedFrameProperties& operator=(FencedFrameProperties&&);
-
-    GURL mapped_url;
-
-    absl::optional<AdAuctionData> ad_auction_data;
-
-    // Should be invoked when `mapped_url` is navigated to via the passed in
-    // URN.
-    base::RepeatingClosure on_navigate_callback;
-
-    // urn/url mappings for ad components. These are inserted into the
-    // fenced frame page's urn/url mapping when the urn navigation commits.
-    absl::optional<PendingAdComponentsMap> pending_ad_components_map;
-
-    // The pointer to the outer document page's FencedFrameURLMapping is copied
-    // into the fenced frame root's FrameTreeNode. This is safe because a page
-    // will outlive any NavigationRequest occurring in fenced frames in the
-    // page.
-    //
-    // The metadata can be on fenced frame roots, and if `kAllowURNsInIframes`
-    // is enabled, it can also be on any node except for the main frame node in
-    // the outermost frame tree.
-    absl::optional<raw_ptr<const SharedStorageBudgetMetadata>>
-        shared_storage_budget_metadata;
-
-    ReportingMetadata reporting_metadata;
-
-    absl::optional<base::UnguessableToken> partition_nonce;
   };
 
   class MappingResultObserver {
@@ -238,6 +60,14 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   ~FencedFrameURLMapping();
   FencedFrameURLMapping(FencedFrameURLMapping&) = delete;
   FencedFrameURLMapping& operator=(FencedFrameURLMapping&) = delete;
+
+  // Imports URN to URL mappings from passed in mapping. Generally only called
+  // once per PendingAdComponentsMap, on the mapping associated with a frame
+  // being navigated to a URN. Calling this twice with the same
+  // PendingAdComponentsMap on the same FencedFrameURLMapping will assert,
+  // since it will result in adding the same URNs twice to the same mapping.
+  void ImportPendingAdComponents(
+      const std::vector<std::pair<GURL, FencedFrameConfig>>& components);
 
   // Adds a mapping for |url| to a URN:UUID that will be generated by this
   // function. Should only be invoked with a valid URL which is one of the
@@ -332,7 +162,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
  private:
   friend class FencedFrameURLMappingTestPeer;
 
-  using UrnUuidToUrlMap = std::map<GURL, MapInfo>;
+  using UrnUuidToUrlMap = std::map<GURL, FencedFrameConfig>;
 
   // The maximum number of urn mappings.
   static constexpr size_t kMaxUrnMappingSize = 65536;

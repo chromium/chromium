@@ -1,0 +1,124 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// See `content/browser/fenced_frame/fenced_frame_config.h` for a high-level
+// description of the FencedFrameConfig information flow.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom";
+import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
+
+// In order to represent that a value exists in a different process but is
+// hidden from this process, we use a union of a type T and this singleton enum
+// `Opaque`. (This is used by a more privileged process to censor information
+// that is being sent to a less privileged process, based on fenced
+// frame-specific privacy policies.
+enum Opaque {
+  kOpaque
+};
+
+union PotentiallyOpaqueURL {
+  url.mojom.Url transparent;
+  Opaque opaque;
+};
+
+struct AdAuctionData {
+  url.mojom.Origin interest_group_owner;
+  string interest_group_name;
+};
+
+union PotentiallyOpaqueAdAuctionData {
+  AdAuctionData transparent;
+  Opaque opaque;
+};
+
+union PotentiallyOpaqueConfigVector {
+  array<FencedFrameConfig> transparent;
+  Opaque opaque;
+};
+
+struct URNConfigPair {
+  url.mojom.Url urn;
+  FencedFrameConfig config;
+};
+
+union PotentiallyOpaqueURNConfigVector {
+  array<URNConfigPair> transparent;
+  Opaque opaque;
+};
+
+struct SharedStorageBudgetMetadata {
+  url.mojom.Origin origin;
+  double budget_to_charge;
+};
+
+union PotentiallyOpaqueSharedStorageBudgetMetadata {
+  SharedStorageBudgetMetadata transparent;
+  Opaque opaque;
+};
+
+union PotentiallyOpaqueReportingMetadata {
+  FencedFrameReporting transparent;
+  Opaque opaque;
+};
+
+// The `FencedFrameConfig` struct is used to transfer a redacted version
+// (`blink::RedactedFencedFrameConfig`) of `content::FencedFrameConfig` across
+// processes. In brief, this is a collection of properties that the browser
+// process exposes to an embedder that may wish to load into a fenced frame.
+// The config will determine the fenced frame's behavior, but it may have
+// certain fields redacted (marked as opaque) in order to preserve privacy.
+// For example:
+// * This object is returned to the caller of APIs that use fenced frames,
+//   so that they can inspect the (unredacted) information inside and then
+//   load it into a fenced frame.
+// * When nested frames are declared in the above APIs, the top-level
+//   frame will be given access to these objects in order to load the nested
+//   configs.
+struct FencedFrameConfig {
+  PotentiallyOpaqueURL? mapped_url;
+
+  PotentiallyOpaqueAdAuctionData? ad_auction_data;
+
+  PotentiallyOpaqueConfigVector? nested_configs;
+
+  PotentiallyOpaqueSharedStorageBudgetMetadata? shared_storage_budget_metadata;
+
+  PotentiallyOpaqueReportingMetadata? reporting_metadata;
+};
+
+// The `FencedFrameProperties` struct is used to transfer a redacted version
+// (`blink::RedactedFencedFrameProperties`) of `content::FencedFrameProperties`
+// across processes. In brief, this is a collection of properties that is being
+// or has already been loaded into a fenced frame and determines its behavior,
+// but may have certain fields redacted (marked as opaque) in order to preserve
+// privacy.
+// For example:
+// * When a `FencedFrameConfig` (see above) is loaded into a fenced frame, a
+//   `FencedFrameProperties` object is generated from the config and is
+//   sent to the fenced frame's renderer upon navigation commit. These
+//   properties are used to determine availability of certain APIs, store
+//   nested configs, etc.
+struct FencedFrameProperties {
+  PotentiallyOpaqueURL? mapped_url;
+
+  PotentiallyOpaqueAdAuctionData? ad_auction_data;
+
+  // If this is a navigation to the result of an InterestGroup auction, this
+  // is a list of URNs that map to auction component URLs. Null, otherwise.
+  // When non-null, always contains exactly kMaxAdAuctionAdComponents=20 URNs
+  // to avoid use as a data sidechannel between auction worklets and the
+  // fenced frames their results are loaded in.
+  PotentiallyOpaqueURNConfigVector? nested_urn_config_pairs;
+
+  PotentiallyOpaqueSharedStorageBudgetMetadata? shared_storage_budget_metadata;
+
+  // If this is an "opaque-ads" mode fenced frame, there might be an associated
+  // reporting metadata. This is a map from destination type to reporting
+  // metadata which in turn is a map from the event type to the reporting url.
+  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
+  PotentiallyOpaqueReportingMetadata? reporting_metadata;
+};

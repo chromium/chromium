@@ -17,8 +17,8 @@ import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
-import "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
+import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
@@ -457,22 +457,6 @@ struct CommitNavigationParams {
 
   array<url.mojom.Url> early_hints_preloaded_resources;
 
-  // If this is a navigation to the result of an InterestGroup auction, this
-  // is a list of URNs that map to auction component URLs. Null, otherwise.
-  // When non-null, always contains exactly kMaxAdAuctionAdComponents=20 URNs
-  // to avoid use as a data sidechannel between auction worklets and the
-  // fenced frames their results are loaded in.
-  //
-  // Mojo doesn't allow using symbolic constants as array lengths, so hard-code
-  // the length here directly.
-  array<url.mojom.Url, 20>? ad_auction_components;
-
-  // If this is an "opaque-ads" mode fenced frame, there might be an associated
-  // reporting metadata. This is a map from destination type to reporting
-  // metadata which in turn is a map from the event type to the reporting url.
-  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  FencedFrameReporting? fenced_frame_reporting_metadata;
-
   // The time the commit was sent from the browser.
   mojo_base.mojom.TimeTicks commit_sent;
 
@@ -535,4 +519,9 @@ struct CommitNavigationParams {
   // their new enabled/disabled status:
   // <enum_representing_runtime_enabled_feature, enabled/disabled>
   map<blink.mojom.RuntimeFeatureState, bool> modified_runtime_features;
+
+  // A collection of properties that determines the behavior of a fenced frame.
+  // Only non-null for embedder-initiated navigations of a fenced frame root,
+  // and urn navigations in iframes while they're supported.
+  FencedFrameProperties? fenced_frame_properties;
 };

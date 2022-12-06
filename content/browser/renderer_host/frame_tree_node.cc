@@ -854,7 +854,7 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
   return fenced_frame_status_ != FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
-const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
+const absl::optional<FencedFrameProperties>&
 FrameTreeNode::GetFencedFrameProperties() {
   if (!IsInFencedFrameTree()) {
     // If we might be in a urn iframe, try to find the "urn iframe root"
@@ -903,7 +903,15 @@ absl::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
   if (!root_fenced_frame_properties.has_value()) {
     return absl::nullopt;
   }
-  return root_fenced_frame_properties->partition_nonce;
+  if (root_fenced_frame_properties->partition_nonce_.has_value()) {
+    return root_fenced_frame_properties->partition_nonce_
+        ->GetValueIgnoringVisibility();
+  }
+  // It is only possible for there to be `FencedFrameProperties` but no
+  // partition nonce in urn iframes (when not nested inside a fenced frame).
+  CHECK(blink::features::IsAllowURNsInIframeEnabled());
+  CHECK(!IsInFencedFrameTree());
+  return absl::nullopt;
 }
 
 void FrameTreeNode::SetFencedFramePropertiesIfNeeded() {
@@ -913,7 +921,7 @@ void FrameTreeNode::SetFencedFramePropertiesIfNeeded() {
 
   // The fenced frame properties are set only on the fenced frame root.
   // In the future, they will be set on the FrameTree instead.
-  fenced_frame_properties_ = FencedFrameURLMapping::FencedFrameProperties();
+  fenced_frame_properties_ = FencedFrameProperties();
 }
 
 absl::optional<blink::mojom::FencedFrameMode>
@@ -944,23 +952,24 @@ void FrameTreeNode::SetSrcdocValue(const std::string& srcdoc_value) {
   srcdoc_value_ = srcdoc_value;
 }
 
-std::vector<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
+std::vector<const SharedStorageBudgetMetadata*>
 FrameTreeNode::FindSharedStorageBudgetMetadata() {
-  std::vector<const FencedFrameURLMapping::SharedStorageBudgetMetadata*> result;
+  std::vector<const SharedStorageBudgetMetadata*> result;
   FrameTreeNode* node = this;
 
   while (true) {
     if (node->fenced_frame_properties_ &&
-        node->fenced_frame_properties_->shared_storage_budget_metadata) {
-      result.emplace_back(node->fenced_frame_properties_
-                              ->shared_storage_budget_metadata.value());
+        node->fenced_frame_properties_->shared_storage_budget_metadata_) {
+      result.emplace_back(
+          node->fenced_frame_properties_->shared_storage_budget_metadata_
+              ->GetValueIgnoringVisibility());
     }
 
-    if (node->GetParentOrOuterDocument()) {
-      node = node->GetParentOrOuterDocument()->frame_tree_node();
-    } else {
+    if (!node->GetParentOrOuterDocument()) {
       break;
     }
+
+    node = node->GetParentOrOuterDocument()->frame_tree_node();
   }
 
   return result;

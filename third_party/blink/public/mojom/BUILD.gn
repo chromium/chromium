@@ -1110,6 +1110,7 @@ mojom("mojom_core") {
 
     # Depends on frame_policy.mojom.
     "fenced_frame/fenced_frame.mojom",
+    "fenced_frame/fenced_frame_config.mojom",
     "navigation/navigation_params.mojom",
 
     # Depends on transferable_message.mojom.
@@ -1251,6 +1252,20 @@ mojom("mojom_core") {
         "//third_party/blink/public/common/messaging/transferable_message.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/messaging/transferable_message_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.FencedFrameConfig"
+          cpp = "::blink::FencedFrame::RedactedFencedFrameConfig"
+        },
+        {
+          mojom = "blink.mojom.FencedFrameProperties"
+          cpp = "::blink::FencedFrame::RedactedFencedFrameProperties"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h" ]
+      traits_public_deps = [ "//third_party/blink/public/common:headers" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps

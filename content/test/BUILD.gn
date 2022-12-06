@@ -2215,6 +2215,7 @@ test("content_unittests") {
     "../browser/download/save_package_unittest.cc",
     "../browser/fenced_frame/fenced_frame_unittest.cc",
     "../browser/fenced_frame/fenced_frame_url_mapping_unittest.cc",
+    "../browser/fenced_frame/redacted_fenced_frame_config_mojom_traits_unittest.cc",
     "../browser/file_system/browser_file_system_helper_unittest.cc",
     "../browser/file_system/file_system_operation_runner_unittest.cc",
     "../browser/file_system_access/file_system_access_capacity_allocation_host_impl_unittest.cc",

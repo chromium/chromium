@@ -28,7 +28,7 @@ void SimulateSharedStorageURNMappingComplete(
     double budget_to_charge,
     const std::string& report_event,
     const GURL& report_url) {
-  FencedFrameURLMapping::SharedStorageBudgetMetadata budget_metadata = {
+  SharedStorageBudgetMetadata budget_metadata = {
       .origin = shared_storage_origin, .budget_to_charge = budget_to_charge};
 
   SharedStorageReportingMap reporting_map(
@@ -46,21 +46,9 @@ TestFencedFrameURLMappingResultObserver::
     ~TestFencedFrameURLMappingResultObserver() = default;
 
 void TestFencedFrameURLMappingResultObserver::OnFencedFrameURLMappingComplete(
-    const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
-        properties) {
+    const absl::optional<FencedFrameProperties>& properties) {
   mapping_complete_observed_ = true;
-  fenced_frame_properties_ = properties;
-  if (properties) {
-    mapped_url_ = properties->mapped_url;
-    ad_auction_data_ = properties->ad_auction_data;
-    pending_ad_components_map_ = properties->pending_ad_components_map;
-    reporting_metadata_ = properties->reporting_metadata;
-  } else {
-    mapped_url_ = absl::nullopt;
-    ad_auction_data_ = absl::nullopt;
-    pending_ad_components_map_ = absl::nullopt;
-    reporting_metadata_ = ReportingMetadata();
-  }
+  observed_fenced_frame_properties_ = properties;
 }
 
 bool FencedFrameURLMappingTestPeer::HasObserver(
@@ -79,13 +67,17 @@ void FencedFrameURLMappingTestPeer::GetSharedStorageReportingMap(
   auto urn_it = fenced_frame_url_mapping_->urn_uuid_to_url_map_.find(urn_uuid);
   DCHECK(urn_it != fenced_frame_url_mapping_->urn_uuid_to_url_map_.end());
 
-  if (urn_it->second.reporting_metadata.metadata.empty())
+  if (!urn_it->second.reporting_metadata_.has_value())
     return;
 
-  auto data_it = urn_it->second.reporting_metadata.metadata.find(
-      blink::mojom::ReportingDestination::kSharedStorageSelectUrl);
+  auto data_it =
+      urn_it->second.reporting_metadata_->GetValueIgnoringVisibility()
+          .metadata.find(
+              blink::mojom::ReportingDestination::kSharedStorageSelectUrl);
 
-  if (data_it != urn_it->second.reporting_metadata.metadata.end())
+  if (data_it !=
+      urn_it->second.reporting_metadata_->GetValueIgnoringVisibility()
+          .metadata.end())
     *out_reporting_map = data_it->second;
 }
 

@@ -967,14 +967,21 @@ class CONTENT_EXPORT NavigationRequest
     return prerender_frame_tree_node_id_.value();
   }
 
-  // TODO(crbug.com/1347953): Replace this function with
-  // NavigationRequest::ComputeFencedFrameProperties(), which falls back to
-  // frame_tree_node_->GetFencedFrameProperties() when the NavigationRequest
-  // itself doesn't have any properties.
-  const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
-  fenced_frame_properties() const {
+  // Return the `FencedFrameProperties` attached to this `NavigationRequest`,
+  // if present. This will only return a non-null value during
+  // embedder-initiated fenced frame navigations of a fenced frame root (or
+  // urn iframe).
+  const absl::optional<FencedFrameProperties>& GetFencedFrameProperties()
+      const {
     return fenced_frame_properties_;
   }
+
+  // Compute and return the `FencedFrameProperties` that this
+  // `NavigationRequest` acts under, i.e. the properties attached to this
+  // `NavigationRequest` if present, or the properties attached to the fenced
+  // frame root (if present) otherwise.
+  const absl::optional<FencedFrameProperties>& ComputeFencedFrameProperties()
+      const;
 
   const absl::optional<base::UnguessableToken> ComputeFencedFrameNonce() const;
 
@@ -1106,8 +1113,7 @@ class CONTENT_EXPORT NavigationRequest
   // Called from `FencedFrameURLMapping` when the mapping decision is made, and
   // resume the deferred navigation.
   void OnFencedFrameURLMappingComplete(
-      const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
-          properties) override;
+      const absl::optional<FencedFrameProperties>& properties) override;
 
   // Called from BeginNavigation(), OnPrerenderingActivationChecksComplete(),
   // or OnFencedFrameURLMappingComplete().
@@ -2215,8 +2221,7 @@ class CONTENT_EXPORT NavigationRequest
   //
   // If the navigation doesn't commit (e.g. an HTTP 204 response), the fenced
   // frame properties will not be stored in the fenced frame root.
-  absl::optional<FencedFrameURLMapping::FencedFrameProperties>
-      fenced_frame_properties_;
+  absl::optional<FencedFrameProperties> fenced_frame_properties_;
 
   // Prerender2:
   // The type to trigger prerendering. The value is valid only when Prerender2

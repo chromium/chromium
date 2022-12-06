@@ -645,15 +645,15 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
         .ToString();
   }
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata*
-  GetSharedStorageBudgetMetadata(const GURL& urn_uuid) {
+  SharedStorageBudgetMetadata* GetSharedStorageBudgetMetadata(
+      const GURL& urn_uuid) {
     FencedFrameURLMapping& fenced_frame_url_mapping =
         PrimaryFrameTreeNodeRoot()
             ->current_frame_host()
             ->GetPage()
             .fenced_frame_urls_map();
 
-    FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+    SharedStorageBudgetMetadata* metadata =
         fenced_frame_url_mapping.GetSharedStorageBudgetMetadata(GURL(urn_uuid));
 
     return metadata;
@@ -1700,7 +1700,7 @@ IN_PROC_BROWSER_TEST_F(
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+  SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
@@ -1772,7 +1772,7 @@ IN_PROC_BROWSER_TEST_F(
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+  SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
@@ -1843,7 +1843,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+  SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("b.test"));
@@ -1911,7 +1911,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+  SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
@@ -2645,7 +2645,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+  SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
@@ -2782,7 +2782,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
   observer.Wait();
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+  SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
@@ -2928,7 +2928,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
   observer.Wait();
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+  SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
@@ -2984,7 +2984,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       "Promise resolved to a number outside the length of the input urls.",
       base::UTF16ToUTF8(console_observer.messages().back().message));
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+  SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
@@ -3057,7 +3057,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
 
-  FencedFrameURLMapping::SharedStorageBudgetMetadata* metadata =
+  SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));

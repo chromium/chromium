@@ -1050,7 +1050,13 @@ void FrameLoader::CommitNavigation(
   if (is_requestor_same_origin) {
     const mojom::blink::FencedFrameReportingPtr& old_fenced_frame_reporting =
         document_loader_->FencedFrameReporting();
-    DCHECK(!navigation_params->fenced_frame_reporting);
+    // In urn iframes, embedder-initiated navigations may be same-origin, so
+    // this isn't true.
+    if (navigation_params->fenced_frame_reporting) {
+      DCHECK(!frame_->IsFencedFrameRoot() &&
+             blink::features::IsAllowURNsInIframeEnabled());
+    }
+
     if (!navigation_params->fenced_frame_reporting &&
         old_fenced_frame_reporting) {
       navigation_params->fenced_frame_reporting.emplace();

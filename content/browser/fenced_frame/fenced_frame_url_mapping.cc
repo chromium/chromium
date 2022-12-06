@@ -23,13 +23,6 @@ namespace content {
 
 namespace {
 
-const char kURNUUIDprefix[] = "urn:uuid:";
-
-GURL GenerateURN() {
-  return GURL(kURNUUIDprefix +
-              base::GUID::GenerateRandomV4().AsLowercaseString());
-}
-
 // Returns a new string based on input where the matching substrings have been
 // replaced with the corresponding substitutions. This function avoids repeated
 // string operations by building the output based on all substitutions, one
@@ -64,6 +57,9 @@ std::string SubstituteMappedStrings(
 
 }  // namespace
 
+FencedFrameURLMapping::FencedFrameURLMapping() = default;
+FencedFrameURLMapping::~FencedFrameURLMapping() = default;
+
 FencedFrameURLMapping::SharedStorageURNMappingResult::
     SharedStorageURNMappingResult() = default;
 
@@ -78,125 +74,19 @@ FencedFrameURLMapping::SharedStorageURNMappingResult::
 FencedFrameURLMapping::SharedStorageURNMappingResult::
     ~SharedStorageURNMappingResult() = default;
 
-FencedFrameURLMapping::PendingAdComponentsMap::PendingAdComponentsMap(
-    const PendingAdComponentsMap&) = default;
-
-FencedFrameURLMapping::PendingAdComponentsMap::PendingAdComponentsMap(
-    PendingAdComponentsMap&&) = default;
-
-FencedFrameURLMapping::PendingAdComponentsMap::~PendingAdComponentsMap() =
-    default;
-
-FencedFrameURLMapping::PendingAdComponentsMap&
-FencedFrameURLMapping::PendingAdComponentsMap::operator=(
-    const PendingAdComponentsMap&) = default;
-
-FencedFrameURLMapping::PendingAdComponentsMap&
-FencedFrameURLMapping::PendingAdComponentsMap::operator=(
-    PendingAdComponentsMap&&) = default;
-
-std::vector<GURL> FencedFrameURLMapping::PendingAdComponentsMap::GetURNs()
-    const {
-  std::vector<GURL> urns;
-  for (const auto& component_ad : component_ads_) {
-    urns.push_back(component_ad.urn);
-  }
-  return urns;
-}
-
-void FencedFrameURLMapping::PendingAdComponentsMap::ExportToMapping(
-    FencedFrameURLMapping& mapping) const {
-  for (const auto& component_ad : component_ads_) {
-    DCHECK(!mapping.IsMapped(component_ad.urn));
+void FencedFrameURLMapping::ImportPendingAdComponents(
+    const std::vector<std::pair<GURL, FencedFrameConfig>>& components) {
+  for (const auto& component_ad : components) {
+    DCHECK(!IsMapped(component_ad.first));
 
     UrnUuidToUrlMap::iterator it =
-        mapping.urn_uuid_to_url_map_
-            .emplace(component_ad.urn, component_ad.config)
+        urn_uuid_to_url_map_.emplace(component_ad.first, component_ad.second)
             .first;
-    it->second.ad_component_configs.emplace();
+    it->second.nested_configs_.emplace(std::vector<FencedFrameConfig>(),
+                                       VisibilityToEmbedder::kTransparent,
+                                       VisibilityToContent::kTransparent);
   }
 }
-
-FencedFrameURLMapping::PendingAdComponentsMap::PendingAdComponentsMap(
-    const std::vector<MapInfo>& ad_component_configs) {
-  DCHECK_LE(ad_component_configs.size(), blink::kMaxAdAuctionAdComponents);
-  for (const MapInfo& config : ad_component_configs) {
-    component_ads_.emplace_back(
-        AdComponent{/*urn=*/GenerateURN(), /*config=*/config});
-  }
-
-  // Pad `component_ads_` to contain exactly kMaxAdAuctionAdComponents ads, to
-  // avoid leaking any data to the fenced frame the component ads array is
-  // exposed to.
-  while (component_ads_.size() < blink::kMaxAdAuctionAdComponents) {
-    component_ads_.emplace_back(AdComponent{
-        /*urn=*/GenerateURN(), /*config=*/MapInfo(GURL(url::kAboutBlankURL))});
-  }
-}
-
-FencedFrameURLMapping::MapInfo::MapInfo() = default;
-
-FencedFrameURLMapping::MapInfo::MapInfo(const GURL& mapped_url)
-    : mapped_url(mapped_url) {}
-
-FencedFrameURLMapping::MapInfo::MapInfo(
-    const GURL& mapped_url,
-    const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
-    const ReportingMetadata& reporting_metadata)
-    : mapped_url(mapped_url),
-      shared_storage_budget_metadata(shared_storage_budget_metadata),
-      reporting_metadata(reporting_metadata) {}
-
-FencedFrameURLMapping::MapInfo::MapInfo(const MapInfo&) = default;
-FencedFrameURLMapping::MapInfo::MapInfo(MapInfo&&) = default;
-FencedFrameURLMapping::MapInfo::~MapInfo() = default;
-
-FencedFrameURLMapping::MapInfo& FencedFrameURLMapping::MapInfo::operator=(
-    const MapInfo&) = default;
-FencedFrameURLMapping::MapInfo& FencedFrameURLMapping::MapInfo::operator=(
-    MapInfo&&) = default;
-
-FencedFrameURLMapping::FencedFrameProperties::FencedFrameProperties()
-    : ad_auction_data(absl::nullopt),
-      pending_ad_components_map(absl::nullopt),
-      shared_storage_budget_metadata(absl::nullopt),
-      partition_nonce(base::UnguessableToken::Create()) {}
-
-FencedFrameURLMapping::FencedFrameProperties::FencedFrameProperties(
-    const MapInfo& map_info)
-    : mapped_url(map_info.mapped_url),
-      ad_auction_data(map_info.ad_auction_data),
-      on_navigate_callback(map_info.on_navigate_callback),
-      pending_ad_components_map(absl::nullopt),
-      shared_storage_budget_metadata(absl::nullopt),
-      reporting_metadata(map_info.reporting_metadata),
-      partition_nonce(base::UnguessableToken::Create()) {
-  if (map_info.shared_storage_budget_metadata) {
-    shared_storage_budget_metadata =
-        &map_info.shared_storage_budget_metadata.value();
-  }
-  if (map_info.ad_component_configs) {
-    pending_ad_components_map =
-        PendingAdComponentsMap(*map_info.ad_component_configs);
-  }
-}
-
-FencedFrameURLMapping::FencedFrameProperties::FencedFrameProperties(
-    const FencedFrameProperties&) = default;
-FencedFrameURLMapping::FencedFrameProperties::FencedFrameProperties(
-    FencedFrameProperties&&) = default;
-FencedFrameURLMapping::FencedFrameProperties::~FencedFrameProperties() =
-    default;
-
-FencedFrameURLMapping::FencedFrameProperties&
-FencedFrameURLMapping::FencedFrameProperties::operator=(
-    const FencedFrameProperties&) = default;
-FencedFrameURLMapping::FencedFrameProperties&
-FencedFrameURLMapping::FencedFrameProperties::operator=(
-    FencedFrameProperties&&) = default;
-
-FencedFrameURLMapping::FencedFrameURLMapping() = default;
-FencedFrameURLMapping::~FencedFrameURLMapping() = default;
 
 absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURL(
     const GURL& url,
@@ -211,9 +101,11 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURL(
     return absl::nullopt;
   }
 
-  auto& [urn, map_info] = *it.value();
+  auto& [urn, config] = *it.value();
 
-  map_info.reporting_metadata = reporting_metadata;
+  config.reporting_metadata_.emplace(reporting_metadata,
+                                     VisibilityToEmbedder::kOpaque,
+                                     VisibilityToContent::kTransparent);
   return urn;
 }
 
@@ -225,10 +117,10 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
   }
 
   // Create a urn::uuid.
-  GURL urn_uuid = GenerateURN();
+  GURL urn_uuid = GenerateUrnUuid();
   DCHECK(!IsMapped(urn_uuid));
 
-  return urn_uuid_to_url_map_.emplace(urn_uuid, MapInfo(url)).first;
+  return urn_uuid_to_url_map_.emplace(urn_uuid, FencedFrameConfig(url)).first;
 }
 
 void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
@@ -244,23 +136,31 @@ void FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   pending_urn_uuid_to_url_map_.erase(pending_it);
 
   bool emplaced = false;
-  std::tie(std::ignore, emplaced) = urn_uuid_to_url_map_.emplace(urn_uuid, url);
+  std::tie(std::ignore, emplaced) =
+      urn_uuid_to_url_map_.emplace(urn_uuid, FencedFrameConfig());
   DCHECK(emplaced);
-  auto& map_info = urn_uuid_to_url_map_[urn_uuid];
+  auto& config = urn_uuid_to_url_map_[urn_uuid];
 
-  // The urn::uuid should be mapped to the given url.
-  DCHECK(map_info.mapped_url == url);
+  // Assign mapped URL and interest group info.
+  config.mapped_url_.emplace(url, VisibilityToEmbedder::kOpaque,
+                             VisibilityToContent::kTransparent);
+  config.ad_auction_data_.emplace(std::move(ad_auction_data),
+                                  VisibilityToEmbedder::kOpaque,
+                                  VisibilityToContent::kOpaque);
+  config.on_navigate_callback_ = std::move(on_navigate_callback);
 
-  // Assign interest group info.
-  map_info.ad_auction_data = std::move(ad_auction_data);
-  map_info.on_navigate_callback = std::move(on_navigate_callback);
-  std::vector<MapInfo> ad_component_configs;
-  ad_component_configs.reserve(ad_component_urls.size());
+  std::vector<FencedFrameConfig> nested_configs;
+  nested_configs.reserve(ad_component_urls.size());
   for (auto& ad_component_url : ad_component_urls) {
-    ad_component_configs.emplace_back(ad_component_url);
+    nested_configs.emplace_back(ad_component_url);
   }
-  map_info.ad_component_configs = std::move(ad_component_configs);
-  map_info.reporting_metadata = reporting_metadata;
+  config.nested_configs_.emplace(std::move(nested_configs),
+                                 VisibilityToEmbedder::kOpaque,
+                                 VisibilityToContent::kTransparent);
+
+  config.reporting_metadata_.emplace(reporting_metadata,
+                                     VisibilityToEmbedder::kOpaque,
+                                     VisibilityToContent::kTransparent);
 }
 
 absl::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
@@ -268,7 +168,7 @@ absl::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
     return absl::nullopt;
   }
 
-  GURL urn_uuid = GenerateURN();
+  GURL urn_uuid = GenerateUrnUuid();
   DCHECK(!IsMapped(urn_uuid));
   DCHECK(!IsPendingMapped(urn_uuid));
 
@@ -318,7 +218,7 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
 
   DCHECK(!IsMapped(urn_uuid));
 
-  absl::optional<MapInfo> config = absl::nullopt;
+  absl::optional<FencedFrameConfig> config = absl::nullopt;
 
   // Only if the resolved URL is fenced-frame-compatible do we:
   //   1.) Add it to `urn_uuid_to_url_map_`
@@ -335,8 +235,9 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
             std::move(mapping_result.reporting_map);
     reporting_metadata = ReportingMetadata(std::move(reporting_metadata_map));
 
-    config = MapInfo(mapping_result.mapped_url, mapping_result.budget_metadata,
-                     reporting_metadata);
+    config =
+        FencedFrameConfig(mapping_result.mapped_url,
+                          mapping_result.budget_metadata, reporting_metadata);
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);
   }
 
@@ -355,15 +256,15 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
   pending_urn_uuid_to_url_map_.erase(pending_it);
 }
 
-FencedFrameURLMapping::SharedStorageBudgetMetadata*
+SharedStorageBudgetMetadata*
 FencedFrameURLMapping::GetSharedStorageBudgetMetadata(const GURL& urn_uuid) {
   auto it = urn_uuid_to_url_map_.find(urn_uuid);
   DCHECK(it != urn_uuid_to_url_map_.end());
 
-  if (!it->second.shared_storage_budget_metadata)
+  if (!it->second.shared_storage_budget_metadata_)
     return nullptr;
 
-  return &it->second.shared_storage_budget_metadata.value();
+  return &it->second.shared_storage_budget_metadata_->value_;
 }
 
 void FencedFrameURLMapping::SubstituteMappedURL(
@@ -373,20 +274,25 @@ void FencedFrameURLMapping::SubstituteMappedURL(
   if (it == urn_uuid_to_url_map_.end()) {
     return;
   }
-  MapInfo info = it->second;
-  info.mapped_url = GURL(
-      SubstituteMappedStrings(it->second.mapped_url.spec(), substitutions));
-  if (!info.mapped_url.is_valid()) {
-    return;
+  FencedFrameConfig info = it->second;
+  if (info.mapped_url_.has_value()) {
+    GURL substituted_url = GURL(SubstituteMappedStrings(
+        it->second.mapped_url_->GetValueIgnoringVisibility().spec(),
+        substitutions));
+    if (!substituted_url.is_valid()) {
+      return;
+    }
+    info.mapped_url_->value_ = substituted_url;
   }
-  if (info.ad_component_configs) {
-    for (auto& ad_component_config : info.ad_component_configs.value()) {
+  if (info.nested_configs_.has_value()) {
+    for (auto& nested_config : info.nested_configs_->value_) {
       GURL substituted_url = GURL(SubstituteMappedStrings(
-          ad_component_config.mapped_url.spec(), substitutions));
+          nested_config.mapped_url_->GetValueIgnoringVisibility().spec(),
+          substitutions));
       if (!substituted_url.is_valid()) {
         return;
       }
-      ad_component_config = MapInfo(substituted_url);
+      nested_config.mapped_url_->value_ = substituted_url;
     }
   }
   it->second = std::move(info);

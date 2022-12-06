@@ -155,6 +155,8 @@ source_set("headers") {
     "dom_storage/session_storage_namespace_id.h",
     "features.h",
     "fenced_frame/fenced_frame_utils.h",
+    "fenced_frame/redacted_fenced_frame_config.h",
+    "fenced_frame/redacted_fenced_frame_config_mojom_traits.h",
     "fetch/fetch_api_request_headers_map.h",
     "fetch/fetch_api_request_headers_mojom_traits.h",
     "forcedark/forcedark_switches.h",

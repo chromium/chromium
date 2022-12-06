@@ -11675,22 +11675,27 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
                navigation_request->GetDocumentToken());
     }
 
-    const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
-        fenced_frame_properties = navigation_request->fenced_frame_properties();
+    const absl::optional<FencedFrameProperties>& fenced_frame_properties =
+        navigation_request->GetFencedFrameProperties();
     if (fenced_frame_properties) {
       // This may only be done after creating the DocumentAssociatedData for the
       // new document, if appropriate, since `fenced_frame_urls_map` hangs off
       // of that.
-      if (fenced_frame_properties->pending_ad_components_map.has_value()) {
-        fenced_frame_properties->pending_ad_components_map->ExportToMapping(
-            GetPage().fenced_frame_urls_map());
+      if (fenced_frame_properties->nested_urn_config_pairs_.has_value()) {
+        GetPage().fenced_frame_urls_map().ImportPendingAdComponents(
+            fenced_frame_properties->nested_urn_config_pairs_
+                ->GetValueIgnoringVisibility());
       }
 
-      if (fenced_frame_properties->ad_auction_data.has_value()) {
+      if (fenced_frame_properties->ad_auction_data_.has_value()) {
         AdAuctionDocumentData::CreateForCurrentDocument(
             this,
-            fenced_frame_properties->ad_auction_data->interest_group_owner,
-            fenced_frame_properties->ad_auction_data->interest_group_name);
+            fenced_frame_properties->ad_auction_data_
+                ->GetValueIgnoringVisibility()
+                .interest_group_owner,
+            fenced_frame_properties->ad_auction_data_
+                ->GetValueIgnoringVisibility()
+                .interest_group_name);
       }
     }
 

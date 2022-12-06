@@ -7213,7 +7213,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // URN because the validation logic checks a fixed URL for this test, and
   // don't want to send a random request to port 80 on localhost, which is what
   // example.com is mapped to.
-  observer.fenced_frame_properties()->on_navigate_callback.Run();
+  observer.on_navigate_callback().Run();
   WaitForURL(https_server_->GetURL(kTopLevelSellerHost,
                                    "/echo?report_top_level_seller"));
   WaitForURL(https_server_->GetURL(kComponentSellerHost,

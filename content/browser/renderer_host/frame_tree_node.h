@@ -522,8 +522,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   const std::string& srcdoc_value() const { return srcdoc_value_; }
 
   void set_fenced_frame_properties(
-      absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
-          fenced_frame_properties) {
+      const absl::optional<FencedFrameProperties>& fenced_frame_properties) {
     // TODO(crbug.com/1262022): Reenable this DCHECK once ShadowDOM and
     // loading urns in iframes (for FLEDGE OT) are gone.
     // DCHECK_EQ(fenced_frame_status_,
@@ -535,8 +534,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // That is to say, this function returns the `fenced_frame_properties_`
   // variable attached to the fenced frame root FrameTreeNode, which may be
   // either this node or an ancestor of it.
-  const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
-  GetFencedFrameProperties();
+  const absl::optional<FencedFrameProperties>& GetFencedFrameProperties();
 
   // Return the number of fenced frame boundaries above this frame. The
   // outermost main frame's frame tree has fenced frame depth 0, a topmost
@@ -552,7 +550,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // possibly be associated with a fenced frame root, unless when
   // `kAllowURNsInIframes` is enabled in which case they could be be associated
   // with any node.
-  std::vector<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
+  std::vector<const SharedStorageBudgetMetadata*>
   FindSharedStorageBudgetMetadata();
 
   // Accessor to BrowsingContextState for subframes only. Only main frame
@@ -776,8 +774,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // contains all the metadata specifying the resulting context.
   // TODO(crbug.com/1262022): Move this into the FrameTree once ShadowDOM
   // and urn iframes are gone.
-  absl::optional<FencedFrameURLMapping::FencedFrameProperties>
-      fenced_frame_properties_;
+  absl::optional<FencedFrameProperties> fenced_frame_properties_;
 
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //

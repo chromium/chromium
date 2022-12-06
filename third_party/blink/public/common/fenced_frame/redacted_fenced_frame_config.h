@@ -1,0 +1,150 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// See `content/browser/fenced_frame/fenced_frame_config.h` for a description of
+// the fenced frame config information flow, including redacted configs.
+
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_REDACTED_FENCED_FRAME_CONFIG_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_REDACTED_FENCED_FRAME_CONFIG_H_
+
+#include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom-forward.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+namespace content {
+struct FencedFrameConfig;
+struct FencedFrameProperties;
+FORWARD_DECLARE_TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest);
+}  // namespace content
+
+namespace blink::FencedFrame {
+
+struct AdAuctionData {
+  url::Origin interest_group_owner;
+  std::string interest_group_name;
+};
+
+using ReportingMetadata = blink::mojom::FencedFrameReporting;
+
+// The metadata for the shared storage runURLSelectionOperation's budget,
+// which includes the shared storage's origin and the amount of budget to
+// charge when a fenced frame that originates from the URN is navigating a top
+// frame. Before the fenced frame results in a top navigation, this
+// `SharedStorageBudgetMetadata` will be stored/associated with the URN inside
+// the `FencedFrameURLMapping`.
+struct BLINK_COMMON_EXPORT SharedStorageBudgetMetadata {
+  url::Origin origin;
+
+  // The `budget_to_charge` needs to be mutable because the overall
+  // `FencedFrameConfig`/`FencedFrameProperties` object is const in virtually
+  // all cases, except that we want to reduce this budget to 0 after it's used
+  // the first time.
+  mutable double budget_to_charge = 0;
+};
+
+// Represents a potentially opaque (redacted) value.
+// (If the value is redacted, `potentially_opaque_value` will be
+// `absl::nullopt`.)
+template <class T>
+struct BLINK_COMMON_EXPORT RedactedFencedFrameProperty {
+ public:
+  explicit RedactedFencedFrameProperty(
+      const absl::optional<T>& potentially_opaque_value)
+      : potentially_opaque_value(potentially_opaque_value) {}
+  ~RedactedFencedFrameProperty() = default;
+
+  absl::optional<T> potentially_opaque_value;
+};
+
+// Represents a fenced frame config that has been redacted for a particular
+// entity, in order to send (over mojom) to the renderer corresponding to that
+// entity.
+// This object should only be constructed using
+// `content::FencedFrameConfig::RedactFor(entity)`, or implicitly during
+// mojom deserialization with the defined type mappings.
+struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
+  RedactedFencedFrameConfig();
+  ~RedactedFencedFrameConfig();
+
+ private:
+  friend struct content::FencedFrameConfig;
+  friend struct mojo::StructTraits<
+      blink::mojom::FencedFrameConfigDataView,
+      blink::FencedFrame::RedactedFencedFrameConfig>;
+
+  FRIEND_TEST_ALL_PREFIXES(::content::FencedFrameConfigMojomTraitsTest,
+                           ConfigMojomTraitsTest);
+
+  absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
+  absl::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
+  absl::optional<
+      RedactedFencedFrameProperty<std::vector<RedactedFencedFrameConfig>>>
+      nested_configs_;
+  absl::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
+      shared_storage_budget_metadata_;
+  absl::optional<RedactedFencedFrameProperty<ReportingMetadata>>
+      reporting_metadata_;
+};
+
+// Represents a set of fenced frame properties (instantiated from a config) that
+// have been redacted for a particular entity, in order to send (over mojom) to
+// the renderer corresponding to that entity.
+// This object should only be constructed using
+// `content::FencedFrameProperties::RedactFor(entity)`, or implicitly during
+// mojom deserialization with the defined type mappings.
+struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
+  RedactedFencedFrameProperties();
+  ~RedactedFencedFrameProperties();
+
+  const absl::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
+    return mapped_url_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<AdAuctionData>>&
+  ad_auction_data() const {
+    return ad_auction_data_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<
+      std::vector<std::pair<GURL, RedactedFencedFrameConfig>>>>&
+  nested_urn_config_pairs() const {
+    return nested_urn_config_pairs_;
+  }
+  const absl::optional<
+      RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>&
+  shared_storage_budget_metadata() const {
+    return shared_storage_budget_metadata_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<ReportingMetadata>>&
+  reporting_metadata() const {
+    return reporting_metadata_;
+  }
+
+ private:
+  friend struct content::FencedFrameProperties;
+  friend struct mojo::StructTraits<
+      blink::mojom::FencedFramePropertiesDataView,
+      blink::FencedFrame::RedactedFencedFrameProperties>;
+
+  FRIEND_TEST_ALL_PREFIXES(::content::FencedFrameConfigMojomTraitsTest,
+                           ConfigMojomTraitsTest);
+
+  absl::optional<RedactedFencedFrameProperty<GURL>> mapped_url_;
+  absl::optional<RedactedFencedFrameProperty<AdAuctionData>> ad_auction_data_;
+  absl::optional<RedactedFencedFrameProperty<
+      std::vector<std::pair<GURL, RedactedFencedFrameConfig>>>>
+      nested_urn_config_pairs_;
+  absl::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
+      shared_storage_budget_metadata_;
+  absl::optional<RedactedFencedFrameProperty<ReportingMetadata>>
+      reporting_metadata_;
+};
+
+}  // namespace blink::FencedFrame
+
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_REDACTED_FENCED_FRAME_CONFIG_H_

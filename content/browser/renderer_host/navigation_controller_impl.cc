@@ -3819,8 +3819,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*http_response_code=*/-1,
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
           /*early_hints_preloaded_resources=*/std::vector<GURL>(),
-          /*ad_auction_components=*/absl::nullopt,
-          /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           /*commit_sent=*/base::TimeTicks(), /*srcdoc_value=*/std::string(),
           /*fallback_srcdoc_baseurl_value=*/GURL(),
@@ -3832,7 +3830,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*view_transition_state=*/absl::nullopt,
           /*soft_navigation_heuristics_task_id=*/absl::nullopt,
           /*modified_runtime_features=*/
-          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>());
+          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
+          /*fenced_frame_properties=*/absl::nullopt);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();

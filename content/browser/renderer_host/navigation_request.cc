@@ -148,6 +148,7 @@
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -1260,10 +1261,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*is_cross_browsing_instance=*/false,
           /*old_page_info=*/nullptr, /*http_response_code=*/-1,
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
-          /*early_hints_preloaded_resources=*/
-          std::vector<GURL>(),
-          /*ad_auction_components=*/absl::nullopt,
-          /*fenced_frame_reporting_metadata=*/nullptr,
+          /*early_hints_preloaded_resources=*/std::vector<GURL>(),
           // This timestamp will be populated when the commit IPC is sent.
           /*commit_sent=*/base::TimeTicks(), /*srcdoc_value=*/std::string(),
           /*fallback_srcdoc_baseurl=*/GURL(),
@@ -1276,7 +1274,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*view_transition_state=*/absl::nullopt,
           /*soft_navigation_heuristic_task_id=*/absl::nullopt,
           /*modified_runtime_features=*/
-          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>());
+          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
+          /*fenced_frame_properties=*/absl::nullopt);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1403,10 +1402,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*is_cross_browsing_instance=*/false,
           /*old_page_info=*/nullptr, http_response_code,
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
-          /*early_hints_preloaded_resources=*/
-          std::vector<GURL>(),
-          /*ad_auction_components=*/absl::nullopt,
-          /*fenced_frame_reporting_metadata=*/nullptr,
+          /*early_hints_preloaded_resources=*/std::vector<GURL>(),
           // This timestamp will be populated when the commit IPC is sent.
           /*commit_sent=*/base::TimeTicks(), /*srcdoc_value=*/std::string(),
           /*fallback_srcdoc_baseurl=*/GURL(),
@@ -1419,7 +1415,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*view_transition_state=*/absl::nullopt,
           /*soft_navigation_heuristic_task_id=*/absl::nullopt,
           /*modified_runtime_features=*/
-          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>());
+          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
+          /*fenced_frame_properties=*/absl::nullopt);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -1549,8 +1546,7 @@ NavigationRequest::NavigationRequest(
                     ->is_fenced_frame_root_originating_from_opaque_url()),
       fenced_frame_properties_(
           is_embedder_initiated_fenced_frame_navigation
-              ? absl::make_optional(
-                    FencedFrameURLMapping::FencedFrameProperties())
+              ? absl::make_optional(FencedFrameProperties())
               : absl::nullopt) {
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
@@ -2186,45 +2182,59 @@ bool NavigationRequest::NeedFencedFrameURLMapping() {
 }
 
 void NavigationRequest::OnFencedFrameURLMappingComplete(
-    const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
-        properties) {
+    const absl::optional<FencedFrameProperties>& properties) {
   is_deferred_on_fenced_frame_url_mapping_ = false;
 
-  if (properties) {
-    if (properties->on_navigate_callback)
-      properties->on_navigate_callback.Run();
-    common_params_->url = properties->mapped_url;
-    commit_params_->original_url = properties->mapped_url;
-    // TODO(crbug/1281643): move into commit_params_->ad_auction_components
-    // directly.
-    if (!properties->reporting_metadata.metadata.empty()) {
-      commit_params_->fenced_frame_reporting_metadata =
-          properties->reporting_metadata.Clone();
-    }
-    fenced_frame_properties_ = properties;
-    // For urns loaded into iframes for FLEDGE OT, we don't want to use a
-    // fenced frame nonce for compatibility.
+  // The URL mapping might have failed (e.g. because the urn is invalid):
+  if (!properties.has_value()) {
+    // For iframes, try the urn as-is to maintain existing behavior which will
+    // abort the navigation as the url is unresolvable.
     if (!frame_tree_node_->IsFencedFrameRoot()) {
-      CHECK(blink::features::IsAllowURNsInIframeEnabled());
-      fenced_frame_properties_->partition_nonce = absl::nullopt;
-    }
-  } else {
-    if (frame_tree_node_->IsFencedFrameRoot()) {
-      StartNavigation();
-      OnRequestFailedInternal(
-          network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
-          false /* skip_throttles */, absl::nullopt /* error_page_content*/,
-          false /* collapse_frame */);
+      BeginNavigationImpl();  // DO NOT ADD CODE after this, because it might
+                              // have destroyed `this`.
       return;
     }
-    // else (for iframes and shadow-dom fenced frames) try the urn as-is to
-    // maintain existing behavior which will abort the navigation as the url is
-    // unresolvable.
+
+    StartNavigation();
+    OnRequestFailedInternal(
+        network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
+        false /* skip_throttles */, absl::nullopt /* error_page_content*/,
+        false /* collapse_frame */);
+    return;
   }
 
-  BeginNavigationImpl();
-  // DO NOT ADD CODE after this. The previous call to BeginNavigationImpl may
-  // cause the destruction of the NavigationRequest.
+  if (properties->on_navigate_callback_) {
+    properties->on_navigate_callback_.Run();
+  }
+
+  // Currently, all fenced frame use cases include mapped urls. Patch up
+  // url-related fields to use the underlying mapped url, rather than the
+  // original urn.
+  CHECK(properties->mapped_url_.has_value());
+  const GURL& mapped_url_value =
+      properties->mapped_url_->GetValueIgnoringVisibility();
+  common_params_->url = mapped_url_value;
+  commit_params_->original_url = mapped_url_value;
+
+  // Create a view of the fenced frame properties from the perspective of the
+  // fenced frame content, which will be sent to its renderer.
+  commit_params_->fenced_frame_properties =
+      properties->RedactFor(content::FencedFrameEntity::kContent);
+
+  // Store the browser's view of the fenced frame properties in the
+  // `NavigationRequest`. Upon commit, it will be stored in the fenced frame
+  // root `FrameTreeNode`.
+  fenced_frame_properties_ = properties;
+
+  // For urns loaded into iframes for FLEDGE OT, for compatibility we don't
+  // want to use a fenced frame nonce.
+  if (!frame_tree_node_->IsFencedFrameRoot()) {
+    CHECK(blink::features::IsAllowURNsInIframeEnabled());
+    fenced_frame_properties_->partition_nonce_ = absl::nullopt;
+  }
+
+  BeginNavigationImpl();  // DO NOT ADD CODE after this, because it might have
+                          // destroyed `this`.
 }
 
 void NavigationRequest::BeginNavigationImpl() {
@@ -5167,14 +5177,6 @@ void NavigationRequest::CommitNavigation() {
     policy_container_builder_->SetAllowTopNavigationWithoutUserGesture(true);
   } else if (!IsInMainFrame() && !embedder_allows_top_navigation_explicitly) {
     policy_container_builder_->SetAllowTopNavigationWithoutUserGesture(false);
-  }
-
-  // If this is a result of an ad auction, need to pass its ad component URLs to
-  // the renderer.
-  if (fenced_frame_properties_ &&
-      fenced_frame_properties_->pending_ad_components_map) {
-    commit_params_->ad_auction_components =
-        fenced_frame_properties_->pending_ad_components_map->GetURNs();
   }
 
   if (!IsSameDocument()) {
@@ -8160,15 +8162,30 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
               frame_tree_node_->current_frame_host()));
 }
 
+const absl::optional<FencedFrameProperties>&
+NavigationRequest::ComputeFencedFrameProperties() const {
+  if (fenced_frame_properties_) {
+    return fenced_frame_properties_;
+  }
+  return frame_tree_node_->GetFencedFrameProperties();
+}
+
 const absl::optional<base::UnguessableToken>
 NavigationRequest::ComputeFencedFrameNonce() const {
-  // TODO(crbug.com/1347953): Once
-  // NavigationRequest::ComputeFencedFrameProperties() is added, use that rather
-  // than branch here.
-  if (fenced_frame_properties_) {
-    return fenced_frame_properties_->partition_nonce;
+  const absl::optional<FencedFrameProperties>&
+      computed_fenced_frame_properties = ComputeFencedFrameProperties();
+  if (!computed_fenced_frame_properties.has_value()) {
+    return absl::nullopt;
   }
-  return frame_tree_node_->GetFencedFrameNonce();
+  if (!computed_fenced_frame_properties->partition_nonce_.has_value()) {
+    // It is only possible for there to be `FencedFrameProperties` but no
+    // partition nonce in urn iframes (when not nested inside a fenced frame).
+    CHECK(blink::features::IsAllowURNsInIframeEnabled() &&
+          !frame_tree_node_->IsInFencedFrameTree());
+    return absl::nullopt;
+  }
+  return computed_fenced_frame_properties->partition_nonce_
+      ->GetValueIgnoringVisibility();
 }
 
 void NavigationRequest::RenderFallbackContentForObjectTag() {

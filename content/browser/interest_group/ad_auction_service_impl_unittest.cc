@@ -622,8 +622,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   // Retrieves the FencedFrameProperties for the specified URN from the main
   // frame. Returns nullopt if no such URN exists.
-  absl::optional<FencedFrameURLMapping::FencedFrameProperties>
-  GetFencedFramePropertiesForURN(const GURL& urn_url) {
+  absl::optional<FencedFrameProperties> GetFencedFramePropertiesForURN(
+      const GURL& urn_url) {
     TestFencedFrameURLMappingResultObserver observer;
     FencedFrameURLMapping& fenced_frame_urls_map =
         static_cast<RenderFrameHostImpl*>(main_rfh())
@@ -635,8 +635,9 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   absl::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
     auto properties = GetFencedFramePropertiesForURN(urn_url);
-    if (properties)
-      return properties->mapped_url;
+    if (properties && properties->mapped_url_.has_value()) {
+      return properties->mapped_url_->GetValueIgnoringVisibility();
+    }
     return absl::nullopt;
   }
 
@@ -647,7 +648,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   void InvokeCallbackForURN(const GURL& urn_url) {
     auto properties = GetFencedFramePropertiesForURN(urn_url);
     ASSERT_TRUE(properties);
-    properties->on_navigate_callback.Run();
+    properties->on_navigate_callback_.Run();
   }
 
   // Creates a new AdAuctionServiceImpl and use it to try and join

@@ -10,7 +10,7 @@ typedef (USVString or OpaqueProperty) FencedFrameInnerConfigURL;
 [Exposed=Window, RuntimeEnabled=FencedFrames]
 interface FencedFrameInnerConfig {
   // TODO(crbug.com/1374716): Attributes of this class should mirror the fields
-  // of FencedFrameURLMapping::FencedFrameConfiguration.
+  // of `blink::FencedFrame::RedactedFencedFrameConfig`.
   // For more information on why this is needed please see:
   // https://github.com/WICG/fenced-frame/issues/48#issuecomment-1245809738
   constructor(USVString url);

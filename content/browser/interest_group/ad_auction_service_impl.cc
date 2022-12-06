@@ -366,12 +366,14 @@ class FencedFrameURLMappingObserver
   ~FencedFrameURLMappingObserver() override = default;
 
   void OnFencedFrameURLMappingComplete(
-      const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
-          properties) override {
+      const absl::optional<FencedFrameProperties>& properties) override {
     if (properties) {
-      *mapped_url_ = properties->mapped_url;
-      if (send_reports_ && properties->on_navigate_callback)
-        properties->on_navigate_callback.Run();
+      if (properties->mapped_url_) {
+        *mapped_url_ = properties->mapped_url_->GetValueIgnoringVisibility();
+      }
+      if (send_reports_ && properties->on_navigate_callback_) {
+        properties->on_navigate_callback_.Run();
+      }
     }
     called_ = true;
   }

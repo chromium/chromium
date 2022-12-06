@@ -56,7 +56,7 @@ void SharedStorageBudgetCharger::DidStartNavigation(
   storage::SharedStorageManager* shared_storage_manager =
       initiator_frame_host->GetStoragePartition()->GetSharedStorageManager();
 
-  std::vector<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
+  std::vector<const SharedStorageBudgetMetadata*>
       shared_storage_budget_metadata = initiator_frame_host->frame_tree_node()
                                            ->FindSharedStorageBudgetMetadata();
 

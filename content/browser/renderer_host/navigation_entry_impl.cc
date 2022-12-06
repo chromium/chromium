@@ -915,8 +915,6 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           -1 /* http_response_code */,
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
           std::vector<GURL>() /* early_hints_preloaded_resources */,
-          absl::nullopt /* ad_auction_components */,
-          /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
           GURL() /* fallback_srcdoc_baseurl */,
@@ -927,7 +925,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           /*view_transition_state=*/absl::nullopt,
           soft_navigation_heuristics_task_id,
           /*modified_runtime_features=*/
-          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>());
+          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
+          /*fenced_frame_properties=*/absl::nullopt);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

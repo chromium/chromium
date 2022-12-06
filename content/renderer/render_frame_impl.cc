@@ -1036,28 +1036,41 @@ void FillMiscNavigationParams(
         NavigationApiHistoryEntryPtrToWebHistoryItem(*entry));
   }
 
-  if (commit_params.ad_auction_components) {
-    DCHECK_EQ(blink::kMaxAdAuctionAdComponents,
-              commit_params.ad_auction_components->size());
-    navigation_params->ad_auction_components.emplace();
-    for (const GURL& urn : *commit_params.ad_auction_components) {
-      // `ad_auction_components` must be a list of URNs, to avoid leaking data.
-      DCHECK(urn.SchemeIs(url::kUrnScheme));
-      navigation_params->ad_auction_components->push_back(blink::WebURL(urn));
-    }
-  }
-
-  if (commit_params.fenced_frame_reporting_metadata) {
-    navigation_params->fenced_frame_reporting.emplace();
-    for (const auto& [destination, metadata] :
-         commit_params.fenced_frame_reporting_metadata->metadata) {
-      base::flat_map<blink::WebString, blink::WebURL> data;
-      for (const auto& [event_type, url] : metadata) {
-        data.emplace(blink::WebString::FromUTF8(event_type),
-                     blink::WebURL(url));
+  if (commit_params.fenced_frame_properties) {
+    if (commit_params.fenced_frame_properties->nested_urn_config_pairs() &&
+        commit_params.fenced_frame_properties->nested_urn_config_pairs()
+            ->potentially_opaque_value.has_value()) {
+      const auto& nested_urn_config_pairs_value =
+          commit_params.fenced_frame_properties->nested_urn_config_pairs()
+              ->potentially_opaque_value.value();
+      DCHECK_EQ(blink::kMaxAdAuctionAdComponents,
+                nested_urn_config_pairs_value.size());
+      navigation_params->ad_auction_components.emplace();
+      for (const auto& nested_urn_config_pair : nested_urn_config_pairs_value) {
+        const GURL& urn = nested_urn_config_pair.first;
+        DCHECK(urn.SchemeIs(url::kUrnScheme));
+        navigation_params->ad_auction_components->push_back(blink::WebURL(urn));
       }
-      navigation_params->fenced_frame_reporting->metadata.emplace(
-          destination, std::move(data));
+    }
+
+    if (commit_params.fenced_frame_properties->reporting_metadata() &&
+        commit_params.fenced_frame_properties->reporting_metadata()
+            ->potentially_opaque_value.has_value()) {
+      const auto& reporting_metadata_value =
+          commit_params.fenced_frame_properties->reporting_metadata()
+              ->potentially_opaque_value.value();
+
+      navigation_params->fenced_frame_reporting.emplace();
+      for (const auto& [destination, metadata] :
+           reporting_metadata_value.metadata) {
+        base::flat_map<blink::WebString, blink::WebURL> data;
+        for (const auto& [event_type, url] : metadata) {
+          data.emplace(blink::WebString::FromUTF8(event_type),
+                       blink::WebURL(url));
+        }
+        navigation_params->fenced_frame_reporting->metadata.emplace(
+            destination, std::move(data));
+      }
     }
   }
 

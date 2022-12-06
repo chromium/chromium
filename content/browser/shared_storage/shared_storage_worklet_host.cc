@@ -39,9 +39,6 @@ constexpr base::TimeDelta kKeepAliveTimeout = base::Seconds(2);
 using SharedStorageURNMappingResult =
     FencedFrameURLMapping::SharedStorageURNMappingResult;
 
-using SharedStorageBudgetMetadata =
-    FencedFrameURLMapping::SharedStorageBudgetMetadata;
-
 using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
 
