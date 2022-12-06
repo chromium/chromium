@@ -7,12 +7,14 @@
 
 #include <windows.h>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/timer/timer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
@@ -24,6 +26,7 @@ class NamedMojoServerEndpointConnectorWin final
     : public NamedMojoServerEndpointConnector {
  public:
   explicit NamedMojoServerEndpointConnectorWin(
+      const mojo::NamedPlatformChannel::ServerName& server_name,
       base::SequenceBound<Delegate> delegate);
   NamedMojoServerEndpointConnectorWin(
       const NamedMojoServerEndpointConnectorWin&) = delete;
@@ -31,19 +34,18 @@ class NamedMojoServerEndpointConnectorWin final
       const NamedMojoServerEndpointConnectorWin&) = delete;
   ~NamedMojoServerEndpointConnectorWin() override;
 
-  void Connect(mojo::PlatformChannelServerEndpoint server_endpoint) override;
-
  private:
   void OnConnectedEventSignaled(base::WaitableEvent* event);
 
+  void Connect();
   void OnReady();
   void OnError();
 
   void ResetConnectionObjects();
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Overrides for NamedMojoServerEndpointConnector.
+  bool TryStart() override;
 
-  base::SequenceBound<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::WaitableEventWatcher client_connection_watcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -58,6 +60,8 @@ class NamedMojoServerEndpointConnectorWin final
 
   // Object to allow ConnectNamedPipe() to run asynchronously.
   OVERLAPPED connect_overlapped_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::OneShotTimer retry_connect_timer_;
 };
 
 }  // namespace named_mojo_ipc_server

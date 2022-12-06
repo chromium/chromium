@@ -70,8 +70,6 @@ class NamedMojoIpcServerBase : public IpcServer {
       IsTrustedMojoEndpointCallback is_trusted_endpoint_callback);
   ~NamedMojoIpcServerBase() override;
 
-  void CreateServerEndpoint();
-
   void OnIpcDisconnected();
 
   virtual mojo::ReceiverId TrackMessagePipe(
@@ -96,22 +94,19 @@ class NamedMojoIpcServerBase : public IpcServer {
     ~DelegateProxy() override;
 
     // Overrides for NamedMojoServerEndpointConnector::Delegate
-    void OnServerEndpointConnected(mojo::PlatformChannelEndpoint endpoint,
-                                   base::ProcessId peer_pid) override;
-    void OnServerEndpointConnectionFailed() override;
+    void OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
+                           base::ProcessId peer_pid) override;
+    void OnServerEndpointCreated() override;
 
    private:
     base::WeakPtr<NamedMojoIpcServerBase> server_;
   };
 
-  void OnServerEndpointCreated(mojo::PlatformChannelServerEndpoint endpoint);
-
-  void OnServerEndpointConnected(mojo::PlatformChannelEndpoint endpoint,
-                                 base::ProcessId peer_pid);
-  void OnServerEndpointConnectionFailed();
-
-  void PassAndTrackMessagePipe(mojo::PlatformChannelEndpoint endpoint,
-                               base::ProcessId peer_pid);
+  void OnEndpointConnectorStarted(
+      base::SequenceBound<NamedMojoServerEndpointConnector> endpoint_connector);
+  void OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
+                         base::ProcessId peer_pid);
+  void OnServerEndpointCreated();
 
   using ActiveConnectionMap =
       base::flat_map<mojo::ReceiverId,
@@ -131,10 +126,9 @@ class NamedMojoIpcServerBase : public IpcServer {
   // This is only populated if the server uses isolated connections.
   ActiveConnectionMap active_connections_;
 
-  base::OneShotTimer resend_invitation_on_error_timer_;
+  base::OneShotTimer restart_endpoint_timer_;
 
-  base::RepeatingClosure on_server_endpoint_created_callback_for_testing_ =
-      base::DoNothing();
+  base::RepeatingClosure on_server_endpoint_created_callback_for_testing_;
 
   base::WeakPtrFactory<NamedMojoIpcServerBase> weak_factory_{this};
 };

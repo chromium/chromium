@@ -11,6 +11,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
+#include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 
 namespace named_mojo_ipc_server {
 
@@ -19,6 +20,7 @@ class NamedMojoServerEndpointConnectorLinux final
     : public NamedMojoServerEndpointConnector {
  public:
   explicit NamedMojoServerEndpointConnectorLinux(
+      const mojo::NamedPlatformChannel::ServerName& server_name,
       base::SequenceBound<Delegate> delegate);
   NamedMojoServerEndpointConnectorLinux(
       const NamedMojoServerEndpointConnectorLinux&) = delete;
@@ -26,21 +28,15 @@ class NamedMojoServerEndpointConnectorLinux final
       const NamedMojoServerEndpointConnectorLinux&) = delete;
   ~NamedMojoServerEndpointConnectorLinux() override;
 
-  // NamedMojoServerEndpointConnector implementation.
-  void Connect(mojo::PlatformChannelServerEndpoint server_endpoint) override;
-
  private:
-  void OnFileCanReadWithoutBlocking();
+  void OnSocketReady();
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Overrides for NamedMojoServerEndpointConnector.
+  bool TryStart() override;
 
-  base::SequenceBound<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // These are only valid/non-null when there is a pending connection.
-  // Note that `pending_server_endpoint_` must outlive
-  // `read_watcher_controller_`; otherwise a bad file descriptor error will
-  // occur at destruction.
-  mojo::PlatformChannelServerEndpoint pending_server_endpoint_
+  // Note that |server_endpoint_| must outlive |read_watcher_controller_|;
+  // otherwise a bad file descriptor error will occur at destruction.
+  mojo::PlatformChannelServerEndpoint server_endpoint_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<base::FileDescriptorWatcher::Controller>
       read_watcher_controller_ GUARDED_BY_CONTEXT(sequence_checker_);

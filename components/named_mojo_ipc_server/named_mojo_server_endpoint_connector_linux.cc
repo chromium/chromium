@@ -10,85 +10,85 @@
 
 #include "base/check.h"
 #include "base/files/file_descriptor_watcher_posix.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/threading/sequence_bound.h"
+#include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
 namespace named_mojo_ipc_server {
 
 NamedMojoServerEndpointConnectorLinux::NamedMojoServerEndpointConnectorLinux(
+    const mojo::NamedPlatformChannel::ServerName& server_name,
     base::SequenceBound<Delegate> delegate)
-    : delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
-}
+    : NamedMojoServerEndpointConnector(server_name, std::move(delegate)) {}
 
 NamedMojoServerEndpointConnectorLinux::
     ~NamedMojoServerEndpointConnectorLinux() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void NamedMojoServerEndpointConnectorLinux::Connect(
-    mojo::PlatformChannelServerEndpoint server_endpoint) {
+void NamedMojoServerEndpointConnectorLinux::OnSocketReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(server_endpoint.is_valid());
-  DCHECK(!pending_server_endpoint_.is_valid());
+  DCHECK(server_endpoint_.is_valid());
 
-  pending_server_endpoint_ = std::move(server_endpoint);
-  read_watcher_controller_ = base::FileDescriptorWatcher::WatchReadable(
-      pending_server_endpoint_.platform_handle().GetFD().get(),
-      base::BindRepeating(
-          &NamedMojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking,
-          weak_factory_.GetWeakPtr()));
-}
+  int fd = server_endpoint_.platform_handle().GetFD().get();
 
-void NamedMojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  int fd = pending_server_endpoint_.platform_handle().GetFD().get();
-
-  base::ScopedFD socket;
-  bool success = mojo::AcceptSocketConnection(fd, &socket);
-  read_watcher_controller_.reset();
-  pending_server_endpoint_.reset();
+  base::ScopedFD connection_fd;
+  bool success = mojo::AcceptSocketConnection(fd, &connection_fd);
   if (!success) {
     LOG(ERROR) << "AcceptSocketConnection failed.";
-    delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
     return;
   }
-  if (!socket.is_valid()) {
+  if (!connection_fd.is_valid()) {
     LOG(ERROR) << "Socket is invalid.";
-    delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
     return;
   }
 
   ucred unix_peer_identity;
   socklen_t len = sizeof(unix_peer_identity);
-  if (getsockopt(socket.get(), SOL_SOCKET, SO_PEERCRED, &unix_peer_identity,
-                 &len) != 0) {
+  if (getsockopt(connection_fd.get(), SOL_SOCKET, SO_PEERCRED,
+                 &unix_peer_identity, &len) != 0) {
     PLOG(ERROR) << "getsockopt failed.";
-    delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
     return;
   }
 
   mojo::PlatformChannelEndpoint endpoint(
-      mojo::PlatformHandle(std::move(socket)));
+      mojo::PlatformHandle(std::move(connection_fd)));
   if (!endpoint.is_valid()) {
     LOG(ERROR) << "Endpoint is invalid.";
-    delegate_.AsyncCall(&Delegate::OnServerEndpointConnectionFailed);
     return;
   }
-  delegate_.AsyncCall(&Delegate::OnServerEndpointConnected)
+  delegate_.AsyncCall(&Delegate::OnClientConnected)
       .WithArgs(std::move(endpoint), unix_peer_identity.pid);
+}
+
+bool NamedMojoServerEndpointConnectorLinux::TryStart() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  mojo::PlatformChannelServerEndpoint server_endpoint =
+      mojo::NamedPlatformChannel({server_name_}).TakeServerEndpoint();
+  if (!server_endpoint.is_valid()) {
+    return false;
+  }
+
+  server_endpoint_ = std::move(server_endpoint);
+  read_watcher_controller_ = base::FileDescriptorWatcher::WatchReadable(
+      server_endpoint_.platform_handle().GetFD().get(),
+      base::BindRepeating(&NamedMojoServerEndpointConnectorLinux::OnSocketReady,
+                          weak_factory_.GetWeakPtr()));
+  delegate_.AsyncCall(&Delegate::OnServerEndpointCreated);
+  return true;
 }
 
 // static
 base::SequenceBound<NamedMojoServerEndpointConnector>
 NamedMojoServerEndpointConnector::Create(
-    base::SequenceBound<Delegate> delegate,
     scoped_refptr<base::SequencedTaskRunner> io_sequence,
-    const mojo::NamedPlatformChannel::ServerName& /*server_name*/) {
+    const mojo::NamedPlatformChannel::ServerName& server_name,
+    base::SequenceBound<Delegate> delegate) {
   return base::SequenceBound<NamedMojoServerEndpointConnectorLinux>(
-      io_sequence, std::move(delegate));
+      io_sequence, server_name, std::move(delegate));
 }
 
 }  // namespace named_mojo_ipc_server

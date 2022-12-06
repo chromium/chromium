@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
+#include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -34,35 +37,49 @@ class NamedMojoServerEndpointConnector {
    public:
     virtual ~Delegate() = default;
 
-    // Called when the client has connected to the server endpoint.
-    virtual void OnServerEndpointConnected(
-        mojo::PlatformChannelEndpoint endpoint,
+    // Called when a client has connected to the server endpoint.
+    virtual void OnClientConnected(
+        mojo::PlatformChannelEndpoint client_endpoint,
         base::ProcessId peer_pid) = 0;
 
-    // Called when error occurred during the connection process.
-    virtual void OnServerEndpointConnectionFailed() = 0;
+    // Called to notify unittests that the server endpoint has been created.
+    virtual void OnServerEndpointCreated() = 0;
 
    protected:
     Delegate() = default;
   };
 
-  // Creates the platform-specific MojoServerEndpointConnector. |delegate| must
-  // outlive the created object.
-  // The endpoint connector will be bound to |io_sequence| and post replies to
-  // the |callback_sequence|.
+  virtual ~NamedMojoServerEndpointConnector();
+
+  // Configures this object to begin listening for and connecting endpoints.
+  // Implementations will attempt to acquire platform-specific handles, retrying
+  // indefinitely until acquired or this object is destroyed.
+  void Start();
+
+  // Creates the platform-specific MojoServerEndpointConnector.
+  // |delegate| must outlive the created object. The endpoint connector will be
+  // bound to |io_sequence| and post replies to current sequence.
   static base::SequenceBound<NamedMojoServerEndpointConnector> Create(
-      base::SequenceBound<Delegate> delegate,
       scoped_refptr<base::SequencedTaskRunner> io_sequence,
-      const mojo::NamedPlatformChannel::ServerName& server_name);
-
-  virtual ~NamedMojoServerEndpointConnector() = default;
-
-  // Connects to |server_endpoint|; invokes the delegate when it's connected or
-  // failed to connect. Note that only one pending server endpoint is allowed.
-  virtual void Connect(mojo::PlatformChannelServerEndpoint server_endpoint) = 0;
+      const mojo::NamedPlatformChannel::ServerName& server_name,
+      base::SequenceBound<Delegate> delegate);
 
  protected:
-  NamedMojoServerEndpointConnector() = default;
+  NamedMojoServerEndpointConnector(
+      const mojo::NamedPlatformChannel::ServerName& server_name,
+      base::SequenceBound<Delegate> delegate);
+
+  // If this method returns false, it will be called again with a delay; a
+  // subclass is free is always return true and handle reconnect itself.
+  virtual bool TryStart() = 0;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  const mojo::NamedPlatformChannel::ServerName server_name_;
+  base::SequenceBound<Delegate> delegate_;
+
+  base::WeakPtrFactory<NamedMojoServerEndpointConnector> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace named_mojo_ipc_server

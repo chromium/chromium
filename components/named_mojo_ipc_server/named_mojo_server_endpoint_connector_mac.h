@@ -23,30 +23,25 @@ class NamedMojoServerEndpointConnectorMac final
     : public NamedMojoServerEndpointConnector {
  public:
   explicit NamedMojoServerEndpointConnectorMac(
-      base::SequenceBound<Delegate> delegate,
-      const mojo::NamedPlatformChannel::ServerName& server_name);
+      const mojo::NamedPlatformChannel::ServerName& server_name,
+      base::SequenceBound<Delegate> delegate);
   NamedMojoServerEndpointConnectorMac(
       const NamedMojoServerEndpointConnectorMac&) = delete;
   NamedMojoServerEndpointConnectorMac& operator=(
       const NamedMojoServerEndpointConnectorMac&) = delete;
   ~NamedMojoServerEndpointConnectorMac() override;
 
-  // NamedMojoServerEndpointConnector implementation.
-  void Connect(mojo::PlatformChannelServerEndpoint server_endpoint) override;
-
  private:
-  // Called by |dispatch_source_| when a Mach message is ready to be received
-  // on |endpoint_|.
+  // Called by |dispatch_source_| on an arbitrary thread when a Mach message is
+  // ready to be received on |endpoint_|.
   void HandleRequest();
   mach_port_t port();
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Overrides for NamedMojoServerEndpointConnector.
+  bool TryStart() override;
 
-  base::SequenceBound<Delegate> delegate_;
-  const mojo::NamedPlatformChannel::ServerName server_name_;
-
-  // These are only valid/non-null when there is a pending connection.
-  mojo::PlatformChannelServerEndpoint pending_server_endpoint_;
+  // Note: |server_endpoint_| must outlive |dispatch_source_|.
+  mojo::PlatformChannelServerEndpoint server_endpoint_;
   std::unique_ptr<base::DispatchSourceMach> dispatch_source_;
 };
 
