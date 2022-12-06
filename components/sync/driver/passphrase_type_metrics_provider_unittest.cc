@@ -9,12 +9,15 @@
 
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/metrics/metrics_features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync/test/sync_user_settings_mock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace syncer {
 
@@ -22,10 +25,14 @@ namespace {
 
 using testing::Return;
 
-class PassphraseTypeMetricsProviderTest : public testing::Test {
+class PassphraseTypeMetricsProviderTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<bool> {
  public:
   PassphraseTypeMetricsProviderTest() = default;
   ~PassphraseTypeMetricsProviderTest() override = default;
+
+  bool ShouldEmitHistogramsEarlier() { return GetParam(); }
 
   void SetUp() override {
     // Using base::Unretained() here is safe, because |metrics_provider_| can't
@@ -33,6 +40,14 @@ class PassphraseTypeMetricsProviderTest : public testing::Test {
     metrics_provider_ = std::make_unique<PassphraseTypeMetricsProvider>(
         base::BindRepeating(&PassphraseTypeMetricsProviderTest::GetSyncServices,
                             base::Unretained(this)));
+
+    if (ShouldEmitHistogramsEarlier()) {
+      feature_list_.InitWithFeatures(
+          {metrics::features::kEmitHistogramsEarlier}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {metrics::features::kEmitHistogramsEarlier});
+    }
   }
 
   // Adds sync service, which will be provided to |metrics_provider_|.
@@ -51,7 +66,12 @@ class PassphraseTypeMetricsProviderTest : public testing::Test {
 
   void ExpectRecordedPassphraseType(PassphraseTypeForMetrics expected) {
     base::HistogramTester histogram_tester;
-    metrics_provider_->ProvideCurrentSessionData(nullptr);
+    if (ShouldEmitHistogramsEarlier()) {
+      metrics_provider_->OnDidCreateMetricsLog();
+    } else {
+      metrics::ChromeUserMetricsExtension uma_proto;
+      metrics_provider_->ProvideCurrentSessionData(&uma_proto);
+    }
     histogram_tester.ExpectUniqueSample("Sync.PassphraseType2", expected, 1);
   }
 
@@ -66,57 +86,63 @@ class PassphraseTypeMetricsProviderTest : public testing::Test {
 
   std::vector<std::unique_ptr<MockSyncService>> sync_services_;
   std::unique_ptr<PassphraseTypeMetricsProvider> metrics_provider_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordNoSyncingProfiles) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PassphraseTypeMetricsProviderTest,
+                         testing::Bool());
+
+TEST_P(PassphraseTypeMetricsProviderTest, ShouldRecordNoSyncingProfiles) {
   ExpectRecordedPassphraseType(
       PassphraseTypeForMetrics::kNoActiveSyncingProfiles);
 }
 
-TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordSyncTransportInactive) {
+TEST_P(PassphraseTypeMetricsProviderTest, ShouldRecordSyncTransportInactive) {
   AddSyncService(PassphraseType::kKeystorePassphrase,
                  /*sync_transport_active=*/false);
   ExpectRecordedPassphraseType(
       PassphraseTypeForMetrics::kNoActiveSyncingProfiles);
 }
 
-TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordMultipleSyncingProfiles) {
+TEST_P(PassphraseTypeMetricsProviderTest, ShouldRecordMultipleSyncingProfiles) {
   AddSyncService(PassphraseType::kImplicitPassphrase);
   AddSyncService(PassphraseType::kKeystorePassphrase);
   ExpectRecordedPassphraseType(
       PassphraseTypeForMetrics::kInconsistentStateAcrossProfiles);
 }
 
-TEST_F(PassphraseTypeMetricsProviderTest,
+TEST_P(PassphraseTypeMetricsProviderTest,
        ShouldRecordKeystorePassphraseWithMultipleProfiles) {
   AddSyncService(PassphraseType::kKeystorePassphrase);
   AddSyncService(PassphraseType::kKeystorePassphrase);
   ExpectRecordedPassphraseType(PassphraseTypeForMetrics::kKeystorePassphrase);
 }
 
-TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordImplicitPassphrase) {
+TEST_P(PassphraseTypeMetricsProviderTest, ShouldRecordImplicitPassphrase) {
   AddSyncService(PassphraseType::kImplicitPassphrase);
   ExpectRecordedPassphraseType(PassphraseTypeForMetrics::kImplicitPassphrase);
 }
 
-TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordKeystorePassphrase) {
+TEST_P(PassphraseTypeMetricsProviderTest, ShouldRecordKeystorePassphrase) {
   AddSyncService(PassphraseType::kKeystorePassphrase);
   ExpectRecordedPassphraseType(PassphraseTypeForMetrics::kKeystorePassphrase);
 }
 
-TEST_F(PassphraseTypeMetricsProviderTest,
+TEST_P(PassphraseTypeMetricsProviderTest,
        ShouldRecordFrozenImplicitPassphrase) {
   AddSyncService(PassphraseType::kFrozenImplicitPassphrase);
   ExpectRecordedPassphraseType(
       PassphraseTypeForMetrics::kFrozenImplicitPassphrase);
 }
 
-TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordCustomPassphrase) {
+TEST_P(PassphraseTypeMetricsProviderTest, ShouldRecordCustomPassphrase) {
   AddSyncService(PassphraseType::kCustomPassphrase);
   ExpectRecordedPassphraseType(PassphraseTypeForMetrics::kCustomPassphrase);
 }
 
-TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordTrustedVaultPassphrase) {
+TEST_P(PassphraseTypeMetricsProviderTest, ShouldRecordTrustedVaultPassphrase) {
   AddSyncService(PassphraseType::kTrustedVaultPassphrase);
   ExpectRecordedPassphraseType(
       PassphraseTypeForMetrics::kTrustedVaultPassphrase);

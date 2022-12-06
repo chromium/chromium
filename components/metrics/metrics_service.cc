@@ -406,6 +406,13 @@ void MetricsService::DisableRecording() {
 
   PushPendingLogsToPersistentStorage();
 
+  // If kEmitHistogramsForIndependentLogs is set, call OnDidCreateMetricsLog()
+  // to provide histograms.
+  if (base::FeatureList::IsEnabled(features::kEmitHistogramsEarlier) &&
+      features::kEmitHistogramsForIndependentLogs.Get()) {
+    delegating_provider_.OnDidCreateMetricsLog();
+  }
+
   enablement_observers_.Notify(/*enabled=*/false);
 }
 

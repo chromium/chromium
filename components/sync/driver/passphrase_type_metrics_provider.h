@@ -54,8 +54,7 @@ class PassphraseTypeMetricsProvider : public metrics::MetricsProvider {
   ~PassphraseTypeMetricsProvider() override;
 
   // MetricsProvider overrides.
-  void ProvideCurrentSessionData(
-      metrics::ChromeUserMetricsExtension* uma_proto) override;
+  bool ProvideHistograms() override;
 
  private:
   const GetAllSyncServicesCallback get_all_sync_services_callback_;

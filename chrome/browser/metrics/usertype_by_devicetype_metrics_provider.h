@@ -56,8 +56,7 @@ class UserTypeByDeviceTypeMetricsProvider
   ~UserTypeByDeviceTypeMetricsProvider() override;
 
   // MetricsProvider:
-  void ProvideCurrentSessionData(
-      metrics::ChromeUserMetricsExtension* uma_proto_unused) override;
+  bool ProvideHistograms() override;
 
   // session_manager::SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;

@@ -57997,6 +57997,7 @@ from previous Chrome versions.
   <int value="-1615727417" label="OmniboxSearchReadyIncognito:enabled"/>
   <int value="-1615704396"
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:disabled"/>
+  <int value="-1615589080" label="EmitHistogramsEarlier:disabled"/>
   <int value="-1614912400" label="enable-link-disambiguation-popup"/>
   <int value="-1613583483" label="UseNewAcceptLanguageHeader:enabled"/>
   <int value="-1612641543" label="CCTRealTimeEngagementSignals:disabled"/>
@@ -58085,6 +58086,7 @@ from previous Chrome versions.
       label="OmniboxOnDeviceHeadProviderNonIncognito:enabled"/>
   <int value="-1563280385" label="Floss:enabled"/>
   <int value="-1562505975" label="AppIconInIntentChip:enabled"/>
+  <int value="-1562318579" label="EmitHistogramsEarlier:enabled"/>
   <int value="-1562065709" label="ForceEnableDevicesPage:enabled"/>
   <int value="-1561252720" label="AutofillCreditCardUploadFeedback:disabled"/>
   <int value="-1560729847" label="AutofillCacheQueryResponses:enabled"/>

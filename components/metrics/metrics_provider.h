@@ -37,6 +37,15 @@ class MetricsProvider {
   // |done_callback| must be run on the same thread that calls |AsyncInit|.
   virtual void AsyncInit(base::OnceClosure done_callback);
 
+  // Called by OnDidCreateMetricsLog() when feature kEmitHistogramsEarlier
+  // is enabled to provide histograms. If histograms are not emitted
+  // successfully or the feature is disabled, it will be called in
+  // ProvideCurrentSessionData().
+  // Returns whether or not histograms are emitted successfully.
+  // This function is temporary for crbug.com/1367008 and should not be used
+  // otherwise.
+  virtual bool ProvideHistograms();
+
   // Called when a new MetricsLog is created.
   virtual void OnDidCreateMetricsLog();
 
@@ -134,6 +143,11 @@ class MetricsProvider {
   // PrepareDeltas() (plural), should be made.
   virtual void RecordInitialHistogramSnapshots(
       base::HistogramSnapshotManager* snapshot_manager);
+
+ protected:
+  // Used to indicate whether ProvideHistograms() successfully emits histograms
+  // when called in OnDidCreateMetricsLog().
+  bool emitted_ = false;
 };
 
 }  // namespace metrics

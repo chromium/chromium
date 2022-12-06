@@ -12,10 +12,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace metrics {
-class ChromeUserMetricsExtension;
-}  // namespace metrics
-
 // Categorizes the primary account of the active user profile into a FamilyLink
 // supervision type to segment the Chrome user population.
 // TODO(crbug.com/1347816): Support multi-profile supervision type segmentation.
@@ -50,8 +46,7 @@ class FamilyLinkUserMetricsProvider : public metrics::MetricsProvider,
   ~FamilyLinkUserMetricsProvider() override;
 
   // metrics::MetricsProvider:
-  void ProvideCurrentSessionData(
-      metrics::ChromeUserMetricsExtension* uma_proto_unused) override;
+  bool ProvideHistograms() override;
 
   // IdentityManagerFactoryObserver:
   void IdentityManagerCreated(

@@ -31,8 +31,7 @@ class BluetoothMetricsProvider : public metrics::MetricsProvider {
   ~BluetoothMetricsProvider() override;
 
   // metrics::MetricsProvider:
-  void ProvideCurrentSessionData(
-      metrics::ChromeUserMetricsExtension* uma_proto) override;
+  bool ProvideHistograms() override;
 };
 
 }  // namespace metrics

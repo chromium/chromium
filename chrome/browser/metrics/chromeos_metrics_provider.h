@@ -57,11 +57,13 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
  private:
   void ProvideAccessibilityMetrics();
   void ProvideSuggestedContentMetrics();
+  void ProvideMetrics(metrics::SystemProfileProto* system_profile_proto,
+                      bool should_include_arc_metrics);
 
   void SetTpmType(metrics::SystemProfileProto* system_profile_proto);
 
   // Called from the ProvideCurrentSessionData(...) to record UserType.
-  void UpdateUserTypeUMA();
+  bool UpdateUserTypeUMA();
 
   // For collecting systemwide performance data via the UMA channel.
   std::unique_ptr<metrics::ProfileProvider> profile_provider_;

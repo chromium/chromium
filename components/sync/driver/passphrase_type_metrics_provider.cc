@@ -68,11 +68,11 @@ PassphraseTypeMetricsProvider::PassphraseTypeMetricsProvider(
 
 PassphraseTypeMetricsProvider::~PassphraseTypeMetricsProvider() = default;
 
-void PassphraseTypeMetricsProvider::ProvideCurrentSessionData(
-    metrics::ChromeUserMetricsExtension* uma_proto) {
+bool PassphraseTypeMetricsProvider::ProvideHistograms() {
   base::UmaHistogramEnumeration(
       "Sync.PassphraseType2",
       GetPassphraseTypeForAllProfiles(get_all_sync_services_callback_.Run()));
+  return true;
 }
 
 }  // namespace syncer

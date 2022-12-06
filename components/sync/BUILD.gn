@@ -308,6 +308,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/gcm_driver:test_support",
     "//components/invalidation/impl",
+    "//components/metrics",
     "//components/os_crypt",
     "//components/os_crypt:test_support",
     "//components/prefs:test_support",

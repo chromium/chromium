@@ -36,11 +36,13 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.InstallerPackageType;
+import org.chromium.components.metrics.MetricsFeatures;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
@@ -64,6 +66,9 @@ import java.util.concurrent.TimeUnit;
  * https://crbug.com/932582).
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Tests cannot run batched because"
+                + "RecordHistogram.getHistogramTotalCountForTesting() doesn't reset between"
+                + "batch tests.")
 @CommandLineFlags.Add({MetricsSwitches.FORCE_ENABLE_METRICS_REPORTING}) // Override sampling logic
 public class AwMetricsIntegrationTest {
     @Rule
@@ -344,6 +349,23 @@ public class AwMetricsIntegrationTest {
 
         assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("MemoryAndroid.LowRamDevice"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=" + MetricsFeatures.EMIT_HISTOGRAMS_EARLIER})
+    public void testMetadata_androidHistogramsWithEarlyEmission() throws Throwable {
+        // Wait for a metrics log, since AndroidMetricsProvider logs this histogram once a
+        // metrics log is created if the feature is enabled.
+        // Do not assert anything about this histogram before this point (ex. do not
+        // assert total count == 0), because this would race with the initial metrics log.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        // At this point, this histogram should be logged for the initial metrics log
+        // and the first ongoing metrics log upon opening.
+        assertEquals(
+                2, RecordHistogram.getHistogramTotalCountForTesting("MemoryAndroid.LowRamDevice"));
     }
 
     @Test

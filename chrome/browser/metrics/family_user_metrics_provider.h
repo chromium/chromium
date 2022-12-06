@@ -13,10 +13,6 @@
 
 class Profile;
 
-namespace metrics {
-class ChromeUserMetricsExtension;
-}  // namespace metrics
-
 // Categorizes the current user into a family user type for UMA dashboard
 // filtering. This metrics provider is ChromeOS specific.
 class FamilyUserMetricsProvider
@@ -57,8 +53,7 @@ class FamilyUserMetricsProvider
   ~FamilyUserMetricsProvider() override;
 
   // MetricsProvider:
-  void ProvideCurrentSessionData(
-      metrics::ChromeUserMetricsExtension* uma_proto_unused) override;
+  bool ProvideHistograms() override;
 
   // session_manager::SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;

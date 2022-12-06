@@ -23,6 +23,7 @@ class IOSChromeDefaultBrowserMetricsProvider : public metrics::MetricsProvider {
   ~IOSChromeDefaultBrowserMetricsProvider() override;
 
   // metrics::MetricsProvider:
+  void OnDidCreateMetricsLog() override;
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 

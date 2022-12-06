@@ -22,9 +22,8 @@ class AndroidMetricsProvider : public metrics::MetricsProvider {
   ~AndroidMetricsProvider() override;
 
   // metrics::MetricsProvider:
+  bool ProvideHistograms() override;
   void ProvidePreviousSessionData(
-      metrics::ChromeUserMetricsExtension* uma_proto) override;
-  void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 };
 

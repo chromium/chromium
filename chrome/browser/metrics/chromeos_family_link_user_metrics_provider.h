@@ -13,10 +13,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace metrics {
-class ChromeUserMetricsExtension;
-}  // namespace metrics
-
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
@@ -55,8 +51,7 @@ class ChromeOSFamilyLinkUserMetricsProvider
   ~ChromeOSFamilyLinkUserMetricsProvider() override;
 
   // metrics::MetricsProvider:
-  void ProvideCurrentSessionData(
-      metrics::ChromeUserMetricsExtension* uma_proto_unused) override;
+  bool ProvideHistograms() override;
 
   // session_manager::SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;

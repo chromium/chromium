@@ -5,6 +5,7 @@
 #include "components/metrics/metrics_provider.h"
 
 #include "base/notreached.h"
+#include "components/metrics/metrics_features.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics {
@@ -22,7 +23,14 @@ void MetricsProvider::AsyncInit(base::OnceClosure done_callback) {
   std::move(done_callback).Run();
 }
 
+bool MetricsProvider::ProvideHistograms() {
+  return true;
+}
+
 void MetricsProvider::OnDidCreateMetricsLog() {
+  if (base::FeatureList::IsEnabled(features::kEmitHistogramsEarlier)) {
+    emitted_ = ProvideHistograms();
+  }
 }
 
 void MetricsProvider::OnRecordingEnabled() {
@@ -71,6 +79,11 @@ void MetricsProvider::ProvidePreviousSessionData(
 void MetricsProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
   ProvideStabilityMetrics(uma_proto->mutable_system_profile());
+
+  if (!base::FeatureList::IsEnabled(features::kEmitHistogramsEarlier) ||
+      !emitted_) {
+    ProvideHistograms();
+  }
 }
 
 void MetricsProvider::ProvideCurrentSessionUKMData() {}

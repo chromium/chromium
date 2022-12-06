@@ -5,27 +5,52 @@
 #include "components/metrics/android_metrics_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/metrics/metrics_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics {
 
-class AndroidMetricsProviderTest : public testing::Test {
+class AndroidMetricsProviderTest : public testing::Test,
+                                   public ::testing::WithParamInterface<bool> {
  public:
   AndroidMetricsProviderTest() = default;
   ~AndroidMetricsProviderTest() override = default;
 
+  bool ShouldEmitHistogramsEarlier() { return GetParam(); }
+
+  void SetUp() override {
+    if (ShouldEmitHistogramsEarlier()) {
+      feature_list_.InitWithFeatures({features::kEmitHistogramsEarlier}, {});
+    } else {
+      feature_list_.InitWithFeatures({}, {features::kEmitHistogramsEarlier});
+    }
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
   AndroidMetricsProvider metrics_provider_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(AndroidMetricsProviderTest, ProvidePreviousSessionData_IsLowRamDevice) {
-  metrics_provider_.ProvidePreviousSessionData(nullptr /* uma_proto */);
+INSTANTIATE_TEST_SUITE_P(All, AndroidMetricsProviderTest, testing::Bool());
+
+TEST_P(AndroidMetricsProviderTest, ProvidePreviousSessionData_IsLowRamDevice) {
+  ChromeUserMetricsExtension uma_proto;
+  metrics_provider_.ProvidePreviousSessionData(&uma_proto);
   histogram_tester_.ExpectTotalCount("MemoryAndroid.LowRamDevice", 1);
 }
 
-TEST_F(AndroidMetricsProviderTest, ProvideCurrentSessionData_IsLowRamDevice) {
-  metrics_provider_.ProvideCurrentSessionData(nullptr /* uma_proto */);
+TEST_P(AndroidMetricsProviderTest, ProvideCurrentSessionData_IsLowRamDevice) {
+  if (!ShouldEmitHistogramsEarlier()) {
+    ChromeUserMetricsExtension uma_proto;
+    metrics_provider_.ProvideCurrentSessionData(&uma_proto);
+  } else {
+    metrics_provider_.OnDidCreateMetricsLog();
+  }
   histogram_tester_.ExpectTotalCount("MemoryAndroid.LowRamDevice", 1);
 }
 

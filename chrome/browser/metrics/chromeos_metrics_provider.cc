@@ -44,6 +44,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/system/statistics_provider.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -122,6 +123,12 @@ void ChromeOSMetricsProvider::Init() {
 
 void ChromeOSMetricsProvider::OnDidCreateMetricsLog() {
   cros_system_profile_provider_->OnDidCreateMetricsLog();
+  if (base::FeatureList::IsEnabled(metrics::features::kEmitHistogramsEarlier)) {
+    // Not guaranteed to result in emitting hisotograms when called early on
+    // browser startup.
+    arc::StabilityMetricsManager::Get()->RecordMetricsToUMA();
+    emitted_ = UpdateUserTypeUMA();
+  }
 }
 
 void ChromeOSMetricsProvider::OnRecordingEnabled() {
@@ -154,8 +161,9 @@ void ChromeOSMetricsProvider::ProvideSuggestedContentMetrics() {
           ash::prefs::kSuggestedContentEnabled));
 }
 
-void ChromeOSMetricsProvider::ProvideStabilityMetrics(
-    metrics::SystemProfileProto* system_profile_proto) {
+void ChromeOSMetricsProvider::ProvideMetrics(
+    metrics::SystemProfileProto* system_profile_proto,
+    bool should_include_arc_metrics) {
   metrics::SystemProfileProto::Stability* stability_proto =
       system_profile_proto->mutable_stability();
   PrefService* pref = g_browser_process->local_state();
@@ -184,16 +192,29 @@ void ChromeOSMetricsProvider::ProvideStabilityMetrics(
       // static_cast because we only have macros for stability histograms.
       static_cast<int>(EnrollmentStatus::kMaxValue) + 1);
 
-  // Record ARC-related stability metrics that should be included in initial
-  // stability logs and all regular UMA logs.
-  arc::StabilityMetricsManager::Get()->RecordMetricsToUMA();
+  if (should_include_arc_metrics) {
+    // Record ARC-related stability metrics that should be included in initial
+    // stability logs and all regular UMA logs.
+    arc::StabilityMetricsManager::Get()->RecordMetricsToUMA();
+  }
+}
+
+void ChromeOSMetricsProvider::ProvideStabilityMetrics(
+    metrics::SystemProfileProto* system_profile_proto) {
+  ProvideMetrics(system_profile_proto, /*should_include_arc_metrics=*/true);
 }
 
 void ChromeOSMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
+  bool should_provide_histograms =
+      !base::FeatureList::IsEnabled(
+          metrics::features::kEmitHistogramsEarlier) ||
+      !emitted_;
+
   ProvideAccessibilityMetrics();
   ProvideSuggestedContentMetrics();
-  ProvideStabilityMetrics(uma_proto->mutable_system_profile());
+  ProvideMetrics(uma_proto->mutable_system_profile(),
+                 /*should_include_arc_metrics=*/should_provide_histograms);
   std::vector<SampledProfile> sampled_profiles;
   if (profile_provider_->GetSampledProfiles(&sampled_profiles)) {
     for (auto& profile : sampled_profiles) {
@@ -201,17 +222,22 @@ void ChromeOSMetricsProvider::ProvideCurrentSessionData(
     }
   }
   arc::UpdateEnabledStateByUserTypeUMA();
-  UpdateUserTypeUMA();
+  if (should_provide_histograms) {
+    UpdateUserTypeUMA();
+  }
 }
 
-void ChromeOSMetricsProvider::UpdateUserTypeUMA() {
-  if (!user_manager::UserManager::IsInitialized())
-    return;
+bool ChromeOSMetricsProvider::UpdateUserTypeUMA() {
+  if (!user_manager::UserManager::IsInitialized()) {
+    return false;
+  }
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user)
-    return;
+  if (!primary_user) {
+    return false;
+  }
   user_manager::UserType user_type = primary_user->GetType();
   base::UmaHistogramEnumeration("UMA.PrimaryUserType", user_type,
                                 user_manager::UserType::NUM_USER_TYPES);
+  return true;
 }

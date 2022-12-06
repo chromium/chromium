@@ -14,12 +14,12 @@ BluetoothMetricsProvider::BluetoothMetricsProvider() = default;
 
 BluetoothMetricsProvider::~BluetoothMetricsProvider() = default;
 
-void BluetoothMetricsProvider::ProvideCurrentSessionData(
-    metrics::ChromeUserMetricsExtension* uma_proto) {
+bool BluetoothMetricsProvider::ProvideHistograms() {
   base::UmaHistogramEnumeration("Bluetooth.StackName",
                                 floss::features::IsFlossEnabled()
                                     ? BluetoothStackName::kFloss
                                     : BluetoothStackName::kBlueZ);
+  return true;
 }
 
 }  // namespace metrics

@@ -47,20 +47,20 @@ UserTypeByDeviceTypeMetricsProvider::~UserTypeByDeviceTypeMetricsProvider() {
     session_manager->RemoveObserver(this);
 }
 
-void UserTypeByDeviceTypeMetricsProvider::ProvideCurrentSessionData(
-    metrics::ChromeUserMetricsExtension* uma_proto_unused) {
+bool UserTypeByDeviceTypeMetricsProvider::ProvideHistograms() {
   if (!user_segment_ || !device_segment_)
-    return;
+    return false;
 
   int uma_val =
       ConstructUmaValue(user_segment_.value(), device_segment_.value());
 
   if (uma_val == kMgsOnUnmanagedDevice) {
     LOG(WARNING) << "Can't have MGS on unmanaged device!";
-    return;
+    return false;
   }
 
   base::UmaHistogramSparse(kHistogramName, uma_val);
+  return true;
 }
 
 void UserTypeByDeviceTypeMetricsProvider::OnUserSessionStarted(

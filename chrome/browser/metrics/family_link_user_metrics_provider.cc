@@ -31,14 +31,14 @@ FamilyLinkUserMetricsProvider::FamilyLinkUserMetricsProvider() {
 
 FamilyLinkUserMetricsProvider::~FamilyLinkUserMetricsProvider() = default;
 
-void FamilyLinkUserMetricsProvider::ProvideCurrentSessionData(
-    metrics::ChromeUserMetricsExtension* uma_proto_unused) {
+bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
   // This function is called at unpredictable intervals throughout the Chrome
   // session, so guarantee it will never crash.
   if (!log_segment_)
-    return;
+    return false;
   base::UmaHistogramEnumeration(kFamilyLinkUserLogSegmentHistogramName,
                                 log_segment_.value());
+  return true;
 }
 
 void FamilyLinkUserMetricsProvider::IdentityManagerCreated(
