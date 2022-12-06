@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/mojom/event.mojom.h"
@@ -79,17 +80,35 @@ bool UnionTraits<metrics::structured::mojom::MetricValueDataView,
 }
 
 // static
+absl::optional<base::TimeDelta> StructTraits<
+    metrics::structured::mojom::EventDataView,
+    metrics::structured::Event>::system_uptime(const metrics::structured::Event&
+                                                   event) {
+  if (event.IsEventSequenceType())
+    return event.recorded_time_since_boot();
+  return absl::nullopt;
+}
+
+// static
 bool StructTraits<metrics::structured::mojom::EventDataView,
                   metrics::structured::Event>::
     Read(metrics::structured::mojom::EventDataView event,
          metrics::structured::Event* out) {
   std::string project_name, event_name;
   std::map<std::string, metrics::structured::Event::MetricValue> metrics;
+  absl::optional<base::TimeDelta> system_uptime;
+  bool is_event_sequence = event.is_event_sequence();
+
   if (!event.ReadProjectName(&project_name) ||
-      !event.ReadEventName(&event_name) || !event.ReadMetrics(&metrics))
+      !event.ReadEventName(&event_name) || !event.ReadMetrics(&metrics) ||
+      !event.ReadSystemUptime(&system_uptime))
     return false;
 
-  *out = metrics::structured::Event(project_name, event_name);
+  *out =
+      metrics::structured::Event(project_name, event_name, is_event_sequence);
+
+  if (system_uptime.has_value())
+    out->SetRecordedTimeSinceBoot(system_uptime.value());
 
   for (auto&& metric : metrics) {
     if (!out->AddMetric(metric.first, metric.second.type,
