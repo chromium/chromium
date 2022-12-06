@@ -282,7 +282,8 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       additional_info(match.additional_info),
       duplicate_matches(match.duplicate_matches),
       query_tiles(match.query_tiles),
-      suggest_tiles(match.suggest_tiles) {}
+      suggest_tiles(match.suggest_tiles),
+      scoring_signals(match.scoring_signals) {}
 
 AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept {
   *this = std::move(match);
@@ -334,6 +335,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   duplicate_matches = std::move(match.duplicate_matches);
   query_tiles = std::move(match.query_tiles);
   suggest_tiles = std::move(match.suggest_tiles);
+  scoring_signals = std::move(match.scoring_signals);
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
   std::swap(java_match_, match.java_match_);
@@ -403,6 +405,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   duplicate_matches = match.duplicate_matches;
   query_tiles = match.query_tiles;
   suggest_tiles = match.suggest_tiles;
+  scoring_signals = match.scoring_signals;
 
 #if BUILDFLAG(IS_ANDROID)
   // In case the target element previously held a java object, release it.

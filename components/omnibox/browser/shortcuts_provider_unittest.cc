@@ -251,10 +251,15 @@ class ShortcutsProviderTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  // Passthrough to the private function in provider_.
+  // Passthrough to the private `CreateScoredShortcutMatch` function in
+  // provider_.
   int CalculateAggregateScore(
       const std::string& terms,
       const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts);
+
+  // Passthrough to the private `GetMatches`. Enables populating scoring
+  // signals.
+  void GetMatchesWithScoringSignals(const AutocompleteInput& input);
 
   // ScopedFeatureList needs to be defined before TaskEnvironment, so that it is
   // destroyed after TaskEnvironment, to prevent data races on the
@@ -311,8 +316,15 @@ int ShortcutsProviderTest::CalculateAggregateScore(
   const int max_relevance =
       ShortcutsProvider::kShortcutsProviderDefaultMaxRelevance;
   return provider_
-      ->CalculateAggregateScore(ASCIIToUTF16(terms), shortcuts, max_relevance)
-      .first;
+      ->CreateScoredShortcutMatch(ASCIIToUTF16(terms),
+                                  /*stripped_destination_url=*/GURL(),
+                                  shortcuts, max_relevance)
+      .relevance;
+}
+
+void ShortcutsProviderTest::GetMatchesWithScoringSignals(
+    const AutocompleteInput& input) {
+  provider_->GetMatches(input, /*populate_scoring_signals=*/true);
 }
 
 // Actual tests ---------------------------------------------------------------
@@ -756,6 +768,27 @@ TEST_F(ShortcutsProviderTest, GetMatches) {
     EXPECT_EQ(matches[1].relevance, matches[2].relevance + 1);
     EXPECT_GT(matches[2].relevance, 0);
   }
+}
+
+TEST_F(ShortcutsProviderTest, GetMatchesWithScoringSignals) {
+  // When multiple shortcuts with the same destination URL match the input,
+  // they should be scored together (i.e. their visit counts summed, the most
+  // recent visit date and shortest text considered).
+  AutocompleteInput input(u"wi", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  GetMatchesWithScoringSignals(input);
+  const auto& matches = provider_->matches();
+  EXPECT_EQ(matches.size(), 3u);
+  // There are 2 shortcuts with the wilson7 url which have the same aggregate
+  // text length, visit count, and last visit as the 1 winston shortcut.
+  EXPECT_EQ(matches[0].scoring_signals.shortcut_visit_count(), 3);
+  EXPECT_EQ(matches[0].scoring_signals.shortest_shortcut_len(), 7);
+
+  EXPECT_EQ(matches[1].scoring_signals.shortcut_visit_count(), 3);
+  EXPECT_EQ(matches[1].scoring_signals.shortest_shortcut_len(), 7);
+
+  EXPECT_EQ(matches[2].scoring_signals.shortcut_visit_count(), 2);
+  EXPECT_EQ(matches[2].scoring_signals.shortest_shortcut_len(), 7);
 }
 
 TEST_F(ShortcutsProviderTest, Score) {
