@@ -92,3 +92,18 @@ def NewLoginGoogleAccount(action_runner,
   """ Login for new UI """
   BaseLoginGoogle(action_runner, credential, credentials_path)
   action_runner.WaitForElement(text='Google Account')
+
+
+def ManualLoginGoogleAccount(action_runner):
+
+  action_runner.Navigate(
+      'https://accounts.google.com/ServiceLogin?continue='
+      'https%3A%2F%2Faccounts.google.com%2FManageAccount',
+      override_online.ALWAYS_ONLINE)
+
+  # Wait until either the email or password input is visible.
+  action_runner.WaitForJavaScriptCondition('{{ @a }} || {{ @b }}',
+                                           a=_EMAIL_INPUT_VISIBLE_CONDITION,
+                                           b=_PASSWORD_INPUT_VISIBLE_CONDITION)
+
+  action_runner.WaitForElement(text='Google Account')

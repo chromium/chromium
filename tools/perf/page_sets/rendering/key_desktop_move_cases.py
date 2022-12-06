@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from telemetry.page import shared_page_state
+from telemetry.util import wpr_modes
 
 from page_sets.login_helpers import google_login
 from page_sets.rendering import rendering_story
@@ -53,7 +54,10 @@ class GmailMouseScroll2018Page(KeyDesktopMoveCasesPage):
       }'''
 
   def RunNavigateSteps(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    if self.wpr_mode == wpr_modes.WPR_OFF:
+      google_login.ManualLoginGoogleAccount(action_runner)
+    else:
+      google_login.NewLoginGoogleAccount(action_runner, 'googletest')
     super(GmailMouseScroll2018Page, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
         'window.gmonkey !== undefined &&'

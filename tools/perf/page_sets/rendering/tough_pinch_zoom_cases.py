@@ -73,7 +73,10 @@ class GmailPinchZoom2018Page(ToughPinchZoomPage):
 
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode != wpr_modes.WPR_REPLAY:
-      google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+      if self.wpr_mode == wpr_modes.WPR_OFF:
+        google_login.ManualLoginGoogleAccount(action_runner)
+      else:
+        google_login.NewLoginGoogleAccount(action_runner, 'googletest')
     super(GmailPinchZoom2018Page, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
         'window.gmonkey !== undefined &&'
@@ -90,7 +93,10 @@ class GoogleCalendarPinchZoom2018Page(ToughPinchZoomPage):
 
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode != wpr_modes.WPR_REPLAY:
-      google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+      if self.wpr_mode == wpr_modes.WPR_OFF:
+        google_login.ManualLoginGoogleAccount(action_runner)
+      else:
+        google_login.NewLoginGoogleAccount(action_runner, 'googletest')
     super(GoogleCalendarPinchZoom2018Page, self).RunNavigateSteps(
       action_runner)
     action_runner.WaitForElement('span[class~="sm8sCf"]')

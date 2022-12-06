@@ -13,6 +13,7 @@ from page_sets.login_helpers import google_login
 from page_sets.helpers import override_online
 
 from telemetry.util import js_template
+from telemetry.util import wpr_modes
 
 
 class _LoadingStory(system_health_story.SystemHealthStory):
@@ -490,7 +491,10 @@ class LoadGmailStory2019(_LoadingStory):
   SKIP_LOGIN = False
 
   def _Login(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    if self.wpr_mode == wpr_modes.WPR_OFF:
+      google_login.ManualLoginGoogleAccount(action_runner)
+    else:
+      google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 
     # Navigating to http://mail.google.com immediately leads to an infinite
     # redirection loop due to a bug in WPR (see
@@ -513,7 +517,11 @@ class LoadChatStory2020(_LoadingStory):
   SKIP_LOGIN = False
 
   def _Login(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'chatfeature')
+    if self.wpr_mode == wpr_modes.WPR_OFF:
+      google_login.ManualLoginGoogleAccount(action_runner)
+    else:
+      google_login.NewLoginGoogleAccount(action_runner, 'chatfeature')
+
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
 
 
@@ -552,7 +560,10 @@ class LoadDriveStory2019(_LoadingStory):
   TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2019]
 
   def _Login(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    if self.wpr_mode == wpr_modes.WPR_OFF:
+      google_login.ManualLoginGoogleAccount(action_runner)
+    else:
+      google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 
 
 ################################################################################
