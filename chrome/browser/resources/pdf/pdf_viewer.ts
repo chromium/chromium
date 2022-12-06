@@ -583,9 +583,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * @param message Message received from the plugin containing the x and y to
    *     navigate to in screen coordinates.
    */
-  private goToPageAndXY_(
+  private goToPageAndXy_(
       origin: ChangePageOrigin, page: number, message: Point) {
-    this.viewport.goToPageAndXY(page, message.x, message.y);
+    this.viewport.goToPageAndXy(page, message.x, message.y);
     if (origin === ChangePageOrigin.BOOKMARK) {
       record(UserAction.FOLLOW_BOOKMARK);
     }
@@ -646,7 +646,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.pluginController_!.getPasswordComplete(event.detail.password);
   }
 
-  updateUIForViewportChange() {
+  updateUiForViewportChange() {
     // Update toolbar elements.
     this.clockwiseRotations_ = this.viewport.getClockwiseRotations();
     this.pageNo_ = this.viewport.getMostVisiblePage() + 1;
@@ -940,7 +940,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
   private onChangePageAndXy_(e: CustomEvent<ChangePageAndXyDetail>) {
     const point = this.viewport.convertPageToScreen(e.detail.page, e.detail);
-    this.goToPageAndXY_(e.detail.origin, e.detail.page, point);
+    this.goToPageAndXy_(e.detail.origin, e.detail.page, point);
   }
 
   private onNavigate_(e: CustomEvent<NavigateDetail>) {

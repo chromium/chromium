@@ -198,7 +198,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
     document.body.addEventListener('change-page-and-xy', e => {
       const point =
           this.viewport_!.convertPageToScreen(e.detail.page, e.detail);
-      this.viewport_!.goToPageAndXY(e.detail.page, point.x, point.y);
+      this.viewport_!.goToPageAndXy(e.detail.page, point.x, point.y);
     });
 
     // Setup the keyboard event listener.
@@ -241,7 +241,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
         this.viewport_!.setPosition(this.lastViewportPosition);
       }
       this.paramsParser!.getViewportFromUrlParams(this.originalUrl)
-          .then(params => this.handleURLParams_(params));
+          .then(params => this.handleUrlParams_(params));
       this.setLoadState(LoadState.SUCCESS);
       this.sendDocumentLoadedMessage();
       while (this.delayedScriptingMessages_.length > 0) {
@@ -271,7 +271,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
   }
 
   /** Updates the UI before sending the viewport scripting message. */
-  protected abstract updateUIForViewportChange(): void;
+  protected abstract updateUiForViewportChange(): void;
 
   /** A callback to be called after the viewport changes. */
   private viewportChanged_() {
@@ -279,7 +279,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
       return;
     }
 
-    this.updateUIForViewportChange();
+    this.updateUiForViewportChange();
 
     const visiblePage = this.viewport_!.getMostVisiblePage();
     const visiblePageDimensions =
@@ -423,7 +423,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
    * later actions can override the effects of previous actions.
    * @param params The open params passed in the URL.
    */
-  private handleURLParams_(params: OpenPdfParams) {
+  private handleUrlParams_(params: OpenPdfParams) {
     assert(this.viewport_);
 
     if (params.zoom) {
@@ -431,7 +431,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
     }
 
     if (params.position) {
-      this.viewport_.goToPageAndXY(
+      this.viewport_.goToPageAndXy(
           params.page ? params.page : 0, params.position.x, params.position.y);
     } else if (params.page) {
       this.viewport_.goToPage(params.page);

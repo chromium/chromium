@@ -148,7 +148,7 @@ export class PdfViewerPpElement extends PdfViewerBaseElement {
                      PRINT_PREVIEW_BACKGROUND_COLOR);
   }
 
-  updateUIForViewportChange() {
+  updateUiForViewportChange() {
     // Offset the toolbar position so that it doesn't move if scrollbars appear.
     const hasScrollbars = this.viewport.documentHasScrollbars();
     const scrollbarWidth = this.viewport.scrollbarWidth;

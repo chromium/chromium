@@ -21,18 +21,18 @@ export class InkApi {
     this.canvas_.addUndoRedoListener(listener);
   }
 
-  async setPDF(buffer: ArrayBuffer) {
+  async setPdf(buffer: ArrayBuffer) {
     // We change the type from ArrayBuffer to Uint8Array due to the consequences
     // of the buffer being passed across the iframe boundary. This realm has a
     // different ArrayBuffer constructor than `buffer`.
     return this.canvas_.setPDF(new Uint8Array(buffer));
   }
 
-  async getPDF(): Promise<Uint8Array> {
+  async getPdf(): Promise<Uint8Array> {
     return this.canvas_.getPDF();
   }
 
-  async getPDFDestructive(): Promise<Uint8Array> {
+  async getPdfDestructive(): Promise<Uint8Array> {
     return this.canvas_.getPDFDestructive();
   }
 

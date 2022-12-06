@@ -1197,14 +1197,14 @@ export class Viewport implements ViewportInterface {
    * @param page the index of the page to go to. zero-based.
    */
   goToPage(page: number) {
-    this.goToPageAndXY(page, 0, 0);
+    this.goToPageAndXy(page, 0, 0);
   }
 
   /**
    * Go to the given y position in the given page index.
    * @param page the index of the page to go to. zero-based.
    */
-  goToPageAndXY(page: number, x: number|undefined, y: number|undefined) {
+  goToPageAndXy(page: number, x: number|undefined, y: number|undefined) {
     this.mightZoom_(() => {
       if (this.pageDimensions_.length === 0) {
         return;
@@ -1364,7 +1364,7 @@ export class Viewport implements ViewportInterface {
     if (zoom) {
       this.setZoom(zoom);
     }
-    this.goToPageAndXY(page, x, y);
+    this.goToPageAndXy(page, x, y);
   }
 
   setSmoothScrolling(isSmooth: boolean) {

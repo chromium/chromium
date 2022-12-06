@@ -211,7 +211,7 @@ export class ViewerInkHostElement extends PolymerElement {
     this.ink_!.addUndoStateListener(
         e => this.dispatchEvent(
             new CustomEvent('undo-state-changed', {detail: e})));
-    await this.ink_!.setPDF(data);
+    await this.ink_!.setPdf(data);
     this.state_ = State.ACTIVE;
     this.viewportChanged();
     // Wait for the next task to avoid a race where Ink drops the background
@@ -273,7 +273,7 @@ export class ViewerInkHostElement extends PolymerElement {
    */
   async saveDocument(): Promise<{fileName: string, dataToSave: ArrayBuffer}> {
     if (this.state_ === State.ACTIVE) {
-      const pdf = await this.ink_!.getPDFDestructive();
+      const pdf = await this.ink_!.getPdfDestructive();
       this.buffer_ = await pdf.buffer;
       this.state_ = State.IDLE;
     }
