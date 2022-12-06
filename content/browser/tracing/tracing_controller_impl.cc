@@ -205,19 +205,21 @@ void TracingControllerImpl::AddAgents() {
   agents_.push_back(std::make_unique<CastTracingAgent>());
 #endif
 
+  // Ensure the TraceEventAgent has been created.
+  tracing::TraceEventAgent::GetInstance();
+
   // For adding general CPU, network, OS, and other system information to the
   // metadata.
-  auto* trace_event_agent = tracing::TraceEventAgent::GetInstance();
-  trace_event_agent->AddMetadataGeneratorFunction(base::BindRepeating(
+  auto* metadata_source = tracing::TraceEventMetadataSource::GetInstance();
+  metadata_source->AddGeneratorFunction(base::BindRepeating(
       &TracingControllerImpl::GenerateMetadataDict, base::Unretained(this)));
   if (delegate_) {
-    trace_event_agent->AddMetadataGeneratorFunction(
+    metadata_source->AddGeneratorFunction(
         base::BindRepeating(&TracingDelegate::GenerateMetadataDict,
                             base::Unretained(delegate_.get())));
   }
-  tracing::TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(
-      base::BindRepeating(&TracingControllerImpl::GenerateMetadataPacket,
-                          base::Unretained(this)));
+  metadata_source->AddGeneratorFunction(base::BindRepeating(
+      &TracingControllerImpl::GenerateMetadataPacket, base::Unretained(this)));
 #if BUILDFLAG(IS_ANDROID)
   tracing::PerfettoTracedProcess::Get()->AddDataSource(
       tracing::JavaHeapProfiler::GetInstance());
@@ -250,8 +252,7 @@ void TracingControllerImpl::GenerateMetadataPacket(
 }
 
 // Can be called on any thread.
-absl::optional<base::Value::Dict>
-TracingControllerImpl::GenerateMetadataDict() {
+absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Value::Dict metadata_dict;
 
@@ -376,7 +377,7 @@ TracingControllerImpl::GenerateMetadataDict() {
     }
   }
 
-  return metadata_dict;
+  return base::Value(std::move(metadata_dict));
 }
 
 TracingControllerImpl* TracingControllerImpl::GetInstance() {

@@ -29,6 +29,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -126,7 +127,7 @@ class TracingControllerTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell, GetTestUrl("", "title1.html")));
   }
 
-  absl::optional<base::Value::Dict> GenerateMetadataDict() {
+  absl::optional<base::Value> GenerateMetadataDict() {
     return std::move(metadata_);
   }
 
@@ -244,9 +245,10 @@ class TracingControllerTest : public ContentBrowserTest {
       scoped_refptr<TracingController::TraceDataEndpoint> trace_data_endpoint =
           TracingController::CreateStringEndpoint(std::move(callback));
 
-      metadata_ = base::Value::Dict();
-      metadata_->Set("not-whitelisted", "this_not_found");
-      tracing::TraceEventAgent::GetInstance()->AddMetadataGeneratorFunction(
+      base::Value::Dict metadata;
+      metadata.Set("not-whitelisted", "this_not_found");
+      metadata_ = base::Value(std::move(metadata));
+      tracing::TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(
           base::BindRepeating(&TracingControllerTest::GenerateMetadataDict,
                               base::Unretained(this)));
 
@@ -336,7 +338,7 @@ class TracingControllerTest : public ContentBrowserTest {
   int enable_recording_done_callback_count_;
   int disable_recording_done_callback_count_;
   base::FilePath last_actual_recording_file_path_;
-  absl::optional<base::Value::Dict> metadata_;
+  absl::optional<base::Value> metadata_;
   std::unique_ptr<std::string> last_data_;
 };
 

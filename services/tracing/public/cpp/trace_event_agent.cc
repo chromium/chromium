@@ -58,21 +58,4 @@ void TraceEventAgent::GetCategories(std::set<std::string>* category_set) {
   }
 }
 
-void TraceEventAgent::AddMetadataGeneratorFunction(
-    MetadataGeneratorFunction generator) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  metadata_generator_functions_.push_back(generator);
-
-  TraceEventMetadataSource::GetInstance()->AddGeneratorFunction(
-      base::BindRepeating(
-          [](MetadataGeneratorFunction const& generator)
-              -> absl::optional<base::Value> {
-            if (auto rv = generator.Run()) {
-              return base::Value(std::move(rv.value()));
-            }
-            return absl::nullopt;
-          },
-          std::move(generator)));
-}
-
 }  // namespace tracing

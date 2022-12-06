@@ -92,10 +92,10 @@ bool AwTracingDelegate::IsAllowedToEndBackgroundScenario(
   return true;
 }
 
-absl::optional<base::Value::Dict> AwTracingDelegate::GenerateMetadataDict() {
+absl::optional<base::Value> AwTracingDelegate::GenerateMetadataDict() {
   base::Value::Dict metadata_dict;
   metadata_dict.Set("revision", version_info::GetLastChange());
-  return metadata_dict;
+  return base::Value(std::move(metadata_dict));
 }
 
 }  // namespace android_webview

@@ -34,7 +34,7 @@ class CONTENT_EXPORT TracingDelegate {
   virtual bool IsSystemWideTracingEnabled();
 
   // Used to add any additional metadata to traces.
-  virtual absl::optional<base::Value::Dict> GenerateMetadataDict();
+  virtual absl::optional<base::Value> GenerateMetadataDict();
 };
 
 }  // namespace content

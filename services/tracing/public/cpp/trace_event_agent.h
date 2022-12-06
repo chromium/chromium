@@ -30,20 +30,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventAgent : public BaseAgent {
 
   void GetCategories(std::set<std::string>* category_set) override;
 
-  using MetadataGeneratorFunction =
-      base::RepeatingCallback<absl::optional<base::Value::Dict>()>;
-  void AddMetadataGeneratorFunction(MetadataGeneratorFunction generator);
-
  private:
   friend base::NoDestructor<tracing::TraceEventAgent>;
-  friend std::default_delete<TraceEventAgent>;      // For Testing
-  friend class TraceEventAgentTest;                 // For Testing
 
   TraceEventAgent();
   ~TraceEventAgent() override;
-
-
-  std::vector<MetadataGeneratorFunction> metadata_generator_functions_;
 
   THREAD_CHECKER(thread_checker_);
 };
