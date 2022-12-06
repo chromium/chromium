@@ -90,40 +90,6 @@ VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
   }
 }
 
-// TODO(eugene): There is some strange channel switch during RGB readback.
-// When frame's pixel format matches GL and Skia color types we get reversed
-// channels. But why?
-SkColorType SkColorTypeForPlane(VideoPixelFormat format, size_t plane) {
-  switch (format) {
-    case PIXEL_FORMAT_I420:
-    case PIXEL_FORMAT_I420A:
-    case PIXEL_FORMAT_I422:
-    case PIXEL_FORMAT_I444:
-      // kGray_8_SkColorType would make more sense but doesn't work on Windows.
-      return kAlpha_8_SkColorType;
-    case PIXEL_FORMAT_NV12:
-      return plane == VideoFrame::kYPlane ? kAlpha_8_SkColorType
-                                          : kR8G8_unorm_SkColorType;
-    case PIXEL_FORMAT_NV12A:
-      return plane == VideoFrame::kYPlane ||
-                     plane == VideoFrame::kAPlaneTriPlanar
-                 ? kAlpha_8_SkColorType
-                 : kR8G8_unorm_SkColorType;
-    case PIXEL_FORMAT_P016LE:
-      return plane == VideoFrame::kYPlane ? kA16_unorm_SkColorType
-                                          : kR16G16_unorm_SkColorType;
-    case PIXEL_FORMAT_XBGR:
-    case PIXEL_FORMAT_ABGR:
-      return kRGBA_8888_SkColorType;
-    case PIXEL_FORMAT_XRGB:
-    case PIXEL_FORMAT_ARGB:
-      return kBGRA_8888_SkColorType;
-    default:
-      NOTREACHED();
-      return kUnknown_SkColorType;
-  }
-}
-
 GrGLenum GLFormatForPlane(VideoPixelFormat format, size_t plane) {
   switch (SkColorTypeForPlane(format, plane)) {
     case kAlpha_8_SkColorType:
@@ -1259,6 +1225,41 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
   return EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat)
       .WithData("src", src_frame.AsHumanReadableString())
       .WithData("dst", dst_frame.AsHumanReadableString());
+}
+
+// TODO(crbug.com/1395524): There is some strange channel switch during RGB
+// readback. When frame's pixel format matches GL and Skia color types we get
+// reversed channels. But why?
+MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
+                                             size_t plane) {
+  switch (format) {
+    case PIXEL_FORMAT_I420:
+    case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_I422:
+    case PIXEL_FORMAT_I444:
+      // kGray_8_SkColorType would make more sense but doesn't work on Windows.
+      return kAlpha_8_SkColorType;
+    case PIXEL_FORMAT_NV12:
+      return plane == VideoFrame::kYPlane ? kAlpha_8_SkColorType
+                                          : kR8G8_unorm_SkColorType;
+    case PIXEL_FORMAT_NV12A:
+      return plane == VideoFrame::kYPlane ||
+                     plane == VideoFrame::kAPlaneTriPlanar
+                 ? kAlpha_8_SkColorType
+                 : kR8G8_unorm_SkColorType;
+    case PIXEL_FORMAT_P016LE:
+      return plane == VideoFrame::kYPlane ? kA16_unorm_SkColorType
+                                          : kR16G16_unorm_SkColorType;
+    case PIXEL_FORMAT_XBGR:
+    case PIXEL_FORMAT_ABGR:
+      return kRGBA_8888_SkColorType;
+    case PIXEL_FORMAT_XRGB:
+    case PIXEL_FORMAT_ARGB:
+      return kBGRA_8888_SkColorType;
+    default:
+      NOTREACHED();
+      return kUnknown_SkColorType;
+  }
 }
 
 MEDIA_EXPORT VideoPixelFormat

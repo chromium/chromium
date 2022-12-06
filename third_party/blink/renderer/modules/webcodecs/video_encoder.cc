@@ -836,7 +836,7 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
     background_readback_ = BackgroundReadback::From(*GetExecutionContext());
 
   if (background_readback_) {
-    background_readback_->ReadbackTextureBackedFrameToMemory(
+    background_readback_->ReadbackTextureBackedFrameToMemoryFrame(
         std::move(frame), std::move(background_result_cb));
     return true;
   }

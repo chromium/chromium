@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/background_readback.h"
 
+#include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -30,6 +32,14 @@
 namespace {
 bool CanUseRgbReadback(media::VideoFrame& frame) {
   return media::IsRGB(frame.format()) && (frame.NumTextures() == 1);
+}
+
+SkImageInfo GetImageInfoForFrame(const media::VideoFrame& frame,
+                                 const gfx::Size& size) {
+  SkColorType color_type =
+      SkColorTypeForPlane(frame.format(), media::VideoFrame::kARGBPlane);
+  SkAlphaType alpha_type = kUnpremul_SkAlphaType;
+  return SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
 }
 
 gpu::raster::RasterInterface* GetSharedGpuRasterInterface() {
@@ -41,7 +51,31 @@ gpu::raster::RasterInterface* GetSharedGpuRasterInterface() {
   }
   return nullptr;
 }
+
+// Controls how asyc VideoFrame.copyTo() works
+// Enabled - RI::ReadbackARGBPixelsAsync()
+// Disabled - simply call sync readback on a separate thread.
+BASE_FEATURE(kTrullyAsyncRgbVideoFrameCopyTo,
+             "TrullyAsyncRgbVideoFrameCopyTo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace
+
+namespace WTF {
+
+template <>
+struct CrossThreadCopier<blink::VideoFrameLayout>
+    : public CrossThreadCopierPassThrough<blink::VideoFrameLayout> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<base::span<uint8_t>>
+    : public CrossThreadCopierPassThrough<base::span<uint8_t>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+}  // namespace WTF
 
 namespace blink {
 
@@ -52,8 +86,13 @@ class SyncReadbackThread
     : public WTF::ThreadSafeRefCounted<SyncReadbackThread> {
  public:
   SyncReadbackThread();
-  scoped_refptr<media::VideoFrame> Readback(
+  scoped_refptr<media::VideoFrame> ReadbackToFrame(
       scoped_refptr<media::VideoFrame> frame);
+
+  bool ReadbackToBuffer(scoped_refptr<media::VideoFrame> frame,
+                        const gfx::Rect src_rect,
+                        const VideoFrameLayout dest_layout,
+                        base::span<uint8_t> dest_buffer);
 
  private:
   bool LazyInitialize();
@@ -87,9 +126,9 @@ BackgroundReadback* BackgroundReadback::From(ExecutionContext& context) {
   return supplement;
 }
 
-void BackgroundReadback::ReadbackTextureBackedFrameToMemory(
+void BackgroundReadback::ReadbackTextureBackedFrameToMemoryFrame(
     scoped_refptr<media::VideoFrame> txt_frame,
-    ReadbackDoneCallback result_cb) {
+    ReadbackToFrameDoneCallback result_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(txt_frame);
 
@@ -101,25 +140,56 @@ void BackgroundReadback::ReadbackTextureBackedFrameToMemory(
   ReadbackOnThread(std::move(txt_frame), std::move(result_cb));
 }
 
+void BackgroundReadback::ReadbackTextureBackedFrameToBuffer(
+    scoped_refptr<media::VideoFrame> txt_frame,
+    const gfx::Rect& src_rect,
+    const VideoFrameLayout& dest_layout,
+    base::span<uint8_t> dest_buffer,
+    ReadbackDoneCallback done_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(txt_frame);
+
+  if (base::FeatureList::IsEnabled(kTrullyAsyncRgbVideoFrameCopyTo) &&
+      CanUseRgbReadback(*txt_frame)) {
+    ReadbackRGBTextureBackedFrameToBuffer(txt_frame, src_rect, dest_layout,
+                                          dest_buffer, std::move(done_cb));
+    return;
+  }
+  ReadbackOnThread(std::move(txt_frame), src_rect, dest_layout, dest_buffer,
+                   std::move(done_cb));
+}
+
 void BackgroundReadback::ReadbackOnThread(
     scoped_refptr<media::VideoFrame> txt_frame,
-    ReadbackDoneCallback result_cb) {
+    ReadbackToFrameDoneCallback result_cb) {
   worker_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       ConvertToBaseOnceCallback(
-          CrossThreadBindOnce(&SyncReadbackThread::Readback,
+          CrossThreadBindOnce(&SyncReadbackThread::ReadbackToFrame,
                               sync_readback_impl_, std::move(txt_frame))),
       std::move(result_cb));
 }
 
+void BackgroundReadback::ReadbackOnThread(
+    scoped_refptr<media::VideoFrame> txt_frame,
+    const gfx::Rect& src_rect,
+    const VideoFrameLayout& dest_layout,
+    base::span<uint8_t> dest_buffer,
+    ReadbackDoneCallback done_cb) {
+  worker_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          &SyncReadbackThread::ReadbackToBuffer, sync_readback_impl_,
+          std::move(txt_frame), src_rect, dest_layout, dest_buffer)),
+      std::move(done_cb));
+}
+
 void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
     scoped_refptr<media::VideoFrame> txt_frame,
-    ReadbackDoneCallback result_cb) {
+    ReadbackToFrameDoneCallback result_cb) {
   DCHECK(CanUseRgbReadback(*txt_frame));
 
-  SkImageInfo info = SkImageInfo::MakeN32(txt_frame->coded_size().width(),
-                                          txt_frame->coded_size().height(),
-                                          kUnpremul_SkAlphaType);
+  SkImageInfo info = GetImageInfoForFrame(*txt_frame, txt_frame->coded_size());
   const auto format = media::VideoPixelFormatFromSkColorType(
       info.colorType(), media::IsOpaque(txt_frame->format()));
 
@@ -133,6 +203,10 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
     return;
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "media", "ReadbackRGBTextureBackedFrameToMemory", txt_frame.get(),
+      "timestamp", txt_frame->timestamp());
+
   uint8_t* dst_pixels =
       result->GetWritableVisibleData(media::VideoFrame::kARGBPlane);
   int rgba_stide = result->stride(media::VideoFrame::kARGBPlane);
@@ -145,19 +219,23 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
   gfx::Point src_point;
   gpu::MailboxHolder mailbox_holder = txt_frame->mailbox_holder(0);
   ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
+
   ri->ReadbackARGBPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, origin, src_point,
       info, base::saturated_cast<GLuint>(rgba_stide), dst_pixels,
-      WTF::BindOnce(&BackgroundReadback::OnARGBPixelsReadCompleted,
+      WTF::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
                     MakeUnwrappingCrossThreadHandle(this), std::move(result_cb),
                     std::move(txt_frame), std::move(result)));
 }
 
-void BackgroundReadback::OnARGBPixelsReadCompleted(
-    ReadbackDoneCallback result_cb,
+void BackgroundReadback::OnARGBPixelsFrameReadCompleted(
+    ReadbackToFrameDoneCallback result_cb,
     scoped_refptr<media::VideoFrame> txt_frame,
     scoped_refptr<media::VideoFrame> result_frame,
     bool success) {
+  TRACE_EVENT_NESTABLE_ASYNC_END1("media",
+                                  "ReadbackRGBTextureBackedFrameToMemory",
+                                  txt_frame.get(), "success", success);
   if (!success) {
     ReadbackOnThread(std::move(txt_frame), std::move(result_cb));
     return;
@@ -165,12 +243,91 @@ void BackgroundReadback::OnARGBPixelsReadCompleted(
   if (auto* ri = GetSharedGpuRasterInterface()) {
     media::WaitAndReplaceSyncTokenClient client(ri);
     txt_frame->UpdateReleaseSyncToken(&client);
+  } else {
+    success = false;
   }
 
   result_frame->set_color_space(txt_frame->ColorSpace());
   result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
   result_frame->metadata().ClearTextureFrameMedatada();
   std::move(result_cb).Run(success ? std::move(result_frame) : nullptr);
+}
+
+void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
+    scoped_refptr<media::VideoFrame> txt_frame,
+    const gfx::Rect& src_rect,
+    const VideoFrameLayout& dest_layout,
+    base::span<uint8_t> dest_buffer,
+    ReadbackDoneCallback done_cb) {
+  if (dest_layout.NumPlanes() != 1) {
+    NOTREACHED()
+        << "This method shouldn't be called on anything but RGB frames";
+    media::BindToCurrentLoop(std::move(std::move(done_cb))).Run(false);
+    return;
+  }
+
+  auto* ri = GetSharedGpuRasterInterface();
+  if (!ri) {
+    media::BindToCurrentLoop(std::move(std::move(done_cb))).Run(false);
+    return;
+  }
+
+  uint32_t offset = dest_layout.Offset(0);
+  uint32_t stride = dest_layout.Stride(0);
+
+  uint8_t* dst_pixels = dest_buffer.data() + offset;
+  size_t max_bytes_written = stride * src_rect.height();
+  if (stride <= 0 || max_bytes_written > dest_buffer.size()) {
+    DLOG(ERROR) << "Buffer is not sufficiently large for readback";
+    media::BindToCurrentLoop(std::move(std::move(done_cb))).Run(false);
+    return;
+  }
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "media", "ReadbackRGBTextureBackedFrameToBuffer", txt_frame.get(),
+      "timestamp", txt_frame->timestamp());
+
+  SkImageInfo info = GetImageInfoForFrame(*txt_frame, src_rect.size());
+  gfx::Point src_point = src_rect.origin();
+  auto origin = txt_frame->metadata().texture_origin_is_top_left
+                    ? kTopLeft_GrSurfaceOrigin
+                    : kBottomLeft_GrSurfaceOrigin;
+
+  gpu::MailboxHolder mailbox_holder = txt_frame->mailbox_holder(0);
+  ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
+
+  ri->ReadbackARGBPixelsAsync(
+      mailbox_holder.mailbox, mailbox_holder.texture_target, origin, src_point,
+      info, base::saturated_cast<GLuint>(stride), dst_pixels,
+      WTF::BindOnce(&BackgroundReadback::OnARGBPixelsBufferReadCompleted,
+                    MakeUnwrappingCrossThreadHandle(this), std::move(txt_frame),
+                    src_rect, dest_layout, dest_buffer, std::move(done_cb)));
+}
+
+void BackgroundReadback::OnARGBPixelsBufferReadCompleted(
+    scoped_refptr<media::VideoFrame> txt_frame,
+    const gfx::Rect& src_rect,
+    const VideoFrameLayout& dest_layout,
+    base::span<uint8_t> dest_buffer,
+    ReadbackDoneCallback done_cb,
+    bool success) {
+  TRACE_EVENT_NESTABLE_ASYNC_END1("media",
+                                  "ReadbackRGBTextureBackedFrameToBuffer",
+                                  txt_frame.get(), "success", success);
+  if (!success) {
+    ReadbackOnThread(std::move(txt_frame), src_rect, dest_layout, dest_buffer,
+                     std::move(done_cb));
+    return;
+  }
+
+  if (auto* ri = GetSharedGpuRasterInterface()) {
+    media::WaitAndReplaceSyncTokenClient client(ri);
+    txt_frame->UpdateReleaseSyncToken(&client);
+  } else {
+    success = false;
+  }
+
+  std::move(done_cb).Run(success);
 }
 
 SyncReadbackThread::SyncReadbackThread() {
@@ -204,7 +361,7 @@ bool SyncReadbackThread::LazyInitialize() {
   return true;
 }
 
-scoped_refptr<media::VideoFrame> SyncReadbackThread::Readback(
+scoped_refptr<media::VideoFrame> SyncReadbackThread::ReadbackToFrame(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!LazyInitialize())
@@ -214,6 +371,44 @@ scoped_refptr<media::VideoFrame> SyncReadbackThread::Readback(
   auto* gr_context = context_provider_->GetGrContext();
   return media::ReadbackTextureBackedFrameToMemorySync(*frame, ri, gr_context,
                                                        &result_frame_pool_);
+}
+
+bool SyncReadbackThread::ReadbackToBuffer(
+    scoped_refptr<media::VideoFrame> frame,
+    const gfx::Rect src_rect,
+    const VideoFrameLayout dest_layout,
+    base::span<uint8_t> dest_buffer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  TRACE_EVENT1("media", "SyncReadbackThread::ReadbackToBuffer", "timestamp",
+               frame->timestamp());
+
+  if (!LazyInitialize() || !frame)
+    return false;
+
+  auto* ri = context_provider_->RasterInterface();
+  auto* gr_context = context_provider_->GetGrContext();
+
+  if (!ri)
+    return false;
+
+  for (wtf_size_t i = 0; i < dest_layout.NumPlanes(); i++) {
+    const gfx::Size sample_size =
+        media::VideoFrame::SampleSize(dest_layout.Format(), i);
+    gfx::Rect plane_src_rect(src_rect.x() / sample_size.width(),
+                             src_rect.y() / sample_size.height(),
+                             src_rect.width() / sample_size.width(),
+                             src_rect.height() / sample_size.height());
+    uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
+    if (!media::ReadbackTexturePlaneToMemorySync(
+            *frame, i, plane_src_rect, dest_pixels, dest_layout.Stride(i), ri,
+            gr_context)) {
+      // It's possible to fail after copying some but not all planes, leaving
+      // the output buffer in a corrupt state D:
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace blink

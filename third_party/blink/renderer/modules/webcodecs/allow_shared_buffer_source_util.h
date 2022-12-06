@@ -37,6 +37,12 @@ base::span<T> AsSpan(const AllowSharedBufferSource* buffer_union) {
   }
 }
 
+// Ensures that the underlying memory for `buffer_union` remains valid
+// (owned by a returned instance of ArrayBufferContents)
+// even if the buffer is detached or truncated by client activity.
+ArrayBufferContents PinArrayBufferContent(
+    const AllowSharedBufferSource* buffer_union);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ALLOW_SHARED_BUFFER_SOURCE_UTIL_H_

@@ -186,7 +186,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super(WebCodecsIntegrationTest, cls).SetUpProcess()
     args = [
         '--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream',
-        '--enable-unsafe-webgpu'
+        '--enable-unsafe-webgpu', '--enable-blink-features=SharedArrayBuffer'
     ]
 
     # If we don't call CustomizeBrowserArgs cls.platform is None

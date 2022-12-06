@@ -37,11 +37,13 @@ class DOMRectReadOnly;
 class ExceptionState;
 class ExecutionContext;
 class ScriptPromise;
+class ScriptPromiseResolver;
 class ScriptState;
 class VideoColorSpace;
 class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
+class VideoFrameLayout;
 
 MODULES_EXPORT BASE_DECLARE_FEATURE(kRemoveWebCodecsSpecViolations);
 
@@ -130,6 +132,11 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   bool IsAccelerated() const override;
 
   void ResetExternalMemory();
+  ScriptPromiseResolver* CopyToAsync(ScriptState* script_state,
+                                     scoped_refptr<media::VideoFrame> frame,
+                                     gfx::Rect src_rect,
+                                     const AllowSharedBufferSource* destination,
+                                     const VideoFrameLayout& dest_layout);
 
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;

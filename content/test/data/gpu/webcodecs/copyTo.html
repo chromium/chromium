@@ -80,6 +80,21 @@ Take frames coming from various sources and read them using copyTo().
     }
   }
 
+  function readWholeBuffer(buffer) {
+    let bytes = new Uint8Array(buffer);
+    return bytes.reduce((acc, byte) => { return byte ? acc + 1 : acc; }, 0);
+  }
+
+  function makeWorker() {
+    const worker = new Worker('buffer-read-and-reply-worker.js');
+    let resolve_promise = null;
+    worker.onmessage = function(e) { resolve_promise(e.data); }
+    let worker_promise = new Promise((resolve) => {
+      resolve_promise = resolve;
+    });
+    return { worker , worker_promise };
+  }
+
   async function main(arg) {
     let source_type = arg.source_type;
     let source = await createFrameSource(source_type, 320, 240);
@@ -89,12 +104,39 @@ Take frames coming from various sources and read them using copyTo().
     }
 
     let frame = await source.getNextFrame();
+    let size = frame.allocationSize();
+
+    // Readback a whole frame to a regular buffer and send it to a worker
+    {
+      let {worker, worker_promise } = makeWorker();
+      let buf = new ArrayBuffer(size);
+      TEST.assert(readWholeBuffer(buf) == 0, "Buffer should be zero");
+      let copy_promise = frame.copyTo(buf);
+      worker.postMessage(buf, [buf]);
+      let result_buf = await worker_promise;
+      let layout = await copy_promise;
+      TEST.assert(readWholeBuffer(result_buf) > 0, "Buffer shouldn't be zero");
+      TEST.assert(layout, "layout is empty / ArrayBuffer");
+      worker.terminate();
+    }
+
+    // Readback a whole frame to a shared buffer and send it to a worker
+    {
+      let {worker, worker_promise} = makeWorker();
+      let buf = new SharedArrayBuffer(size);
+      TEST.assert(readWholeBuffer(buf) == 0, "Buffer should be zero");
+      let copy_promise = frame.copyTo(buf);
+      worker.postMessage(buf);
+      await worker_promise;
+      let layout = await copy_promise;
+      TEST.assert(readWholeBuffer(buf) > 0, "SharedBuffer shouldn't be zero");
+      TEST.assert(layout, "layout is empty / SharedArrayBuffer");
+      worker.terminate();
+    }
+
+    // Validate pixels
     if (!arg.validate_camera_frames && source_type == 'camera') {
       TEST.log("Skip copyTo result validation");
-      let size = frame.allocationSize();
-      let buf = new ArrayBuffer(size);
-      let layout = await frame.copyTo(buf);
-      TEST.assert(layout, "layout is empty");
     } else {
       await validateFourColorsBytes(frame);
     }

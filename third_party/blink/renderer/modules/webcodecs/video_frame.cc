@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
+#include "third_party/blink/renderer/modules/webcodecs/background_readback.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_layout.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -63,9 +65,24 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
+namespace WTF {
+
+template <>
+struct CrossThreadCopier<blink::VideoFrameLayout>
+    : public CrossThreadCopierPassThrough<blink::VideoFrameLayout> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+}  // namespace WTF
+
 namespace blink {
 
 namespace {
+
+// Controls if VideoFrame.copyTo() reads GPU frames asynchronously
+BASE_FEATURE(kVideoFrameAsyncCopyTo,
+             "VideoFrameAsyncCopyTo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   switch (fmt) {
@@ -474,6 +491,19 @@ bool ParseCopyToOptions(const media::VideoFrame& frame,
   if (src_rect_out)
     *src_rect_out = src_rect;
   return true;
+}
+
+// Convert and return |dest_layout|.
+HeapVector<Member<PlaneLayout>> ConvertLayout(
+    const VideoFrameLayout& dest_layout) {
+  HeapVector<Member<PlaneLayout>> result;
+  for (wtf_size_t i = 0; i < dest_layout.NumPlanes(); i++) {
+    auto* plane = MakeGarbageCollected<PlaneLayout>();
+    plane->setOffset(dest_layout.Offset(i));
+    plane->setStride(dest_layout.Stride(i));
+    result.push_back(plane);
+  }
+  return result;
 }
 
 }  // namespace
@@ -1017,6 +1047,41 @@ uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
   return dest_layout.Size();
 }
 
+ScriptPromiseResolver* VideoFrame::CopyToAsync(
+    ScriptState* script_state,
+    scoped_refptr<media::VideoFrame> frame,
+    gfx::Rect src_rect,
+    const AllowSharedBufferSource* destination,
+    const VideoFrameLayout& dest_layout) {
+  auto* background_readback =
+      BackgroundReadback::From(*ExecutionContext::From(script_state));
+  if (!background_readback)
+    return nullptr;
+
+  ArrayBufferContents contents = PinArrayBufferContent(destination);
+  if (!contents.DataLength())
+    return nullptr;
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto readback_done_handler = [](ArrayBufferContents contents,
+                                  ScriptPromiseResolver* resolver,
+                                  VideoFrameLayout dest_layout, bool success) {
+    auto* script_state = resolver->GetScriptState();
+    if (success && script_state->ContextIsValid()) {
+      resolver->Resolve(ConvertLayout(dest_layout));
+    } else {
+      resolver->Reject();
+    }
+  };
+  auto done_cb = WTF::BindOnce(readback_done_handler, std::move(contents),
+                               WrapPersistent(resolver), dest_layout);
+
+  auto buffer = AsSpan<uint8_t>(destination);
+  background_readback->ReadbackTextureBackedFrameToBuffer(
+      std::move(frame), src_rect, dest_layout, buffer, std::move(done_cb));
+  return resolver;
+}
+
 ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
                                  const AllowSharedBufferSource* destination,
                                  VideoFrameCopyToOptions* options,
@@ -1059,6 +1124,14 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
     CopyMappablePlanes(*mapped_frame, src_rect, dest_layout, buffer);
   } else {
     DCHECK(local_frame->HasTextures());
+
+    if (base::FeatureList::IsEnabled(kVideoFrameAsyncCopyTo)) {
+      if (auto* resolver = CopyToAsync(script_state, local_frame, src_rect,
+                                       destination, dest_layout)) {
+        return resolver->Promise();
+      }
+    }
+
     if (!CopyTexturablePlanes(*local_frame, src_rect, dest_layout, buffer)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Failed to read VideoFrame data.");
@@ -1066,15 +1139,7 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
     }
   }
 
-  // Convert and return |dest_layout|.
-  HeapVector<Member<PlaneLayout>> result;
-  for (wtf_size_t i = 0; i < dest_layout.NumPlanes(); i++) {
-    auto* plane = MakeGarbageCollected<PlaneLayout>();
-    plane->setOffset(dest_layout.Offset(i));
-    plane->setStride(dest_layout.Stride(i));
-    result.push_back(plane);
-  }
-
+  auto result = ConvertLayout(dest_layout);
   return ScriptPromise::Cast(
       script_state,
       ToV8Traits<IDLSequence<PlaneLayout>>::ToV8(script_state, result)
