@@ -28,6 +28,10 @@ This implication means we need to minimize risk of needing to revert CLs that
 add methods. We thus add the following guidance:
 * When adding a new interface method, create the exo (server) implementation
   first.
+* In the same CL, add a stub (empty) implementation on the client
+  (ozone-wayland) side without updating the version. This is to avoid a problem
+  when yet another protocol update is added on the client side while your are
+  working on the client side implementation for your protocol update.
 * In a separate CL, follow up with the client changes that use the interface
   method.
 Thus, in the event that usage of the new interface causes bugs, the client-side

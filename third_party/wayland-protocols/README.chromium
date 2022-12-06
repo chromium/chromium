@@ -29,6 +29,9 @@ To upgrade a source to a new version:
 - Run gclient sync to update the local working copy with the new version.
 - Update this README to reflect the new version number in the source's section.
 
+Please follow the guideline below when updating an extension protocol.
+https://source.chromium.org/chromium/chromium/src/+/main:components/exo/wayland/README.md
+
 --------------------------------------------------------------------------------
 Name: gtk
 URL: https://github.com/GNOME/gtk
