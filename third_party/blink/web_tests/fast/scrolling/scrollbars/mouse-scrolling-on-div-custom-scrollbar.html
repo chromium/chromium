@@ -4,6 +4,9 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/scrollbar-util.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-actions.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <style>
 .appearance {
   width: 100px;
@@ -55,19 +58,23 @@ window.onload = () => {
     let x = customRectFast.right - 5;
     let y = customRectFast.top + customRectFast.height / 2;
 
-    await mouseMoveTo(x, y);
-    await mouseDownAt(x, y);
-    await mouseMoveTo(x, y);
-    await mouseUpAt(x, y);
+    await new test_driver.Actions()
+        .pointerMove(x, y)
+        .pointerDown()
+        .addTick()
+        .pointerUp()
+        .send();
 
     // Testing the horizontal custom scrollbar click.
     x = customRectFast.left + customRectFast.width / 2;
     y = customRectFast.bottom - 5;
 
-    await mouseMoveTo(x, y);
-    await mouseDownAt(x, y);
-    await mouseMoveTo(x, y);
-    await mouseUpAt(x, y);
+    await new test_driver.Actions()
+        .pointerMove(x, y)
+        .pointerDown()
+        .addTick()
+        .pointerUp()
+        .send();
 
     // Test passes if renderer did not crash.
 
