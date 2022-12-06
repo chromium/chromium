@@ -103,7 +103,7 @@ void DumpDistillability(content::RenderFrame* render_frame,
   raw_features.Set("moz_score_all_linear", features.moz_score_all_linear);
   dict.Set("features", std::move(raw_features));
 
-  base::ListValue derived_features;
+  base::Value::List derived_features;
   for (double value : derived) {
     derived_features.Append(value);
   }
