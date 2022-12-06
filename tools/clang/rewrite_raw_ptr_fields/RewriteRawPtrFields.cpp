@@ -1100,6 +1100,9 @@ class RawRefRewriter {
         paths_to_exclude(paths_to_exclude) {}
 
   void addMatchers() {
+    auto anonymous_struct_field_decl_matcher =
+        fieldDecl(hasParent(cxxRecordDecl(isAnonymousStructOrUnion())));
+
     // Field declarations =========
     // Given
     //   struct S {
@@ -1112,6 +1115,7 @@ class RawRefRewriter {
     //   matched by --exclude-paths cmdline param
     // - "implicit" fields (i.e. field decls that are not explicitly present in
     //   the source code)
+    // - fields in anonymous structs.
 
     auto field_decl_matcher =
         fieldDecl(allOf(has(referenceTypeLoc().bind("affectedFieldDeclType")),
@@ -1120,7 +1124,8 @@ class RawRefRewriter {
                             isInThirdPartyLocation(), isInGeneratedLocation(),
                             isInLocationListedInFilterFile(&paths_to_exclude),
                             isFieldDeclListedInFilterFile(&fields_to_exclude),
-                            ImplicitFieldDeclaration()))))
+                            ImplicitFieldDeclaration(),
+                            anonymous_struct_field_decl_matcher))))
             .bind("affectedFieldDecl");
 
     match_finder.addMatcher(field_decl_matcher, &field_decl_rewriter);
