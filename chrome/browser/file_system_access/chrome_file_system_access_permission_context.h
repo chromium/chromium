@@ -157,6 +157,14 @@ class ChromeFileSystemAccessPermissionContext
   // Return all persisted objects, including those which have expired.
   std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
   GetAllGrantedOrExpiredObjects();
+  scoped_refptr<content::FileSystemAccessPermissionGrant>
+  GetPersistedReadPermissionGrantForTesting(const url::Origin& origin,
+                                            const base::FilePath& path,
+                                            HandleType handle_type);
+  scoped_refptr<content::FileSystemAccessPermissionGrant>
+  GetPersistedWritePermissionGrantForTesting(const url::Origin& origin,
+                                             const base::FilePath& path,
+                                             HandleType handle_type);
   void UpdatePersistedPermissionsForTesting();
   bool HasPersistedPermissionForTesting(const url::Origin& origin,
                                         const base::FilePath& path,

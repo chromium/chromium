@@ -1750,6 +1750,36 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermissions(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+scoped_refptr<content::FileSystemAccessPermissionGrant>
+ChromeFileSystemAccessPermissionContext::
+    GetPersistedReadPermissionGrantForTesting(const url::Origin& origin,
+                                              const base::FilePath& path,
+                                              HandleType handle_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto grant =
+      GetReadPermissionGrant(origin, path, handle_type, UserAction::kOpen);
+
+  static_cast<PermissionGrantImpl*>(grant.get())
+      ->SetStatus(PermissionStatus::GRANTED,
+                  PersistedPermissionOptions::kUpdatePersistedPermission);
+  return grant;
+}
+
+scoped_refptr<content::FileSystemAccessPermissionGrant>
+ChromeFileSystemAccessPermissionContext::
+    GetPersistedWritePermissionGrantForTesting(const url::Origin& origin,
+                                               const base::FilePath& path,
+                                               HandleType handle_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto grant =
+      GetWritePermissionGrant(origin, path, handle_type, UserAction::kSave);
+
+  static_cast<PermissionGrantImpl*>(grant.get())
+      ->SetStatus(PermissionStatus::GRANTED,
+                  PersistedPermissionOptions::kUpdatePersistedPermission);
+  return grant;
+}
+
 void ChromeFileSystemAccessPermissionContext::
     UpdatePersistedPermissionsForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

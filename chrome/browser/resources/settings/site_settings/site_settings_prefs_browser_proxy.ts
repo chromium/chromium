@@ -181,6 +181,16 @@ export interface NotificationPermission {
   notificationInfoString: string;
 }
 
+/**
+ * The File System Access permission grant information
+ * passed from site_settings_handler.cc.
+ */
+export interface FileSystemPermissionGrant {
+  displayName: string;
+  isWritable: boolean;
+  isDirectory: boolean;
+}
+
 export interface SiteSettingsPrefsBrowserProxy {
   /**
    * Sets the default value for a site settings category.

@@ -93,6 +93,11 @@ class SiteSettingsHandler
   friend class SiteSettingsHandlerChooserExceptionTest;
   friend class SiteSettingsHandlerInfobarTest;
   friend class SiteSettingsHandlerTest;
+  // TODO(crbug.com/1373962): Remove this friend class when
+  // Persistent Permissions is launched.
+  friend class PersistentPermissionsSiteSettingsHandlerTest;
+  FRIEND_TEST_ALL_PREFIXES(PersistentPermissionsSiteSettingsHandlerTest,
+                           HandleGetFileSystemGrants);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerChooserExceptionTest,
                            HandleGetChooserExceptionListForUsb);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerChooserExceptionTest,
@@ -251,6 +256,10 @@ class SiteSettingsHandler
   // Returns the list of notification permissions that needs to be reviewed.
   void HandleGetNotificationPermissionReviewList(const base::Value::List& args);
 
+  // Returns the list of the allowed permission grants as defined by the
+  // File System Access API.
+  void HandleGetFileSystemGrants(const base::Value::List& args);
+
   // Gets and sets a list of ContentSettingTypes for an origin.
   // TODO(https://crbug.com/739241): Investigate replacing the
   // '*CategoryPermissionForPattern' equivalents below with these methods.
@@ -348,6 +357,10 @@ class SiteSettingsHandler
   // Permissions' module in site settings notification page. Those domains send
   // a lot of notifications, but have low site engagement.
   base::Value::List PopulateNotificationPermissionReviewData();
+
+  // Returns a list of permission grant objects for the allowed permissions
+  // granted via the File System Access API.
+  base::Value::List PopulateFileSystemGrantData(const url::Origin& origin);
 
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();

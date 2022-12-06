@@ -30,6 +30,8 @@
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/notification_permission_review_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
@@ -2201,6 +2203,137 @@ TEST_F(SiteSettingsHandlerTest, IncludeWebUISchemesInGetOriginPermissions) {
               exception_list[0].FindKey("origin")->GetString());
     EXPECT_EQ("allowlist", exception_list[0].FindKey("source")->GetString());
   }
+}
+
+class PersistentPermissionsSiteSettingsHandlerTest
+    : public SiteSettingsHandlerTest {
+  void SetUp() override {
+    SiteSettingsHandlerTest::SetUp();
+    handler_ = std::make_unique<SiteSettingsHandler>(&profile_);
+    handler_->set_web_ui(web_ui());
+    handler_->AllowJavascript();
+    web_ui()->ClearTrackedCalls();
+  }
+
+  void TearDown() override { handler_->DisallowJavascript(); }
+
+ public:
+  PersistentPermissionsSiteSettingsHandlerTest() {
+    // TODO(crbug.com/1373962): Remove this feature list enabler
+    // when Persistent Permissions is launched.
+
+    // Enable Persisted Permissions.
+    feature_list_.InitAndEnableFeature(
+        features::kFileSystemAccessPersistentPermissions);
+  }
+
+ protected:
+  std::unique_ptr<SiteSettingsHandler> handler_;
+  TestingProfile profile_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// GetFileSystemGrants() returns the allowed grants for a given origin
+// based on the File System Access persistent permissions policy.
+TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
+       HandleGetFileSystemGrants) {
+  ChromeFileSystemAccessPermissionContext* context =
+      FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
+
+  auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
+  auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
+
+  const base::FilePath kTestPath = base::FilePath(FILE_PATH_LITERAL("/a/b/"));
+  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/c/d/"));
+  const base::FilePath kTestPath3 = base::FilePath(FILE_PATH_LITERAL("/e/"));
+  const base::FilePath kTestPath4 =
+      base::FilePath(FILE_PATH_LITERAL("/f/g/h/"));
+
+  // Populate the `grants` object with permissions.
+  auto file_read_grant = context->GetPersistedReadPermissionGrantForTesting(
+      kTestOrigin1, kTestPath,
+      ChromeFileSystemAccessPermissionContext::HandleType::kFile);
+  auto file_write_grant = context->GetPersistedWritePermissionGrantForTesting(
+      kTestOrigin2, kTestPath2,
+      ChromeFileSystemAccessPermissionContext::HandleType::kFile);
+  auto directory_read_grant =
+      context->GetPersistedReadPermissionGrantForTesting(
+          kTestOrigin1, kTestPath3,
+          ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
+  auto directory_write_grant =
+      context->GetPersistedWritePermissionGrantForTesting(
+          kTestOrigin2, kTestPath4,
+          ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
+
+  EXPECT_EQ(context->GetPermissionGrants(kTestOrigin1).file_read_grants.size(),
+            1UL);
+  EXPECT_EQ(context->GetPermissionGrants(kTestOrigin2).file_read_grants.size(),
+            0UL);
+  EXPECT_EQ(context->GetPermissionGrants(kTestOrigin1).file_write_grants.size(),
+            0UL);
+  EXPECT_EQ(context->GetPermissionGrants(kTestOrigin2).file_write_grants.size(),
+            1UL);
+  EXPECT_EQ(
+      context->GetPermissionGrants(kTestOrigin1).directory_read_grants.size(),
+      1UL);
+  EXPECT_EQ(
+      context->GetPermissionGrants(kTestOrigin2).directory_read_grants.size(),
+      0UL);
+  EXPECT_EQ(
+      context->GetPermissionGrants(kTestOrigin1).directory_write_grants.size(),
+      0UL);
+  EXPECT_EQ(
+      context->GetPermissionGrants(kTestOrigin2).directory_write_grants.size(),
+      1UL);
+
+  url::Origin originToTest = kTestOrigin1;
+  base::Value::List get_file_system_origin_permissions_args;
+  get_file_system_origin_permissions_args.Append(kCallbackId);
+  get_file_system_origin_permissions_args.Append(originToTest.GetURL().spec());
+
+  handler_->HandleGetFileSystemGrants(get_file_system_origin_permissions_args);
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  const base::Value::List& grants = data.arg3()->GetList();
+
+  EXPECT_EQ(grants.size(), 2UL);
+
+  EXPECT_FALSE(grants[0].FindKey(site_settings::kIsDirectory)->GetBool());
+  EXPECT_TRUE(grants[1].FindKey(site_settings::kIsDirectory)->GetBool());
+
+  EXPECT_EQ(grants[0].FindKey(site_settings::kDisplayName)->GetString(),
+            FilePathToValue(file_read_grant->GetPath()).GetString());
+  EXPECT_EQ(grants[1].FindKey(site_settings::kDisplayName)->GetString(),
+            FilePathToValue(directory_read_grant->GetPath()).GetString());
+
+  EXPECT_FALSE(grants[0].FindKey(site_settings::kIsWritable)->GetBool());
+  EXPECT_FALSE(grants[1].FindKey(site_settings::kIsWritable)->GetBool());
+
+  originToTest = kTestOrigin2;
+  base::Value::List get_file_system_origin2_permissions_args;
+  get_file_system_origin2_permissions_args.Append(kCallbackId);
+  get_file_system_origin2_permissions_args.Append(originToTest.GetURL().spec());
+
+  handler_->HandleGetFileSystemGrants(get_file_system_origin2_permissions_args);
+  const content::TestWebUI::CallData& origin2_data =
+      *web_ui()->call_data().back();
+  const base::Value::List& origin2_grants = origin2_data.arg3()->GetList();
+
+  EXPECT_EQ(origin2_grants.size(), 2UL);
+
+  EXPECT_FALSE(
+      origin2_grants[0].FindKey(site_settings::kIsDirectory)->GetBool());
+  EXPECT_TRUE(
+      origin2_grants[1].FindKey(site_settings::kIsDirectory)->GetBool());
+
+  EXPECT_EQ(origin2_grants[0].FindKey(site_settings::kDisplayName)->GetString(),
+            FilePathToValue(file_write_grant->GetPath()).GetString());
+  EXPECT_EQ(origin2_grants[1].FindKey(site_settings::kDisplayName)->GetString(),
+            FilePathToValue(directory_write_grant->GetPath()).GetString());
+
+  EXPECT_TRUE(origin2_grants[0].FindKey(site_settings::kIsWritable)->GetBool());
+  EXPECT_TRUE(origin2_grants[1].FindKey(site_settings::kIsWritable)->GetBool());
 }
 
 namespace {
