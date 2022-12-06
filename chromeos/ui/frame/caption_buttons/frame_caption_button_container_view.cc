@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -228,7 +229,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
             base::Unretained(this)),
         views::CAPTION_BUTTON_ICON_FLOAT, HTMENU));
     float_button_->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
+        l10n_util::GetStringUTF16(IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME));
   }
 
   size_button_ = new FrameSizeButton(
@@ -562,12 +563,9 @@ void FrameCaptionButtonContainerView::UpdateFloatButton() {
   SetButtonImage(
       views::CAPTION_BUTTON_ICON_FLOAT,
       floated ? chromeos::kUnfloatButtonIcon : chromeos::kFloatButtonIcon);
-  float_button_->SetTooltipText(
-      floated
-          // TODO(sammiequon|shidi): Update this to the correct string once UX
-          // writing has a decision.
-          ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE)
-          : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
+  float_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      floated ? IDS_MULTITASK_MENU_EXIT_FLOAT_BUTTON_NAME
+              : IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME));
 
   // Float button also needs to update its visibility when float state changes.
   float_button_->SetEnabled(

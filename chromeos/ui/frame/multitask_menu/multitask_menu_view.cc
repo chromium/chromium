@@ -8,8 +8,11 @@
 
 #include "base/callback_forward.h"
 #include "base/check.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
@@ -21,7 +24,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -76,9 +78,9 @@ MultitaskMenuView::MultitaskMenuView(
         base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
                             base::Unretained(this), /*left_top=*/false),
         is_portrait_mode);
-    half_button_ = half_button.get();
-    AddChildView(
-        CreateButtonContainer(std::move(half_button), IDS_APP_ACCNAME_HALF));
+    half_button_for_testing_ = half_button.get();
+    AddChildView(CreateButtonContainer(std::move(half_button),
+                                       IDS_MULTITASK_MENU_HALF_BUTTON_NAME));
   }
 
   // Partial button.
@@ -91,33 +93,40 @@ MultitaskMenuView::MultitaskMenuView(
         base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
                             base::Unretained(this), /*left_top=*/false),
         is_portrait_mode);
-    partial_button_ = partial_button.get();
+    partial_button_for_testing_ = partial_button.get();
     AddChildView(CreateButtonContainer(std::move(partial_button),
-                                       IDS_APP_ACCNAME_PARTIAL));
+                                       IDS_MULTITASK_MENU_PARTIAL_BUTTON_NAME));
   }
 
   // Full screen button.
   if (buttons & kFullscreen) {
+    const bool fullscreened = window->GetProperty(kWindowStateTypeKey) ==
+                              WindowStateType::kFullscreen;
+    int message_id = fullscreened
+                         ? IDS_MULTITASK_MENU_EXIT_FULLSCREEN_BUTTON_NAME
+                         : IDS_MULTITASK_MENU_FULLSCREEN_BUTTON_NAME;
     auto full_button = std::make_unique<MultitaskButton>(
         base::BindRepeating(&MultitaskMenuView::FullScreenButtonPressed,
                             base::Unretained(this)),
         MultitaskButton::Type::kFull, is_portrait_mode,
-        l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FULL));
-    full_button_ = full_button.get();
-    AddChildView(
-        CreateButtonContainer(std::move(full_button), IDS_APP_ACCNAME_FULL));
+        l10n_util::GetStringUTF16(message_id));
+    full_button_for_testing_ = full_button.get();
+    AddChildView(CreateButtonContainer(std::move(full_button), message_id));
   }
 
   // Float on top button.
   if (buttons & kFloat) {
+    const bool floated =
+        window->GetProperty(kWindowStateTypeKey) == WindowStateType::kFloated;
+    int message_id = floated ? IDS_MULTITASK_MENU_EXIT_FLOAT_BUTTON_NAME
+                             : IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME;
     auto float_button = std::make_unique<MultitaskButton>(
         base::BindRepeating(&MultitaskMenuView::FloatButtonPressed,
                             base::Unretained(this)),
         MultitaskButton::Type::kFloat, is_portrait_mode,
-        l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT_ON_TOP));
-    float_button_ = float_button.get();
-    AddChildView(CreateButtonContainer(std::move(float_button),
-                                       IDS_APP_ACCNAME_FLOAT_ON_TOP));
+        l10n_util::GetStringUTF16(message_id));
+    float_button_for_testing_ = float_button.get();
+    AddChildView(CreateButtonContainer(std::move(float_button), message_id));
   }
 }
 

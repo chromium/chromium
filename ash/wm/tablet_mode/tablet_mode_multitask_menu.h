@@ -24,7 +24,7 @@ class TabletModeMultitaskMenuView;
 
 // Creates and maintains the multitask menu. Responsible for showing,
 // hiding, and animating the menu.
-class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
+class ASH_EXPORT TabletModeMultitaskMenu : public aura::WindowObserver,
                                            public views::WidgetObserver,
                                            public display::DisplayObserver {
  public:

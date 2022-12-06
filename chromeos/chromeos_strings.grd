@@ -301,6 +301,26 @@
         Report this query
       </message>
 
+      <!-- Multitask Menu -->
+      <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title and and accessible name of the half button on the multitask menu.">
+        Half
+      </message>
+      <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_NAME" desc="Title and and accessible name of the partial button on the multitask menu.">
+        Partial
+      </message>
+      <message name="IDS_MULTITASK_MENU_FULLSCREEN_BUTTON_NAME" desc="Title and and accessible name of the fullscreen button on the multitask menu, when the window is not in fullscreen state.">
+        Full
+      </message>
+      <message name="IDS_MULTITASK_MENU_EXIT_FULLSCREEN_BUTTON_NAME" desc="Title and and accessible name of the fullscreen button on the multitask menu, when the window is in fullscreen state.">
+        Exit full
+      </message>
+      <message name="IDS_MULTITASK_MENU_FLOAT_BUTTON_NAME" desc="Title and and accessible name of the float button on the multitask menu, when the window is not in float state.">
+        Float
+      </message>
+      <message name="IDS_MULTITASK_MENU_EXIT_FLOAT_BUTTON_NAME" desc="Title and and accessible name of the float button on the multitask menu, when the window is in float state.">
+        Exit float
+      </message>
+
       <if expr="chromeos_ash">
       <message name="IDS_ASSISTANT_SCREEN_CONTEXT_QUERY_FALLBACK_TEXT" desc="Message shown in Assistant UI when a query for content related to the screen context returns no results.">
         I can't find anything on your screen I can help with.

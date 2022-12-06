@@ -58,12 +58,18 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   static std::string GetEntryTypeHistogramName();
 
   // For testing.
-  SplitButtonView* half_button_for_testing() { return half_button_.get(); }
-  SplitButtonView* partial_button_for_testing() {
-    return partial_button_.get();
+  SplitButtonView* half_button_for_testing() {
+    return half_button_for_testing_.get();
   }
-  MultitaskButton* full_button_for_testing() { return full_button_.get(); }
-  MultitaskButton* float_button_for_testing() { return float_button_.get(); }
+  SplitButtonView* partial_button_for_testing() {
+    return partial_button_for_testing_.get();
+  }
+  MultitaskButton* full_button_for_testing() {
+    return full_button_for_testing_.get();
+  }
+  MultitaskButton* float_button_for_testing() {
+    return float_button_for_testing_.get();
+  }
 
  private:
   // Callbacks for the buttons in the multitask menu view.
@@ -73,10 +79,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   void FloatButtonPressed();
 
   // Saved for testing purpose.
-  raw_ptr<SplitButtonView> half_button_ = nullptr;
-  raw_ptr<SplitButtonView> partial_button_ = nullptr;
-  raw_ptr<MultitaskButton> full_button_ = nullptr;
-  raw_ptr<MultitaskButton> float_button_ = nullptr;
+  raw_ptr<SplitButtonView> half_button_for_testing_ = nullptr;
+  raw_ptr<SplitButtonView> partial_button_for_testing_ = nullptr;
+  raw_ptr<MultitaskButton> full_button_for_testing_ = nullptr;
+  raw_ptr<MultitaskButton> float_button_for_testing_ = nullptr;
 
   // The window which the buttons act on. It is guaranteed to outlive `this`.
   aura::Window* const window_;
