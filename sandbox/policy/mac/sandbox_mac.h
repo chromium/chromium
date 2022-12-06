@@ -35,6 +35,12 @@ SANDBOX_POLICY_EXPORT base::FilePath GetCanonicalPath(
 SANDBOX_POLICY_EXPORT std::string GetSandboxProfile(
     sandbox::mojom::Sandbox sandbox_type);
 
+// Returns true if the compiled policy for the sandbox `sandbox_type` can be
+// cached and reused across multiple processes. Some sandbox policies bind
+// parameters that prevent the policy from being reused.
+SANDBOX_POLICY_EXPORT bool CanCacheSandboxPolicy(
+    sandbox::mojom::Sandbox sandbox_type);
+
 }  // namespace policy
 }  // namespace sandbox
 

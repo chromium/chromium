@@ -71,6 +71,14 @@ BASE_FEATURE(kForceSpectreVariant2Mitigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_MAC)
+// Enables caching compiled sandbox profiles. Only some profiles support this,
+// as controlled by CanCacheSandboxPolicy().
+BASE_FEATURE(kCacheMacSandboxProfiles,
+             "CacheMacSandboxProfiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
+
 bool IsNetworkSandboxEnabled() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
   return true;

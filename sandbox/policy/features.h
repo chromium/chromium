@@ -33,6 +33,10 @@ SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kSpectreVariant2Mitigation);
 SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kForceSpectreVariant2Mitigation);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_MAC)
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kCacheMacSandboxProfiles);
+#endif  // BUILDFLAG(IS_MAC)
+
 // Returns whether the network sandbox is enabled for the current platform
 // configuration. This might be overridden by the content embedder so prefer
 // calling ContentBrowserClient::ShouldSandboxNetworkService().
