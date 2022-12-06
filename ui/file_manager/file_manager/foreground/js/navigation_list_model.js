@@ -672,7 +672,7 @@ export class NavigationListModel extends EventTarget {
         const volumeEntry = new VolumeEntry(crostiniVolume.volumeInfo);
         volumeEntry.disabled = this.volumeManager_.isDisabled(
             VolumeManagerCommon.VolumeType.CROSTINI);
-        myFilesEntry.addEntry(new VolumeEntry(crostiniVolume.volumeInfo));
+        myFilesEntry.addEntry(volumeEntry);
       }
     } else {
       myFilesEntry.removeByVolumeType(VolumeManagerCommon.VolumeType.CROSTINI);

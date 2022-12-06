@@ -337,6 +337,7 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
                             base::Unretained(this)));
   }
 
+  // TODO(b/261163959): Optimize DLP messages.
   bool HandleDlpCommands(const std::string& name,
                          const base::Value::Dict& value,
                          std::string* output) override {
@@ -346,10 +347,18 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
               ::testing::Return(policy::DlpRulesManager::Level::kBlock));
       return true;
     }
-    if (name == "setBlockedComponents") {
+    if (name == "setBlockedArc") {
       policy::DlpRulesManager::AggregatedComponents components;
       components[policy::DlpRulesManager::Level::kBlock].insert(
           policy::DlpRulesManager::Component::kArc);
+      EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents)
+          .WillOnce(testing::Return(components));
+      return true;
+    }
+    if (name == "setBlockedCrostini") {
+      policy::DlpRulesManager::AggregatedComponents components;
+      components[policy::DlpRulesManager::Level::kBlock].insert(
+          policy::DlpRulesManager::Component::kCrostini);
       EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents)
           .WillOnce(testing::Return(components));
       return true;
@@ -1280,11 +1289,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.js */
     DlpFilesAppBrowserTest,
-    ::testing::Values(TestCase("transferShowDlpToast").EnableDlp(),
-                      TestCase("dlpShowManagedIcon").EnableDlp(),
-                      TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
-                      TestCase("saveAsDlpRestrictedDirectory").EnableDlp(),
-                      TestCase("openDlpRestrictedFile").EnableDlp()));
+    ::testing::Values(
+        TestCase("transferShowDlpToast").EnableDlp(),
+        TestCase("dlpShowManagedIcon").EnableDlp(),
+        TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
+        TestCase("saveAsDlpRestrictedDirectory").EnableDlp(),
+        TestCase("saveAsDlpRestrictedMountableDirectory").EnableDlp(),
+        TestCase("openDlpRestrictedFile").EnableDlp()));
 // TODO(crbug.com/1394305): Re-enable this test
 // TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp()));
 

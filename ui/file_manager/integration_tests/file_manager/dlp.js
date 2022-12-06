@@ -120,7 +120,7 @@ testcase.dlpContextMenuRestrictionDetails = async () => {
  */
 testcase.saveAsDlpRestrictedDirectory = async () => {
   // Setup the restrictions.
-  await sendTestMessage({name: 'setBlockedComponents'});
+  await sendTestMessage({name: 'setBlockedArc'});
 
   const okButton = '.button-panel button.ok:enabled';
   const disabledOkButton = '.button-panel button.ok:disabled';
@@ -174,6 +174,84 @@ testcase.saveAsDlpRestrictedDirectory = async () => {
 };
 
 /**
+ * Tests the save dialogs properly show DLP blocked volumes/directories, before
+ * and after they are mounted. If a volume is blocked by DLP, it should be
+ * marked as disabled in the navigation list both before and after mounting, but
+ * in the file list it will only be disabled after mounting.
+ */
+testcase.saveAsDlpRestrictedMountableDirectory = async () => {
+  // Setup the restrictions.
+  await sendTestMessage({name: 'setBlockedCrostini'});
+
+  const okButton = '.button-panel button.ok:enabled';
+  const disabledOkButton = '.button-panel button.ok:disabled';
+  const cancelButton = '.button-panel button.cancel';
+
+  // Add entries to Downloads.
+  await addEntries(['local'], [ENTRIES.hello]);
+
+  const closer = async (dialog) => {
+    // Verify that the button is enabled when a file is selected.
+    await remoteCall.waitUntilSelected(dialog, ENTRIES.hello.targetPath);
+    await remoteCall.waitForElement(dialog, okButton);
+
+    // Select My Files folder and wait for file list to display Downloads, Play
+    // files, and Linux files.
+    await navigateWithDirectoryTree(dialog, '/My files');
+    const downloadsRow = ['Downloads', '--', 'Folder'];
+    const playFilesRow = ['Play files', '--', 'Folder'];
+    const linuxFilesRow = ['Linux files', '--', 'Folder'];
+    await remoteCall.waitForFiles(
+        dialog, [downloadsRow, playFilesRow, linuxFilesRow],
+        {ignoreFileSize: true, ignoreLastModifiedTime: true});
+
+    const linuxFilesInFileList =
+        '.directory:not([disabled])[file-name="Linux files"]';
+    const disabledLinuxFilesInFileList =
+        '.directory[disabled][file-name="Linux files"]';
+    const disabledFakeLinuxTreeItem = '#directory-tree .tree-item[disabled] ' +
+        '.icon[root-type-icon="crostini"]';
+    const disabledRealLinuxTreeItem = '#directory-tree .tree-item[disabled] ' +
+        '.icon[volume-type-icon="crostini"]';
+    // Before Crostini is mounted, Linux files should be disabled in the
+    // navigation list, but not in the file list.
+    await remoteCall.waitForElementsCount(dialog, [linuxFilesInFileList], 1);
+    await remoteCall.waitForElementsCount(
+        dialog, [disabledFakeLinuxTreeItem], 1);
+
+    // Select Linux files from the file list and mount Crostini. We cannot
+    // select/mount it from the navigation list since it's already disabled
+    // there.
+    await remoteCall.waitUntilSelected(dialog, 'Linux files');
+    await remoteCall.waitForElement(dialog, okButton);
+    await remoteCall.callRemoteTestUtil(
+        'fakeEvent', dialog, [okButton, 'click']);
+    // Verify that Crostini is mounted and disabled, now both in the navigation
+    // and the file list, as well as that the OK button is disabled while we're
+    // still in the Linux files directory.
+    await remoteCall.waitUntilCurrentDirectoryIsChanged(dialog, '/Linux files');
+    await remoteCall.waitForElement(dialog, disabledOkButton);
+    await navigateWithDirectoryTree(dialog, '/My files');
+    await remoteCall.waitForElementsCount(
+        dialog, [disabledRealLinuxTreeItem], 1);
+    await remoteCall.waitForElementsCount(
+        dialog, [disabledLinuxFilesInFileList], 1);
+    await remoteCall.waitUntilSelected(dialog, 'Linux files');
+    await remoteCall.waitForElement(dialog, disabledOkButton);
+
+    // Click the close button to dismiss the dialog.
+    await remoteCall.waitForElement(dialog, cancelButton);
+    const event = [cancelButton, 'click'];
+    await remoteCall.callRemoteTestUtil('fakeEvent', dialog, event);
+  };
+
+  chrome.test.assertEq(
+      undefined,
+      await openAndWaitForClosingDialog(
+          {type: 'saveFile'}, 'downloads', [ENTRIES.hello], closer));
+};
+
+/**
  * Tests that save dialogs are never opened in a DLP blocked volume/directory,
  * but rather in the default display root.
  */
@@ -202,7 +280,7 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
           allowedCloser));
 
   // Setup the restrictions.
-  await sendTestMessage({name: 'setBlockedComponents'});
+  await sendTestMessage({name: 'setBlockedArc'});
 
   const blockedCloser = async (dialog) => {
     // Double check: current directory should be the default root, not Play

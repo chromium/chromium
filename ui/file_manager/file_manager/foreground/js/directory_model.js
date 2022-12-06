@@ -313,6 +313,17 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
+   * @return {boolean} True if the current volume is blocked by DLP.
+   */
+  isDlpBlocked() {
+    if (!util.isDlpEnabled()) {
+      return false;
+    }
+    const info = this.getCurrentVolumeInfo();
+    return info ? this.volumeManager_.isDisabled(info.volumeType) : false;
+  }
+
+  /**
    * @param {VolumeManagerCommon.VolumeType} volumeType Volume Type
    * @return {boolean} True if current root volume type is equal to specified
    *     volume type.
