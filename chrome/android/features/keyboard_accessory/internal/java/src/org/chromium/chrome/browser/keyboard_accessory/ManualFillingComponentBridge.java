@@ -106,9 +106,9 @@ class ManualFillingComponentBridge {
     }
 
     @CalledByNative
-    void showWhenKeyboardIsVisible() {
+    void show(boolean waitForKeyboard) {
         if (getManualFillingComponent() != null) {
-            getManualFillingComponent().showWhenKeyboardIsVisible();
+            getManualFillingComponent().show(waitForKeyboard);
         }
     }
 

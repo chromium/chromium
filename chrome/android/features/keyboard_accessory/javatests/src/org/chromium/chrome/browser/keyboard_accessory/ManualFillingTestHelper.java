@@ -198,9 +198,8 @@ public class ManualFillingTestHelper {
         // TODO(fhorschig): This should be |focusNode|. Change with autofill popup deprecation.
         DOMUtils.clickNode(mWebContentsRef.get(), USERNAME_NODE_ID);
         if (forceAccessory) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                getManualFillingCoordinator().getMediatorForTesting().showWhenKeyboardIsVisible();
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { getManualFillingCoordinator().getMediatorForTesting().show(true); });
         }
         getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
     }

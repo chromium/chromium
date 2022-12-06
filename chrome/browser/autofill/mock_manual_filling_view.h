@@ -23,7 +23,7 @@ class MockManualFillingView : public ManualFillingViewInterface {
   MOCK_METHOD1(OnAutomaticGenerationStatusChanged, void(bool));
   MOCK_METHOD0(CloseAccessorySheet, void());
   MOCK_METHOD0(SwapSheetWithKeyboard, void());
-  MOCK_METHOD0(ShowWhenKeyboardIsVisible, void());
+  MOCK_METHOD1(Show, void(WaitForKeyboard));
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD1(ShowAccessorySheetTab, void(const autofill::AccessoryTabType&));
 };

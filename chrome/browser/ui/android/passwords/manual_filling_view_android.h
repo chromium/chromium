@@ -43,7 +43,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void OnAutomaticGenerationStatusChanged(bool available) override;
   void CloseAccessorySheet() override;
   void SwapSheetWithKeyboard() override;
-  void ShowWhenKeyboardIsVisible() override;
+  void Show(WaitForKeyboard wait_for_keyboard) override;
   void Hide() override;
   void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) override;

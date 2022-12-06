@@ -159,9 +159,10 @@ public interface ManualFillingComponent extends BackPressHandler {
             PropertyProvider<AutofillSuggestion[]> autofillProvider, AutofillDelegate delegate);
 
     /**
-     * Signals that the accessory has permission to show if the user focuses a form field.
+     * Signals that the accessory has permission to show.
+     * @param waitForKeyboard signals if the keyboard is requested.
      */
-    void showWhenKeyboardIsVisible();
+    void show(boolean waitForKeyboard);
 
     /**
      * Requests to close the active tab in the keyboard accessory. If there is no active tab, this
@@ -175,7 +176,7 @@ public interface ManualFillingComponent extends BackPressHandler {
     void swapSheetWithKeyboard();
 
     /**
-     * Hides the sheet until undone with {@link #showWhenKeyboardIsVisible()}.
+     * Hides the sheet until undone with {@link #show()}.
      */
     void hide();
 

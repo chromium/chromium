@@ -34,6 +34,10 @@ class ManualFillingProperties {
             new PropertyModel.WritableIntPropertyKey("keyboard_extension_state");
     static final PropertyModel.WritableBooleanPropertyKey SUPPRESSED_BY_BOTTOM_SHEET =
             new PropertyModel.WritableBooleanPropertyKey("suppressed_by_bottom_sheet");
+    // TODO(crbug.com/1395804): SHOULD_EXTEND_KEYBOARD doubles the number of states of
+    // KEYBOARD_EXTENSION_STATE.
+    static final PropertyModel.WritableBooleanPropertyKey SHOULD_EXTEND_KEYBOARD =
+            new PropertyModel.WritableBooleanPropertyKey("should_extend_keyboard");
 
     /**
      * Properties that a given state enforces. Must be between 0x0 and 0x100.
@@ -72,11 +76,12 @@ class ManualFillingProperties {
     static PropertyModel createFillingModel() {
         return new PropertyModel
                 .Builder(SHOW_WHEN_VISIBLE, KEYBOARD_EXTENSION_STATE, PORTRAIT_ORIENTATION,
-                        SUPPRESSED_BY_BOTTOM_SHEET)
+                        SUPPRESSED_BY_BOTTOM_SHEET, SHOULD_EXTEND_KEYBOARD)
                 .with(SHOW_WHEN_VISIBLE, false)
                 .with(KEYBOARD_EXTENSION_STATE, HIDDEN)
                 .with(PORTRAIT_ORIENTATION, true)
                 .with(SUPPRESSED_BY_BOTTOM_SHEET, false)
+                .with(SHOULD_EXTEND_KEYBOARD, true)
                 .build();
     }
 

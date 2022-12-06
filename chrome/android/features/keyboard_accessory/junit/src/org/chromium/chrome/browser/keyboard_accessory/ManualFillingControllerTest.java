@@ -31,6 +31,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.HIDDEN;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.REPLACING_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.WAITING_TO_REPLACE;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOULD_EXTEND_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOW_WHEN_VISIBLE;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 import static org.chromium.chrome.browser.tab.TabLaunchType.FROM_BROWSER_ACTIONS;
@@ -706,7 +707,7 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Show the accessory bar for the default dimensions (300x128@2.f).
-        mController.showWhenKeyboardIsVisible();
+        mController.show(true);
         verify(mMockKeyboardAccessory).show();
 
         // The accessory is shown and the content area plus bar size don't exceed the threshold.
@@ -726,7 +727,7 @@ public class ManualFillingControllerTest {
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any(), any())).thenReturn(true);
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
-        mController.showWhenKeyboardIsVisible();
+        mController.show(true);
         setContentAreaDimensions(2.f, 180, 220);
         mMediator.onLayoutChange(mMockContentView, 0, 0, 540, 360, 0, 0, 640, 360);
         verify(mMockKeyboardAccessory).show();
@@ -751,7 +752,7 @@ public class ManualFillingControllerTest {
 
         // Show the accessory bar for the dimensions exactly at the threshold: 300x128@2.f.
         simulateLayoutSizeChange(2.0f, 300, 128);
-        mController.showWhenKeyboardIsVisible();
+        mController.show(true);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
         verify(mMockKeyboardAccessory).show();
 
@@ -778,7 +779,7 @@ public class ManualFillingControllerTest {
 
         // Show the accessory bar for the dimensions exactly at the threshold: 180x128@2.f.
         simulateLayoutSizeChange(2.0f, 180, 128);
-        mController.showWhenKeyboardIsVisible();
+        mController.show(true);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
 
         // Use a width that is too small but with a valid height (e.g. resized multi-window window).
@@ -892,6 +893,25 @@ public class ManualFillingControllerTest {
     }
 
     @Test
+    public void testTransitionToFloatingBarWithShouldExtendKeyboardFalse() {
+        addBrowserTab(mMediator, 1111, null);
+        mModel.set(SHOW_WHEN_VISIBLE, true);
+        // Make sure the model is in a non-FLOATING_BAR state first.
+        mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
+        reset(mMockKeyboardAccessory, mMockAccessorySheet);
+
+        // Set the model FLOATING_BAR but not extend the keyboard with SHOULD_EXTEND_KEYBOARD
+        mModel.set(SHOULD_EXTEND_KEYBOARD, false);
+        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_BAR);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
+
+        verify(mMockSoftKeyboardDelegate, never()).showSoftKeyboard(any());
+        verify(mMockAccessorySheet).hide();
+        verify(mMockKeyboardAccessory).closeActiveTab();
+        verify(mMockKeyboardAccessory).show();
+    }
+
+    @Test
     public void testTransitionToFloatingSheetShowsBarAndSheet() {
         addBrowserTab(mMediator, 1111, null);
         // Make sure the model is in a non-FLOATING_SHEET state first.
@@ -969,7 +989,7 @@ public class ManualFillingControllerTest {
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any(), any())).thenReturn(true);
 
         // Showing the keyboard should now trigger a transition into EXTENDING state.
-        mController.showWhenKeyboardIsVisible();
+        mController.show(true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
     }
@@ -985,7 +1005,7 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Showing the keyboard should now trigger a transition into EXTENDING state.
-        mController.showWhenKeyboardIsVisible();
+        mController.show(true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
     }

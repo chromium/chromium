@@ -19,6 +19,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "chrome/browser/autofill/credit_card_accessory_controller.h"
+#include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_metrics_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -431,7 +432,10 @@ void ManualFillingControllerImpl::UpdateVisibility() {
       if (sheet.has_value())
         view_->OnItemsAvailable(std::move(sheet.value()));
     }
-    view_->ShowWhenKeyboardIsVisible();
+    view_->Show(ManualFillingViewInterface::WaitForKeyboard(
+        last_focused_field_type_ != FocusedFieldType::kUnfillableElement &&
+        last_focused_field_type_ != FocusedFieldType::kUnknown));
+
   } else {
     view_->Hide();
   }

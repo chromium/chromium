@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "url/gurl.h"
@@ -54,6 +55,8 @@ class ManualFillingViewInterface {
     TOP_DIVIDER = 6,
   };
 
+  using WaitForKeyboard = base::StrongAlias<struct WaitForKeyboardTag, bool>;
+
   virtual ~ManualFillingViewInterface() = default;
 
   // Called with data that should replace the data currently shown in an
@@ -70,8 +73,9 @@ class ManualFillingViewInterface {
   // Opens a keyboard which dismisses the sheet. NoOp without open sheet.
   virtual void SwapSheetWithKeyboard() = 0;
 
-  // Shows the accessory bar when the keyboard is also shown.
-  virtual void ShowWhenKeyboardIsVisible() = 0;
+  // Shows the accessory bar. If |wait_for_keyboard|, shows the bar when the
+  // keyboard is also shown.
+  virtual void Show(WaitForKeyboard wait_for_keyboard) = 0;
 
   // Hides the accessory bar and the accessory sheet (if open).
   virtual void Hide() = 0;

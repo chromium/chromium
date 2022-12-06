@@ -187,12 +187,11 @@ void ManualFillingViewAndroid::SwapSheetWithKeyboard() {
   }
 }
 
-void ManualFillingViewAndroid::ShowWhenKeyboardIsVisible() {
-  TRACE_EVENT0("passwords",
-               "ManualFillingViewAndroid::ShowWhenKeyboardIsVisible");
+void ManualFillingViewAndroid::Show(WaitForKeyboard wait_for_keyboard) {
+  TRACE_EVENT0("passwords", "ManualFillingViewAndroid::Show");
   if (auto obj = GetOrCreateJavaObject()) {
-    Java_ManualFillingComponentBridge_showWhenKeyboardIsVisible(
-        base::android::AttachCurrentThread(), obj);
+    Java_ManualFillingComponentBridge_show(base::android::AttachCurrentThread(),
+                                           obj, wait_for_keyboard.value());
   }
 }
 
