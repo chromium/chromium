@@ -50,7 +50,6 @@ namespace content {
 namespace {
 
 const char kBackgroundTracingConfig[] = "config";
-const char kBackgroundTracingUploadUrl[] = "upload_url";
 
 }  // namespace
 
@@ -325,12 +324,6 @@ void BackgroundTracingManagerImpl::SetTraceToUpload(
   } else {
     trace_to_upload_.clear();
   }
-}
-
-std::string BackgroundTracingManagerImpl::GetBackgroundTracingUploadUrl(
-    const std::string& trial_name) {
-  return variations::GetVariationParamValue(trial_name,
-                                            kBackgroundTracingUploadUrl);
 }
 
 std::unique_ptr<content::BackgroundTracingConfig>
