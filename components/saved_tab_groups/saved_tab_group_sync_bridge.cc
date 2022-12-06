@@ -18,6 +18,7 @@
 #include "base/guid.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -35,6 +36,9 @@
 #include "base/logging.h"
 
 namespace {
+constexpr base::TimeDelta discard_orphaned_tabs_threshold =
+    base::Microseconds(base::Time::kMicrosecondsPerDay * 90);
+
 std::unique_ptr<syncer::EntityData> CreateEntityData(
     std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specific) {
   std::unique_ptr<syncer::EntityData> entity_data =
@@ -371,8 +375,19 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
     SavedTabGroup* group = model_->Get(
         base::GUID::ParseLowercase(tab_iterator->tab().group_guid()));
     if (!group) {
-      ++tab_iterator;
-      continue;
+      base::Time last_update_time = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(tab_iterator->update_time_windows_epoch_micros()));
+      base::Time now = base::Time::Now();
+
+      // Discard orphaned tabs that have not been updated for 90 days.
+      if (now - last_update_time >= discard_orphaned_tabs_threshold) {
+        RemoveEntitySpecific(base::GUID::ParseLowercase(tab_iterator->guid()),
+                             write_batch);
+        tab_iterator = tabs_missing_groups_.erase(tab_iterator);
+      } else {
+        ++tab_iterator;
+      }
+
     } else {
       write_batch->WriteData(tab_iterator->guid(),
                              tab_iterator->SerializeAsString());
