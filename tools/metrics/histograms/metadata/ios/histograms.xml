@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContentSuggestions.ActionOnNTP"
-    enum="IOSContentSuggestionsActionType" expires_after="2023-04-03">
+    enum="IOSContentSuggestionsActionType" expires_after="2023-06-04">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -186,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContentSuggestions.ActionOnStartSurface"
-    enum="IOSContentSuggestionsActionType" expires_after="2023-04-03">
+    enum="IOSContentSuggestionsActionType" expires_after="2023-06-04">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

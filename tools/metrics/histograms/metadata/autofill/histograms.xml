@@ -3555,7 +3555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Sectioning.FieldsPerSection" units="Fields"
-    expires_after="2023-03-31">
+    expires_after="2023-06-04">
   <owner>fleimgruber@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
