@@ -20,22 +20,19 @@ using extensions::PermissionsParser;
 using extensions::mojom::APIPermissionID;
 
 bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
-  const base::Value* externally_connectable_value = nullptr;
+  const base::Value::Dict* externally_connectable_dict =
+      extension->manifest()->FindDictPath(
+          extensions::manifest_keys::kExternallyConnectable);
   // chromeos_system_extension's 'externally_connectable' must exist.
-  if (!extension->manifest()->GetDictionary(
-          extensions::manifest_keys::kExternallyConnectable,
-          &externally_connectable_value))
+  if (!externally_connectable_dict)
     return false;
-
-  const auto* externally_connectable_dict =
-      externally_connectable_value->GetIfDict();
 
   // chromeos_system_extension's 'externally_connectable' can only specify
   // "matches".
-  if (!externally_connectable_dict ||
-      externally_connectable_dict->size() != 1 ||
-      !externally_connectable_dict->Find("matches"))
+  if (externally_connectable_dict->size() != 1 ||
+      !externally_connectable_dict->Find("matches")) {
     return false;
+  }
 
   const auto* matches_list =
       externally_connectable_dict->Find("matches")->GetIfList();
@@ -56,10 +53,8 @@ ChromeOSSystemExtensionHandler::~ChromeOSSystemExtensionHandler() = default;
 
 bool ChromeOSSystemExtensionHandler::Parse(extensions::Extension* extension,
                                            std::u16string* error) {
-  const base::Value* system_extension_dict = nullptr;
-  if (!extension->manifest()->GetDictionary(
-          extensions::manifest_keys::kChromeOSSystemExtension,
-          &system_extension_dict)) {
+  if (!extension->manifest()->FindDictPath(
+          extensions::manifest_keys::kChromeOSSystemExtension)) {
     *error = base::ASCIIToUTF16(kInvalidChromeOSSystemExtensionDeclaration);
     return false;
   }
