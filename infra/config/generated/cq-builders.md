@@ -473,11 +473,14 @@ These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
 
-* [chromeos-jacuzzi-nearby-chrome-fyi](https://ci.chromium.org/p/chromium/builders/try/chromeos-jacuzzi-nearby-chrome-fyi) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-jacuzzi-nearby-chrome-fyi""))
+* [chromeos-jacuzzi-nearby-chrome-fyi](https://ci.chromium.org/p/chrome/builders/try/chromeos-jacuzzi-nearby-chrome-fyi) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-jacuzzi-nearby-chrome-fyi""))
   * Experiment percentage: 100.0
 
   Location filters:
   * [`//third_party/nearby/README.chromium`](https://cs.chromium.org/search?q=+file:third_party/nearby/README.chromium)
+
+* [linux-chromeos-compile-chrome](https://ci.chromium.org/p/chrome/builders/try/linux-chromeos-compile-chrome) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-chrome""))
+  * Experiment percentage: 5.0
 
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-rel""))
   * Experiment percentage: 60.0

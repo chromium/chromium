@@ -8,26 +8,45 @@
 # http://go/chromium-cq#internal-builders-on-the-cq.
 
 load("//lib/branches.star", "branches")
+load("//lib/try.star", "default_location_filters", "try_")
 load("//project.star", "settings")
 
 def chrome_internal_verifier(
         *,
         builder,
-        include_owner_whitelist = True,
+        tryjob = None,
         **kwargs):
-    owner_whitelist = []
-    if include_owner_whitelist:
-        owner_whitelist = [
-            "googlers",
-            "project-chromium-robot-committers",
-        ]
-    branches.cq_tryjob_verifier(
-        builder = "{}:try/{}".format(settings.chrome_project, builder),
-        cq_group = "cq",
-        includable_only = True,
-        owner_whitelist = owner_whitelist,
-        **kwargs
-    )
+    """Registers an internal Chrome trybot in Chromium's CQ config
+
+    Args:
+      builder: Name of builder in the internal chrome project.
+      tryjob - A struct containing the details of the tryjob verifier for the
+        builder, obtained by calling the `try.tryjob()` function.
+    """
+    if tryjob != None:
+        location_filters = tryjob.location_filters
+        if tryjob.add_default_filters:
+            location_filters = (location_filters or []) + default_location_filters()
+
+        branches.cq_tryjob_verifier(
+            builder = "{}:try/{}".format(settings.chrome_project, builder),
+            cq_group = "cq",
+            disable_reuse = tryjob.disable_reuse,
+            experiment_percentage = tryjob.experiment_percentage,
+            location_filters = location_filters,
+            cancel_stale = tryjob.cancel_stale,
+        )
+    else:
+        branches.cq_tryjob_verifier(
+            builder = "{}:try/{}".format(settings.chrome_project, builder),
+            cq_group = "cq",
+            includable_only = True,
+            owner_whitelist = [
+                "googlers",
+                "project-chromium-robot-committers",
+            ],
+            **kwargs
+        )
 
 chrome_internal_verifier(
     builder = "android-internal-binary-size",
@@ -144,9 +163,9 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "linux-chromeos-compile-chrome",
-    # We skip the owner_whitelist here since the recipe it runs enforces the
-    # restrictions outlined in http://shortn/_ulOm5v8gA2.
-    include_owner_whitelist = False,
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
 )
 
 chrome_internal_verifier(

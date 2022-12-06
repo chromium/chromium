@@ -44,7 +44,7 @@ These builders are currently disabled due to the cq_disable_experiments outages
 setting. See //infra/config/outages/README.md for more information.
 """ if outages_config.disable_cq_experiments else "")
 
-_TRY_BUILDER_VIEW_URL = "https://ci.chromium.org/p/chromium/builders/try"
+_TRY_BUILDER_VIEW_URL = "https://ci.chromium.org/p/{project}/builders/{bucket}/{builder}"
 
 def _get_main_config_group_builders(ctx):
     cq_cfg = ctx.output["luci/commit-queue.cfg"]
@@ -101,12 +101,18 @@ def _group_builders_by_section(builders):
         optional = optional,
     )
 
-def _codesearch_query(*atoms):
-    query = ["https://cs.chromium.org/search?q="]
+def _codesearch_query(url, *atoms):
+    query = ["{}/search?q=".format(url)]
     for atom in atoms:
         query.append("+")
         query.append(atom)
     return "".join(query)
+
+def _public_codesearch_query(*atoms):
+    return _codesearch_query("https://cs.chromium.org", *atoms)
+
+def _internal_codesearch_query(*atoms):
+    return _codesearch_query("https://source.corp.google.com", *atoms)
 
 def _get_location_filter_details(f):
     if f.gerrit_host_regexp != ".*" or f.gerrit_project_regexp != ".*":
@@ -117,7 +123,7 @@ def _get_location_filter_details(f):
     if regex.endswith(".+"):
         regex = regex[:-len(".+")]
 
-    url = _codesearch_query("file:" + regex)
+    url = _public_codesearch_query("file:" + regex)
 
     # If the regex doesn't have any interesting characters that might be part of a
     # regex, assume the regex is targeting a single path and direct link to it
@@ -151,7 +157,14 @@ def _generate_cq_builders_md(ctx):
         lines.append(header)
 
         for b in builders:
-            name = b.name.rsplit("/", 1)[-1]
+            project, bucket, name = b.name.split("/")
+            if project not in ("chrome", "chromium"):
+                fail("unexpected project added to the CQ: {}".format(project))
+            builder_url = _TRY_BUILDER_VIEW_URL.format(
+                project = project,
+                bucket = bucket,
+                builder = name,
+            )
 
             # Some builders share a common prefix (android-marshmallow-x86-rel
             # and android-marshmallow-x86-rel-non-cq for example). The quotes
@@ -159,16 +172,18 @@ def _generate_cq_builders_md(ctx):
             # than everything with a common prefix. Two sets of quotes are
             # needed because the first set is interpreted by codesearch.
             quoted_name = "\"\"{name}\"\"".format(name = name)
+            if project == "chrome":
+                codesearch_query = _internal_codesearch_query("file:/try/.*\\.star$")
+            else:
+                codesearch_query = _public_codesearch_query("file:/try/.*\\.star$")
             lines.append((
-                "* [{name}]({try_builder_view}/{name}) " +
+                "* [{name}]({try_builder_view}) " +
                 "([definition]({definition_query}+{quoted_name}))"
             ).format(
                 name = name,
                 quoted_name = quoted_name,
-                try_builder_view = _TRY_BUILDER_VIEW_URL,
-                definition_query = _codesearch_query(
-                    "file:/try/.*\\.star$",
-                ),
+                try_builder_view = builder_url,
+                definition_query = codesearch_query,
             ))
 
             if b.experiment_percentage:

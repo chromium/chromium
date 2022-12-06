@@ -23,24 +23,19 @@ load("./builders.star", "builders", "os", "os_category")
 load("./orchestrator.star", "register_compilator", "register_orchestrator")
 load("//project.star", "settings")
 
-def _default_location_filters(builder_name):
+def default_location_filters(builder_name = None):
     """Get the default location filters for a builder.
 
     Args:
       builder_name: The qualified-name of the builder to get the location
         filters for. May be a bucket-qualified name (e.g. try/linux-rel) or a
-        project-qualified name (e.g. chromium/try/linux-rel).
+        project-qualified name (e.g. chromium/try/linux-rel). If specified,
+        the builder's config files at //infra/config/generated/builders/ are
+        added to the default include-filters returned.
 
     Returns:
       A list of cq.location_filter objects to use for the builder.
     """
-    pieces = builder_name.split("/")
-    if len(pieces) == 2:
-        bucket, builder = pieces
-    elif len(pieces) == 3:
-        _, bucket, builder = pieces
-    else:
-        fail("builder_name must be a qualified builder name, got {}".format(builder_name))
 
     def location_filter(*, path_regexp, exclude = False):
         return cq.location_filter(
@@ -50,18 +45,30 @@ def _default_location_filters(builder_name):
             exclude = exclude,
         )
 
-    return [
+    filters = [
         # Contains documentation that doesn't affect the outputs
         location_filter(path_regexp = "docs/.+", exclude = True),
         # Contains configuration files that aren't active until after committed
         location_filter(path_regexp = "infra/config/.+", exclude = True),
-        # Contains builder-specific files that can be consumed by the builder
-        # pre-submit
-        location_filter(path_regexp = "infra/config/generated/builders/{}/{}/.+".format(bucket, builder)),
     ]
+    if builder_name:
+        pieces = builder_name.split("/")
+        if len(pieces) == 2:
+            bucket, builder = pieces
+        elif len(pieces) == 3:
+            _, bucket, builder = pieces
+        else:
+            fail("builder_name must be a qualified builder name, got {}".format(builder_name))
+        filters.append(
+            # Contains builder-specific files that can be consumed by the builder
+            # pre-submit
+            location_filter(path_regexp = "infra/config/generated/builders/{}/{}/.+".format(bucket, builder)),
+        )
+
+    return filters
 
 def location_filters_without_defaults(tryjob_builder_proto):
-    default_filters = _default_location_filters(tryjob_builder_proto.name)
+    default_filters = default_location_filters(tryjob_builder_proto.name)
     return [f for f in tryjob_builder_proto.location_filters if cq.location_filter(
         gerrit_host_regexp = f.gerrit_host_regexp,
         gerrit_project_regexp = f.gerrit_project_regexp,
@@ -124,7 +131,7 @@ def tryjob(
       add_default_filters: A bool indicating whether to add default filters that
         exclude certain directories that would have no impact when building
         chromium with the patch applied (docs, config files that don't take
-        effect until landing, etc., see _default_location_filters).
+        effect until landing, etc., see default_location_filters).
 
     Returns:
       A struct that can be passed to the `tryjob` argument of `try_.builder` to
@@ -287,7 +294,7 @@ def try_builder(
     if tryjob != None:
         location_filters = tryjob.location_filters
         if tryjob.add_default_filters:
-            location_filters = (location_filters or []) + _default_location_filters(builder)
+            location_filters = (location_filters or []) + default_location_filters(builder)
 
         luci.cq_tryjob_verifier(
             builder = builder,
