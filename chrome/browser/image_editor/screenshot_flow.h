@@ -187,6 +187,9 @@ class ScreenshotFlow : public content::WebContentsObserver,
   // while also making sure the points are within the web contents view bounds.
   void AttemptRegionCapture(gfx::Rect view_bounds);
 
+  // Setter for |is_dragging_|.
+  void SetIsDragging(bool value);
+
   base::WeakPtr<ScreenshotFlow> weak_this_;
 
   // Whether we are in drag mode on this layer.

@@ -125,9 +125,16 @@ void ScreenshotFlow::RemoveUIOverlay() {
   event_capture_mac_.reset();
 #else
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
+#if BUILDFLAG(IS_WIN)
+  // This handles cases where the overlay is removed while a drag is still in
+  // progress, including if ScreenshotFlow is destroyed. It is safe to call
+  // ReleaseCapture() even if the capture has not been set or has already been
+  // released.
+  native_window->ReleaseCapture();
+#endif  // BUILDFLAG(IS_WIN)
   event_capture_.Reset();
   ui::Layer* content_layer = native_window->layer();
-#endif
+#endif  // else
 
   content_layer->Remove(screen_capture_layer_.get());
 
@@ -232,7 +239,7 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
             location.y() > web_contents_bounds.height()) {
           return;
         }
-        is_dragging_ = true;
+        SetIsDragging(true);
         drag_start_ = location;
         drag_end_ = location;
         event->SetHandled();
@@ -249,7 +256,7 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
       if ((capture_mode_ == CaptureMode::SELECTION_RECTANGLE ||
            capture_mode_ == CaptureMode::SELECTION_ELEMENT) &&
           is_dragging_) {
-        is_dragging_ = false;
+        SetIsDragging(false);
         AttemptRegionCapture(web_contents_bounds);
         event->SetHandled();
       }
@@ -259,7 +266,7 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
       if ((capture_mode_ == CaptureMode::SELECTION_RECTANGLE ||
            capture_mode_ == CaptureMode::SELECTION_ELEMENT) &&
           event->AsMouseWheelEvent()->y_offset() > 0 && is_dragging_) {
-        is_dragging_ = false;
+        SetIsDragging(false);
         AttemptRegionCapture(web_contents_bounds);
         event->SetHandled();
       }
@@ -280,7 +287,7 @@ void ScreenshotFlow::OnScrollEvent(ui::ScrollEvent* event) {
   if ((capture_mode_ == CaptureMode::SELECTION_RECTANGLE ||
        capture_mode_ == CaptureMode::SELECTION_ELEMENT) &&
       event->y_offset() > 0 && is_dragging_) {
-    is_dragging_ = false;
+    SetIsDragging(false);
     AttemptRegionCapture(web_contents_bounds);
     event->SetHandled();
   }
@@ -394,6 +401,18 @@ void ScreenshotFlow::SetCursor(ui::mojom::CursorType cursor_type) {
     ui::Cursor cursor(cursor_type);
     host->SetCursor(cursor);
   }
+}
+
+void ScreenshotFlow::SetIsDragging(bool value) {
+  is_dragging_ = value;
+#if BUILDFLAG(IS_WIN)
+  const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
+  if (value) {
+    native_window->SetCapture();
+  } else {
+    native_window->ReleaseCapture();
+  }
+#endif
 }
 
 bool ScreenshotFlow::IsCaptureModeActive() {
