@@ -144,6 +144,8 @@ inline constexpr char kArcTosWebviewFirstLoadResult[] =
 inline constexpr char kPrivacyPolicyFirstLoadResult[] =
     "OOBE.WebViewLoader.FirstLoadResult."
     "ConsolidatedConsentPrivacyPolicyWebview";
+inline constexpr char kRecoveryOptInResultHistogram[] =
+    "OOBE.ConsolidatedConsentScreen.RecoveryOptInResult";
 
 ArcPlayTermsOfServiceConsent BuildArcPlayTermsOfServiceConsent(
     const std::string& tos_content) {
@@ -336,6 +338,7 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
       "AcceptedRegular",
       1);
 
+  histogram_tester_.ExpectTotalCount(kRecoveryOptInResultHistogram, 1);
   histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
   histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
 

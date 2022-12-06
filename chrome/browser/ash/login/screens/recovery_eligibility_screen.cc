@@ -80,10 +80,11 @@ void RecoveryEligibilityScreen::ShowImpl() {
   auto supported_factors =
       user_context->GetAuthFactorsConfiguration().get_supported_factors();
   if (supported_factors.Has(cryptohome::AuthFactorType::kRecovery)) {
+    context()->recovery_setup.is_supported = true;
     // Don't ask about recovery consent for managed users - use the policy value
     // instead.
-    context()->ask_about_recovery_consent = !IsUserManaged();
-    context()->recovery_factor_opted_in =
+    context()->recovery_setup.ask_about_recovery_consent = !IsUserManaged();
+    context()->recovery_setup.recovery_factor_opted_in =
         IsRecoveryFactorBehaviorPolicyEnabled();
   }
   exit_callback_.Run(Result::PROCEED);

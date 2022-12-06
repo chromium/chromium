@@ -225,6 +225,17 @@ chromium-metrics-reviews@google.com.
   <summary>Time from the login screen start to user session start.</summary>
 </histogram>
 
+<histogram name="OOBE.ConsolidatedConsentScreen.RecoveryOptInResult"
+    enum="RecoveryOptInResult" expires_after="2023-06-01">
+  <owner>anastasiian@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Tracks the result of the cryptohome recovery opt-in on the consolidated
+    consent screen. Recorded when user exists the consolidated consent screen.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.ConsolidatedConsentScreen.UserActions"
     enum="ConsolidatedConsentScreenUserAction" expires_after="2023-09-01">
   <owner>osamafathy@google.com</owner>

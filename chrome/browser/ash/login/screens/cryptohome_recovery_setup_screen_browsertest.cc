@@ -114,10 +114,10 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest, SkippedOnOptOut) {
   LoginAsRegularUser();
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
-      ->ask_about_recovery_consent = true;
+      ->recovery_setup.ask_about_recovery_consent = true;
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
-      ->recovery_factor_opted_in = false;
+      ->recovery_setup.recovery_factor_opted_in = false;
   base::HistogramTester histogram_tester;
 
   ShowScreen();
@@ -137,10 +137,10 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
   LoginAsRegularUser();
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
-      ->ask_about_recovery_consent = true;
+      ->recovery_setup.ask_about_recovery_consent = true;
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
-      ->recovery_factor_opted_in = true;
+      ->recovery_setup.recovery_factor_opted_in = true;
   EXPECT_FALSE(PinSetupScreen::ShouldSkipBecauseOfPolicy());
   base::HistogramTester histogram_tester;
 
@@ -168,10 +168,10 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
       /*override_quick_unlock=*/true);
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
-      ->ask_about_recovery_consent = true;
+      ->recovery_setup.ask_about_recovery_consent = true;
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
-      ->recovery_factor_opted_in = true;
+      ->recovery_setup.recovery_factor_opted_in = true;
   EXPECT_TRUE(PinSetupScreen::ShouldSkipBecauseOfPolicy());
   base::HistogramTester histogram_tester;
 

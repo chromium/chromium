@@ -67,7 +67,7 @@ void CryptohomeRecoverySetupScreen::OnUserAction(
 bool CryptohomeRecoverySetupScreen::MaybeSkip(WizardContext& wizard_context) {
   // Skip recovery setup if the user didn't opt-in.
   if (wizard_context.skip_post_login_screens_for_tests ||
-      !wizard_context.recovery_factor_opted_in) {
+      !wizard_context.recovery_setup.recovery_factor_opted_in) {
     ExitScreen(wizard_context, Result::SKIPPED);
     return true;
   }

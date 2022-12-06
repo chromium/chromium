@@ -33,6 +33,19 @@ class WizardContext {
     kEnterprise,
   };
 
+  struct RecoverySetup {
+    // Whether the recovery auth factor is supported. Used for metrics.
+    bool is_supported = false;
+
+    // Controls if user should be asked about recovery factor setup
+    // on the consolidated consent screen.
+    bool ask_about_recovery_consent = false;
+
+    // User's choice about using recovery factor. Filled by
+    // consolidated consent screen, used by auth_factors_setup screen.
+    bool recovery_factor_opted_in = false;
+  };
+
   // Configuration for automating OOBE screen actions, e.g. during device
   // version rollback.
   // Set by WizardController.
@@ -97,13 +110,8 @@ class WizardContext {
   EnrollmentPreference enrollment_preference_ =
       WizardContext::EnrollmentPreference::kEnterprise;
 
-  // Controls if user should be asked about recovery factor setup
-  // on the consolidated consent screen.
-  bool ask_about_recovery_consent = false;
-
-  // User's choice about using recovery factor. Filled by
-  // consolidated consent screen, used by auth_factors_setup screen.
-  bool recovery_factor_opted_in = false;
+  // The data for recovery setup flow.
+  RecoverySetup recovery_setup;
 
   // Authorization data that is required by PinSetup screen to add PIN as
   // another possible auth factor. Can be empty (if PIN is not supported).

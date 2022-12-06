@@ -13,6 +13,7 @@
 #include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -83,6 +84,33 @@ std::string GetCrosEulaOnlineUrl() {
   return base::StringPrintf(chrome::kCrosEulaOnlineURLPath,
                             g_browser_process->GetApplicationLocale().c_str());
 }
+
+ConsolidatedConsentScreen::RecoveryOptInResult GetRecoveryOptInResult(
+    const WizardContext::RecoverySetup& recovery_setup) {
+  if (!recovery_setup.is_supported)
+    return ConsolidatedConsentScreen::RecoveryOptInResult::kNotSupported;
+
+  if (recovery_setup.ask_about_recovery_consent) {
+    // The user was shown the opt-in checkbox.
+    if (recovery_setup.recovery_factor_opted_in)
+      return ConsolidatedConsentScreen::RecoveryOptInResult::kUserOptIn;
+    return ConsolidatedConsentScreen::RecoveryOptInResult::kUserOptOut;
+  }
+
+  // The user was not shown the opt-in checkbox. In this case the policy value
+  // is used.
+  if (recovery_setup.recovery_factor_opted_in)
+    return ConsolidatedConsentScreen::RecoveryOptInResult::kPolicyOptIn;
+  return ConsolidatedConsentScreen::RecoveryOptInResult::kPolicyOptOut;
+}
+
+void RecordRecoveryOptinResult(
+    const WizardContext::RecoverySetup& recovery_setup) {
+  base::UmaHistogramEnumeration(
+      "OOBE.ConsolidatedConsentScreen.RecoveryOptInResult",
+      GetRecoveryOptInResult(recovery_setup));
+}
+
 }  // namespace
 
 std::string ConsolidatedConsentScreen::GetResultString(Result result) {
@@ -188,9 +216,11 @@ void ConsolidatedConsentScreen::ShowImpl() {
   data.Set("crosEulaUrl", GetCrosEulaOnlineUrl());
   // Option that controls if Recovery factor opt-in should be shown for the
   // user.
-  data.Set("showRecoveryOption", context()->ask_about_recovery_consent);
+  data.Set("showRecoveryOption",
+           context()->recovery_setup.ask_about_recovery_consent);
   // Default value for recovery opt toggle.
-  data.Set("recoveryOptionDefault", context()->recovery_factor_opted_in);
+  data.Set("recoveryOptionDefault",
+           context()->recovery_setup.recovery_factor_opted_in);
 
   view_->Show(std::move(data));
 }
@@ -395,7 +425,7 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
                                          bool enable_recovery) {
   ReportUsageOptIn(enable_stats_usage);
 
-  context()->recovery_factor_opted_in = enable_recovery;
+  context()->recovery_setup.recovery_factor_opted_in = enable_recovery;
 
   if (arc::IsArcDemoModeSetupFlow() ||
       !arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {
@@ -430,6 +460,7 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
 }
 
 void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
+  RecordRecoveryOptinResult(context()->recovery_setup);
   StartupUtils::MarkEulaAccepted();
   network_portal_detector::GetInstance()->Enable();
 

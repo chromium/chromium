@@ -86216,6 +86216,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="DownloadError"/>
 </enum>
 
+<enum name="RecoveryOptInResult">
+  <summary>
+    The result of the cryptohome recovery opt-in. For managed users the policy
+    value is used, for unmanaged users the user selection is used.
+  </summary>
+  <int value="0" label="Not supported"/>
+  <int value="1" label="User Opt In"/>
+  <int value="2" label="User Opt Out"/>
+  <int value="3" label="Policy Opt In"/>
+  <int value="4" label="Policy Opt Out"/>
+</enum>
+
 <enum name="RecurrenceRankerConfigurationError">
   <obsolete>
     Replaced by RecurrenceRankerInitializationStatus

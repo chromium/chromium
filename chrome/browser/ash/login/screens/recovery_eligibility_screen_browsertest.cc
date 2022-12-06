@@ -116,10 +116,10 @@ IN_PROC_BROWSER_TEST_F(RecoveryEligibilityScreenTest, UnmanagedUser) {
   ShowScreen();
   EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
-                  ->ask_about_recovery_consent);
+                  ->recovery_setup.ask_about_recovery_consent);
   EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
-                  ->recovery_factor_opted_in);
+                  ->recovery_setup.recovery_factor_opted_in);
 
   ContinueScreenExit();
   EXPECT_EQ(result_.value(), RecoveryEligibilityScreen::Result::PROCEED);
@@ -138,10 +138,10 @@ IN_PROC_BROWSER_TEST_F(RecoveryEligibilityScreenTest,
   ShowScreen();
   EXPECT_FALSE(LoginDisplayHost::default_host()
                    ->GetWizardContextForTesting()
-                   ->ask_about_recovery_consent);
+                   ->recovery_setup.ask_about_recovery_consent);
   EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
-                  ->recovery_factor_opted_in);
+                  ->recovery_setup.recovery_factor_opted_in);
 
   ContinueScreenExit();
   EXPECT_EQ(result_.value(), RecoveryEligibilityScreen::Result::PROCEED);
@@ -160,10 +160,10 @@ IN_PROC_BROWSER_TEST_F(RecoveryEligibilityScreenTest,
   ShowScreen();
   EXPECT_FALSE(LoginDisplayHost::default_host()
                    ->GetWizardContextForTesting()
-                   ->ask_about_recovery_consent);
+                   ->recovery_setup.ask_about_recovery_consent);
   EXPECT_FALSE(LoginDisplayHost::default_host()
                    ->GetWizardContextForTesting()
-                   ->recovery_factor_opted_in);
+                   ->recovery_setup.recovery_factor_opted_in);
 
   ContinueScreenExit();
   EXPECT_EQ(result_.value(), RecoveryEligibilityScreen::Result::PROCEED);
