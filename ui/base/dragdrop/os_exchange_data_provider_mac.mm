@@ -360,7 +360,7 @@ NSDraggingItem* OSExchangeDataProviderMac::GetDraggingItem() const {
 // static
 NSArray* OSExchangeDataProviderMac::SupportedPasteboardTypes() {
   return @[
-    kUTTypeChromiumWebCustomData, ClipboardUtil::UTIForWebURLsAndTitles(),
+    kUTTypeChromiumWebCustomData, kUTTypeWebKitWebURLsWithTitles,
     NSURLPboardType, NSFilenamesPboardType, kUTTypeChromiumInitiatedDrag,
     NSStringPboardType, NSHTMLPboardType, NSRTFPboardType,
     NSFilenamesPboardType, kUTTypeChromiumWebCustomData, NSPasteboardTypeString

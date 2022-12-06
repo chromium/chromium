@@ -151,7 +151,8 @@ const ClipboardFormatType& ClipboardFormatType::BitmapType() {
 
 // static
 const ClipboardFormatType& ClipboardFormatType::WebKitSmartPasteType() {
-  static base::NoDestructor<ClipboardFormatType> type(kWebSmartPastePboardType);
+  static base::NoDestructor<ClipboardFormatType> type(
+      kUTTypeWebKitWebSmartPaste);
   return *type;
 }
 
