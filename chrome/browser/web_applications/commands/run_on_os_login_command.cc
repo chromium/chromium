@@ -46,7 +46,8 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
     absl::optional<RunOnOsLoginMode> login_mode,
     RunOnOsLoginAction set_or_sync_mode,
     base::OnceClosure callback)
-    : lock_description_(
+    : WebAppCommandTemplate<AppLock>("RunOnOsLoginCommand"),
+      lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
               {app_id})),
       app_id_(app_id),
@@ -83,8 +84,7 @@ void RunOnOsLoginCommand::OnShutdown() {
 
 base::Value RunOnOsLoginCommand::ToDebugValue() const {
   base::Value::Dict rool_info;
-  rool_info.Set("RunOnOsLoginCommand ID:", id());
-  rool_info.Set("App Id: ", app_id_);
+  rool_info.Set("app_id: ", app_id_);
   switch (set_or_sync_mode_) {
     case RunOnOsLoginAction::kSetModeInDBAndOS:
       rool_info.Set("Type of Action: ", "Setting value in DB & OS");

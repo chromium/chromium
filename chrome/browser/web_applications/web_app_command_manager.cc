@@ -34,9 +34,13 @@ namespace {
 base::Value CreateLogValue(const WebAppCommand& command,
                            absl::optional<CommandResult> result) {
   base::Value::Dict dict;
+  dict.Set("name", command.name());
   dict.Set("id", command.id());
-  dict.Set("started", command.IsStarted());
-  dict.Set("value", command.ToDebugValue());
+  base::Value debug_value = command.ToDebugValue();
+  if (!debug_value.is_none() &&
+      !(debug_value.is_dict() && !debug_value.DictEmpty())) {
+    dict.Set("value", command.ToDebugValue());
+  }
   if (result) {
     switch (result.value()) {
       case CommandResult::kSuccess:

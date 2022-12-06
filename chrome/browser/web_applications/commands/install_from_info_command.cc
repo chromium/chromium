@@ -27,7 +27,8 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback)
-    : lock_description_(
+    : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
+      lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
               {GenerateAppId(install_info->manifest_id,
                              install_info->start_url)})),
@@ -36,7 +37,9 @@ InstallFromInfoCommand::InstallFromInfoCommand(
       install_info_(std::move(install_info)),
       overwrite_existing_manifest_fields_(overwrite_existing_manifest_fields),
       install_surface_(install_surface),
-      install_callback_(std::move(install_callback)) {}
+      install_callback_(std::move(install_callback)) {
+  PopulateInitialDebugInfo();
+}
 
 InstallFromInfoCommand::InstallFromInfoCommand(
     std::unique_ptr<WebAppInstallInfo> install_info,
@@ -44,7 +47,8 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
     const WebAppInstallParams& install_params)
-    : lock_description_(
+    : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
+      lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
               {GenerateAppId(install_info->manifest_id,
                              install_info->start_url)})),
@@ -61,6 +65,7 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     DCHECK(!install_params.add_to_quick_launch_bar);
   }
   DCHECK(install_info_->start_url.is_valid());
+  PopulateInitialDebugInfo();
 }
 InstallFromInfoCommand::~InstallFromInfoCommand() = default;
 
@@ -101,7 +106,17 @@ void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
                      weak_factory_.GetWeakPtr()));
 }
 
+void InstallFromInfoCommand::PopulateInitialDebugInfo() {
+  debug_value_.Set("app_id", app_id_);
+  debug_value_.Set("start_url", install_info_->start_url.spec());
+  debug_value_.Set("overwrite_existing_manifest_fields",
+                   overwrite_existing_manifest_fields_);
+  debug_value_.Set("install_surface", static_cast<int>(install_surface_));
+  debug_value_.Set("has_install_params", install_params_ ? true : false);
+}
+
 void InstallFromInfoCommand::Abort(webapps::InstallResultCode code) {
+  debug_value_.Set("result_code", base::StreamableToString(code));
   if (!install_callback_)
     return;
   webapps::InstallableMetrics::TrackInstallResult(false);
@@ -114,17 +129,14 @@ void InstallFromInfoCommand::OnInstallCompleted(const AppId& app_id,
                                                 webapps::InstallResultCode code,
                                                 OsHooksErrors os_hooks_errors) {
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
+  debug_value_.Set("result_code", base::StreamableToString(code));
   SignalCompletionAndSelfDestruct(
       webapps::IsSuccess(code) ? CommandResult::kSuccess
                                : CommandResult::kFailure,
       base::BindOnce(std::move(install_callback_), app_id, code));
 }
 
-void InstallFromInfoCommand::OnSyncSourceRemoved() {
-  // TODO(crbug.com/1320086): remove after uninstall from sync is async.
-  Abort(webapps::InstallResultCode::kAppNotInRegistrarAfterCommit);
-  return;
-}
+void InstallFromInfoCommand::OnSyncSourceRemoved() {}
 
 void InstallFromInfoCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
@@ -132,7 +144,7 @@ void InstallFromInfoCommand::OnShutdown() {
 }
 
 base::Value InstallFromInfoCommand::ToDebugValue() const {
-  return base::Value(base::StringPrintf("InstallFromInfoCommand %d, app_id: %s",
-                                        id(), app_id_.c_str()));
+  return base::Value(debug_value_.Clone());
 }
+
 }  // namespace web_app

@@ -89,6 +89,7 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
 
+  base::Value::Dict debug_value_;
   InstallErrorLogEntry install_error_log_entry_;
 
   AppId app_id_;

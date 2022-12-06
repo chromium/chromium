@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
@@ -294,7 +295,7 @@ void WebAppCommandScheduler::ClearWebAppBrowsingData(
   }
 
   provider_->scheduler().ScheduleCallbackWithLock<FullSystemLock>(
-      std::make_unique<FullSystemLockDescription>(),
+      "ClearWebAppBrowsingData", std::make_unique<FullSystemLockDescription>(),
       base::BindOnce(web_app::ClearWebAppBrowsingData, begin_time, end_time,
                      std::move(done)));
 }
@@ -309,6 +310,7 @@ void WebAppCommandScheduler::SetAppIsDisabled(const AppId& app_id,
   }
 
   provider_->scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
+      "SetAppIsDisabled",
       std::make_unique<web_app::AppLockDescription,
                        base::flat_set<web_app::AppId>>({app_id}),
       base::BindOnce(
@@ -321,14 +323,28 @@ void WebAppCommandScheduler::SetAppIsDisabled(const AppId& app_id,
 
 template <class LockType, class DescriptionType>
 void WebAppCommandScheduler::ScheduleCallbackWithLock(
+    const std::string& operation_name,
     std::unique_ptr<DescriptionType> lock_description,
     base::OnceCallback<void(LockType& lock)> callback) {
   if (IsShuttingDown())
     return;
 
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<CallbackCommand<LockType>>(std::move(lock_description),
-                                                  std::move(callback)));
+      std::make_unique<CallbackCommand<LockType>>(
+          operation_name, std::move(lock_description), std::move(callback)));
+}
+
+template <class LockType, class DescriptionType>
+void WebAppCommandScheduler::ScheduleCallbackWithLock(
+    const std::string& operation_name,
+    std::unique_ptr<DescriptionType> lock_description,
+    base::OnceCallback<base::Value(LockType& lock)> callback) {
+  if (IsShuttingDown())
+    return;
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<CallbackCommand<LockType>>(
+          operation_name, std::move(lock_description), std::move(callback)));
 }
 
 bool WebAppCommandScheduler::IsShuttingDown() const {
@@ -338,26 +354,55 @@ bool WebAppCommandScheduler::IsShuttingDown() const {
 }
 
 template void WebAppCommandScheduler::ScheduleCallbackWithLock<NoopLock>(
+    const std::string& operation_name,
     std::unique_ptr<NoopLock::LockDescription> lock_description,
     base::OnceCallback<void(NoopLock& lock)> callback);
+template void WebAppCommandScheduler::ScheduleCallbackWithLock<NoopLock>(
+    const std::string& operation_name,
+    std::unique_ptr<NoopLock::LockDescription> lock_description,
+    base::OnceCallback<base::Value(NoopLock& lock)> callback);
 
 template void
 WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsLock>(
+    const std::string& operation_name,
     std::unique_ptr<SharedWebContentsLock::LockDescription> lock_description,
     base::OnceCallback<void(SharedWebContentsLock& lock)> callback);
+template void
+WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsLock>(
+    const std::string& operation_name,
+    std::unique_ptr<SharedWebContentsLock::LockDescription> lock_description,
+    base::OnceCallback<base::Value(SharedWebContentsLock& lock)> callback);
 
 template void WebAppCommandScheduler::ScheduleCallbackWithLock<AppLock>(
+    const std::string& operation_name,
     std::unique_ptr<AppLock::LockDescription> lock_description,
     base::OnceCallback<void(AppLock& lock)> callback);
+template void WebAppCommandScheduler::ScheduleCallbackWithLock<AppLock>(
+    const std::string& operation_name,
+    std::unique_ptr<AppLock::LockDescription> lock_description,
+    base::OnceCallback<base::Value(AppLock& lock)> callback);
 
 template void
 WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsWithAppLock>(
+    const std::string& operation_name,
     std::unique_ptr<SharedWebContentsWithAppLock::LockDescription>
         lock_description,
     base::OnceCallback<void(SharedWebContentsWithAppLock& lock)> callback);
+template void
+WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsWithAppLock>(
+    const std::string& operation_name,
+    std::unique_ptr<SharedWebContentsWithAppLock::LockDescription>
+        lock_description,
+    base::OnceCallback<base::Value(SharedWebContentsWithAppLock& lock)>
+        callback);
 
 template void WebAppCommandScheduler::ScheduleCallbackWithLock<FullSystemLock>(
+    const std::string& operation_name,
     std::unique_ptr<FullSystemLock::LockDescription> lock_description,
     base::OnceCallback<void(FullSystemLock& lock)> callback);
+template void WebAppCommandScheduler::ScheduleCallbackWithLock<FullSystemLock>(
+    const std::string& operation_name,
+    std::unique_ptr<FullSystemLock::LockDescription> lock_description,
+    base::OnceCallback<base::Value(FullSystemLock& lock)> callback);
 
 }  // namespace web_app

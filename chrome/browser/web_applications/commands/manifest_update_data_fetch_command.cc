@@ -185,7 +185,8 @@ ManifestUpdateDataFetchCommand::ManifestUpdateDataFetchCommand(
     base::WeakPtr<content::WebContents> web_contents,
     ManifestFetchCallback fetch_callback,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : lock_description_(
+    : WebAppCommandTemplate<AppLock>("ManifestUpdateDataFetchCommand"),
+      lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
               {app_id})),
       url_(url),
@@ -206,7 +207,6 @@ void ManifestUpdateDataFetchCommand::OnShutdown() {
 
 base::Value ManifestUpdateDataFetchCommand::ToDebugValue() const {
   base::Value::Dict data = debug_log_.Clone();
-  data.Set("type", "ManifestUpdateDataFetchCommand");
   data.Set("url", url_.spec());
   data.Set("app_id", app_id_);
   data.Set("stage", base::StreamableToString(stage_));

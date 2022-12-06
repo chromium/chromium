@@ -61,6 +61,8 @@ class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
   base::Value ToDebugValue() const override;
 
  private:
+  void PopulateInitialDebugInfo();
+
   void Abort(webapps::InstallResultCode code);
 
   void OnInstallCompleted(const AppId& app_id,
@@ -76,6 +78,8 @@ class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
   webapps::WebappInstallSource install_surface_;
   OnceInstallCallback install_callback_;
   absl::optional<WebAppInstallParams> install_params_;
+
+  base::Value::Dict debug_value_;
 
   base::WeakPtrFactory<InstallFromInfoCommand> weak_factory_{this};
 };

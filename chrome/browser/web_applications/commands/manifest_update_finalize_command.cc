@@ -35,7 +35,8 @@ ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
     ManifestWriteCallback write_callback,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive)
-    : lock_description_(
+    : WebAppCommandTemplate<AppLock>("ManifestUpdateFinalizeCommand"),
+      lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
               {app_id})),
       url_(url),
@@ -59,7 +60,6 @@ void ManifestUpdateFinalizeCommand::OnShutdown() {
 
 base::Value ManifestUpdateFinalizeCommand::ToDebugValue() const {
   base::Value::Dict data = debug_log_.Clone();
-  data.Set("type", "ManifestUpdateFinalizeCommand");
   data.Set("url", url_.spec());
   data.Set("app_id", app_id_);
   data.Set("stage", base::StreamableToString(stage_));

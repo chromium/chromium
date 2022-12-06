@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -32,7 +33,8 @@ ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
     OnceInstallCallback callback,
     base::WeakPtr<content::WebContents> contents,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : noop_lock_description_(std::make_unique<NoopLockDescription>()),
+    : WebAppCommandTemplate<NoopLock>("ExternallyManagedInstallCommand"),
+      noop_lock_description_(std::make_unique<NoopLockDescription>()),
       install_params_(
           ConvertExternalInstallOptionsToParams(external_install_options)),
       install_surface_(ConvertExternalInstallSourceToInstallSource(
@@ -42,6 +44,8 @@ ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
       data_retriever_(std::move(data_retriever)),
       install_error_log_entry_(/*background_installation=*/true,
                                install_surface_) {
+  debug_value_.Set("external_install_options",
+                   external_install_options.AsDebugValue());
   if (!install_params_.locally_installed) {
     DCHECK(!install_params_.add_to_applications_menu);
     DCHECK(!install_params_.add_to_desktop);
@@ -77,34 +81,22 @@ void ExternallyManagedInstallCommand::StartWithLock(
           weak_factory_.GetWeakPtr()));
 }
 
-void ExternallyManagedInstallCommand::OnSyncSourceRemoved() {
-  // TODO(crbug.com/1320086): remove after uninstall from sync is async.
-  Abort(webapps::InstallResultCode::kAppNotInRegistrarAfterCommit);
-  return;
-}
+void ExternallyManagedInstallCommand::OnSyncSourceRemoved() {}
 
 void ExternallyManagedInstallCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
-  return;
 }
 
 base::Value ExternallyManagedInstallCommand::ToDebugValue() const {
-  base::Value::Dict params_info;
-  params_info.Set("ExternallyManagedInstallCommand ID:", id());
-  params_info.Set("Title",
-                  install_params_.fallback_app_name.has_value()
-                      ? base::Value(install_params_.fallback_app_name.value())
-                      : base::Value());
-  params_info.Set("Start URL",
-                  install_params_.fallback_start_url.is_valid()
-                      ? base::Value(install_params_.fallback_start_url.spec())
-                      : base::Value());
-  return base::Value(std::move(params_info));
+  base::Value::Dict value(debug_value_.Clone());
+  value.Set("app_id", app_id_);
+  return base::Value(std::move(value));
 }
 
 void ExternallyManagedInstallCommand::Abort(webapps::InstallResultCode code) {
   if (!install_callback_)
     return;
+  debug_value_.Set("result_code", base::StreamableToString(code));
   webapps::InstallableMetrics::TrackInstallResult(false);
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
@@ -166,7 +158,9 @@ void ExternallyManagedInstallCommand::OnDidPerformInstallableCheck(
     DCHECK(!opt_manifest->icons.empty());
   }
 
+  debug_value_.Set("had_manifest", false);
   if (opt_manifest) {
+    debug_value_.Set("had_manifest", true);
     UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
                                  web_app_info_.get());
   }
@@ -280,6 +274,7 @@ void ExternallyManagedInstallCommand::OnInstallFinalized(
     Abort(code);
     return;
   }
+  debug_value_.Set("result_code", base::StreamableToString(code));
 
   RecordWebAppInstallationTimestamp(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext())

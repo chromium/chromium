@@ -47,7 +47,8 @@ class MockCommand : public WebAppCommandTemplate<LockType> {
  public:
   explicit MockCommand(
       std::unique_ptr<typename LockType::LockDescription> lock_description)
-      : lock_description_(std::move(lock_description)) {}
+      : WebAppCommandTemplate<LockType>("MockCommand"),
+        lock_description_(std::move(lock_description)) {}
 
   MOCK_METHOD(void, OnDestruction, ());
 
@@ -486,6 +487,7 @@ TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
            AppLock&) { barrier.Run(app_id); },
         app_id, barrier);
     manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
+        "",
         std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id}),
         std::move(callback)));
   }
@@ -566,12 +568,14 @@ TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
 TEST_F(WebAppCommandManagerTest, ToDebugValue) {
   base::RunLoop loop;
   manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
+      "",
       std::make_unique<AppLockDescription, base::flat_set<AppId>>({kTestAppId}),
       base::BindLambdaForTesting([&](AppLock&) { loop.Quit(); })));
   manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
+      "",
       std::make_unique<AppLockDescription, base::flat_set<AppId>>(
           {kTestAppId2}),
-      base::DoNothing()));
+      base::DoNothingAs<void(AppLock&)>()));
   loop.Run();
   manager().ToDebugValue();
 }

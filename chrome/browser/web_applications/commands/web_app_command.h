@@ -55,7 +55,7 @@ using WebAppCommandQueueId = absl::optional<AppId>;
 class WebAppCommand {
  public:
   using Id = int;
-  WebAppCommand();
+  explicit WebAppCommand(const std::string& name);
   virtual ~WebAppCommand();
 
   // Returns if the command has been started yet.
@@ -63,6 +63,8 @@ class WebAppCommand {
 
   // Unique id generated for this command. Currently only used for debug values.
   Id id() const { return id_; }
+
+  const std::string& name() const { return name_; }
 
   // Returns a debug value to log the state of the command. Used in
   // chrome://web-app-internals.
@@ -124,6 +126,7 @@ class WebAppCommand {
   base::WeakPtr<WebAppCommand> AsWeakPtr();
 
   Id id_;
+  std::string name_;
   raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
 
   base::WeakPtrFactory<WebAppCommand> weak_factory_{this};
@@ -132,8 +135,8 @@ class WebAppCommand {
 template <typename LockType>
 class WebAppCommandTemplate : public WebAppCommand {
  public:
-  WebAppCommandTemplate() = default;
-  ~WebAppCommandTemplate() override = default;
+  explicit WebAppCommandTemplate(const std::string& name);
+  ~WebAppCommandTemplate() override;
 
   // Triggered after lock is acquired. Signals that this command can
   // start its operations. When this command is complete, it should call

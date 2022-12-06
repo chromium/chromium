@@ -160,6 +160,7 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
   DCHECK(AppUsesWindowControlsOverlay());
 
   provider_->scheduler().ScheduleCallbackWithLock<AppLock>(
+      "WebAppBrowserController::ToggleWindowControlsOverlayEnabled",
       std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id()}),
       base::BindOnce(
           [](base::OnceClosure on_complete, const AppId& app_id,
@@ -214,6 +215,7 @@ bool WebAppBrowserController::AlwaysShowToolbarInFullscreen() const {
 
 void WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {
   provider_->scheduler().ScheduleCallbackWithLock<AppLock>(
+      "WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen",
       std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id()}),
       base::BindOnce(
           [](const AppId& app_id, AppLock& lock) {

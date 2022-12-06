@@ -52,10 +52,12 @@ base::Value::List GetHandlersAsListValue(
 }
 
 void AcquireAppLockAndScheduleCallback(
+    const std::string& operation_name,
     web_app::WebAppProvider& provider,
     const web_app::AppId& app_id,
     base::OnceCallback<void(web_app::AppLock& lock)> callback) {
   provider.scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
+      operation_name,
       std::make_unique<web_app::AppLockDescription,
                        base::flat_set<web_app::AppId>>({app_id}),
       std::move(callback));
@@ -323,6 +325,7 @@ void ProtocolHandlersHandler::HandleRemoveAllowedAppHandler(
 
   const web_app::AppId& app_id = handler.web_app_id().value();
   AcquireAppLockAndScheduleCallback(
+      "ProtocolHandlersHandler::HandleRemoveAllowedAppHandler",
       *web_app_provider_, app_id,
       base::BindOnce(
           [](custom_handlers::ProtocolHandler handler, web_app::AppLock& lock) {
@@ -344,6 +347,7 @@ void ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler(
 
   const web_app::AppId& app_id = handler.web_app_id().value();
   AcquireAppLockAndScheduleCallback(
+      "ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler",
       *web_app_provider_, app_id,
       base::BindOnce(
           [](custom_handlers::ProtocolHandler handler, web_app::AppLock& lock) {

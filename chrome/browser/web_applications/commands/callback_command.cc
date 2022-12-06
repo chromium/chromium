@@ -20,9 +20,23 @@ namespace web_app {
 
 template <class LockType, class DescriptionType>
 CallbackCommand<LockType, DescriptionType>::CallbackCommand(
+    const std::string& name,
     std::unique_ptr<DescriptionType> lock_description,
     base::OnceCallback<void(LockType& lock)> callback)
-    : lock_description_(std::move(lock_description)),
+    : CallbackCommand<LockType, DescriptionType>::CallbackCommand(
+          name,
+          std::move(lock_description),
+          // Return an empty base::Value() as the debug value.
+          std::move(callback).Then(
+              base::BindOnce([]() { return base::Value(); }))) {}
+
+template <class LockType, class DescriptionType>
+CallbackCommand<LockType, DescriptionType>::CallbackCommand(
+    const std::string& name,
+    std::unique_ptr<DescriptionType> lock_description,
+    base::OnceCallback<base::Value(LockType& lock)> callback)
+    : WebAppCommandTemplate<LockType>(name),
+      lock_description_(std::move(lock_description)),
       callback_(std::move(callback)) {
   DCHECK(lock_description_);
 }
@@ -34,9 +48,9 @@ template <class LockType, class DescriptionType>
 void CallbackCommand<LockType, DescriptionType>::StartWithLock(
     std::unique_ptr<LockType> lock) {
   lock_ = std::move(lock);
-  std::move(callback_).Run(*lock_.get());
-  return this->SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                               base::DoNothing());
+  debug_value_ = std::move(callback_).Run(*lock_.get());
+  this->SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
+                                        base::DoNothing());
 }
 
 template <class LockType, class DescriptionType>
@@ -47,7 +61,7 @@ LockDescription& CallbackCommand<LockType, DescriptionType>::lock_description()
 
 template <class LockType, class DescriptionType>
 base::Value CallbackCommand<LockType, DescriptionType>::ToDebugValue() const {
-  return base::Value(base::StringPrintf("CallbackCommand %d", this->id()));
+  return debug_value_.Clone();
 }
 
 template class CallbackCommand<NoopLock>;

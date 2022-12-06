@@ -137,7 +137,8 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     OnceInstallCallback callback,
     bool use_fallback,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : noop_lock_description_(std::make_unique<NoopLockDescription>()),
+    : WebAppCommandTemplate<NoopLock>("FetchManifestAndInstallCommand"),
+      noop_lock_description_(std::make_unique<NoopLockDescription>()),
       install_surface_(install_surface),
       web_contents_(contents),
       bypass_service_worker_check_(bypass_service_worker_check),
@@ -201,8 +202,9 @@ FetchManifestAndInstallCommand::GetInstallingWebContents() {
 
 base::Value FetchManifestAndInstallCommand::ToDebugValue() const {
   auto debug_value = debug_log_.Clone();
-  debug_value.Set("command_name", "FetchManifestAndInstallCommand");
   debug_value.Set("app_id", app_id_);
+  debug_value.Set("install_surface", static_cast<int>(install_surface_));
+  debug_value.Set("used_fallback", use_fallback_);
   return base::Value(std::move(debug_value));
 }
 

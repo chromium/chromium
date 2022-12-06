@@ -41,13 +41,13 @@ UpdateFileHandlerCommand::UpdateFileHandlerCommand(
     const AppId& app_id,
     absl::optional<bool> user_choice_to_remember,
     base::OnceClosure callback)
-    : lock_description_(
+    : WebAppCommandTemplate<AppLock>("UpdateFileHandlerCommand"),
+      lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
               {app_id})),
       app_id_(app_id),
       user_choice_to_remember_(std::move(user_choice_to_remember)),
       callback_(std::move(callback)) {
-  debug_info_.Set("name", "UpdateFileHandlerCommand");
   debug_info_.Set("app_id", app_id_);
   if (user_choice_to_remember_)
     debug_info_.Set("user_choice_to_remember",

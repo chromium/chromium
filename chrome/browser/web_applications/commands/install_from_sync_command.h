@@ -9,9 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -126,6 +127,8 @@ class InstallFromSyncCommand
 
   base::OnceCallback<void(webapps::InstallResultCode code)>
       fallback_triggered_for_testing_;
+
+  base::Value::Dict debug_value_;
 
   base::WeakPtrFactory<InstallFromSyncCommand> weak_ptr_factory_{this};
 };

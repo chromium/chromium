@@ -114,7 +114,9 @@ SubAppInstallCommand::SubAppInstallCommand(
     Profile* profile,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : lock_description_(
+    : WebAppCommandTemplate<SharedWebContentsWithAppLock>(
+          "SubAppInstallCommand"),
+      lock_description_(
           std::make_unique<SharedWebContentsWithAppLockDescription>(
               CreateAppIdsForLock(parent_app_id, sub_apps))),
       parent_app_id_{parent_app_id},
@@ -134,7 +136,6 @@ LockDescription& SubAppInstallCommand::lock_description() const {
 
 base::Value SubAppInstallCommand::ToDebugValue() const {
   base::Value::Dict install_info;
-  install_info.Set("type", "SubAppInstallCommand");
   install_info.Set("parent_app_id", parent_app_id_);
   base::Value::List pending_installs;
   for (const auto& installs_remaining : requested_installs_) {

@@ -73,7 +73,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
                                            InstallIsolatedWebAppCommandError>)>
         callback)
-    : lock_description_(std::make_unique<AppLockDescription>(
+    : WebAppCommandTemplate<AppLock>("InstallIsolatedWebAppCommand"),
+      lock_description_(std::make_unique<AppLockDescription>(
           base::flat_set<AppId>{isolation_info.app_id()})),
       isolation_info_(isolation_info),
       isolation_data_(isolation_data),
@@ -105,6 +106,17 @@ InstallIsolatedWebAppCommand::~InstallIsolatedWebAppCommand() = default;
 
 LockDescription& InstallIsolatedWebAppCommand::lock_description() const {
   return *lock_description_;
+}
+
+base::Value InstallIsolatedWebAppCommand::ToDebugValue() const {
+  base::Value::Dict debug_value;
+  debug_value.Set("app_id", isolation_info_.app_id());
+  debug_value.Set("origin", isolation_info_.origin().Serialize());
+  debug_value.Set("bundle_id", isolation_info_.web_bundle_id().id());
+  debug_value.Set("bundle_type",
+                  static_cast<int>(isolation_info_.web_bundle_id().type()));
+  debug_value.Set("isolation_data", isolation_data_.AsDebugValue());
+  return base::Value(std::move(debug_value));
 }
 
 void InstallIsolatedWebAppCommand::StartWithLock(
@@ -336,7 +348,4 @@ void InstallIsolatedWebAppCommand::ReportSuccess() {
                      InstallIsolatedWebAppCommandSuccess{}));
 }
 
-base::Value InstallIsolatedWebAppCommand::ToDebugValue() const {
-  return base::Value{};
-}
 }  // namespace web_app

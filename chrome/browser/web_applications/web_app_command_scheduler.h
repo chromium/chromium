@@ -143,14 +143,25 @@ class WebAppCommandScheduler {
                         base::OnceClosure callback);
 
   // Schedules provided callback after `lock` is granted. The callback can
-  // access web app resources through the `lock`.
+  // access web app resources through the `lock`. The `operation_name` is used
+  // describe this operation in the WebAppCommandManager log, surfaced in
+  // chrome://web-app-internals for debugging purposes.
   // If the system is shutting down, or has already shut down, then the callback
   // will not be called & will simply be destroyed.
   template <typename LockType,
             typename DescriptionType = typename LockType::LockDescription>
   void ScheduleCallbackWithLock(
+      const std::string& operation_name,
       std::unique_ptr<DescriptionType> lock_description,
       base::OnceCallback<void(LockType& lock)> callback);
+  // Same as above, but the callback can return a debug value to also be used in
+  // WebAppCommandManager logs, viewable from chrome://web-app-internals.
+  template <typename LockType,
+            typename DescriptionType = typename LockType::LockDescription>
+  void ScheduleCallbackWithLock(
+      const std::string& operation_name,
+      std::unique_ptr<DescriptionType> lock_description,
+      base::OnceCallback<base::Value(LockType& lock)> callback);
 
   // Schedules to clear the browsing data for web app, given the inclusive time
   // range.

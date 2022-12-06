@@ -30,7 +30,8 @@ FetchInstallabilityForChromeManagement::FetchInstallabilityForChromeManagement(
     std::unique_ptr<WebAppUrlLoader> url_loader,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     FetchInstallabilityForChromeManagementCallback callback)
-    : noop_lock_description_(std::make_unique<NoopLockDescription>()),
+    : WebAppCommandTemplate<NoopLock>("FetchInstallabilityForChromeManagement"),
+      noop_lock_description_(std::make_unique<NoopLockDescription>()),
       url_(url),
       web_contents_(web_contents),
       url_loader_(std::move(url_loader)),
@@ -81,7 +82,6 @@ void FetchInstallabilityForChromeManagement::OnShutdown() {
 
 base::Value FetchInstallabilityForChromeManagement::ToDebugValue() const {
   base::Value::Dict debug_value;
-  debug_value.Set("name", "FetchInstallabilityForChromeManagement");
   debug_value.Set("url", url_.spec());
   debug_value.Set("app_id", app_id_);
   debug_value.Set("error_log", base::Value(error_log_.Clone()));
