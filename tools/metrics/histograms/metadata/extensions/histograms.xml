@@ -343,8 +343,30 @@ chromium-metrics-reviews@google.com.
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    The size, in kb, of a content script that is loaded successfully from a
+    The size, in KB, of a content script that is loaded successfully from a
     file. Recorded when the content of a user script object is set.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ContentScripts.DynamicContentScriptsLengthPerLoad"
+    units="KB" expires_after="2023-12-02">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The size, in KB, of all newly loaded dynamic content scripts for one
+    extension. Recorded when a script load containing at least one new dynamic
+    content script finishes.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ContentScripts.ManifestContentScriptsLengthPerLoad"
+    units="KB" expires_after="2023-12-02">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The size, in KB, of all newly loaded manifest content scripts for one
+    extension. Recorded when a script load containing at least one new manifest
+    content script finishes.
   </summary>
 </histogram>
 
