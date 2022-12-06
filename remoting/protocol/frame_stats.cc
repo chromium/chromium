@@ -5,7 +5,6 @@
 #include "remoting/protocol/frame_stats.h"
 
 #include "remoting/proto/video.pb.h"
-#include "remoting/proto/video_stats.pb.h"
 
 namespace remoting::protocol {
 
@@ -145,6 +144,10 @@ void HostFrameStats::ToFrameStatsMessage(FrameStatsMessage* message_out) const {
   if (screen_id != webrtc::kInvalidScreenId) {
     message_out->set_screen_id(screen_id);
   }
+  message_out->set_codec(codec);
+  message_out->set_profile(profile);
+  message_out->set_encoded_rect_width(encoded_rect_width);
+  message_out->set_encoded_rect_height(encoded_rect_height);
 }
 
 FrameStats::FrameStats() = default;

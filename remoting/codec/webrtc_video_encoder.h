@@ -84,9 +84,13 @@ class WebrtcVideoEncoder {
     bool key_frame;
     int quantizer;
     webrtc::VideoCodecType codec;
+    int32_t profile = 0;
 
     uint32_t rtp_timestamp;
     std::unique_ptr<FrameStats> stats;
+    // This rectangle in the input frame will be encoded by the encoder.
+    int32_t encoded_rect_width = 0;
+    int32_t encoded_rect_height = 0;
   };
 
   enum class EncodeResult {

@@ -29,6 +29,22 @@
 
 namespace remoting::protocol {
 
+FrameStatsMessage::VideoCodec VideoCodecToProtoEnum(
+    webrtc::VideoCodecType codec) {
+  switch (codec) {
+    case webrtc::VideoCodecType::kVideoCodecVP8:
+      return FrameStatsMessage::VP8;
+    case webrtc::VideoCodecType::kVideoCodecVP9:
+      return FrameStatsMessage::VP9;
+    case webrtc::VideoCodecType::kVideoCodecAV1:
+      return FrameStatsMessage::AV1;
+    case webrtc::VideoCodecType::kVideoCodecH264:
+      return FrameStatsMessage::H264;
+    default:
+      return FrameStatsMessage::UNKNOWN;
+  }
+}
+
 struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   FrameStats() = default;
   FrameStats(const FrameStats&) = default;
@@ -466,6 +482,11 @@ void WebrtcVideoStream::OnEncodedFrameSent(
     stats.frame_quality = (63 - frame.quantizer) * 100 / 63;
 
     stats.screen_id = current_frame_stats->screen_id;
+
+    stats.codec = VideoCodecToProtoEnum(frame.codec);
+    stats.profile = frame.profile;
+    stats.encoded_rect_width = frame.encoded_rect_width;
+    stats.encoded_rect_height = frame.encoded_rect_height;
 
     video_stats_dispatcher_->OnVideoFrameStats(result.frame_id, stats);
   }

@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/util.h"
+#include "remoting/codec/utils.h"
 #include "remoting/proto/video.pb.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
@@ -318,6 +319,16 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     encoded_frame->codec = webrtc::kVideoCodecVP9;
   } else {
     encoded_frame->codec = webrtc::kVideoCodecVP8;
+  }
+  encoded_frame->profile = config_.g_profile;
+  if (params.key_frame) {
+    encoded_frame->encoded_rect_width = frame_size.width();
+    encoded_frame->encoded_rect_height = frame_size.height();
+  } else {
+    const webrtc::DesktopRect bounding_rectangle =
+        GetBoundingRect(updated_region);
+    encoded_frame->encoded_rect_width = bounding_rectangle.width();
+    encoded_frame->encoded_rect_height = bounding_rectangle.height();
   }
 
   while (!got_data) {

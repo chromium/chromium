@@ -6,6 +6,8 @@
 #define REMOTING_PROTOCOL_FRAME_STATS_H_
 
 #include "base/time/time.h"
+#include "remoting/proto/video_stats.pb.h"
+#include "third_party/webrtc/api/video/video_codec_type.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -45,6 +47,11 @@ struct HostFrameStats {
   uint32_t capturer_id = webrtc::DesktopCapturerId::kUnknown;
   int frame_quality = -1;
   webrtc::ScreenId screen_id = webrtc::kInvalidScreenId;
+  FrameStatsMessage::VideoCodec codec = FrameStatsMessage::UNKNOWN;
+  int32_t profile = 0;
+  // This rectangle in the frame will be encoded by the encoder.
+  int32_t encoded_rect_width = 0;
+  int32_t encoded_rect_height = 0;
 };
 
 struct ClientFrameStats {

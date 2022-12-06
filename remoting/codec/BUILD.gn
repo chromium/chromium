@@ -7,6 +7,8 @@ source_set("encoder") {
     "audio_encoder.h",
     "encoder_bitrate_filter.cc",
     "encoder_bitrate_filter.h",
+    "utils.cc",
+    "utils.h",
     "video_encoder.cc",
     "video_encoder.h",
     "video_encoder_active_map.cc",

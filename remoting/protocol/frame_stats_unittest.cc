@@ -5,6 +5,7 @@
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/proto/video_stats.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/api/video/video_codec_type.h"
 
 namespace remoting::protocol {
 
@@ -23,6 +24,10 @@ TEST_F(FrameStatsTest, ToStatsMessageAndBack_RestoresFrameStats) {
   stats.bandwidth_estimate_kbps = 18;
   stats.capturer_id = 19;
   stats.frame_quality = 20;
+  stats.codec = remoting::FrameStatsMessage::AV1;
+  stats.profile = 1;
+  stats.encoded_rect_width = 1024;
+  stats.encoded_rect_height = 768;
   FrameStatsMessage message;
 
   stats.ToFrameStatsMessage(&message);
@@ -39,6 +44,10 @@ TEST_F(FrameStatsTest, ToStatsMessageAndBack_RestoresFrameStats) {
   EXPECT_EQ(stats.bandwidth_estimate_kbps, newStats.bandwidth_estimate_kbps);
   EXPECT_EQ(stats.capturer_id, newStats.capturer_id);
   EXPECT_EQ(stats.frame_quality, newStats.frame_quality);
+  EXPECT_EQ(stats.codec, remoting::FrameStatsMessage::AV1);
+  EXPECT_EQ(stats.profile, 1);
+  EXPECT_EQ(stats.encoded_rect_width, 1024);
+  EXPECT_EQ(stats.encoded_rect_height, 768);
 }
 
 }  // namespace remoting::protocol
