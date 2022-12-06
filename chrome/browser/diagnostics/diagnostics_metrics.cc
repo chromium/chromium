@@ -4,6 +4,7 @@
 
 #include "chrome/browser/diagnostics/diagnostics_metrics.h"
 
+#include <ostream>
 #include <string>
 
 #include "base/check.h"
