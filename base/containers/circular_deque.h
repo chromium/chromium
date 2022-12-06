@@ -18,6 +18,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/template_util.h"
 
+#if DCHECK_IS_ON()
+#include <ostream>
+#endif
+
 // base::circular_deque is similar to std::deque. Unlike std::deque, the
 // storage is provided in a flat circular buffer conceptually similar to a
 // vector. The beginning and end will wrap around as necessary so that
