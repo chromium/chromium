@@ -96,7 +96,8 @@ export function fileAttachmentTestSuite() {
     assertTrue(!!getElement('#fileTooBigErrorMessage'));
   });
 
-  // Test that when the add file label is clicked, the file dialog is opened.
+  // Test that when the add file label is clicked, the file dialog is opened and
+  // the file input value will be reset to empty.
   test('canOpenFileDialogByClickAddFileLabel', async () => {
     await initializePage();
     // Verify the add file label is in the page.
@@ -106,6 +107,21 @@ export function fileAttachmentTestSuite() {
     const fileDialog =
         /**@type {!HTMLInputElement} */ (getElement('#selectFileDialog'));
     assertTrue(!!fileDialog);
+
+    // Create a new fake File object
+    const fakeFile = new File(
+        ['This is a fake file!'], 'fakeFile.txt',
+        /** @type {FilePropertyBag} */ ({
+          type: 'text/plain',
+          size: MAX_ATTACH_FILE_SIZE + 1,
+          lastModified: new Date(),
+        }));
+    // Set the selected file manually to simulate a file has been selected.
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(fakeFile);
+    fileDialog.files = dataTransfer.files;
+    // Verify that the file input has a value.
+    assertEquals('C:\\fakepath\\fakeFile.txt', fileDialog.value);
 
     const fileDialogClickPromise = eventToPromise('click', fileDialog);
     let fileDialogClicked = false;
@@ -117,6 +133,8 @@ export function fileAttachmentTestSuite() {
 
     await fileDialogClickPromise;
     assertTrue(fileDialogClicked);
+    // Verify that the file input value has been reset to empty.
+    assertEquals('', fileDialog.value);
   });
 
   // Test that when the replace file label is clicked, the file dialog is

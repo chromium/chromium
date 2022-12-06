@@ -175,6 +175,11 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
   handleOpenFileInputClick_(e) {
     e.preventDefault();
     const fileInput = this.getElement_('#selectFileDialog');
+    // Clear the value so that when the user selects the same file again, the
+    // change event will be triggered. Otherwise, if the file size exceeds the
+    // limit, the error alert will not be displayed when the user selects the
+    // same file again.
+    fileInput.value = null;
     fileInput.click();
   }
 
