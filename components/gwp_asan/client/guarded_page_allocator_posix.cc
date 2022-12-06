@@ -5,6 +5,7 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 
 #include <sys/mman.h>
+#include <ostream>
 
 #include "base/check.h"
 #include "base/posix/eintr_wrapper.h"
