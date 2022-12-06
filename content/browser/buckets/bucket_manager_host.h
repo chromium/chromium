@@ -68,7 +68,7 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   void DeleteBucket(const std::string& name,
                     DeleteBucketCallback callback) override;
 
-  void RemoveBucketHost(const std::string& name);
+  void RemoveBucketHost(storage::BucketId id);
 
   StoragePartitionImpl* GetStoragePartition();
   storage::QuotaManagerProxy* GetQuotaManagerProxy();
@@ -99,8 +99,9 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   // BucketManagerHost.
   const blink::StorageKey storage_key_;
 
-  // Map of currently open/used buckets.
-  std::map<std::string, std::unique_ptr<BucketHost>> bucket_map_;
+  // Map of currently open/used buckets. The lifetime matches that of the remote
+  // which means they can outlive the bucket's data.
+  std::map<storage::BucketId, std::unique_ptr<BucketHost>> bucket_map_;
 
   // Add receivers for frames & workers for `storage_key_` associated with
   // the StoragePartition that owns `manager_`.

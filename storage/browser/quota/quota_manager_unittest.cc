@@ -302,7 +302,7 @@ class QuotaManagerImplTest : public testing::Test {
 
   UsageAndQuotaResult GetUsageAndQuotaForBucket(const BucketInfo& bucket_info) {
     base::test::TestFuture<QuotaStatusCode, int64_t, int64_t> future;
-    quota_manager_impl_->GetBucketUsageAndQuota(bucket_info,
+    quota_manager_impl_->GetBucketUsageAndQuota(bucket_info.id,
                                                 future.GetCallback());
     return {future.Get<0>(), future.Get<1>(), future.Get<2>()};
   }

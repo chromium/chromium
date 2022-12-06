@@ -1328,15 +1328,13 @@ void QuotaManagerImpl::GetUsageAndQuota(const StorageKey& storage_key,
       base::BindOnce(&DidGetUsageAndQuotaStripBreakdown, std::move(callback)));
 }
 
-void QuotaManagerImpl::GetBucketUsageAndQuota(const BucketInfo& bucket,
+void QuotaManagerImpl::GetBucketUsageAndQuota(BucketId id,
                                               UsageAndQuotaCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
-      this, bucket, is_incognito_,
-      base::BindOnce(&DidGetUsageAndQuotaStripOverride,
-                     base::BindOnce(&DidGetUsageAndQuotaStripBreakdown,
-                                    std::move(callback))));
-  helper->Start();
+
+  GetBucketById(
+      id, base::BindOnce(&QuotaManagerImpl::DidGetBucketForUsageAndQuota,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void QuotaManagerImpl::NotifyWriteFailed(const StorageKey& storage_key) {
@@ -2736,6 +2734,22 @@ void QuotaManagerImpl::DidGetBucketForUsage(QuotaClientType client_type,
           bucket.id, modification_time),
       base::BindOnce(&QuotaManagerImpl::OnComplete,
                      weak_factory_.GetWeakPtr()));
+}
+
+void QuotaManagerImpl::DidGetBucketForUsageAndQuota(
+    UsageAndQuotaCallback callback,
+    QuotaErrorOr<BucketInfo> result) {
+  if (!result.ok()) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kUnknown, 0, 0);
+    return;
+  }
+
+  UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
+      this, result.value(), is_incognito_,
+      base::BindOnce(&DidGetUsageAndQuotaStripOverride,
+                     base::BindOnce(&DidGetUsageAndQuotaStripBreakdown,
+                                    std::move(callback))));
+  helper->Start();
 }
 
 void QuotaManagerImpl::DidGetStorageKeys(

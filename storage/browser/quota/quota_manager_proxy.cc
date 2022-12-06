@@ -507,7 +507,7 @@ void QuotaManagerProxy::GetUsageAndQuota(
 }
 
 void QuotaManagerProxy::GetBucketUsageAndQuota(
-    const BucketInfo& bucket,
+    BucketId bucket,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     UsageAndQuotaCallback callback) {
   DCHECK(callback_task_runner);

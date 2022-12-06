@@ -31,7 +31,6 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
              bool persistent,
              blink::mojom::BucketDurability durability);
 
-  // The empty ctor is only for testing.
   BucketInfo();
   ~BucketInfo();
 
@@ -54,6 +53,7 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
   }
 
   bool is_default() const { return name == kDefaultBucketName; }
+  bool is_null() const { return !id; }
 
   BucketId id;
   blink::StorageKey storage_key;

@@ -3,11 +3,6 @@
 
 'use strict';
 
-// This test is for the initial version of the StorageBucket object for
-// debugging.
-//
-// TODO(ayui): Split and add extensive testing for each endpoint after endpoints
-// are fully implemented.
 promise_test(async testCase => {
   const bucket = await navigator.storageBuckets.open('bucket_name');
   testCase.add_cleanup(async () => {
@@ -15,11 +10,14 @@ promise_test(async testCase => {
   });
   const persisted = await bucket.persisted();
   assert_false(persisted);
+
+  // Also verify that the promise is rejected after the bucket is deleted.
+  await navigator.storageBuckets.delete('bucket_name');
+  await promise_rejects_dom(testCase, 'UnknownError', bucket.persisted());
 }, 'persisted() should default to false');
 
-// TODO(ayui): This tests temporary behavior and should be removed when fully
-// implemented. estimate() should return actual usage metrics but currently does
-// not.
+// TODO(estade): Update this test by adding some usage and verifying that
+// estimate() returns actual usage metrics.
 promise_test(async testCase => {
   const bucket = await navigator.storageBuckets.open('bucket_name');
   testCase.add_cleanup(async () => {
@@ -28,6 +26,9 @@ promise_test(async testCase => {
   const estimate = await bucket.estimate();
   assert_equals(estimate.quota, 0);
   assert_equals(estimate.usage, 0);
+
+  await navigator.storageBuckets.delete('bucket_name');
+  await promise_rejects_dom(testCase, 'UnknownError', bucket.estimate());
 }, 'estimate() should retrieve quota usage');
 
 promise_test(async testCase => {
@@ -39,6 +40,9 @@ promise_test(async testCase => {
 
   const durability = await bucket.durability();
   assert_equals('strict', durability);
+
+  await navigator.storageBuckets.delete('bucket_name');
+  await promise_rejects_dom(testCase, 'UnknownError', bucket.durability());
 }, 'durability() should retrieve bucket durability specified during creation');
 
 promise_test(async testCase => {
@@ -72,6 +76,9 @@ promise_test(async testCase => {
 
   const expires = await bucket.expires();
   assert_equals(expires, null);
+
+  await navigator.storageBuckets.delete('bucket_name');
+  await promise_rejects_dom(testCase, 'UnknownError', bucket.expires());
 }, 'expires() should be defaulted to null');
 
 promise_test(async testCase => {
@@ -86,6 +93,9 @@ promise_test(async testCase => {
 
   const expires = await bucket.expires();
   assert_equals(expires, expiresDate);
+
+  await navigator.storageBuckets.delete('bucket_name');
+  await promise_rejects_dom(testCase, 'UnknownError', bucket.setExpires(expiresDate));
 }, 'setExpires() should set bucket expires date');
 
 promise_test(async testCase => {
@@ -107,3 +117,23 @@ promise_test(async testCase => {
   expires = await bucket.expires();
   assert_equals(expires, newExpiresDate);
 }, 'setExpires() should update expires date');
+
+promise_test(async testCase => {
+  const bucket = await navigator.storageBuckets.open(
+      'bucket_name', { durability: 'strict' });
+  testCase.add_cleanup(async () => {
+    await navigator.storageBuckets.delete('bucket_name');
+  });
+
+  const same_bucket = await navigator.storageBuckets.open('bucket_name');
+  const durability = await bucket.durability();
+  const other_durability = await same_bucket.durability();
+  assert_equals(durability, other_durability);
+
+  // Delete the bucket and remake it.
+  await navigator.storageBuckets.delete('bucket_name');
+  const remade_bucket = await navigator.storageBuckets.open('bucket_name');
+  await promise_rejects_dom(testCase, 'UnknownError', bucket.durability());
+  const remade_durability = await remade_bucket.durability();
+  assert_not_equals(remade_durability, durability);
+}, 'two handles can refer to the same bucket, and a bucket name can be reused after deletion');

@@ -388,8 +388,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                        UsageWithBreakdownCallback callback);
   void GetBucketUsageWithBreakdown(const BucketLocator& bucket,
                                    UsageWithBreakdownCallback callback);
-  void GetBucketUsageAndQuota(const BucketInfo& bucket,
-                              UsageAndQuotaCallback callback);
+  void GetBucketUsageAndQuota(BucketId id, UsageAndQuotaCallback callback);
 
   bool IsSessionOnly(const blink::StorageKey& storage_key,
                      blink::mojom::StorageType type) const;
@@ -665,6 +664,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                             base::Time modification_time,
                             base::OnceClosure callback,
                             QuotaErrorOr<BucketInfo> result);
+  void DidGetBucketForUsageAndQuota(UsageAndQuotaCallback callback,
+                                    QuotaErrorOr<BucketInfo> result);
   void DidGetStorageKeys(GetStorageKeysCallback callback,
                          QuotaErrorOr<std::set<blink::StorageKey>> result);
   void DidGetBuckets(

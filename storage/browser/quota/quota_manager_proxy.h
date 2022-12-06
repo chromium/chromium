@@ -212,7 +212,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       UsageAndQuotaCallback callback);
 
   void GetBucketUsageAndQuota(
-      const BucketInfo& bucket,
+      BucketId bucket,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 

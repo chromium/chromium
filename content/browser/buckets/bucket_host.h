@@ -59,18 +59,27 @@ class BucketHost : public blink::mojom::BucketHost {
       mojo::PendingReceiver<blink::mojom::CacheStorage> caches) override;
   void GetDirectory(GetDirectoryCallback callback) override;
 
+  const storage::BucketId bucket_id() { return bucket_id_; }
+
  private:
   void OnReceiverDisconnected();
 
   storage::QuotaManagerProxy* GetQuotaManagerProxy();
 
-  void DidUpdateBucket(base::OnceCallback<void(bool)> callback,
-                       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
+  void DidGetBucket(base::OnceCallback<void(bool)> callback,
+                    storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
 
   void DidGetUsageAndQuota(EstimateCallback callback,
                            blink::mojom::QuotaStatusCode code,
                            int64_t usage,
                            int64_t quota);
+
+  // These are used as callbacks to `GetBucketById` to validate that the bucket
+  // is still active.
+  void DidValidateForPersist(PersistCallback callback, bool bucket_exists);
+  void DidValidateForDurability(DurabilityCallback callback,
+                                bool bucket_exists);
+  void DidValidateForExpires(ExpiresCallback callback, bool bucket_exists);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -78,8 +87,13 @@ class BucketHost : public blink::mojom::BucketHost {
   // BucketHost.
   raw_ptr<BucketManagerHost> bucket_manager_host_;
 
-  // Holds the latest snapshot from the database.
+  // Holds the latest snapshot from the database. This can be an empty object if
+  // the bucket's been deleted.
   storage::BucketInfo bucket_info_;
+
+  // This is the bucket ID, but will survive past bucket deletion for record
+  // keeping purposes.
+  const storage::BucketId bucket_id_;
 
   mojo::ReceiverSet<blink::mojom::BucketHost, base::WeakPtr<BucketContext>>
       receivers_;
