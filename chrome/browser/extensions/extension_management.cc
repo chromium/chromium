@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -42,6 +43,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
@@ -282,11 +284,22 @@ bool ExtensionManagement::IsAllowedManifestType(
 
 bool ExtensionManagement::IsAllowedManifestVersion(
     int manifest_version,
-    const std::string& extension_id) {
+    const std::string& extension_id,
+    Manifest::Type manifest_type) {
+  bool enabled_by_default =
+      !base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsManifestV3Only) ||
+      manifest_version >= 3;
+
+  // Manifest version policy only supports normal extensions and Chrome OS login
+  // screen extension.
+  if (manifest_type != Manifest::Type::TYPE_EXTENSION &&
+      manifest_type != Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION) {
+    return enabled_by_default;
+  }
   switch (global_settings_->manifest_v2_setting) {
     case internal::GlobalSettings::ManifestV2Setting::kDefault:
-      // TODO(crbug.com/1347794): Get actual manifest v2 feature.
-      return true;
+      return enabled_by_default;
     case internal::GlobalSettings::ManifestV2Setting::kDisabled:
       return manifest_version >= 3;
     case internal::GlobalSettings::ManifestV2Setting::kEnabled:
@@ -294,7 +307,7 @@ bool ExtensionManagement::IsAllowedManifestVersion(
     case internal::GlobalSettings::ManifestV2Setting::kEnabledForForceInstalled:
       auto installation_mode =
           GetInstallationMode(extension_id, /*update_url=*/std::string());
-      return manifest_version >= 3 ||
+      return enabled_by_default ||
              installation_mode == InstallationMode::INSTALLATION_FORCED ||
              installation_mode == INSTALLATION_RECOMMENDED;
   }
@@ -302,7 +315,7 @@ bool ExtensionManagement::IsAllowedManifestVersion(
 
 bool ExtensionManagement::IsAllowedManifestVersion(const Extension* extension) {
   return IsAllowedManifestVersion(extension->manifest_version(),
-                                  extension->id());
+                                  extension->id(), extension->GetType());
 }
 
 APIPermissionSet ExtensionManagement::GetBlockedAPIPermissions(

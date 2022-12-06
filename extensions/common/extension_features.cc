@@ -131,4 +131,13 @@ BASE_FEATURE(kWebviewTagMPArchBehavior,
              "WebviewTagMPArchBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, only manifest v3 extensions is allowed while v2 will be disabled.
+// Note that this feature is now only checked by `ExtensionManagement` which
+// represents enterprise extension configurations. Flip the feature will block
+// mv2 extension by default but the error messages will improperly mention
+// enterprise policy.
+BASE_FEATURE(kExtensionsManifestV3Only,
+             "kExtensionsManifestV3Only",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

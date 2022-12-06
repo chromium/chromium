@@ -159,7 +159,8 @@ class ExtensionManagement : public KeyedService {
                              const std::string& extension_id) const;
 
   bool IsAllowedManifestVersion(int manifest_version,
-                                const std::string& extension_id);
+                                const std::string& extension_id,
+                                Manifest::Type manifest_type);
   bool IsAllowedManifestVersion(const Extension* extension);
 
   // Returns the list of blocked API permissions for |extension|.
