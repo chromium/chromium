@@ -42,7 +42,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/authorization_util.h"
@@ -110,7 +109,7 @@ bool SimulatingElevatedRecovery() {
 }
 
 std::vector<std::string> GetRecoveryInstallArguments(
-    const base::Value::Dict& manifest,
+    const base::DictionaryValue& manifest,
     bool is_deferred_run,
     const base::Version& version) {
   std::vector<std::string> arguments;
@@ -121,12 +120,12 @@ std::vector<std::string> GetRecoveryInstallArguments(
     arguments.push_back("/deferredrun");
 
   if (const std::string* recovery_args =
-          manifest.FindString("x-recovery-args")) {
+          manifest.FindStringKey("x-recovery-args")) {
     if (base::IsStringASCII(*recovery_args))
       arguments.push_back(*recovery_args);
   }
   if (const std::string* recovery_add_version =
-          manifest.FindString("x-recovery-add-version")) {
+          manifest.FindStringKey("x-recovery-add-version")) {
     if (*recovery_add_version == "yes") {
       arguments.push_back("/version");
       arguments.push_back(version.GetString());
@@ -138,7 +137,7 @@ std::vector<std::string> GetRecoveryInstallArguments(
 
 base::CommandLine BuildRecoveryInstallCommandLine(
     const base::FilePath& command,
-    const base::Value::Dict& manifest,
+    const base::DictionaryValue& manifest,
     bool is_deferred_run,
     const base::Version& version) {
   base::CommandLine command_line(command);
@@ -151,14 +150,11 @@ base::CommandLine BuildRecoveryInstallCommandLine(
   return command_line;
 }
 
-absl::optional<base::Value::Dict> ReadManifest(const base::FilePath& manifest) {
+std::unique_ptr<base::DictionaryValue> ReadManifest(
+    const base::FilePath& manifest) {
   JSONFileValueDeserializer deserializer(manifest);
   std::string error;
-  std::unique_ptr<base::Value> value = deserializer.Deserialize(NULL, &error);
-  if (value && value->is_dict()) {
-    return std::move(*value).TakeDict();
-  }
-  return absl::nullopt;
+  return base::DictionaryValue::From(deserializer.Deserialize(NULL, &error));
 }
 
 void WaitForElevatedInstallToComplete(base::Process process) {
@@ -182,13 +178,12 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   if (!base::PathExists(main_file) || !base::PathExists(manifest_file))
     return;
 
-  absl::optional<base::Value::Dict> manifest = ReadManifest(manifest_file);
-  CHECK(manifest);
-  const std::string* name = manifest->FindString("name");
+  std::unique_ptr<base::DictionaryValue> manifest(ReadManifest(manifest_file));
+  const std::string* name = manifest->FindStringKey("name");
   if (!name || *name != kRecoveryManifestName)
     return;
   std::string proposed_version;
-  if (const std::string* ptr = manifest->FindString("version")) {
+  if (const std::string* ptr = manifest->FindStringKey("version")) {
     if (base::IsStringASCII(*ptr))
       proposed_version = *ptr;
   }
@@ -427,15 +422,13 @@ void RecoveryComponentInstaller::Install(
 
 bool RecoveryComponentInstaller::DoInstall(
     const base::FilePath& unpack_path) {
-  const base::Value value = update_client::ReadManifest(unpack_path);
+  const base::Value manifest = update_client::ReadManifest(unpack_path);
   if (!manifest.is_dict())
     return false;
-  const base::Value::Dict& manifest = value.GetDict();
-
-  const std::string* name = manifest.FindString("name");
+  const std::string* name = manifest.FindStringKey("name");
   if (!name || *name != kRecoveryManifestName)
     return false;
-  const std::string* proposed_version = manifest.FindString("version");
+  const std::string* proposed_version = manifest.FindStringKey("version");
   if (!proposed_version || !base::IsStringASCII(*proposed_version))
     return false;
   base::Version version(*proposed_version);
@@ -476,7 +469,8 @@ bool RecoveryComponentInstaller::DoInstall(
   // Run the recovery component.
   const bool is_deferred_run = false;
   const auto cmdline = BuildRecoveryInstallCommandLine(
-      main_file, manifest, is_deferred_run, current_version_);
+      main_file, base::Value::AsDictionaryValue(manifest), is_deferred_run,
+      current_version_);
 
   if (!RunInstallCommand(cmdline, path)) {
     return false;
