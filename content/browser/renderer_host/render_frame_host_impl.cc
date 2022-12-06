@@ -4203,7 +4203,7 @@ void RenderFrameHostImpl::Detach() {
   // strongly owned by the RenderFrameHostManager via unique_ptr) will be torn
   // down then. If we do proceed, this ends up with a use-after-free, since
   // StartPendingDeletionOnSubtree() will call
-  // ResetAllNavigationsInSubtreeForPendingDeletion(), which deletes `this`.
+  // ResetAllNavigationsInSubtreeForFrameDetach(), which deletes `this`.
   if (lifecycle_state() == LifecycleStateImpl::kSpeculative ||
       lifecycle_state() == LifecycleStateImpl::kPendingCommit) {
     return;
@@ -4249,7 +4249,7 @@ void RenderFrameHostImpl::Detach() {
   // Before completing the removal, we still need to wait for all of its
   // descendant frames to execute unload handlers. Start executing those
   // handlers now.
-  StartPendingDeletionOnSubtree();
+  StartPendingDeletionOnSubtree(PendingDeletionReason::kFrameDetach);
   frame_tree()->FrameUnloading(frame_tree_node_);
 
   // Some children with no unload handler may be eligible for immediate
@@ -4720,7 +4720,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   if (web_ui())
     web_ui()->RenderFrameHostUnloading();
 
-  StartPendingDeletionOnSubtree();
+  StartPendingDeletionOnSubtree(PendingDeletionReason::kSwappedOut);
   // Some children with no unload handler may be eligible for deletion. Cut the
   // dead branches now. This is a performance optimization.
   PendingDeletionCheckCompletedOnSubtree();
@@ -4790,7 +4790,7 @@ void RenderFrameHostImpl::DetachFromProxy() {
 
   // Start pending deletion on this frame and its children.
   DeleteRenderFrame(mojom::FrameDeleteIntention::kNotMainFrame);
-  StartPendingDeletionOnSubtree();
+  StartPendingDeletionOnSubtree(PendingDeletionReason::kFrameDetach);
   frame_tree()->FrameUnloading(frame_tree_node_);
 
   // Some children with no unload handler may be eligible for immediate
@@ -8565,10 +8565,17 @@ void RenderFrameHostImpl::SetBeforeUnloadTimeoutDelayForTesting(
   beforeunload_timeout_delay_ = timeout;
 }
 
-void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
+void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
+    RenderFrameHostImpl::PendingDeletionReason pending_deletion_reason) {
   DCHECK(IsPendingDeletion());
 
-  ResetAllNavigationsInSubtreeForPendingDeletion();
+  if (pending_deletion_reason == PendingDeletionReason::kFrameDetach ||
+      !base::FeatureList::IsEnabled(kAvoidUnnecessaryNavigationCancellations)) {
+    // Reset navigations only when entering "pending deletion" state due to
+    // frame detach if the kStopCancellingNavigationsOnCommitAndNewNavigation
+    // flag is enabled, or for all pending deletion cases otherwise.
+    ResetAllNavigationsInSubtreeForFrameDetach();
+  }
 
   for (std::unique_ptr<FrameTreeNode>& child_frame : children_) {
     for (FrameTreeNode* node : frame_tree()->SubtreeNodes(child_frame.get())) {
@@ -8651,19 +8658,11 @@ void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree() {
   }
 }
 
-void RenderFrameHostImpl::ResetAllNavigationsInSubtreeForPendingDeletion() {
+void RenderFrameHostImpl::ResetAllNavigationsInSubtreeForFrameDetach() {
   for (auto& child : children_) {
-    child->current_frame_host()
-        ->ResetAllNavigationsInSubtreeForPendingDeletion();
+    child->current_frame_host()->ResetAllNavigationsInSubtreeForFrameDetach();
   }
   ResetOwnedNavigationRequests(NavigationDiscardReason::kWillRemoveFrame);
-  // TODO(https://crbug.com/1220337): This has an interesting interaction with
-  // the experimental implementations of navigation queueing: if the speculative
-  // RenderFrameHost is in pending commit when a new navigation tries to start,
-  // the new navigation attempt is queued. However, once the navigation in the
-  // speculative RenderFrameHost commits, it swaps out the old frame which
-  // causes `StartPendingDeletionOnrSubtree()` which calls this method which
-  // clobbers the navigation request that was specifically queueing...
   frame_tree_node_->ResetNavigationRequest(
       NavigationDiscardReason::kWillRemoveFrame);
   frame_tree_node_->render_manager()->DiscardSpeculativeRFH(

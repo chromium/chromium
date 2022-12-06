@@ -3460,10 +3460,24 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // report to be routed to the Reporting API.
   void MaybeGenerateCrashReport(base::TerminationStatus status, int exit_code);
 
+  // The reason for calling StartPendingDeletionOnSubtree() / what is causing
+  // the RenderFrameHost to enter the "pending deletion" stage.
+  enum class PendingDeletionReason {
+    // The FrameTreeNode containing the RenderFrameHost is being detached.
+    kFrameDetach,
+    // The RenderFrameHost is being swapped out for another RenderFrameHost
+    // that just committed a navigation.
+    kSwappedOut
+  };
   // Move every child frame into the pending deletion state.
   // For each process, send the command to delete the local subtree, and wait
   // for unload handlers to finish if needed.
-  void StartPendingDeletionOnSubtree();
+  // This function can be called because the FrameTreeNode containing this
+  // RenderFrameHost is getting detached, or if the RenderFrameHost is being
+  // unloaded because another RenderFrameHost had committed in the
+  // FrameTreeNode.
+  void StartPendingDeletionOnSubtree(
+      PendingDeletionReason pending_deletion_reason);
 
   // This function checks whether a pending deletion frame and all of its
   // subframes have completed running unload handlers. If so, this function
@@ -3483,7 +3497,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // - Non-pending commit NavigationRequest owned by the FrameTreeNode
   // - Pending commit NavigationRequest owned by the RenderFrameHost
   // - Speculative RenderFrameHost (and its pending commit NavigationRequests).
-  void ResetAllNavigationsInSubtreeForPendingDeletion();
+  void ResetAllNavigationsInSubtreeForFrameDetach();
 
   // Called on an unloading frame when its unload timeout is reached. This
   // immediately deletes the RenderFrameHost.
