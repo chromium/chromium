@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
 
+#import <ostream>
+
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
