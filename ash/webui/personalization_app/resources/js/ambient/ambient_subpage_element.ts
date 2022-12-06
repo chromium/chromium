@@ -196,7 +196,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
    * Determines whether ambient subpage UI restructure is enabled. Value can be
    * mocked in tests.
    */
-  private isAmbientSubpageUIChangeEnabled_(): boolean {
+  private isAmbientSubpageUiChangeEnabled_(): boolean {
     return loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled');
   }
 }

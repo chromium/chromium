@@ -140,7 +140,7 @@ export class RoutineResultListElement extends PolymerElement {
             // blocking routine fails) or not.
             if (shouldUpdateRoutineUI) {
               this.ignoreRoutineStatusUpdates = true;
-              this.updateRoutineUIAfterFailure();
+              this.updateRoutineUiAfterFailure();
             }
             return;
           }
@@ -164,7 +164,7 @@ export class RoutineResultListElement extends PolymerElement {
    * When a test in a routine group fails, we stop sending status updates to the
    * UI and display 'SKIPPED' for the remaining routine groups.
    */
-  updateRoutineUIAfterFailure(): void {
+  updateRoutineUiAfterFailure(): void {
     assert(this.usingRoutineGroups);
     this.results_.forEach(
         (routineGroup: RoutineGroup|ResultStatusItem, i: number) => {

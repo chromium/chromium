@@ -96,7 +96,7 @@
   }
 </style>
 <div id="container">
-  <template is="dom-if" if="[[isAmbientSubpageUIChangeEnabled_()]]">
+  <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_()]]">
     <ambient-preview></ambient-preview>
   </template>
   <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
@@ -116,7 +116,7 @@
       </template>
       <template is="dom-if" if="[[ambientModeEnabled_]]">
         <!-- TODO(b/253470553): Remove after Ambient subpage UI change is released. -->
-        <template is="dom-if" if="[[!isAmbientSubpageUIChangeEnabled_()]]">
+        <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_()]]">
           <ambient-preview class="pre-ui-change"></ambient-preview>
         </template>
         <template is="dom-if" if="[[loadingSettings_]]">
@@ -174,7 +174,7 @@
       </template>
       <template is="dom-if" if="[[!ambientModeEnabled_]]">
         <!-- TODO(b/253470693): Remove after Ambient subpage UI change is released.  -->
-        <template is="dom-if" if="[[!isAmbientSubpageUIChangeEnabled_()]]">
+        <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_()]]">
           <ambient-zero-state id="zeroState"></ambient-zero-state>
         </template>
       </template>

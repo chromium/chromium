@@ -238,7 +238,7 @@
           $i18n{ambientModeMainPageZeroStateMessage}
         </span>
       </h3>
-      <template is="dom-if" if="[[!isAmbientSubpageUIChangeEnabled_()]]">
+      <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_()]]">
         <div id="messageContainer" class="pre-ui-change">
           <span class="text" id="turnOnDescription">
             $i18n{ambientModeMainPageZeroStateMessage}
@@ -249,7 +249,7 @@
           </cr-button>
         </div>
       </template>
-      <template is="dom-if" if="[[isAmbientSubpageUIChangeEnabled_()]]">
+      <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_()]]">
         <div id="messageContainer">
           <ambient-zero-state-svg></ambient-zero-state-svg>
           <template is="dom-if" if="[[!isAmbientModeManaged_()]]">
