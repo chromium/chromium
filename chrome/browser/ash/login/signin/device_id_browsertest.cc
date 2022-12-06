@@ -11,8 +11,8 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/known_user.h"
@@ -109,8 +110,7 @@ class DeviceIDTest : public OobeBaseTest,
 
     // On a real device the first user would create the install attributes file,
     // emulate that, so the following users don't try to establish ownership.
-    device_state_.WriteInstallAttrFile(
-        DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED);
+    EnsureInstallAttributesCreated();
 
     FakeGaia::MergeSessionParams params;
     params.email = user_id;
@@ -175,9 +175,17 @@ class DeviceIDTest : public OobeBaseTest,
     EXPECT_TRUE(base::WriteFile(GetRefreshTokenToDeviceIdMapFilePath(), json));
   }
 
+  void EnsureInstallAttributesCreated() {
+    base::FilePath install_attrs_path = base::PathService::CheckedGet(
+        chromeos::dbus_paths::FILE_INSTALL_ATTRIBUTES);
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!base::PathExists(install_attrs_path)) {
+      EXPECT_TRUE(
+          base::WriteFile(install_attrs_path, "fake_install_attributes_data"));
+    }
+  }
+
   std::unique_ptr<base::RunLoop> user_removal_loop_;
-  DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
