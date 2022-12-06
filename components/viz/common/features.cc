@@ -35,12 +35,7 @@ namespace features {
 
 BASE_FEATURE(kEnableOverlayPrioritization,
              "EnableOverlayPrioritization",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseMultipleOverlays,
              "UseMultipleOverlays",
@@ -241,12 +236,7 @@ BASE_FEATURE(kRendererAllocatesImages,
 );
 
 bool IsOverlayPrioritizationEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // DelegatedCompositing in Lacros makes this feature a no-op.
-  return false;
-#else
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
-#endif
 }
 
 bool IsDelegatedCompositingEnabled() {
