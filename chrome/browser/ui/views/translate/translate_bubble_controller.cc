@@ -168,6 +168,7 @@ void TranslateBubbleController::OnPartialTranslateComplete() {
         translate::TranslateErrors::NONE);
   }
 
+  partial_translate_bubble_view_->MaybeUpdateSourceLanguageCombobox();
   partial_translate_bubble_view_->ShowForReason(
       LocationBarBubbleDelegateView::USER_GESTURE);
   translate::ReportPartialTranslateBubbleUiAction(

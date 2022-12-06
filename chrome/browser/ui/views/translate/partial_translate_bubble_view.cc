@@ -977,13 +977,6 @@ void PartialTranslateBubbleView::SwitchView(
     PartialTranslateBubbleModel::ViewState view_state) {
   UpdateInsets(view_state);
 
-  if (view_state == PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
-      view_state == PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE) {
-    GetBubbleFrameView()->SetFootnoteView(nullptr);
-  } else {
-    GetBubbleFrameView()->SetFootnoteView(CreateWordmarkView());
-  }
-
   SwitchTabForViewState(view_state);
   // The initial partial translation uses "Detected Language" as the source by
   // default, so |partial_text_label_| needs to be resized after receiving the
@@ -1003,8 +996,12 @@ void PartialTranslateBubbleView::SwitchView(
 
   UpdateViewState(view_state);
   if (view_state == PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
-      view_state == PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)
+      view_state == PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE) {
     UpdateAdvancedView();
+    GetBubbleFrameView()->SetFootnoteView(nullptr);
+  } else {
+    GetBubbleFrameView()->SetFootnoteView(CreateWordmarkView());
+  }
 
   UpdateChildVisibilities();
   SizeToContents();
@@ -1034,6 +1031,14 @@ void PartialTranslateBubbleView::UpdateTextForViewState(
   }
 
   AnnounceForAccessibility(view_state);
+}
+
+void PartialTranslateBubbleView::MaybeUpdateSourceLanguageCombobox() {
+  size_t curr_index = model_->GetSourceLanguageIndex();
+  if (source_language_combobox_->GetSelectedIndex() != curr_index) {
+    source_language_combobox_->SetSelectedIndex(curr_index);
+    previous_source_language_index_ = curr_index;
+  }
 }
 
 void PartialTranslateBubbleView::AnnounceForAccessibility(

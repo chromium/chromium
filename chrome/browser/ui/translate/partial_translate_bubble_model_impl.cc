@@ -177,9 +177,10 @@ void PartialTranslateBubbleModelImpl::Translate(
   request.selection_encoding = web_contents->GetEncoding();
   std::string source_language_code = GetSourceLanguageCode();
   if (source_language_code != translate::kUnknownLanguageCode) {
-    // source_language_code will be kUnknownLanguageCode if either a) this is
-    // the first time the selection has been translated or b) the user
-    // explicitly selects "Detected Language" in the language list.
+    // |source_language_code| will be kUnknownLanguageCode if either a) this is
+    // the initial translation triggered from the menu or b) the user
+    // explicitly selects "Detected Language" in the language list. In such
+    // cases, |request.source_language| is left as an "empty" value.
     request.source_language = source_language_code;
   }
   request.target_language = GetTargetLanguageCode();

@@ -90,6 +90,12 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   void SetViewState(PartialTranslateBubbleModel::ViewState view_state,
                     translate::TranslateErrors error_type);
 
+  // Update the source language combobox's selected index to match the current
+  // index in the model. These values desynchronize when a request does not
+  // specify a source language, such as with initial translations from the menu,
+  // or when "Detected Language" is used.
+  void MaybeUpdateSourceLanguageCombobox();
+
   // LocationBarBubbleDelegateView:
   void CloseBubble() override;
 
