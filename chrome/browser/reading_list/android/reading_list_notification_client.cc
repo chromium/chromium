@@ -4,6 +4,8 @@
 
 #include "chrome/browser/reading_list/android/reading_list_notification_client.h"
 
+#include <ostream>
+
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_service.h"
 
