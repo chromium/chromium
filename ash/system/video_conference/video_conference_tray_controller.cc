@@ -10,7 +10,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "ash/system/video_conference/video_conference_tray.h"
-#include "ash/system/video_conference/video_conference_tray_effects_manager.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
