@@ -134,10 +134,8 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
   std::unique_ptr<web_package::SignedWebBundleId> bundle_id_;
 };
 
-// TODO: http://b/232991707 Enable this test with dev-mode signed web bundle
-// implementation.
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
-                       DISABLED_AppFromCommandLineIsInstalled) {
+                       AppFromCommandLineIsInstalled) {
   WebAppTestInstallObserver observer(browser()->profile());
   AppId id = observer.BeginListeningAndWait();
 
