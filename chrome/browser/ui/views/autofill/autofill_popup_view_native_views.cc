@@ -1001,7 +1001,7 @@ AutofillPopupSuggestionView::CreateSubtextViews() {
     if (base::ranges::all_of(label_row, &std::u16string::empty,
                              &Suggestion::Text::value)) {
       // If a row is empty, do not include any further rows.
-      break;
+      return subtext_view;
     }
 
     auto label_row_container_view = std::make_unique<views::BoxLayoutView>();
