@@ -253,16 +253,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>
 
-<histogram name="Autocomplete.Cleanup" units="entries" expires_after="M85">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <summary>
-    Logs the number of autocomplete entries removed when the Autocomplete
-    Retention Policy cleaned up expired entries (after a major Chrome version
-    update). An entry is expired when it hasn't been used in the last 14 months.
-  </summary>
-</histogram>
-
 <histogram name="Autocomplete.DaysSinceLastUse" units="days"
     expires_after="2023-04-16">
   <owner>battre@chromium.org</owner>
