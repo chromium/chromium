@@ -1688,6 +1688,8 @@ component("ash") {
     "system/privacy/screen_switch_check_controller.h",
     "system/privacy_hub/camera_privacy_switch_controller.cc",
     "system/privacy_hub/camera_privacy_switch_controller.h",
+    "system/privacy_hub/geolocation_privacy_switch_controller.cc",
+    "system/privacy_hub/geolocation_privacy_switch_controller.h",
     "system/privacy_hub/microphone_privacy_switch_controller.cc",
     "system/privacy_hub/microphone_privacy_switch_controller.h",
     "system/privacy_hub/privacy_hub_controller.cc",
