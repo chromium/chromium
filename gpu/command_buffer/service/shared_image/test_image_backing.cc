@@ -144,6 +144,8 @@ class TestDawnImageRepresentation : public DawnImageRepresentation {
   void EndAccess() override {}
 };
 
+}  // namespace
+
 class TestOverlayImageRepresentation : public OverlayImageRepresentation {
  public:
   TestOverlayImageRepresentation(SharedImageManager* manager,
@@ -158,7 +160,7 @@ class TestOverlayImageRepresentation : public OverlayImageRepresentation {
 
 #if BUILDFLAG(IS_WIN)
   gl::GLImage* GetGLImage() override {
-    gl_image_ = base::MakeRefCounted<gl::GLImage>();
+    gl_image_ = base::WrapRefCounted<gl::GLImage>(new gl::GLImage());
     return gl_image_.get();
   }
 #endif
@@ -172,8 +174,6 @@ class TestOverlayImageRepresentation : public OverlayImageRepresentation {
  private:
   scoped_refptr<gl::GLImage> gl_image_;
 };
-
-}  // namespace
 
 TestImageBacking::TestImageBacking(const Mailbox& mailbox,
                                    viz::SharedImageFormat format,

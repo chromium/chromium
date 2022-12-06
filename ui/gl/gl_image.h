@@ -29,14 +29,22 @@ class ProcessMemoryDump;
 }  // namespace trace_event
 }  // namespace base
 
+namespace gpu {
+class DawnEGLImageRepresentation;
+class TestOverlayImageRepresentation;
+}  // namespace gpu
+
+namespace ui {
+class SurfacelessGlRenderer;
+class SurfacelessSkiaGlRenderer;
+}  // namespace ui
+
 namespace gl {
 
 // Encapsulates an image that can be bound and/or copied to a texture, hiding
 // platform specific management.
 class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
  public:
-  GLImage() = default;
-
   GLImage(const GLImage&) = delete;
   GLImage& operator=(const GLImage&) = delete;
 
@@ -103,18 +111,30 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   };
   virtual Type GetType() const;
 
+ protected:
+  // NOTE: We are in the process of eliminating client usage of GLImage. As part
+  // of this effort, we are incrementally moving its public interface to be
+  // protected with friend'ing of existing users. DO NOT ADD MORE client usage -
+  // instead, reach out to shared-image-team@ with your use case.
+  // See crbug.com/1382031.
+  GLImage() = default;
+
+  virtual ~GLImage() = default;
+
   // Returns the NativePixmap backing the GLImage. If not backed by a
   // NativePixmap, returns null.
   virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 
   virtual void* GetEGLImage() const;
 
- protected:
-  virtual ~GLImage() = default;
-
   gfx::ColorSpace color_space_;
 
  private:
+  friend class gpu::DawnEGLImageRepresentation;
+  friend class gpu::TestOverlayImageRepresentation;
+  friend class ui::SurfacelessGlRenderer;
+  friend class ui::SurfacelessSkiaGlRenderer;
+
   friend class base::RefCounted<GLImage>;
 };
 
