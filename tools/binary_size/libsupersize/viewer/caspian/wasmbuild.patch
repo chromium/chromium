@@ -1,5 +1,5 @@
 diff --git a/build/config/BUILDCONFIG.gn b/build/config/BUILDCONFIG.gn
-index a373e55a330f7..817f4c16d6474 100644
+index cc7e92ddb67cd..f9212d2e81c63 100644
 --- a/build/config/BUILDCONFIG.gn
 +++ b/build/config/BUILDCONFIG.gn
 @@ -305,10 +305,11 @@ is_ios = current_os == "ios"
@@ -16,11 +16,11 @@ index a373e55a330f7..817f4c16d6474 100644
  # =============================================================================
  # TARGET DEFAULTS
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index 5edf30fb186ea..56c076a28b7b8 100644
+index 6119aa066a982..a77ca7e4a2ab8 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
-@@ -637,6 +637,20 @@ config("compiler") {
-     cflags_cc += [ "-Wno-trigraphs" ]
+@@ -647,6 +647,20 @@ config("compiler") {
+     ldflags += [ "-fexperimental-relative-c++-abi-vtables" ]
    }
  
 +  if (is_wasm) {
@@ -40,7 +40,7 @@ index 5edf30fb186ea..56c076a28b7b8 100644
    # Add flags for link-time optimization. These flags enable
    # optimizations/transformations that require whole-program visibility at link
    # time, so they need to be applied to all translation units, and we may end up
-@@ -756,7 +770,7 @@ config("compiler") {
+@@ -766,7 +780,7 @@ config("compiler") {
  
    # TODO(crbug.com/1374347): Cleanup undefined symbol errors caught by
    # --no-undefined-version.
@@ -49,7 +49,7 @@ index 5edf30fb186ea..56c076a28b7b8 100644
      ldflags += [ "-Wl,--undefined-version" ]
    }
  
-@@ -767,7 +781,7 @@ config("compiler") {
+@@ -777,7 +791,7 @@ config("compiler") {
    if (use_lld && !enable_call_graph_profile_sort) {
      if (is_win) {
        ldflags += [ "/call-graph-profile-sort:no" ]
@@ -58,7 +58,7 @@ index 5edf30fb186ea..56c076a28b7b8 100644
        ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
      }
    }
-@@ -1584,7 +1598,7 @@ config("default_warnings") {
+@@ -1615,7 +1629,7 @@ config("default_warnings") {
          "-Wno-ignored-pragma-optimize",
        ]
  
@@ -67,7 +67,7 @@ index 5edf30fb186ea..56c076a28b7b8 100644
          cflags += [
            # TODO(crbug.com/1343975) Evaluate and possibly enable.
            "-Wno-deprecated-builtins",
-@@ -2356,6 +2370,9 @@ config("symbols") {
+@@ -2380,6 +2394,9 @@ config("symbols") {
  
      # All configs using /DEBUG should include this:
      configs = [ ":win_pdbaltpath" ]
@@ -78,7 +78,7 @@ index 5edf30fb186ea..56c076a28b7b8 100644
      cflags = []
      if (is_mac && enable_dsyms) {
 diff --git a/build/toolchain/toolchain.gni b/build/toolchain/toolchain.gni
-index 6a49c399e39ea..57ded8e517966 100644
+index 844bc8e540bcc..93e6e0c437fab 100644
 --- a/build/toolchain/toolchain.gni
 +++ b/build/toolchain/toolchain.gni
 @@ -47,6 +47,9 @@ if (is_apple) {
