@@ -54,7 +54,7 @@ const tests = [
   ['OnboardingNetworkPageTest', 'onboarding_network_page_test.js'],
   [
     'OnboardingSelectComponentsPageTest',
-    'onboarding_select_components_page_test.js'
+    'onboarding_select_components_page_test.js', 'DISABLED_All'
   ],
   ['OnboardingUpdatePageTest', 'onboarding_update_page_test.js'],
   [
@@ -68,7 +68,7 @@ const tests = [
   ['RebootPageTest', 'reboot_page_test.js'],
   [
     'ReimagingCalibrationFailedPageTest',
-    'reimaging_calibration_failed_page_test.js'
+    'reimaging_calibration_failed_page_test.js', 'DISABLED_All'
   ],
   ['ReimagingCalibrationRunPageTest', 'reimaging_calibration_run_page_test.js'],
   [
