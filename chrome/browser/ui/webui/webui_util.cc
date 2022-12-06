@@ -44,8 +44,6 @@ void SetJSModuleDefaults(content::WebUIDataSource* source) {
 #endif
       "'self';");
 
-  // TODO(crbug.com/1098690): Trusted Type Polymer
-  source->DisableTrustedTypesCSP();
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
@@ -58,6 +56,7 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const ResourcePath> resources,
                           int default_resource) {
   SetJSModuleDefaults(source);
+  EnableTrustedTypesCSP(source);
   source->AddResourcePaths(resources);
   source->AddResourcePath("", default_resource);
 }

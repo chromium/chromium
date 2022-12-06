@@ -397,7 +397,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://apps",
     "chrome://browser-switch",
     "chrome://profile-picker",
-    // "chrome://welcome",
+    "chrome://welcome",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Note: Disabled because a DCHECK fires when directly visiting the URL.

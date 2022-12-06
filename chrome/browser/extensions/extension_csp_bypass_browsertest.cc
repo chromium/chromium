@@ -88,17 +88,21 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
     content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
     std::string code = base::StringPrintf(
         R"(
-        var s = document.createElement('script');
-        s.src = '%s';
-        s.onload = function() {
+        function canLoadScript() {
+          const s = document.createElement('script');
+          try {
+            s.src = '%s';
+            document.body.appendChild(s);
+          } catch(e) {
+            // Blocked by TrustedTypes CSP.
+            return false;
+          }
+
           // Not blocked by CSP.
-          window.domAutomationController.send(true);
-        };
-        s.onerror = function() {
-          // Blocked by CSP.
-          window.domAutomationController.send(false);
-        };
-        document.body.appendChild(s);)",
+          return true;
+        }
+        window.domAutomationController.send(canLoadScript());
+        )",
         extension->GetResourceURL("script.js").spec().c_str());
     bool script_loaded = false;
     EXPECT_TRUE(ExecuteScriptAndExtractBool(rfh, code, &script_loaded));
@@ -133,11 +137,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, LoadWebAccessibleScript) {
   EXPECT_TRUE(CanLoadScript(ext_without_permission));
 
   // chrome-extension:-URLs can never bypass CSP in WebUI.
-  // TODO(crbug.com/1098690): Find a way to make this test work for pages that
-  // do use TrustedTypes. In the meantime, just use a WebUI that has not
-  // enabled TrustedTypes yet.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIWelcomeURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIExtensionsURL)));
 
   EXPECT_FALSE(CanLoadScript(component_ext_with_permission));
   EXPECT_FALSE(CanLoadScript(component_ext_without_permission));

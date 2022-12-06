@@ -52,6 +52,7 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISyncConfirmationHost);
   webui::SetJSModuleDefaults(source);
+  webui::EnableTrustedTypesCSP(source);
 
   static constexpr webui::ResourcePath kResources[] = {
       {"icons.html.js", IDR_SIGNIN_ICONS_HTML_JS},
