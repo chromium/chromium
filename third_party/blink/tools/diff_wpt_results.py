@@ -48,12 +48,13 @@ _log = logging.getLogger(os.path.basename(__file__))
 # and rwt/content_shell on Linux
 PRODUCTS = PRODUCTS + [
     'chrome_linux', 'content_shell', 'wpt_content_shell_linux',
-    'wpt_content_shell_win10'
+    'wpt_content_shell_win10', 'wpt_content_shell_mac12'
 ]
 PRODUCTS_TO_STEPNAMES.update({
     'chrome_linux': 'wpt_tests_suite',
     'wpt_content_shell_linux': 'wpt_tests_suite_linux',
     'wpt_content_shell_win10': 'wpt_tests_suite_win10',
+    'wpt_content_shell_mac12': 'wpt_tests_suite_mac12',
     'content_shell': 'blink_wpt_tests'
 })
 PRODUCTS_TO_BUILDER_NAME = {
@@ -62,6 +63,7 @@ PRODUCTS_TO_BUILDER_NAME = {
     'chrome_linux': 'linux-wpt-fyi-rel',
     'wpt_content_shell_linux': 'linux-wpt-content-shell-fyi-rel',
     'wpt_content_shell_win10': 'win10-wpt-content-shell-fyi-rel',
+    'wpt_content_shell_mac12': 'mac-12-wpt-fyi-rel',
     'content_shell': "Linux Tests"
 }
 
@@ -73,6 +75,7 @@ STEP_NAME_VARIANTS = {
     ['wpt_tests_suite (experimental) on Ubuntu-18.04'],
     'wpt_tests_suite_win10':
     ['wpt_tests_suite (experimental) on Windows-10-19042'],
+    'wpt_tests_suite_mac12': ['wpt_tests_suite (experimental) on Mac-12'],
     'blink_wpt_tests': ['blink_wpt_tests on Ubuntu-18.04']
 }
 
