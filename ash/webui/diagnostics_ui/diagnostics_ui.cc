@@ -96,11 +96,11 @@ base::Value::Dict GetDataSourceUpdate() {
   update.Set("settingsLinkText",
              base::Value(GetLinkLabel(IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT,
                                       "chrome://os-settings/")));
-  // TODO(crbug.com/1207678): update this link when the Help Center is ready.
   update.Set(
       "keyboardTesterHelpLink",
-      base::Value(GetLinkLabel(IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_HELP_LINK,
-                               "https://support.google.com/chromebook/")));
+      base::Value(GetLinkLabel(
+          IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_HELP_LINK,
+          "https://support.google.com/chromebook?p=keyboard_troubleshoot")));
   return update;
 }
 
