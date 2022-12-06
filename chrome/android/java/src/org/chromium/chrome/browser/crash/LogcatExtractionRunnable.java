@@ -59,10 +59,8 @@ public class LogcatExtractionRunnable implements Runnable {
         try {
             if (uploadNow) {
                 MinidumpUploadServiceImpl.tryUploadCrashDumpNow(minidump);
-            } else if (MinidumpUploadServiceImpl.shouldUseJobSchedulerForUploads()) {
-                MinidumpUploadServiceImpl.scheduleUploadJob();
             } else {
-                MinidumpUploadServiceImpl.tryUploadCrashDump(minidump);
+                MinidumpUploadServiceImpl.scheduleUploadJob();
             }
         } catch (SecurityException e) {
             Log.w(TAG, e.toString());
