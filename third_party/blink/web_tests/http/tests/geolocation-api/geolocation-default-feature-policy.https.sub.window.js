@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<body>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=../resources/feature-policy-permissions-test.js></script>
+//META: script=/resources/testharness.js
+//META: script=/resources/testharnessreport.js
+//META: script=../resources/feature-policy-permissions-test.js
 
-<script type="module">
 import {GeolocationMock} from '/resources/geolocation-mock.js';
 
 const mockLatitude = 51.478;
@@ -21,6 +18,3 @@ run_permission_default_header_policy_tests(
   'GeolocationPositionError',
   function() { return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(resolve, reject); }); });
-
-</script>
-</body>
