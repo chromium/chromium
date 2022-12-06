@@ -60,31 +60,31 @@ html_to_wrapper("html_wrapper_files") {
 # TS compiler can find them when resolving relative paths.
 copy("copy_mojom") {
   deps = [
-    "//chrome/browser/cart:mojo_bindings_js__generator",
-    "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js__generator",
-    "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_js__generator",
-    "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js__generator",
-    "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_js__generator",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js__generator",
-    "//chrome/browser/ui/webui/realbox:mojo_bindings_js__generator",
-    "//components/omnibox/browser:omnibox_js__generator",
+    "//chrome/browser/cart:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_ts__generator",
+    "//chrome/browser/ui/webui/realbox:mojo_bindings_ts__generator",
+    "//components/omnibox/browser:omnibox_ts__generator",
   ]
   sources = [
-    "$root_gen_dir/mojom-webui/chrome/browser/cart/chrome_cart.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/recipes/recipes.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/realbox/realbox.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/components/omnibox/browser/omnibox.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/cart/chrome_cart.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/recipes/recipes.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/realbox/realbox.mojom-webui.ts",
+    "$root_gen_dir/components/omnibox/browser/omnibox.mojom-webui.ts",
   ]
 
   if (!is_official_build) {
     deps += [
-      "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js__generator",
+      "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_ts__generator",
     ]
-    sources += [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/foo/foo.mojom-webui.js" ]
+    sources += [ "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/foo/foo.mojom-webui.ts" ]
   }
 
   outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
@@ -108,21 +108,7 @@ grit("resources") {
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/resources.grd"
 
-  deps = [
-    ":build_grd",
-    "//chrome/browser/cart:mojo_bindings_js",
-    "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js",
-    "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_js",
-    "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js",
-    "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_js",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
-    "//chrome/browser/ui/webui/realbox:mojo_bindings_js",
-    "//chrome/common/search:mojo_bindings_js",
-    "//components/omnibox/browser:omnibox_js",
-  ]
-  if (!is_official_build) {
-    deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js" ]
-  }
+  deps = [ ":build_grd" ]
 
   outputs = [
     "grit/new_tab_page_resources.h",
@@ -172,7 +158,7 @@ ts_library_sourcemaps("build_ts") {
   } else {
     tsconfig_base = "tsconfig_base.json"
   }
-  in_files = ts_files + html_wrapper_files + mojo_js_files + css_wrapper_files
+  in_files = ts_files + html_wrapper_files + mojo_ts_files + css_wrapper_files
 
   deps = [
     "//third_party/polymer/v3_0:library",

@@ -775,4 +775,5 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
 mojom("omnibox") {
   sources = [ "omnibox.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
 }

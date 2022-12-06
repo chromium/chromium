@@ -9,6 +9,7 @@ assert(!is_android)
 mojom("mojo_bindings") {
   sources = [ "new_tab_page.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
 
   public_deps = [
     "//chrome/browser/ui/webui/realbox:mojo_bindings",

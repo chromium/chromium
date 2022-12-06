@@ -60,17 +60,22 @@ foreach(f, css_files) {
 
 ts_files = web_component_files + non_web_component_files
 
-mojo_js_files = [
-  "chrome_cart.mojom-webui.js",
-  "drive.mojom-webui.js",
-  "feed.mojom-webui.js",
-  "new_tab_page.mojom-webui.js",
-  "photos.mojom-webui.js",
-  "realbox.mojom-webui.js",
-  "recipes.mojom-webui.js",
-  "omnibox.mojom-webui.js",
+mojo_ts_files = [
+  "chrome_cart.mojom-webui.ts",
+  "drive.mojom-webui.ts",
+  "feed.mojom-webui.ts",
+  "new_tab_page.mojom-webui.ts",
+  "photos.mojom-webui.ts",
+  "realbox.mojom-webui.ts",
+  "recipes.mojom-webui.ts",
+  "omnibox.mojom-webui.ts",
 ]
 
 if (!is_official_build) {
-  mojo_js_files += [ "foo.mojom-webui.js" ]
+  mojo_ts_files += [ "foo.mojom-webui.ts" ]
+}
+
+mojo_js_files = []
+foreach(f, mojo_ts_files) {
+  mojo_js_files += [ string_replace(f, ".ts", ".js") ]
 }
