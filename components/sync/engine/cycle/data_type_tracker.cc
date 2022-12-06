@@ -55,6 +55,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case SESSIONS:
     case HISTORY:
     case SAVED_TAB_GROUP:
+    case POWER_BOOKMARK:
       // Sessions is the type that causes the most commit traffic. It gets a
       // custom nudge delay, tuned for a reasonable trade-off between traffic
       // and freshness.
@@ -164,6 +165,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case WORKSPACE_DESK:
     case NIGORI:
     case SAVED_TAB_GROUP:
+    case POWER_BOOKMARK:
     case PROXY_TABS:
       return false;
     case UNSPECIFIED:

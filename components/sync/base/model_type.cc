@@ -179,6 +179,9 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
     {SAVED_TAB_GROUP, "SAVED_TAB_GROUP", "saved_tab_group", "Saved Tab Group",
      sync_pb::EntitySpecifics::kSavedTabGroupFieldNumber,
      ModelTypeForHistograms::kSavedTabGroups},
+    {POWER_BOOKMARK, "POWER_BOOKMARK", "power_bookmark", "Power Bookmark",
+     sync_pb::EntitySpecifics::kPowerBookmarkFieldNumber,
+     ModelTypeForHistograms::kPowerBookmark},
     // ---- Proxy types ----
     {PROXY_TABS, "", "", "Proxy tabs", -1, ModelTypeForHistograms::kProxyTabs},
     // ---- Control Types ----
@@ -190,7 +193,7 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(std::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(44 == syncer::GetNumModelTypes(),
+static_assert(45 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
@@ -330,6 +333,9 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case SAVED_TAB_GROUP:
       specifics->mutable_saved_tab_group();
       break;
+    case POWER_BOOKMARK:
+      specifics->mutable_power_bookmark();
+      break;
   }
 }
 
@@ -360,7 +366,7 @@ void internal::GetModelTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(44 == syncer::GetNumModelTypes(),
+  static_assert(45 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -447,6 +453,8 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
     return SEGMENTATION;
   if (specifics.has_saved_tab_group())
     return SAVED_TAB_GROUP;
+  if (specifics.has_power_bookmark())
+    return POWER_BOOKMARK;
 
   // This client version doesn't understand |specifics|.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -454,7 +462,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(44 == syncer::GetNumModelTypes(),
+  static_assert(45 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();

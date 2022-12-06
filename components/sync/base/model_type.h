@@ -144,6 +144,10 @@ enum ModelType {
   // (Linux, Mac, Windows, ChromeOS).
   SAVED_TAB_GROUP,
 
+  // Power bookmarks are features associated with bookmarks(i.e. notes, price
+  // tracking). Their life cycle are synced with bookmarks.
+  POWER_BOOKMARK,
+
   // Proxy types are excluded from the sync protocol, but are still considered
   // real user types. By convention, we prefix them with 'PROXY_' to distinguish
   // them from normal protocol types.
@@ -245,7 +249,8 @@ enum class ModelTypeForHistograms {
   kAutofillWalletUsage = 54,
   kSegmentation = 55,
   kSavedTabGroups = 56,
-  kMaxValue = kSavedTabGroups
+  kPowerBookmark = 57,
+  kMaxValue = kPowerBookmark
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -269,7 +274,7 @@ constexpr ModelTypeSet ProtocolTypes() {
       USER_EVENTS, NIGORI, USER_CONSENTS, SEND_TAB_TO_SELF, SECURITY_EVENTS,
       WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES, OS_PRIORITY_PREFERENCES,
       SHARING_MESSAGE, WORKSPACE_DESK, HISTORY, PRINTERS_AUTHORIZATION_SERVERS,
-      CONTACT_INFO, SAVED_TAB_GROUP);
+      CONTACT_INFO, SAVED_TAB_GROUP, POWER_BOOKMARK);
 }
 
 // These are the normal user-controlled types. This is to distinguish from

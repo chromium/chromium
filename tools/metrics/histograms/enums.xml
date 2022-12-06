@@ -97750,6 +97750,7 @@ would be helpful to identify which type is being sent.
   <int value="54" label="Autofill Wallet Usage"/>
   <int value="55" label="Segmentation"/>
   <int value="56" label="Saved Tab Groups"/>
+  <int value="57" label="Power Bookmark"/>
 </enum>
 
 <enum name="SyncModelTypeStoreInitResult">

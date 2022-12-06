@@ -45,6 +45,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".OS_PREFERENCE" summary="OS_PREFERENCE"/>
   <variant name=".OS_PRIORITY_PREFERENCE" summary="OS_PRIORITY_PREFERENCE"/>
   <variant name=".PASSWORD" summary="PASSWORD"/>
+  <variant name=".POWER_BOOKMARK" summary="POWER_BOOKMARK"/>
   <variant name=".PREFERENCE" summary="PREFERENCE"/>
   <variant name=".PRINTERS" summary="PRINTERS"/>
   <variant name=".PRINTERS_AUTHORIZATION_SERVERS"
