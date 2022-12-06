@@ -8,7 +8,7 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './emoji_button.html.js';
-import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN} from './events.js';
+import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiButtonClickEvent, EmojiVariantsShownEvent} from './events.js';
 import {CategoryEnum, Emoji} from './types.js';
 
 export class EmojiButton extends PolymerElement {
@@ -119,6 +119,10 @@ export class EmojiButton extends PolymerElement {
 declare global {
   interface HTMLElementTagNameMap {
     [EmojiButton.is]: EmojiButton;
+  }
+  interface HTMLElementEventMap {
+    [EMOJI_VARIANTS_SHOWN]: EmojiVariantsShownEvent;
+    [EMOJI_BUTTON_CLICK]: EmojiButtonClickEvent;
   }
 }
 

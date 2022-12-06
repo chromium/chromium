@@ -21,18 +21,18 @@ export class TextGroupButton extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {string} */
       name: {type: String, readonly: true},
-      /** @type {string} */
       groupId: {type: String, readonly: true},
-      /** @type {boolean} */
       active: {type: Boolean, value: false},
-      /** @type {boolean} */
       disabled: {type: Boolean, value: false},
-      /** @type {number} */
       customTabIndex: {type: Number, value: -1},
     };
   }
+  name: string;
+  groupId: string;
+  active: boolean;
+  disabled: boolean;
+  customTabIndex: number;
 
   constructor() {
     super();
@@ -43,11 +43,11 @@ export class TextGroupButton extends PolymerElement {
         createCustomEvent(GROUP_BUTTON_CLICK, {group: this.groupId}));
   }
 
-  _className(active) {
+  private calculateClassName(active: boolean) {
     return active ? 'text-group-active' : '';
   }
 
-  _toUpperCase(text) {
+  private toUpperCase(text: string) {
     return text.toUpperCase();
   }
 }

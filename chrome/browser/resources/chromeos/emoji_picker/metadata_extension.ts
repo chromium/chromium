@@ -52,7 +52,7 @@ function makeGroupTabs(
           groupTabs.push(
               {
                 name: tab.name,
-                icon: tab.icon ?? null,
+                icon: tab.icon,
                 category: category,
                 pagination: pagination,
                 groupId: groupId.toString(),
@@ -67,23 +67,24 @@ function makeGroupTabs(
   return groupTabs;
 }
 
-export const CATEGORY_METADATA = [
-  {
-    name: 'emoji',
-    icon: 'emoji_picker_v2:emoji_emojis',
-    active: true,
-  },
-  {
-    name: 'symbol',
-    icon: 'emoji_picker_v2:emoji_symbols',
-    active: false,
-  },
-  {
-    name: 'emoticon',
-    icon: 'emoji_picker_v2:emoji_emoticons',
-    active: false,
-  },
-];
+export const CATEGORY_METADATA:
+    Array<{name: CategoryEnum, icon: string, active: boolean}> = [
+      {
+        name: CategoryEnum.EMOJI,
+        icon: 'emoji_picker_v2:emoji_emojis',
+        active: true,
+      },
+      {
+        name: CategoryEnum.SYMBOL,
+        icon: 'emoji_picker_v2:emoji_symbols',
+        active: false,
+      },
+      {
+        name: CategoryEnum.EMOTICON,
+        icon: 'emoji_picker_v2:emoji_emoticons',
+        active: false,
+      },
+    ];
 
 const CATEGORY_TABS = {
   'emoji': [

@@ -11,7 +11,7 @@ const MAX_RECENTS = 18;
  * @return {{history:!Array<StoredItem>, preference:Object<string,string>}}
  *     recently used emoji, most recent first.
  */
-function load(keyName) {
+function load(keyName: string) {
   const stored = window.localStorage.getItem(keyName);
   if (!stored) {
     return {history: [], preference: {}};
@@ -25,25 +25,26 @@ function load(keyName) {
  * @param {{history:!Array<StoredItem>, preference:Object<string,string>}} data
  *     recently used emoji, most recent first.
  */
-function save(keyName, data) {
+function save(
+    keyName: string,
+    data: {history: StoredItem[], preference: {[index: string]: string}}) {
   window.localStorage.setItem(keyName, JSON.stringify(data));
 }
 
 export class RecentlyUsedStore {
-  constructor(name) {
+  storeName: string;
+  data: {history: StoredItem[], preference: {[index: string]: string}};
+  constructor(name: string) {
     this.storeName = name;
     this.data = load(name);
   }
 
   /**
    * Saves preferences for a base emoji.
-   *
-   * @param {string} baseEmoji
-   * @param {string} variant
-   * @returns {boolean} True if any preferences are updated and false
+   * returns True if any preferences are updated and false
    *    otherwise.
    */
-  savePreferredVariant(baseEmoji, variant) {
+  savePreferredVariant(baseEmoji: string, variant: string) {
     if (!baseEmoji) {
       return false;
     }
@@ -75,9 +76,8 @@ export class RecentlyUsedStore {
   /**
    * Moves the given item to the front of the MRU list, inserting it if
    * it did not previously exist.
-   * @param {!StoredItem} newItem most recently used item.
    */
-  bumpItem(newItem) {
+  bumpItem(newItem: StoredItem) {
     // Find and remove newItem from array if it previously existed.
     // Note, this explicitly allows for multiple recent item entries for the
     // same "base" emoji just with a different variant.

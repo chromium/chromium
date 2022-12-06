@@ -32,7 +32,7 @@ export const EMOJI_BUTTON_CLICK = 'emoji-button-click';
  * same time. It will be be improved after removing emoji-button.
  */
 export type EmojiVariantsShownEvent =
-    CustomEvent<{owner?: Element, variants?: Element, baseEmoji: string}>;
+    CustomEvent<{owner?: Element, variants?: HTMLElement, baseEmoji: string}>;
 
 export const EMOJI_VARIANTS_SHOWN = 'emoji-variants-shown';
 

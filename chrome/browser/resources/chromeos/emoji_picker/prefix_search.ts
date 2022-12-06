@@ -9,55 +9,41 @@ import {EmojiVariants} from './types.js';
  * Preprocess a phrase by the following operations:
  *  (1) remove white whitespace at both ends of the phrase.
  *  (2) convert all letters into lowercase.
- * @param {string} phrase
- * @returns {string}
  */
-function sanitize(phrase) {
+function sanitize(phrase: string) {
   return phrase.trim().toLowerCase();
 }
 
 export class EmojiPrefixSearch {
-  constructor() {
-    /** @type {!Trie} */
-    this.tokenTrie_ = new Trie();
+  private tokenTrie = new Trie();
+  private wordToEmojisMap: Map<string, Set<string>> = new Map();
+  private emojiMap: Map<string, EmojiVariants> = new Map();
 
-    /** @type {!Map<string, !Set<string>>} */
-    this.wordToEmojisMap_ = new Map();
-
-    /** @type {!Map<string, EmojiVariants>} */
-    this.emojiMap_ = new Map();
-  }
-
-  /**
-   * @param {!Array<!EmojiVariants>} collection
-   */
-  setCollection(collection) {
+  setCollection(collection: EmojiVariants[]) {
     this.clear();
     for (const record of collection) {
       const string = record.base.string;
       const name = record.base.name;
-      const terms = this.tokenize_(name).map(term => sanitize(term));
+      const terms = this.tokenize(name).map(term => sanitize(term));
       terms.forEach(term => {
-        if (!this.wordToEmojisMap_.has(term)) {
-          this.wordToEmojisMap_.set(term, new Set());
+        if (!this.wordToEmojisMap.has(term)) {
+          this.wordToEmojisMap.set(term, new Set());
         }
-        this.wordToEmojisMap_.get(term).add(string);
-        this.emojiMap_.set(string, record);
-        this.tokenTrie_.add(term);
+        this.wordToEmojisMap.get(term)?.add(string);
+        this.emojiMap.set(string, record);
+        this.tokenTrie.add(term);
       });
     }
   }
 
   /**
    * Returns all items whose name contains the prefix.
-   * @param {string} prefix
-   * @returns {!Array<string>}
    */
-  matchPrefixToEmojis(prefix) {
-    const results = new Set();
-    const terms = this.tokenTrie_.getKeys(prefix);
+  matchPrefixToEmojis(prefix: string): string[] {
+    const results: Set<string> = new Set();
+    const terms = this.tokenTrie.getKeys(prefix);
     for (const term of terms) {
-      const matchedItems = this.wordToEmojisMap_.get(term);
+      const matchedItems = this.wordToEmojisMap.get(term);
       if (matchedItems !== undefined) {
         matchedItems.forEach(item => {
           results.add(item);
@@ -67,38 +53,31 @@ export class EmojiPrefixSearch {
     return Array.from(results);
   }
 
-
-
   /**
    * Clear trie and lookup table.
    */
-  clear() {
-    this.tokenTrie_.clear();
-    this.wordToEmojisMap_.clear();
-    this.emojiMap_.clear();
+  clear(): void {
+    this.tokenTrie.clear();
+    this.wordToEmojisMap.clear();
+    this.emojiMap.clear();
   }
 
-  /**
-   * Split a phrase into tokens.
-   * @private
-   * @param {string} phrase
-   * @returns {!Array<string>} array of non-empty tokens.
-   */
-  tokenize_(phrase) {
+  private tokenize(phrase: string): string[] {
     return phrase.split(' ').filter(token => token.length > 0);
   }
 
   /**
    * Fetch all words from the emoji data that have 'term' has prefix and attach
    * matching metadata for each word.
-   * @param {!EmojiVariants} emoji
-   * @param {string} term
-   * @returns {!Array<{pos: Number, isMatched: Boolean, token: String, weight:
-   *     Number}>} Array of matching metadata.
    */
-  getMatchedKeywords_(emoji, term) {
+  getMatchedKeywords(emoji: EmojiVariants, term: string): Array<{
+    pos: number,
+    isMatched: boolean,
+    token: string,
+    weight: number,
+  }> {
     const PRIMARY_NAME_WEIGHT = 1;
-    return this.tokenize_(sanitize(emoji.base.name))
+    return this.tokenize(sanitize(emoji.base.name))
         .map((token, pos) => ({
                pos,
                isMatched: token.startsWith(term),
@@ -110,14 +89,10 @@ export class EmojiPrefixSearch {
 
   /**
    * Calculate the matching score of a term against a given emoji.
-   * @param {!EmojiVariants} emoji
-   * @param {string} term
-   * @throws Thrown when any matched word from emoji description is empty.
-   * @returns {number}
    */
-  scoreTermAgainstEmoji(emoji, term) {
+  scoreTermAgainstEmoji(emoji: EmojiVariants, term: string) {
     let score = 0;
-    for (const item of this.getMatchedKeywords_(emoji, term)) {
+    for (const item of this.getMatchedKeywords(emoji, term)) {
       if (item.token.length === 0) {
         throw new Error('Token can not be empty.');
       }
@@ -131,28 +106,27 @@ export class EmojiPrefixSearch {
 
   /**
    * Search for all items that match with the given query
-   * @param {string} query multi-word query
-   * @returns {!Array<{item: !EmojiVariants, score: number}>} an array of
-   *     matched items.
    */
-  search(query) {
+  search(query: string) {
     const queryScores = new Map();
     const sanitizedQuery = sanitize(query);
-    this.tokenize_(sanitizedQuery).forEach((term, idx) => {
+    this.tokenize(sanitizedQuery).forEach((term, idx) => {
       // For each token
       const termScores = new Map();
       const candidateEmojis = this.matchPrefixToEmojis(term);
 
       for (const emoji of candidateEmojis) {
-        const emojiRecord = this.emojiMap_.get(emoji);
-        termScores.set(emoji, this.scoreTermAgainstEmoji(emojiRecord, term));
+        const emojiRecord = this.emojiMap.get(emoji);
+        if (emojiRecord) {
+          termScores.set(emoji, this.scoreTermAgainstEmoji(emojiRecord, term));
+        }
       }
 
       for (const emoji of termScores.keys()) {
         // If it is the first term in the query phrase, we apply the
         // normalization factor.
         if (idx === 0) {
-          const emojiName = this.emojiMap_.get(emoji).base.name;
+          const emojiName = this.emojiMap.get(emoji)?.base?.name ?? ' ';
           queryScores.set(emoji, sanitizedQuery.length / emojiName.length);
         }
         if (queryScores.has(emoji)) {
@@ -171,19 +145,17 @@ export class EmojiPrefixSearch {
 
     const results =
         Array.from(queryScores.keys()).map(emoji => ({
-                                             item: this.emojiMap_.get(emoji),
+                                             item: this.emojiMap.get(emoji) as
+                                                 EmojiVariants,
                                              score: queryScores.get(emoji),
                                            }));
-    return this.sort_(results);
+    return this.sort(results);
   }
 
   /**
    * Sort the array of Emoji objects by relevance score in descending order
-   * @param {!Array<{item: !EmojiVariants, score: number}>} results
-   * @returns {!Array<{item: !EmojiVariants, score: number}>} the sorted array
-   *     of Emoji objects.
    */
-  sort_(results) {
+  private sort(results: Array<{item: EmojiVariants, score: number}>) {
     return results.sort((emoji1, emoji2) => emoji2.score - emoji1.score);
   }
 }

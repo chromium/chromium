@@ -13,10 +13,10 @@ web_component_files = [
   "emoji_category_button.ts",
   "emoji_group.ts",
   "emoji_group_button.ts",
-  "emoji_picker.js",
+  "emoji_picker.ts",
   "emoji_search.ts",
   "emoji_variants.ts",
-  "text_group_button.js",
+  "text_group_button.ts",
 ]
 
 # Files that are passed as input to html_to_wrapper().
@@ -30,15 +30,15 @@ foreach(f, html_files) {
   html_wrapper_files += [ f + ".ts" ]
 }
 
-non_component_js_files = [
+non_component_ts_files = [
   "constants.ts",
   "emoji_picker_api_proxy.ts",
   "events.ts",
   "metadata_extension.ts",
-  "prefix_search.js",
-  "store.js",
+  "prefix_search.ts",
+  "store.ts",
   "structs/trie.ts",
-  "types.js",
+  "types.ts",
 ]
 
 mojo_js_files = [ "emoji_picker.mojom-webui.js" ]
@@ -198,7 +198,7 @@ html_to_wrapper("html_wrapper_files") {
 }
 
 copy("copy_checked_in_ts_js_files") {
-  sources = web_component_files + non_component_js_files
+  sources = web_component_files + non_component_ts_files
   outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
 }
 
@@ -206,7 +206,7 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/preprocessed"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  in_files = web_component_files + non_component_js_files + html_wrapper_files +
+  in_files = web_component_files + non_component_ts_files + html_wrapper_files +
              mojo_js_files + [ "fuse.js" ]
   definitions = [ "$target_gen_dir/preprocessed/fuse.d.ts" ]
   deps = [

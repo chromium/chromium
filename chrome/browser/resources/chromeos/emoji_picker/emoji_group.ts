@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './emoji_button.js';
 import './emoji_variants.js';
 
@@ -11,7 +10,7 @@ import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './emoji_group.html.js';
-import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_VARIANTS_SHOWN} from './events.js';
+import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
 
 // Note - these names are used directly in CSS.
@@ -19,7 +18,6 @@ export enum EmojiGroupLayoutType {
   GRID_LAYOUT = 'grid-layout',
   FLEX_LAYOUT = 'flex-layout',
 }
-
 
 const DEFAULT_CATEGORY_LAYOUTS = {
   [CategoryEnum.EMOJI]: EmojiGroupLayoutType.GRID_LAYOUT,
@@ -280,7 +278,7 @@ export class EmojiGroupComponent extends PolymerElement {
   /**
    * Hides emoji variants if any is visible.
    */
-  private hideEmojiVariants(): void {
+  hideEmojiVariants(): void {
     this.shownEmojiVariantIndex = null;
   }
 
@@ -312,6 +310,9 @@ export class EmojiGroupComponent extends PolymerElement {
 declare global {
   interface HTMLElementTagNameMap {
     [EmojiGroupComponent.is]: EmojiGroupComponent;
+  }
+  interface HTMLElementEventMap {
+    [EMOJI_CLEAR_RECENTS_CLICK]: EmojiClearRecentClickEvent;
   }
 }
 

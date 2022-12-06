@@ -28,8 +28,8 @@
 
 <cr-button
     id="group-button"
-    class$="[[_className(active)]]"
+    class$="[[calculateClassName(active)]]"
     on-click="handleClick"
     custom-tab-index="[[customTabIndex]]">
-  [[_toUpperCase(name)]]
+  [[toUpperCase(name)]]
 </cr-button>

@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './emoji_category_button.html.js';
-import {CATEGORY_BUTTON_CLICK, createCustomEvent} from './events.js';
+import {CATEGORY_BUTTON_CLICK, CategoryButtonClickEvent, createCustomEvent} from './events.js';
 
 export class EmojiCategoryButton extends PolymerElement {
   static get is() {
@@ -46,6 +46,9 @@ export class EmojiCategoryButton extends PolymerElement {
 declare global {
   interface HTMLElementTagNameMap {
     [EmojiCategoryButton.is]: EmojiCategoryButton;
+  }
+  interface HTMLElementEventMap {
+    [CATEGORY_BUTTON_CLICK]: CategoryButtonClickEvent;
   }
 }
 
