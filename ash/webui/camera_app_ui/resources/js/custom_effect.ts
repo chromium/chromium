@@ -119,6 +119,11 @@ export function setup(): void {
       hide();
     }
   });
+  state.addObserver(state.State.STREAMING, (val) => {
+    if (!val) {
+      hide();
+    }
+  });
 }
 
 function getIndicatorI18nStringId(indicatorType: IndicatorType): I18nString {
