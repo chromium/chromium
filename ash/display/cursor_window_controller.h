@@ -89,6 +89,7 @@ class ASH_EXPORT CursorWindowController {
 
   // Gets the cursor container for testing purposes.
   const aura::Window* GetContainerForTest() const;
+  SkColor GetCursorColorForTest() const;
 
  private:
   friend class CursorWindowControllerTest;

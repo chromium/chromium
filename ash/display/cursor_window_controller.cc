@@ -309,6 +309,10 @@ const aura::Window* CursorWindowController::GetContainerForTest() const {
   return container_;
 }
 
+SkColor CursorWindowController::GetCursorColorForTest() const {
+  return cursor_color_;
+}
+
 void CursorWindowController::SetContainer(aura::Window* container) {
   if (container_ == container)
     return;
