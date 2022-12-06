@@ -54,12 +54,7 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
       last_used_time(form.date_last_used) {
   // Only one-note with an empty `unique_display_name` is supported in the
   // settings UI.
-  for (const PasswordNote& n : form.notes) {
-    if (n.unique_display_name.empty()) {
-      note = n;
-      break;
-    }
-  }
+  note = form.GetNoteWithEmptyUniqueDisplayName().value_or(std::move(note));
 
   CredentialFacet facet;
   facet.display_name = form.app_display_name;
@@ -87,12 +82,7 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
 
   // Only one-note with an empty `unique_display_name` is supported in the
   // settings UI.
-  for (const PasswordNote& n : forms[0].notes) {
-    if (n.unique_display_name.empty()) {
-      note = n;
-      break;
-    }
-  }
+  note = forms[0].GetNoteWithEmptyUniqueDisplayName().value_or(std::move(note));
 
   // Add credential facets.
   for (const auto& form : forms) {

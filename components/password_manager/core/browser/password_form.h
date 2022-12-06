@@ -47,6 +47,17 @@ enum class InsecureType {
   kMaxValue = kReused
 };
 
+enum class PasswordNoteChangeResult {
+  // A new credential is added with the note field not empty.
+  kNoteAdded = 0,
+  // The note changed from a non-empty to another non-empty.
+  kNoteEdited = 1,
+  // The note changed from non-empty to empty.
+  kNoteRemoved = 2,
+  // The note did not change.
+  kNoteNotChanged = 3
+};
+
 // Metadata for insecure credentials
 struct InsecurityMetadata {
   InsecurityMetadata();
@@ -457,6 +468,15 @@ struct PasswordForm {
 
   // Returns true when |password_value| or |new_password_value| are non-empty.
   bool HasNonEmptyPasswordValue() const;
+
+  // Returns the note with an empty `unique_display_name`, otherwise returns an
+  // nullopt.
+  absl::optional<PasswordNote> GetNoteWithEmptyUniqueDisplayName() const;
+
+  // Updates the note with an empty `unique_display_name` and returns the status
+  // as `PasswordNoteAction`.
+  PasswordNoteChangeResult SetNoteWithEmptyUniqueDisplayName(
+      const PasswordNote& new_note);
 
   PasswordForm();
   PasswordForm(const PasswordForm& other);

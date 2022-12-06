@@ -91,25 +91,20 @@ IsPasswordNoteChanged IsNoteChanged(const password_manager::PasswordForm& form,
       (!old_note_exists && !new_note.value.empty()));
 }
 
-PasswordNoteAction UpdateNoteInPasswordForm(
-    password_manager::PasswordForm& form,
-    const PasswordNote& new_note) {
-  const auto& note_itr = base::ranges::find_if(
-      form.notes, &std::u16string::empty, &PasswordNote::unique_display_name);
-  // if the old note doesn't exist, the note is just created.
-  if (note_itr == form.notes.end()) {
-    form.notes.push_back(new_note);
-    return PasswordNoteAction::kNoteAddedInEditDialog;
+PasswordNoteAction NoteChangeResultToPasswordNoteEditDialogAction(
+    password_manager::PasswordNoteChangeResult result) {
+  switch (result) {
+    case password_manager::PasswordNoteChangeResult::kNoteAdded:
+      return PasswordNoteAction::kNoteAddedInEditDialog;
+    case password_manager::PasswordNoteChangeResult::kNoteEdited:
+      return PasswordNoteAction::kNoteEditedInEditDialog;
+    case password_manager::PasswordNoteChangeResult::kNoteRemoved:
+      return PasswordNoteAction::kNoteRemovedInEditDialog;
+    case password_manager::PasswordNoteChangeResult::kNoteNotChanged:
+      return PasswordNoteAction::kNoteNotChanged;
   }
-  // Note existed, but it was empty.
-  if (note_itr->value.empty()) {
-    note_itr->value = new_note.value;
-    note_itr->date_created = base::Time::Now();
-    return PasswordNoteAction::kNoteAddedInEditDialog;
-  }
-  note_itr->value = new_note.value;
-  return new_note.value.empty() ? PasswordNoteAction::kNoteRemovedInEditDialog
-                                : PasswordNoteAction::kNoteEditedInEditDialog;
+  NOTREACHED();
+  return PasswordNoteAction::kNoteNotChanged;
 }
 
 void LogMetricsAddCredential(const password_manager::PasswordForm& form) {
@@ -392,9 +387,10 @@ SavedPasswordsPresenter::EditSavedCredentials(
 
     if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
       if (note_changed) {
-        PasswordNoteAction note_action =
-            UpdateNoteInPasswordForm(new_form, updated_credential.note);
-        metrics_util::LogPasswordNoteActionInSettings(note_action);
+        password_manager::PasswordNoteChangeResult note_change_result =
+            new_form.SetNoteWithEmptyUniqueDisplayName(updated_credential.note);
+        metrics_util::LogPasswordNoteActionInSettings(
+            NoteChangeResultToPasswordNoteEditDialogAction(note_change_result));
       } else {
         metrics_util::LogPasswordNoteActionInSettings(
             PasswordNoteAction::kNoteNotChanged);
