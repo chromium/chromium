@@ -6,9 +6,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "auto_advancing_virtual_time_domain.h": [
-    "+base/task/task_observer.h",
-  ],
   "idle_time_estimator.h": [
     "+base/task/task_observer.h",
   ],

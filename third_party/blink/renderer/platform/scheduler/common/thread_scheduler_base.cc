@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_base.h"
 
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
+#include "third_party/blink/renderer/platform/scheduler/common/auto_advancing_virtual_time_domain.h"
 
 namespace blink {
 namespace scheduler {

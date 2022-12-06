@@ -12,6 +12,8 @@ if (is_android) {
 
 blink_platform_sources("scheduler") {
   sources = [
+    "common/auto_advancing_virtual_time_domain.cc",
+    "common/auto_advancing_virtual_time_domain.h",
     "common/back_forward_cache_disabling_feature_tracker.cc",
     "common/back_forward_cache_disabling_feature_tracker.h",
     "common/cancelable_closure_holder.cc",
@@ -67,8 +69,6 @@ blink_platform_sources("scheduler") {
     "main_thread/agent_group_scheduler_impl.cc",
     "main_thread/agent_group_scheduler_impl.h",
     "main_thread/attribution_group.h",
-    "main_thread/auto_advancing_virtual_time_domain.cc",
-    "main_thread/auto_advancing_virtual_time_domain.h",
     "main_thread/deadline_task_runner.cc",
     "main_thread/deadline_task_runner.h",
     "main_thread/find_in_page_budget_pool_controller.cc",
@@ -229,6 +229,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "common/auto_advancing_virtual_time_domain_unittest.cc",
     "common/back_forward_cache_disabling_feature_tracker_unittest.cc",
     "common/cooperative_scheduling_manager_unittest.cc",
     "common/idle_helper_unittest.cc",
@@ -242,7 +243,6 @@ source_set("unit_tests") {
     "common/tracing_helper_unittest.cc",
     "common/ukm_task_sampler_unittest.cc",
     "common/worker_pool_unittest.cc",
-    "main_thread/auto_advancing_virtual_time_domain_unittest.cc",
     "main_thread/deadline_task_runner_unittest.cc",
     "main_thread/frame_scheduler_impl_unittest.cc",
     "main_thread/frame_task_queue_controller_unittest.cc",
