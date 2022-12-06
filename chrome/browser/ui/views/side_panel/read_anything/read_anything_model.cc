@@ -63,6 +63,7 @@ void ReadAnythingModel::Init(const std::string& font_name,
         letter_spacing_index);
   }
 
+  font_name_ = font_model_->GetFontNameAt(font_model_->GetStartingStateIndex());
   colors_combobox_index_ = colors_model_->GetStartingStateIndex();
   auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
   foreground_color_id_ = initial_colors.foreground_color_id;
