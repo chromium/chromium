@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
 
@@ -24,6 +23,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #endif
+
+namespace apps {
+enum class LaunchSource;
+}
 
 namespace signin {
 enum class ConsentLevel;
