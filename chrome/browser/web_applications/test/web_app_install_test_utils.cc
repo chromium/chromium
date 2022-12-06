@@ -5,27 +5,37 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 
 #include "base/command_line.h"
+#include "base/containers/enum_set.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace web_app {
 namespace test {
+namespace {
+using WebAppSourcesSet = base::EnumSet<WebAppManagement::Type,
+                                       WebAppManagement::kMinValue,
+                                       WebAppManagement::kMaxValue>;
+}
 
 void WaitUntilReady(WebAppProvider* provider) {
   if (provider->on_registry_ready().is_signaled())
@@ -115,6 +125,50 @@ void UninstallWebApp(Profile* profile, const AppId& app_id) {
   run_loop.Run();
   // Allow updates to be published to App Service listeners.
   base::RunLoop().RunUntilIdle();
+}
+
+bool UninstallAllWebApps(Profile* profile) {
+  bool success = true;
+  auto* provider = WebAppProvider::GetForTest(profile);
+  if (!provider)
+    return false;
+  std::vector<AppId> app_ids = provider->registrar().GetAppIds();
+  for (auto& app_id : app_ids) {
+    const WebApp* app = provider->registrar().GetAppById(app_id);
+    WebAppSourcesSet sources =
+        WebAppSourcesSet::FromEnumBitmask(app->GetSources().to_ullong());
+
+    // Non-user installs first, as they block user uninstalls.
+    for (WebAppManagement::Type source : sources) {
+      if (source == WebAppManagement::kSync)
+        continue;
+      base::test::TestFuture<webapps::UninstallResultCode> result;
+      provider->install_finalizer().UninstallExternalWebApp(
+          app_id, source, webapps::WebappUninstallSource::kTestCleanup,
+          result.GetCallback());
+      if (!result.Wait() ||
+          result.Get() == webapps::UninstallResultCode::kError) {
+        LOG(ERROR) << "Error uninstalling " << app_id;
+        success = false;
+      }
+    }
+
+    // User uninstalls now, which should be unblocked now.
+    for (WebAppManagement::Type source : sources) {
+      if (source != WebAppManagement::kSync)
+        continue;
+      base::test::TestFuture<webapps::UninstallResultCode> result;
+      provider->install_finalizer().UninstallWebApp(
+          app_id, webapps::WebappUninstallSource::kTestCleanup,
+          result.GetCallback());
+      if (!result.Wait() ||
+          result.Get() == webapps::UninstallResultCode::kError) {
+        LOG(ERROR) << "Error uninstalling " << app_id;
+        success = false;
+      }
+    }
+  }
+  return success;
 }
 
 }  // namespace test

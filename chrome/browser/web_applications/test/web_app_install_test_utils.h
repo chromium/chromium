@@ -56,6 +56,10 @@ AppId InstallWebApp(Profile* profile,
 // tests.
 void UninstallWebApp(Profile* profile, const AppId& app_id);
 
+// Synchronously uninstall all web apps for the given profile. May be used in
+// unit tests and browser tests. Returns `false` if there was a failure.
+bool UninstallAllWebApps(Profile* profile);
+
 }  // namespace test
 }  // namespace web_app
 

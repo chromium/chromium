@@ -304,15 +304,15 @@ class StartupWebAppCreator
                        base::WrapRefCounted(this), allowed);
 
     if (remember_user_choice) {
+      WebAppProvider* provider = WebAppProvider::GetForWebApps(profile_);
       if (!protocol_url_.is_empty()) {
-        PersistProtocolHandlersUserChoice(profile_, app_id_, protocol_url_,
-                                          allowed, std::move(persist_callback));
+        provider->scheduler().UpdateProtocolHandlerUserApproval(
+            app_id_, protocol_url_.scheme(), allowed,
+            std::move(persist_callback));
       } else {
         DCHECK(!file_launch_infos_.empty());
-        WebAppProvider::GetForWebApps(profile_)
-            ->scheduler()
-            .PersistFileHandlersUserChoice(app_id_, allowed,
-                                           std::move(persist_callback));
+        provider->scheduler().PersistFileHandlersUserChoice(
+            app_id_, allowed, std::move(persist_callback));
       }
     } else {
       std::move(persist_callback).Run();

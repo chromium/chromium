@@ -142,6 +142,13 @@ class WebAppCommandScheduler {
   // OS.
   void SyncRunOnOsLoginMode(const AppId& app_id, base::OnceClosure callback);
 
+  // Updates the approved or disallowed protocol list for the given app. If
+  // necessary, it also updates the protocol registration with the OS.
+  void UpdateProtocolHandlerUserApproval(const AppId& app_id,
+                                         const std::string& protocol_scheme,
+                                         bool allowed,
+                                         base::OnceClosure callback);
+
   // Set app to disabled, This is Chrome OS specific and no-op on other
   // platforms.
   void SetAppIsDisabled(const AppId& app_id,

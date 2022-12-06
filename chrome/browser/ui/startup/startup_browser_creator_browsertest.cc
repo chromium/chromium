@@ -2759,7 +2759,7 @@ IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel) {
   if (!AreProtocolHandlersSupported())
-    return;
+    GTEST_SKIP() << "Protocol Handlers unsupported";
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "ProtocolHandlerLaunchDialogView");
@@ -2786,7 +2786,7 @@ IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept) {
   if (!AreProtocolHandlersSupported())
-    return;
+    GTEST_SKIP() << "Protocol Handlers unsupported";
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "ProtocolHandlerLaunchDialogView");
@@ -2842,7 +2842,7 @@ IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl) {
   if (!AreProtocolHandlersSupported())
-    return;
+    GTEST_SKIP() << "Protocol Handlers unsupported";
 
   // Register web app as a protocol handler that should *not* handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
@@ -2875,7 +2875,7 @@ IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsLaunchedWithAllowedProtocolUrlPref) {
   if (!AreProtocolHandlersSupported())
-    return;
+    GTEST_SKIP() << "Protocol Handlers unsupported";
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "ProtocolHandlerLaunchDialogView");
@@ -2944,7 +2944,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
                        WebAppLaunch_WebAppIsLaunchedWithAllowedProtocol) {
   if (!AreProtocolHandlersSupported())
-    return;
+    GTEST_SKIP() << "Protocol Handlers unsupported";
 
   // Register web app as a protocol handler that should handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
@@ -3016,7 +3016,7 @@ IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsLaunchedWithDiallowedProtocolUrlPref) {
   if (!AreProtocolHandlersSupported())
-    return;
+    GTEST_SKIP() << "Protocol Handlers unsupported";
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "ProtocolHandlerLaunchDialogView");
@@ -3054,7 +3054,7 @@ IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     WebAppLaunch_WebAppIsLaunchedWithDisallowedOnceProtocol) {
   if (!AreProtocolHandlersSupported())
-    return;
+    GTEST_SKIP() << "Protocol Handlers unsupported";
 
   // Register web app as a protocol handler that should handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
@@ -3109,7 +3109,7 @@ class StartupBrowserWebAppProtocolAndFileHandlingTest
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
                        WebAppLaunch_FileProtocol) {
   if (!AreProtocolHandlersSupported())
-    return;
+    GTEST_SKIP() << "Protocol Handlers unsupported";
 
   // Install an app with protocol handlers and a handler for plain text files.
   apps::ProtocolHandlerInfo protocol_handler;

@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
+#include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
@@ -300,6 +301,22 @@ void WebAppCommandScheduler::SyncRunOnOsLoginMode(const AppId& app_id,
 
   provider_->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSyncLoginMode(app_id, std::move(callback)));
+}
+
+void WebAppCommandScheduler::UpdateProtocolHandlerUserApproval(
+    const AppId& app_id,
+    const std::string& protocol_scheme,
+    bool allowed,
+    base::OnceClosure callback) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(callback));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<UpdateProtocolHandlerApprovalCommand>(
+          app_id, protocol_scheme, allowed, std::move(callback)));
 }
 
 void WebAppCommandScheduler::ClearWebAppBrowsingData(
